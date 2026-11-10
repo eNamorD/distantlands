@@ -115,21 +115,21 @@ Each unit below is one commit. For each unit:
 
 1. **OperationShadow**
    - Grep: `grep -rn "OperationShadow" src/main shared/src frontend/src/main`
-   - Delete `src/main/scala/oathdigital/gameplay/operations/OperationShadow.scala`.
+   - Delete `src/main/scala/distantlands/gameplay/operations/OperationShadow.scala`.
    - Delete the test `OperationExecutorSuite` "shadow comparison distinguishes parity rejection and mismatch".
 2. **PowerOperationPlanner**
    - Grep: `grep -rn "PowerOperationPlanner\|PlaceRelicAtSite\|DrawTopRelic\|RelicPlacement" src/main shared/src frontend/src/main`
-   - Delete `RelicPlacement`, `PowerOperationPlanner`, `DrawTopRelic` and `PlaceRelicAtSite` from `src/main/scala/oathdigital/gameplay/operations/PowerOperations.scala`. Keep everything else in that file (`Costs` and so on).
+   - Delete `RelicPlacement`, `PowerOperationPlanner`, `DrawTopRelic` and `PlaceRelicAtSite` from `src/main/scala/distantlands/gameplay/operations/PowerOperations.scala`. Keep everything else in that file (`Costs` and so on).
    - Reword the comment at `CatacombsContribution.scala:31`, which cites `PowerOperations.PlaceRelicAtSite:93`: say what `relicSlots` checks without citing the deleted code.
    - Delete the tests `PowerOperationsSuite` "DrawTopRelic and PlaceRelicAtSite preserve top-card and facedown rules" and "power operation plans apply in order and fail without a partial result".
 3. **RuleRegistry**
    - Grep: `grep -rn "RuleRegistry\|TypedRuleHandler" src/main shared/src frontend/src/main`
-   - Delete `TypedRuleHandler` and `RuleRegistry` from `src/main/scala/oathdigital/gameplay/RuleResolution.scala`. If nothing else remains in the file, delete the file.
+   - Delete `TypedRuleHandler` and `RuleRegistry` from `src/main/scala/distantlands/gameplay/RuleResolution.scala`. If nothing else remains in the file, delete the file.
    - Delete the tests `RuleResolutionSuite` "registry lookup is explicit and unknown relevant handlers are safe" and "resolution ordering is priority source identity then handler ID".
 4. **The presentation package**
    - Grep: `grep -rn "oathdigital.presentation\|VisualResolver\|PresentationExample\|ViewId\|BoardView" src/main shared/src frontend/src/main`
-   - Delete `src/main/scala/oathdigital/presentation/`.
-   - Delete `src/test/scala/oathdigital/presentation/VisualResolverSuite.scala`.
+   - Delete `src/main/scala/distantlands/presentation/`.
+   - Delete `src/test/scala/distantlands/presentation/VisualResolverSuite.scala`.
    - Delete the test `OpaqueIdSuite` "ViewId keeps its validation and prints raw".
 5. **AtlasState's unused methods**
    - Grep each method: `grep -rn "addRecent\|removeRecent\|removeForgotten\|mostRecent\|mostForgotten" src/main shared/src frontend/src/main`
@@ -147,7 +147,7 @@ Each unit below is one commit. For each unit:
    - Remove the type and the parameter `ServerRuntime` passes. The loader already ignores it, as `CatalogModel.scala` says.
    - Delete the test `CatalogLoaderSuite` "legacy selection flags do not produce partial catalogs".
 8. **Chancellor supply bands**
-   - Production has no Chancellor table: `grep -rn "Chancellor" src/main/scala/oathdigital/gameplay/phases` shows no supply bands.
+   - Production has no Chancellor table: `grep -rn "Chancellor" src/main/scala/distantlands/gameplay/phases` shows no supply bands.
    - Delete the test `SupplySuite` "the Chancellor uses the distinct Imperial refresh bands" and its test-local table.
    - In the same commit, point the two Exile tests of that suite at `FinishRestProcedure.ExileSupply` instead of their hand copy. This is the ledger's WEAK finding in the same file.
 9. **The frontend ModifierFlowDraft.submission `case other` branch**
@@ -168,7 +168,7 @@ Each unit below is one commit. For each unit:
 ### Task 2: Registration checks
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/powers/PowerCatalogUniquenessSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/PowerCatalogUniquenessSuite.scala`
 - Modify: the power suites listed in the ledger (areas "Powers: action, banner, targeting, title" and "Powers: the other folders"), `PowerImplementationStatusSuite.scala`, `gameplay/title/ChaosCultSuite.scala`
 
 - [ ] **Step 1: Write the uniqueness test.**
@@ -204,7 +204,7 @@ class PowerCatalogUniquenessSuite extends munit.FunSuite:
 - [ ] **Step 3: Mutation check.**
   - Append ` :+ TakeWealthLimit` a second time at the end of `WalkerPowerCatalog.default`.
   - Run step 2's command. Expected: FAIL, naming TakeWealthLimit's id.
-  - Revert with `git checkout src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`.
+  - Revert with `git checkout src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`.
 - [ ] **Step 4: Delete the registration tests the ledger lists.** They fall into four groups:
   - the 32 "X is a registered phase power" tests;
   - the persistent-rule "registered…, so it is automatic" tests (Circlet, Vault, Fortress, Mob, Gossip, Grasping Vines, Toll Roads, Book Binders, Horned Mask, Marble Fountains, Hunger, Sacred Ground, Secret Police, Vow of Obedience, Chaos Cult);
@@ -235,7 +235,7 @@ This task covers the ledger entries in categories TAUTOLOGY, TYPE-PREVENTED, OBS
   - For each pinned string or number, check whether it is persisted or on the wire:
 
 ```bash
-grep -rn '"<the value>"' src/main/scala/oathdigital/serialization src/main/scala/oathdigital/persistence shared/src/main
+grep -rn '"<the value>"' src/main/scala/distantlands/serialization src/main/scala/distantlands/persistence shared/src/main
 ```
 
   - No hit: delete the pin.

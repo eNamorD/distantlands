@@ -49,36 +49,36 @@
 
 **Server, new:**
 
-- `src/main/scala/oathdigital/application/gamelog/LogEntry.scala` — `LogEntry`, `LogKind`, `LogSpan`, and the internal `Posted`.
-- `src/main/scala/oathdigital/application/gamelog/LogJournal.scala` — the scanned journal with per-operation states, segment closings, and the `Run` and `OpStep` records.
-- `src/main/scala/oathdigital/application/gamelog/LogWords.scala` — names and the visibility rule (`CardWord`, card lists counted by kind, joining).
-- `src/main/scala/oathdigital/application/gamelog/StartLines.scala` — start lines, their anchors, modifiers and cost; "Continued Recover".
-- `src/main/scala/oathdigital/application/gamelog/ActionLines.scala` — one action line per `ProcedureRef`.
-- `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` — the exhaustive `OathEvent` match, headlines, run tracking.
-- `src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala` — entries to wire, page after a sequence.
-- `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala` and `LogPageCodec.scala` — wire types and codec.
+- `src/main/scala/distantlands/application/gamelog/LogEntry.scala` — `LogEntry`, `LogKind`, `LogSpan`, and the internal `Posted`.
+- `src/main/scala/distantlands/application/gamelog/LogJournal.scala` — the scanned journal with per-operation states, segment closings, and the `Run` and `OpStep` records.
+- `src/main/scala/distantlands/application/gamelog/LogWords.scala` — names and the visibility rule (`CardWord`, card lists counted by kind, joining).
+- `src/main/scala/distantlands/application/gamelog/StartLines.scala` — start lines, their anchors, modifiers and cost; "Continued Recover".
+- `src/main/scala/distantlands/application/gamelog/ActionLines.scala` — one action line per `ProcedureRef`.
+- `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` — the exhaustive `OathEvent` match, headlines, run tracking.
+- `src/main/scala/distantlands/application/gamelog/GameLogProjector.scala` — entries to wire, page after a sequence.
+- `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala` and `LogPageCodec.scala` — wire types and codec.
 
 **Server, modified:** `engine/Engine.scala`, `application/GameApplicationService.scala`, `gameplay/walker/WalkerReplay.scala`, `gameplay/walker/ProcedureWalker.scala`, `application/GamePresentationProjector.scala`, `application/PreviewModifierDescriptions.scala`, `model/CoreOperations.scala` (doc only), `application/GameProjection.scala`, `server/TrustedGameGateway.scala`, `server/TrustedSeatRoutes.scala`, `server/GameRoutes.scala`.
 
-**Frontend, new:** `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`.
+**Frontend, new:** `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`.
 
 **Frontend, modified:** `GameClient.scala`, `TableSession.scala`, `TableScreen.scala`, `GameTableShell.scala`, `frontend/styles.css`.
 
-**Tests, new:** `src/test/scala/oathdigital/engine/EventReplayEngineSuite.scala`, `src/test/scala/oathdigital/application/GameHistorySuite.scala`, `src/test/scala/oathdigital/application/gamelog/{LogScripts,GameLogHeadlineSuite,GameLogStartLineSuite,GameLogActionLineSuite,GameLogExchangeSuite,GameLogPropertiesSuite,GameLogRouteSuite}.scala`, `shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`.
+**Tests, new:** `src/test/scala/distantlands/engine/EventReplayEngineSuite.scala`, `src/test/scala/distantlands/application/GameHistorySuite.scala`, `src/test/scala/distantlands/application/gamelog/{LogScripts,GameLogHeadlineSuite,GameLogStartLineSuite,GameLogActionLineSuite,GameLogExchangeSuite,GameLogPropertiesSuite,GameLogRouteSuite}.scala`, `shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`, `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`.
 
-**Tests, modified:** `frontend/src/test/scala/oathdigital/frontend/{TableSessionSuite,ServerModeUiSuite,HttpGameClientSuite}.scala`.
+**Tests, modified:** `frontend/src/test/scala/distantlands/frontend/{TableSessionSuite,ServerModeUiSuite,HttpGameClientSuite}.scala`.
 
 ---
 
 ### Task 1: Scan the journal
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/engine/Engine.scala` (the `EventReplayEngine` class at the end)
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala:15-25` (result types) and `:259-284` (`reconstruct`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala:30-40` (`executeRecorded`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:112-115` (beside `applyRecorded`)
-- Create: `src/test/scala/oathdigital/engine/EventReplayEngineSuite.scala`
-- Create: `src/test/scala/oathdigital/application/GameHistorySuite.scala`
+- Modify: `src/main/scala/distantlands/engine/Engine.scala` (the `EventReplayEngine` class at the end)
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala:15-25` (result types) and `:259-284` (`reconstruct`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala:30-40` (`executeRecorded`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:112-115` (beside `applyRecorded`)
+- Create: `src/test/scala/distantlands/engine/EventReplayEngineSuite.scala`
+- Create: `src/test/scala/distantlands/application/GameHistorySuite.scala`
 
 **Interfaces:**
 - Produces: `final case class ReplayStep[S, E](event: RecordedEvent[E], before: S, after: S)` in `oathdigital.engine`; `EventReplayEngine.scan(events: Iterable[RecordedEvent[E]]): Either[EventReplayFailure[V], Vector[ReplayStep[S, E]]]`.
@@ -87,7 +87,7 @@
 
 - [ ] **Step 1: Write the failing engine test**
 
-Create `src/test/scala/oathdigital/engine/EventReplayEngineSuite.scala`:
+Create `src/test/scala/distantlands/engine/EventReplayEngineSuite.scala`:
 
 ```scala
 package oathdigital.engine
@@ -174,7 +174,7 @@ Expected: 3 tests pass.
 
 - [ ] **Step 5: Write the failing history test**
 
-Create `src/test/scala/oathdigital/application/GameHistorySuite.scala`:
+Create `src/test/scala/distantlands/application/GameHistorySuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -326,12 +326,12 @@ Expected: every test passes. Record the count as the server baseline.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/engine/Engine.scala \
-  src/main/scala/oathdigital/application/GameApplicationService.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/test/scala/oathdigital/engine/EventReplayEngineSuite.scala \
-  src/test/scala/oathdigital/application/GameHistorySuite.scala
+git add src/main/scala/distantlands/engine/Engine.scala \
+  src/main/scala/distantlands/application/GameApplicationService.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/test/scala/distantlands/engine/EventReplayEngineSuite.scala \
+  src/test/scala/distantlands/application/GameHistorySuite.scala
 git commit -m "feat(engine): scan the journal with the state around every event"
 ```
 
@@ -340,12 +340,12 @@ git commit -m "feat(engine): scan the journal with the state around every event"
 ### Task 2: Names and card visibility on the presentation projector
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala` (`setupPlayers`, `readyPlayers`, new members after `identifiesCard`, new companion object at the end)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:403-408` (`orientationOf` delegates)
-- Modify: `src/main/scala/oathdigital/application/PreviewModifierDescriptions.scala` (`printedOn` visibility)
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala:521-527` (the `BeginTurn` doc comment)
-- Create: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (the first script only; later tasks add more)
-- Create: `src/test/scala/oathdigital/application/PresentationLabelsSuite.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala` (`setupPlayers`, `readyPlayers`, new members after `identifiesCard`, new companion object at the end)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:403-408` (`orientationOf` delegates)
+- Modify: `src/main/scala/distantlands/application/PreviewModifierDescriptions.scala` (`printedOn` visibility)
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala:521-527` (the `BeginTurn` doc comment)
+- Create: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (the first script only; later tasks add more)
+- Create: `src/test/scala/distantlands/application/PresentationLabelsSuite.scala`
 
 **Interfaces:**
 - Produces on `GamePresentationProjector`: `playerLabel(id: PlayerId): String`; `cardLabel(ready: ReadyGame, id: CardId): String`; `identifiesAt(ready: ReadyGame, viewer: Option[PlayerId], id: CardId): Boolean`.
@@ -355,7 +355,7 @@ git commit -m "feat(engine): scan the journal with the state around every event"
 
 - [ ] **Step 1: Write the first script and a failing test**
 
-Create `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`:
+Create `src/test/scala/distantlands/application/gamelog/LogScripts.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -416,7 +416,7 @@ object LogScripts:
     Script("woken", service, active(situation))
 ```
 
-Create `src/test/scala/oathdigital/application/PresentationLabelsSuite.scala`:
+Create `src/test/scala/distantlands/application/PresentationLabelsSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -548,12 +548,12 @@ Expected: all pass.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/GamePresentationProjector.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/application/PreviewModifierDescriptions.scala \
-  src/main/scala/oathdigital/model/CoreOperations.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/PresentationLabelsSuite.scala
+git add src/main/scala/distantlands/application/GamePresentationProjector.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/application/PreviewModifierDescriptions.scala \
+  src/main/scala/distantlands/model/CoreOperations.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/PresentationLabelsSuite.scala
 git commit -m "feat(application): label players and judge card visibility where a card lies"
 ```
 
@@ -562,12 +562,12 @@ git commit -m "feat(application): label players and judge card visibility where 
 ### Task 3: The formatter skeleton and headlines
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/gamelog/LogEntry.scala`
-- Create: `src/main/scala/oathdigital/application/gamelog/LogJournal.scala`
-- Create: `src/main/scala/oathdigital/application/gamelog/LogWords.scala`
-- Create: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (add `round`, `formatter`, `texts`)
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/LogEntry.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/LogJournal.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/LogWords.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (add `round`, `formatter`, `texts`)
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala`
 
 **Interfaces:**
 - Consumes: `GameHistory`, `ReplayStep`, `ProcedureWalker.applyRecordedOperation` (Task 1); `playerLabel`, `cardLabel`, `identifiesAt`, `printedOn` (Task 2).
@@ -623,7 +623,7 @@ Append to `object LogScripts` in `LogScripts.scala`:
 
 - [ ] **Step 2: Write the failing headline tests**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -674,7 +674,7 @@ Expected: compilation failure, `Not found: GameLogFormatter`.
 
 - [ ] **Step 4: Create the entry model**
 
-Create `src/main/scala/oathdigital/application/gamelog/LogEntry.scala`:
+Create `src/main/scala/distantlands/application/gamelog/LogEntry.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -731,7 +731,7 @@ private[gamelog] object Posted:
 
 - [ ] **Step 5: Create the journal view**
 
-Create `src/main/scala/oathdigital/application/gamelog/LogJournal.scala`:
+Create `src/main/scala/distantlands/application/gamelog/LogJournal.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -842,7 +842,7 @@ private[gamelog] object LogJournal:
 
 - [ ] **Step 6: Create the names and the visibility rule**
 
-Create `src/main/scala/oathdigital/application/gamelog/LogWords.scala`:
+Create `src/main/scala/distantlands/application/gamelog/LogWords.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -932,7 +932,7 @@ private[gamelog] object LogWords:
 
 - [ ] **Step 7: Create the formatter with headlines only**
 
-Create `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`:
+Create `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -1051,9 +1051,9 @@ Expected: 4 tests pass. If "a whole round" fails because Begin Rest parks on a R
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala
+git add src/main/scala/distantlands/application/gamelog/ \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala
 git commit -m "feat(log): format round, turn and victory headlines from the scanned journal"
 ```
 
@@ -1062,11 +1062,11 @@ git commit -m "feat(log): format round, turn and victory headlines from the scan
 ### Task 4: Start lines, and the first action lines
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/gamelog/StartLines.scala`
-- Create: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` (`walker`, constructor fields)
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (add `oathkeeper`)
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/StartLines.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` (`walker`, constructor fields)
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (add `oathkeeper`)
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala`
 
 **Interfaces:**
 - Consumes: `LogJournal`, `Run`, `OpStep`, `LogWords`, `CardWord`, `Posted` (Task 3).
@@ -1093,7 +1093,7 @@ Append to `object LogScripts`. `ParkedServiceFixture` lives in `oathdigital.appl
 
 - [ ] **Step 2: Write the failing tests**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -1167,7 +1167,7 @@ Expected: FAIL: no "Started Travel" entry (`None.get`).
 
 - [ ] **Step 4: Create the start lines**
 
-Create `src/main/scala/oathdigital/application/gamelog/StartLines.scala`:
+Create `src/main/scala/distantlands/application/gamelog/StartLines.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -1299,7 +1299,7 @@ private[gamelog] final class StartLines(words: LogWords,
 
 - [ ] **Step 5: Create the action lines with Travel, Finish Rest and Oathkeeper**
 
-Create `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`:
+Create `src/main/scala/distantlands/application/gamelog/ActionLines.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -1397,9 +1397,9 @@ Expected: all pass.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala
+git add src/main/scala/distantlands/application/gamelog/ \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala
 git commit -m "feat(log): post start lines with modifiers and cost, and the first action lines"
 ```
 
@@ -1408,9 +1408,9 @@ git commit -m "feat(log): post start lines with modifiers and cost, and the firs
 ### Task 5: Search, Play Facedown Adviser, Muster, Trade and Take Wealth
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (add `search`, `facedownAdviser`, `muster`, `trade`, `takeWealth`)
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (add `search`, `facedownAdviser`, `muster`, `trade`, `takeWealth`)
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
 
 **Interfaces:**
 - Consumes: `ActionLines.action`, `plural`, `resource` (Task 4); `LogJournal.runOps`, `answers`, `readyBefore`, `readyAfter`, `pawnSite` (Task 3).
@@ -1489,7 +1489,7 @@ Append to `object LogScripts`, and widen the testkit import to `import oathdigit
 
 - [ ] **Step 2: Write the failing tests**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -1741,9 +1741,9 @@ Expected: all pass. If a script's start command is refused (for example Muster f
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ActionLines.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala
+git add src/main/scala/distantlands/application/gamelog/ActionLines.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala
 git commit -m "feat(log): action lines for Search, facedown play, Muster, Trade and Take Wealth"
 ```
 
@@ -1752,9 +1752,9 @@ git commit -m "feat(log): action lines for Search, facedown play, Muster, Trade 
 ### Task 6: Recover, Forge, Campaign, Challenge and Place Banner Resource
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (add `recoverFailed`, `recoverSucceeded`, `forge`, `banners`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (add `recoverFailed`, `recoverSucceeded`, `forge`, `banners`)
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 5's helpers; `StartLines.continued` (Task 4); `ParkedServiceFixture.recoverChronicle`, `recoverSites`, `failingDice`; `ForgeWalkerFixture.forgeReadyGame`, `blankCampaignDice`.
@@ -1978,9 +1978,9 @@ Expected: all pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ActionLines.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala
+git add src/main/scala/distantlands/application/gamelog/ActionLines.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala
 git commit -m "feat(log): action lines for Recover, Forge, Campaign, Challenge and banner resources"
 ```
 
@@ -1989,9 +1989,9 @@ git commit -m "feat(log): action lines for Recover, Forge, Campaign, Challenge a
 ### Task 7: Negotiation and Use Power; the exhaustive match
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (add `negotiationDeclined`, `negotiationAgreed`, `usePower`, `all`)
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogExchangeSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (add `negotiationDeclined`, `negotiationAgreed`, `usePower`, `all`)
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogExchangeSuite.scala`
 
 **Interfaces:**
 - Consumes: `NegotiationDeal.eligible`, `negotiatorsDecisionId`, `dealDecisionId`; `ParkedServiceFixture.silverTonguePark`; `LogWords.power`.
@@ -2060,7 +2060,7 @@ Append to `object LogScripts` (add imports `oathdigital.gameplay.actions.negotia
 
 - [ ] **Step 2: Write the failing tests**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogExchangeSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogExchangeSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -2216,9 +2216,9 @@ Expected: all pass, and `ActionLines.scala` compiles with no wildcard case.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ActionLines.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogExchangeSuite.scala
+git add src/main/scala/distantlands/application/gamelog/ActionLines.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogExchangeSuite.scala
 git commit -m "feat(log): lines for Negotiation and used powers; every procedure has a decision"
 ```
 
@@ -2227,15 +2227,15 @@ git commit -m "feat(log): lines for Negotiation and used powers; every procedure
 ### Task 8: Properties over every script, and the six-player smoke read
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
-- Temporary, never committed: `src/test/scala/oathdigital/application/gamelog/SixPlayerSmokeRead.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
+- Temporary, never committed: `src/test/scala/distantlands/application/gamelog/SixPlayerSmokeRead.scala`
 
 **Interfaces:**
 - Consumes: `LogScripts.all`, `LogScripts.formatter`, `LogScripts.presentation`.
 
 - [ ] **Step 1: Write the property tests**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -2342,7 +2342,7 @@ Expected: all pass. A prefix-stability failure means a line read past its segmen
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala
+git add src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala
 git commit -m "test(log): prefix stability, viewer agreement and leak checks over every script"
 ```
 
@@ -2352,7 +2352,7 @@ The completed six-player game `manual-1790205747051-112090` (1053 events) was ex
 `/private/tmp/claude-501/-Users-roman-projects-oathdigital/0c9af783-65ae-419e-882c-bcff64ce79a7/scratchpad/sixplayer_all.txt`.
 If that file is missing, skip this step and say so in the report; never read `var/oathdigital` directly.
 
-Create `src/test/scala/oathdigital/application/gamelog/SixPlayerSmokeRead.scala`:
+Create `src/test/scala/distantlands/application/gamelog/SixPlayerSmokeRead.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -2402,9 +2402,9 @@ Delete the file afterwards and confirm with `git status --short` that nothing un
 ### Task 9: Wire types and codec
 
 **Files:**
-- Create: `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`
-- Create: `shared/src/main/scala/oathdigital/protocol/projection/LogPageCodec.scala`
-- Create: `shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala`
+- Create: `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`
+- Create: `shared/src/main/scala/distantlands/protocol/projection/LogPageCodec.scala`
+- Create: `shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`
 
 **Interfaces:**
 - Produces: `LogSpanWire(kind: String, text: String, id: Option[String] = None, value: Option[Int] = None, unit: Option[String] = None)`, `LogEntryWire(sequence: Long, ordinal: Int, kind: String, depth: Int, spans: Vector[LogSpanWire])`, `LogPageWire(gameId: String, after: Long, nextSequence: Long, entries: Vector[LogEntryWire])` in `oathdigital.protocol.projection`.
@@ -2412,7 +2412,7 @@ Delete the file afterwards and confirm with `git status --short` that nothing un
 
 - [ ] **Step 1: Write the failing codec test**
 
-Create `shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala`:
+Create `shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`:
 
 ```scala
 package oathdigital.protocol
@@ -2454,7 +2454,7 @@ Expected: compilation failure, `Not found: LogPageWire`.
 
 - [ ] **Step 3: Create the wire types**
 
-Create `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`:
+Create `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`:
 
 ```scala
 package oathdigital.protocol.projection
@@ -2479,7 +2479,7 @@ final case class LogPageWire(gameId: String, after: Long, nextSequence: Long,
 
 - [ ] **Step 4: Create the codec**
 
-Create `shared/src/main/scala/oathdigital/protocol/projection/LogPageCodec.scala`:
+Create `shared/src/main/scala/distantlands/protocol/projection/LogPageCodec.scala`:
 
 ```scala
 package oathdigital.protocol.projection
@@ -2566,9 +2566,9 @@ Expected: 4 tests pass on each.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/LogPageCodec.scala \
-  shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/LogPageCodec.scala \
+  shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala
 git commit -m "feat(protocol): the game log page wire and its codec"
 ```
 
@@ -2577,12 +2577,12 @@ git commit -m "feat(protocol): the game log page wire and its codec"
 ### Task 10: The log page on both seat routes
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala` (a field and a method on `GameProjector`)
-- Modify: `src/main/scala/oathdigital/server/TrustedGameGateway.scala`
-- Modify: `src/main/scala/oathdigital/server/TrustedSeatRoutes.scala` (the `pathPrefix("api")` block)
-- Modify: `src/main/scala/oathdigital/server/GameRoutes.scala` (`GameServerGateway` and the `parameter("playerId")` block)
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogRouteSuite.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/GameLogProjector.scala`
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala` (a field and a method on `GameProjector`)
+- Modify: `src/main/scala/distantlands/server/TrustedGameGateway.scala`
+- Modify: `src/main/scala/distantlands/server/TrustedSeatRoutes.scala` (the `pathPrefix("api")` block)
+- Modify: `src/main/scala/distantlands/server/GameRoutes.scala` (`GameServerGateway` and the `parameter("playerId")` block)
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogRouteSuite.scala`
 
 **Interfaces:**
 - Consumes: `GameLogFormatter` (Task 3), `LogPageWire` and `LogPageCodec` (Task 9), `GameApplicationService.history` (Task 1).
@@ -2592,7 +2592,7 @@ git commit -m "feat(protocol): the game log page wire and its codec"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogRouteSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogRouteSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -2674,7 +2674,7 @@ class GameLogRouteSuite extends munit.FunSuite:
       Await.result(system.whenTerminated, 10.seconds)
 ```
 
-Also add one test to `src/test/scala/oathdigital/server/TrustedSeatRoutesSuite.scala`, beside "creation returns ordered public links", using its `withServer`, `create` and `send` helpers:
+Also add one test to `src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala`, beside "creation returns ordered public links", using its `withServer`, `create` and `send` helpers:
 
 ```scala
   test("the log route pages for the seat's cookie and checks the cursor"):
@@ -2707,7 +2707,7 @@ Expected: compilation failure, `value logPage is not a member of GameProjector`.
 
 - [ ] **Step 3: Create the log projector**
 
-Create `src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala`:
+Create `src/main/scala/distantlands/application/gamelog/GameLogProjector.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -2848,13 +2848,13 @@ Expected: all pass.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala \
-  src/main/scala/oathdigital/application/GameProjection.scala \
-  src/main/scala/oathdigital/server/TrustedGameGateway.scala \
-  src/main/scala/oathdigital/server/TrustedSeatRoutes.scala \
-  src/main/scala/oathdigital/server/GameRoutes.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogRouteSuite.scala \
-  src/test/scala/oathdigital/server/TrustedSeatRoutesSuite.scala
+git add src/main/scala/distantlands/application/gamelog/GameLogProjector.scala \
+  src/main/scala/distantlands/application/GameProjection.scala \
+  src/main/scala/distantlands/server/TrustedGameGateway.scala \
+  src/main/scala/distantlands/server/TrustedSeatRoutes.scala \
+  src/main/scala/distantlands/server/GameRoutes.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogRouteSuite.scala \
+  src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala
 git commit -m "feat(server): serve the game log page on the trusted and development routes"
 ```
 
@@ -2863,10 +2863,10 @@ git commit -m "feat(server): serve the game log page on the trusted and developm
 ### Task 11: The client asks for the log
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameClient.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/HttpGameClientSuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala` (`FakeClient` only)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala` (a `quietLog` wrapper on every `Main.start`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameClient.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala` (`FakeClient` only)
+- Modify: `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala` (a `quietLog` wrapper on every `Main.start`)
 
 **Interfaces:**
 - Produces: `GameClient.loadLog(gameId: String, selectedPlayerId: String, after: Long): Future[Either[GameClientFailure, LogPageWire]]`; `GameJson.logResponse(response: TransportResponse): Either[GameClientFailure, LogPageWire]`.
@@ -2984,7 +2984,7 @@ In `ServerModeUiSuite.scala`, add near the top of the class:
       else inner.request(method, url, body)
 ```
 
-Then change every one of the 16 `Main.start(…, transport)` calls so its last argument is `quietLog(transport)` (or `quietLog(hostTransport(...))` where the transport is built inline). Check with `grep -n "Main.start(" frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala` that none is left unwrapped.
+Then change every one of the 16 `Main.start(…, transport)` calls so its last argument is `quietLog(transport)` (or `quietLog(hostTransport(...))` where the transport is built inline). Check with `grep -n "Main.start(" frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala` that none is left unwrapped.
 
 - [ ] **Step 5: Run the frontend suite**
 
@@ -2994,10 +2994,10 @@ Expected: every test passes. Record the count as the frontend baseline plus 3.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/GameClient.scala \
-  frontend/src/test/scala/oathdigital/frontend/HttpGameClientSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/GameClient.scala \
+  frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala
 git commit -m "feat(frontend): read the game log page on both clients"
 ```
 
@@ -3006,9 +3006,9 @@ git commit -m "feat(frontend): read the game log page on both clients"
 ### Task 12: The session keeps the log
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableSession.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala` (`TableView` only)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableSession.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala` (`TableView` only)
+- Modify: `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala`
 
 **Interfaces:**
 - Consumes: `GameClient.loadLog` (Task 11).
@@ -3148,9 +3148,9 @@ Expected: all pass, including the existing redraw-count assertions (a pending lo
 - [ ] **Step 5: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/TableSession.scala \
-  frontend/src/main/scala/oathdigital/frontend/TableScreen.scala \
-  frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/TableSession.scala \
+  frontend/src/main/scala/distantlands/frontend/TableScreen.scala \
+  frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala
 git commit -m "feat(frontend): the table session fetches and keeps the game log"
 ```
 
@@ -3159,11 +3159,11 @@ git commit -m "feat(frontend): the table session fetches and keeps the game log"
 ### Task 13: The Log pane
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala:31` (placeholder) and a new `showLog`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala` (`render`, last line)
+- Create: `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala:31` (placeholder) and a new `showLog`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala` (`render`, last line)
 - Modify: `frontend/styles.css:845-847`
-- Create: `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`
+- Create: `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`
 
 **Interfaces:**
 - Consumes: `TableView.viewedLog` (Task 12), `PlayerColorCss.of`.
@@ -3171,7 +3171,7 @@ git commit -m "feat(frontend): the table session fetches and keeps the game log"
 
 - [ ] **Step 1: Write the failing pane tests**
 
-Create `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -3262,7 +3262,7 @@ Expected: compilation failure, `Not found: GameLogPane`.
 
 - [ ] **Step 3: Create the pane**
 
-Create `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -3383,11 +3383,11 @@ Start the development server with the Browser pane (`preview_start` by name from
 - [ ] **Step 8: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala \
-  frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala \
-  frontend/src/main/scala/oathdigital/frontend/TableScreen.scala \
+git add frontend/src/main/scala/distantlands/frontend/GameLogPane.scala \
+  frontend/src/main/scala/distantlands/frontend/GameTableShell.scala \
+  frontend/src/main/scala/distantlands/frontend/TableScreen.scala \
   frontend/styles.css \
-  frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala
+  frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala
 git commit -m "feat(frontend): the Log pane appends the game log and sticks to the bottom"
 ```
 

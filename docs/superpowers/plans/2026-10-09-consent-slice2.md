@@ -66,19 +66,19 @@ The code forced these, or the spec left them open. Task 3 records each one in th
 
 Created:
 
-- `src/test/scala/oathdigital/gameplay/PassMap.scala`: the Pass's three-region map, moved out of `CampaignPowersSuite`.
-- `src/test/scala/oathdigital/gameplay/CampaignConsentFixture.scala`: a Campaign the Pass bears on.
-- `src/test/scala/oathdigital/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala`
-- `src/test/scala/oathdigital/application/CampaignConsentServiceSuite.scala`
+- `src/test/scala/distantlands/gameplay/PassMap.scala`: the Pass's three-region map, moved out of `CampaignPowersSuite`.
+- `src/test/scala/distantlands/gameplay/CampaignConsentFixture.scala`: a Campaign the Pass bears on.
+- `src/test/scala/distantlands/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala`
+- `src/test/scala/distantlands/application/CampaignConsentServiceSuite.scala`
 
 Modified:
 
-- `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`: `OptionRestriction.waiver`.
-- `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`: the option path's ledger and askability checks, and the shared `consentAsk`.
-- `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala`: the Pass's campaign waiver and `noTargetConsent`.
-- `src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala`: registers option-restriction waivers.
-- `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`: `consentAsks` reads choose-many options; `grantAnswers`.
-- `src/main/scala/oathdigital/application/ConsentDesk.scala`: a grant answers only a choose-one.
+- `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`: `OptionRestriction.waiver`.
+- `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`: the option path's ledger and askability checks, and the shared `consentAsk`.
+- `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala`: the Pass's campaign waiver and `noTargetConsent`.
+- `src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala`: registers option-restriction waivers.
+- `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`: `consentAsks` reads choose-many options; `grantAnswers`.
+- `src/main/scala/distantlands/application/ConsentDesk.scala`: a grant answers only a choose-one.
 - Tests: `CampaignPowersSuite`, `ConsentPowersSuite`, frontend `ConsentAskingSuite`.
 - Docs: the spec, `CONTEXT.md`, `docs/ROADMAP.md` and `docs/rules/implementation-traceability.md`.
 
@@ -87,16 +87,16 @@ Modified:
 ### Task 1: The Pass's campaign clause is askable
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/PassMap.scala`
-- Create: `src/test/scala/oathdigital/gameplay/CampaignConsentFixture.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CampaignPowersSuite.scala:43-67`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala:85-97`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala:74-130` and `:307-340`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala:145-248`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala:12-16`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala:302-320`
+- Create: `src/test/scala/distantlands/gameplay/PassMap.scala`
+- Create: `src/test/scala/distantlands/gameplay/CampaignConsentFixture.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CampaignPowersSuite.scala:43-67`
+- Modify: `src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala:85-97`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala:74-130` and `:307-340`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala:145-248`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala:12-16`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala:302-320`
 
 **Interfaces:**
 - Consumes (slice 1): `Waiver(granter: ReadyGame => Option[PlayerId], source: PowerSourceRef, note: (PowerCtx, DecisionOptionRef) => PowerNote)`; `ConsentState.remembered(key: ConsentKey, now: ConsentTurn): Option[ConsentAnswer]`; `ConsentTurn.of(ready)`; `OptionReason.Askable(power: PowerId, note: PowerNote, asks: Vector[ConsentAsk])`; `OathRules.consentAsks(state, requester, decisionId, target): Either[OathViolation, Vector[ConsentAsk]]`.
@@ -107,7 +107,7 @@ Modified:
 
 - [ ] **Step 1: Move the Pass's map out of `CampaignPowersSuite`**
 
-Create `src/test/scala/oathdigital/gameplay/PassMap.scala`:
+Create `src/test/scala/distantlands/gameplay/PassMap.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -170,7 +170,7 @@ Expected: PASS, the same 9 tests as before.
 
 - [ ] **Step 3: Write the Campaign fixture**
 
-Create `src/test/scala/oathdigital/gameplay/CampaignConsentFixture.scala`:
+Create `src/test/scala/distantlands/gameplay/CampaignConsentFixture.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -244,7 +244,7 @@ If a `Table` step's name or parameter order differs (`boardWarbands`, `supply`, 
 
 - [ ] **Step 4: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -630,16 +630,16 @@ Expected: PASS.
 - [ ] **Step 12: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/test/scala/oathdigital/gameplay/PassMap.scala \
-  src/test/scala/oathdigital/gameplay/CampaignConsentFixture.scala \
-  src/test/scala/oathdigital/gameplay/CampaignPowersSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala \
+  src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/test/scala/distantlands/gameplay/PassMap.scala \
+  src/test/scala/distantlands/gameplay/CampaignConsentFixture.scala \
+  src/test/scala/distantlands/gameplay/CampaignPowersSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala
 git commit -m "feat(consent): let the Narrow Pass's ruler waive it for a campaign target"
 ```
 
@@ -648,9 +648,9 @@ git commit -m "feat(consent): let the Narrow Pass's ruler waive it for a campaig
 ### Task 2: A grant at the targets opens the target and answers nothing
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/CampaignConsentServiceSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (beside `consentAsks`)
-- Modify: `src/main/scala/oathdigital/application/ConsentDesk.scala:103-123`
+- Create: `src/test/scala/distantlands/application/CampaignConsentServiceSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (beside `consentAsks`)
+- Modify: `src/main/scala/distantlands/application/ConsentDesk.scala:103-123`
 
 **Interfaces:**
 - Consumes (Task 1): `CampaignConsentFixture.passRuledByP2`, `deepWoodsRef`, `targetOptions(state)` and `parkedAt(state)`; the askable campaign target.
@@ -658,7 +658,7 @@ git commit -m "feat(consent): let the Narrow Pass's ruler waive it for a campaig
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/application/CampaignConsentServiceSuite.scala`:
+Create `src/test/scala/distantlands/application/CampaignConsentServiceSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -835,9 +835,9 @@ Expected: PASS. Slice 1's Travel grant still moves the pawn, because its destina
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/main/scala/oathdigital/application/ConsentDesk.scala \
-  src/test/scala/oathdigital/application/CampaignConsentServiceSuite.scala
+git add src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/main/scala/distantlands/application/ConsentDesk.scala \
+  src/test/scala/distantlands/application/CampaignConsentServiceSuite.scala
 git commit -m "feat(consent): a grant at the campaign targets opens the target and answers nothing"
 ```
 
@@ -846,7 +846,7 @@ git commit -m "feat(consent): a grant at the campaign targets opens the target a
 ### Task 3: The board's choose-many asks, the docs, and the gate
 
 **Files:**
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ConsentAskingSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ConsentAskingSuite.scala`
 - Modify: `docs/superpowers/specs/2026-10-08-consent-system-design.md`
 - Modify: `CONTEXT.md:79-83`
 - Modify: `docs/ROADMAP.md:75-78` and `:180-182`
@@ -1008,7 +1008,7 @@ Run, in order:
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/test/scala/oathdigital/frontend/ConsentAskingSuite.scala \
+git add frontend/src/test/scala/distantlands/frontend/ConsentAskingSuite.scala \
   docs/superpowers/specs/2026-10-08-consent-system-design.md \
   docs/superpowers/plans/2026-10-09-consent-slice2.md \
   CONTEXT.md docs/ROADMAP.md docs/rules/implementation-traceability.md

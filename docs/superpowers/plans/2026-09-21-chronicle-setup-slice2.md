@@ -24,15 +24,15 @@
 ## Task 1: `Phase.Setup` and the `GameStarted` event family
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`Phase`)
-- Modify: `src/main/scala/oathdigital/model/GameEventProtocol.scala` (replace the four legacy setup events with `GameStarted`)
-- Modify: `src/main/scala/oathdigital/model/Setup.scala` (add `SetupOrders`; slim `FirstGameSetupPlan`; delete `FirstGameSetupCommand`)
-- Modify: `src/main/scala/oathdigital/model/GameViolation.scala` (add `UnsupportedChronicle`)
-- Modify: `src/main/scala/oathdigital/model/GameProcedureProtocol.scala` (replace `AwaitingPawn`/`AwaitingAdviser`/`ReadyForFirstTurn` with `AwaitingSetupPawn`/`AwaitingSetupAdviser`)
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala` (add `SetupPawnPlaced`, `SetupEnd`)
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala` (add `TriggeredProcedureRef.Setup`)
-- Modify: `src/main/scala/oathdigital/model/World.scala` (`AtlasEntry.StoredSite` gains a trailing `edifice` field)
-- Test: `src/test/scala/oathdigital/model/GameStartedSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`Phase`)
+- Modify: `src/main/scala/distantlands/model/GameEventProtocol.scala` (replace the four legacy setup events with `GameStarted`)
+- Modify: `src/main/scala/distantlands/model/Setup.scala` (add `SetupOrders`; slim `FirstGameSetupPlan`; delete `FirstGameSetupCommand`)
+- Modify: `src/main/scala/distantlands/model/GameViolation.scala` (add `UnsupportedChronicle`)
+- Modify: `src/main/scala/distantlands/model/GameProcedureProtocol.scala` (replace `AwaitingPawn`/`AwaitingAdviser`/`ReadyForFirstTurn` with `AwaitingSetupPawn`/`AwaitingSetupAdviser`)
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala` (add `SetupPawnPlaced`, `SetupEnd`)
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala` (add `TriggeredProcedureRef.Setup`)
+- Modify: `src/main/scala/distantlands/model/World.scala` (`AtlasEntry.StoredSite` gains a trailing `edifice` field)
+- Test: `src/test/scala/distantlands/model/GameStartedSuite.scala`
 
 **Interfaces:**
 - Produces: `Phase.Setup` (`key = "setup"`); `model.SetupOrders(participants: Vector[FirstGameParticipant], firstPlayer: PlayerId, worldDeckOrder: Vector[WorldCardId], relicOrder: Vector[RelicId])`; `OathEvent.GameStarted(chronicle: Chronicle, orders: SetupOrders)`; `OathViolation.UnsupportedChronicle(reason: String)`; `OathContinue.AwaitingSetupPawn(playerId: PlayerId, decision: DecisionId)` / `AwaitingSetupAdviser(playerId: PlayerId, decision: DecisionId)`; `PowerWindow.SetupPawnPlaced` / `SetupEnd` (both `OtherWindow`); `TriggeredProcedureRef.Setup` (`key = "setup"`).
@@ -40,7 +40,7 @@
 
 - [ ] **Step 1: Add `Phase.Setup`**
 
-In `src/main/scala/oathdigital/model/GameState.scala`, add the case before `Wake` and list it first in `all`:
+In `src/main/scala/distantlands/model/GameState.scala`, add the case before `Wake` and list it first in `all`:
 
 ```scala
 sealed trait Phase extends Product with Serializable { def key: String }
@@ -64,7 +64,7 @@ object Phase {
 
 - [ ] **Step 2: Replace the legacy setup events with `GameStarted`**
 
-In `src/main/scala/oathdigital/model/GameEventProtocol.scala`, delete `FirstGameStarted`, `GamePawnPlaced`, `StartingAdviserChosen` and `FirstGameCompleted`, and add in their place:
+In `src/main/scala/distantlands/model/GameEventProtocol.scala`, delete `FirstGameStarted`, `GamePawnPlaced`, `StartingAdviserChosen` and `FirstGameCompleted`, and add in their place:
 
 ```scala
   /** Replaces `FirstGameStarted` (2026-09-21 Chronicle design, slice 2,
@@ -83,7 +83,7 @@ Remove the now-dead `import` of nothing extra is needed (`Chronicle`/`SetupOrder
 
 - [ ] **Step 3: Add `SetupOrders`, slim `FirstGameSetupPlan`, delete `FirstGameSetupCommand`**
 
-Rewrite `src/main/scala/oathdigital/model/Setup.scala` in full:
+Rewrite `src/main/scala/distantlands/model/Setup.scala` in full:
 
 ```scala
 package oathdigital.model
@@ -159,7 +159,7 @@ final case class FirstGameSetupMaterial(
 
 - [ ] **Step 4: Add `UnsupportedChronicle`**
 
-In `src/main/scala/oathdigital/model/GameViolation.scala`, add near the other setup-related violations (next to `UnsupportedRestState` is a reasonable home):
+In `src/main/scala/distantlands/model/GameViolation.scala`, add near the other setup-related violations (next to `UnsupportedRestState` is a reasonable home):
 
 ```scala
   /** A Chronicle shape Setup does not support yet: a non-empty `world`
@@ -173,7 +173,7 @@ In `src/main/scala/oathdigital/model/GameViolation.scala`, add near the other se
 
 - [ ] **Step 5: Replace the legacy setup continuations**
 
-In `src/main/scala/oathdigital/model/GameProcedureProtocol.scala`, delete `AwaitingPawn`, `AwaitingAdviser` and `ReadyForFirstTurn`, and add in their place (same shape as every other per-decision continuation, e.g. `AwaitingRecoverRoll`):
+In `src/main/scala/distantlands/model/GameProcedureProtocol.scala`, delete `AwaitingPawn`, `AwaitingAdviser` and `ReadyForFirstTurn`, and add in their place (same shape as every other per-decision continuation, e.g. `AwaitingRecoverRoll`):
 
 ```scala
   final case class AwaitingSetupPawn(playerId: PlayerId, decision: DecisionId)
@@ -184,7 +184,7 @@ In `src/main/scala/oathdigital/model/GameProcedureProtocol.scala`, delete `Await
 
 - [ ] **Step 6: Add the two Setup windows**
 
-In `src/main/scala/oathdigital/model/PowerWindow.scala`, add near `RestStart`/`RestEnd`:
+In `src/main/scala/distantlands/model/PowerWindow.scala`, add near `RestStart`/`RestEnd`:
 
 ```scala
   /** Where the placing player's site is fixed for this player's Setup turn
@@ -199,7 +199,7 @@ In `src/main/scala/oathdigital/model/PowerWindow.scala`, add near `RestStart`/`R
 
 - [ ] **Step 7: Add the triggered `Setup` procedure reference**
 
-In `src/main/scala/oathdigital/model/ProcedureRef.scala`, add to `TriggeredProcedureRef`:
+In `src/main/scala/distantlands/model/ProcedureRef.scala`, add to `TriggeredProcedureRef`:
 
 ```scala
 object TriggeredProcedureRef {
@@ -214,7 +214,7 @@ object TriggeredProcedureRef {
 
 - [ ] **Step 8: Let a stored Atlas site remember its edifice**
 
-In `src/main/scala/oathdigital/model/World.scala`, widen `AtlasEntry.StoredSite` with a trailing, defaulted field (every existing 3-arg call site keeps compiling unchanged):
+In `src/main/scala/distantlands/model/World.scala`, widen `AtlasEntry.StoredSite` with a trailing, defaulted field (every existing 3-arg call site keeps compiling unchanged):
 
 ```scala
   final case class StoredSite(
@@ -269,15 +269,15 @@ Expected: PASS. The project will not fully compile again until Tasks 2-7 land (S
 - [ ] **Step 12: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/model/GameEventProtocol.scala \
-  src/main/scala/oathdigital/model/Setup.scala \
-  src/main/scala/oathdigital/model/GameViolation.scala \
-  src/main/scala/oathdigital/model/GameProcedureProtocol.scala \
-  src/main/scala/oathdigital/model/PowerWindow.scala \
-  src/main/scala/oathdigital/model/ProcedureRef.scala \
-  src/main/scala/oathdigital/model/World.scala \
-  src/test/scala/oathdigital/model/GameStartedSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/model/GameEventProtocol.scala \
+  src/main/scala/distantlands/model/Setup.scala \
+  src/main/scala/distantlands/model/GameViolation.scala \
+  src/main/scala/distantlands/model/GameProcedureProtocol.scala \
+  src/main/scala/distantlands/model/PowerWindow.scala \
+  src/main/scala/distantlands/model/ProcedureRef.scala \
+  src/main/scala/distantlands/model/World.scala \
+  src/test/scala/distantlands/model/GameStartedSuite.scala
 git commit -m "feat: add the GameStarted event and Phase.Setup model shapes
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -288,10 +288,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 2: Initial pawn placement through `Move`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala` (`movePawn`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala` (`pawnMoveViolation`)
-- Test: `src/test/scala/oathdigital/gameplay/operations/OperationStateMutationSuite.scala` (extend)
-- Test: `src/test/scala/oathdigital/gameplay/OperationValidatorSuite.scala` if it exists, otherwise add to the same suite `OperationStateMutationSuite.scala` covers validator rejections in
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala` (`movePawn`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationValidator.scala` (`pawnMoveViolation`)
+- Test: `src/test/scala/distantlands/gameplay/operations/OperationStateMutationSuite.scala` (extend)
+- Test: `src/test/scala/distantlands/gameplay/OperationValidatorSuite.scala` if it exists, otherwise add to the same suite `OperationStateMutationSuite.scala` covers validator rejections in
 
 **Interfaces:**
 - Consumes: `Piece.Pawn`, `Location.PlayArea`, `Location.Site`, `PlayerState.pawnSite: Option[SiteId]` (all already defined).
@@ -334,7 +334,7 @@ Expected: FAIL on the first new test with `IncompatibleLocation`.
 
 - [ ] **Step 3: Extend `movePawn`**
 
-In `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala`, add a case above the existing `Site -> Site` one:
+In `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala`, add a case above the existing `Site -> Site` one:
 
 ```scala
   private def movePawn(ready: ReadyGame, player: PlayerId,
@@ -365,7 +365,7 @@ In `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala`
 
 - [ ] **Step 4: Extend `pawnMoveViolation`**
 
-In `src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala`, mirror the same addition:
+In `src/main/scala/distantlands/gameplay/operations/OperationValidator.scala`, mirror the same addition:
 
 ```scala
   private def pawnMoveViolation(
@@ -417,9 +417,9 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala \
-  src/test/scala/oathdigital/gameplay/operations/OperationStateMutationSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationValidator.scala \
+  src/test/scala/distantlands/gameplay/operations/OperationStateMutationSuite.scala
 git commit -m "feat: allow a pawn's first placement as a Move from the player area
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -430,11 +430,11 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 3: `GameStartRules` -- Chronicle validation and the fresh `ReadyGame`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/FirstGameSetupMaterializer.scala` (add `temporaryHands` to `materialize`'s result)
-- Modify: `src/main/scala/oathdigital/gameplay/setup/FirstGameSetup.scala` (delete everything except `FirstGameRulesData`)
-- Delete: `src/main/scala/oathdigital/application/ChronicleFirstGamePlan.scala` is **not** deleted yet (Task 6 repurposes it) -- do not touch it in this task.
-- Test: `src/test/scala/oathdigital/gameplay/setup/GameStartRulesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala` (add `temporaryHands` to `materialize`'s result)
+- Modify: `src/main/scala/distantlands/gameplay/setup/FirstGameSetup.scala` (delete everything except `FirstGameRulesData`)
+- Delete: `src/main/scala/distantlands/application/ChronicleFirstGamePlan.scala` is **not** deleted yet (Task 6 repurposes it) -- do not touch it in this task.
+- Test: `src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala`
 
 **Interfaces:**
 - Consumes: `Chronicle`, `SetupOrders`, `FirstGameSetupPlan`, `FirstGameSetupMaterial` (Task 1), `ExecutableCatalog`.
@@ -442,7 +442,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Trim `FirstGameSetupMaterializer.materialize`**
 
-In `src/main/scala/oathdigital/gameplay/setup/FirstGameSetupMaterializer.scala`, add one field to the final construction (the method already computes everything `handFor` needs):
+In `src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala`, add one field to the final construction (the method already computes everything `handFor` needs):
 
 ```scala
   def materialize(plan: FirstGameSetupPlan,
@@ -467,7 +467,7 @@ This is the only change this file needs: called with `placements = Vector.empty,
 
 - [ ] **Step 2: Trim `FirstGameSetup.scala` to just its rules data**
 
-Rewrite `src/main/scala/oathdigital/gameplay/setup/FirstGameSetup.scala` in full, deleting `FirstGameSetupRules` and every import it alone needed:
+Rewrite `src/main/scala/distantlands/gameplay/setup/FirstGameSetup.scala` in full, deleting `FirstGameSetupRules` and every import it alone needed:
 
 ```scala
 package oathdigital.gameplay.setup
@@ -725,10 +725,10 @@ Expected: PASS. The project as a whole still will not compile (Tasks 4-7 remain)
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala \
-  src/main/scala/oathdigital/gameplay/setup/FirstGameSetupMaterializer.scala \
-  src/main/scala/oathdigital/gameplay/setup/FirstGameSetup.scala \
-  src/test/scala/oathdigital/gameplay/setup/GameStartRulesSuite.scala
+git add src/main/scala/distantlands/gameplay/setup/GameStartRules.scala \
+  src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala \
+  src/main/scala/distantlands/gameplay/setup/FirstGameSetup.scala \
+  src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala
 git commit -m "feat: build the initial Ready game directly from a Chronicle
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -739,8 +739,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 4: The `Setup` walker procedure
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/setup/SetupProcedure.scala`
-- Test: `src/test/scala/oathdigital/gameplay/setup/SetupProcedureSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala`
+- Test: `src/test/scala/distantlands/gameplay/setup/SetupProcedureSuite.scala`
 
 **Interfaces:**
 - Consumes: `ReadyGame` in `Phase.Setup` with populated `temporaryHands` and every `pawnSite`/`advisers` empty (Task 3's output); the generic walker vocabulary (`Sequence`, `Decide`, `BuildOps`, `Move`, `BeginTurn`, `DecisionQuery.ChooseOne`, `DecisionOption.Site`/`Denizen`) from `CoreOperations.scala`/`Decisions.scala`.
@@ -950,8 +950,8 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/setup/SetupProcedure.scala \
-  src/test/scala/oathdigital/gameplay/setup/SetupProcedureSuite.scala
+git add src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala \
+  src/test/scala/distantlands/gameplay/setup/SetupProcedureSuite.scala
 git commit -m "feat: declare the Setup walker procedure tree
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -962,13 +962,13 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 5: Wire `GameCommand.Begin`, `OathRules` and the walker registry
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala` (`GameCommand.Begin`; delete `PlacePawn`, `ChooseAdviser`, `ResolveCardDecision`, `CardDecisionResolution`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala` (delete the `setup` field and its `evolve` fallback; add `GameStarted`/`beginGame`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`continuationIn` needs no new case -- Setup finishes in `Phase.Wake`, already handled; verify only)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (register `TriggeredProcedureRef.Setup`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathLifecycle.scala` (drop `_: InProgress` from both matches)
-- Modify: `src/main/scala/oathdigital/model/GameStateProtocol.scala` (delete `OathState.InProgress`)
-- Test: `src/test/scala/oathdigital/gameplay/GameStartRulesWiringSuite.scala` (or fold into `OathRulesWalkerPowerSuite.scala`/an existing suite that already exercises `OathRules` end-to-end -- check first)
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala` (`GameCommand.Begin`; delete `PlacePawn`, `ChooseAdviser`, `ResolveCardDecision`, `CardDecisionResolution`)
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala` (delete the `setup` field and its `evolve` fallback; add `GameStarted`/`beginGame`)
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`continuationIn` needs no new case -- Setup finishes in `Phase.Wake`, already handled; verify only)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (register `TriggeredProcedureRef.Setup`)
+- Modify: `src/main/scala/distantlands/gameplay/OathLifecycle.scala` (drop `_: InProgress` from both matches)
+- Modify: `src/main/scala/distantlands/model/GameStateProtocol.scala` (delete `OathState.InProgress`)
+- Test: `src/test/scala/distantlands/gameplay/GameStartRulesWiringSuite.scala` (or fold into `OathRulesWalkerPowerSuite.scala`/an existing suite that already exercises `OathRules` end-to-end -- check first)
 
 **Interfaces:**
 - Consumes: `GameStartRules.evolve` (Task 3), `SetupProcedure.build` (Task 4).
@@ -976,7 +976,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Delete `OathState.InProgress`**
 
-In `src/main/scala/oathdigital/model/GameStateProtocol.scala`:
+In `src/main/scala/distantlands/model/GameStateProtocol.scala`:
 
 ```scala
 sealed trait OathState extends Product with Serializable
@@ -988,11 +988,11 @@ object OathState {
 
 - [ ] **Step 2: Fix `OathLifecycle`'s two matches**
 
-In `src/main/scala/oathdigital/gameplay/OathLifecycle.scala`, both `validateReady` and `validateAct` change `case NoGame | _: InProgress => Left(GameNotStarted)` to `case NoGame => Left(GameNotStarted)`.
+In `src/main/scala/distantlands/gameplay/OathLifecycle.scala`, both `validateReady` and `validateAct` change `case NoGame | _: InProgress => Left(GameNotStarted)` to `case NoGame => Left(GameNotStarted)`.
 
 - [ ] **Step 3: Replace `GameCommand.Begin`'s payload; delete the dead setup commands**
 
-In `src/main/scala/oathdigital/application/GameCommands.scala`:
+In `src/main/scala/distantlands/application/GameCommands.scala`:
 
 ```scala
   final case class Begin(chronicle: Chronicle, orders: SetupOrders)
@@ -1003,11 +1003,11 @@ Delete `PlacePawn`, `ChooseAdviser` (both `GameCommand` cases), the whole `Resol
 
 - [ ] **Step 4: Delete the corresponding `Authorization` helpers**
 
-In `src/main/scala/oathdigital/application/Authorization.scala`, delete `placePawn`, `chooseAdviser` and `resolveCardDecision` from `AuthorizedPlayer`.
+In `src/main/scala/distantlands/application/Authorization.scala`, delete `placePawn`, `chooseAdviser` and `resolveCardDecision` from `AuthorizedPlayer`.
 
 - [ ] **Step 5: Register `TriggeredProcedureRef.Setup` in the walker registry**
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, add an import for `oathdigital.gameplay.setup.SetupProcedure` and an entry alongside `TriggeredProcedureRef.Oathkeeper`:
+In `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, add an import for `oathdigital.gameplay.setup.SetupProcedure` and an entry alongside `TriggeredProcedureRef.Oathkeeper`:
 
 ```scala
     TriggeredProcedureRef.Setup -> Entry(
@@ -1026,7 +1026,7 @@ In `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, a
 
 - [ ] **Step 6: Wire `GameStarted` into `OathRules.evolve` and add `beginGame`**
 
-In `src/main/scala/oathdigital/gameplay/OathRules.scala`:
+In `src/main/scala/distantlands/gameplay/OathRules.scala`:
 
 - Delete `private val setup = new FirstGameSetupRules(catalog)` and its import of `oathdigital.gameplay.setup.FirstGameSetupRules`.
 - Replace the fallback `case setupEvent => setup.evolve(state, setupEvent)` at the bottom of `evolve`'s match with an explicit case (the match is now exhaustive without a fallback, so remove the `setupEvent =>` wildcard entirely and add):
@@ -1069,7 +1069,7 @@ Check the file's existing imports for `oathdigital.model.OathEvent._`/`OathState
 
 - [ ] **Step 7: Verify `continuationIn` needs no change**
 
-Confirm by inspection (no edit expected) that `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`'s `continuationIn` already has a `Phase.Wake => Right(OathContinue.AwaitingWakeAction(actor))` case -- Setup's tree ends with `BeginTurn(firstPlayer, Phase.Wake)`, so the walker's generic `Finished` branch (`walkerTransition`) already produces the correct continuation with no change to this method.
+Confirm by inspection (no edit expected) that `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`'s `continuationIn` already has a `Phase.Wake => Right(OathContinue.AwaitingWakeAction(actor))` case -- Setup's tree ends with `BeginTurn(firstPlayer, Phase.Wake)`, so the walker's generic `Finished` branch (`walkerTransition`) already produces the correct continuation with no change to this method.
 
 - [ ] **Step 8: Compile**
 
@@ -1082,12 +1082,12 @@ Expected: remaining errors are only in `GameApplicationService.scala`/`GameProje
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/GameCommands.scala \
-  src/main/scala/oathdigital/application/Authorization.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/OathRules.scala \
-  src/main/scala/oathdigital/gameplay/OathLifecycle.scala \
-  src/main/scala/oathdigital/model/GameStateProtocol.scala
+git add src/main/scala/distantlands/application/GameCommands.scala \
+  src/main/scala/distantlands/application/Authorization.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/OathRules.scala \
+  src/main/scala/distantlands/gameplay/OathLifecycle.scala \
+  src/main/scala/distantlands/model/GameStateProtocol.scala
 git commit -m "feat: run Setup as a triggered walker procedure from OathRules
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -1098,20 +1098,20 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 6: Application-layer bootstrap -- factories, the deal-order helper, `prepareBootstrap`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/ChronicleFirstGamePlan.scala` (repurpose into a total `SetupOrders` builder; drop `ChronicleBridgeFailure`)
-- Modify: `src/main/scala/oathdigital/application/DevelopmentFirstGamePlanFactory.scala` (`FirstGamePlanFactory.build` returns `Chronicle`)
-- Modify: `src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala` (same)
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala` (`prepareBootstrap` signature; `applyCommand`'s `Begin`/`PlacePawn`/`ChooseAdviser`/`ResolveCardDecision` cases)
-- Modify: `src/main/scala/oathdigital/server/GameRoutes.scala`, `AuthenticatedGameRoutes.scala`, `TrustedGameProvisioning.scala` (each call site's two-line change)
-- Test: `src/test/scala/oathdigital/application/ChronicleFirstGamePlanSuite.scala` (adjust to the new return shape)
-- Test: `src/test/scala/oathdigital/application/DevelopmentFirstGamePlanFactorySuite.scala`, `GeneratedFirstGamePlanFactorySuite.scala` (adjust assertions from `FirstGameSetupPlan` fields to `Chronicle` fields)
+- Modify: `src/main/scala/distantlands/application/ChronicleFirstGamePlan.scala` (repurpose into a total `SetupOrders` builder; drop `ChronicleBridgeFailure`)
+- Modify: `src/main/scala/distantlands/application/DevelopmentFirstGamePlanFactory.scala` (`FirstGamePlanFactory.build` returns `Chronicle`)
+- Modify: `src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala` (same)
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala` (`prepareBootstrap` signature; `applyCommand`'s `Begin`/`PlacePawn`/`ChooseAdviser`/`ResolveCardDecision` cases)
+- Modify: `src/main/scala/distantlands/server/GameRoutes.scala`, `AuthenticatedGameRoutes.scala`, `TrustedGameProvisioning.scala` (each call site's two-line change)
+- Test: `src/test/scala/distantlands/application/ChronicleFirstGamePlanSuite.scala` (adjust to the new return shape)
+- Test: `src/test/scala/distantlands/application/DevelopmentFirstGamePlanFactorySuite.scala`, `GeneratedFirstGamePlanFactorySuite.scala` (adjust assertions from `FirstGameSetupPlan` fields to `Chronicle` fields)
 
 **Interfaces:**
 - Produces: `trait FirstGamePlanFactory { def build(config: FirstGameBootstrapConfig): Either[BootstrapPlanFailure, Chronicle] }`; `ChronicleFirstGamePlan.dealOrder(chronicle: Chronicle, config: FirstGameBootstrapConfig): SetupOrders` (total, no `Either`); `GameApplicationService.prepareBootstrap(gameId: String, chronicle: Chronicle, config: FirstGameBootstrapConfig): Either[GameApplicationError, PreparedGameBootstrap]`.
 
 - [ ] **Step 1: Repurpose `ChronicleFirstGamePlan` into a total `SetupOrders` builder**
 
-Rewrite `src/main/scala/oathdigital/application/ChronicleFirstGamePlan.scala` in full:
+Rewrite `src/main/scala/distantlands/application/ChronicleFirstGamePlan.scala` in full:
 
 ```scala
 package oathdigital.application
@@ -1146,7 +1146,7 @@ object ChronicleFirstGamePlan {
 
 - [ ] **Step 2: `FirstGamePlanFactory.build` returns `Chronicle`**
 
-In `src/main/scala/oathdigital/application/DevelopmentFirstGamePlanFactory.scala`:
+In `src/main/scala/distantlands/application/DevelopmentFirstGamePlanFactory.scala`:
 
 ```scala
 trait FirstGamePlanFactory {
@@ -1169,11 +1169,11 @@ final class DevelopmentFirstGamePlanFactory(catalog: ExecutableCatalog)
 
 - [ ] **Step 3: Same for `GeneratedFirstGamePlanFactory`**
 
-In `src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala`, change `build`'s return type to `Either[BootstrapPlanFailure, Chronicle]` and delete its `plan <- ChronicleFirstGamePlan.build(...)` step -- the method now ends at `chronicle <- FirstGameChronicleGenerator.generate(...)` (mapped to `BootstrapPlanFailure`), with the seating shuffle unchanged (it shuffles `config.participants`/`firstPlayer` before generation, which stays exactly as committed in `685b56c` since the shuffled `config` still flows into `FirstGameChronicleGenerator.generate` and now also into `ChronicleFirstGamePlan.dealOrder` at the `prepareBootstrap` call site, Step 5 below).
+In `src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala`, change `build`'s return type to `Either[BootstrapPlanFailure, Chronicle]` and delete its `plan <- ChronicleFirstGamePlan.build(...)` step -- the method now ends at `chronicle <- FirstGameChronicleGenerator.generate(...)` (mapped to `BootstrapPlanFailure`), with the seating shuffle unchanged (it shuffles `config.participants`/`firstPlayer` before generation, which stays exactly as committed in `685b56c` since the shuffled `config` still flows into `FirstGameChronicleGenerator.generate` and now also into `ChronicleFirstGamePlan.dealOrder` at the `prepareBootstrap` call site, Step 5 below).
 
 - [ ] **Step 4: `GameApplicationService.prepareBootstrap` and `applyCommand`**
 
-In `src/main/scala/oathdigital/application/GameApplicationService.scala`:
+In `src/main/scala/distantlands/application/GameApplicationService.scala`:
 
 ```scala
   def prepareBootstrap(
@@ -1201,7 +1201,7 @@ Delete the `GameCommand.PlacePawn`, `GameCommand.ChooseAdviser` cases and the `G
 
 - [ ] **Step 5: The three route call sites**
 
-In each of `src/main/scala/oathdigital/server/GameRoutes.scala`, `AuthenticatedGameRoutes.scala` and `TrustedGameProvisioning.scala`, the existing two-step call:
+In each of `src/main/scala/distantlands/server/GameRoutes.scala`, `AuthenticatedGameRoutes.scala` and `TrustedGameProvisioning.scala`, the existing two-step call:
 
 ```scala
 plan <- planFactory.build(config)
@@ -1234,16 +1234,16 @@ Expected: PASS (server suites are covered in Task 7, since they also touch the d
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/ChronicleFirstGamePlan.scala \
-  src/main/scala/oathdigital/application/DevelopmentFirstGamePlanFactory.scala \
-  src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala \
-  src/main/scala/oathdigital/application/GameApplicationService.scala \
-  src/main/scala/oathdigital/server/GameRoutes.scala \
-  src/main/scala/oathdigital/server/AuthenticatedGameRoutes.scala \
-  src/main/scala/oathdigital/server/TrustedGameProvisioning.scala \
-  src/test/scala/oathdigital/application/ChronicleFirstGamePlanSuite.scala \
-  src/test/scala/oathdigital/application/DevelopmentFirstGamePlanFactorySuite.scala \
-  src/test/scala/oathdigital/application/GeneratedFirstGamePlanFactorySuite.scala
+git add src/main/scala/distantlands/application/ChronicleFirstGamePlan.scala \
+  src/main/scala/distantlands/application/DevelopmentFirstGamePlanFactory.scala \
+  src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala \
+  src/main/scala/distantlands/application/GameApplicationService.scala \
+  src/main/scala/distantlands/server/GameRoutes.scala \
+  src/main/scala/distantlands/server/AuthenticatedGameRoutes.scala \
+  src/main/scala/distantlands/server/TrustedGameProvisioning.scala \
+  src/test/scala/distantlands/application/ChronicleFirstGamePlanSuite.scala \
+  src/test/scala/distantlands/application/DevelopmentFirstGamePlanFactorySuite.scala \
+  src/test/scala/distantlands/application/GeneratedFirstGamePlanFactorySuite.scala
 git commit -m "feat: bootstrap games from a Chronicle end to end
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -1254,16 +1254,16 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 7: Delete the legacy setup machinery
 
 **Files:**
-- Delete: `src/main/scala/oathdigital/gameplay/setup/FirstGameSetupRules.scala` -- **note:** per Task 3 Step 2 this content was already removed from `FirstGameSetup.scala` (the class lived in that file, not a separate one); this task's job is the remaining call sites and dead code, not a second file deletion. Confirm with `grep -rn "FirstGameSetupRules" src/main src/test frontend/src` that nothing outside test files still references it before continuing.
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala` (delete `setupProjection`, the `InProgress` branch of `projectFor`, and `setupMaterializer`)
-- Modify: `src/main/scala/oathdigital/application/GameIntentMapper.scala` (delete the `Intent.PlacePawn` case)
-- Modify: `src/main/scala/oathdigital/application/LegalActionProjector.scala` (add `case Phase.Setup => Vector.empty`)
-- Modify: `src/main/scala/oathdigital/application/PendingProjector.scala` (add `case Phase.Setup => "setup"`)
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala` (add whatever `Phase.Setup` arm the compiler demands -- almost certainly "no phase powers usable during Setup")
-- Modify: `src/main/scala/oathdigital/model/GameViolation.scala` (delete now-dead cases: `WrongDenizenSuitCount`, `InvalidHomelandEdifice`, `WrongCount`, `DuplicateComponent`, `UnknownComponent`, `InvalidWorldDeck`, `InvalidRelicOrder`, `SiteNotInPlay`, `AdviserNotInHand`, `GameAlreadyReady`, `CatalogMismatch` -- **verify each is genuinely unused first** with `grep -rn "<CaseName>" src/main src/test frontend/src`, and skip any that still has a live use site; do not delete on assumption)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala` (delete `placePawn`/`chooseAdviser` client calls; verify the generic walker decision panel already covers what these controlled)
-- Modify every remaining test file the Task 1 Step 9 compiler run and this task's own compile flagged: `src/test/scala/oathdigital/gameplay/setup/FirstGameSetupRulesSuite.scala` (delete the whole file -- its subject is gone), `src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala` (swap its `OathContinue.ReadyForFirstTurn` fixture value for `OathContinue.AwaitingSetupPawn`), and the remaining files this plan's research already found: `ForgeWalkerFixture.scala`, `GameApplicationServiceSuite.scala`, `MembershipAuthorizationServiceSuite.scala`, `ParkedServiceFixture.scala`, `PendingWalkerInvariantSuite.scala`, `WalkerDecisionProjectionSuite.scala`, `AuthenticatedGameRoutesSuite.scala`, `GameHttpWireSuite.scala`, `GameRoutesSuite.scala`, `GameTrustBoundaryRoutesSuite.scala`, `TrustedSeatRoutesSuite.scala`, plus `frontend/src/test/scala/oathdigital/frontend/HttpGameClientSuite.scala`, `ProtocolTestCommands.scala`, `ServerModeUiSuite.scala`.
-- Modify: `src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala` (delete the `FirstGameStarted` wire case; add `GameStarted`)
+- Delete: `src/main/scala/distantlands/gameplay/setup/FirstGameSetupRules.scala` -- **note:** per Task 3 Step 2 this content was already removed from `FirstGameSetup.scala` (the class lived in that file, not a separate one); this task's job is the remaining call sites and dead code, not a second file deletion. Confirm with `grep -rn "FirstGameSetupRules" src/main src/test frontend/src` that nothing outside test files still references it before continuing.
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala` (delete `setupProjection`, the `InProgress` branch of `projectFor`, and `setupMaterializer`)
+- Modify: `src/main/scala/distantlands/application/GameIntentMapper.scala` (delete the `Intent.PlacePawn` case)
+- Modify: `src/main/scala/distantlands/application/LegalActionProjector.scala` (add `case Phase.Setup => Vector.empty`)
+- Modify: `src/main/scala/distantlands/application/PendingProjector.scala` (add `case Phase.Setup => "setup"`)
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala` (add whatever `Phase.Setup` arm the compiler demands -- almost certainly "no phase powers usable during Setup")
+- Modify: `src/main/scala/distantlands/model/GameViolation.scala` (delete now-dead cases: `WrongDenizenSuitCount`, `InvalidHomelandEdifice`, `WrongCount`, `DuplicateComponent`, `UnknownComponent`, `InvalidWorldDeck`, `InvalidRelicOrder`, `SiteNotInPlay`, `AdviserNotInHand`, `GameAlreadyReady`, `CatalogMismatch` -- **verify each is genuinely unused first** with `grep -rn "<CaseName>" src/main src/test frontend/src`, and skip any that still has a live use site; do not delete on assumption)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala` (delete `placePawn`/`chooseAdviser` client calls; verify the generic walker decision panel already covers what these controlled)
+- Modify every remaining test file the Task 1 Step 9 compiler run and this task's own compile flagged: `src/test/scala/distantlands/gameplay/setup/FirstGameSetupRulesSuite.scala` (delete the whole file -- its subject is gone), `src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala` (swap its `OathContinue.ReadyForFirstTurn` fixture value for `OathContinue.AwaitingSetupPawn`), and the remaining files this plan's research already found: `ForgeWalkerFixture.scala`, `GameApplicationServiceSuite.scala`, `MembershipAuthorizationServiceSuite.scala`, `ParkedServiceFixture.scala`, `PendingWalkerInvariantSuite.scala`, `WalkerDecisionProjectionSuite.scala`, `AuthenticatedGameRoutesSuite.scala`, `GameHttpWireSuite.scala`, `GameRoutesSuite.scala`, `GameTrustBoundaryRoutesSuite.scala`, `TrustedSeatRoutesSuite.scala`, plus `frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala`, `ProtocolTestCommands.scala`, `ServerModeUiSuite.scala`.
+- Modify: `src/main/scala/distantlands/serialization/GameEventJsonSupport.scala` (delete the `FirstGameStarted` wire case; add `GameStarted`)
 
 **Interfaces:**
 - Consumes: everything landed in Tasks 1-6.
@@ -1297,11 +1297,11 @@ Run the verification grep from Step 1's pattern, once per candidate case name (`
 
 - [ ] **Step 5: Serialization codec**
 
-In `src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala`, delete the `FirstGameStarted` wire case (`case FirstGameStarted(plan) if plan.catalog != catalog => ...` and any encode/decode branch for it), and add an equivalent `GameStarted` case encoding `chronicle`/`orders` -- follow the exact pattern the file already uses for another event carrying two nested model values (e.g. however `WarExhaustionResolved` or `BanditsRefilled` round-trips a compound payload) rather than inventing a new JSON shape convention. Add or extend a round-trip test in this file's paired suite (`GameEventWireSuite.scala`, already in the earlier grep's file list) asserting `GameStarted(chronicle, orders)` survives encode/decode.
+In `src/main/scala/distantlands/serialization/GameEventJsonSupport.scala`, delete the `FirstGameStarted` wire case (`case FirstGameStarted(plan) if plan.catalog != catalog => ...` and any encode/decode branch for it), and add an equivalent `GameStarted` case encoding `chronicle`/`orders` -- follow the exact pattern the file already uses for another event carrying two nested model values (e.g. however `WarExhaustionResolved` or `BanditsRefilled` round-trips a compound payload) rather than inventing a new JSON shape convention. Add or extend a round-trip test in this file's paired suite (`GameEventWireSuite.scala`, already in the earlier grep's file list) asserting `GameStarted(chronicle, orders)` survives encode/decode.
 
 - [ ] **Step 6: Frontend**
 
-In `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala`, delete the `placePawn`/`chooseAdviser` command-building helpers and whatever UI affordance called them (a "place pawn on the board" click handler and an "adviser choice" panel distinct from the generic walker decision panel). Confirm with a manual read of `WalkerDecisionProjectionSuite.scala`/the frontend's existing Recover or Search decision-rendering path that a `DecisionQuery.ChooseOne` over `DecisionOption.Site`/`DecisionOption.Denizen` options already renders through the generic panel with no Setup-specific branch -- if the frontend has a `status == "not-started"`/`"awaiting-pawn"`/`"awaiting-adviser"` special case anywhere (mirroring the deleted `GameProjection.setupProjection`'s status strings), delete that branch too, since `GameProjection` no longer emits those statuses.
+In `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala`, delete the `placePawn`/`chooseAdviser` command-building helpers and whatever UI affordance called them (a "place pawn on the board" click handler and an "adviser choice" panel distinct from the generic walker decision panel). Confirm with a manual read of `WalkerDecisionProjectionSuite.scala`/the frontend's existing Recover or Search decision-rendering path that a `DecisionQuery.ChooseOne` over `DecisionOption.Site`/`DecisionOption.Denizen` options already renders through the generic panel with no Setup-specific branch -- if the frontend has a `status == "not-started"`/`"awaiting-pawn"`/`"awaiting-adviser"` special case anywhere (mirroring the deleted `GameProjection.setupProjection`'s status strings), delete that branch too, since `GameProjection` no longer emits those statuses.
 
 - [ ] **Step 7: Update every remaining test file**
 
@@ -1331,7 +1331,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 8: End-to-end Setup walker suite and replay determinism
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/setup/GameStartToWakeSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/setup/GameStartToWakeSuite.scala`
 
 **Interfaces:**
 - Consumes: `OathRules.beginGame` (Task 5), everything else already landed.
@@ -1399,7 +1399,7 @@ Expected: PASS.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/setup/GameStartToWakeSuite.scala
+git add src/test/scala/distantlands/gameplay/setup/GameStartToWakeSuite.scala
 git commit -m "test: cover the full Setup journey from Begin to Wake
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"

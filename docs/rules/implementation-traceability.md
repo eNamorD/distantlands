@@ -38,8 +38,8 @@ Foundations change/orientation statement; CR remains normative. `A#` refers to
 the numbered issue in [`ambiguities.md`](ambiguities.md): B# for “Blocking
 without component/card corpus” and F# for “Formalization decisions.”
 Implementation paths are abbreviated relative to
-`src/main/scala/oathdigital/`; suite paths are abbreviated relative to
-`src/test/scala/oathdigital/`. “Model only” deliberately does not raise a row
+`src/main/scala/distantlands/`; suite paths are abbreviated relative to
+`src/test/scala/distantlands/`. “Model only” deliberately does not raise a row
 above **Unimplemented**.
 
 ## Phase 3 playable-shell audit

@@ -101,24 +101,24 @@ Check each of these in the code before Task 1. If a name or signature differs, r
 | File | Change | Task |
 |---|---|---|
 | `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md` | modify | 1, 4 |
-| `src/main/scala/oathdigital/model/ProcedureRef.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala` | create | 1 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` | modify | 1 |
-| `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` | modify | 1 |
-| `src/main/scala/oathdigital/application/gamelog/*.scala` | modify where a match needs the new cases | 1 |
-| `src/main/scala/oathdigital/gameplay/OathDriver.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/phases/wake/TakeWealthProcedure.scala` | modify | 3 |
-| `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala` | modify (doc) | 3 |
-| `src/main/scala/oathdigital/application/{GameCommands,Authorization,GameIntentMapper,GameApplicationService,LegalActionProjector}.scala` | modify | 3 |
-| `shared/src/main/scala/oathdigital/protocol/{CommandIntents,CommandIntentCodec,CommandIntentDecoders}.scala` | modify | 3 |
-| `frontend/src/main/scala/oathdigital/frontend/{ActionDecisionRenderer,ServerUiSupport,PhasePowerButtons,WalkerPanelSupport}.scala` | modify | 3 |
-| `src/test/scala/oathdigital/testkit/MenuPlay.scala` | create | 1 |
-| `src/test/scala/oathdigital/testkit/{Table,Situation,SituationDriver}.scala` | modify | 1, 2, 3 |
-| `src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala` | create | 1 |
-| `src/test/scala/oathdigital/application/PhaseMenuServiceSuite.scala` | create | 1 |
-| `src/test/scala/oathdigital/application/gamelog/{LogScripts,GameLogPhaseMenuSuite}.scala` | modify, create | 1 |
-| `src/test/scala/oathdigital/gameplay/OathDriverSuite.scala` | modify | 2 |
+| `src/main/scala/distantlands/model/ProcedureRef.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala` | create | 1 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` | modify | 1 |
+| `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` | modify | 1 |
+| `src/main/scala/distantlands/application/gamelog/*.scala` | modify where a match needs the new cases | 1 |
+| `src/main/scala/distantlands/gameplay/OathDriver.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/phases/wake/TakeWealthProcedure.scala` | modify | 3 |
+| `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala` | modify (doc) | 3 |
+| `src/main/scala/distantlands/application/{GameCommands,Authorization,GameIntentMapper,GameApplicationService,LegalActionProjector}.scala` | modify | 3 |
+| `shared/src/main/scala/distantlands/protocol/{CommandIntents,CommandIntentCodec,CommandIntentDecoders}.scala` | modify | 3 |
+| `frontend/src/main/scala/distantlands/frontend/{ActionDecisionRenderer,ServerUiSupport,PhasePowerButtons,WalkerPanelSupport}.scala` | modify | 3 |
+| `src/test/scala/distantlands/testkit/MenuPlay.scala` | create | 1 |
+| `src/test/scala/distantlands/testkit/{Table,Situation,SituationDriver}.scala` | modify | 1, 2, 3 |
+| `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala` | create | 1 |
+| `src/test/scala/distantlands/application/PhaseMenuServiceSuite.scala` | create | 1 |
+| `src/test/scala/distantlands/application/gamelog/{LogScripts,GameLogPhaseMenuSuite}.scala` | modify, create | 1 |
+| `src/test/scala/distantlands/gameplay/OathDriverSuite.scala` | modify | 2 |
 | other test suites (listed per task) | modify | 1-3 |
 | `CONTEXT.md` | modify | 4 |
 | `docs/ROADMAP.md` | modify | 4 |
@@ -131,16 +131,16 @@ The menu exists and works when parked, but nothing parks it yet: the tests park 
 
 **Files:**
 - Modify: `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md`
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala`
-- Create: `src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`, and any other match the compiler reports
-- Create: `src/test/scala/oathdigital/testkit/MenuPlay.scala`
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala`
-- Create: `src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala`, `src/test/scala/oathdigital/application/PhaseMenuServiceSuite.scala`, `src/test/scala/oathdigital/application/gamelog/GameLogPhaseMenuSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala`
+- Create: `src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`, and any other match the compiler reports
+- Create: `src/test/scala/distantlands/testkit/MenuPlay.scala`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala`
+- Create: `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala`, `src/test/scala/distantlands/application/PhaseMenuServiceSuite.scala`, `src/test/scala/distantlands/application/gamelog/GameLogPhaseMenuSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
 - Modify tests: `ProcedureRefSuite`, `WalkerProcedureRegistrySuite`, wherever they list the triggered procedures
 
 **Interfaces:**
@@ -226,7 +226,7 @@ At the end of ruling 7, add: "(Its mechanism is replaced by plan-time ruling 1 o
 
 - [ ] **Step 3: The test helpers**
 
-Create `src/test/scala/oathdigital/testkit/MenuPlay.scala`:
+Create `src/test/scala/distantlands/testkit/MenuPlay.scala`:
 
 ```scala
 package oathdigital.testkit
@@ -285,7 +285,7 @@ object MenuPlay:
 
 If `ParkedNode.Decision` has a different arity, match it as `FollowUpRulesSuite.options` does.
 
-In `src/test/scala/oathdigital/testkit/Table.scala`, after `offering`:
+In `src/test/scala/distantlands/testkit/Table.scala`, after `offering`:
 
 ```scala
   /** The menu of the turn's phase parked, as the driver leaves it when the
@@ -301,7 +301,7 @@ Import `oathdigital.gameplay.phases.PhaseMenu`. If `Table`'s field is not called
 
 - [ ] **Step 4: Write the failing rules tests**
 
-Create `src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -449,7 +449,7 @@ Add both to `TriggeredProcedureRef.all`, after `FollowUpOffer`.
 
 - [ ] **Step 7: The menu**
 
-Create `src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala`:
+Create `src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala`:
 
 ```scala
 package oathdigital.gameplay.phases
@@ -660,7 +660,7 @@ If "Take Wealth already used at this site says so" shows "Cannot take wealth now
 
 - [ ] **Step 11: The service and the Game Log tests**
 
-Create `src/test/scala/oathdigital/application/PhaseMenuServiceSuite.scala`:
+Create `src/test/scala/distantlands/application/PhaseMenuServiceSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -732,7 +732,7 @@ In `LogScripts.scala`, after `recordedEventsBoard`, add:
 
 Import `PhaseMenu`, `TakeWealthProcedure` and `MenuPlay`.
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogPhaseMenuSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogPhaseMenuSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -756,11 +756,11 @@ Expected: PASS. The driver does not park a menu yet, so no existing test changes
 
 ```bash
 git add docs/superpowers/specs/2026-10-09-walker-game-loop-design.md \
-  src/main/scala/oathdigital/model/ProcedureRef.scala \
-  src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/main/scala/oathdigital/application src/test/scala
+  src/main/scala/distantlands/model/ProcedureRef.scala \
+  src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/main/scala/distantlands/application src/test/scala
 git status --short
 git commit -m "feat(walker): the Wake and Rest menus as walker procedures"
 ```
@@ -772,9 +772,9 @@ git commit -m "feat(walker): the Wake and Rest menus as walker procedures"
 `OathDriver.phaseEnd` starts the phase's menu, or the ending when it is the only option available. A test situation settles at a menu.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/OathDriver.scala`
-- Modify: `src/test/scala/oathdigital/testkit/Situation.scala`, `SituationDriver.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/OathDriverSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathDriver.scala`
+- Modify: `src/test/scala/distantlands/testkit/Situation.scala`, `SituationDriver.scala`
+- Modify: `src/test/scala/distantlands/gameplay/OathDriverSuite.scala`
 - Modify tests: those listed in Step 6
 
 **Interfaces:**
@@ -944,7 +944,7 @@ Any other failure: stop and report.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/OathDriver.scala \
+git add src/main/scala/distantlands/gameplay/OathDriver.scala \
   src/test/scala
 git status --short
 git commit -m "feat(walker): the driver parks the Wake and Rest menus"
@@ -957,10 +957,10 @@ git commit -m "feat(walker): the driver parks the Wake and Rest menus"
 Nothing can send End Wake or Finish Rest now, and no projection in Wake or Rest is left without a parked decision. The commands, the controls and the frontend's Wake and Rest buttons go. The menu is drawn by the generic choose-one panel.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala`, `GameApplicationService.scala`, `LegalActionProjector.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/wake/TakeWealthProcedure.scala`, `phases/PhasePowerProcedure.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala`, `ServerUiSupport.scala`, `PhasePowerButtons.scala`, `WalkerPanelSupport.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala`, `GameApplicationService.scala`, `LegalActionProjector.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/wake/TakeWealthProcedure.scala`, `phases/PhasePowerProcedure.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala`, `ServerUiSupport.scala`, `PhasePowerButtons.scala`, `WalkerPanelSupport.scala`
 - Modify tests: `SituationDriver`, `PendingWalkerInvariantSuite`, `MembershipAuthorizationServiceSuite`, `TakeWealthProcedureSuite`, `EndWakeProcedureSuite`, `GameApplicationServiceProjectionSuite`, `TrustedSeatRoutesSuite`, `CommandProtocolSuite`, `ViewerPresentationSuite`, `PhasePowerButtonsSuite`, `WalkerChoicePanelRenderSuite`
 
 **Interfaces:**
@@ -1076,11 +1076,11 @@ Report the counts.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital src/test/scala \
-  shared/src/main/scala/oathdigital/protocol \
-  shared/src/test/scala/oathdigital/protocol \
-  frontend/src/main/scala/oathdigital/frontend \
-  frontend/src/test/scala/oathdigital/frontend
+git add src/main/scala/distantlands src/test/scala \
+  shared/src/main/scala/distantlands/protocol \
+  shared/src/test/scala/distantlands/protocol \
+  frontend/src/main/scala/distantlands/frontend \
+  frontend/src/test/scala/distantlands/frontend
 git status --short
 git commit -m "feat(walker): Wake and Rest are played at their menus"
 ```

@@ -124,10 +124,10 @@ The product owner settled these on 2026-10-16. They override the slice 13 entry 
 The engine seam, with no card behind it yet. A sourced Campaign entry may name an origin. Every origin-based Campaign rule reads it, and the force question adds the warbands there.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`
-- Create: `src/test/scala/oathdigital/gameplay/campaign/CampaignOriginSuite.scala`. If `src/test/scala/oathdigital/gameplay/campaign/` doesn't exist, place it beside the other Campaign procedure suites (`grep -rl "class CampaignProcedure" src/test/scala`).
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CampaignFixture.scala`
+- Create: `src/test/scala/distantlands/gameplay/campaign/CampaignOriginSuite.scala`. If `src/test/scala/distantlands/gameplay/campaign/` doesn't exist, place it beside the other Campaign procedure suites (`grep -rl "class CampaignProcedure" src/test/scala`).
 
 **Interfaces:**
 - Produces:
@@ -363,11 +363,11 @@ Expected: PASS. No existing heading changes, because `split` is empty without a 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala \
-  src/test/scala/oathdigital/gameplay/CampaignFixture.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala \
-  src/test/scala/oathdigital/gameplay/campaign/CampaignOriginSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala \
+  src/test/scala/distantlands/gameplay/CampaignFixture.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala \
+  src/test/scala/distantlands/gameplay/campaign/CampaignOriginSuite.scala
 git commit -m "feat(campaign): a power's queued Campaign may campaign from an origin"
 ```
 
@@ -380,19 +380,19 @@ Stage `PlanDriver.scala` only if Step 2 added `answeredUntil` there.
 The losses learn where the force stands. The result records the origin's counts, a question splits the dead when the split is a real choice, and the loss powers and the losses line read both kills.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala`
-- Modify: `src/main/scala/oathdigital/serialization/CampaignResultCodec.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala` (`CampaignIds`, `CampaignAnswers`, `originForce`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignOutcome.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SparedForce.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BillowingFog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/TravelingDoctor.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BearTraps.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/CampaignLines.scala`
-- Test: `src/test/scala/oathdigital/gameplay/campaign/CampaignOriginSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/CampaignResultCodecSuite.scala`
-- Test: the Billowing Fog suite (`grep -rl "BillowingFog" src/test/scala`) and `src/test/scala/oathdigital/gameplay/powers/campaign/BearTrapsSuite.scala` (or wherever Bear Traps is tested)
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala`
+- Modify: `src/main/scala/distantlands/serialization/CampaignResultCodec.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala` (`CampaignIds`, `CampaignAnswers`, `originForce`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignOutcome.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SparedForce.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BillowingFog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/TravelingDoctor.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BearTraps.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/CampaignLines.scala`
+- Test: `src/test/scala/distantlands/gameplay/campaign/CampaignOriginSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/CampaignResultCodecSuite.scala`
+- Test: the Billowing Fog suite (`grep -rl "BillowingFog" src/test/scala`) and `src/test/scala/distantlands/gameplay/powers/campaign/BearTrapsSuite.scala` (or wherever Bear Traps is tested)
 
 **Interfaces:**
 - Consumes: Task 1's `queuedOrigin`, `atOrigin` and `campaignQueuedFrom`.
@@ -671,18 +671,18 @@ Expected: PASS. Fix any caller of `losses(ready, result)` the compiler names.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CampaignTypes.scala \
-  src/main/scala/oathdigital/serialization/CampaignResultCodec.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignOutcome.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SparedForce.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/BillowingFog.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/TravelingDoctor.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/BearTraps.scala \
-  src/main/scala/oathdigital/application/gamelog/CampaignLines.scala \
-  src/test/scala/oathdigital/gameplay/campaign/CampaignOriginSuite.scala \
-  src/test/scala/oathdigital/serialization/CampaignResultCodecSuite.scala
+git add src/main/scala/distantlands/model/CampaignTypes.scala \
+  src/main/scala/distantlands/serialization/CampaignResultCodec.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignOutcome.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SparedForce.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/BillowingFog.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/TravelingDoctor.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/BearTraps.scala \
+  src/main/scala/distantlands/application/gamelog/CampaignLines.scala \
+  src/test/scala/distantlands/gameplay/campaign/CampaignOriginSuite.scala \
+  src/test/scala/distantlands/serialization/CampaignResultCodecSuite.scala
 git commit -m "feat(campaign): split the attacker's dead between board and origin"
 ```
 
@@ -695,15 +695,15 @@ Add the Billowing Fog and Bear Traps suite paths you edited.
 Ruling 5. Each read of the attacker's own pawn site during a Campaign walk reads `CampaignSetup.originOf`, which falls back to the pawn site for anyone else and outside a queued Campaign.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala` (`kindNote`, line ~94)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala` (`NarrowPassSitePower.campaignBlocked`, lines ~214-234)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala` (`pawnSite`, lines ~161-162)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SignalTrees.scala` (`home`, line ~63)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/VowOfUnion.scala` (`region`, line ~153)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala` (`pawnRegion`, line ~56)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala` (`pawnAt`, lines ~73-76)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala` (`walledIn`, lines ~61-66, and the Scaladoc)
-- Test: `SignalTreesSuite`, `PeaceEnvoySuite`, `MercenariesSuite`, `VowOfUnionSuite` and `FortressRulesSuite` under `src/test/scala/oathdigital/gameplay/powers/`, the Narrow Pass Campaign suite (`gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala`), and the City Wall suite (`grep -rl "CityWall" src/test/scala`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala` (`kindNote`, line ~94)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala` (`NarrowPassSitePower.campaignBlocked`, lines ~214-234)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala` (`pawnSite`, lines ~161-162)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SignalTrees.scala` (`home`, line ~63)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/VowOfUnion.scala` (`region`, line ~153)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala` (`pawnRegion`, line ~56)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala` (`pawnAt`, lines ~73-76)
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala` (`walledIn`, lines ~61-66, and the Scaladoc)
+- Test: `SignalTreesSuite`, `PeaceEnvoySuite`, `MercenariesSuite`, `VowOfUnionSuite` and `FortressRulesSuite` under `src/test/scala/distantlands/gameplay/powers/`, the Narrow Pass Campaign suite (`gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala`), and the City Wall suite (`grep -rl "CityWall" src/test/scala`)
 
 **Interfaces:**
 - Consumes: Task 1's `CampaignSetup.originOf` and `CampaignFixture.campaignQueuedFrom`.
@@ -758,14 +758,14 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SignalTrees.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/VowOfUnion.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala \
-  src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala \
+git add src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SignalTrees.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/VowOfUnion.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala \
+  src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala \
   <the seven edited suites>
 git commit -m "feat(campaign): the attacker's pawn reads a queued origin"
 ```
@@ -777,16 +777,16 @@ git commit -m "feat(campaign): the attacker's pawn reads a queued origin"
 The `QueuedStarts` seam, tested through its first power.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (`usePowerEntry`, `lookup`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala` (`priced`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/CampaignFromSite.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/WildAllies.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `WildAlliesCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (`usePowerEntry`, `lookup`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/QueuedStart.scala` (`priced`)
+- Create: `src/main/scala/distantlands/gameplay/powers/action/CampaignFromSite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/WildAllies.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `WildAlliesCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` and `src/test/resources/powers/unimplemented.txt` (regenerated)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/WildAlliesSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/action/WildAlliesSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1 and 2.
@@ -1169,17 +1169,17 @@ Expected: PASS. If `BackendArchitectureSuite` flags `CampaignFromSite` for impor
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala \
-  src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/CampaignFromSite.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/WildAllies.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
+git add src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala \
+  src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/walker/QueuedStart.scala \
+  src/main/scala/distantlands/gameplay/powers/action/CampaignFromSite.scala \
+  src/main/scala/distantlands/gameplay/powers/action/WildAllies.scala \
+  src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
   src/test/resources/notes/declared-keys.txt \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/action/WildAlliesSuite.scala
+  src/test/scala/distantlands/gameplay/powers/action/WildAlliesSuite.scala
 git commit -m "feat(batch8): Wild Allies campaigns from a Beast site"
 ```
 
@@ -1188,13 +1188,13 @@ git commit -m "feat(batch8): Wild Allies campaigns from a Beast site"
 ### Task 5: Captains, and the Game Log
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Captains.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` (remove `CaptainsCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Captains.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` (remove `CaptainsCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` and `src/test/resources/powers/unimplemented.txt` (regenerated)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/CaptainsSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/action/CaptainsSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 4's `CampaignFromSite`.
@@ -1282,14 +1282,14 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/Captains.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala \
+git add src/main/scala/distantlands/gameplay/powers/action/Captains.scala \
+  src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala \
   src/test/resources/notes/declared-keys.txt \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/action/CaptainsSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala
+  src/test/scala/distantlands/gameplay/powers/action/CaptainsSuite.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala
 git commit -m "feat(batch8): Captains campaigns from a ruled site"
 ```
 

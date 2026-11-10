@@ -68,24 +68,24 @@
 | File | Change | Responsibility |
 |---|---|---|
 | `docs/superpowers/specs/2026-10-09-modifier-walker-design.md` | Modify | Plan-time rulings |
-| `src/main/scala/oathdigital/gameplay/powerresolver/ModifierPicks.scala` | Create | The modifier decision's ids, and the picks read from answers |
-| `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` | Modify | `OfferReason`; the `selectionCard`, `selectionWindows` and `offerReason` hooks |
-| `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala` | Modify | The hooks; a pick applies at its window; Search pays at pick |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala` | Modify | `pool` and `withAnswers` |
-| `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` | Modify | Picks join the powers at every entry and after each answer |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` | Modify | Picks join the powers in `leafAt` and the restriction scan; the `ModifierChoice` case |
-| `src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala` | Create | The modifier decision node and its `Repeat` |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` | Modify | `choosesModifiers` |
-| `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` | Modify | Refuse `StartWalker.modifiers` for a procedure that chooses them |
-| `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala` | Modify | The tree starts with the modifier decision; `startable` previews what follows it |
-| `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala` | Modify | The facedown tree starts with the modifier decision; picked cards reach the slots |
-| `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala` | Modify | A picked card is "In use as a modifier this action" |
-| `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala` | Modify | `ActiveModifier` also holds picked cards |
-| `src/main/scala/oathdigital/application/gamelog/StartLines.scala` | Modify | The start line names the picks; the tags wait for them |
-| `src/main/scala/oathdigital/application/gamelog/DetailLines.scala` | Modify | The modifier decision posts no "Chose" line |
-| `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` | Modify | Hands `StartLines` the pick reader |
-| `frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala` | Modify | Search and facedown play start directly |
-| `src/test/scala/oathdigital/gameplay/ModifierPlay.scala` | Create | Test helper: pick modifiers through the decision |
+| `src/main/scala/distantlands/gameplay/powerresolver/ModifierPicks.scala` | Create | The modifier decision's ids, and the picks read from answers |
+| `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` | Modify | `OfferReason`; the `selectionCard`, `selectionWindows` and `offerReason` hooks |
+| `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala` | Modify | The hooks; a pick applies at its window; Search pays at pick |
+| `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala` | Modify | `pool` and `withAnswers` |
+| `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` | Modify | Picks join the powers at every entry and after each answer |
+| `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` | Modify | Picks join the powers in `leafAt` and the restriction scan; the `ModifierChoice` case |
+| `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala` | Create | The modifier decision node and its `Repeat` |
+| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` | Modify | `choosesModifiers` |
+| `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` | Modify | Refuse `StartWalker.modifiers` for a procedure that chooses them |
+| `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala` | Modify | The tree starts with the modifier decision; `startable` previews what follows it |
+| `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala` | Modify | The facedown tree starts with the modifier decision; picked cards reach the slots |
+| `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala` | Modify | A picked card is "In use as a modifier this action" |
+| `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala` | Modify | `ActiveModifier` also holds picked cards |
+| `src/main/scala/distantlands/application/gamelog/StartLines.scala` | Modify | The start line names the picks; the tags wait for them |
+| `src/main/scala/distantlands/application/gamelog/DetailLines.scala` | Modify | The modifier decision posts no "Chose" line |
+| `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` | Modify | Hands `StartLines` the pick reader |
+| `frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala` | Modify | Search and facedown play start directly |
+| `src/test/scala/distantlands/gameplay/ModifierPlay.scala` | Create | Test helper: pick modifiers through the decision |
 | Tests | Create/Modify | Listed per task |
 | `docs/ROADMAP.md`, `CONTEXT.md` | Modify | Slice 1 checked; the modifier flow's entry |
 
@@ -174,14 +174,14 @@ git commit -m "docs(modifiers): record the slice 1 plan-time rulings"
 ### Task 2: The picks vocabulary and powers that follow the answers
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/ModifierPicks.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powerresolver/ModifierPicksSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/SelectedModifierSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/ModifierPicks.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
+- Create: `src/test/scala/distantlands/gameplay/powerresolver/ModifierPicksSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/SelectedModifierSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -202,7 +202,7 @@ git commit -m "docs(modifiers): record the slice 1 plan-time rulings"
 
 - [ ] **Step 1: Write the failing vocabulary suite**
 
-Create `src/test/scala/oathdigital/gameplay/powerresolver/ModifierPicksSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powerresolver/ModifierPicksSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powerresolver
@@ -337,7 +337,7 @@ Also reword `selectionPayments`' doc comment to say what it is now:
 
 - [ ] **Step 4: Create `ModifierPicks`**
 
-Create `src/main/scala/oathdigital/gameplay/powerresolver/ModifierPicks.scala`:
+Create `src/main/scala/distantlands/gameplay/powerresolver/ModifierPicks.scala`:
 
 ```scala
 package oathdigital.gameplay.powerresolver
@@ -584,14 +584,14 @@ Expected: PASS. No walk answers a modifier decision yet, so `withAnswers` return
 - [ ] **Step 13: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/ModifierPicks.scala \
-  src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala \
-  src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/test/scala/oathdigital/gameplay/powerresolver/ModifierPicksSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/SelectedModifierSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/ModifierPicks.scala \
+  src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala \
+  src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/test/scala/distantlands/gameplay/powerresolver/ModifierPicksSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/SelectedModifierSuite.scala
 git commit -m "feat(walker): read modifier picks from the answers"
 ```
 
@@ -600,9 +600,9 @@ git commit -m "feat(walker): read modifier picks from the answers"
 ### Task 3: The modifier decision node
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
-- Create: `src/test/scala/oathdigital/gameplay/walker/ModifierChoiceSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
+- Create: `src/test/scala/distantlands/gameplay/walker/ModifierChoiceSuite.scala`
 
 **Interfaces:**
 - Consumes: everything Task 2 produces.
@@ -615,7 +615,7 @@ The suite drives a hand-built tree through `ProcedureWalker`, with stand-in powe
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/walker/ModifierChoiceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/ModifierChoiceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -842,7 +842,7 @@ Expected: compile error, `ModifierChoice` not found.
 
 - [ ] **Step 3: Create `ModifierChoice`**
 
-Create `src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala`. Mind the import rules: this file names no card and never spells the selected-modifier trait's name.
+Create `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala`. Mind the import rules: this file names no card and never spells the selected-modifier trait's name.
 
 ```scala
 package oathdigital.gameplay.walker
@@ -1044,9 +1044,9 @@ Expected: PASS. A failure in "the engine never learns its powers" names a power 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/test/scala/oathdigital/gameplay/walker/ModifierChoiceSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/test/scala/distantlands/gameplay/walker/ModifierChoiceSuite.scala
 git commit -m "feat(walker): the modifier decision node"
 ```
 
@@ -1055,15 +1055,15 @@ git commit -m "feat(walker): the modifier decision node"
 ### Task 4: Search and facedown-adviser play choose their modifiers in the walk
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`
-- Create: `src/test/scala/oathdigital/gameplay/ModifierPlay.scala`
-- Create: `src/test/scala/oathdigital/gameplay/SearchModifierChoiceSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`
+- Create: `src/test/scala/distantlands/gameplay/ModifierPlay.scala`
+- Create: `src/test/scala/distantlands/gameplay/SearchModifierChoiceSuite.scala`
 - Modify: the test helpers and suites listed in Step 10
 
 **Interfaces:**
@@ -1081,7 +1081,7 @@ git commit -m "feat(walker): the modifier decision node"
 
 - [ ] **Step 1: Write the test helper**
 
-Create `src/test/scala/oathdigital/gameplay/ModifierPlay.scala`:
+Create `src/test/scala/distantlands/gameplay/ModifierPlay.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1150,7 +1150,7 @@ object ModifierPlay:
 
 - [ ] **Step 2: Write the failing Search suite**
 
-Create `src/test/scala/oathdigital/gameplay/SearchModifierChoiceSuite.scala`. It uses real cards. News from Afar costs 2 favor and makes the Search's Supply free. Wild Cry, at the actor's site, is offered for a Search and for a facedown-adviser play.
+Create `src/test/scala/distantlands/gameplay/SearchModifierChoiceSuite.scala`. It uses real cards. News from Afar costs 2 favor and makes the Search's Supply free. Wild Cry, at the actor's site, is offered for a Search and for a facedown-adviser play.
 
 ```scala
 package oathdigital.gameplay
@@ -1257,7 +1257,7 @@ class SearchModifierChoiceSuite extends munit.FunSuite:
       CardPlayProcedure.facedownAdviserDecisionId)
 ```
 
-`parked(state)` is a guess at `ParkedDecisionAssertions`' reader. Read `src/test/scala/oathdigital/gameplay/walker/ParkedDecisionAssertions.scala` first, and use the reader it has for the parked `Decide`; keep the assertions as written. Table steps that do not exist under these names (`supply`, `denizen(..., at =)`) are named in `testkit/Table.scala`; use those.
+`parked(state)` is a guess at `ParkedDecisionAssertions`' reader. Read `src/test/scala/distantlands/gameplay/walker/ParkedDecisionAssertions.scala` first, and use the reader it has for the parked `Decide`; keep the assertions as written. Table steps that do not exist under these names (`supply`, `denizen(..., at =)`) are named in `testkit/Table.scala`; use those.
 
 - [ ] **Step 3: Run it to see it fail**
 
@@ -1549,15 +1549,15 @@ Expected: PASS. Repeat the rules above until it does. If a failure is not covere
 Stage the production files above, the two new test files, and every test file you changed. List them with `git status --short`, and stage each by path.
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala \
-  src/test/scala/oathdigital/gameplay/ModifierPlay.scala \
-  src/test/scala/oathdigital/gameplay/SearchModifierChoiceSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala \
+  src/test/scala/distantlands/gameplay/ModifierPlay.scala \
+  src/test/scala/distantlands/gameplay/SearchModifierChoiceSuite.scala
 # then each changed test file by path
 git commit -m "feat(search): choose Search modifiers inside the walk"
 ```
@@ -1567,11 +1567,11 @@ git commit -m "feat(search): choose Search modifiers inside the walk"
 ### Task 5: The Game Log names the picks
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
 
 **Interfaces:**
 - Consumes: `ModifierPicks.picks`, `ModifierPicks.settled`, `ModifierPicks.isDecision`; `ModifierPlay.answers` (Task 4).
@@ -1712,10 +1712,10 @@ Expected: PASS. A facedown-adviser test that pinned the tag at the start now see
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/StartLines.scala \
-  src/main/scala/oathdigital/application/gamelog/DetailLines.scala \
-  src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala
+git add src/main/scala/distantlands/application/gamelog/StartLines.scala \
+  src/main/scala/distantlands/application/gamelog/DetailLines.scala \
+  src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala
 # and any other log test file you changed, by path
 git commit -m "feat(gamelog): name the modifiers picked in the walk"
 ```
@@ -1725,10 +1725,10 @@ git commit -m "feat(gamelog): name the modifiers picked in the walk"
 ### Task 6: The client starts directly; record the slice and run the gates
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierFlowSuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierFlowDrafts.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierFlowSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierFlowDrafts.scala`
 - Modify: `docs/ROADMAP.md`, `CONTEXT.md`, `docs/superpowers/specs/2026-10-07-search-source-walker-design.md`
 
 - [ ] **Step 1: Update the frontend tests first**
@@ -1784,10 +1784,10 @@ Expected: all pass. Compare the test counts with the baseline and report the dif
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierFlowSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierFlowDrafts.scala \
+git add frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierFlowSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierFlowDrafts.scala \
   docs/ROADMAP.md CONTEXT.md \
   docs/superpowers/specs/2026-10-07-search-source-walker-design.md
 git commit -m "feat(frontend): start Search without the modifier flow"

@@ -49,7 +49,7 @@ class PendingWalkerInvariantSuite extends munit.FunSuite:
     * from the source so a new intent cannot escape the invariant. */
   test("the sample holds every GameCommand constructor"):
     val source = Files.readString(Paths.get(
-      "src/main/scala/oathdigital/application/GameCommands.scala"))
+      "src/main/scala/distantlands/application/GameCommands.scala"))
     val start = source.indexOf("object PlayerIntent:")
     val end = "\n\\S".r.findFirstMatchIn(source.substring(start + 1))
       .fold(source.length)(start + 1 + _.start)

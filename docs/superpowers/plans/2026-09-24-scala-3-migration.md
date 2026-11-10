@@ -52,9 +52,9 @@ Work in a git worktree on branch `scala-3-migration` (superpowers:using-git-work
 
 | File | Change | Task |
 | --- | --- | --- |
-| `src/test/scala/oathdigital/persistence/HsqldbDatabaseOwnerSuite.scala` | Add characterization test for `retryTransientLock` | 1 |
-| `src/main/scala/oathdigital/persistence/HsqldbDatabaseOwner.scala` | Replace `do/while` with a tail-recursive loop | 1 |
-| `src/main/scala/oathdigital/server/OathServer.scala` | Explicit `ExecutionContext` type | 2 |
+| `src/test/scala/distantlands/persistence/HsqldbDatabaseOwnerSuite.scala` | Add characterization test for `retryTransientLock` | 1 |
+| `src/main/scala/distantlands/persistence/HsqldbDatabaseOwner.scala` | Replace `do/while` with a tail-recursive loop | 1 |
+| `src/main/scala/distantlands/server/OathServer.scala` | Explicit `ExecutionContext` type | 2 |
 | `build.sbt` | `-Xsource:3` (Task 2); version, flags, coverage floor (Task 4) | 2, 4 |
 | Files reported by the compiler | Minimal migration fixes | 2, 4 |
 | `project/plugins.sbt` | `sbt-scalajs` 1.20.1 → 1.22.0 | 3 |
@@ -66,8 +66,8 @@ Work in a git worktree on branch `scala-3-migration` (superpowers:using-git-work
 Scala 3 removed `do { ... } while (...)`. The method's current behavior must survive exactly, including one subtle rule: after a backoff sleep, the deadline is checked again before the next attempt.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/persistence/HsqldbDatabaseOwner.scala` (imports at lines 1–16; method at lines 149–171)
-- Test: `src/test/scala/oathdigital/persistence/HsqldbDatabaseOwnerSuite.scala` (append a test after the one at line 119)
+- Modify: `src/main/scala/distantlands/persistence/HsqldbDatabaseOwner.scala` (imports at lines 1–16; method at lines 149–171)
+- Test: `src/test/scala/distantlands/persistence/HsqldbDatabaseOwnerSuite.scala` (append a test after the one at line 119)
 
 **Interfaces:**
 - Consumes: `HsqldbDatabaseOwner.retryTransientLock[A](attempt: () => Either[OpenAttemptFailure, A], maxAttempts: Int, deadlineNanos: Long, nanoTime: () => Long, sleep: Long => Unit, retryable: Throwable => Boolean): Either[OpenAttemptFailure, A]`, `HsqldbDatabaseOwner.ConnectionFailure(error: Throwable)`
@@ -191,7 +191,7 @@ Expected: PASS, all tests.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/persistence/HsqldbDatabaseOwner.scala src/test/scala/oathdigital/persistence/HsqldbDatabaseOwnerSuite.scala
+git add src/main/scala/distantlands/persistence/HsqldbDatabaseOwner.scala src/test/scala/distantlands/persistence/HsqldbDatabaseOwnerSuite.scala
 git commit -m "refactor(persistence): drop do/while from the reopen retry loop
 
 Scala 3 removed do/while. A tail-recursive loop keeps the same attempt
@@ -206,7 +206,7 @@ paths the existing one did not cover."
 With `-Xsource:3`, Scala 2.13 reports Scala 3 incompatibilities in the `scala3-migration` category, and these are compile errors by default. Once the flag is on, new code on `main` cannot reintroduce them.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/server/OathServer.scala:4` and `:41`
+- Modify: `src/main/scala/distantlands/server/OathServer.scala:4` and `:41`
 - Modify: `build.sbt` (both `scalacOptions` blocks: the `root` block and the `frontend` block)
 - Modify: whatever files the compiler reports in Step 3
 
@@ -274,7 +274,7 @@ Expected: `[success]`. Repeat Step 4 until it is.
 If Step 4 touched more than about 15 files, split into one commit per row of the table, each passing the gate, with the `build.sbt` flag change in the last commit. Otherwise one commit:
 
 ```bash
-git add build.sbt src/main/scala/oathdigital/server/OathServer.scala
+git add build.sbt src/main/scala/distantlands/server/OathServer.scala
 git add -u src frontend/src shared
 git commit -m "build: compile with -Xsource:3 to block Scala 3 incompatibilities
 

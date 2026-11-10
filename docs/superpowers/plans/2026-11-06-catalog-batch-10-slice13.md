@@ -110,13 +110,13 @@ Campaign actions. ... Bandits always enforce them."
 ### Task 1: The Patrols' waiver and the askable Act menu
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/recover/RelicPatrols.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala:495-501`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala:363-382`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/recover/RelicPatrolsSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/recover/RelicPatrols.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/QueuedStart.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala:495-501`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala:363-382`
+- Modify: `src/test/scala/distantlands/gameplay/powers/recover/RelicPatrolsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
 
 **Interfaces:**
@@ -130,7 +130,7 @@ Campaign actions. ... Bandits always enforce them."
 
 - [ ] **Step 1: Write the failing menu-pick tests**
 
-In `src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala`, add
+In `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala`, add
 `QueuedStart` to the walker import and add `WalkerProcedureRegistry` too:
 
 ```scala
@@ -607,7 +607,7 @@ Expected: PASS, every test. Palanquin and the consent service suites prove
 - [ ] **Step 12: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/recover/RelicPatrols.scala src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala src/test/scala/oathdigital/gameplay/powers/recover/RelicPatrolsSuite.scala src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala src/test/resources/notes/declared-keys.txt
+git add src/main/scala/distantlands/gameplay/powers/recover/RelicPatrols.scala src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala src/main/scala/distantlands/gameplay/walker/QueuedStart.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala src/test/scala/distantlands/gameplay/powers/recover/RelicPatrolsSuite.scala src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala src/test/resources/notes/declared-keys.txt
 git commit -m "$(cat <<'EOF'
 feat(powers): the Patrols' ruler may let an enemy recover
 
@@ -629,7 +629,7 @@ EOF
 ### Task 2: Consent through the service, docs and gates
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/PatrolsConsentServiceSuite.scala`
+- Create: `src/test/scala/distantlands/application/PatrolsConsentServiceSuite.scala`
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`
 - Modify: `docs/ROADMAP.md`
 
@@ -648,7 +648,7 @@ git log --oneline 0.2.0-alpha | grep "feat(powers): implement Search Party"
 
 If that prints a line, run `git rebase 0.2.0-alpha`. Resolve a conflict in
 `declared-keys.txt` by keeping both sides' lines in sorted order. Then
-create `src/test/scala/oathdigital/application/PatrolsConsentServiceSuite.scala`:
+create `src/test/scala/distantlands/application/PatrolsConsentServiceSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -885,7 +885,7 @@ Expected: every test passes, and statement coverage is at least 92%.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/PatrolsConsentServiceSuite.scala docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
+git add src/test/scala/distantlands/application/PatrolsConsentServiceSuite.scala docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'
 test(consent): ask the Patrols' ruler from the Act menu
 

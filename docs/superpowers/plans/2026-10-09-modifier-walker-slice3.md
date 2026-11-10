@@ -25,7 +25,7 @@
 **Spec:** `docs/superpowers/specs/2026-10-09-modifier-walker-design.md`. Read it whole, including its "Plan-time rulings". The slice 2 plan, `docs/superpowers/plans/2026-10-09-modifier-walker-slice2.md`, shows how Travel moved. This plan copies that move for Muster and Trade. The files to copy from are:
 
 - `SearchProcedure` (`gameplay/actions/search/`).
-- `TravelModifierChoiceSuite` (`src/test/scala/oathdigital/gameplay/powers/travel/`).
+- `TravelModifierChoiceSuite` (`src/test/scala/distantlands/gameplay/powers/travel/`).
 - The Search and Travel tests of `ModifierStartControlsSuite`.
 
 **Starts from:** `main` at `5ae1e668` (the slice 2 merge) or later. Slice 2 changes several files this plan changes again: `SelectedModifier.paidAtPick`, `SelectedModifierSuite`, `ModifierStartControlsSuite`, `LogScripts`, `UndoServiceSuite`, `ModifierFlowDraft` and the frontend flow suites. The steps below describe those files as slice 2 leaves them. Where slice 2's executor deviated from its plan, adapt the edit and say so in the commit message.
@@ -69,17 +69,17 @@
 
 | File | Change | Responsibility |
 |---|---|---|
-| `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala` | Modify | The tree starts with the modifier decision; `afterModifiers`; `startOptions`; Start's reason |
-| `src/main/scala/oathdigital/gameplay/actions/economy/MusterProcedure.scala`, `TradeProcedure.scala` | Modify | Their `Kind`s name the modifier window and start label; `startOptions` previews what follows the decision |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` | Modify | Muster and Trade `choosesModifiers` |
-| `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala` | Modify | Muster and Trade join `paidAtPick` |
-| `src/test/scala/oathdigital/gameplay/ModifierPlay.scala` | Modify | `started` takes `startArgs` |
-| `src/test/scala/oathdigital/testkit/EconomyActions.scala` | Modify | Picks modifiers through the decision; `parkedDecision`, `optionStatesAtStart` |
-| `src/test/scala/oathdigital/gameplay/powers/economy/MusterModifierChoiceSuite.scala`, `TradeModifierChoiceSuite.scala` | Create | The Muster and Trade modifier decisions |
+| `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala` | Modify | The tree starts with the modifier decision; `afterModifiers`; `startOptions`; Start's reason |
+| `src/main/scala/distantlands/gameplay/actions/economy/MusterProcedure.scala`, `TradeProcedure.scala` | Modify | Their `Kind`s name the modifier window and start label; `startOptions` previews what follows the decision |
+| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` | Modify | Muster and Trade `choosesModifiers` |
+| `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala` | Modify | Muster and Trade join `paidAtPick` |
+| `src/test/scala/distantlands/gameplay/ModifierPlay.scala` | Modify | `started` takes `startArgs` |
+| `src/test/scala/distantlands/testkit/EconomyActions.scala` | Modify | Picks modifiers through the decision; `parkedDecision`, `optionStatesAtStart` |
+| `src/test/scala/distantlands/gameplay/powers/economy/MusterModifierChoiceSuite.scala`, `TradeModifierChoiceSuite.scala` | Create | The Muster and Trade modifier decisions |
 | Economy power suites and others | Modify | Listed in Task 1 |
-| `src/test/scala/oathdigital/application/UndoServiceSuite.scala` | Modify | Undo of a Muster pick, then of the start |
-| `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, `GameLogStartLineSuite.scala` | Modify | `golemMuster` picks Golem Legions; the start line names it |
-| `frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala` | Modify | Muster and Trade start directly |
+| `src/test/scala/distantlands/application/UndoServiceSuite.scala` | Modify | Undo of a Muster pick, then of the start |
+| `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, `GameLogStartLineSuite.scala` | Modify | `golemMuster` picks Golem Legions; the start line names it |
+| `frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala` | Modify | Muster and Trade start directly |
 | Frontend suites | Modify | Listed in Task 3 |
 | `docs/ROADMAP.md`, `CONTEXT.md` | Modify | Slice 3 checked; flow note |
 
@@ -90,21 +90,21 @@
 This task turns the switch and fixes every suite the switch breaks, so that its commit is green.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/MusterProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (the `ActionRef.Muster` and `ActionRef.Trade` entries)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/ModifierPlay.scala`
-- Modify: `src/test/scala/oathdigital/testkit/EconomyActions.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/MusterModifierChoiceSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/TradeModifierChoiceSuite.scala`
-- Modify, under `src/test/scala/oathdigital/gameplay/powers/economy/`: `AwaitedReturnSuite`, `DefameSuite`, `GolemLegionsSuite`, `KnightsErrantSuite`, `MapLibrarySuite`, `MovingMarketSuite`, `OldSongsSuite`, `PressgangsSuite`, `SkilledMerchantsSuite`, `VowOfPovertySuite`
-- Modify: `src/test/scala/oathdigital/gameplay/EnclosingProcedureSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/SelectionPaymentsSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/SelectedModifierSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/ModifierStartControlsSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (`golemMuster` only)
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/MusterProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (the `ActionRef.Muster` and `ActionRef.Trade` entries)
+- Modify: `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`
+- Modify: `src/test/scala/distantlands/gameplay/ModifierPlay.scala`
+- Modify: `src/test/scala/distantlands/testkit/EconomyActions.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/MusterModifierChoiceSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/TradeModifierChoiceSuite.scala`
+- Modify, under `src/test/scala/distantlands/gameplay/powers/economy/`: `AwaitedReturnSuite`, `DefameSuite`, `GolemLegionsSuite`, `KnightsErrantSuite`, `MapLibrarySuite`, `MovingMarketSuite`, `OldSongsSuite`, `PressgangsSuite`, `SkilledMerchantsSuite`, `VowOfPovertySuite`
+- Modify: `src/test/scala/distantlands/gameplay/EnclosingProcedureSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/SelectionPaymentsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/SelectedModifierSuite.scala`
+- Modify: `src/test/scala/distantlands/application/ModifierStartControlsSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (`golemMuster` only)
 
 **Interfaces:**
 - Consumes, from slice 1:
@@ -123,7 +123,7 @@ The economy suites below are listed from an inventory of every test that starts 
 
 - [ ] **Step 1: Let `ModifierPlay.started` carry start arguments**
 
-In `src/test/scala/oathdigital/gameplay/ModifierPlay.scala`, change `started`'s doc comment and signature, and pass `startArgs` to the start:
+In `src/test/scala/distantlands/gameplay/ModifierPlay.scala`, change `started`'s doc comment and signature, and pass `startArgs` to the start:
 
 ```scala
   /** `actor` starts `procedure` with `startArgs`, picks `modifiers` in
@@ -145,7 +145,7 @@ and, inside it:
 
 - [ ] **Step 2: Drive `EconomyActions` through the decision**
 
-Replace `src/test/scala/oathdigital/testkit/EconomyActions.scala` with:
+Replace `src/test/scala/distantlands/testkit/EconomyActions.scala` with:
 
 ```scala
 package oathdigital.testkit
@@ -249,7 +249,7 @@ object EconomyActions:
 
 - [ ] **Step 3: Write the failing Muster suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/MusterModifierChoiceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/MusterModifierChoiceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -342,7 +342,7 @@ class MusterModifierChoiceSuite extends munit.FunSuite:
 
 - [ ] **Step 4: Write the failing Trade suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/TradeModifierChoiceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/TradeModifierChoiceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -443,7 +443,7 @@ Expected:
 
 - [ ] **Step 6: Start the economy tree with the modifier decision**
 
-Replace `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala` with:
+Replace `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala` with:
 
 ```scala
 package oathdigital.gameplay.actions.economy
@@ -918,30 +918,30 @@ Some other test may start a Muster or Trade directly while its actor holds a Mus
 - [ ] **Step 16: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/MusterProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala \
-  src/test/scala/oathdigital/gameplay/ModifierPlay.scala \
-  src/test/scala/oathdigital/testkit/EconomyActions.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/MusterModifierChoiceSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/TradeModifierChoiceSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/AwaitedReturnSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/DefameSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/GolemLegionsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/KnightsErrantSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/MapLibrarySuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/MovingMarketSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/OldSongsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/PressgangsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/SkilledMerchantsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/VowOfPovertySuite.scala \
-  src/test/scala/oathdigital/gameplay/EnclosingProcedureSuite.scala \
-  src/test/scala/oathdigital/gameplay/SelectionPaymentsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/SelectedModifierSuite.scala \
-  src/test/scala/oathdigital/application/ModifierStartControlsSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala
+git add src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/MusterProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala \
+  src/test/scala/distantlands/gameplay/ModifierPlay.scala \
+  src/test/scala/distantlands/testkit/EconomyActions.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/MusterModifierChoiceSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/TradeModifierChoiceSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/AwaitedReturnSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/DefameSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/GolemLegionsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/KnightsErrantSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/MapLibrarySuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/MovingMarketSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/OldSongsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/PressgangsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/SkilledMerchantsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/VowOfPovertySuite.scala \
+  src/test/scala/distantlands/gameplay/EnclosingProcedureSuite.scala \
+  src/test/scala/distantlands/gameplay/SelectionPaymentsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/SelectedModifierSuite.scala \
+  src/test/scala/distantlands/application/ModifierStartControlsSuite.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala
 git commit -m "feat(economy): choose Muster and Trade modifiers inside the walk"
 ```
 
@@ -954,8 +954,8 @@ Add any other suite that Step 15 fixed to the `git add` list. End the message wi
 ### Task 2: Undo and the Game Log for a Muster pick
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/application/UndoServiceSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala`
+- Modify: `src/test/scala/distantlands/application/UndoServiceSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala`
 
 **Interfaces:**
 - Consumes: `ModifierPlay.pick`; `LogScripts.golemMuster`, as Task 1 left it.
@@ -1013,8 +1013,8 @@ Expected: PASS. `GameLogActionLineSuite`'s "Muster on Golem Legions: the line na
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/UndoServiceSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala
+git add src/test/scala/distantlands/application/UndoServiceSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala
 git commit -m "test(economy): undo a Muster pick, and log the Muster's picks"
 ```
 
@@ -1025,10 +1025,10 @@ End the message with your trailer.
 ### Task 3: The client starts Muster and Trade directly; record the slice and run the gates
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierFlowSuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierFlowDrafts.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierFlowSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierFlowDrafts.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala`
 - Modify: `docs/ROADMAP.md`, `CONTEXT.md`
 
 **Interfaces:** none new.
@@ -1145,10 +1145,10 @@ Follow the memory recipe (`preview-start-hits-live-db`). Never use `preview_star
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierFlowSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierFlowDrafts.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala \
+git add frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierFlowSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierFlowDrafts.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala \
   docs/ROADMAP.md CONTEXT.md
 git commit -m "feat(frontend): start Muster and Trade without the modifier flow"
 ```

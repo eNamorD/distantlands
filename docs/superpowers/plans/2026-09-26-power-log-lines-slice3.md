@@ -77,7 +77,7 @@ These were settled while planning (2026-09-26). Task 4 records each one in the s
   - `gameplay/powers/travel/TravelSitePowers.scala`: `NarrowPassSitePower(id, site, coastSites, coastOrIslandSites)`, `source` is `RuleSourceRef.Site(site)`. `OptionRestriction(campaignBlocked)` at `CampaignTargetSelection`; `Restriction((ctx, _) => blocked(ctx))` at `TravelActionEligibility`, a whole-action block.
   - Travel's destination is a command argument (`TravelProcedure.candidates` dry-runs each one). No `Decide` offers travel destinations.
 - **Tests:**
-  - `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`: `Said(key, text, covers)` and `said(power: PhasePower, events)`. A player argument reads as its id.
+  - `src/test/scala/distantlands/gameplay/powers/NoteText.scala`: `Said(key, text, covers)` and `said(power: PhasePower, events)`. A player argument reads as its id.
   - `VisionPlayFixture.searched(ready, vision)` and `fromAdvisers(ready, vision)` return the `OathTransition` that parks on the placement decision. Its `events` hold the notes. `PowerFixture.actor` is the acting player.
   - `TargetingFixture.start(state, procedure, actor): Either[OathViolation, OathTransition]`; `TargetingFixture.rules.resolveWalker(...)` answers a parked decision. `CampaignFixture.Board(ready, actor, other, origin)`; `origin` is the actor's pawn site.
   - `CampaignPowersSuite` tests the Narrow Pass on a hand-built `Decide` at `CampaignTargetSelection` through `ProcedureWalker.advance`, which returns `WalkerOutcome.Parked(pending, events)`.
@@ -87,12 +87,12 @@ These were settled while planning (2026-09-26). Task 4 records each one in the s
 ### Task 1: The Vision powers say a Vision cannot be played faceup
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/VisionPlay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfObedience.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/SacredGround.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfObedienceSuite.scala`, `SecretPoliceSuite.scala`, `SacredGroundSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/NoteText.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/VisionPlay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/VowOfObedience.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/SacredGround.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/VowOfObedienceSuite.scala`, `SecretPoliceSuite.scala`, `SacredGroundSuite.scala`
 
 **Interfaces:**
 - Produces: `NoteText.said(id: PowerId, keys: Vector[NoteKey], events: Vector[OathEvent]): Vector[Said]`; `VisionPlay.noFaceup: NoteKey` (name `"no-faceup"`); `VisionPlay.note(card: CardId): (PowerCtx, DecisionOptionRef) => Option[PowerNote]`.
@@ -238,7 +238,7 @@ Expected: all PASS. If a golden log under `src/test/resources/gamelog/` now diff
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/NoteText.scala src/main/scala/oathdigital/gameplay/powers/cardplay/VisionPlay.scala src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfObedience.scala src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala src/main/scala/oathdigital/gameplay/powers/cardplay/SacredGround.scala src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfObedienceSuite.scala src/test/scala/oathdigital/gameplay/powers/cardplay/SecretPoliceSuite.scala src/test/scala/oathdigital/gameplay/powers/cardplay/SacredGroundSuite.scala
+git add src/test/scala/distantlands/gameplay/powers/NoteText.scala src/main/scala/distantlands/gameplay/powers/cardplay/VisionPlay.scala src/main/scala/distantlands/gameplay/powers/cardplay/VowOfObedience.scala src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala src/main/scala/distantlands/gameplay/powers/cardplay/SacredGround.scala src/test/scala/distantlands/gameplay/powers/cardplay/VowOfObedienceSuite.scala src/test/scala/distantlands/gameplay/powers/cardplay/SecretPoliceSuite.scala src/test/scala/distantlands/gameplay/powers/cardplay/SacredGroundSuite.scala
 git commit -m "feat(powers): the Vision rules say why a faceup placement is missing"
 ```
 
@@ -247,8 +247,8 @@ git commit -m "feat(powers): the Vision rules say why a faceup placement is miss
 ### Task 2: The Fortress says who cannot be targeted
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/targeting/FortressRulesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/targeting/FortressRulesSuite.scala`
 
 **Interfaces:**
 - Consumes: `NoteText.said(id, keys, events)` (Task 1).
@@ -393,7 +393,7 @@ Expected: all PASS, the golden logs unchanged.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala src/test/scala/oathdigital/gameplay/powers/targeting/FortressRulesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala src/test/scala/distantlands/gameplay/powers/targeting/FortressRulesSuite.scala
 git commit -m "feat(powers): the Fortress says who it keeps from being targeted"
 ```
 
@@ -415,8 +415,8 @@ Fix what it confirms before Task 3.
 ### Task 3: The Circlet of Command says whose things cannot be targeted
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/CircletOfCommand.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/targeting/CircletOfCommandSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/CircletOfCommand.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/targeting/CircletOfCommandSuite.scala`
 
 **Interfaces:**
 - Consumes: `NoteText.said(id, keys, events)` (Task 1).
@@ -597,7 +597,7 @@ Expected: all PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/targeting/CircletOfCommand.scala src/test/scala/oathdigital/gameplay/powers/targeting/CircletOfCommandSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/targeting/CircletOfCommand.scala src/test/scala/distantlands/gameplay/powers/targeting/CircletOfCommandSuite.scala
 git commit -m "feat(powers): the Circlet of Command says whose things it protects"
 ```
 
@@ -606,8 +606,8 @@ git commit -m "feat(powers): the Circlet of Command says whose things it protect
 ### Task 4: The Narrow Pass says which targets it forbids; record the slice
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/CampaignPowersSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/CampaignPowersSuite.scala`
 - Modify: `docs/superpowers/specs/2026-09-26-power-log-lines-design.md`
 - Modify: `docs/ROADMAP.md`
 
@@ -759,7 +759,7 @@ Expected: both clean.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala src/test/scala/oathdigital/gameplay/CampaignPowersSuite.scala docs/superpowers/specs/2026-09-26-power-log-lines-design.md docs/ROADMAP.md
+git add src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala src/test/scala/distantlands/gameplay/CampaignPowersSuite.scala docs/superpowers/specs/2026-09-26-power-log-lines-design.md docs/ROADMAP.md
 git commit -m "feat(powers): the Narrow Pass says which targets it forbids; record slice 3"
 ```
 

@@ -14,7 +14,7 @@ representable and stops decoding.
   roll's faces travel as a space-joined string in a field named `id`.
 - **The move, not a mirror.** `LogSpan`, `LogEntry`, `LogSection`,
   `LogTakenBack` and `LogKind` move from
-  `src/main/scala/oathdigital/application/gamelog/LogEntry.scala` to the shared
+  `src/main/scala/distantlands/application/gamelog/LogEntry.scala` to the shared
   protocol package. The four `Wire` twins and both mapping functions are
   deleted; `LogPageWire` becomes `LogPage`. `Posted` stays in `gamelog`.
 - **Three derived fields leave the wire.** `text` is a `def` on the trait,
@@ -44,7 +44,7 @@ through `./sbtw`.
 for why table 2 stays apart.
 
 **Starts from:** `main`. Check that
-`shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`
+`shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`
 is 36 lines and still defines `LogSpanWire`.
 
 ## Global Constraints
@@ -125,12 +125,12 @@ No shape change, no wire change. The `Wire` twins and
 full gate must pass with no test edited beyond its import list.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`
-- Delete: `src/main/scala/oathdigital/application/gamelog/LogEntry.scala`
-- Create: `src/main/scala/oathdigital/application/gamelog/Posted.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`
+- Delete: `src/main/scala/distantlands/application/gamelog/LogEntry.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/Posted.scala`
 - Modify (import line only): the 15 other files under
-  `src/main/scala/oathdigital/application/gamelog/` and 19 files under
-  `src/test/scala/oathdigital/application/gamelog/` listed in Step 3.
+  `src/main/scala/distantlands/application/gamelog/` and 19 files under
+  `src/test/scala/distantlands/application/gamelog/` listed in Step 3.
 
 **Interfaces:**
 - Consumes: nothing.
@@ -221,10 +221,10 @@ object LogSpan:
 - [ ] **Step 2: Replace `LogEntry.scala` with `Posted.scala`**
 
 ```bash
-git rm src/main/scala/oathdigital/application/gamelog/LogEntry.scala
+git rm src/main/scala/distantlands/application/gamelog/LogEntry.scala
 ```
 
-Create `src/main/scala/oathdigital/application/gamelog/Posted.scala`:
+Create `src/main/scala/distantlands/application/gamelog/Posted.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -248,7 +248,7 @@ alphabetical position the file's existing `oathdigital.*` import block uses.
 A file that already has `import LogSpan.Text` keeps it unchanged: it resolves
 against the newly imported `LogSpan`.
 
-Production (`src/main/scala/oathdigital/application/gamelog/`):
+Production (`src/main/scala/distantlands/application/gamelog/`):
 
 | File | Import |
 |---|---|
@@ -274,7 +274,7 @@ import oathdigital.protocol.projection.{LogEntry, LogEntryWire, LogPageWire,
   LogSectionWire, LogSpan, LogSpanWire, LogTakenBackWire}
 ```
 
-Test (`src/test/scala/oathdigital/application/gamelog/`):
+Test (`src/test/scala/distantlands/application/gamelog/`):
 
 | File | Import |
 |---|---|
@@ -318,7 +318,7 @@ Expected: no output.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala src/main/scala/oathdigital/application/gamelog src/test/scala/oathdigital/application/gamelog
+git add shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala src/main/scala/distantlands/application/gamelog src/test/scala/distantlands/application/gamelog
 git commit -m "refactor(gamelog): move the log's types to the shared protocol
 
 They are the types the wire should have. Moving them is the step that
@@ -338,10 +338,10 @@ with `Section`, `Action`, `Decision`, `Delta`, `Roll` and `Trigger`
 `LogKind` makes a wrong depth unwritable.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/Posted.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala:122,147,154`
-- Modify: every file under `src/main/scala/oathdigital/application/gamelog/`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/Posted.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala:122,147,154`
+- Modify: every file under `src/main/scala/distantlands/application/gamelog/`
   that calls `Posted.line` or `Posted.headline` (31 and 5 calls, in
   `ActionLines`, `CampaignLines`, `ConsentLines`, `DetailLines`, `EventLines`,
   `GameLogFormatter`, `NegotiationLines`, `PowerLines`, `SetupLines`,
@@ -355,7 +355,7 @@ with `Section`, `Action`, `Decision`, `Delta`, `Roll` and `Trigger`
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala`:
+Add to `src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala`:
 
 ```scala
   test("a kind carries its own depth, and headlines never carry a section"):
@@ -408,7 +408,7 @@ final case class LogEntry(sequence: Long, ordinal: Int, kind: LogKind,
 
 - [ ] **Step 4: Collapse `Posted`**
 
-`src/main/scala/oathdigital/application/gamelog/Posted.scala` becomes:
+`src/main/scala/distantlands/application/gamelog/Posted.scala` becomes:
 
 ```scala
 package oathdigital.application.gamelog
@@ -425,7 +425,7 @@ private[gamelog] final case class Posted(kind: LogKind,
 - [ ] **Step 5: Rewrite the 36 call sites**
 
 ```bash
-cd src/main/scala/oathdigital/application/gamelog
+cd src/main/scala/distantlands/application/gamelog
 perl -pi -e 's/Posted\.(line|headline)\(/Posted(/g' *.scala
 cd -
 ```
@@ -481,7 +481,7 @@ Expected: PASS. The wire's JSON still carries `depth`
 
 ```bash
 git status --porcelain src/test/resources/gamelog
-git add shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala src/main/scala/oathdigital/application/gamelog src/test/scala/oathdigital/application/gamelog
+git add shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala src/main/scala/distantlands/application/gamelog src/test/scala/distantlands/application/gamelog
 git commit -m "refactor(gamelog): a log kind carries its own depth
 
 Posted.headline and Posted.line were the only thing keeping the two in
@@ -498,12 +498,12 @@ Both construction sites pass the literal `"Supply"`. A field with one possible
 value is not one of the case's fields; the word moves into `text`.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala:57,186`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala:38`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GoldenLog.scala:21`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogWordsSuite.scala:37`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala:30`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala:57,186`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogProjector.scala:38`
+- Modify: `src/test/scala/distantlands/application/gamelog/GoldenLog.scala:21`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogWordsSuite.scala:37`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala:30`
 
 **Interfaces:**
 - Consumes: Task 2's types.
@@ -511,7 +511,7 @@ value is not one of the case's fields; the word moves into `text`.
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `src/test/scala/oathdigital/application/gamelog/LogWordsSuite.scala`:
+Add to `src/test/scala/distantlands/application/gamelog/LogWordsSuite.scala`:
 
 ```scala
   test("a cost names the one currency an action spends"):
@@ -591,7 +591,7 @@ Expected: PASS.
 
 ```bash
 git status --porcelain src/test/resources/gamelog
-git add shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala src/main/scala/oathdigital/application/gamelog src/test/scala/oathdigital/application/gamelog
+git add shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala src/main/scala/distantlands/application/gamelog src/test/scala/distantlands/application/gamelog
 git commit -m "refactor(gamelog): a cost's currency is the case's, not a field
 
 Both sites pass \"Supply\" and always have.
@@ -608,25 +608,25 @@ codec go together, and the frontend, the server routes and the suites move
 onto the moved types in the same compile.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/LogPageCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala:32`
-- Modify: `src/main/scala/oathdigital/server/GameRoutes.scala:23,76,143`
-- Modify: `src/main/scala/oathdigital/server/TrustedGameGateway.scala:6,32`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameClient.scala:10,115,205`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableSession.scala:4,42,305`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala:22`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala:165`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameLogOverlay.scala:4,44`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`
-- Test: `shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/TestLog.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`,
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/LogPageCodec.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogProjector.scala`
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala:32`
+- Modify: `src/main/scala/distantlands/server/GameRoutes.scala:23,76,143`
+- Modify: `src/main/scala/distantlands/server/TrustedGameGateway.scala:6,32`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameClient.scala:10,115,205`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableSession.scala:4,42,305`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala:22`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala:165`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameLogOverlay.scala:4,44`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`
+- Test: `shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/TestLog.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`,
   `GameLogTakenBackPaneSuite.scala`, `GameLogWithdrawnSuite.scala`,
   `GameLogOverlaySuite.scala`, `TableSessionSuite.scala`,
   `HttpGameClientSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/LogWordsSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/LogWordsSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 3's `LogSpan`, `LogEntry`, `LogKind`, `LogSection`,
@@ -641,7 +641,7 @@ onto the moved types in the same compile.
 - [ ] **Step 1: Write the failing codec tests**
 
 Replace the whole of
-`shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala`:
+`shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`:
 
 ```scala
 package oathdigital.protocol
@@ -1193,9 +1193,9 @@ replace three of them, and pins the fourth
 out of scope) to it with a set-equality test.
 
 **Files:**
-- Create: `shared/src/main/scala/oathdigital/protocol/projection/DieFaces.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:634,640-654`
-- Test: `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`
+- Create: `shared/src/main/scala/distantlands/protocol/projection/DieFaces.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:634,640-654`
+- Test: `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -1208,7 +1208,7 @@ out of scope) to it with a set-equality test.
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`:
+Add to `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`:
 
 ```scala
   /** The decision wire keeps its own face table
@@ -1236,7 +1236,7 @@ WalkerDecisionProjector".
 
 - [ ] **Step 3: Create the shared vocabulary**
 
-`shared/src/main/scala/oathdigital/protocol/projection/DieFaces.scala`:
+`shared/src/main/scala/distantlands/protocol/projection/DieFaces.scala`:
 
 ```scala
 package oathdigital.protocol.projection
@@ -1314,7 +1314,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/DieFaces.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/DieFaces.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala
 git commit -m "feat(protocol): one die face vocabulary, shared by both runtimes
 
 Seven faces were spelled in four tables and two of them had drifted. This
@@ -1332,12 +1332,12 @@ A pure rename, so the shared `DieFace` enum can own the bare name on the
 frontend side. No behavior change.
 
 **Files:**
-- Delete: `frontend/src/main/scala/oathdigital/frontend/DieFace.scala`
-- Create: `frontend/src/main/scala/oathdigital/frontend/DieFaceChip.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala:249`
-- Delete: `frontend/src/test/scala/oathdigital/frontend/DieFaceSuite.scala`
-- Create: `frontend/src/test/scala/oathdigital/frontend/DieFaceChipSuite.scala`
+- Delete: `frontend/src/main/scala/distantlands/frontend/DieFace.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/DieFaceChip.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala:249`
+- Delete: `frontend/src/test/scala/distantlands/frontend/DieFaceSuite.scala`
+- Create: `frontend/src/test/scala/distantlands/frontend/DieFaceChipSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 5's enums (not used yet).
@@ -1348,15 +1348,15 @@ frontend side. No behavior change.
 - [ ] **Step 1: Rename the three files and the references**
 
 ```bash
-git mv frontend/src/main/scala/oathdigital/frontend/DieFace.scala \
-  frontend/src/main/scala/oathdigital/frontend/DieFaceChip.scala
-git mv frontend/src/test/scala/oathdigital/frontend/DieFaceSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/DieFaceChipSuite.scala
+git mv frontend/src/main/scala/distantlands/frontend/DieFace.scala \
+  frontend/src/main/scala/distantlands/frontend/DieFaceChip.scala
+git mv frontend/src/test/scala/distantlands/frontend/DieFaceSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/DieFaceChipSuite.scala
 perl -pi -e 's/\bDieFaceSuite\b/DieFaceChipSuite/g; s/\bDieFace\b/DieFaceChip/g' \
-  frontend/src/main/scala/oathdigital/frontend/DieFaceChip.scala \
-  frontend/src/test/scala/oathdigital/frontend/DieFaceChipSuite.scala \
-  frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala \
-  frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala
+  frontend/src/main/scala/distantlands/frontend/DieFaceChip.scala \
+  frontend/src/test/scala/distantlands/frontend/DieFaceChipSuite.scala \
+  frontend/src/main/scala/distantlands/frontend/GameLogPane.scala \
+  frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala
 ```
 
 - [ ] **Step 2: Reword the object's doc comment**
@@ -1414,17 +1414,17 @@ carries typed faces, head first, so the die is read off them. Three of the
 four face tables collapse onto `DieFace.word` and `DieFace.key`.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/LogPageCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogWords.scala:129-156`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/DieFaceChip.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala:65-68,249`
-- Test: `shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GoldenLog.scala:22-23`
-- Test: `frontend/src/test/scala/oathdigital/frontend/DieFaceChipSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala:72-83`
-- Test: `frontend/src/test/scala/oathdigital/frontend/WalkerDecisionDraftSuite.scala:80-84`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/LogPageCodec.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/LogWords.scala:129-156`
+- Modify: `frontend/src/main/scala/distantlands/frontend/DieFaceChip.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala:65-68,249`
+- Test: `shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GoldenLog.scala:22-23`
+- Test: `frontend/src/test/scala/distantlands/frontend/DieFaceChipSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala:72-83`
+- Test: `frontend/src/test/scala/distantlands/frontend/WalkerDecisionDraftSuite.scala:80-84`
 
 **Interfaces:**
 - Consumes: Task 5's `Die` and `DieFace`; Task 6's `DieFaceChip`.
@@ -1439,7 +1439,7 @@ four face tables collapse onto `DieFace.word` and `DieFace.key`.
 
 - [ ] **Step 1: Write the failing tests**
 
-In `shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala`,
+In `shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`,
 replace the `LogSpan.Dice(...)` in "every span case round-trips" with
 `LogSpan.Dice(DieFace.OneSword, Vector(DieFace.TwoSwordsSkull))` and add:
 
@@ -1478,7 +1478,7 @@ replace the `LogSpan.Dice(...)` in "every span case round-trips" with
         "$.entries[0].spans[0].faces[0]", "unknown die face 'three-moons'")))
 ```
 
-In `src/test/scala/oathdigital/application/gamelog/LogWordsSuite.scala`:
+In `src/test/scala/distantlands/application/gamelog/LogWordsSuite.scala`:
 
 ```scala
   test("a roll is its faces; a mixed or empty pool is no span"):
@@ -1578,7 +1578,7 @@ Replace lines 128-156 (`dice` and the four private functions) with:
 
 - [ ] **Step 6: Keep `GoldenLog`'s rendering byte-identical**
 
-`src/test/scala/oathdigital/application/gamelog/GoldenLog.scala:22-23`:
+`src/test/scala/distantlands/application/gamelog/GoldenLog.scala:22-23`:
 
 ```scala
     case dice: LogSpan.Dice =>
@@ -1789,10 +1789,10 @@ to go: `fetchLog` consumes the result with `result.foreach`, so a `Left` is
 dropped and the pane would silently stop updating forever.
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameClient.scala:204-209`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableSession.scala:77-99`
-- Test: `frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/HttpGameClientSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameClient.scala:204-209`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableSession.scala:77-99`
+- Test: `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 7's codec, which produces `UnknownVariant` for an unknown
@@ -1803,7 +1803,7 @@ dropped and the pane would silently stop updating forever.
 
 - [ ] **Step 1: Write the failing tests**
 
-In `frontend/src/test/scala/oathdigital/frontend/HttpGameClientSuite.scala`:
+In `frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala`:
 
 ```scala
   test("a log page naming a span kind this build lacks is unsupported"):
@@ -1821,7 +1821,7 @@ In `frontend/src/test/scala/oathdigital/frontend/HttpGameClientSuite.scala`:
 (Match `RecordingTransport`'s actual name and constructor in that file; the
 suite already builds one at line 263.)
 
-In `frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala`:
+In `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala`:
 
 ```scala
   /** The log route's half of the stale-bundle path: strict decoding gives

@@ -95,20 +95,20 @@ The spec left these to the plan, or the code forced them. Each task repeats the 
 This task adds the data, the replay and the wire spelling. Nothing emits the op or the events yet.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (beside `PowerSourceRef`, L87-109; `CurrentGameState`, L136-184)
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (beside `RecordCampaignResult`, L523-527)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala` (beside `recordCampaignResult`, L58-59)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala` (`applyNonMoveLeaves`, L178-212)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala` (`applyRecordedReady`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala:87-94` (`evolve` dispatch)
-- Create: `src/main/scala/oathdigital/serialization/FollowUpWire.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (`TurnOperation` union L46-48, `encodeTurnOperation` L212-246, `decodeTurnOperation` L459-499)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala` (discriminator, encoder, decoder; move the note-source and procedure spellings out)
-- Modify: `src/main/scala/oathdigital/serialization/GameEventWire.scala:38-41` (type constants)
-- Create: `src/test/scala/oathdigital/gameplay/walker/FollowUpReplaySuite.scala`
-- Modify: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala` (operations list L233-304)
-- Modify: `src/test/scala/oathdigital/serialization/WalkerDecisionWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (beside `PowerSourceRef`, L87-109; `CurrentGameState`, L136-184)
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (beside `RecordCampaignResult`, L523-527)
+- Modify: `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala` (beside `recordCampaignResult`, L58-59)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala` (`applyNonMoveLeaves`, L178-212)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala` (`applyRecordedReady`)
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala:87-94` (`evolve` dispatch)
+- Create: `src/main/scala/distantlands/serialization/FollowUpWire.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (`TurnOperation` union L46-48, `encodeTurnOperation` L212-246, `decodeTurnOperation` L459-499)
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala` (discriminator, encoder, decoder; move the note-source and procedure spellings out)
+- Modify: `src/main/scala/distantlands/serialization/GameEventWire.scala:38-41` (type constants)
+- Create: `src/test/scala/distantlands/gameplay/walker/FollowUpReplaySuite.scala`
+- Modify: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala` (operations list L233-304)
+- Modify: `src/test/scala/distantlands/serialization/WalkerDecisionWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -124,7 +124,7 @@ This task adds the data, the replay and the wire spelling. Nothing emits the op 
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/FollowUpReplaySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/FollowUpReplaySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -324,7 +324,7 @@ Also extend the `oathdigital.gameplay.walker` import at `OathRules.scala:15`.
 
 - [ ] **Step 5: Add the wire spelling**
 
-Create `src/main/scala/oathdigital/serialization/FollowUpWire.scala`:
+Create `src/main/scala/distantlands/serialization/FollowUpWire.scala`:
 - Declare the trait with the same self-type `WalkerOperationCodec` declares.
 - Move `encodeNoteSource` and `decodeNoteSource` out of `WalkerEventCodec.scala` (L117-124 and L157-165) into it, renamed `encodePowerSource` and `decodePowerSource`, and update their two callers in `WalkerEventCodec`.
 - Move `encodeProcedure` and `decodeProcedure` (`WalkerEventCodec.scala` L243-251) in unchanged, as `protected final`.
@@ -449,7 +449,7 @@ Expected: PASS. If a suite compares `CurrentGameState` field lists, add the two 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala src/main/scala/oathdigital/gameplay/OathRules.scala src/main/scala/oathdigital/serialization/FollowUpWire.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/serialization/WalkerEventCodec.scala src/main/scala/oathdigital/serialization/GameEventWire.scala src/test/scala/oathdigital/gameplay/walker/FollowUpReplaySuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala src/test/scala/oathdigital/serialization/WalkerDecisionWireSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala src/main/scala/distantlands/gameplay/OathRules.scala src/main/scala/distantlands/serialization/FollowUpWire.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/serialization/WalkerEventCodec.scala src/main/scala/distantlands/serialization/GameEventWire.scala src/test/scala/distantlands/gameplay/walker/FollowUpReplaySuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala src/test/scala/distantlands/serialization/WalkerDecisionWireSuite.scala
 git commit -m "feat(walker): add the follow-up queue, its op and its events"
 ```
 
@@ -458,10 +458,10 @@ git commit -m "feat(walker): add the follow-up queue, its op and its events"
 ### Task 2: Starting and skipping in the rules
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameViolation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`startWalker` L61-91; new `startFollowUp`, `skipFollowUp`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathLifecycle.scala:23-38` (`validateAct`)
-- Create: `src/test/scala/oathdigital/gameplay/FollowUpRulesSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameViolation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`startWalker` L61-91; new `startFollowUp`, `skipFollowUp`)
+- Modify: `src/main/scala/distantlands/gameplay/OathLifecycle.scala:23-38` (`validateAct`)
+- Create: `src/test/scala/distantlands/gameplay/FollowUpRulesSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `FollowUp`, `FollowUpStarted`, `FollowUpSkipped` and `CurrentGameState.followUps` and `walkerFollowUp`.
@@ -472,7 +472,7 @@ git commit -m "feat(walker): add the follow-up queue, its op and its events"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/FollowUpRulesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/FollowUpRulesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -708,7 +708,7 @@ Expected: PASS.
 
 - [ ] **Step 7: Audit the Campaign and Travel paths for Act-phase assumptions**
 
-Run: `grep -rn "Phase.Act\|turn.phase" src/main/scala/oathdigital/gameplay/actions/campaign src/main/scala/oathdigital/gameplay/actions/travel src/main/scala/oathdigital/gameplay/powers/campaign src/main/scala/oathdigital/gameplay/powers/travel`
+Run: `grep -rn "Phase.Act\|turn.phase" src/main/scala/distantlands/gameplay/actions/campaign src/main/scala/distantlands/gameplay/actions/travel src/main/scala/distantlands/gameplay/powers/campaign src/main/scala/distantlands/gameplay/powers/travel`
 Expected: no output. The exploration found none outside `OathLifecycle.validateAct`. If any line prints, read it. A phase read that would refuse or change a queued Campaign or Travel in Rest gets the same `walkerFollowUp` exemption, plus a test in this suite.
 
 - [ ] **Step 8: Run the whole server suite and commit**
@@ -717,7 +717,7 @@ Run: `./sbtw test`
 Expected: PASS.
 
 ```bash
-git add src/main/scala/oathdigital/model/GameViolation.scala src/main/scala/oathdigital/gameplay/OathRulesWalker.scala src/main/scala/oathdigital/gameplay/OathLifecycle.scala src/test/scala/oathdigital/gameplay/FollowUpRulesSuite.scala
+git add src/main/scala/distantlands/model/GameViolation.scala src/main/scala/distantlands/gameplay/OathRulesWalker.scala src/main/scala/distantlands/gameplay/OathLifecycle.scala src/test/scala/distantlands/gameplay/FollowUpRulesSuite.scala
 git commit -m "feat(rules): start a queued action, or skip it"
 ```
 
@@ -728,14 +728,14 @@ Also stage `OathRules.scala` if it gained a forwarder.
 ### Task 3: The Supply waiver
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/SupplyStrip.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/NewsFromAfar.scala:29-38`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala` (the `TradeCost` filter)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelPayments.scala` (delete `withoutSupply`), and its callers `WayStation.scala` (2), `AFastSteed.scala`, `ForestPaths.scala`, `Tents.scala`, `SpecialEnvoy.scala`
-- Rename: `src/main/scala/oathdigital/gameplay/powers/economy/SupplyWaiver.scala` to `SuitSupplyWaiver.scala`, and its callers `CupOfPlenty.scala`, `AnimalPlaymates.scala`, `Birdsong.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala` (`selected`)
-- Create: `src/test/scala/oathdigital/gameplay/FollowUpSupplyWaiverSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/SupplyStrip.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/NewsFromAfar.scala:29-38`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala` (the `TradeCost` filter)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelPayments.scala` (delete `withoutSupply`), and its callers `WayStation.scala` (2), `AFastSteed.scala`, `ForestPaths.scala`, `Tents.scala`, `SpecialEnvoy.scala`
+- Rename: `src/main/scala/distantlands/gameplay/powers/economy/SupplyWaiver.scala` to `SuitSupplyWaiver.scala`, and its callers `CupOfPlenty.scala`, `AnimalPlaymates.scala`, `Birdsong.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala` (`selected`)
+- Create: `src/test/scala/distantlands/gameplay/FollowUpSupplyWaiverSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's queued start, and `CurrentGameState.walkerFollowUp`.
@@ -746,7 +746,7 @@ Also stage `OathRules.scala` if it gained a forwarder.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/FollowUpSupplyWaiverSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/FollowUpSupplyWaiverSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -836,7 +836,7 @@ Expected: FAIL. The first test's start is refused for insufficient Supply, and t
 
 - [ ] **Step 3: Extract the strip**
 
-Create `src/main/scala/oathdigital/gameplay/operations/SupplyStrip.scala`:
+Create `src/main/scala/distantlands/gameplay/operations/SupplyStrip.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -874,14 +874,14 @@ Move the other unconditional strips onto it (plan decision 2):
 - `AwaitedReturn.scala`: replace the `operations.filterNot { case SpendSupply … }` in its `TradeCost` Transform with `SupplyStrip(ctx.activePlayer, operations)`, keeping the `++ Vector(sacrifice(…), Note(…))` after it.
 - `TravelPayments.scala`: delete `withoutSupply` and its doc. In each caller, replace `TravelPayments.withoutSupply(operations, X)` with `SupplyStrip(X, operations)`. The argument order flips: the actor comes first.
 
-Rename the economy waiver: `git mv src/main/scala/oathdigital/gameplay/powers/economy/SupplyWaiver.scala src/main/scala/oathdigital/gameplay/powers/economy/SuitSupplyWaiver.scala`, rename the object to `SuitSupplyWaiver`, and change `SupplyWaiver.effects(` to `SuitSupplyWaiver.effects(` in `CupOfPlenty.scala`, `AnimalPlaymates.scala` and `Birdsong.scala`. Check that nothing else names it: `grep -rn "SupplyWaiver\b\|withoutSupply" src docs`.
+Rename the economy waiver: `git mv src/main/scala/distantlands/gameplay/powers/economy/SupplyWaiver.scala src/main/scala/distantlands/gameplay/powers/economy/SuitSupplyWaiver.scala`, rename the object to `SuitSupplyWaiver`, and change `SupplyWaiver.effects(` to `SuitSupplyWaiver.effects(` in `CupOfPlenty.scala`, `AnimalPlaymates.scala` and `Birdsong.scala`. Check that nothing else names it: `grep -rn "SupplyWaiver\b\|withoutSupply" src docs`.
 
 Run: `./sbtw "testOnly oathdigital.gameplay.powers.*"`
 Expected: PASS. The strips behave as before.
 
 - [ ] **Step 4: Add the waiver**
 
-Create `src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala`:
+Create `src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -959,7 +959,7 @@ Expected: PASS. A suite that asserts the exact `powers` of a `WalkerPowers.selec
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/SupplyStrip.scala src/main/scala/oathdigital/gameplay/powers/search/NewsFromAfar.scala src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala src/main/scala/oathdigital/gameplay/powers/economy/SupplyWaiver.scala src/main/scala/oathdigital/gameplay/powers/economy/SuitSupplyWaiver.scala src/main/scala/oathdigital/gameplay/powers/economy/CupOfPlenty.scala src/main/scala/oathdigital/gameplay/powers/economy/AnimalPlaymates.scala src/main/scala/oathdigital/gameplay/powers/economy/Birdsong.scala src/main/scala/oathdigital/gameplay/powers/travel/TravelPayments.scala src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala src/main/scala/oathdigital/gameplay/powers/travel/AFastSteed.scala src/main/scala/oathdigital/gameplay/powers/travel/ForestPaths.scala src/main/scala/oathdigital/gameplay/powers/travel/Tents.scala src/main/scala/oathdigital/gameplay/powers/travel/SpecialEnvoy.scala src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala src/test/scala/oathdigital/gameplay/FollowUpSupplyWaiverSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/SupplyStrip.scala src/main/scala/distantlands/gameplay/powers/search/NewsFromAfar.scala src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala src/main/scala/distantlands/gameplay/powers/economy/SupplyWaiver.scala src/main/scala/distantlands/gameplay/powers/economy/SuitSupplyWaiver.scala src/main/scala/distantlands/gameplay/powers/economy/CupOfPlenty.scala src/main/scala/distantlands/gameplay/powers/economy/AnimalPlaymates.scala src/main/scala/distantlands/gameplay/powers/economy/Birdsong.scala src/main/scala/distantlands/gameplay/powers/travel/TravelPayments.scala src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala src/main/scala/distantlands/gameplay/powers/travel/AFastSteed.scala src/main/scala/distantlands/gameplay/powers/travel/ForestPaths.scala src/main/scala/distantlands/gameplay/powers/travel/Tents.scala src/main/scala/distantlands/gameplay/powers/travel/SpecialEnvoy.scala src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala src/test/scala/distantlands/gameplay/FollowUpSupplyWaiverSuite.scala
 git commit -m "feat(walker): a queued action spends no Supply"
 ```
 
@@ -970,17 +970,17 @@ Also stage any suite Step 6 updated.
 ### Task 4: The Skip command and the service gate
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala:9-11`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntentCodec.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntentDecoders.scala`
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala` (`GameCommand`, `issuer`)
-- Modify: `src/main/scala/oathdigital/application/Authorization.scala:54-58`
-- Modify: `src/main/scala/oathdigital/application/GameIntentMapper.scala:16-18`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala` (`applyCommand` L429-441, `applyUnblockedCommand` L443-522)
-- Modify: `server/src/main/scala/oathdigital/server/GameRoutes.scala:28-39` (`CommandRejectionMessage.text`). Find the path with `grep -rn "object CommandRejectionMessage" server`.
-- Modify: `src/test/scala/oathdigital/testkit/SituationDriver.scala` (`Rules.transition`)
-- Modify: `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala:9`
-- Create: `src/test/scala/oathdigital/application/FollowUpServiceSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala:9-11`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntentCodec.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntentDecoders.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala` (`GameCommand`, `issuer`)
+- Modify: `src/main/scala/distantlands/application/Authorization.scala:54-58`
+- Modify: `src/main/scala/distantlands/application/GameIntentMapper.scala:16-18`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala` (`applyCommand` L429-441, `applyUnblockedCommand` L443-522)
+- Modify: `server/src/main/scala/distantlands/server/GameRoutes.scala:28-39` (`CommandRejectionMessage.text`). Find the path with `grep -rn "object CommandRejectionMessage" server`.
+- Modify: `src/test/scala/distantlands/testkit/SituationDriver.scala` (`Rules.transition`)
+- Modify: `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala:9`
+- Create: `src/test/scala/distantlands/application/FollowUpServiceSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's `skipFollowUp` and `FollowUpPending`.
@@ -993,7 +993,7 @@ Also stage any suite Step 6 updated.
 
 In `CommandProtocolSuite`, add `GameIntent.SkipFollowUp` to the round-trip list at L9, beside `FinishRest`.
 
-Create `src/test/scala/oathdigital/application/FollowUpServiceSuite.scala`:
+Create `src/test/scala/distantlands/application/FollowUpServiceSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -1121,8 +1121,8 @@ Run: `./sbtw test frontend/test`
 Expected: PASS. A frontend match over `GameIntent` that the compiler reports as non-exhaustive gets the new case, mirroring `FinishRest`.
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/CommandIntents.scala shared/src/main/scala/oathdigital/protocol/CommandIntentCodec.scala shared/src/main/scala/oathdigital/protocol/CommandIntentDecoders.scala src/main/scala/oathdigital/application/GameCommands.scala src/main/scala/oathdigital/application/Authorization.scala src/main/scala/oathdigital/application/GameIntentMapper.scala src/main/scala/oathdigital/application/GameApplicationService.scala src/test/scala/oathdigital/testkit/SituationDriver.scala shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala src/test/scala/oathdigital/application/FollowUpServiceSuite.scala
-git add server/src/main/scala/oathdigital/server/GameRoutes.scala
+git add shared/src/main/scala/distantlands/protocol/CommandIntents.scala shared/src/main/scala/distantlands/protocol/CommandIntentCodec.scala shared/src/main/scala/distantlands/protocol/CommandIntentDecoders.scala src/main/scala/distantlands/application/GameCommands.scala src/main/scala/distantlands/application/Authorization.scala src/main/scala/distantlands/application/GameIntentMapper.scala src/main/scala/distantlands/application/GameApplicationService.scala src/test/scala/distantlands/testkit/SituationDriver.scala shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala src/test/scala/distantlands/application/FollowUpServiceSuite.scala
+git add server/src/main/scala/distantlands/server/GameRoutes.scala
 git commit -m "feat(application): skip a queued action, and refuse anything else first"
 ```
 
@@ -1133,16 +1133,16 @@ Use the actual path of `CommandRejectionMessage` in the second `git add`.
 ### Task 5: Projection
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala` (`starts`, L80-91)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala` (`build`, `startable`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala` (`Fields` L12-20, encode L29-79, decode L81-145)
-- Modify: `src/main/scala/oathdigital/application/ScopedProjectionContext.scala` (`LegalProjection`)
-- Modify: `src/main/scala/oathdigital/application/LegalActionProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/PendingProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala` (L69-72, L93-94, L107)
-- Modify: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- Create: `src/test/scala/oathdigital/application/FollowUpProjectionSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala` (`starts`, L80-91)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala` (`build`, `startable`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala` (`Fields` L12-20, encode L29-79, decode L81-145)
+- Modify: `src/main/scala/distantlands/application/ScopedProjectionContext.scala` (`LegalProjection`)
+- Modify: `src/main/scala/distantlands/application/LegalActionProjector.scala`
+- Modify: `src/main/scala/distantlands/application/PendingProjector.scala`
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala` (L69-72, L93-94, L107)
+- Modify: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- Create: `src/test/scala/distantlands/application/FollowUpProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1-3.
@@ -1165,7 +1165,7 @@ Use the actual path of `CommandRejectionMessage` in the second `git add`.
 
 In `ProjectionProtocolSuite`, add a round trip of a projection whose `followUp` is `Some(FollowUpProjection("p1", "campaign", "Campaign", "Knights Errant", startable = false, reason = Some("No site to conquer and no enemy pawn to raid"), queuedAfter = Vector("Campaign")))`. Also add one with `followUp = None` that encodes no `followUp` key. Copy the suite's `undo` round-trip tests.
 
-Create `src/test/scala/oathdigital/application/FollowUpProjectionSuite.scala`:
+Create `src/test/scala/distantlands/application/FollowUpProjectionSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -1465,7 +1465,7 @@ Run: `./sbtw test frontend/test`
 Expected: PASS.
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala src/main/scala/oathdigital/application/ScopedProjectionContext.scala src/main/scala/oathdigital/application/LegalActionProjector.scala src/main/scala/oathdigital/application/PendingProjector.scala src/main/scala/oathdigital/application/GameProjection.scala shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala src/test/scala/oathdigital/application/FollowUpProjectionSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala src/main/scala/distantlands/application/ScopedProjectionContext.scala src/main/scala/distantlands/application/LegalActionProjector.scala src/main/scala/distantlands/application/PendingProjector.scala src/main/scala/distantlands/application/GameProjection.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala src/test/scala/distantlands/application/FollowUpProjectionSuite.scala
 git commit -m "feat(projection): show a queued action, whether it can start, and why"
 ```
 
@@ -1474,11 +1474,11 @@ git commit -m "feat(projection): show a queued action, whether it can start, and
 ### Task 6: Game Log
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` (`formatLive` L82-91, `eventLines` L124-161)
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala` (`start` L21-32, `name` L73-87)
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:288-298`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogFollowUpSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` (`formatLive` L82-91, `eventLines` L124-161)
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala` (`start` L21-32, `name` L73-87)
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:288-298`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogFollowUpSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's events and Task 2's queued start.
@@ -1510,7 +1510,7 @@ In `LogScripts.scala`, after `raid`, add a script. It is `raid`'s table plus a C
 
 Extract `raid`'s `act.withAnswers { ... }` partial function into `private def raidAnswers(act: Situation): Situation`, and use it in both scripts, so the two answer sets cannot drift.
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogFollowUpSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogFollowUpSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -1626,7 +1626,7 @@ Expected: PASS, every Game Log suite included, `GameLogPowerLinesSuite`'s prefix
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala src/main/scala/oathdigital/application/gamelog/StartLines.scala src/main/scala/oathdigital/application/gamelog/ActionLines.scala src/test/scala/oathdigital/application/gamelog/LogScripts.scala src/test/scala/oathdigital/application/gamelog/GameLogFollowUpSuite.scala
+git add src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala src/main/scala/distantlands/application/gamelog/StartLines.scala src/main/scala/distantlands/application/gamelog/ActionLines.scala src/test/scala/distantlands/application/gamelog/LogScripts.scala src/test/scala/distantlands/application/gamelog/GameLogFollowUpSuite.scala
 git commit -m "feat(gamelog): credit a queued action's source and log a Skip"
 ```
 
@@ -1635,10 +1635,10 @@ git commit -m "feat(gamelog): credit a queued action's source and log a Skip"
 ### Task 7: The follow-up panel
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/FollowUpControls.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala` (`status` L13-48, `actionsPanel`)
-- Create: `frontend/src/test/scala/oathdigital/frontend/FollowUpControlsSuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ViewerPresentationSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/FollowUpControls.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala` (`status` L13-48, `actionsPanel`)
+- Create: `frontend/src/test/scala/distantlands/frontend/FollowUpControlsSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ViewerPresentationSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 4's `GameIntent.SkipFollowUp` and Task 5's `GameProjection.followUp` and controls.
@@ -1646,7 +1646,7 @@ git commit -m "feat(gamelog): credit a queued action's source and log a Skip"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `frontend/src/test/scala/oathdigital/frontend/FollowUpControlsSuite.scala`. It builds the projection with `ServerModeFixtures.twoSeatProjection`, whose active player is `red-exile`.
+Create `frontend/src/test/scala/distantlands/frontend/FollowUpControlsSuite.scala`. It builds the projection with `ServerModeFixtures.twoSeatProjection`, whose active player is `red-exile`.
 
 ```scala
 package oathdigital.frontend
@@ -1732,7 +1732,7 @@ Expected: compilation fails, because `FollowUpControls` is not found.
 
 - [ ] **Step 3: Draw the panel**
 
-Create `frontend/src/main/scala/oathdigital/frontend/FollowUpControls.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/FollowUpControls.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -1805,7 +1805,7 @@ Run: `./sbtw frontend/test`
 Expected: PASS.
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/FollowUpControls.scala frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala frontend/src/test/scala/oathdigital/frontend/FollowUpControlsSuite.scala frontend/src/test/scala/oathdigital/frontend/ViewerPresentationSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/FollowUpControls.scala frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala frontend/src/test/scala/distantlands/frontend/FollowUpControlsSuite.scala frontend/src/test/scala/distantlands/frontend/ViewerPresentationSuite.scala
 git commit -m "feat(frontend): draw the queued action's start and Skip"
 ```
 
@@ -1814,11 +1814,11 @@ git commit -m "feat(frontend): draw the queued action's start and Skip"
 ### Task 8: Knights Errant on the queue
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/KnightsErrant.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:67`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala:221-232`
-- Modify: `src/test/scala/oathdigital/gameplay/walker/WalkerProcedureRegistrySuite.scala:176-191`
-- Rewrite: `src/test/scala/oathdigital/gameplay/powers/economy/KnightsErrantSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/KnightsErrant.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:67`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala:221-232`
+- Modify: `src/test/scala/distantlands/gameplay/walker/WalkerProcedureRegistrySuite.scala:176-191`
+- Rewrite: `src/test/scala/distantlands/gameplay/powers/economy/KnightsErrantSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1-5.
@@ -1946,7 +1946,7 @@ Expected: PASS. Look for two things:
 - A suite that names `KnightsErrant.decisionId` or `KnightsErrant.campaigns` must lose that reference.
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/KnightsErrant.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/test/scala/oathdigital/gameplay/powers/economy/KnightsErrantSuite.scala src/test/scala/oathdigital/gameplay/walker/WalkerProcedureRegistrySuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/KnightsErrant.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/test/scala/distantlands/gameplay/powers/economy/KnightsErrantSuite.scala src/test/scala/distantlands/gameplay/walker/WalkerProcedureRegistrySuite.scala
 git commit -m "feat(powers): Knights Errant queues its Campaign"
 ```
 
@@ -1957,17 +1957,17 @@ Also stage `WalkerPowerCatalog.scala` and any suite Step 5 touched.
 ### Task 9: Option warnings and Hunting Party
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala` (beside `Unavailable`, L268)
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` (`ContributingPower`)
-- Create: `src/main/scala/oathdigital/gameplay/walker/OptionWarnings.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (`playable` L189-197, `optionProjection` L340-344)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala:138-151` (`withholds`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/HuntingParty.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala:46-51` (delete `HuntingPartyCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala:107` (and its import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/search/HuntingPartySuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala` (beside `Unavailable`, L268)
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` (`ContributingPower`)
+- Create: `src/main/scala/distantlands/gameplay/walker/OptionWarnings.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (`playable` L189-197, `optionProjection` L340-344)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala:138-151` (`withholds`)
+- Create: `src/main/scala/distantlands/gameplay/powers/search/HuntingParty.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala:46-51` (delete `HuntingPartyCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala:107` (and its import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/search/HuntingPartySuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1-5.
@@ -1980,7 +1980,7 @@ Also stage `WalkerPowerCatalog.scala` and any suite Step 5 touched.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/HuntingPartySuite.scala`. It drives the whole Search through a `Situation`, so the default answers settle the card choice and the placement after the source:
+Create `src/test/scala/distantlands/gameplay/powers/search/HuntingPartySuite.scala`. It drives the whole Search through a `Situation`, so the default answers settle the card choice and the placement after the source:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -2099,7 +2099,7 @@ In `ContributingPower`, add:
 
 Import `Decide` and `OptionReason` from `oathdigital.model`.
 
-Create `src/main/scala/oathdigital/gameplay/walker/OptionWarnings.scala`:
+Create `src/main/scala/distantlands/gameplay/walker/OptionWarnings.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -2172,7 +2172,7 @@ Confirm that the panel drawing the Search source decision calls `withholds` for 
 
 - [ ] **Step 4: Add Hunting Party**
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/HuntingParty.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/HuntingParty.scala`:
 - Move `HuntingPartyCard` out of `HoldingOrderDenizens.scala` (L46-51) into it, unchanged.
 - Point `NewFoundations.scala`'s import at the new package.
 
@@ -2245,7 +2245,7 @@ Run: `./sbtw test frontend/test`
 Expected: PASS. Some catalog suites count implemented cards or list the holding cards (`PowerKindsCatalogSuite`, an implementation-status or holding suite). Each gains Hunting Party as implemented, or loses it from holding.
 
 ```bash
-git add src/main/scala/oathdigital/model/Decisions.scala src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala src/main/scala/oathdigital/gameplay/walker/OptionWarnings.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala src/main/scala/oathdigital/gameplay/powers/search/HuntingParty.scala src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/search/HuntingPartySuite.scala frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala
+git add src/main/scala/distantlands/model/Decisions.scala src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala src/main/scala/distantlands/gameplay/walker/OptionWarnings.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala src/main/scala/distantlands/gameplay/powers/search/HuntingParty.scala src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/powers/search/HuntingPartySuite.scala frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala
 git commit -m "feat(powers): Hunting Party queues a Campaign after a world-deck Search"
 ```
 
@@ -2256,15 +2256,15 @@ Also stage every file the compiler's exhaustiveness fixes and Step 6 touched.
 ### Task 10: Second Wind
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/SecondWind.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala:9-14` (delete `SecondWindCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala:148` (and its import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala:26-27` (`walkerActions`)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/CampaignControlsSuite.scala:23-25`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala:166` (`commit` gains `modifiers`)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/SearchFixture.scala:40` and `CallForHelpSuite.scala:61`, if they name the moved card object
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/SecondWindSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/SecondWind.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala:9-14` (delete `SecondWindCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala:148` (and its import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala:26-27` (`walkerActions`)
+- Modify: `frontend/src/test/scala/distantlands/frontend/CampaignControlsSuite.scala:23-25`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala:166` (`commit` gains `modifiers`)
+- Modify: `src/test/scala/distantlands/gameplay/powers/SearchFixture.scala:40` and `CallForHelpSuite.scala:61`, if they name the moved card object
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/SecondWindSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1-5.
@@ -2272,9 +2272,9 @@ Also stage every file the compiler's exhaustiveness fixes and Step 6 touched.
 
 - [ ] **Step 1: Write the failing tests**
 
-Give `PlanDriver.commit` (`src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala:166`) a trailing `modifiers: Vector[PowerId] = Vector.empty` parameter, and pass it to its `startWalker` call. Existing callers are unchanged.
+Give `PlanDriver.commit` (`src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala:166`) a trailing `modifiers: Vector[PowerId] = Vector.empty` parameter, and pass it to its `startWalker` call. Existing callers are unchanged.
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/SecondWindSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/SecondWindSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -2371,7 +2371,7 @@ Expected: compilation fails, because `SecondWind` is not found, and the frontend
 
 - [ ] **Step 3: Add Second Wind**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/SecondWind.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/SecondWind.scala`:
 - Move `SecondWindCard` out of `HoldingDiscordDenizens.scala` (L9-14) into it, unchanged.
 - Point `NewFoundations.scala`'s import, and any test that names the card object, at the new package.
 
@@ -2441,7 +2441,7 @@ Run: `./sbtw test frontend/test`
 Expected: PASS. Catalog suites gain Second Wind as implemented, as in Task 9.
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala src/main/scala/oathdigital/gameplay/powers/campaign/SecondWind.scala src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala frontend/src/test/scala/oathdigital/frontend/CampaignControlsSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/SecondWindSuite.scala
+git add src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala src/main/scala/distantlands/gameplay/powers/campaign/SecondWind.scala src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala frontend/src/test/scala/distantlands/frontend/CampaignControlsSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/SecondWindSuite.scala
 git commit -m "feat(powers): Second Wind queues a Travel and a Campaign after a win"
 ```
 

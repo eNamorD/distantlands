@@ -35,24 +35,24 @@
 
 | File | Change |
 |---|---|
-| `src/main/scala/oathdigital/server/ProductionFrontendRoutes.scala` | serve `index.html` at `/new-game` |
-| `src/main/scala/oathdigital/server/DevelopmentRoutes.scala` | serve `frontend/index.html` at `/new-game` |
-| `frontend/src/main/scala/oathdigital/frontend/ChronicleStorage.scala` | new: `ChronicleStorage`, `MemoryChronicleStorage`, `ChronicleStorage.browser` |
-| `frontend/src/main/scala/oathdigital/frontend/ChronicleShelf.scala` | new: `SavedChronicle`, `ShelfRow`, `AutoSave`, `ChronicleShelf` |
-| `frontend/src/main/scala/oathdigital/frontend/ChronicleText.scala` | new: summary line, row details, lineage names |
-| `frontend/src/main/scala/oathdigital/frontend/ChronicleClient.scala` | new: convert and rename |
-| `frontend/src/main/scala/oathdigital/frontend/ChronicleDevices.scala` | new: `ChronicleFiles`, `PageHistory`, `ChronicleDevices` |
-| `frontend/src/main/scala/oathdigital/frontend/ChronicleTransfer.scala` | new: import section, export controls |
-| `frontend/src/main/scala/oathdigital/frontend/ChroniclePage.scala` | new: the `/` page |
-| `frontend/src/main/scala/oathdigital/frontend/ChroniclePages.scala` | new: `HostChronicle`, routing between `/` and `/new-game` |
-| `frontend/src/main/scala/oathdigital/frontend/TrustedHostUi.scala` | name field or loaded name, Back, `New`/`Saved`, save on success |
-| `frontend/src/main/scala/oathdigital/frontend/Main.scala` | route `/` and `/new-game` to `ChroniclePages`; pass devices |
-| `frontend/src/main/scala/oathdigital/frontend/TableChronicle.scala` | new: the table's Chronicle section, automatic save, the save dialog |
-| `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala` | append the Chronicle section |
-| `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala` | build `TableChronicle` |
-| `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala` | `textField` helper |
+| `src/main/scala/distantlands/server/ProductionFrontendRoutes.scala` | serve `index.html` at `/new-game` |
+| `src/main/scala/distantlands/server/DevelopmentRoutes.scala` | serve `frontend/index.html` at `/new-game` |
+| `frontend/src/main/scala/distantlands/frontend/ChronicleStorage.scala` | new: `ChronicleStorage`, `MemoryChronicleStorage`, `ChronicleStorage.browser` |
+| `frontend/src/main/scala/distantlands/frontend/ChronicleShelf.scala` | new: `SavedChronicle`, `ShelfRow`, `AutoSave`, `ChronicleShelf` |
+| `frontend/src/main/scala/distantlands/frontend/ChronicleText.scala` | new: summary line, row details, lineage names |
+| `frontend/src/main/scala/distantlands/frontend/ChronicleClient.scala` | new: convert and rename |
+| `frontend/src/main/scala/distantlands/frontend/ChronicleDevices.scala` | new: `ChronicleFiles`, `PageHistory`, `ChronicleDevices` |
+| `frontend/src/main/scala/distantlands/frontend/ChronicleTransfer.scala` | new: import section, export controls |
+| `frontend/src/main/scala/distantlands/frontend/ChroniclePage.scala` | new: the `/` page |
+| `frontend/src/main/scala/distantlands/frontend/ChroniclePages.scala` | new: `HostChronicle`, routing between `/` and `/new-game` |
+| `frontend/src/main/scala/distantlands/frontend/TrustedHostUi.scala` | name field or loaded name, Back, `New`/`Saved`, save on success |
+| `frontend/src/main/scala/distantlands/frontend/Main.scala` | route `/` and `/new-game` to `ChroniclePages`; pass devices |
+| `frontend/src/main/scala/distantlands/frontend/TableChronicle.scala` | new: the table's Chronicle section, automatic save, the save dialog |
+| `frontend/src/main/scala/distantlands/frontend/TableScreen.scala` | append the Chronicle section |
+| `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` | build `TableChronicle` |
+| `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala` | `textField` helper |
 | `frontend/styles.css` | Chronicle page, list, import, export, table section, dialog |
-| `frontend/src/test/scala/oathdigital/frontend/…` | new suites and fakes (listed per task); `ServerModeHostFormSuite` and `TestBrowser` updated |
+| `frontend/src/test/scala/distantlands/frontend/…` | new suites and fakes (listed per task); `ServerModeHostFormSuite` and `TestBrowser` updated |
 | `docs/…` | spec status, ROADMAP, traceability |
 
 ---
@@ -60,9 +60,9 @@
 ### Task 1: Serve the page at `/new-game`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/server/ProductionFrontendRoutes.scala`
-- Modify: `src/main/scala/oathdigital/server/DevelopmentRoutes.scala`
-- Test: `src/test/scala/oathdigital/server/ProductionFrontendRoutesSuite.scala`, `src/test/scala/oathdigital/server/GameRoutesSuite.scala`
+- Modify: `src/main/scala/distantlands/server/ProductionFrontendRoutes.scala`
+- Modify: `src/main/scala/distantlands/server/DevelopmentRoutes.scala`
+- Test: `src/test/scala/distantlands/server/ProductionFrontendRoutesSuite.scala`, `src/test/scala/distantlands/server/GameRoutesSuite.scala`
 
 **Interfaces:**
 - Produces: `GET /new-game` answers the frontend shell in both modes. A reload on the player selection page therefore loads the app, which redirects to `/` (Task 6).
@@ -121,7 +121,7 @@ Run the same command. Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/ProductionFrontendRoutes.scala src/main/scala/oathdigital/server/DevelopmentRoutes.scala src/test/scala/oathdigital/server/ProductionFrontendRoutesSuite.scala src/test/scala/oathdigital/server/GameRoutesSuite.scala
+git add src/main/scala/distantlands/server/ProductionFrontendRoutes.scala src/main/scala/distantlands/server/DevelopmentRoutes.scala src/test/scala/distantlands/server/ProductionFrontendRoutesSuite.scala src/test/scala/distantlands/server/GameRoutesSuite.scala
 git commit -m "feat(chronicle): serve the app at /new-game
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -132,10 +132,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: Chronicle storage and the shelf
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/ChronicleStorage.scala`
-- Create: `frontend/src/main/scala/oathdigital/frontend/ChronicleShelf.scala`
-- Create: `frontend/src/main/scala/oathdigital/frontend/ChronicleText.scala`
-- Test (new): `ChronicleStorageContract.scala`, `MemoryChronicleStorageSuite.scala`, `BrowserChronicleStorageSuite.scala`, `ChronicleShelfSuite.scala`, `ChronicleTextSuite.scala`, `ChronicleFixtures.scala`, all in `frontend/src/test/scala/oathdigital/frontend/`
+- Create: `frontend/src/main/scala/distantlands/frontend/ChronicleStorage.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/ChronicleShelf.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/ChronicleText.scala`
+- Test (new): `ChronicleStorageContract.scala`, `MemoryChronicleStorageSuite.scala`, `BrowserChronicleStorageSuite.scala`, `ChronicleShelfSuite.scala`, `ChronicleTextSuite.scala`, `ChronicleFixtures.scala`, all in `frontend/src/test/scala/distantlands/frontend/`
 
 **Interfaces:**
 - Consumes: `oathdigital.protocol.{ChronicleEntry, ChronicleSummary, ChronicleScore, ChronicleEntryCodec}` (shared).
@@ -571,7 +571,7 @@ Run the Step 3 command. Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ChronicleStorage.scala frontend/src/main/scala/oathdigital/frontend/ChronicleShelf.scala frontend/src/main/scala/oathdigital/frontend/ChronicleText.scala frontend/src/test/scala/oathdigital/frontend/ChronicleStorageContract.scala frontend/src/test/scala/oathdigital/frontend/MemoryChronicleStorageSuite.scala frontend/src/test/scala/oathdigital/frontend/BrowserChronicleStorageSuite.scala frontend/src/test/scala/oathdigital/frontend/ChronicleShelfSuite.scala frontend/src/test/scala/oathdigital/frontend/ChronicleTextSuite.scala frontend/src/test/scala/oathdigital/frontend/ChronicleFixtures.scala
+git add frontend/src/main/scala/distantlands/frontend/ChronicleStorage.scala frontend/src/main/scala/distantlands/frontend/ChronicleShelf.scala frontend/src/main/scala/distantlands/frontend/ChronicleText.scala frontend/src/test/scala/distantlands/frontend/ChronicleStorageContract.scala frontend/src/test/scala/distantlands/frontend/MemoryChronicleStorageSuite.scala frontend/src/test/scala/distantlands/frontend/BrowserChronicleStorageSuite.scala frontend/src/test/scala/distantlands/frontend/ChronicleShelfSuite.scala frontend/src/test/scala/distantlands/frontend/ChronicleTextSuite.scala frontend/src/test/scala/distantlands/frontend/ChronicleFixtures.scala
 git commit -m "feat(chronicle): keep Chronicles in browser storage
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -582,10 +582,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: The convert client and the browser devices
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/ChronicleClient.scala`
-- Create: `frontend/src/main/scala/oathdigital/frontend/ChronicleDevices.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala` (add `textField`)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ChronicleFixtures.scala` (add `converted`, `convertingTransport`, `devices`)
+- Create: `frontend/src/main/scala/distantlands/frontend/ChronicleClient.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/ChronicleDevices.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala` (add `textField`)
+- Modify: `frontend/src/test/scala/distantlands/frontend/ChronicleFixtures.scala` (add `converted`, `convertingTransport`, `devices`)
 - Test (new): `ChronicleClientSuite.scala`, `ChronicleFilesSuite.scala`, `FakeChronicleFiles.scala`, `FakePageHistory.scala`
 
 **Interfaces:**
@@ -905,7 +905,7 @@ Run the Step 3 command. Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ChronicleClient.scala frontend/src/main/scala/oathdigital/frontend/ChronicleDevices.scala frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala frontend/src/test/scala/oathdigital/frontend/ChronicleClientSuite.scala frontend/src/test/scala/oathdigital/frontend/ChronicleFilesSuite.scala frontend/src/test/scala/oathdigital/frontend/FakeChronicleFiles.scala frontend/src/test/scala/oathdigital/frontend/FakePageHistory.scala frontend/src/test/scala/oathdigital/frontend/ChronicleFixtures.scala
+git add frontend/src/main/scala/distantlands/frontend/ChronicleClient.scala frontend/src/main/scala/distantlands/frontend/ChronicleDevices.scala frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala frontend/src/test/scala/distantlands/frontend/ChronicleClientSuite.scala frontend/src/test/scala/distantlands/frontend/ChronicleFilesSuite.scala frontend/src/test/scala/distantlands/frontend/FakeChronicleFiles.scala frontend/src/test/scala/distantlands/frontend/FakePageHistory.scala frontend/src/test/scala/distantlands/frontend/ChronicleFixtures.scala
 git commit -m "feat(chronicle): convert, rename and the browser's file seams
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -916,8 +916,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 4: Import and export controls
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/ChronicleTransfer.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/TestBrowser.scala` (add `change`)
+- Create: `frontend/src/main/scala/distantlands/frontend/ChronicleTransfer.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/TestBrowser.scala` (add `change`)
 - Modify: `frontend/styles.css`
 - Test (new): `ChronicleTransferSuite.scala`
 
@@ -1189,7 +1189,7 @@ Run the Step 3 command. Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ChronicleTransfer.scala frontend/src/test/scala/oathdigital/frontend/ChronicleTransferSuite.scala frontend/src/test/scala/oathdigital/frontend/TestBrowser.scala frontend/styles.css
+git add frontend/src/main/scala/distantlands/frontend/ChronicleTransfer.scala frontend/src/test/scala/distantlands/frontend/ChronicleTransferSuite.scala frontend/src/test/scala/distantlands/frontend/TestBrowser.scala frontend/styles.css
 git commit -m "feat(chronicle): import and export a Chronicle as JSON or TTS
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1200,7 +1200,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 5: The Chronicle page
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/ChroniclePage.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/ChroniclePage.scala`
 - Modify: `frontend/styles.css`
 - Test (new): `ChroniclePageSuite.scala`
 
@@ -1439,7 +1439,7 @@ Run the Step 2 command. Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ChroniclePage.scala frontend/src/test/scala/oathdigital/frontend/ChroniclePageSuite.scala frontend/styles.css
+git add frontend/src/main/scala/distantlands/frontend/ChroniclePage.scala frontend/src/test/scala/distantlands/frontend/ChroniclePageSuite.scala frontend/styles.css
 git commit -m "feat(chronicle): the Chronicle page lists, loads, renames and deletes
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1450,10 +1450,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 6: Player selection and routing
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/ChroniclePages.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TrustedHostUi.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/Main.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ServerModeHostFormSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/ChroniclePages.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TrustedHostUi.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/Main.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ServerModeHostFormSuite.scala`
 - Test (new): `ChroniclePagesSuite.scala`
 
 **Interfaces:**
@@ -1677,7 +1677,7 @@ Expected: PASS, including every existing `ServerModeSessionSuite` test. Those op
 - [ ] **Step 9: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ChroniclePages.scala frontend/src/main/scala/oathdigital/frontend/TrustedHostUi.scala frontend/src/main/scala/oathdigital/frontend/Main.scala frontend/src/test/scala/oathdigital/frontend/ChroniclePagesSuite.scala frontend/src/test/scala/oathdigital/frontend/ServerModeHostFormSuite.scala frontend/src/test/scala/oathdigital/frontend/ChronicleFixtures.scala frontend/styles.css
+git add frontend/src/main/scala/distantlands/frontend/ChroniclePages.scala frontend/src/main/scala/distantlands/frontend/TrustedHostUi.scala frontend/src/main/scala/distantlands/frontend/Main.scala frontend/src/test/scala/distantlands/frontend/ChroniclePagesSuite.scala frontend/src/test/scala/distantlands/frontend/ServerModeHostFormSuite.scala frontend/src/test/scala/distantlands/frontend/ChronicleFixtures.scala frontend/styles.css
 git commit -m "feat(chronicle): start a game from a new or loaded Chronicle
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1688,10 +1688,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 7: Automatic save and export at the table
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/TableChronicle.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/Main.scala` (pass `transport` and `devices`)
+- Create: `frontend/src/main/scala/distantlands/frontend/TableChronicle.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/Main.scala` (pass `transport` and `devices`)
 - Modify: `frontend/styles.css`
 - Test (new): `TableChronicleSuite.scala`. Modify: `ServerModeSessionSuite.scala` (one wiring test)
 
@@ -1895,7 +1895,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/TableChronicle.scala frontend/src/main/scala/oathdigital/frontend/TableScreen.scala frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala frontend/src/main/scala/oathdigital/frontend/Main.scala frontend/src/test/scala/oathdigital/frontend/TableChronicleSuite.scala frontend/src/test/scala/oathdigital/frontend/ServerModeSessionSuite.scala frontend/styles.css
+git add frontend/src/main/scala/distantlands/frontend/TableChronicle.scala frontend/src/main/scala/distantlands/frontend/TableScreen.scala frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala frontend/src/main/scala/distantlands/frontend/Main.scala frontend/src/test/scala/distantlands/frontend/TableChronicleSuite.scala frontend/src/test/scala/distantlands/frontend/ServerModeSessionSuite.scala frontend/styles.css
 git commit -m "feat(chronicle): save the evolved Chronicle at the table and export it
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1934,7 +1934,7 @@ python3 scripts/check-markdown-links.py
 Expected: all pass, and statement coverage is at least 92%. Check that no file is over 800 lines:
 
 ```bash
-wc -l frontend/src/main/scala/oathdigital/frontend/*.scala | sort -n | tail -5
+wc -l frontend/src/main/scala/distantlands/frontend/*.scala | sort -n | tail -5
 ```
 
 - [ ] **Step 3: Record the slice as landed**

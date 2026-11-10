@@ -58,15 +58,15 @@
 
 | File | Responsibility |
 |---|---|
-| Create `src/main/scala/oathdigital/gameplay/powers/action/Oracle.scala` | The Oracle power: take the first Vision, note it, embed its placement. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala` | `powers` becomes `forCatalog(catalog)`, adding Oracle. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala` | Calls `SelfActionPowers.forCatalog(catalog)`. |
-| Create `src/test/scala/oathdigital/gameplay/powers/action/OracleSuite.scala` | Walker-driven suite: draw, placements, restriction, empty deck, cost, replay, line. |
-| Modify `src/main/scala/oathdigital/application/gamelog/ActionLines.scala` | A `UsePower` run posts the placement line after its own lines. |
-| Modify `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` | An `oracle` script, added to `named`. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/Oracle.scala` | The Oracle power: take the first Vision, note it, embed its placement. |
+| Modify `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala` | `powers` becomes `forCatalog(catalog)`, adding Oracle. |
+| Modify `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala` | Calls `SelfActionPowers.forCatalog(catalog)`. |
+| Create `src/test/scala/distantlands/gameplay/powers/action/OracleSuite.scala` | Walker-driven suite: draw, placements, restriction, empty deck, cost, replay, line. |
+| Modify `src/main/scala/distantlands/application/gamelog/ActionLines.scala` | A `UsePower` run posts the placement line after its own lines. |
+| Modify `src/test/scala/distantlands/application/gamelog/LogScripts.scala` | An `oracle` script, added to `named`. |
 | Create `src/test/resources/gamelog/oracle.actor.log`, `oracle.other.log` | The script's golden logs. |
-| Modify `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala` | Oracle's line, the placement line after it, and the Vision's back for another seat. |
-| Modify `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala` | Pins `denizen.oracle`. |
+| Modify `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala` | Oracle's line, the placement line after it, and the Vision's back for another seat. |
+| Modify `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala` | Pins `denizen.oracle`. |
 | Modify `docs/ROADMAP.md` | Records slice 3 done. |
 
 ---
@@ -74,10 +74,10 @@
 ### Task 1: Oracle draws a Vision and plays it as if searched
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Oracle.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala:22`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/OracleSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Oracle.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala:22`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/OracleSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction(idValue, cost)`, `CardPlayProcedure.unchecked`, `CardPlayProcedure.placedCard`, `CardPlayProcedure.placementDecisionId`, `CatalogCards.denizen(catalog, power)`, `PowerSourceRef.of`, `NoteKey`, `NoteArg.Player`, `NoteArg.Card`.
@@ -88,7 +88,7 @@
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/OracleSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/OracleSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -246,7 +246,7 @@ Expected: compile failure, `Not found: Oracle`.
 
 - [ ] **Step 3: Write Oracle**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/Oracle.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/Oracle.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -320,7 +320,7 @@ If `-Werror` flags `catalog` as a private field clash with the inherited name or
 
 - [ ] **Step 4: Register it**
 
-Replace `src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala` with:
+Replace `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -340,7 +340,7 @@ object SelfActionPowers:
       Oracle.forCatalog(catalog).toVector
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`, replace `SelfActionPowers.powers ++` with `SelfActionPowers.forCatalog(catalog) ++`.
+In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`, replace `SelfActionPowers.powers ++` with `SelfActionPowers.forCatalog(catalog) ++`.
 
 Then check nothing else reads the old name:
 
@@ -362,10 +362,10 @@ Expected: PASS. `PowerNoteCatalogSuite` accepts both templates: `drew` starts wi
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/Oracle.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/OracleSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/Oracle.scala \
+  src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala \
+  src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/action/OracleSuite.scala
 git commit -m "feat(powers): Oracle draws the first Vision and plays it as if searched"
 ```
 
@@ -374,10 +374,10 @@ git commit -m "feat(powers): Oracle draws the first Vision and plays it as if se
 ### Task 2: A power run's placement line
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala` (the `ActionRef.UsePower` arm of `lines`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (a new `oracle` script, and `named`)
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala` (the `ActionRef.UsePower` arm of `lines`)
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (a new `oracle` script, and `named`)
 - Create: `src/test/resources/gamelog/oracle.actor.log`, `src/test/resources/gamelog/oracle.other.log`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
 
 **Interfaces:**
 - Consumes: `Oracle.id` (Task 1), `ActionLines.PlacePrefix`, `ParkedServiceFixture.withWorldDeckTop`, `ParkedServiceFixture.topOfWorldDeck`, `Step.Arrange`, `GameCommand.UsePower`.
@@ -385,7 +385,7 @@ git commit -m "feat(powers): Oracle draws the first Vision and plays it as if se
 
 - [ ] **Step 1: Add the script**
 
-In `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, add `Oracle` to the powers import:
+In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add `Oracle` to the powers import:
 
 ```scala
 import oathdigital.gameplay.powers.action.{GamblingHall, Oracle, Wolves}
@@ -425,7 +425,7 @@ In `named`, change the last entry to:
 
 - [ ] **Step 2: Write the failing test**
 
-Append to `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`:
+Append to `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`:
 
 ```scala
 
@@ -467,7 +467,7 @@ If instead the script fails to build (for example, the arranged secrets are refu
 
 - [ ] **Step 4: Post the placement line for a power run**
 
-In `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`, replace the `UsePower` arm:
+In `src/main/scala/distantlands/application/gamelog/ActionLines.scala`, replace the `UsePower` arm:
 
 ```scala
       case ActionRef.UsePower(power) =>
@@ -505,9 +505,9 @@ Expected: PASS, including `GameLogGoldenSuite` for `oracle` and the property sui
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ActionLines.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala \
+git add src/main/scala/distantlands/application/gamelog/ActionLines.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala \
   src/test/resources/gamelog/oracle.actor.log \
   src/test/resources/gamelog/oracle.other.log
 git commit -m "feat(log): a power that plays a card posts where it went"
@@ -518,12 +518,12 @@ git commit -m "feat(log): a power that plays a card posts where it went"
 ### Task 3: Pin the card, record the slice, run the gates
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala`
 - Modify: `docs/ROADMAP.md`
 
 - [ ] **Step 1: Pin Oracle**
 
-In `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala`, after the test "catalog batch 2's peeking actions are implemented", add:
+In `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala`, after the test "catalog batch 2's peeking actions are implemented", add:
 
 ```scala
 
@@ -568,7 +568,7 @@ Expected: both pass.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala \
+git add src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala \
   docs/ROADMAP.md
 git commit -m "docs: record catalog batch 2 slice 3c"
 ```

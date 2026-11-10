@@ -19,7 +19,7 @@
 - **Vision rules text, verbatim.** The five strings in Task 1 are printed card text. Copy them exactly, including `**bold**`, the `[favor]`/`[secret]` tokens, the apostrophe in `People's`, and Conspiracy's blank line. Do not reword, do not re-add the word "uniquely".
 - **Oathkeeper titles and lines, verbatim.** The eight strings in Task 3 are printed card text. Copy them exactly.
 - **The three battle-plan badges are exactly `Attack Plan`, `Defense Plan`, `Battle Plan`.** No fourth value.
-- **Glyph tokens are a closed vocabulary of 17**, listed in `frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala`. `favor` and `secret` are in it. Do not invent a token; `relic` does not exist.
+- **Glyph tokens are a closed vocabulary of 17**, listed in `frontend/src/main/scala/distantlands/frontend/TokenSprite.scala`. `favor` and `secret` are in it. Do not invent a token; `relic` does not exist.
 - **The engine's Vision victory rules are out of scope.** `VisionVictoryEligibility` and `uniquePositiveLeader` are not touched by any task here.
 - **Do not raise the model or effort level of any subagent above this session's** (project `CLAUDE.md`).
 - **Commit messages end with** `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`.
@@ -54,7 +54,7 @@
 | `frontend/.../ActionDecisionRenderer.scala` | Modifier options as card faces (Task 6). |
 | `frontend/styles.css` | `.player-slots`, `.plan-side-*`, `.plans-played`, `.walker-roll-*`. |
 
-Tests mirror production one-to-one: `src/test/scala/oathdigital/...`, `shared/src/test/scala/oathdigital/protocol/`, `frontend/src/test/scala/oathdigital/frontend/`.
+Tests mirror production one-to-one: `src/test/scala/distantlands/...`, `shared/src/test/scala/distantlands/protocol/`, `frontend/src/test/scala/distantlands/frontend/`.
 
 ---
 
@@ -63,9 +63,9 @@ Tests mirror production one-to-one: `src/test/scala/oathdigital/...`, `shared/sr
 The printed text for the five Visions. Pure data in the shared module; the projector already reads this map (`GamePresentationProjector.scala:336`) and `RulesTextRenderer` already handles the markup, so nothing else changes.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/VisionCardPresentation.scala`
-- Create: `shared/src/test/scala/oathdigital/protocol/VisionCardPresentationSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/RulesTextRendererSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/VisionCardPresentation.scala`
+- Create: `shared/src/test/scala/distantlands/protocol/VisionCardPresentationSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/RulesTextRendererSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -73,7 +73,7 @@ The printed text for the five Visions. Pure data in the shared module; the proje
 
 - [x] **Step 1: Write the failing shared test**
 
-Create `shared/src/test/scala/oathdigital/protocol/VisionCardPresentationSuite.scala`:
+Create `shared/src/test/scala/distantlands/protocol/VisionCardPresentationSuite.scala`:
 
 ```scala
 package oathdigital.protocol
@@ -128,7 +128,7 @@ Expected: FAIL — the current text reads "Win if you uniquely rule the most sit
 
 - [x] **Step 3: Replace the five entries**
 
-Rewrite the body of `VisionCardPresentation.byId` in `shared/src/main/scala/oathdigital/protocol/projection/VisionCardPresentation.scala`:
+Rewrite the body of `VisionCardPresentation.byId` in `shared/src/main/scala/distantlands/protocol/projection/VisionCardPresentation.scala`:
 
 ```scala
 object VisionCardPresentation {
@@ -163,7 +163,7 @@ Expected: PASS
 
 - [x] **Step 5: Write the failing frontend rendering test**
 
-Append to `frontend/src/test/scala/oathdigital/frontend/RulesTextRendererSuite.scala`, inside the existing class:
+Append to `frontend/src/test/scala/distantlands/frontend/RulesTextRendererSuite.scala`, inside the existing class:
 
 ```scala
   test("Conspiracy renders as two paragraphs with both banner glyphs") {
@@ -193,7 +193,7 @@ Expected: all green. `GamePresentationProjectorPrintedFacesSuite` reads `VisionC
 - [x] **Step 8: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/VisionCardPresentation.scala shared/src/test/scala/oathdigital/protocol/VisionCardPresentationSuite.scala frontend/src/test/scala/oathdigital/frontend/RulesTextRendererSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/VisionCardPresentation.scala shared/src/test/scala/distantlands/protocol/VisionCardPresentationSuite.scala frontend/src/test/scala/distantlands/frontend/RulesTextRendererSuite.scala
 ```
 
 ```bash
@@ -213,12 +213,12 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 A Vision may be played faceup or discarded. Today the placement query offers four buttons and rejects the illegal two after the click, and displacing a revealed Vision asks a one-option "Choose a card to discard". Both go.
 
-Read `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala:124-200` (`childrenFor`) and `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:228-270` (`planVision`) before starting.
+Read `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala:124-200` (`childrenFor`) and `src/main/scala/distantlands/gameplay/actions/CardPlay.scala:228-270` (`planVision`) before starting.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`
-- Test: `src/test/scala/oathdigital/gameplay/VisionPlaySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`
+- Test: `src/test/scala/distantlands/gameplay/VisionPlaySuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -226,7 +226,7 @@ Read `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.sca
 
 - [x] **Step 1: Write the failing tests**
 
-Add to `src/test/scala/oathdigital/gameplay/VisionPlaySuite.scala`. Use the suite's existing fixture helpers for building a `ReadyGame` with a Vision in the actor's temporary hand — read the file first and follow whatever it already does to reach a parked `cardplay.place.*` decision; the three assertions below are what must hold:
+Add to `src/test/scala/distantlands/gameplay/VisionPlaySuite.scala`. Use the suite's existing fixture helpers for building a `ReadyGame` with a Vision in the actor's temporary hand — read the file first and follow whatever it already does to reach a parked `cardplay.place.*` decision; the three assertions below are what must hold:
 
 ```scala
   test("a Vision's placement offers exactly Discard and Play faceup") {
@@ -318,7 +318,7 @@ Expected: green. Suites that drove a Vision play through the replacement answer 
 - [x] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/oathdigital/gameplay/actions/CardPlay.scala src/test/scala/oathdigital/gameplay/VisionPlaySuite.scala
+git add src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/distantlands/gameplay/actions/CardPlay.scala src/test/scala/distantlands/gameplay/VisionPlaySuite.scala
 ```
 
 ```bash
@@ -334,13 +334,13 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 `OathkeeperGoal` carries a key and nothing else, and `WorldBoardRenderer.oathName` derives "Oath of The People" from it. Replace that with the printed titles, and give the inspection overlay a second entry point so the Oathkeeper pill in Task 4 has somewhere to open.
 
 **Files:**
-- Create: `shared/src/main/scala/oathdigital/protocol/projection/OathkeeperPresentation.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardInspection.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala:88-89`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala` (delete `oathName`, use the printed title in `sharedBank`)
-- Create: `shared/src/test/scala/oathdigital/protocol/OathkeeperPresentationSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/CardInspectionOverlaySuite.scala`
+- Create: `shared/src/main/scala/distantlands/protocol/projection/OathkeeperPresentation.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardInspection.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala:88-89`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala` (delete `oathName`, use the printed title in `sharedBank`)
+- Create: `shared/src/test/scala/distantlands/protocol/OathkeeperPresentationSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -352,7 +352,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 - [x] **Step 1: Write the failing shared test**
 
-Create `shared/src/test/scala/oathdigital/protocol/OathkeeperPresentationSuite.scala`:
+Create `shared/src/test/scala/distantlands/protocol/OathkeeperPresentationSuite.scala`:
 
 ```scala
 package oathdigital.protocol
@@ -396,7 +396,7 @@ Expected: FAIL — `OathkeeperPresentation` does not exist.
 
 - [x] **Step 3: Write the presentation map**
 
-Create `shared/src/main/scala/oathdigital/protocol/projection/OathkeeperPresentation.scala`:
+Create `shared/src/main/scala/distantlands/protocol/projection/OathkeeperPresentation.scala`:
 
 ```scala
 package oathdigital.protocol.projection
@@ -439,7 +439,7 @@ Expected: PASS
 
 - [x] **Step 5: Write the failing overlay test**
 
-Append to `frontend/src/test/scala/oathdigital/frontend/CardInspectionOverlaySuite.scala`, inside the existing class:
+Append to `frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala`, inside the existing class:
 
 ```scala
   test("text mode renders a title and its lines and draws no card") {
@@ -518,7 +518,7 @@ In `CardInspectionOverlay`, extract the open/focus tail the two modes share and 
 
 - [x] **Step 8: Widen the handler slot**
 
-Replace the body of `frontend/src/main/scala/oathdigital/frontend/CardInspection.scala`:
+Replace the body of `frontend/src/main/scala/distantlands/frontend/CardInspection.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -563,7 +563,7 @@ private[frontend] object CardInspection {
 
 - [x] **Step 9: Rewire the shell**
 
-Replace `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala:89`:
+Replace `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala:89`:
 
 ```scala
   CardInspection.onOpen {
@@ -575,7 +575,7 @@ Replace `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala:89`:
 
 - [x] **Step 10: Print the Oath's real title in the shared bank**
 
-In `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala`, delete the whole `oathName` definition (and its doc comment) at lines 279-285, and change the shared-bank line to read the printed title:
+In `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala`, delete the whole `oathName` definition (and its doc comment) at lines 279-285, and change the shared-bank line to read the printed title:
 
 ```scala
    value.oathkeeper.foreach(oath =>
@@ -604,7 +604,7 @@ Expected: green.
 - [x] **Step 13: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/OathkeeperPresentation.scala shared/src/test/scala/oathdigital/protocol/OathkeeperPresentationSuite.scala frontend/src/main/scala/oathdigital/frontend/CardInspection.scala frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala frontend/src/test/scala/oathdigital/frontend/CardInspectionOverlaySuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/OathkeeperPresentation.scala shared/src/test/scala/distantlands/protocol/OathkeeperPresentationSuite.scala frontend/src/main/scala/distantlands/frontend/CardInspection.scala frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala frontend/src/main/scala/distantlands/frontend/GameTableShell.scala frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala
 ```
 
 ```bash
@@ -620,9 +620,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 A title and a Vision are states of the player, not cards in a hand. Give them a row of their own between the identity line and `.board-cards`, and stop drawing the Vision as a card among the advisers.
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:48-84`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:48-84`
 - Modify: `frontend/styles.css`
-- Test: `frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala`
 
 **Interfaces:**
 - Consumes: `CardInspection.openText(title, lines, origin)` and `CardInspection.open(card, origin)` (Task 3); `OathkeeperPresentation.byGoal` / `.title` (Task 3).
@@ -630,7 +630,7 @@ A title and a Vision are states of the player, not cards in a hand. Give them a 
 
 - [x] **Step 1: Write the failing test**
 
-Add to `frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala`. Follow the suite's existing fixture for building a `GameProjection` with a `PlayerBoardProjection`; the assertions are:
+Add to `frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala`. Follow the suite's existing fixture for building a `GameProjection` with a `PlayerBoardProjection`; the assertions are:
 
 ```scala
   test("the title and the Vision sit in their own row, not among the cards") {
@@ -759,7 +759,7 @@ Expected: green. `SiteBoxLayoutSuite` and `PanelPlacementSuite` may pin the play
 - [x] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala frontend/styles.css frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala frontend/styles.css frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala
 ```
 
 ```bash
@@ -775,13 +775,13 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 `DecisionOption.Button` projects `card = None`, so a placement panel has no card to draw, and a facedown adviser being placed never enters `temporaryHands` so the "Cards in hand" preview does not cover it either. Add the subject to the decision.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala` (`WalkerDecisionProjection`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala` (`encodeWalkerDecision`/`decodeWalkerDecision`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala` (`renderChooseOnePanel`)
-- Test: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- Test: `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala` (`WalkerDecisionProjection`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala` (`encodeWalkerDecision`/`decodeWalkerDecision`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala` (`renderChooseOnePanel`)
+- Test: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- Test: `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -789,7 +789,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 - [x] **Step 1: Write the failing codec test**
 
-Add to `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`, following its existing round-trip style:
+Add to `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`, following its existing round-trip style:
 
 ```scala
   test("a walker decision round-trips the cards it is about") {
@@ -867,7 +867,7 @@ Expected: PASS
 
 - [x] **Step 5: Write the failing projector test**
 
-Add to `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`, using the suite's existing fixture for a parked `PlayFacedownAdviser` walk:
+Add to `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`, using the suite's existing fixture for a parked `PlayFacedownAdviser` walk:
 
 ```scala
   test("a placement decision projects the card being placed") {
@@ -958,7 +958,7 @@ Expected: PASS
 
 - [x] **Step 9: Write the failing frontend test**
 
-Add to `frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala`:
+Add to `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala`:
 
 ```scala
   test("the card a placement is about is drawn above the buttons") {
@@ -1029,7 +1029,7 @@ Expected: green.
 - [x] **Step 14: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala frontend/styles.css frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala frontend/styles.css frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala
 ```
 
 ```bash
@@ -1045,17 +1045,17 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 All three route sites build `PreviewModifier(sourceKey, handlerId, handlerId)`, so the ordering panel offers a button reading `denizen.vow-of-peace`. The server knows the card and the action the power modifies; send both.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/MajorActionPreviewProtocol.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala` (visibility)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ProjectionCodecSupport.scala` (visibility)
-- Create: `src/main/scala/oathdigital/application/PreviewModifierDescriptions.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala`
-- Modify: `src/main/scala/oathdigital/server/GameRoutes.scala:61-63`
-- Modify: `src/main/scala/oathdigital/server/AuthenticatedGameRoutes.scala:102-104`
-- Modify: `src/main/scala/oathdigital/server/TrustedGameGateway.scala:54`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:99-135`
-- Test: `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/MajorActionPreviewProtocol.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala` (visibility)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ProjectionCodecSupport.scala` (visibility)
+- Create: `src/main/scala/distantlands/application/PreviewModifierDescriptions.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala`
+- Modify: `src/main/scala/distantlands/server/GameRoutes.scala:61-63`
+- Modify: `src/main/scala/distantlands/server/AuthenticatedGameRoutes.scala:102-104`
+- Modify: `src/main/scala/distantlands/server/TrustedGameGateway.scala:54`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:99-135`
+- Test: `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -1065,7 +1065,7 @@ All three route sites build `PreviewModifier(sourceKey, handlerId, handlerId)`, 
 
 - [x] **Step 1: Write the failing codec test**
 
-Add to `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala`, beside the existing preview round-trip at line 182:
+Add to `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`, beside the existing preview round-trip at line 182:
 
 ```scala
   test("a preview modifier round-trips its card and the action it modifies") {
@@ -1151,7 +1151,7 @@ Expected: PASS
 
 - [x] **Step 6: Describe the modifiers server-side**
 
-Create `src/main/scala/oathdigital/application/PreviewModifierDescriptions.scala`:
+Create `src/main/scala/distantlands/application/PreviewModifierDescriptions.scala`:
 
 ```scala
 package oathdigital.application
@@ -1248,9 +1248,9 @@ and fill it in `preview`, in both branches, after `acceptPreview` has returned:
 
 Replace the `accepted.options.map(v => PreviewModifier(...))` expression with `accepted.modifiers` at:
 
-- `src/main/scala/oathdigital/server/GameRoutes.scala:62-63`
-- `src/main/scala/oathdigital/server/AuthenticatedGameRoutes.scala:102-104`
-- `src/main/scala/oathdigital/server/TrustedGameGateway.scala:54`
+- `src/main/scala/distantlands/server/GameRoutes.scala:62-63`
+- `src/main/scala/distantlands/server/AuthenticatedGameRoutes.scala:102-104`
+- `src/main/scala/distantlands/server/TrustedGameGateway.scala:54`
 
 Then delete the now-unused `PreviewModifier` import from any of those three files that no longer names the type.
 
@@ -1261,7 +1261,7 @@ Expected: green. A route suite asserting `description == handlerId` must be upda
 
 - [x] **Step 10: Write the failing frontend test**
 
-Add to `frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala` (or the suite that renders the ordering panel, if that is a different file — search for `modifier-toggle` in `frontend/src/test`):
+Add to `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala` (or the suite that renders the ordering panel, if that is a different file — search for `modifier-toggle` in `frontend/src/test`):
 
 ```scala
   test("a modifier option draws its card and names the action it modifies") {
@@ -1356,7 +1356,7 @@ Expected: green.
 - [x] **Step 15: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/MajorActionPreviewProtocol.scala shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala shared/src/main/scala/oathdigital/protocol/projection/ProjectionCodecSupport.scala shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala src/main/scala/oathdigital/application/PreviewModifierDescriptions.scala src/main/scala/oathdigital/application/GameApplicationService.scala src/main/scala/oathdigital/server frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala frontend/styles.css frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala
+git add shared/src/main/scala/distantlands/protocol/MajorActionPreviewProtocol.scala shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala shared/src/main/scala/distantlands/protocol/projection/ProjectionCodecSupport.scala shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala src/main/scala/distantlands/application/PreviewModifierDescriptions.scala src/main/scala/distantlands/application/GameApplicationService.scala src/main/scala/distantlands/server frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala frontend/styles.css frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala
 ```
 
 ```bash
@@ -1372,16 +1372,16 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 Battle plans stay a one-at-a-time loop — pricing is a dry run against the state each previous plan left, and plans apply as they are chosen, so a set of individually-affordable plans has no joint meaning. What changes is that an offer says which side it is for and the option draws as a card.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala` (`CampaignPlanOffer`)
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala` (`DecisionOption.Badged`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlans.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (`optionProjection`)
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala` (`CampaignPlanOffer`)
+- Modify: `src/main/scala/distantlands/model/Decisions.scala` (`DecisionOption.Badged`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlans.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (`optionProjection`)
 - Modify: `shared/.../projection/ActionProjectionDtos.scala` + `ActionProjectionCodec.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala`
 - Modify: `frontend/styles.css`
-- Test: `src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala`
 
 **Interfaces:**
 - Consumes: `WalkerDecisionProjection.subjectCards` exists (Task 5) — this task adds a key to the same `exact(...)` sets, so rebase on it.
@@ -1393,7 +1393,7 @@ Battle plans stay a one-at-a-time loop — pricing is a dry run against the stat
 
 - [x] **Step 1: Write the failing engine test**
 
-Add to `src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala`:
+Add to `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala`:
 
 ```scala
   test("a plan's badge names the side or sides that may use it") {
@@ -1423,7 +1423,7 @@ Expected: FAIL — `badgeOf` and `Badged` do not exist.
 
 - [x] **Step 3: Let an offer carry its sides**
 
-In `src/main/scala/oathdigital/model/CampaignTypes.scala`:
+In `src/main/scala/distantlands/model/CampaignTypes.scala`:
 
 ```scala
 /** ... existing doc ...
@@ -1448,7 +1448,7 @@ In `BattlePlan.contributions`, stamp it on every offer:
 
 - [x] **Step 4: Add the badged option**
 
-In `src/main/scala/oathdigital/model/Decisions.scala`, beside `Priced`:
+In `src/main/scala/distantlands/model/Decisions.scala`, beside `Priced`:
 
 ```scala
   /** An option carrying one short label a client draws as a chip: what kind of
@@ -1500,7 +1500,7 @@ Expected: PASS
 
 - [x] **Step 7: Write the failing projection test**
 
-Add to `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`:
+Add to `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`:
 
 ```scala
   test("a badged option projects its badge and keeps its price") {
@@ -1587,7 +1587,7 @@ Expected: PASS
 
 - [x] **Step 12: Write the failing frontend test**
 
-Add to `frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala`:
+Add to `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala`:
 
 ```scala
   test("a battle-plan offer draws its card and its side as a chip") {
@@ -1681,7 +1681,7 @@ Expected: green.
 - [x] **Step 17: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CampaignTypes.scala src/main/scala/oathdigital/model/Decisions.scala src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlans.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala frontend/styles.css src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala
+git add src/main/scala/distantlands/model/CampaignTypes.scala src/main/scala/distantlands/model/Decisions.scala src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlans.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala frontend/styles.css src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala
 ```
 
 ```bash
@@ -1698,11 +1698,11 @@ The plan window is a `Repeat`, so each pass re-asks with the chosen plans remove
 
 **Files:**
 - Modify: `shared/.../projection/ActionProjectionDtos.scala` + `ActionProjectionCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala`
 - Modify: `frontend/styles.css`
-- Test: `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala`
+- Test: `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala`
 
 **Interfaces:**
 - Consumes: `DecisionOptionProjection.badge` (Task 7), `WalkerDecisionProjection.subjectCards` (Task 5) — this adds a third key to the same `exact(...)` sets.
@@ -1710,7 +1710,7 @@ The plan window is a `Repeat`, so each pass re-asks with the chosen plans remove
 
 - [x] **Step 1: Write the failing projector test**
 
-Add to `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`:
+Add to `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`:
 
 ```scala
   test("a repeated decision lists what has already been answered at it") {
@@ -1721,7 +1721,7 @@ Add to `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scal
   }
 ```
 
-Build `campaignWithOnePlanPlayed` from the suite's existing Campaign fixture by answering one plan and re-parking; if the suite has no Campaign fixture, `src/test/scala/oathdigital/gameplay/CampaignFixture.scala` has one and the projector suite may use it.
+Build `campaignWithOnePlanPlayed` from the suite's existing Campaign fixture by answering one plan and re-parking; if the suite has no Campaign fixture, `src/test/scala/distantlands/gameplay/CampaignFixture.scala` has one and the projector suite may use it.
 
 - [x] **Step 2: Run it to verify it fails**
 
@@ -1791,7 +1791,7 @@ and the resolver:
   }
 ```
 
-`pending.answered` is a `Vector[Answered]`; confirm the `Answered` case class's shape in `src/main/scala/oathdigital/model/` before writing the pattern — `WalkerDecisionProjector` does not currently destructure it, but `CardPlayProcedure.scala:159` does, as `Answered(id, DecisionAnswer.ChooseOneAnswer(value), _)`.
+`pending.answered` is a `Vector[Answered]`; confirm the `Answered` case class's shape in `src/main/scala/distantlands/model/` before writing the pattern — `WalkerDecisionProjector` does not currently destructure it, but `CardPlayProcedure.scala:159` does, as `Answered(id, DecisionAnswer.ChooseOneAnswer(value), _)`.
 
 - [x] **Step 5: Run the projector test**
 
@@ -1800,7 +1800,7 @@ Expected: PASS
 
 - [x] **Step 6: Write the failing frontend test**
 
-Add to `frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala`:
+Add to `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala`:
 
 ```scala
   test("the plans already played are listed above the remaining offers") {
@@ -1868,7 +1868,7 @@ Expected: green.
 - [x] **Step 11: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala frontend/styles.css frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala frontend/styles.css frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala
 ```
 
 ```bash
@@ -1886,17 +1886,17 @@ Mid-walk roll feedback exists only for Recover, gated on `procedure == ActionRef
 **This task removes `difficulty` rather than adding a field.** Recover's panel reads it, so Recover and Campaign convert together, in this one task — that is why it is not two.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/walker/WalkerRollFeedback.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/WalkerRollFeedback.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
 - Modify: `shared/.../projection/ActionProjectionDtos.scala` + `ActionProjectionCodec.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerSelectionPanels.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerSelectionPanels.scala`
 - Modify: `frontend/styles.css`
-- Test: `src/test/scala/oathdigital/gameplay/CampaignBattleSuite.scala`, `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/RecoverPanelSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/CampaignBattleSuite.scala`, `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`, `frontend/src/test/scala/distantlands/frontend/RecoverPanelSuite.scala`, `frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala`
 
 **Interfaces:**
 - Consumes: `WalkerDecisionProjection` (Tasks 5 and 8 added keys to its `exact(...)` sets; this task changes the nested roll payload's keys, not those).
@@ -1908,7 +1908,7 @@ Mid-walk roll feedback exists only for Recover, gated on `procedure == ActionRef
 
 - [x] **Step 1: Write the failing engine test**
 
-Replace the two `sacrificeHeading` cases in `src/test/scala/oathdigital/gameplay/CampaignBattleSuite.scala` with:
+Replace the two `sacrificeHeading` cases in `src/test/scala/distantlands/gameplay/CampaignBattleSuite.scala` with:
 
 ```scala
   test("the sacrifice heading is the prompt alone -- the dice are glyphs") {
@@ -1960,7 +1960,7 @@ Expected: PASS
 
 - [x] **Step 5: Write the failing feedback test**
 
-Add to `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`:
+Add to `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`:
 
 ```scala
   test("a parked sacrifice projects the attack pool's faces, score and losses") {
@@ -2035,7 +2035,7 @@ In `ActionProjectionCodec.scala`:
 
 - [x] **Step 8: Declare what feedback a procedure wants**
 
-Create `src/main/scala/oathdigital/gameplay/walker/WalkerRollFeedback.scala`:
+Create `src/main/scala/distantlands/gameplay/walker/WalkerRollFeedback.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -2189,7 +2189,7 @@ Expected: green.
 
 - [x] **Step 12: Write the failing frontend tests**
 
-In `frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala`:
+In `frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala`:
 
 ```scala
   test("the sacrifice panel draws dice, then totals, then the prompt") {
@@ -2212,7 +2212,7 @@ In `frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scal
 
 `.die-faces` is the class `DieFace.roll` produces — read `DieFace.scala:47` and assert on whatever it actually writes. `renderAmountPanel` is the suite's existing helper for reaching `WalkerSelectionPanels.render` with a `WalkerAmountDraft`; extend it to take the parked decision.
 
-In `frontend/src/test/scala/oathdigital/frontend/RecoverPanelSuite.scala`, update the existing roll-feedback assertions to the new copy:
+In `frontend/src/test/scala/distantlands/frontend/RecoverPanelSuite.scala`, update the existing roll-feedback assertions to the new copy:
 
 ```scala
   test("Recover shows its dice and how close the score is to the target") {
@@ -2320,7 +2320,7 @@ Expected: green.
 - [x] **Step 18: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala src/main/scala/oathdigital/gameplay/actions/campaign src/main/scala/oathdigital/application/WalkerDecisionProjector.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala frontend/src/main/scala/oathdigital/frontend/WalkerSelectionPanels.scala frontend/styles.css src/test/scala/oathdigital frontend/src/test/scala/oathdigital/frontend
+git add src/main/scala/distantlands/gameplay/walker src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala src/main/scala/distantlands/gameplay/actions/campaign src/main/scala/distantlands/application/WalkerDecisionProjector.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala frontend/src/main/scala/distantlands/frontend/WalkerSelectionPanels.scala frontend/styles.css src/test/scala/distantlands frontend/src/test/scala/distantlands/frontend
 ```
 
 ```bash

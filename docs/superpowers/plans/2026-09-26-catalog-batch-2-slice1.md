@@ -38,18 +38,18 @@
 
 | File | Responsibility |
 |---|---|
-| Create `src/main/scala/oathdigital/gameplay/powers/economy/SupplyWaiver.scala` | The shared "spend no Supply when the source card's suit qualifies" transform for Muster and Trade. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/economy/CupOfPlenty.scala` | Uses `SupplyWaiver`. Behaviour unchanged. |
-| Create `src/main/scala/oathdigital/gameplay/powers/economy/AnimalPlaymates.scala` | Muster waiver for a beast source. |
-| Create `src/main/scala/oathdigital/gameplay/powers/economy/Birdsong.scala` | Trade waiver for a beast or nomad source. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala` | Registers both. |
-| Create `src/main/scala/oathdigital/gameplay/powers/travel/RoyalStables.scala` | The Travel reduction (N1). |
-| Modify `src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala` | Registers it. |
-| Create `src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala` | The relic protection and its note. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/targeting/TargetProtections.scala` | Registers it. |
-| Modify `src/test/scala/oathdigital/gameplay/powers/NoteText.scala` | Reads any power's notes by id, unless Power log lines slice 3 already added that. |
+| Create `src/main/scala/distantlands/gameplay/powers/economy/SupplyWaiver.scala` | The shared "spend no Supply when the source card's suit qualifies" transform for Muster and Trade. |
+| Modify `src/main/scala/distantlands/gameplay/powers/economy/CupOfPlenty.scala` | Uses `SupplyWaiver`. Behaviour unchanged. |
+| Create `src/main/scala/distantlands/gameplay/powers/economy/AnimalPlaymates.scala` | Muster waiver for a beast source. |
+| Create `src/main/scala/distantlands/gameplay/powers/economy/Birdsong.scala` | Trade waiver for a beast or nomad source. |
+| Modify `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala` | Registers both. |
+| Create `src/main/scala/distantlands/gameplay/powers/travel/RoyalStables.scala` | The Travel reduction (N1). |
+| Modify `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala` | Registers it. |
+| Create `src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala` | The relic protection and its note. |
+| Modify `src/main/scala/distantlands/gameplay/powers/targeting/TargetProtections.scala` | Registers it. |
+| Modify `src/test/scala/distantlands/gameplay/powers/NoteText.scala` | Reads any power's notes by id, unless Power log lines slice 3 already added that. |
 | Create the four card suites beside their packages' existing suites | One per card. |
-| Modify `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala` | Pins the four catalog flags. |
+| Modify `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala` | Pins the four catalog flags. |
 | Modify `docs/ROADMAP.md` | Records the slice. |
 
 ---
@@ -57,13 +57,13 @@
 ### Task 1: Supply waivers (Cup of Plenty refactor, Animal Playmates, Birdsong)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/SupplyWaiver.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/CupOfPlenty.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/AnimalPlaymates.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/Birdsong.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/AnimalPlaymatesSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/economy/BirdsongSuite.scala`; existing `CupOfPlentySuite` must stay green.
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/SupplyWaiver.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/CupOfPlenty.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/AnimalPlaymates.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/Birdsong.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/AnimalPlaymatesSuite.scala`, `src/test/scala/distantlands/gameplay/powers/economy/BirdsongSuite.scala`; existing `CupOfPlentySuite` must stay green.
 
 **Interfaces:**
 - Consumes: `PowerAnswers.one(pending: PendingTree, decisionId: String): Option[DecisionOptionRef]`, `MusterProcedure.decisionId` (`"muster.source"`), `TradeProcedure.decisionId` (`"trade.source"`), `MusterSource.matching(catalog, ready, actor, suit): Int`, `CatalogCards.denizen(catalog, id): Option[DenizenId]`.
@@ -159,13 +159,13 @@ Expected: PASS, every test. This step is a refactor; a failure means the helper 
 - [ ] **Step 4: Commit the refactor**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/SupplyWaiver.scala src/main/scala/oathdigital/gameplay/powers/economy/CupOfPlenty.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/SupplyWaiver.scala src/main/scala/distantlands/gameplay/powers/economy/CupOfPlenty.scala
 git commit -m "refactor(powers): share the Cup of Plenty's Supply waiver"
 ```
 
 - [ ] **Step 5: Write the failing Animal Playmates suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/AnimalPlaymatesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/AnimalPlaymatesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -282,7 +282,7 @@ Expected: compile error, `AnimalPlaymates` is not found in `oathdigital.gameplay
 
 - [ ] **Step 7: Implement Animal Playmates**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/AnimalPlaymates.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/AnimalPlaymates.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -324,13 +324,13 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/AnimalPlaymates.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/economy/AnimalPlaymatesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/AnimalPlaymates.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/economy/AnimalPlaymatesSuite.scala
 git commit -m "feat(powers): Animal Playmates waives a beast Muster's Supply"
 ```
 
 - [ ] **Step 10: Write the failing Birdsong suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/BirdsongSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/BirdsongSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -429,7 +429,7 @@ class BirdsongSuite extends munit.FunSuite:
 Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.BirdsongSuite"`
 Expected: compile error, `Birdsong` is not found.
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/Birdsong.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/Birdsong.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -474,7 +474,7 @@ Expected: PASS.
 - [ ] **Step 13: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/Birdsong.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/economy/BirdsongSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/Birdsong.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/economy/BirdsongSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(powers): Birdsong waives a beast or nomad Trade's Supply"
 ```
 
@@ -483,10 +483,10 @@ git commit -m "feat(powers): Birdsong waives a beast or nomad Trade's Supply"
 ### Task 2: Royal Stables and the Supply reduction (N1)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/RoyalStables.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/travel/RoyalStablesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/RoyalStables.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/travel/RoyalStablesSuite.scala`
 
 **Interfaces:**
 - Consumes: `TravelRoute.pawnMove(operation): Option[PawnMove]` and `TravelRoute.adjustSupply(operations, actor)(rewrite: Int => Int)`, both `private[travel]` in `TravelSitePowers.scala`; `ContributingPower.priority: Int` (default 0, sorted ascending by `ContributingPower.sortKey`); the test fixture `TravelFixture`.
@@ -496,7 +496,7 @@ Why the priority: `ContributionCollector.gather` folds a window's transforms in 
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/RoyalStablesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/RoyalStablesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -582,7 +582,7 @@ Expected: compile error, `RoyalStables` is not found.
 
 - [ ] **Step 3: Implement Royal Stables**
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/RoyalStables.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/RoyalStables.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -636,7 +636,7 @@ Expected: PASS. If the terrain test fails with 2, the fold does not run in ascen
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/RoyalStables.scala src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala src/test/scala/oathdigital/gameplay/powers/travel/RoyalStablesSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/travel/RoyalStables.scala src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala src/test/scala/distantlands/gameplay/powers/travel/RoyalStablesSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(powers): Royal Stables lowers a Travel's Supply by one"
 ```
 
@@ -645,11 +645,11 @@ git commit -m "feat(powers): Royal Stables lowers a Travel's Supply by one"
 ### Task 3: Forgotten Vault
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/TargetProtections.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/targeting/ForgottenVaultSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/TargetProtections.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/NoteText.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/targeting/ForgottenVaultSuite.scala`
 
 **Interfaces:**
 - Consumes: `SiteRulers.rulerOfCard(ready, card: DenizenId): Option[SiteRuler]` (player or bandits only), `SiteRule.enemies(left: SiteRuler, right: SiteRuler): Boolean`, `OptionRestriction(fn, note)`, `Note(power, build, covers = false)`, `NoteKey`, `PowerSourceRef.Card`, `NoteArg.Player`; the fixtures `TargetingFixture`, `CampaignFixture.raidBoard`, `PowerFixture`, `CardStaging`.
@@ -661,7 +661,7 @@ Log line: this follows the Power log lines slice 3 plan's rulings for the Circle
 
 - [ ] **Step 1: Let `NoteText` read any power's notes**
 
-The Power log lines slice 3 plan (`docs/superpowers/plans/2026-09-26-power-log-lines-slice3.md`, Task 1) adds the same overload. If `NoteText.said(id: PowerId, keys: Vector[NoteKey], events: Vector[OathEvent])` already exists on `main`, skip this step. Otherwise, in `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`, replace `said` with exactly the code that plan uses, so whichever lands second merges cleanly:
+The Power log lines slice 3 plan (`docs/superpowers/plans/2026-09-26-power-log-lines-slice3.md`, Task 1) adds the same overload. If `NoteText.said(id: PowerId, keys: Vector[NoteKey], events: Vector[OathEvent])` already exists on `main`, skip this step. Otherwise, in `src/test/scala/distantlands/gameplay/powers/NoteText.scala`, replace `said` with exactly the code that plan uses, so whichever lands second merges cleanly:
 
 ```scala
   /** The notes `power` journaled in `events`, in order. */
@@ -677,7 +677,7 @@ The Power log lines slice 3 plan (`docs/superpowers/plans/2026-09-26-power-log-l
 
 - [ ] **Step 2: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/targeting/ForgottenVaultSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/targeting/ForgottenVaultSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -812,7 +812,7 @@ Expected: compile error, `ForgottenVault` is not found.
 
 - [ ] **Step 4: Implement Forgotten Vault**
 
-Create `src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -914,7 +914,7 @@ Expected: PASS. The phase-power suites that call `NoteText.said` compile unchang
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala src/main/scala/oathdigital/gameplay/powers/targeting/TargetProtections.scala src/test/scala/oathdigital/gameplay/powers/NoteText.scala src/test/scala/oathdigital/gameplay/powers/targeting/ForgottenVaultSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala src/main/scala/distantlands/gameplay/powers/targeting/TargetProtections.scala src/test/scala/distantlands/gameplay/powers/NoteText.scala src/test/scala/distantlands/gameplay/powers/targeting/ForgottenVaultSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(powers): Forgotten Vault protects its ruler's relics"
 ```
 
@@ -923,7 +923,7 @@ git commit -m "feat(powers): Forgotten Vault protects its ruler's relics"
 ### Task 4: Gates and roadmap
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala`
 - Modify: `docs/ROADMAP.md` (section "Phase - Catalog batch 2")
 
 - [ ] **Step 1: Pin the four cards as implemented**
@@ -989,7 +989,7 @@ Rewrap the paragraph to the file's line width.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala docs/ROADMAP.md
+git add src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala docs/ROADMAP.md
 git commit -m "docs: record catalog batch 2 slice 1"
 ```
 

@@ -26,20 +26,20 @@
 
 ## File Structure
 
-- Modify `src/main/scala/oathdigital/model/Chronicle.scala`: `era`, `oathkeeperGoal`.
-- Modify `src/main/scala/oathdigital/model/GameState.scala`: `CampaignState.baseline`, `CampaignState.evolved`, `Phase.Chronicle`.
-- Modify `src/main/scala/oathdigital/model/ProcedureRef.scala`: `ChronicleBegin`, `ChronicleFinish`.
-- Modify `src/main/scala/oathdigital/model/CoreOperations.scala`: `ChronicleUpdated` operation.
-- Modify `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala`: read `era` and `oathkeeperGoal` from the Chronicle, keep the baseline.
-- Create `src/main/scala/oathdigital/gameplay/chronicle/ChronicleBeginProcedure.scala`, `ChronicleFinishProcedure.scala`, `ChronicleSequence.scala`.
-- Modify `src/main/scala/oathdigital/gameplay/OathDriver.scala`: Chronicle branch.
-- Modify `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, `application/gamelog/ProcedureLog.scala`, `model/PowerWindow.scala` only if a window is needed (it is not in this plan).
+- Modify `src/main/scala/distantlands/model/Chronicle.scala`: `era`, `oathkeeperGoal`.
+- Modify `src/main/scala/distantlands/model/GameState.scala`: `CampaignState.baseline`, `CampaignState.evolved`, `Phase.Chronicle`.
+- Modify `src/main/scala/distantlands/model/ProcedureRef.scala`: `ChronicleBegin`, `ChronicleFinish`.
+- Modify `src/main/scala/distantlands/model/CoreOperations.scala`: `ChronicleUpdated` operation.
+- Modify `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala`: read `era` and `oathkeeperGoal` from the Chronicle, keep the baseline.
+- Create `src/main/scala/distantlands/gameplay/chronicle/ChronicleBeginProcedure.scala`, `ChronicleFinishProcedure.scala`, `ChronicleSequence.scala`.
+- Modify `src/main/scala/distantlands/gameplay/OathDriver.scala`: Chronicle branch.
+- Modify `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, `application/gamelog/ProcedureLog.scala`, `model/PowerWindow.scala` only if a window is needed (it is not in this plan).
 - Modify serialization: `GameEventJsonSupport.scala` (Chronicle fields) and `WalkerOperationCodec.scala` (`ChronicleUpdated`).
-- Modify frontend: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala`.
+- Modify frontend: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala`.
 - Docs: `docs/rules/chronicle.md`, `docs/rules/ambiguities.md`, `docs/rules/implementation-traceability.md`, `CONTEXT.md`.
 - Tests are named per task.
 
-Paths below are relative to the repo root; `M/` = `src/main/scala/oathdigital/`, `T/` = `src/test/scala/oathdigital/`.
+Paths below are relative to the repo root; `M/` = `src/main/scala/distantlands/`, `T/` = `src/test/scala/distantlands/`.
 
 ---
 
@@ -232,7 +232,7 @@ git commit -m "feat(model): Chronicle carries the era scorepad and the Oathkeepe
 Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
 ```
 
-(Expand `M/` and `T/` to the full `src/main/scala/oathdigital/` and `src/test/scala/oathdigital/` paths in the real command.)
+(Expand `M/` and `T/` to the full `src/main/scala/distantlands/` and `src/test/scala/distantlands/` paths in the real command.)
 
 ---
 
@@ -319,7 +319,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala src/test/scala/oathdigital/gameplay/setup/GameStartRulesSuite.scala src/test/scala/oathdigital/testkit/TestGameFixtures.scala
+git add src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/gameplay/setup/GameStartRules.scala src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala src/test/scala/distantlands/testkit/TestGameFixtures.scala
 git commit -m "feat(setup): game start keeps the baseline Chronicle on the campaign
 
 Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
@@ -403,7 +403,7 @@ Expected: PASS. (`WalkerProcedureRegistrySuite` and the Game Log suites fail unt
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model src/main/scala/oathdigital/serialization src/main/scala/oathdigital/gameplay/operations src/main/scala/oathdigital/application/PendingProjector.scala src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala src/test/scala/oathdigital/model src/test/scala/oathdigital/serialization src/test/scala/oathdigital/gameplay/operations
+git add src/main/scala/distantlands/model src/main/scala/distantlands/serialization src/main/scala/distantlands/gameplay/operations src/main/scala/distantlands/application/PendingProjector.scala src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala src/test/scala/distantlands/model src/test/scala/distantlands/serialization src/test/scala/distantlands/gameplay/operations
 git commit -m "feat(model): Chronicle phase, its two procedure refs and the ChronicleUpdated operation
 
 Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
@@ -584,7 +584,7 @@ Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleBeginSuite"`. Exp
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay src/main/scala/oathdigital/model src/main/scala/oathdigital/serialization src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala src/test/scala/oathdigital/gameplay src/test/scala/oathdigital/application/gamelog
+git add src/main/scala/distantlands/gameplay src/main/scala/distantlands/model src/main/scala/distantlands/serialization src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/test/scala/distantlands/gameplay src/test/scala/distantlands/application/gamelog
 git commit -m "feat(chronicle): the winner starts the Chronicle and the driver journals the update
 
 Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
@@ -595,8 +595,8 @@ Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
 ### Task 6: The frontend shows the winner's Start Chronicle decision
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:278-317`
-- Test: `frontend/src/test/scala/oathdigital/frontend/` (the suite that covers `viewerPresentation`; find it with `grep -rl viewerPresentation frontend/src/test`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:278-317`
+- Test: `frontend/src/test/scala/distantlands/frontend/` (the suite that covers `viewerPresentation`; find it with `grep -rl viewerPresentation frontend/src/test`)
 
 **Interfaces:**
 - Consumes: a projection with `oathkeeper.winnerPlayerId` set **and** `walkerDecision` (owner) or `walkerWaiting` (others) present.
@@ -650,7 +650,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala frontend/src/test
+git add frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala frontend/src/test
 git commit -m "feat(frontend): let a parked decision through after the game has a winner
 
 Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"

@@ -198,15 +198,15 @@ Every one of these cost a fix commit or a corrupted file. Read them.
 
 **New:**
 
-- `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignNotes.scala`
+- `src/main/scala/distantlands/gameplay/actions/campaign/CampaignNotes.scala`
   — Campaign's `NoteSet`, its twenty-three keys, every note builder, and the
   readers that turn a step into a count or a card list. Nothing else words a
   Campaign line. Expect 380 to 430 lines; if it passes 800, split the
   readers into `CampaignNoteReads.scala` and keep the keys and builders
   here.
-- `src/test/scala/oathdigital/application/gamelog/CampaignLogScripts.scala`
+- `src/test/scala/distantlands/application/gamelog/CampaignLogScripts.scala`
   — the three new golden scripts and their `named` vector.
-- `src/test/scala/oathdigital/application/gamelog/GoldenScripts.scala` —
+- `src/test/scala/distantlands/application/gamelog/GoldenScripts.scala` —
   the golden registry: `LogScripts.named ++ CampaignLogScripts.named`.
   `LogScripts` is at its cap and cannot hold the new entries.
 
@@ -245,11 +245,11 @@ lost Captains Raid, exercised by `GameLogActionLineSuite`, and neither is in
 the golden registry.
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/gamelog/CampaignLogScripts.scala`
-- Create: `src/test/scala/oathdigital/application/gamelog/GoldenScripts.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogGoldenSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala:16`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` — **delete `all` only** (two lines; nothing else may grow, the file is at 800)
+- Create: `src/test/scala/distantlands/application/gamelog/CampaignLogScripts.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/GoldenScripts.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogGoldenSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala:16`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` — **delete `all` only** (two lines; nothing else may grow, the file is at 800)
 - Create: eight golden files under `src/test/resources/gamelog/`
 
 **Interfaces:**
@@ -428,11 +428,11 @@ drop the script.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/gamelog/CampaignLogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GoldenScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogGoldenSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
+git add src/test/scala/distantlands/application/gamelog/CampaignLogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GoldenScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogGoldenSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
   src/test/resources/gamelog/
 git commit -m "test(gamelog): golden the Campaign branches no script played
 
@@ -462,12 +462,12 @@ This **amends ruling 7**, which allowed three new argument kinds and said a
 fourth is a spec amendment. Task 6 writes the amendment into the design.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala`
-- Test: `src/test/scala/oathdigital/serialization/PowerNoteWireSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala`
+- Test: `src/test/scala/distantlands/serialization/PowerNoteWireSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/NoteText.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
 
 **Interfaces:**
 - Consumes: `LogWords.join`, `LogWords.one`, `LogWords.seen`,
@@ -649,11 +649,11 @@ Task 3.
 Run: `./sbtw test && ./sbtw frontend/test && ./sbtw frontend/fastLinkJS && python3 scripts/check-architecture.py`
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerNotes.scala \
-  src/main/scala/oathdigital/serialization/WalkerEventCodec.scala \
-  src/main/scala/oathdigital/application/gamelog/PowerLines.scala \
-  src/test/scala/oathdigital/serialization/PowerNoteWireSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/NoteText.scala
+git add src/main/scala/distantlands/model/PowerNotes.scala \
+  src/main/scala/distantlands/serialization/WalkerEventCodec.scala \
+  src/main/scala/distantlands/application/gamelog/PowerLines.scala \
+  src/test/scala/distantlands/serialization/PowerNoteWireSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/NoteText.scala
 git commit -m "feat(gamelog): a note argument for a joined list of mixed references
 
 A Campaign's targets join sites, or a pawn, relics and banners; a won
@@ -703,9 +703,9 @@ this task registers the keys, pins every sentence, and leaves the rule
 posting the lines exactly as it does today.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignNotes.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignNotes.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
 - Fixture: `src/test/resources/notes/declared-keys.txt`
 
 **Interfaces:**
@@ -1220,9 +1220,9 @@ Expected: PASS, and `git status` shows no golden changed: nothing journals a
 Campaign note yet.
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/CampaignNotes.scala \
-  src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala \
-  src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala \
+git add src/main/scala/distantlands/gameplay/actions/campaign/CampaignNotes.scala \
+  src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala \
+  src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala \
   src/test/resources/notes/declared-keys.txt
 git commit -m "feat(gamelog): Campaign's own words, and what each line reads
 
@@ -1246,22 +1246,22 @@ The atomic switch: the leaves are placed, the registry entry becomes
 hand-built journals are replaced with tests of real play and of the readers.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignNotes.scala` (one member)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignOutcome.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignConquest.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignRaid.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
-- Delete: `src/main/scala/oathdigital/application/gamelog/CampaignLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` (the `ActionLines` construction)
-- Create: `src/test/scala/oathdigital/gameplay/campaign/CampaignNoteReadsSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/CampaignLogScripts.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogCampaignSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogRareLinesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala` (the `noting` vector)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignNotes.scala` (one member)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignOutcome.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignConquest.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignRaid.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
+- Delete: `src/main/scala/distantlands/application/gamelog/CampaignLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` (the `ActionLines` construction)
+- Create: `src/test/scala/distantlands/gameplay/campaign/CampaignNoteReadsSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/CampaignLogScripts.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogCampaignSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogRareLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala` (the `noting` vector)
 - Fixture: the Campaign goldens
 
 **Interfaces:**
@@ -1422,14 +1422,14 @@ In `ProcedureLog.rules`, replace Campaign's arm:
       narratedPrefixes = Vector("campaign."))
 ```
 
-Then `git rm src/main/scala/oathdigital/application/gamelog/CampaignLines.scala`,
+Then `git rm src/main/scala/distantlands/application/gamelog/CampaignLines.scala`,
 and in `ActionLines` delete the `campaigns` field and the `campaignLines`
 method. **Do not slice the file on computed indices**; this is the file
 slice 2 corrupted twice. Delete the two members by name, then assert:
 
 ```bash
-grep -c "campaignLines\|new CampaignLines" src/main/scala/oathdigital/application/gamelog/ActionLines.scala
-grep -c "usePowerLines\|def named\|def effect\|def powerSource" src/main/scala/oathdigital/application/gamelog/ActionLines.scala
+grep -c "campaignLines\|new CampaignLines" src/main/scala/distantlands/application/gamelog/ActionLines.scala
+grep -c "usePowerLines\|def named\|def effect\|def powerSource" src/main/scala/distantlands/application/gamelog/ActionLines.scala
 ```
 Expected: `0`, then a non-zero count. `ActionLines`' constructor then takes
 only `words`; drop `choices` and `catalog` and fix the one construction site
@@ -1762,9 +1762,9 @@ A placement that survives all three edits is not being tested.
 Run: `./sbtw test && ./sbtw frontend/test && ./sbtw frontend/fastLinkJS && python3 scripts/check-architecture.py`
 
 ```bash
-git add -u src/main/scala/oathdigital src/test/scala/oathdigital \
+git add -u src/main/scala/distantlands src/test/scala/distantlands \
   src/test/resources/gamelog
-git add src/test/scala/oathdigital/gameplay/campaign/CampaignNoteReadsSuite.scala
+git add src/test/scala/distantlands/gameplay/campaign/CampaignNoteReadsSuite.scala
 git commit -m "feat(gamelog): Campaign journals its own lines
 
 Twenty-three note leaves placed where each line's facts complete, and
@@ -1795,15 +1795,15 @@ the power-note path; the companion's helpers go to `LogWords`, where the
 rest of the shared span building lives.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogWords.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`
-- Delete: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (three references, no new lines)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/NoteText.scala` (if it names `ActionLines.plural`)
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/LogWords.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`
+- Delete: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (three references, no new lines)
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/NoteText.scala` (if it names `ActionLines.plural`)
 
 **Interfaces:**
 - Consumes: nothing new.
@@ -1880,7 +1880,7 @@ Check `ChoiceWords` is still constructed for `DetailLines`, and that
 `catalog` is still used by whatever else needs it; if either is now unused,
 `-Werror` says so.
 
-Then `git rm src/main/scala/oathdigital/application/gamelog/ActionLines.scala`.
+Then `git rm src/main/scala/distantlands/application/gamelog/ActionLines.scala`.
 
 - [ ] **Step 4: Run the gate and the golden proof**
 
@@ -1891,14 +1891,14 @@ changes no line, so `git status` must show no file under
 move.
 
 Check the sizes the design predicted: `wc -l
-src/main/scala/oathdigital/application/gamelog/{PowerLines,LogWords}.scala`
+src/main/scala/distantlands/application/gamelog/{PowerLines,LogWords}.scala`
 — roughly 220 and 185, both well inside the cap.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add -u src/main/scala/oathdigital/application/gamelog \
-  src/test/scala/oathdigital
+git add -u src/main/scala/distantlands/application/gamelog \
+  src/test/scala/distantlands
 git commit -m "refactor(gamelog): fold ActionLines away
 
 Powers' lines are in PowerLines, procedures' lines are in their own

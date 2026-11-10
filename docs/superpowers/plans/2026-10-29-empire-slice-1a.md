@@ -49,15 +49,15 @@ builder-declared askable options, following Palanquin's Toll Roads ask.
 
 | File | Responsibility |
 |---|---|
-| `src/main/scala/oathdigital/model/Imperials.scala` (new) | Role reads: a player's role, the Chancellor, the Imperial players, the governor of the Empire's sites |
-| `src/main/scala/oathdigital/model/World.scala` | `Role.hasVisionSlot`; `SiteRule.governed`, `SiteRule.rulingPlayer` |
-| `src/main/scala/oathdigital/model/GameStateProtocol.scala` | `MaterialBankState.ImperialWarbands` |
-| `src/test/scala/oathdigital/testkit/Table.scala` | `Table.imperial` step |
-| `src/main/scala/oathdigital/gameplay/SiteRulers.scala`, `PowerAccess.scala` | Resolver-based ruler reads; `SiteRulers.protectedAt` |
-| `src/main/scala/oathdigital/gameplay/TurnOrder.scala` (new) | Round order from the Chancellor or the first player |
-| `src/main/scala/oathdigital/gameplay/SupremacySites.scala` (new) | Each player's Supremacy count |
-| `src/main/scala/oathdigital/gameplay/actions/ImperialLaws.scala` (new) | Law ids, names and notes for Chancellor's Eye and Warband Transfers |
-| `src/main/scala/oathdigital/gameplay/actions/minor/WarbandTransfers.scala` (new) | The Warband Transfers minor action |
+| `src/main/scala/distantlands/model/Imperials.scala` (new) | Role reads: a player's role, the Chancellor, the Imperial players, the governor of the Empire's sites |
+| `src/main/scala/distantlands/model/World.scala` | `Role.hasVisionSlot`; `SiteRule.governed`, `SiteRule.rulingPlayer` |
+| `src/main/scala/distantlands/model/GameStateProtocol.scala` | `MaterialBankState.ImperialWarbands` |
+| `src/test/scala/distantlands/testkit/Table.scala` | `Table.imperial` step |
+| `src/main/scala/distantlands/gameplay/SiteRulers.scala`, `PowerAccess.scala` | Resolver-based ruler reads; `SiteRulers.protectedAt` |
+| `src/main/scala/distantlands/gameplay/TurnOrder.scala` (new) | Round order from the Chancellor or the first player |
+| `src/main/scala/distantlands/gameplay/SupremacySites.scala` (new) | Each player's Supremacy count |
+| `src/main/scala/distantlands/gameplay/actions/ImperialLaws.scala` (new) | Law ids, names and notes for Chancellor's Eye and Warband Transfers |
+| `src/main/scala/distantlands/gameplay/actions/minor/WarbandTransfers.scala` (new) | The Warband Transfers minor action |
 | `FinishRestProcedure.scala`, `BeginRestProcedure.scala` | Imperial Supply and banks |
 | `StateBasedEvaluation.scala`, `VisionVictoryEligibility.scala`, `OathkeeperRules.scala` | Guards, Wake, Supremacy |
 | `CardSlots.scala`, `CardPlay.scala` | The Vision slot |
@@ -68,11 +68,11 @@ builder-declared askable options, following Palanquin's Toll Roads ask.
 ### Task 1: Roles and the ruler resolver
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/Imperials.scala`
-- Modify: `src/main/scala/oathdigital/model/World.scala` (enum `Role`, object `SiteRule`)
-- Modify: `src/main/scala/oathdigital/model/GameStateProtocol.scala:13-15` (`MaterialBankState`)
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala` (new step after `warbandsAt`, around line 279)
-- Test: `src/test/scala/oathdigital/model/SiteRulingPlayerSuite.scala` (new)
+- Create: `src/main/scala/distantlands/model/Imperials.scala`
+- Modify: `src/main/scala/distantlands/model/World.scala` (enum `Role`, object `SiteRule`)
+- Modify: `src/main/scala/distantlands/model/GameStateProtocol.scala:13-15` (`MaterialBankState`)
+- Modify: `src/test/scala/distantlands/testkit/Table.scala` (new step after `warbandsAt`, around line 279)
+- Test: `src/test/scala/distantlands/model/SiteRulingPlayerSuite.scala` (new)
 
 **Interfaces:**
 - Produces:
@@ -259,7 +259,7 @@ Expected: PASS, 7 tests.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Imperials.scala src/main/scala/oathdigital/model/World.scala src/main/scala/oathdigital/model/GameStateProtocol.scala src/test/scala/oathdigital/testkit/Table.scala src/test/scala/oathdigital/model/SiteRulingPlayerSuite.scala
+git add src/main/scala/distantlands/model/Imperials.scala src/main/scala/distantlands/model/World.scala src/main/scala/distantlands/model/GameStateProtocol.scala src/test/scala/distantlands/testkit/Table.scala src/test/scala/distantlands/model/SiteRulingPlayerSuite.scala
 git commit -m "feat(empire): resolve the Empire's sites to their ruling player"
 ```
 
@@ -268,16 +268,16 @@ git commit -m "feat(empire): resolve the Empire's sites to their ruling player"
 ### Task 2: Every "which player rules" read goes through the resolver
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/SiteRulers.scala` (`rulerOf`, `rulerOfCard` doc, new `protectedAt`)
-- Modify: `src/main/scala/oathdigital/gameplay/PowerAccess.scala:56-60` (`ruledSites`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala:186-191` (Oaken Fortress `shields`, doc at :176-179)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala` (`protectedRuler`, `shields`, doc)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala:227-231, 244-247`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyContribution.scala:59-60`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ForgeRules.scala:20-22`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala:57-96`
+- Modify: `src/main/scala/distantlands/gameplay/SiteRulers.scala` (`rulerOf`, `rulerOfCard` doc, new `protectedAt`)
+- Modify: `src/main/scala/distantlands/gameplay/PowerAccess.scala:56-60` (`ruledSites`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala:186-191` (Oaken Fortress `shields`, doc at :176-179)
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala` (`protectedRuler`, `shields`, doc)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala:227-231, 244-247`
+- Modify: `src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyContribution.scala:59-60`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ForgeRules.scala:20-22`
+- Modify: `src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala:57-96`
 - Modify comments only: `powers/RulerToll.scala:9`, `powers/travel/TollRoads.scala:24`, `powers/travel/WayStation.scala:24`, `powers/cardplay/SecretPolice.scala:22-29`, `powers/poweruse/RulerBans.scala:10`, `operations/AncientBloodline.scala:20-23`
-- Test: `src/test/scala/oathdigital/gameplay/EmpireRulerSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/EmpireRulerSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `SiteRule.rulingPlayer`, `SiteRule.governed`, `Imperials.players`, `Table.imperial` (Task 1)
@@ -332,7 +332,7 @@ Add one card-level test to each existing suite, following that suite's own
 setup helpers, and seat roles with `Table.imperial` before placing Imperial
 warbands:
 
-- `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala`:
+- `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala`:
   "an Exile travelling to an Empire site on a Citizen's turn pays the
   Citizen" is impossible (the traveller is the turn player), so test "an
   Exile travelling to an Empire site pays the Chancellor": Toll Roads at an
@@ -345,7 +345,7 @@ warbands:
 - The Oaken Fortress suite (`grep -rl OakenFortress src/test`): with the
   intact Fortress at an Empire site where the Citizen p2's pawn stands, an
   Exile cannot Challenge p2.
-- `src/test/scala/oathdigital/application/HallOfMinistersConsentServiceSuite.scala`:
+- `src/test/scala/distantlands/application/HallOfMinistersConsentServiceSuite.scala`:
   with the intact Hall at an Empire site, the Citizen p2 discarding a card
   at another Empire site during an Exile's turn is refused and askable of
   the Chancellor p1, not waved through.
@@ -514,7 +514,7 @@ Expected: PASS, including every existing power suite.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/SiteRulers.scala src/main/scala/oathdigital/gameplay/PowerAccess.scala src/main/scala/oathdigital/gameplay/powers src/main/scala/oathdigital/gameplay/actions/ForgeRules.scala src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala src/main/scala/oathdigital/gameplay/operations/AncientBloodline.scala src/test/scala/oathdigital/gameplay/EmpireRulerSuite.scala
+git add src/main/scala/distantlands/gameplay/SiteRulers.scala src/main/scala/distantlands/gameplay/PowerAccess.scala src/main/scala/distantlands/gameplay/powers src/main/scala/distantlands/gameplay/actions/ForgeRules.scala src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala src/main/scala/distantlands/gameplay/operations/AncientBloodline.scala src/test/scala/distantlands/gameplay/EmpireRulerSuite.scala
 git add <each card suite you extended, by name>
 git commit -m "feat(empire): read every site ruler through the turn-aware resolver"
 ```
@@ -524,13 +524,13 @@ git commit -m "feat(empire): read every site ruler through the turn-aware resolv
 ### Task 3: Lift the all-Exile guards; turn order and Wake
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/TurnOrder.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala` (`supported` :166-171, `atWake` :39-49, `visionAtWake` :51-59, `endRound` :63-66, `RoundEnded` arm :139-141, `expectedWarExhaustion` :185, doc :13-20)
-- Modify: `src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala:142-145` (`turnOrder`)
-- Modify: `src/main/scala/oathdigital/gameplay/phases/rest/BeginRestProcedure.scala:7-25`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala:265-282` (`started`, `supported`)
-- Modify: `src/main/scala/oathdigital/model/DomainValidation.scala` (new `ImperialUsurper` problem)
-- Test: `src/test/scala/oathdigital/model/DomainValidationSuite.scala`, `src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala`, `src/test/scala/oathdigital/gameplay/EmpireTurnSuite.scala` (new)
+- Create: `src/main/scala/distantlands/gameplay/TurnOrder.scala`
+- Modify: `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala` (`supported` :166-171, `atWake` :39-49, `visionAtWake` :51-59, `endRound` :63-66, `RoundEnded` arm :139-141, `expectedWarExhaustion` :185, doc :13-20)
+- Modify: `src/main/scala/distantlands/gameplay/phases/rest/FinishRestProcedure.scala:142-145` (`turnOrder`)
+- Modify: `src/main/scala/distantlands/gameplay/phases/rest/BeginRestProcedure.scala:7-25`
+- Modify: `src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala:265-282` (`started`, `supported`)
+- Modify: `src/main/scala/distantlands/model/DomainValidation.scala` (new `ImperialUsurper` problem)
+- Test: `src/test/scala/distantlands/model/DomainValidationSuite.scala`, `src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala`, `src/test/scala/distantlands/gameplay/EmpireTurnSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `Imperials.chancellor`, `Imperials.isImperial`, `Table.imperial`
@@ -583,7 +583,7 @@ because of it, add `.update(r => r.updateCurrent(c => c.copy(tracks =
 c.tracks.copy(usurperLimited = false))))` with a comment saying the
 Usurper Limiter is off in an Empire game (ruling R5).
 
-In `src/test/scala/oathdigital/model/DomainValidationSuite.scala`:
+In `src/test/scala/distantlands/model/DomainValidationSuite.scala`:
 
 ```scala
   test("an Imperial player never holds the Usurper side of the title"):
@@ -760,7 +760,7 @@ Expected: PASS (Dissent and Revelation read `turnOrder`).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/TurnOrder.scala src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala src/main/scala/oathdigital/gameplay/phases/rest/BeginRestProcedure.scala src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala src/test/scala/oathdigital/gameplay/EmpireTurnSuite.scala src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala src/main/scala/oathdigital/model/DomainValidation.scala src/test/scala/oathdigital/model/DomainValidationSuite.scala
+git add src/main/scala/distantlands/gameplay/TurnOrder.scala src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala src/main/scala/distantlands/gameplay/phases/rest/FinishRestProcedure.scala src/main/scala/distantlands/gameplay/phases/rest/BeginRestProcedure.scala src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala src/test/scala/distantlands/gameplay/EmpireTurnSuite.scala src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala src/test/scala/distantlands/gameplay/MinorActionsSuite.scala src/main/scala/distantlands/model/DomainValidation.scala src/test/scala/distantlands/model/DomainValidationSuite.scala
 git commit -m "feat(empire): start rounds with the Chancellor and keep Wake wins for Exiles"
 ```
 
@@ -769,13 +769,13 @@ git commit -m "feat(empire): start rounds with the Chancellor and keep Wake wins
 ### Task 4: Supremacy with the Empire, and the Vision slot
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/SupremacySites.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/oathkeeper/OathkeeperRules.scala:30-45`
-- Modify: `src/main/scala/oathdigital/gameplay/VisionVictoryEligibility.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala` (three `qualifies` calls; `endRoundWinner` takes `ready`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala:85-101, 303-314`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:142-145`
-- Test: `src/test/scala/oathdigital/gameplay/oathkeeper/OathkeeperRulesSuite.scala`, `src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/SupremacySites.scala`
+- Modify: `src/main/scala/distantlands/gameplay/oathkeeper/OathkeeperRules.scala:30-45`
+- Modify: `src/main/scala/distantlands/gameplay/VisionVictoryEligibility.scala`
+- Modify: `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala` (three `qualifies` calls; `endRoundWinner` takes `ready`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala:85-101, 303-314`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala:142-145`
+- Test: `src/test/scala/distantlands/gameplay/oathkeeper/OathkeeperRulesSuite.scala`, `src/test/scala/distantlands/gameplay/CardSlotsSuite.scala`
 
 **Interfaces:**
 - Consumes: `Imperials.role`, `Role.hasVisionSlot`, `PlayerForceKind.of`
@@ -988,7 +988,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/SupremacySites.scala src/main/scala/oathdigital/gameplay/oathkeeper/OathkeeperRules.scala src/main/scala/oathdigital/gameplay/VisionVictoryEligibility.scala src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala src/main/scala/oathdigital/gameplay/actions/CardPlay.scala src/test/scala/oathdigital/gameplay/oathkeeper/OathkeeperRulesSuite.scala src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala
+git add src/main/scala/distantlands/gameplay/SupremacySites.scala src/main/scala/distantlands/gameplay/oathkeeper/OathkeeperRules.scala src/main/scala/distantlands/gameplay/VisionVictoryEligibility.scala src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala src/main/scala/distantlands/gameplay/actions/CardPlay.scala src/test/scala/distantlands/gameplay/oathkeeper/OathkeeperRulesSuite.scala src/test/scala/distantlands/gameplay/CardSlotsSuite.scala
 git commit -m "feat(empire): count the Empire for Supremacy and keep Visions off Imperial boards"
 ```
 
@@ -997,9 +997,9 @@ git commit -m "feat(empire): count the Empire for Supremacy and keep Visions off
 ### Task 5: Imperial Supply at Rest
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala:26-29, 74-121`
-- Modify: `src/main/scala/oathdigital/model/Resources.scala:42-45` (doc of `SupplyRules`)
-- Test: `src/test/scala/oathdigital/gameplay/phases/rest/ImperialSupplySuite.scala` (new)
+- Modify: `src/main/scala/distantlands/gameplay/phases/rest/FinishRestProcedure.scala:26-29, 74-121`
+- Modify: `src/main/scala/distantlands/model/Resources.scala:42-45` (doc of `SupplyRules`)
+- Test: `src/test/scala/distantlands/gameplay/phases/rest/ImperialSupplySuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `Imperials.role`, `Imperials.chancellor`, `PlayerForceKind.of`
@@ -1130,7 +1130,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala src/main/scala/oathdigital/model/Resources.scala src/test/scala/oathdigital/gameplay/phases/rest/ImperialSupplySuite.scala
+git add src/main/scala/distantlands/gameplay/phases/rest/FinishRestProcedure.scala src/main/scala/distantlands/model/Resources.scala src/test/scala/distantlands/gameplay/phases/rest/ImperialSupplySuite.scala
 git commit -m "feat(empire): refresh the Chancellor's and Citizens' Supply at Rest"
 ```
 
@@ -1139,12 +1139,12 @@ git commit -m "feat(empire): refresh the Chancellor's and Citizens' Supply at Re
 ### Task 6: Move Warbands for Imperials, with Chancellor's Eye
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/ImperialLaws.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/RuleNotes.scala:17-21` (`all`)
-- Modify: `src/main/scala/oathdigital/application/ConsentProjector.scala:21` (`ConsentNames.power`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala:190-240` (`way`, `most`, `move`)
+- Create: `src/main/scala/distantlands/gameplay/actions/ImperialLaws.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/RuleNotes.scala:17-21` (`all`)
+- Modify: `src/main/scala/distantlands/application/ConsentProjector.scala:21` (`ConsentNames.power`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala:190-240` (`way`, `most`, `move`)
 - Modify: `src/test/resources/notes/declared-keys.txt` (golden note keys)
-- Test: `src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala`, `src/test/scala/oathdigital/application/ChancellorsEyeConsentServiceSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/MinorActionsSuite.scala`, `src/test/scala/distantlands/application/ChancellorsEyeConsentServiceSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `Imperials`, `SiteRule.rulingPlayer`, `PlayerForceKind.of`, `Table.imperial`
@@ -1364,7 +1364,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/ImperialLaws.scala src/main/scala/oathdigital/gameplay/actions/RuleNotes.scala src/main/scala/oathdigital/application/ConsentProjector.scala src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala src/test/scala/oathdigital/application/ChancellorsEyeConsentServiceSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/ImperialLaws.scala src/main/scala/distantlands/gameplay/actions/RuleNotes.scala src/main/scala/distantlands/application/ConsentProjector.scala src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/MinorActionsSuite.scala src/test/scala/distantlands/application/ChancellorsEyeConsentServiceSuite.scala
 git commit -m "feat(empire): move Imperial warbands, asking the Chancellor's consent for a Citizen"
 ```
 
@@ -1373,15 +1373,15 @@ git commit -m "feat(empire): move Imperial warbands, asking the Chancellor's con
 ### Task 7: The Warband Transfers minor action
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/minor/WarbandTransfers.scala`
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala:120-135` (new `ActionRef`, listed in `ActionRef.all`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala:269-273` (new entry)
-- Modify: `src/main/scala/oathdigital/gameplay/phases/ActOffers.scala:51, 65-66`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala:92`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:268-270`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala:118-120`
-- Modify golden and listing tests: `src/test/scala/oathdigital/model/ProcedureRefSuite.scala:21`, `src/test/resources/notes/declared-keys.txt`, `src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala:178, 198`, `src/test/scala/oathdigital/application/PhasePowerMenuSuite.scala:128`, `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala:246`
-- Test: `src/test/scala/oathdigital/gameplay/WarbandTransfersSuite.scala` (new), `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` plus `src/test/resources/gamelog/warbands-transferred.{actor,other}.log`
+- Create: `src/main/scala/distantlands/gameplay/actions/minor/WarbandTransfers.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala:120-135` (new `ActionRef`, listed in `ActionRef.all`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala:269-273` (new entry)
+- Modify: `src/main/scala/distantlands/gameplay/phases/ActOffers.scala:51, 65-66`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala:92`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:268-270`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala:118-120`
+- Modify golden and listing tests: `src/test/scala/distantlands/model/ProcedureRefSuite.scala:21`, `src/test/resources/notes/declared-keys.txt`, `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala:178, 198`, `src/test/scala/distantlands/application/PhasePowerMenuSuite.scala:128`, `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala:246`
+- Test: `src/test/scala/distantlands/gameplay/WarbandTransfersSuite.scala` (new), `src/test/scala/distantlands/application/gamelog/LogScripts.scala` plus `src/test/resources/gamelog/warbands-transferred.{actor,other}.log`
 
 **Interfaces:**
 - Consumes: `Imperials`, `ImperialLaws.warbandTransfers`, `ImperialLaws.needsPartner`, `ImperialLaws.refused`
@@ -1644,7 +1644,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/minor/WarbandTransfers.scala src/main/scala/oathdigital/model/ProcedureRef.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/gameplay/phases/ActOffers.scala src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala src/main/scala/oathdigital/application/gamelog/DetailLines.scala src/test/scala/oathdigital/gameplay/WarbandTransfersSuite.scala src/test/scala/oathdigital/model/ProcedureRefSuite.scala src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala src/test/scala/oathdigital/application/PhasePowerMenuSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala src/test/scala/oathdigital/application/gamelog/LogScripts.scala src/test/resources/gamelog/warbands-transferred.actor.log src/test/resources/gamelog/warbands-transferred.other.log
+git add src/main/scala/distantlands/gameplay/actions/minor/WarbandTransfers.scala src/main/scala/distantlands/model/ProcedureRef.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/gameplay/phases/ActOffers.scala src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/main/scala/distantlands/application/gamelog/DetailLines.scala src/test/scala/distantlands/gameplay/WarbandTransfersSuite.scala src/test/scala/distantlands/model/ProcedureRefSuite.scala src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala src/test/scala/distantlands/application/PhasePowerMenuSuite.scala src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala src/test/scala/distantlands/application/gamelog/LogScripts.scala src/test/resources/gamelog/warbands-transferred.actor.log src/test/resources/gamelog/warbands-transferred.other.log
 git commit -m "feat(empire): add the Warband Transfers minor action"
 ```
 
@@ -1653,11 +1653,11 @@ git commit -m "feat(empire): add the Warband Transfers minor action"
 ### Task 8: Roles and Imperial boards in the browser
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala:57-60` (`readyPlayers`), `:140-180` (`playerBoards`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:312-337` (`PlayerBoardProjection.supplyBands`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala:197-244` (board codec)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/SupplyAtRest.scala`, `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:64-91`
-- Test: `src/test/scala/oathdigital/application/GamePresentationProjectorSuite.scala` (or the suite that covers `playerBoards`; grep `restSupplyBase` in `src/test`), `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/SupplyAtRestSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala:57-60` (`readyPlayers`), `:140-180` (`playerBoards`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:312-337` (`PlayerBoardProjection.supplyBands`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala:197-244` (board codec)
+- Modify: `frontend/src/main/scala/distantlands/frontend/SupplyAtRest.scala`, `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:64-91`
+- Test: `src/test/scala/distantlands/application/GamePresentationProjectorSuite.scala` (or the suite that covers `playerBoards`; grep `restSupplyBase` in `src/test`), `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`, `frontend/src/test/scala/distantlands/frontend/SupplyAtRestSuite.scala`, `frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala`
 
 **Interfaces:**
 - Consumes: `Imperials.role`, `FinishRestProcedure.supplyRules`, `FinishRestProcedure.supplyGainAtRest`
@@ -1769,7 +1769,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/GamePresentationProjector.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala frontend/src/main/scala/oathdigital/frontend/SupplyAtRest.scala frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala
+git add src/main/scala/distantlands/application/GamePresentationProjector.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala frontend/src/main/scala/distantlands/frontend/SupplyAtRest.scala frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala
 git add <each test file you changed, by name>
 git commit -m "feat(empire): show roles and each board's own Supply bands"
 ```
@@ -1779,7 +1779,7 @@ git commit -m "feat(empire): show roles and each board's own Supply bands"
 ### Task 9: Scenario, docs and gates
 
 **Files:**
-- Test: `src/test/scala/oathdigital/gameplay/EmpireInPlayScenarioSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/EmpireInPlayScenarioSuite.scala` (new)
 - Modify: `docs/rules/implementation-traceability.md` (rows 91, 92, 95, 110, 117, 118)
 - Modify: `docs/rules/rules-reference.md` (a new "Imperial laws" section after "Victory and game end")
 - Modify: `docs/rules/ambiguities.md` (rulings R1, R2, R3)
@@ -1790,7 +1790,7 @@ git commit -m "feat(empire): show roles and each board's own Supply bands"
 
 A Citizen's turn played through `OathDriver` on the service, in the style
 of the existing end-to-end suites (find one with
-`grep -rl "Table.*service" src/test/scala/oathdigital/gameplay | head`):
+`grep -rl "Table.*service" src/test/scala/distantlands/gameplay | head`):
 
 1. `Table.start.imperial(p1, p2)`; the Empire holds two sites in one
    region, one of them holding Toll Roads; p2's turn, Act.
@@ -1844,6 +1844,6 @@ Run, in order:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/EmpireInPlayScenarioSuite.scala docs/rules/implementation-traceability.md docs/rules/rules-reference.md docs/rules/ambiguities.md docs/superpowers/specs/2026-10-29-empire-phase-design.md docs/ROADMAP.md
+git add src/test/scala/distantlands/gameplay/EmpireInPlayScenarioSuite.scala docs/rules/implementation-traceability.md docs/rules/rules-reference.md docs/rules/ambiguities.md docs/superpowers/specs/2026-10-29-empire-phase-design.md docs/ROADMAP.md
 git commit -m "test(empire): play a Citizen's turn and record slice 1a in the docs"
 ```

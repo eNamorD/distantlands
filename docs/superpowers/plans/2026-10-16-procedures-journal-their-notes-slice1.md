@@ -151,10 +151,10 @@ git commit -m "docs: amend the note designs for procedure notes"
 ### Task 2: A note's source becomes optional
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala:7-8`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala:121-123,155-159`
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala:46-54`
-- Test: `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala:7-8`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala:121-123,155-159`
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala:46-54`
+- Test: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing.
@@ -298,10 +298,10 @@ plan did not foresee. That would be a `model` and codec change in slice 4,
 and a spec amendment under ruling 7.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala:125-192`
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala:88-103`
-- Test: `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala:125-192`
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala:88-103`
+- Test: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's `PowerNote`.
@@ -485,9 +485,9 @@ git commit -m "feat(gamelog): note arguments for players, clauses and placements
 ### Task 4: `ProcedureNotes` and the declared-set union
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/DeclaredNotes.scala:36-40`
-- Test: `src/test/scala/oathdigital/gameplay/powers/DeclaredNoteKeysSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/DeclaredNotes.scala:36-40`
+- Test: `src/test/scala/distantlands/gameplay/powers/DeclaredNoteKeysSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's `PowerNote`.
@@ -614,9 +614,9 @@ git commit -m "feat(gamelog): procedures join the declared note union"
 `covered` and `repeated` were written when every note came from a power.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala:59-82`
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogJournal.scala:71-80`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala:59-82`
+- Modify: `src/main/scala/distantlands/application/gamelog/LogJournal.scala:71-80`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 4's `ProcedureNotes.writes`.
@@ -764,7 +764,7 @@ journaled at all. Both already hold for a power's note; this task pins them
 for a procedure's before any procedure relies on them.
 
 **Files:**
-- Test: `src/test/scala/oathdigital/gameplay/walker/WalkerNotesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/walker/WalkerNotesSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 4's `ProcedureNotes.id`.
@@ -828,10 +828,10 @@ git commit -m "test(walker): a procedure note is journaled once, and not in a de
 ### Task 7: `ActionLineSource` and `Told`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:28-68`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala:49`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:28-68`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala:49`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -981,13 +981,13 @@ The proof. `ActionLines.musterLines` is deleted and the golden logs do not
 move.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/MusterProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala:40-53,112-129`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:63-78`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/MusterProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala:40-53,112-129`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:63-78`
 - Modify: `src/test/resources/notes/declared-keys.txt`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 2–6.

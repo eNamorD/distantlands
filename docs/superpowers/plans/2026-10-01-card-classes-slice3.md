@@ -107,19 +107,19 @@ The spec fixes the target; these are the choices for getting there.
 
 | Path | Change |
 |------|--------|
-| `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` | Loses 28 relics |
-| `src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala` | Loses 8 edifices |
-| 34 power files under `src/main/scala/oathdigital/gameplay/powers/` | Gain their card object |
-| `src/main/scala/oathdigital/gameplay/operations/GrandScepter.scala` | Gains `TheGrandScepterCard`; `GrandScepter` becomes an object |
-| `src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala` | Gains `HallOfMinistersCard`; `HallOfMinisters` becomes an object |
-| `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala` | Always prints both restrictions |
-| `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` | Imports the moved objects |
-| `src/main/scala/oathdigital/application/{FirstGameChronicleGenerator,ImplementedCardCatalog}.scala` | Import the scepter from `gameplay.operations` |
+| `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` | Loses 28 relics |
+| `src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala` | Loses 8 edifices |
+| 34 power files under `src/main/scala/distantlands/gameplay/powers/` | Gain their card object |
+| `src/main/scala/distantlands/gameplay/operations/GrandScepter.scala` | Gains `TheGrandScepterCard`; `GrandScepter` becomes an object |
+| `src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala` | Gains `HallOfMinistersCard`; `HallOfMinisters` becomes an object |
+| `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala` | Always prints both restrictions |
+| `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` | Imports the moved objects |
+| `src/main/scala/distantlands/application/{FirstGameChronicleGenerator,ImplementedCardCatalog}.scala` | Import the scepter from `gameplay.operations` |
 | 21 relic and edifice power files that used `CatalogCards` | Static card reference; 9 become `case object`s |
-| `src/main/scala/oathdigital/gameplay/powers/CatalogCards.scala` | Deleted |
+| `src/main/scala/distantlands/gameplay/powers/CatalogCards.scala` | Deleted |
 | Aggregator scaladocs (list in Task 2) | Say only site powers can be omitted |
-| `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala` | Two tests generalised to relics and edifices |
-| `src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala` | Restrictions hold whatever the catalog lists |
+| `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala` | Two tests generalised to relics and edifices |
+| `src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala` | Restrictions hold whatever the catalog lists |
 | Test callers of `forCatalog(...).get`, `CatalogCards`, the holding scepter | Drop `.get`, name the object, import from the new package |
 | `docs/ROADMAP.md` | Slice 3 ticked |
 
@@ -204,13 +204,13 @@ def remove(src, pkg, names):
 ### Task 1: Move implemented relics and edifices beside their powers
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala`,
-  `src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala`,
+  `src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala`
 - Modify: the 36 destination files in the script's `DEST` table
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/MurkyFountain.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/MurkyFountain.scala`
   and the other files that import a moved card (the script finds them)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Test: `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Test: `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from other tasks.
@@ -291,8 +291,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import s3_imports as imports
 
 W = sys.argv[1].rstrip("/") + "/"
-M = W + "src/main/scala/oathdigital/"
-T = W + "src/test/scala/oathdigital/"
+M = W + "src/main/scala/distantlands/"
+T = W + "src/test/scala/distantlands/"
 P = "gameplay/powers/"
 DEST = {
     "StickyFireCard": P + "campaign/StickyFire.scala",
@@ -457,13 +457,13 @@ git commit -m "refactor(cards): move implemented relics and edifices beside thei
   `cardplay/CardPlayTriggers.scala`, `campaign/PlanRules.scala`,
   `campaign/BattlePlans.scala`, `campaign/SimplePlans.scala`,
   `travel/TravelModifiers.scala` (all under
-  `src/main/scala/oathdigital/gameplay/powers/`)
-- Delete: `src/main/scala/oathdigital/gameplay/powers/CatalogCards.scala`
+  `src/main/scala/distantlands/gameplay/powers/`)
+- Delete: `src/main/scala/distantlands/gameplay/powers/CatalogCards.scala`
 - Modify: the test callers (`CampaignPlansSuite`, `SelectedModifierSuite`,
   `StickyFireSuite`, `SacredGroundSuite`, `TruthfulHarpSuite`,
   `GreatForgeRulesSuite`, `GreatMarketRulesSuite`, `ProvingGroundsRulesSuite`,
   `CircletOfCommandSuite`, `FortressRulesSuite`, `DragonskinDrumSuite`)
-- Test: `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's card objects under `gameplay/`.
@@ -535,8 +535,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import s3_imports as imports
 
 W = sys.argv[1].rstrip("/") + "/"
-M = W + "src/main/scala/oathdigital/"
-T = W + "src/test/scala/oathdigital/"
+M = W + "src/main/scala/distantlands/"
+T = W + "src/test/scala/distantlands/"
 REVIEWED = {M + "gameplay/powers/" + f for f in (
     "ActionPowers.scala", "MusterPowers.scala", "RestPowers.scala",
     "NegotiationPowers.scala", "CampaignPowers.scala", "RecoverPowers.scala")}
@@ -874,7 +874,7 @@ Expected: root 2538 tests pass (the `CatalogCards` test is gone), frontend
 
 Stage the files `git status --short` lists. The script deleted
 `CatalogCards.scala`; stage that deletion with
-`git add src/main/scala/oathdigital/gameplay/powers/CatalogCards.scala`.
+`git add src/main/scala/distantlands/gameplay/powers/CatalogCards.scala`.
 Then:
 
 ```bash
@@ -886,11 +886,11 @@ git commit -m "refactor(powers): relic and edifice powers name their cards"
 ### Task 3: The Grand Scepter and the Hall of Ministers declare their restrictions
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/GrandScepter.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/OperationResolutionSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/GrandScepter.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala`
+- Modify: `src/test/scala/distantlands/gameplay/OperationResolutionSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala`
 - Modify: `docs/ROADMAP.md`
 
 **Interfaces:**
@@ -949,8 +949,8 @@ Usage: python3 s3_restrict.py <worktree root>
 import sys
 
 W = sys.argv[1].rstrip("/") + "/"
-O = W + "src/main/scala/oathdigital/gameplay/operations/"
-T = W + "src/test/scala/oathdigital/gameplay/"
+O = W + "src/main/scala/distantlands/gameplay/operations/"
+T = W + "src/test/scala/distantlands/gameplay/"
 
 
 def edit(path, pairs):
@@ -1073,11 +1073,11 @@ Expected: root 2538 tests pass, frontend 468 pass, both checks pass.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/GrandScepter.scala \
-  src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala \
-  src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala \
-  src/test/scala/oathdigital/gameplay/OperationResolutionSuite.scala \
+git add src/main/scala/distantlands/gameplay/operations/GrandScepter.scala \
+  src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala \
+  src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala \
+  src/test/scala/distantlands/gameplay/OperationResolutionSuite.scala \
   docs/ROADMAP.md
 git commit -m "refactor(operations): the Grand Scepter and the Hall of Ministers declare their restrictions"
 ```

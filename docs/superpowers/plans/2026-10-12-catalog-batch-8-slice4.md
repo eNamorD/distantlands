@@ -105,20 +105,20 @@ These are for the product owner's review with the plan. Task 1 writes them into 
 ## File Structure
 
 - **Create:**
-  - `src/main/scala/oathdigital/gameplay/powers/campaign/Keep.scala`: the card and the power.
-  - `src/test/scala/oathdigital/gameplay/powers/campaign/KeepSuite.scala`
-  - `src/test/scala/oathdigital/application/gamelog/KeepLogSuite.scala`
+  - `src/main/scala/distantlands/gameplay/powers/campaign/Keep.scala`: the card and the power.
+  - `src/test/scala/distantlands/gameplay/powers/campaign/KeepSuite.scala`
+  - `src/test/scala/distantlands/application/gamelog/KeepLogSuite.scala`
 - **Modify:**
-  - `src/main/scala/oathdigital/model/PowerWindow.scala`: `CampaignRaidConsequences`.
-  - `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignRaid.scala`: the split.
-  - `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`: the new window is after the outcome.
-  - `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`: registers Keep.
-  - `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`: the card moves out.
-  - `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`: imports.
-  - `src/main/scala/oathdigital/application/gamelog/CampaignLines.scala`: the closing summary skips restated steps.
-  - `src/test/scala/oathdigital/gameplay/CampaignRaidSuite.scala`: the seam test.
-  - `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`: Keep is automatic.
-  - `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`: `raidAnswers` becomes public, if slice 3 has not already done so.
+  - `src/main/scala/distantlands/model/PowerWindow.scala`: `CampaignRaidConsequences`.
+  - `src/main/scala/distantlands/gameplay/actions/campaign/CampaignRaid.scala`: the split.
+  - `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`: the new window is after the outcome.
+  - `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`: registers Keep.
+  - `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`: the card moves out.
+  - `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`: imports.
+  - `src/main/scala/distantlands/application/gamelog/CampaignLines.scala`: the closing summary skips restated steps.
+  - `src/test/scala/distantlands/gameplay/CampaignRaidSuite.scala`: the seam test.
+  - `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`: Keep is automatic.
+  - `src/test/scala/distantlands/application/gamelog/LogScripts.scala`: `raidAnswers` becomes public, if slice 3 has not already done so.
   - The design, the rulings appendix and `docs/ROADMAP.md`.
 
 ---
@@ -211,10 +211,10 @@ git commit -m "docs(batch8): slice 4 plan-time rulings for Keep"
 ### Task 2: Split the Raid transfer
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignRaid.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`
-- Test: `src/test/scala/oathdigital/gameplay/CampaignRaidSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignRaid.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`
+- Test: `src/test/scala/distantlands/gameplay/CampaignRaidSuite.scala`
 
 **Interfaces:**
 - Produces: `PowerWindow.CampaignRaidConsequences`; `CampaignRaid.takes` and `CampaignRaid.consequences`. Task 3's Keep folds the new window to nothing.
@@ -419,7 +419,7 @@ Expected: PASS, with no test changed.
 - [ ] **Step 7: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignRaid.scala src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala src/test/scala/oathdigital/gameplay/CampaignRaidSuite.scala
+git add src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignRaid.scala src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala src/test/scala/distantlands/gameplay/CampaignRaidSuite.scala
 git commit -m "feat(batch8): a Raid's consequences run in their own window"
 ```
 
@@ -428,12 +428,12 @@ git commit -m "feat(batch8): a Raid's consequences run in their own window"
 ### Task 3: Keep
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/Keep.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/KeepSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/Keep.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/KeepSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerWindow.CampaignRaidConsequences` (Task 2).
@@ -686,7 +686,7 @@ Expected: PASS, with 5 new tests.
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/Keep.scala src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/KeepSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/Keep.scala src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/KeepSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(batch8): Keep spares a defeated defender who rules its site"
 ```
 
@@ -695,9 +695,9 @@ git commit -m "feat(batch8): Keep spares a defeated defender who rules its site"
 ### Task 4: Keep in the Game Log
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/gamelog/KeepLogSuite.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/CampaignLines.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/KeepLogSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/CampaignLines.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
 
 **Interfaces:**
 - Consumes: `Keep` and its line (Task 3).
@@ -781,7 +781,7 @@ Expected: PASS, with 2 new tests and no existing test changed.
 - [ ] **Step 5: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/CampaignLines.scala src/test/scala/oathdigital/application/gamelog/LogScripts.scala src/test/scala/oathdigital/application/gamelog/KeepLogSuite.scala
+git add src/main/scala/distantlands/application/gamelog/CampaignLines.scala src/test/scala/distantlands/application/gamelog/LogScripts.scala src/test/scala/distantlands/application/gamelog/KeepLogSuite.scala
 git commit -m "feat(batch8): Keep's line replaces the Raid's relocation in the log"
 ```
 

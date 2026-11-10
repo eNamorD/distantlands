@@ -52,24 +52,24 @@ ruling R9).
 
 | File | Responsibility |
 |---|---|
-| `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala` | `defenderAt`: an Empire site's defender is the Chancellor |
-| `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignConquest.scala` | Placed survivors take the attacker's warband kind |
-| `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala` | Attacker kills and Raid board losses take the player's warband kind |
-| `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala` | A plan sacrifice from a board takes the player's warband kind |
-| `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignNotes.scala` | Loss notes read the player's warband kind with no Exile fallback |
-| `src/main/scala/oathdigital/gameplay/powers/action/SiegeEngines.scala` | The Imperial kill line |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/MilitaryParade.scala` | Comment: ruling R9 |
-| `src/test/scala/oathdigital/gameplay/actions/campaign/ImperialInfightingSuite.scala` (new) | Defenders, targets and raids with the Empire |
-| `src/test/scala/oathdigital/gameplay/ImperialCampaignBattleSuite.scala` (new) | Warband kinds through whole Campaigns |
-| `src/test/scala/oathdigital/gameplay/EmpireCampaignScenarioSuite.scala` (new) | The slice scenario through the service |
+| `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala` | `defenderAt`: an Empire site's defender is the Chancellor |
+| `src/main/scala/distantlands/gameplay/actions/campaign/CampaignConquest.scala` | Placed survivors take the attacker's warband kind |
+| `src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala` | Attacker kills and Raid board losses take the player's warband kind |
+| `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala` | A plan sacrifice from a board takes the player's warband kind |
+| `src/main/scala/distantlands/gameplay/actions/campaign/CampaignNotes.scala` | Loss notes read the player's warband kind with no Exile fallback |
+| `src/main/scala/distantlands/gameplay/powers/action/SiegeEngines.scala` | The Imperial kill line |
+| `src/main/scala/distantlands/gameplay/powers/campaign/MilitaryParade.scala` | Comment: ruling R9 |
+| `src/test/scala/distantlands/gameplay/actions/campaign/ImperialInfightingSuite.scala` (new) | Defenders, targets and raids with the Empire |
+| `src/test/scala/distantlands/gameplay/ImperialCampaignBattleSuite.scala` (new) | Warband kinds through whole Campaigns |
+| `src/test/scala/distantlands/gameplay/EmpireCampaignScenarioSuite.scala` (new) | The slice scenario through the service |
 
 ---
 
 ### Task 1: The Chancellor defends Imperial sites
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala:130-139` (`defenderAt`)
-- Test: `src/test/scala/oathdigital/gameplay/actions/campaign/ImperialInfightingSuite.scala` (new)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala:130-139` (`defenderAt`)
+- Test: `src/test/scala/distantlands/gameplay/actions/campaign/ImperialInfightingSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `Imperials.chancellor(ready: ReadyGame): Option[PlayerId]`
@@ -92,7 +92,7 @@ Chancellor's side. So the Campaign keeps its own question.
 
 The test lives in package `oathdigital.gameplay.actions.campaign` because
 `CampaignTargets` is `private[campaign]`. Create the directory
-`src/test/scala/oathdigital/gameplay/actions/campaign/`.
+`src/test/scala/distantlands/gameplay/actions/campaign/`.
 
 ```scala
 package oathdigital.gameplay.actions.campaign
@@ -276,7 +276,7 @@ board has a purple site.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala src/test/scala/oathdigital/gameplay/actions/campaign/ImperialInfightingSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala src/test/scala/distantlands/gameplay/actions/campaign/ImperialInfightingSuite.scala
 git commit -m "feat(empire): the Chancellor defends Imperial sites in a Campaign"
 ```
 
@@ -285,11 +285,11 @@ git commit -m "feat(empire): the Chancellor defends Imperial sites in a Campaign
 ### Task 2: Campaign warbands follow the role
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignConquest.scala:27-36` (`placements`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala` (`attackerKills`, `raidBoardLosses`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala:172-185` (`killOps`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignNotes.scala:316-322` (`forceKindOf`)
-- Test: `src/test/scala/oathdigital/gameplay/ImperialCampaignBattleSuite.scala` (new)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignConquest.scala:27-36` (`placements`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala` (`attackerKills`, `raidBoardLosses`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala:172-185` (`killOps`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignNotes.scala:316-322` (`forceKindOf`)
+- Test: `src/test/scala/distantlands/gameplay/ImperialCampaignBattleSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `PlayerForceKind.of(ready: ReadyGame, player: PlayerState): Option[ForceKind]`;
@@ -299,7 +299,7 @@ git commit -m "feat(empire): the Chancellor defends Imperial sites in a Campaign
   `CampaignFixture.withAdviserFor`.
 - Produces: no new names. After this task no Campaign file builds
   `ForceKind.Exile(...)`; check with
-  `grep -n "ForceKind.Exile" src/main/scala/oathdigital/gameplay/actions/campaign/*.scala`
+  `grep -n "ForceKind.Exile" src/main/scala/distantlands/gameplay/actions/campaign/*.scala`
   (expected: no output).
 
 - [ ] **Step 1: Write the failing tests**
@@ -479,13 +479,13 @@ Run: `./sbtw "testOnly oathdigital.gameplay.ImperialCampaignBattleSuite oathdigi
 Expected: PASS. The golden Campaign logs do not change: every all-Exile
 player's kind is still their lineage's.
 
-Then run: `grep -n "ForceKind.Exile" src/main/scala/oathdigital/gameplay/actions/campaign/*.scala`
+Then run: `grep -n "ForceKind.Exile" src/main/scala/distantlands/gameplay/actions/campaign/*.scala`
 Expected: no output.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/CampaignConquest.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignNotes.scala src/test/scala/oathdigital/gameplay/ImperialCampaignBattleSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/campaign/CampaignConquest.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignNotes.scala src/test/scala/distantlands/gameplay/ImperialCampaignBattleSuite.scala
 git commit -m "feat(empire): Campaign warbands follow the player's role"
 ```
 
@@ -494,12 +494,12 @@ git commit -m "feat(empire): Campaign warbands follow the player's role"
 ### Task 3: Siege Engines, Military Parade and leftover comments
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SiegeEngines.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/MilitaryParade.scala:17-29` (doc comment only)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/QuickExit.scala:15-22` (doc comment rewrap only)
-- Modify: `src/main/scala/oathdigital/gameplay/SiteRulers.scala:5-11` (doc comment rewrap only)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SiegeEngines.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/MilitaryParade.scala:17-29` (doc comment only)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/QuickExit.scala:15-22` (doc comment rewrap only)
+- Modify: `src/main/scala/distantlands/gameplay/SiteRulers.scala:5-11` (doc comment rewrap only)
 - Modify: `docs/rules/ambiguities.md` (ruling R9 under "Empire rulings")
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/SiegeEnginesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/SiegeEnginesSuite.scala`
 
 **Interfaces:**
 - Consumes: `Table.imperial`.
@@ -597,7 +597,7 @@ Expected: "Markdown link check passed".
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/SiegeEngines.scala src/main/scala/oathdigital/gameplay/powers/campaign/MilitaryParade.scala src/main/scala/oathdigital/gameplay/powers/action/QuickExit.scala src/main/scala/oathdigital/gameplay/SiteRulers.scala src/test/scala/oathdigital/gameplay/powers/action/SiegeEnginesSuite.scala docs/rules/ambiguities.md
+git add src/main/scala/distantlands/gameplay/powers/action/SiegeEngines.scala src/main/scala/distantlands/gameplay/powers/campaign/MilitaryParade.scala src/main/scala/distantlands/gameplay/powers/action/QuickExit.scala src/main/scala/distantlands/gameplay/SiteRulers.scala src/test/scala/distantlands/gameplay/powers/action/SiegeEnginesSuite.scala docs/rules/ambiguities.md
 git commit -m "feat(empire): log Siege Engines kills of Imperial warbands"
 ```
 
@@ -608,7 +608,7 @@ Add any note-catalog test file you changed in Step 3 to the `git add`.
 ### Task 4: Scenario, docs and gates
 
 **Files:**
-- Test: `src/test/scala/oathdigital/gameplay/EmpireCampaignScenarioSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/EmpireCampaignScenarioSuite.scala` (new)
 - Modify: `docs/rules/implementation-traceability.md` (row 104)
 - Modify: `docs/rules/rules-reference.md` ("Imperial laws" section)
 - Modify: `docs/superpowers/specs/2026-10-29-empire-phase-design.md` (Status line)
@@ -739,6 +739,6 @@ Run, in order:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/EmpireCampaignScenarioSuite.scala docs/rules/implementation-traceability.md docs/rules/rules-reference.md docs/superpowers/specs/2026-10-29-empire-phase-design.md docs/ROADMAP.md
+git add src/test/scala/distantlands/gameplay/EmpireCampaignScenarioSuite.scala docs/rules/implementation-traceability.md docs/rules/rules-reference.md docs/superpowers/specs/2026-10-29-empire-phase-design.md docs/ROADMAP.md
 git commit -m "test(empire): a Citizen conquers an Imperial site; record slice 1b-i"
 ```

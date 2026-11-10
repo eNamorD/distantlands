@@ -139,17 +139,17 @@ Inventoried at `14e9d307`.
 ### Task 1: The Crown's access and battle plans
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/BanditCrown.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/poweruse/BanditCrown.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (delete `BanditCrownCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala:5-6` (import)
-- Modify: `src/main/scala/oathdigital/gameplay/PowerAccess.scala:74-75` and its doc comment
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala:45-46` and its doc comment
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` (register)
+- Create: `src/main/scala/distantlands/gameplay/BanditCrown.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/poweruse/BanditCrown.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (delete `BanditCrownCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala:5-6` (import)
+- Modify: `src/main/scala/distantlands/gameplay/PowerAccess.scala:74-75` and its doc comment
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala:45-46` and its doc comment
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` (register)
 - Modify: `src/test/resources/powers/unimplemented.txt` (delete `relic.bandit-crown`)
 - Modify: the four test imports of finding 12
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/BanditCrownSuite.scala` (create)
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/BanditCrownPlansSuite.scala` (create)
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/BanditCrownSuite.scala` (create)
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/BanditCrownPlansSuite.scala` (create)
 
 **Interfaces:**
 - Produces: `oathdigital.gameplay.BanditCrownCard` (moved verbatim);
@@ -164,7 +164,7 @@ Inventoried at `14e9d307`.
 
 Delete `object BanditCrownCard` (the 7 lines from `object BanditCrownCard`
 to its `val powers`, and the blank line after) from `HoldingRelics.scala`.
-Create `src/main/scala/oathdigital/gameplay/BanditCrown.scala`:
+Create `src/main/scala/distantlands/gameplay/BanditCrown.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -214,7 +214,7 @@ import so `ArbiterCard` keeps `catalog.holding`).
 
 - [ ] **Step 2: Register the power**
 
-Create `src/main/scala/oathdigital/gameplay/powers/poweruse/BanditCrown.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/poweruse/BanditCrown.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.poweruse
@@ -246,7 +246,7 @@ the line `relic.bandit-crown` from
 
 - [ ] **Step 3: Write the failing access tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/poweruse/BanditCrownSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/poweruse/BanditCrownSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.poweruse
@@ -312,7 +312,7 @@ class BanditCrownSuite extends munit.FunSuite:
 
 - [ ] **Step 4: Write the failing battle-plan tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/BanditCrownPlansSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/BanditCrownPlansSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -450,7 +450,7 @@ Expected: all pass.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/BanditCrown.scala src/main/scala/oathdigital/gameplay/powers/poweruse/BanditCrown.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/PowerAccess.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/resources/powers/unimplemented.txt src/test/scala/oathdigital/gameplay/powers/poweruse/BanditCrownSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/BanditCrownPlansSuite.scala src/test/scala/oathdigital/gameplay/RecoverProcedureSuite.scala src/test/scala/oathdigital/gameplay/RestSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyTargetWindowSuite.scala
+git add src/main/scala/distantlands/gameplay/BanditCrown.scala src/main/scala/distantlands/gameplay/powers/poweruse/BanditCrown.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/PowerAccess.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/resources/powers/unimplemented.txt src/test/scala/distantlands/gameplay/powers/poweruse/BanditCrownSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/BanditCrownPlansSuite.scala src/test/scala/distantlands/gameplay/RecoverProcedureSuite.scala src/test/scala/distantlands/gameplay/RestSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyTargetWindowSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): the Bandit Crown's holder uses cards at bandit sites
 
@@ -469,18 +469,18 @@ EOF
 ### Task 2: The holder's consent
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/SiteRulers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/RulerBans.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/SpellBreaker.scala:49`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/ForestCouncil.scala:85,96`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala:92,100`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PayOrAsk.scala:65-68`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala:50-56`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/wake/Passages.scala:115-135` and its doc comment
-- Modify: `src/main/scala/oathdigital/gameplay/powers/recover/RelicPatrols.scala:60-65`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/ForbiddenForest.scala:60-63`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala:72-75`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/NonPersistentPowerRestriction.scala`
+- Modify: `src/main/scala/distantlands/gameplay/SiteRulers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/RulerBans.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/SpellBreaker.scala:49`
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/ForestCouncil.scala:85,96`
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala:92,100`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PayOrAsk.scala:65-68`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala:50-56`
+- Modify: `src/main/scala/distantlands/gameplay/powers/wake/Passages.scala:115-135` and its doc comment
+- Modify: `src/main/scala/distantlands/gameplay/powers/recover/RelicPatrols.scala:60-65`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/ForbiddenForest.scala:60-63`
+- Modify: `src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala:72-75`
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/NonPersistentPowerRestriction.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt`
 - Test: `BanditCrownSuite.scala`, `BanditForestSuite.scala`, `PassagesSuite.scala`
 
@@ -913,7 +913,7 @@ Expected: all pass.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/SiteRulers.scala src/main/scala/oathdigital/gameplay/powers/poweruse/RulerBans.scala src/main/scala/oathdigital/gameplay/powers/poweruse/SpellBreaker.scala src/main/scala/oathdigital/gameplay/powers/poweruse/ForestCouncil.scala src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala src/main/scala/oathdigital/gameplay/powers/PayOrAsk.scala src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala src/main/scala/oathdigital/gameplay/powers/wake/Passages.scala src/main/scala/oathdigital/gameplay/powers/recover/RelicPatrols.scala src/main/scala/oathdigital/gameplay/powers/travel/ForbiddenForest.scala src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala src/main/scala/oathdigital/gameplay/powers/poweruse/NonPersistentPowerRestriction.scala src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/poweruse/BanditCrownSuite.scala src/test/scala/oathdigital/gameplay/powers/poweruse/BanditForestSuite.scala src/test/scala/oathdigital/gameplay/powers/wake/PassagesSuite.scala
+git add src/main/scala/distantlands/gameplay/SiteRulers.scala src/main/scala/distantlands/gameplay/powers/poweruse/RulerBans.scala src/main/scala/distantlands/gameplay/powers/poweruse/SpellBreaker.scala src/main/scala/distantlands/gameplay/powers/poweruse/ForestCouncil.scala src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala src/main/scala/distantlands/gameplay/powers/PayOrAsk.scala src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala src/main/scala/distantlands/gameplay/powers/wake/Passages.scala src/main/scala/distantlands/gameplay/powers/recover/RelicPatrols.scala src/main/scala/distantlands/gameplay/powers/travel/ForbiddenForest.scala src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala src/main/scala/distantlands/gameplay/powers/poweruse/NonPersistentPowerRestriction.scala src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/poweruse/BanditCrownSuite.scala src/test/scala/distantlands/gameplay/powers/poweruse/BanditForestSuite.scala src/test/scala/distantlands/gameplay/powers/wake/PassagesSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(consent): the Bandit Crown's holder consents for bandit cards
 
@@ -934,13 +934,13 @@ EOF
 ### Task 3: Bandit tolls the holder may let off
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PayOrAsk.scala` (add `letOffBy`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RulerToll.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/Curfew.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/ForcedLabor.scala:73-75`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala:233-262`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala:93-117`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PayOrAsk.scala` (add `letOffBy`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/RulerToll.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/Curfew.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/ForcedLabor.scala:73-75`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala:233-262`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala:93-117`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala`
 
 **Interfaces:**
 - Consumes: `BanditCrownRule.holder` (Task 1), `PayOrAsk.granter` through
@@ -1195,7 +1195,7 @@ Crown, `letOffBy` names a player ruler exactly when the old code matched
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/PayOrAsk.scala src/main/scala/oathdigital/gameplay/powers/RulerToll.scala src/main/scala/oathdigital/gameplay/powers/economy/Curfew.scala src/main/scala/oathdigital/gameplay/powers/search/ForcedLabor.scala src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/PayOrAsk.scala src/main/scala/distantlands/gameplay/powers/RulerToll.scala src/main/scala/distantlands/gameplay/powers/economy/Curfew.scala src/main/scala/distantlands/gameplay/powers/search/ForcedLabor.scala src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): the Bandit Crown's holder may let a payer off a bandit toll
 

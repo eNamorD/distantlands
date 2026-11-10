@@ -84,24 +84,24 @@ The product owner reviews these with the plan. Task 1 writes all of them into th
 ## File Structure
 
 - **Create:**
-  - `src/main/scala/oathdigital/gameplay/powers/OathkeeperGoalChoice.scala`: the shared question, answer and line.
-  - `src/main/scala/oathdigital/gameplay/powers/action/TheRedSeer.scala`: the card and its power.
-  - `src/main/scala/oathdigital/gameplay/powers/whenplayed/TrueOath.scala`: the card and its power.
-  - `src/test/scala/oathdigital/gameplay/powers/action/TheRedSeerSuite.scala`
-  - `src/test/scala/oathdigital/application/gamelog/TheRedSeerLogSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/whenplayed/TrueOathSuite.scala`
+  - `src/main/scala/distantlands/gameplay/powers/OathkeeperGoalChoice.scala`: the shared question, answer and line.
+  - `src/main/scala/distantlands/gameplay/powers/action/TheRedSeer.scala`: the card and its power.
+  - `src/main/scala/distantlands/gameplay/powers/whenplayed/TrueOath.scala`: the card and its power.
+  - `src/test/scala/distantlands/gameplay/powers/action/TheRedSeerSuite.scala`
+  - `src/test/scala/distantlands/application/gamelog/TheRedSeerLogSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/whenplayed/TrueOathSuite.scala`
 - **Modify:**
-  - `src/main/scala/oathdigital/model/CoreOperations.scala`: the operation.
-  - `src/main/scala/oathdigital/model/OperationError.scala`: the error.
-  - `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala` and `OperationApplication.scala`: applying it.
-  - `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`: the wire form.
-  - `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`: registers The Red Seer.
-  - `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`: registers True Oath.
-  - `src/main/scala/oathdigital/gameplay/powers/ActionPowers.scala`: True Oath's reviewed handler becomes `playedDone`.
-  - `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` and `HoldingNomadDenizens.scala`: the cards move out.
-  - `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`: imports.
-  - `src/test/scala/oathdigital/testkit/Table.scala`: `oathkeeperGoal`.
-  - `src/test/scala/oathdigital/gameplay/operations/OperationMutationSuite.scala` and `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`.
+  - `src/main/scala/distantlands/model/CoreOperations.scala`: the operation.
+  - `src/main/scala/distantlands/model/OperationError.scala`: the error.
+  - `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala` and `OperationApplication.scala`: applying it.
+  - `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`: the wire form.
+  - `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`: registers The Red Seer.
+  - `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`: registers True Oath.
+  - `src/main/scala/distantlands/gameplay/powers/ActionPowers.scala`: True Oath's reviewed handler becomes `playedDone`.
+  - `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` and `HoldingNomadDenizens.scala`: the cards move out.
+  - `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`: imports.
+  - `src/test/scala/distantlands/testkit/Table.scala`: `oathkeeperGoal`.
+  - `src/test/scala/distantlands/gameplay/operations/OperationMutationSuite.scala` and `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`.
   - The design, the rulings appendix and `docs/ROADMAP.md`.
 
 ---
@@ -181,13 +181,13 @@ git commit -m "docs(batch8): record slice 2 plan-time rulings"
 ### Task 2: The Set Oathkeeper Goal operation
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (after `SetOathkeeper`)
-- Modify: `src/main/scala/oathdigital/model/OperationError.scala` (after `OathkeeperUnchanged`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala` (after `setOathkeeper`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala` (after the `SetOathkeeper` case)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala` (after `oathkeeper`)
-- Test: `src/test/scala/oathdigital/gameplay/operations/OperationMutationSuite.scala`, `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (after `SetOathkeeper`)
+- Modify: `src/main/scala/distantlands/model/OperationError.scala` (after `OathkeeperUnchanged`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala` (after `setOathkeeper`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala` (after the `SetOathkeeper` case)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala` (after `oathkeeper`)
+- Test: `src/test/scala/distantlands/gameplay/operations/OperationMutationSuite.scala`, `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces: `SetOathkeeperGoal(goal: OathkeeperGoal)`, applied by the executor and replay, encoded as `set-oathkeeper-goal`. `Table.oathkeeperGoal(goal: OathkeeperGoal): Table`.
@@ -300,7 +300,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/model/OperationError.scala src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/test/scala/oathdigital/testkit/Table.scala src/test/scala/oathdigital/gameplay/operations/OperationMutationSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/model/OperationError.scala src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/testkit/Table.scala src/test/scala/distantlands/gameplay/operations/OperationMutationSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "feat(batch8): a Set Oathkeeper Goal operation"
 ```
 
@@ -309,12 +309,12 @@ git commit -m "feat(batch8): a Set Oathkeeper Goal operation"
 ### Task 3: The goal question and The Red Seer
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/OathkeeperGoalChoice.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/TheRedSeer.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (remove `TheRedSeerCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `TheRedSeerCard` from `gameplay.powers.action`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/TheRedSeerSuite.scala`, `src/test/scala/oathdigital/application/gamelog/TheRedSeerLogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/OathkeeperGoalChoice.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/TheRedSeer.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (remove `TheRedSeerCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `TheRedSeerCard` from `gameplay.powers.action`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/TheRedSeerSuite.scala`, `src/test/scala/distantlands/application/gamelog/TheRedSeerLogSuite.scala`
 
 **Interfaces:**
 - Consumes: `SetOathkeeperGoal`, `Table.oathkeeperGoal` (Task 2).
@@ -641,7 +641,7 @@ Expected: PASS. If a fixture used The Red Seer as a planless or powerless filler
 - [ ] **Step 7: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/OathkeeperGoalChoice.scala src/main/scala/oathdigital/gameplay/powers/action/TheRedSeer.scala src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/action/TheRedSeerSuite.scala src/test/scala/oathdigital/application/gamelog/TheRedSeerLogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/OathkeeperGoalChoice.scala src/main/scala/distantlands/gameplay/powers/action/TheRedSeer.scala src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/action/TheRedSeerSuite.scala src/test/scala/distantlands/application/gamelog/TheRedSeerLogSuite.scala
 git commit -m "feat(batch8): The Red Seer changes the Oathkeeper goal"
 ```
 
@@ -650,12 +650,12 @@ git commit -m "feat(batch8): The Red Seer changes the Oathkeeper goal"
 ### Task 4: True Oath
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/TrueOath.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `TrueOathCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `TrueOathCard` from `gameplay.powers.whenplayed`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionPowers.scala` (`TrueOath`'s handler becomes `playedDone`)
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/TrueOathSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/TrueOath.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `TrueOathCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `TrueOathCard` from `gameplay.powers.whenplayed`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionPowers.scala` (`TrueOath`'s handler becomes `playedDone`)
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/TrueOathSuite.scala`
 
 **Interfaces:**
 - Consumes: `OathkeeperGoalChoice` (Task 3), `Table.oathkeeperGoal` (Task 2).
@@ -845,7 +845,7 @@ Expected: PASS. If a fixture used True Oath as a powerless filler, swap in anoth
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/TrueOath.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala src/main/scala/oathdigital/gameplay/powers/ActionPowers.scala src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/TrueOathSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/TrueOath.scala src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala src/main/scala/distantlands/gameplay/powers/ActionPowers.scala src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/whenplayed/TrueOathSuite.scala
 git commit -m "feat(batch8): True Oath may change the Oathkeeper goal"
 ```
 

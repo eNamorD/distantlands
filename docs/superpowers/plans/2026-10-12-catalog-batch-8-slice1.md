@@ -86,20 +86,20 @@ The product owner reviews these with the plan. Task 1 writes all of them into th
 **Spec (Task 1):** the design and the rulings appendix.
 
 **Hospitality (Task 2):**
-- `src/main/scala/oathdigital/gameplay/powers/travel/Hospitality.scala`: new. `HospitalityCard` moves out of `catalog/holding/HoldingNomadDenizens.scala`.
+- `src/main/scala/distantlands/gameplay/powers/travel/Hospitality.scala`: new. `HospitalityCard` moves out of `catalog/holding/HoldingNomadDenizens.scala`.
 - Registration: `TravelModifiers.scala`, and the `powers.travel` import in `NewFoundations.scala`.
 - Tests: new `HospitalitySuite` and `HospitalityLogSuite`. `PowerKindsCatalogSuite` gains one test.
 
 **Ward of Silence (Task 3):**
-- `src/main/scala/oathdigital/gameplay/powers/action/WardOfSilence.scala`: new. `WardOfSilenceCard` moves out of `catalog/holding/HoldingArcaneDenizens.scala`.
+- `src/main/scala/distantlands/gameplay/powers/action/WardOfSilence.scala`: new. `WardOfSilenceCard` moves out of `catalog/holding/HoldingArcaneDenizens.scala`.
 - Registration: `TargetPowers.scala`, and the `powers.action` import in `NewFoundations.scala`.
 - Tests: new `WardOfSilenceSuite`.
 
 **Vow of Wisdom (Task 4):**
-- `src/main/scala/oathdigital/model/Operation.scala`: `RewritableComposite`.
-- `src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala`: descends a `RewritableComposite`.
-- `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`: `PlacementBody` implements the trait; `PlacementTree` always holds one body.
-- `src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfWisdom.scala`: new. `VowOfWisdomCard` moves out of `catalog/holding/HoldingArcaneDenizens.scala`.
+- `src/main/scala/distantlands/model/Operation.scala`: `RewritableComposite`.
+- `src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala`: descends a `RewritableComposite`.
+- `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`: `PlacementBody` implements the trait; `PlacementTree` always holds one body.
+- `src/main/scala/distantlands/gameplay/powers/cardplay/VowOfWisdom.scala`: new. `VowOfWisdomCard` moves out of `catalog/holding/HoldingArcaneDenizens.scala`.
 - Registration: `CardPlayTriggers.scala`, and the `powers.cardplay` import in `NewFoundations.scala`.
 - Tests: new `VowOfWisdomSuite`. `OperationRewriteSuite` and `CardPlayRulesSuite` gain one test each. `PowerKindsCatalogSuite`'s persistent-rule list gains an entry.
 
@@ -232,13 +232,13 @@ git commit -m "docs(batch8): record slice 1 plan-time rulings"
 This is the slice's riskiest seam: a decision parked after the pawn's move in Travel's cost node. It comes first. If the walk will not park on `travel.hospitality` after the move, stop and ask the product owner. The same applies if the destination look-ahead hides the destination because of it. Do not change the walker or `TravelProcedure`.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/Hospitality.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (remove `HospitalityCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Test: `src/test/scala/oathdigital/gameplay/powers/travel/HospitalitySuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/HospitalityLogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/Hospitality.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (remove `HospitalityCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Test: `src/test/scala/distantlands/gameplay/powers/travel/HospitalitySuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/HospitalityLogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `TravelRoute.pawnMove` (package-private to `powers.travel`), `AdviserSuits.count(catalog, ready, player, suit)`, `PowerAnswers.one`, `PowerAnswers.missing`.
@@ -554,7 +554,7 @@ Expected: PASS. If the first test cannot park on `travel.hospitality`, or the co
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/Hospitality.scala src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/travel/HospitalitySuite.scala src/test/scala/oathdigital/application/gamelog/HospitalityLogSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/travel/Hospitality.scala src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/travel/HospitalitySuite.scala src/test/scala/distantlands/application/gamelog/HospitalityLogSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(batch8): Hospitality gains favor after Travel"
 ```
 
@@ -563,11 +563,11 @@ git commit -m "feat(batch8): Hospitality gains favor after Travel"
 ### Task 3: Ward of Silence flips a player's secrets facedown
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/WardOfSilence.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `WardOfSilenceCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/TargetPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/WardOfSilenceSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/WardOfSilence.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `WardOfSilenceCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/TargetPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Test: `src/test/scala/distantlands/gameplay/powers/action/WardOfSilenceSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction`, `PowerAccess.pawnSite`, `Costs.affordable`, `PowerAnswers.one`, `PowerAnswers.amount`, `NoteSupport.answer`, `NoteSupport.board`.
@@ -857,7 +857,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/WardOfSilence.scala src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/oathdigital/gameplay/powers/action/TargetPowers.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/action/WardOfSilenceSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/WardOfSilence.scala src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/distantlands/gameplay/powers/action/TargetPowers.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/action/WardOfSilenceSuite.scala
 git commit -m "feat(batch8): Ward of Silence flips a player's secrets facedown"
 ```
 
@@ -868,17 +868,17 @@ git commit -m "feat(batch8): Ward of Silence flips a player's secrets facedown"
 The engine half comes first. Its own tests pin it before Vow of Wisdom relies on it.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Operation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfWisdom.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `VowOfWisdomCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Test: `src/test/scala/oathdigital/gameplay/powerresolver/OperationRewriteSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/CardPlayRulesSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfWisdomSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Operation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/VowOfWisdom.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `VowOfWisdomCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Test: `src/test/scala/distantlands/gameplay/powerresolver/OperationRewriteSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/CardPlayRulesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/VowOfWisdomSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `OperationRewrite.ops`, `CardPlayProcedure.PlacementTree.adjust`.
@@ -1014,7 +1014,7 @@ Expected: PASS, with the two new tests. A test that pins a card play's node path
 - [ ] **Step 6: Commit the engine half**
 
 ```bash
-git add src/main/scala/oathdigital/model/Operation.scala src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala src/test/scala/oathdigital/gameplay/powerresolver/OperationRewriteSuite.scala src/test/scala/oathdigital/gameplay/CardPlayRulesSuite.scala
+git add src/main/scala/distantlands/model/Operation.scala src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala src/test/scala/distantlands/gameplay/powerresolver/OperationRewriteSuite.scala src/test/scala/distantlands/gameplay/CardPlayRulesSuite.scala
 git commit -m "feat(batch8): operation rewrites reach into a card play's body"
 ```
 
@@ -1169,7 +1169,7 @@ Expected: PASS.
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfWisdom.scala src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfWisdomSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/VowOfWisdom.scala src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/cardplay/VowOfWisdomSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(batch8): Vow of Wisdom gains a secret for a play to a site"
 ```
 

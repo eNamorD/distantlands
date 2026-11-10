@@ -136,7 +136,7 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
     - A Vision is never played to a site.
   - League Treaty's `inserted` is `Vector(Decide, Branch, BuildOps)`, prepended to the cleanup `BuildOps` of `FinishRestProcedure`, which asks nothing.
 - **Tests:**
-  - `NoteText.said(id, keys, events)` in `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`. A player reads as its id, an amount as "1 favor", a bank as "the Order bank".
+  - `NoteText.said(id, keys, events)` in `src/test/scala/distantlands/gameplay/powers/NoteText.scala`. A player reads as its id, an amount as "1 favor", a bank as "the Order bank".
   - Travel suites: `TravelFixture.travel(ready, destination, modifiers = Vector.empty): Either[OathViolation, OathTransition]` is the whole Travel. `rival = TargetsFixture.others(base).head`.
   - Card play suites:
     - `SearchFixture.play(ready, modifiers, kept, button): OathTransition` keeps the events of the whole Search.
@@ -158,14 +158,14 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
 ### Task 1: The mechanism: card lists, banners, and an unchanged step
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/NoteSupport.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/Wolves.scala`, `action/GamblingHall.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`
-- Test: `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`, `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`, `src/test/scala/oathdigital/gameplay/PowerNoteWalkerSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/NoteSupport.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/Wolves.scala`, `action/GamblingHall.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/NoteText.scala`
+- Test: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`, `src/test/scala/distantlands/gameplay/PowerNoteWalkerSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -390,7 +390,7 @@ If an existing note's test fails, the unchanged-step change altered what it read
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerNotes.scala src/main/scala/oathdigital/serialization/WalkerEventCodec.scala src/main/scala/oathdigital/application/gamelog/PowerLines.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/powers/NoteSupport.scala src/main/scala/oathdigital/gameplay/powers/action/Wolves.scala src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala src/test/scala/oathdigital/gameplay/powers/NoteText.scala src/test/scala/oathdigital/serialization/GameEventWireSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala src/test/scala/oathdigital/gameplay/PowerNoteWalkerSuite.scala
+git add src/main/scala/distantlands/model/PowerNotes.scala src/main/scala/distantlands/serialization/WalkerEventCodec.scala src/main/scala/distantlands/application/gamelog/PowerLines.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/powers/NoteSupport.scala src/main/scala/distantlands/gameplay/powers/action/Wolves.scala src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala src/test/scala/distantlands/gameplay/powers/NoteText.scala src/test/scala/distantlands/serialization/GameEventWireSuite.scala src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala src/test/scala/distantlands/gameplay/PowerNoteWalkerSuite.scala
 git commit -m "feat(log): card list and banner note arguments; an unchanged step reads as no change"
 ```
 
@@ -399,8 +399,8 @@ git commit -m "feat(log): card list and banner note arguments; an unchanged step
 ### Task 2: The Travel powers say what they did
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala`, `GraspingVines.scala`, `ForestPaths.scala`, `DragonskinDrum.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala`, `GraspingVinesSuite.scala`, `ForestPathsSuite.scala`, `DragonskinDrumSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala`, `GraspingVines.scala`, `ForestPaths.scala`, `DragonskinDrum.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala`, `GraspingVinesSuite.scala`, `ForestPathsSuite.scala`, `DragonskinDrumSuite.scala`
 
 **Interfaces:**
 - Consumes: `NoteSupport.killedKey`, `killedNote`, `gainedKey`, `gainedNote` (Task 1).
@@ -637,7 +637,7 @@ If a line appears twice, Travel's destination dry-run journaled into the command
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala src/main/scala/oathdigital/gameplay/powers/travel/ForestPaths.scala src/main/scala/oathdigital/gameplay/powers/travel/DragonskinDrum.scala src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala src/test/scala/oathdigital/gameplay/powers/travel/GraspingVinesSuite.scala src/test/scala/oathdigital/gameplay/powers/travel/ForestPathsSuite.scala src/test/scala/oathdigital/gameplay/powers/travel/DragonskinDrumSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala src/main/scala/distantlands/gameplay/powers/travel/ForestPaths.scala src/main/scala/distantlands/gameplay/powers/travel/DragonskinDrum.scala src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala src/test/scala/distantlands/gameplay/powers/travel/GraspingVinesSuite.scala src/test/scala/distantlands/gameplay/powers/travel/ForestPathsSuite.scala src/test/scala/distantlands/gameplay/powers/travel/DragonskinDrumSuite.scala
 git commit -m "feat(powers): the Travel powers say what they did"
 ```
 
@@ -646,8 +646,8 @@ git commit -m "feat(powers): the Travel powers say what they did"
 ### Task 3: The card-play powers say what they did
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/Gossip.scala`, `cardplay/BookBinders.scala`, `search/TruthfulHarp.scala`, `whenplayed/Dazzle.scala`, `whenplayed/ConspiracyWhenPlayed.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/GossipSuite.scala`, `cardplay/BookBindersSuite.scala`, `search/TruthfulHarpSuite.scala`, `whenplayed/DazzleSuite.scala`, `whenplayed/ConspiracyWhenPlayedSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/Gossip.scala`, `cardplay/BookBinders.scala`, `search/TruthfulHarp.scala`, `whenplayed/Dazzle.scala`, `whenplayed/ConspiracyWhenPlayed.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/GossipSuite.scala`, `cardplay/BookBindersSuite.scala`, `search/TruthfulHarpSuite.scala`, `whenplayed/DazzleSuite.scala`, `whenplayed/ConspiracyWhenPlayedSuite.scala`
 
 **Interfaces:**
 - Consumes: `NoteArg.Cards`, `NoteArg.Banner`, `NoteSupport.gainedFromKey`, `gainedFromNote` (Task 1).
@@ -947,7 +947,7 @@ Expected: all PASS, the golden logs unchanged.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/Gossip.scala src/main/scala/oathdigital/gameplay/powers/cardplay/BookBinders.scala src/main/scala/oathdigital/gameplay/powers/search/TruthfulHarp.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala src/test/scala/oathdigital/gameplay/powers/cardplay/GossipSuite.scala src/test/scala/oathdigital/gameplay/powers/cardplay/BookBindersSuite.scala src/test/scala/oathdigital/gameplay/powers/search/TruthfulHarpSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/Gossip.scala src/main/scala/distantlands/gameplay/powers/cardplay/BookBinders.scala src/main/scala/distantlands/gameplay/powers/search/TruthfulHarp.scala src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala src/test/scala/distantlands/gameplay/powers/cardplay/GossipSuite.scala src/test/scala/distantlands/gameplay/powers/cardplay/BookBindersSuite.scala src/test/scala/distantlands/gameplay/powers/search/TruthfulHarpSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala
 git commit -m "feat(powers): the card-play powers say what they did"
 ```
 
@@ -970,10 +970,10 @@ Fix what it confirms before Task 4.
 ### Task 4: The Campaign powers say what they did
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/GleamingArmor.scala`, `Mercenaries.scala`, `StickyFire.scala`, `Outriders.scala`, `WarningSignals.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/KnightsErrant.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/GleamingArmorSuite.scala`, `MercenariesSuite.scala`, `StickyFireSuite.scala`, `WarningSignalsSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/economy/KnightsErrantSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/OutridersSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/GleamingArmor.scala`, `Mercenaries.scala`, `StickyFire.scala`, `Outriders.scala`, `WarningSignals.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/KnightsErrant.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/GleamingArmorSuite.scala`, `MercenariesSuite.scala`, `StickyFireSuite.scala`, `WarningSignalsSuite.scala`, `src/test/scala/distantlands/gameplay/powers/economy/KnightsErrantSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/OutridersSuite.scala`
 
 **Interfaces:**
 - Consumes: `NoteSupport.killedKey`, `gainedKey`, `answer` (Task 1).
@@ -1405,7 +1405,7 @@ Expected: all PASS, the golden logs unchanged.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/GleamingArmor.scala src/main/scala/oathdigital/gameplay/powers/campaign/Mercenaries.scala src/main/scala/oathdigital/gameplay/powers/campaign/StickyFire.scala src/main/scala/oathdigital/gameplay/powers/campaign/Outriders.scala src/main/scala/oathdigital/gameplay/powers/campaign/WarningSignals.scala src/main/scala/oathdigital/gameplay/powers/economy/KnightsErrant.scala src/test/scala/oathdigital/gameplay/powers/campaign/GleamingArmorSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/MercenariesSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/StickyFireSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/WarningSignalsSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/OutridersSuite.scala src/test/scala/oathdigital/gameplay/powers/economy/KnightsErrantSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/GleamingArmor.scala src/main/scala/distantlands/gameplay/powers/campaign/Mercenaries.scala src/main/scala/distantlands/gameplay/powers/campaign/StickyFire.scala src/main/scala/distantlands/gameplay/powers/campaign/Outriders.scala src/main/scala/distantlands/gameplay/powers/campaign/WarningSignals.scala src/main/scala/distantlands/gameplay/powers/economy/KnightsErrant.scala src/test/scala/distantlands/gameplay/powers/campaign/GleamingArmorSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/MercenariesSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/StickyFireSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/WarningSignalsSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/OutridersSuite.scala src/test/scala/distantlands/gameplay/powers/economy/KnightsErrantSuite.scala
 git commit -m "feat(powers): the Campaign powers say what they did"
 ```
 
@@ -1414,14 +1414,14 @@ git commit -m "feat(powers): the Campaign powers say what they did"
 ### Task 5: The Mob, the Homeland rule and League Treaty; record the slice
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/RuleNotes.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/PlacementRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMob.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyContribution.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/NoteWordings.scala`
-- Create: `src/test/scala/oathdigital/gameplay/HomelandLineSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMobSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/rest/LeagueTreatySuite.scala`, `src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala`, `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/RuleNotes.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/PlacementRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/banner/PeoplesFavorMob.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyContribution.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/NoteWordings.scala`
+- Create: `src/test/scala/distantlands/gameplay/HomelandLineSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/banner/PeoplesFavorMobSuite.scala`, `src/test/scala/distantlands/gameplay/powers/rest/LeagueTreatySuite.scala`, `src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala`, `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
 - Modify: `docs/superpowers/specs/2026-09-26-power-log-lines-design.md`, `docs/ROADMAP.md`
 
 **Interfaces:**
@@ -1453,7 +1453,7 @@ git commit -m "feat(powers): the Campaign powers say what they did"
     assertEquals(mobSaid(toSite(staged(Vector.empty)).events), Vector.empty)
 ```
 
-Create `src/test/scala/oathdigital/gameplay/HomelandLineSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/HomelandLineSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1868,7 +1868,7 @@ Expected: both clean.
 - [ ] **Step 12: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/RuleNotes.scala src/main/scala/oathdigital/gameplay/actions/PlacementRules.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMob.scala src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyContribution.scala src/main/scala/oathdigital/application/gamelog/NoteWordings.scala src/test/scala/oathdigital/gameplay/HomelandLineSuite.scala src/test/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMobSuite.scala src/test/scala/oathdigital/gameplay/powers/rest/LeagueTreatySuite.scala src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala docs/superpowers/specs/2026-09-26-power-log-lines-design.md docs/ROADMAP.md
+git add src/main/scala/distantlands/gameplay/actions/RuleNotes.scala src/main/scala/distantlands/gameplay/actions/PlacementRules.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/distantlands/gameplay/powers/banner/PeoplesFavorMob.scala src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyContribution.scala src/main/scala/distantlands/application/gamelog/NoteWordings.scala src/test/scala/distantlands/gameplay/HomelandLineSuite.scala src/test/scala/distantlands/gameplay/powers/banner/PeoplesFavorMobSuite.scala src/test/scala/distantlands/gameplay/powers/rest/LeagueTreatySuite.scala src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala docs/superpowers/specs/2026-09-26-power-log-lines-design.md docs/ROADMAP.md
 git commit -m "feat(powers): the Mob, the Homeland rule and League Treaty say what they did; record slice 4"
 ```
 

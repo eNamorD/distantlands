@@ -209,11 +209,11 @@ git commit -m "docs(spec): settle the adviser arrival pass and Family Wagon"
 ### Task 2: The adviser arrival pass
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/AdviserArrivals.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/AdviserArrivalPass.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` (trait `ContributingPower`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala` (`recordBatch`)
-- Test: `src/test/scala/oathdigital/gameplay/walker/AdviserArrivalPassSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/AdviserArrivals.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/AdviserArrivalPass.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` (trait `ContributingPower`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala` (`recordBatch`)
+- Test: `src/test/scala/distantlands/gameplay/walker/AdviserArrivalPassSuite.scala`
 
 **Interfaces:**
 - Produces, in `oathdigital.gameplay.powerresolver`:
@@ -224,7 +224,7 @@ git commit -m "docs(spec): settle the adviser arrival pass and Family Wagon"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/AdviserArrivalPassSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/AdviserArrivalPassSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -353,7 +353,7 @@ Expected: FAIL to compile, because `AdviserArrival`, `AdviserArrivals`, `Arrival
 
 - [ ] **Step 3: Create the arrival types**
 
-Create `src/main/scala/oathdigital/gameplay/powerresolver/AdviserArrivals.scala`:
+Create `src/main/scala/distantlands/gameplay/powerresolver/AdviserArrivals.scala`:
 
 ```scala
 package oathdigital.gameplay.powerresolver
@@ -410,7 +410,7 @@ Both types are in the same package, so no import changes.
 
 - [ ] **Step 5: Create the pass**
 
-Create `src/main/scala/oathdigital/gameplay/walker/AdviserArrivalPass.scala`:
+Create `src/main/scala/distantlands/gameplay/walker/AdviserArrivalPass.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -494,7 +494,7 @@ Expected: PASS, the existing walker suites unchanged.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/AdviserArrivals.scala src/main/scala/oathdigital/gameplay/walker/AdviserArrivalPass.scala src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala src/test/scala/oathdigital/gameplay/walker/AdviserArrivalPassSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/AdviserArrivals.scala src/main/scala/distantlands/gameplay/walker/AdviserArrivalPass.scala src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala src/test/scala/distantlands/gameplay/walker/AdviserArrivalPassSuite.scala
 git commit -m "feat(walker): run powers' follow-ups when an adviser arrives"
 ```
 
@@ -503,10 +503,10 @@ git commit -m "feat(walker): run powers' follow-ups when an adviser arrives"
 ### Task 3: Card play's lifted limit and adviser play notes
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala` (`adviserSlots`, the object's doc comment)
-- Test: `src/test/scala/oathdigital/gameplay/CardPlayRulesSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala` (`adviserSlots`, the object's doc comment)
+- Test: `src/test/scala/distantlands/gameplay/CardPlayRulesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/CardSlotsSuite.scala`
 
 **Interfaces:**
 - Produces, in `oathdigital.gameplay.actions`:
@@ -709,7 +709,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala src/test/scala/oathdigital/gameplay/CardPlayRulesSuite.scala src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala src/test/scala/distantlands/gameplay/CardPlayRulesSuite.scala src/test/scala/distantlands/gameplay/CardSlotsSuite.scala
 git commit -m "feat(cardplay): let a power lift the adviser limit and note a play"
 ```
 
@@ -718,15 +718,15 @@ git commit -m "feat(cardplay): let a power lift the adviser limit and note a pla
 ### Task 4: Family Wagon
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/FamilyWagon.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (delete `FamilyWagonCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (the `powers.cardplay` import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala` (`of`)
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala` (`persistentRules`)
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/FamilyWagonSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/AdviserLimitSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/FamilyWagon.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (delete `FamilyWagonCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (the `powers.cardplay` import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala` (`of`)
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala` (`persistentRules`)
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/AdviserLimitSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's `AdviserArrivals`, `ArrivalFollowUp`, `onArrival`; Task 3's `AdviserPlayNote`, `liftWhileFaceUp`, `noteAdviserPlay`, `Unbounded`.
@@ -736,7 +736,7 @@ git commit -m "feat(cardplay): let a power lift the adviser limit and note a pla
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/FamilyWagonSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -921,7 +921,7 @@ Expected: FAIL to compile, because `FamilyWagon` does not exist.
 
 - [ ] **Step 3: Create the card and its power**
 
-Delete `object FamilyWagonCard ...` (its six lines and the blank line after) from `HoldingNomadDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/powers/cardplay/FamilyWagon.scala`:
+Delete `object FamilyWagonCard ...` (its six lines and the blank line after) from `HoldingNomadDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/cardplay/FamilyWagon.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -1105,7 +1105,7 @@ Expected: PASS. If `CardCatalogSuite` or `PowerKindsCatalogSuite` sit in another
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/FamilyWagon.scala src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala src/test/scala/oathdigital/gameplay/powers/cardplay/FamilyWagonSuite.scala src/test/scala/oathdigital/gameplay/powers/AdviserLimitSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/FamilyWagon.scala src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonSuite.scala src/test/scala/distantlands/gameplay/powers/AdviserLimitSuite.scala
 git commit -m "feat(powers): Family Wagon buries every adviser but faceup Nomads"
 ```
 
@@ -1114,10 +1114,10 @@ git commit -m "feat(powers): Family Wagon buries every adviser but faceup Nomads
 ### Task 5: The other arrival routes and the board
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala` (add `drawn`)
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala` (line ~206)
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/FamilyWagonArrivalsSuite.scala`
-- Test: `src/test/scala/oathdigital/application/AdviserLimitProjectionSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala` (add `drawn`)
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala` (line ~206)
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonArrivalsSuite.scala`
+- Test: `src/test/scala/distantlands/application/AdviserLimitProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes: `FamilyWagon` and its keys from Task 4; `HornedMask.id`, `HornedMask.denizenDecisionId`, `Enchantress.id`, `Enchantress.decisionId`, `PiedPiper.id`, `PiedPiper.decisionId`.
@@ -1125,7 +1125,7 @@ git commit -m "feat(powers): Family Wagon buries every adviser but faceup Nomads
 
 - [ ] **Step 1: Write the route tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/FamilyWagonArrivalsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonArrivalsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -1294,7 +1294,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala src/main/scala/oathdigital/application/GamePresentationProjector.scala src/test/scala/oathdigital/gameplay/powers/cardplay/FamilyWagonArrivalsSuite.scala src/test/scala/oathdigital/application/AdviserLimitProjectionSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala src/main/scala/distantlands/application/GamePresentationProjector.scala src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonArrivalsSuite.scala src/test/scala/distantlands/application/AdviserLimitProjectionSuite.scala
 git commit -m "feat(powers): Family Wagon hears every arrival, and its board has room"
 ```
 

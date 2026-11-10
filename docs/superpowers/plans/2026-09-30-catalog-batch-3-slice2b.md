@@ -81,7 +81,7 @@ These settle what the spec and rulings leave open. Each one names what it costs 
 
 ## File Structure
 
-Production, under `src/main/scala/oathdigital/`:
+Production, under `src/main/scala/distantlands/`:
 
 | File | Change | Responsibility |
 |---|---|---|
@@ -107,7 +107,7 @@ Production, under `src/main/scala/oathdigital/`:
 | `gameplay/powers/cardplay/CardPlayTriggers.scala` | Modify | Registers Saddle Makers |
 | `gameplay/powers/wake/HornedMask.scala` | Modify | Doc: the limit names Insomnia |
 
-Tests, under `src/test/scala/oathdigital/`:
+Tests, under `src/test/scala/distantlands/`:
 
 | File | Change |
 |---|---|
@@ -127,16 +127,16 @@ Docs: `docs/ROADMAP.md` and `docs/superpowers/specs/2026-09-30-global-operation-
 ### Task 1: P4 and Insomnia
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/rest/HolderAdviserLimit.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/rest/Insomnia.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala:76-80`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala:26-27`
-- Modify: `src/test/scala/oathdigital/gameplay/RestSuite.scala:256-284`
-- Test: `src/test/scala/oathdigital/gameplay/powers/rest/InsomniaSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/rest/HolderAdviserLimit.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/rest/Insomnia.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala:76-80`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala:26-27`
+- Modify: `src/test/scala/distantlands/gameplay/RestSuite.scala:256-284`
+- Test: `src/test/scala/distantlands/gameplay/powers/rest/InsomniaSuite.scala`
 
 **Interfaces:**
 - Consumes: `CardPlayProcedure.PlacementTree` (`card: WorldCardId`, `adjust(children)(change)`), `PlacementRules.limitAdvisers(limit)`, `PlacementRules.limitFaceupAdvisers(limit)`, `NoteSupport.gainNote`, `NoteSupport.gainedKey`, `NoteSupport.secrets`.
@@ -144,7 +144,7 @@ Docs: `docs/ROADMAP.md` and `docs/superpowers/specs/2026-09-30-global-operation-
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/rest/InsomniaSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/rest/InsomniaSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.rest
@@ -254,7 +254,7 @@ Expected: compile FAIL with "Not found: Insomnia".
 
 - [ ] **Step 3: Create `HolderAdviserLimit`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/rest/HolderAdviserLimit.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/rest/HolderAdviserLimit.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.rest
@@ -305,7 +305,7 @@ final case class HolderAdviserLimit(cardId: DenizenId, limit: Int,
 
 - [ ] **Step 4: Make Silver Tongue use it**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.rest
@@ -395,7 +395,7 @@ object SilverTongue:
 
 - [ ] **Step 5: Create Insomnia**
 
-Create `src/main/scala/oathdigital/gameplay/powers/rest/Insomnia.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/rest/Insomnia.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.rest
@@ -458,7 +458,7 @@ object Insomnia:
 
 - [ ] **Step 6: Make `AdviserLimit.of` take the lowest limit**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -488,7 +488,7 @@ object AdviserLimit:
       .minOption.getOrElse(Default)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`, replace:
 
 ```scala
   * "Full" is the player's adviser limit, [[AdviserLimit.of]]: 3, or 2 for a
@@ -504,7 +504,7 @@ with:
 
 - [ ] **Step 7: Make `PlacementTree.adjust` keep appended nodes**
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
     def adjust(current: Vector[Operation])(
@@ -548,7 +548,7 @@ with:
 
 - [ ] **Step 8: Register Insomnia**
 
-In `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`:
+In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`:
 
 - Change `import oathdigital.gameplay.powers.rest.SilverTongue` to `import oathdigital.gameplay.powers.rest.{Insomnia, SilverTongue}`.
 - Change `PhasePowers(SilverTongue.forCatalog(catalog).toVector ++` to:
@@ -558,7 +558,7 @@ In `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`:
       Insomnia.forCatalog(catalog).toVector ++
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`:
 
 - Change `import oathdigital.gameplay.powers.rest.{LeagueTreatyContribution, SilverTongue}` to `import oathdigital.gameplay.powers.rest.{Insomnia, LeagueTreatyContribution, SilverTongue}`.
 - Add `Insomnia.forCatalog(catalog) ++` on the line after `SilverTongue.forCatalog(catalog) ++`.
@@ -578,7 +578,7 @@ with:
 
 - [ ] **Step 9: Update `RestSuite`'s diagnostic test**
 
-Insomnia's REST now runs as a phase power, so the legacy Rest records no ignored-rule diagnostic for it (ruling 2). In `src/test/scala/oathdigital/gameplay/RestSuite.scala`, in the test "each relevant Rest handler records fallback diagnostics without blocking", replace:
+Insomnia's REST now runs as a phase power, so the legacy Rest records no ignored-rule diagnostic for it (ruling 2). In `src/test/scala/distantlands/gameplay/RestSuite.scala`, in the test "each relevant Rest handler records fallback diagnostics without blocking", replace:
 
 ```scala
     val relevant = Set("denizen.vow-of-poverty", "denizen.naysayers",
@@ -614,7 +614,7 @@ The last `InsomniaSuite` test fails without Step 7: the Mob's discard is not ask
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/rest/HolderAdviserLimit.scala src/main/scala/oathdigital/gameplay/powers/rest/Insomnia.scala src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/rest/InsomniaSuite.scala src/test/scala/oathdigital/gameplay/RestSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/rest/HolderAdviserLimit.scala src/main/scala/distantlands/gameplay/powers/rest/Insomnia.scala src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/powers/rest/InsomniaSuite.scala src/test/scala/distantlands/gameplay/RestSuite.scala
 git commit -m "feat(powers): add Insomnia and share the adviser limit with Silver Tongue"
 ```
 
@@ -623,9 +623,9 @@ git commit -m "feat(powers): add Insomnia and share the adviser limit with Silve
 ### Task 2: Quartermaster
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/wake/Quartermaster.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/wake/QuartermasterSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/wake/Quartermaster.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/wake/QuartermasterSuite.scala`
 
 **Interfaces:**
 - Consumes: `PhasePower`, `PowerAccess.ruledSites(ready, player): Set[SiteId]`, `NoteSupport.gainNote`, `NoteSupport.supply`.
@@ -633,7 +633,7 @@ git commit -m "feat(powers): add Insomnia and share the adviser limit with Silve
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/wake/QuartermasterSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/wake/QuartermasterSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.wake
@@ -714,7 +714,7 @@ Expected: compile FAIL with "Not found: Quartermaster".
 
 - [ ] **Step 3: Create Quartermaster**
 
-Create `src/main/scala/oathdigital/gameplay/powers/wake/Quartermaster.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/wake/Quartermaster.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.wake
@@ -758,7 +758,7 @@ case object Quartermaster extends PhasePower:
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`:
+In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`:
 
 - Change the wake import to:
 
@@ -782,7 +782,7 @@ Expected: PASS. 5 new tests in `QuartermasterSuite`, and every existing wake sui
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/wake/Quartermaster.scala src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/wake/QuartermasterSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/wake/Quartermaster.scala src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala src/test/scala/distantlands/gameplay/powers/wake/QuartermasterSuite.scala
 git commit -m "feat(powers): add Quartermaster"
 ```
 
@@ -791,9 +791,9 @@ git commit -m "feat(powers): add Quartermaster"
 ### Task 3: Saddle Makers
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/SaddleMakers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/SaddleMakersSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/SaddleMakers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/SaddleMakersSuite.scala`
 
 **Interfaces:**
 - Consumes: `ContributingPower`, `CatalogResolution.of`, `NoteSupport.gainedFromKey`, `NoteSupport.gainedFromNote`, `CardPlayedFaceup(card, source)`.
@@ -803,7 +803,7 @@ A play to a site also gains the player 1 favor from the played card's bank (`Car
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/SaddleMakersSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/SaddleMakersSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -915,7 +915,7 @@ Expected: compile FAIL with "Not found: SaddleMakers".
 
 - [ ] **Step 3: Create Saddle Makers**
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/SaddleMakers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/SaddleMakers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -986,7 +986,7 @@ object SaddleMakers:
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala`, add `SaddleMakers.forCatalog(catalog).toVector ++` on the line after `BookBinders.forCatalog(catalog).toVector ++`.
+In `src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala`, add `SaddleMakers.forCatalog(catalog).toVector ++` on the line after `BookBinders.forCatalog(catalog).toVector ++`.
 
 - [ ] **Step 5: Run the suites to verify they pass**
 
@@ -996,7 +996,7 @@ Expected: PASS. 8 new tests in `SaddleMakersSuite`, and every existing card-play
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/SaddleMakers.scala src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala src/test/scala/oathdigital/gameplay/powers/cardplay/SaddleMakersSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/SaddleMakers.scala src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala src/test/scala/distantlands/gameplay/powers/cardplay/SaddleMakersSuite.scala
 git commit -m "feat(powers): add Saddle Makers"
 ```
 
@@ -1005,15 +1005,15 @@ git commit -m "feat(powers): add Saddle Makers"
 ### Task 4: A banner's leaving operations become children of its `Take`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala:434-447`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala:151-155,375-381`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignRaid.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/CampaignLines.scala:128-130`
-- Modify: `src/test/scala/oathdigital/gameplay/ChallengeProcedureSuite.scala:239`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala:434-447`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala:151-155,375-381`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignRaid.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/CampaignLines.scala:128-130`
+- Modify: `src/test/scala/distantlands/gameplay/ChallengeProcedureSuite.scala:239`
+- Modify: `src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
 
 **Interfaces:**
 - Consumes: `OperationPipeline.run(ready, operations, policy, restrictions)(update): Either[OathViolation, OperationRun]`, `OperationRun(state, executed, skipped)`, `Operation.flatten(operation): Vector[Operation]`.
@@ -1021,7 +1021,7 @@ git commit -m "feat(powers): add Saddle Makers"
 
 - [ ] **Step 1: Write the failing tests**
 
-In `src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala`, change the operations import to:
+In `src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala`, change the operations import to:
 
 ```scala
 import oathdigital.gameplay.operations.{GrandScepter, LockedCards,
@@ -1059,7 +1059,7 @@ and add this test at the end of the class:
     assertEquals(order(taken.state), order(ready) + 2)
 ```
 
-In `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`, add this test directly after the test "every Piece variant round-trips through the walker codec":
+In `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, add this test directly after the test "every Piece variant round-trips through the walker codec":
 
 ```scala
   test("a Take's leaving operations round trip, and a Take without them " +
@@ -1097,7 +1097,7 @@ Expected: compile FAIL with "method apply in object Take does not take ... leavi
 
 - [ ] **Step 3: Add `leaving` to `Take`**
 
-In `src/main/scala/oathdigital/model/CoreOperations.scala`, replace:
+In `src/main/scala/distantlands/model/CoreOperations.scala`, replace:
 
 ```scala
 /** Moves a piece into the prompted player's custody. A required `Take`
@@ -1143,7 +1143,7 @@ final case class Take(piece: Piece, player: PlayerId,
 
 - [ ] **Step 4: Encode and decode `leaving`**
 
-In `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`, replace the encode arm:
+In `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`, replace the encode arm:
 
 ```scala
       case Take(piece, player, from, to, sourcePosition, _) => ujson.Obj(
@@ -1200,7 +1200,7 @@ with:
 
 - [ ] **Step 5: Fix the positional `Take` patterns**
 
-In `src/main/scala/oathdigital/application/gamelog/CampaignLines.scala`, replace:
+In `src/main/scala/distantlands/application/gamelog/CampaignLines.scala`, replace:
 
 ```scala
           case OpStep(Take(Piece.Card(id), _, _, _, _, _), before, after) =>
@@ -1224,7 +1224,7 @@ with:
           case OpStep(Take(Piece.Banner(banner), _, _, _, _, _, _), _, _) =>
 ```
 
-In `src/test/scala/oathdigital/gameplay/ChallengeProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/ChallengeProcedureSuite.scala`, replace:
 
 ```scala
         case Take(Piece.Banner(_), _, _, _, _, _) => Some(OperationReason(
@@ -1238,7 +1238,7 @@ with:
 
 - [ ] **Step 6: Move the Raid's leaving operations into its `Take`**
 
-In `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignRaid.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/campaign/CampaignRaid.scala`, replace:
 
 ```scala
       val bannerOps: Vector[CoreOperation] = banners.flatMap { banner =>
@@ -1268,7 +1268,7 @@ with:
 
 - [ ] **Step 7: Move Conspiracy's leaving operations into its `Take`**
 
-In `src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`, replace:
 
 ```scala
     def banner(held: Banner, owner: PlayerId): CoreOperation = Take(
@@ -1314,7 +1314,7 @@ with:
 
 - [ ] **Step 8: Update the Conspiracy suite's reads of the banner's leaving operations**
 
-The recorded batch now holds the banner `Take` with its leaving operations inside it. In `src/test/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala`:
+The recorded batch now holds the banner `Take` with its leaving operations inside it. In `src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala`:
 
 - In the test that takes the People's Favor, replace:
 
@@ -1357,7 +1357,7 @@ If a Game Log suite fails because a line read a banner's leaving operation from 
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignRaid.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala src/main/scala/oathdigital/application/gamelog/CampaignLines.scala src/test/scala/oathdigital/gameplay/ChallengeProcedureSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala src/test/scala/oathdigital/serialization/GameEventWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignRaid.scala src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala src/main/scala/distantlands/application/gamelog/CampaignLines.scala src/test/scala/distantlands/gameplay/ChallengeProcedureSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala src/test/scala/distantlands/serialization/GameEventWireSuite.scala
 git commit -m "feat(operations): carry a banner's leaving operations inside its Take"
 ```
 
@@ -1366,10 +1366,10 @@ git commit -m "feat(operations): carry a banner's leaving operations inside its 
 ### Task 5: Lost Tongue
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/targeting/LostTongue.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/TargetProtections.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/ConspiracyTargets.scala:5-6`
-- Test: `src/test/scala/oathdigital/gameplay/powers/targeting/LostTongueSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/targeting/LostTongue.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/TargetProtections.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/ConspiracyTargets.scala:5-6`
+- Test: `src/test/scala/distantlands/gameplay/powers/targeting/LostTongueSuite.scala`
 
 **Interfaces:**
 - Consumes: `Take` with seven fields (Task 4), `RuledCards.of(catalog, ready, ruler, suit): Vector[CardId]`, `ConspiracyTargets.narrowed(power, operations, protects, note)`, `OptionRestriction(fn, note)`, `BannerRules.holder`.
@@ -1377,7 +1377,7 @@ git commit -m "feat(operations): carry a banner's leaving operations inside its 
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/targeting/LostTongueSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/targeting/LostTongueSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -1567,7 +1567,7 @@ Expected: compile FAIL with "Not found: LostTongue".
 
 - [ ] **Step 3: Create Lost Tongue**
 
-Create `src/main/scala/oathdigital/gameplay/powers/targeting/LostTongue.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/targeting/LostTongue.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -1684,7 +1684,7 @@ object LostTongue:
 
 - [ ] **Step 4: Register it and update `ConspiracyTargets`' doc**
 
-In `src/main/scala/oathdigital/gameplay/powers/targeting/TargetProtections.scala`:
+In `src/main/scala/distantlands/gameplay/powers/targeting/TargetProtections.scala`:
 
 - Add `LostTongue.forCatalog(catalog).toVector ++` on the line after `ForgottenVault.forCatalog(catalog).toVector ++`.
 - Replace the doc comment with:
@@ -1696,7 +1696,7 @@ In `src/main/scala/oathdigital/gameplay/powers/targeting/TargetProtections.scala
   */
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/targeting/ConspiracyTargets.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/targeting/ConspiracyTargets.scala`, replace:
 
 ```scala
 /** Narrows a played Conspiracy's target decision for a rule that protects
@@ -1721,7 +1721,7 @@ If the first Raid test finds the walk parked at `CampaignIds.targets` with no op
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/targeting/LostTongue.scala src/main/scala/oathdigital/gameplay/powers/targeting/TargetProtections.scala src/main/scala/oathdigital/gameplay/powers/targeting/ConspiracyTargets.scala src/test/scala/oathdigital/gameplay/powers/targeting/LostTongueSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/targeting/LostTongue.scala src/main/scala/distantlands/gameplay/powers/targeting/TargetProtections.scala src/main/scala/distantlands/gameplay/powers/targeting/ConspiracyTargets.scala src/test/scala/distantlands/gameplay/powers/targeting/LostTongueSuite.scala
 git commit -m "feat(powers): add Lost Tongue"
 ```
 
@@ -1730,11 +1730,11 @@ git commit -m "feat(powers): add Lost Tongue"
 ### Task 6: The Circlet of Command and the Forgotten Vault protect Campaign targets only
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/CircletOfCommand.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/ConspiracyTargets.scala:5-7`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/targeting/CircletOfCommandSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/targeting/ForgottenVaultSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/CircletOfCommand.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/ConspiracyTargets.scala:5-7`
+- Modify: `src/test/scala/distantlands/gameplay/powers/targeting/CircletOfCommandSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/targeting/ForgottenVaultSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing new.
@@ -1744,7 +1744,7 @@ The rulings ("Target protections corrected") say "target" on a card means a Camp
 
 - [ ] **Step 1: Turn the Circlet suite's Challenge and Conspiracy tests around**
 
-In `src/test/scala/oathdigital/gameplay/powers/targeting/CircletOfCommandSuite.scala`:
+In `src/test/scala/distantlands/gameplay/powers/targeting/CircletOfCommandSuite.scala`:
 
 Replace the test "a Challenge may not name a banner its holder's Circlet protects", the whole test, with:
 
@@ -1785,7 +1785,7 @@ Replace the test "a Conspiracy whose targets the Circlet narrows names the holde
 
 - [ ] **Step 2: Turn the Vault suite's Conspiracy tests around**
 
-In `src/test/scala/oathdigital/gameplay/powers/targeting/ForgottenVaultSuite.scala`, replace the three tests "Conspiracy may take the ruler's banner, but not their relic", "Conspiracy may not take the ruler's facedown relic either" and "a Conspiracy left with no target asks nothing and still says why", all three whole, with:
+In `src/test/scala/distantlands/gameplay/powers/targeting/ForgottenVaultSuite.scala`, replace the three tests "Conspiracy may take the ruler's banner, but not their relic", "Conspiracy may not take the ruler's facedown relic either" and "a Conspiracy left with no target asks nothing and still says why", all three whole, with:
 
 ```scala
   test("Conspiracy may take the ruler's relic as well as their banner"):
@@ -1817,7 +1817,7 @@ Expected: FAIL. The Circlet's Challenge, Conspiracy and line tests, and the Vaul
 
 - [ ] **Step 4: Narrow the Circlet to Campaign targets**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/targeting/CircletOfCommand.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/targeting/CircletOfCommand.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -1906,7 +1906,7 @@ object CircletOfCommand:
 
 - [ ] **Step 5: Narrow the Vault to Campaign targets**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -1978,7 +1978,7 @@ object ForgottenVault:
     CatalogCards.denizen(catalog, id).map(new ForgottenVault(_, catalog))
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/targeting/ConspiracyTargets.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/targeting/ConspiracyTargets.scala`, replace:
 
 ```scala
 /** Narrows a played Conspiracy's target decision for a rule that protects
@@ -2001,7 +2001,7 @@ Expected: PASS. No new tests: the Circlet suite and the Vault suite keep their c
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/targeting/CircletOfCommand.scala src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala src/main/scala/oathdigital/gameplay/powers/targeting/ConspiracyTargets.scala src/test/scala/oathdigital/gameplay/powers/targeting/CircletOfCommandSuite.scala src/test/scala/oathdigital/gameplay/powers/targeting/ForgottenVaultSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/targeting/CircletOfCommand.scala src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala src/main/scala/distantlands/gameplay/powers/targeting/ConspiracyTargets.scala src/test/scala/distantlands/gameplay/powers/targeting/CircletOfCommandSuite.scala src/test/scala/distantlands/gameplay/powers/targeting/ForgottenVaultSuite.scala
 git commit -m "fix(powers): limit the Circlet of Command and the Forgotten Vault to Campaign targets"
 ```
 

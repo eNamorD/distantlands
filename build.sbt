@@ -266,9 +266,9 @@ lazy val frontend = (project in file("frontend"))
     Compile / unmanagedSources ++= {
       val shared = (LocalRootProject / baseDirectory).value / "src" / "main" / "scala"
       Seq(
-        shared / "oathdigital" / "model" / "Identity.scala",
-        shared / "oathdigital" / "model" / "PlayerColor.scala",
-        shared / "oathdigital" / "model" / "Resources.scala"
+        shared / "distantlands" / "model" / "Identity.scala",
+        shared / "distantlands" / "model" / "PlayerColor.scala",
+        shared / "distantlands" / "model" / "Resources.scala"
       )
     },
     Compile / unmanagedSourceDirectories +=

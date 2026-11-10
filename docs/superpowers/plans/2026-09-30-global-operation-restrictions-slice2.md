@@ -58,15 +58,15 @@ the product owner on 2026-09-30. Task 5 records them in the spec.
 
 ## File Structure
 
-- Create `src/main/scala/oathdigital/gameplay/walker/WalkerSearch.scala`: the pure half of the search. It enumerates the answers of a decision, narrows a decision against a verdict, decides what a search does at a decision it reaches, and names the operations that hide information.
-- Modify `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`: search mode on `WalkCtx`, a `Stopped` step, the verdict for one answer, the narrowing before a park, and the stop at hidden information.
-- Modify `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`: `probe` retires; `breaches` gives the tree-level check; `leafAt` narrows through the search.
-- Modify `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala`: a memoized `quiet` copy replaces `copy(probing = false)`.
-- Modify `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`: `DeltaMeaning.of` moves out of `ProcedureWalker` to keep that file under the bound.
-- Modify `src/main/scala/oathdigital/model/CoreOperations.scala`: `BuildOps.required`.
-- Modify `src/main/scala/oathdigital/gameplay/powers/whenplayed/TwinBrother.scala` and `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`: their locked filters retire.
-- Modify `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala`: `isLocked` retires.
-- Modify `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala`, `src/main/scala/oathdigital/gameplay/OathRules.scala` and `src/main/scala/oathdigital/application/PhasePowerProjector.scala`: the phase power dry run.
+- Create `src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala`: the pure half of the search. It enumerates the answers of a decision, narrows a decision against a verdict, decides what a search does at a decision it reaches, and names the operations that hide information.
+- Modify `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`: search mode on `WalkCtx`, a `Stopped` step, the verdict for one answer, the narrowing before a park, and the stop at hidden information.
+- Modify `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`: `probe` retires; `breaches` gives the tree-level check; `leafAt` narrows through the search.
+- Modify `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala`: a memoized `quiet` copy replaces `copy(probing = false)`.
+- Modify `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`: `DeltaMeaning.of` moves out of `ProcedureWalker` to keep that file under the bound.
+- Modify `src/main/scala/distantlands/model/CoreOperations.scala`: `BuildOps.required`.
+- Modify `src/main/scala/distantlands/gameplay/powers/whenplayed/TwinBrother.scala` and `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`: their locked filters retire.
+- Modify `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala`: `isLocked` retires.
+- Modify `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala`, `src/main/scala/distantlands/gameplay/OathRules.scala` and `src/main/scala/distantlands/application/PhasePowerProjector.scala`: the phase power dry run.
 - Tests: create the `SearchBudget` benchmark (a program run by hand, not a suite), `WalkerSearchSuite` and `LazyPruningSuite`; update `HornedMaskSuite`, `WhenPlayedHarness`, `TargetsFixture`, `PhasePowerSuite` and whichever suites Task 3's triage names.
 - Docs: the spec and `docs/ROADMAP.md`.
 
@@ -75,7 +75,7 @@ the product owner on 2026-09-30. Task 5 records them in the spec.
 ### Task 1: Baseline and budget benchmark
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/SearchBudget.scala`
+- Create: `src/test/scala/distantlands/gameplay/SearchBudget.scala`
 - Modify: `docs/superpowers/specs/2026-09-30-global-operation-restrictions-design.md` (section "Lazy pruning", paragraph "Performance budget")
 
 **Interfaces:**
@@ -103,7 +103,7 @@ The benchmark is a program in the test sources, not a munit suite, so
 become part of the suite. It prints its measures and exits non-zero when one
 is over budget.
 
-Create `src/test/scala/oathdigital/gameplay/SearchBudget.scala`:
+Create `src/test/scala/distantlands/gameplay/SearchBudget.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -179,7 +179,7 @@ and READ ms for reading its park.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/SearchBudget.scala docs/superpowers/specs/2026-09-30-global-operation-restrictions-design.md
+git add src/test/scala/distantlands/gameplay/SearchBudget.scala docs/superpowers/specs/2026-09-30-global-operation-restrictions-design.md
 git commit -m "test(walker): add the lazy pruning budget benchmark and record the baseline"
 ```
 
@@ -188,9 +188,9 @@ git commit -m "test(walker): add the lazy pruning budget benchmark and record th
 ### Task 2: The search's answers and narrowing
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/walker/WalkerSearch.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (move `narrowed`)
-- Test: `src/test/scala/oathdigital/gameplay/walker/WalkerSearchSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (move `narrowed`)
+- Test: `src/test/scala/distantlands/gameplay/walker/WalkerSearchSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing new.
@@ -203,7 +203,7 @@ git commit -m "test(walker): add the lazy pruning budget benchmark and record th
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/WalkerSearchSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/WalkerSearchSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -305,7 +305,7 @@ Expected: compilation fails with `Not found: WalkerSearch`.
 
 - [ ] **Step 3: Write `WalkerSearch`**
 
-Create `src/main/scala/oathdigital/gameplay/walker/WalkerSearch.scala`:
+Create `src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -458,7 +458,7 @@ In `WalkerPowerGather.scala`, delete the private `narrowed` method and its doc c
 ```bash
 python3 - <<'EOF'
 import re
-p = 'src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala'
+p = 'src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala'
 s = open(p).read()
 start = s.index("  /** `decide` offering only the permitted options.")
 end = s.index("  /** A required decision with every option forbidden")
@@ -466,7 +466,7 @@ s = s[:start] + s[end:]
 s = re.sub(r'(?<![\w.])narrowed\(decide,', 'WalkerSearch.narrowed(decide,', s)
 open(p, 'w').write(s)
 EOF
-grep -n "narrowed(" src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala
+grep -n "narrowed(" src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala
 ```
 
 Expected: every remaining call reads `WalkerSearch.narrowed(`. A local value or parameter named `narrowed` (as in `lookAheadNotes`) is untouched.
@@ -479,7 +479,7 @@ Expected: PASS. `RestrictionLookAheadSuite` is unchanged in behaviour, since `pr
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/WalkerSearch.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala src/test/scala/oathdigital/gameplay/walker/WalkerSearchSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala src/test/scala/distantlands/gameplay/walker/WalkerSearchSuite.scala
 git commit -m "feat(walker): add the search's answers and narrowing"
 ```
 
@@ -488,11 +488,11 @@ git commit -m "feat(walker): add the search's answers and narrowing"
 ### Task 3: The walker searches before it parks
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`
-- Test: `src/test/scala/oathdigital/gameplay/LazyPruningSuite.scala`, plus the suites the triage in Step 9 names
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`
+- Test: `src/test/scala/distantlands/gameplay/LazyPruningSuite.scala`, plus the suites the triage in Step 9 names
 
 **Interfaces:**
 - Consumes: everything Task 2 produces.
@@ -505,7 +505,7 @@ git commit -m "feat(walker): add the search's answers and narrowing"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/LazyPruningSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/LazyPruningSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -672,8 +672,8 @@ In the class doc comment, replace the paragraph that begins "`probing` is on for
 Replace every `powers.copy(probing = false)` in `ProcedureWalker.scala` and `WalkerPowerGather.scala` with `powers.quiet`:
 
 ```bash
-sed -i '' 's/powers\.copy(probing = false)/powers.quiet/g' src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala
-grep -rn "probing = false)" src/main/scala/oathdigital/gameplay/walker/
+sed -i '' 's/powers\.copy(probing = false)/powers.quiet/g' src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala
+grep -rn "probing = false)" src/main/scala/distantlands/gameplay/walker/
 ```
 
 Expected: the grep shows only `openDecisions`'s `probing` parameter uses, such as `parkedDecide(state, action, pending, powers, probing = false)`.
@@ -719,7 +719,7 @@ In `leafAt`'s doc comment, replace the paragraph that begins "When `powers.probi
     * answer-time check refuses it.
 ```
 
-Step 4's `sed` already turned `lookAheadNotes`' `powers.copy(probing = false)` into `powers.quiet`; nothing more changes there. Replace any remaining doc comment reference to `probe` in `WalkerPowerGather.scala` and `ProcedureWalker.scala` with a reference to the search (`grep -n "probe" src/main/scala/oathdigital/gameplay/walker/*.scala`).
+Step 4's `sed` already turned `lookAheadNotes`' `powers.copy(probing = false)` into `powers.quiet`; nothing more changes there. Replace any remaining doc comment reference to `probe` in `WalkerPowerGather.scala` and `ProcedureWalker.scala` with a reference to the search (`grep -n "probe" src/main/scala/distantlands/gameplay/walker/*.scala`).
 
 - [ ] **Step 6: Add search mode to `ProcedureWalker`**
 
@@ -765,8 +765,8 @@ Make these edits in `ProcedureWalker.scala`.
 and change the three `.map(toOutcome)` calls (in `advance`, `roll` and `resolve`) to `.flatMap(toOutcome)`:
 
 ```bash
-sed -i '' 's/\.map(toOutcome)/.flatMap(toOutcome)/' src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala
-grep -n "toOutcome" src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala
+sed -i '' 's/\.map(toOutcome)/.flatMap(toOutcome)/' src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala
+grep -n "toOutcome" src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala
 ```
 
 Expected: three `.flatMap(toOutcome)` calls and the definition.
@@ -774,8 +774,8 @@ Expected: three `.flatMap(toOutcome)` calls and the definition.
 (e) In `walkRepeat`'s `pass` and in `continue`, a `Stopped` step ends the walk like a park. Replace `case park: Park => Right(park)` in both places:
 
 ```bash
-sed -i '' 's/case park: Park => Right(park)/case stop @ (_: Park | _: Stopped) => Right(stop)/' src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala
-grep -n "case stop @" src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala
+sed -i '' 's/case park: Park => Right(park)/case stop @ (_: Park | _: Stopped) => Right(stop)/' src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala
+grep -n "case stop @" src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala
 ```
 
 Expected: two matches.
@@ -951,7 +951,7 @@ and change the `BuildOps` case to `case build: BuildOps => runBuildOps(build, ct
 
 ```bash
 ./sbtw compile 2>&1 | grep -E "error|warn|success" | head -20
-wc -l src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala
+wc -l src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala
 ```
 
 Expected: `[success]`, and both files at or under 800 lines. Remove any import the compiler reports as unused. If a pattern match is reported as not exhaustive, it is a `Step` match that misses `Stopped`; handle it as a park is handled. If `ProcedureWalker.scala` is over 800 lines, shorten the doc comments this task added before touching other code.
@@ -981,7 +981,7 @@ Expected: both measures under 50 ms. If it fails, do not tune it here: finish th
 - [ ] **Step 11: Commit**
 
 ```bash
-git add -A src/main/scala/oathdigital/gameplay/walker src/test/scala
+git add -A src/main/scala/distantlands/gameplay/walker src/test/scala
 git commit -m "feat(walker): hide options with no legal path by searching before a park"
 ```
 
@@ -990,13 +990,13 @@ git commit -m "feat(walker): hide options with no legal path by searching before
 ### Task 4: Atomic batches, and the locked filters retire
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`BuildOps`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`runBuildOps`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/TwinBrother.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala` (`isLocked` retires)
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala`, `src/main/scala/oathdigital/gameplay/OathRules.scala`, `src/main/scala/oathdigital/application/PhasePowerProjector.scala`
-- Test: `src/test/scala/oathdigital/gameplay/GlobalRestrictionsWalkerSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedHarness.scala`, `src/test/scala/oathdigital/gameplay/powers/TargetsFixture.scala`, `src/test/scala/oathdigital/gameplay/powers/wake/HornedMaskSuite.scala`, `src/test/scala/oathdigital/gameplay/PhasePowerSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`BuildOps`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`runBuildOps`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/TwinBrother.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala` (`isLocked` retires)
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala`, `src/main/scala/distantlands/gameplay/OathRules.scala`, `src/main/scala/distantlands/application/PhasePowerProjector.scala`
+- Test: `src/test/scala/distantlands/gameplay/GlobalRestrictionsWalkerSuite.scala`, `src/test/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedHarness.scala`, `src/test/scala/distantlands/gameplay/powers/TargetsFixture.scala`, `src/test/scala/distantlands/gameplay/powers/wake/HornedMaskSuite.scala`, `src/test/scala/distantlands/gameplay/PhasePowerSuite.scala`
 
 **Interfaces:**
 - Consumes: the search from Task 3.
@@ -1201,7 +1201,7 @@ git commit -m "refactor(restrictions): retire the locked filters for the search"
 **Files:**
 - Modify: `docs/superpowers/specs/2026-09-30-global-operation-restrictions-design.md`
 - Modify: `docs/ROADMAP.md`
-- Possibly modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, `src/main/scala/oathdigital/gameplay/operations/LockedCards.scala` (only if the budget needs the caches)
+- Possibly modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, `src/main/scala/distantlands/gameplay/operations/LockedCards.scala` (only if the budget needs the caches)
 
 - [ ] **Step 1: Measure**
 

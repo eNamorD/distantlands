@@ -86,36 +86,36 @@ These settle what the spec and rulings leave open. Each one names what it costs 
 
 | File | Responsibility |
 |---|---|
-| Create `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDice.scala` | The "±" rule: effect and label by side. |
+| Create `src/main/scala/distantlands/gameplay/powers/campaign/PlanDice.scala` | The "±" rule: effect and label by side. |
 | Create `.../campaign/Longbows.scala`, `BlackSword.scala`, `FireTalkers.scala` | Dice plans (Task 1). |
 | Create `.../campaign/NatureWorship.scala`, `CrackedSage.scala` | Dice plans that read advisers' suits (Task 2). |
 | Modify `.../campaign/SimplePlans.scala` | Registers the five dice plans. |
 | Modify `.../campaign/PlanDiscard.scala` | Adds the "Discarded after the Campaign." note and the end-of-Campaign discard. |
 | Create `.../campaign/HorseArchers.scala`, `StormCaller.scala` | Plans discarded at the end (Task 3). |
 | Create `.../campaign/BagOfSiegeworks.scala` | N2 (Task 4). |
-| Modify `src/main/scala/oathdigital/gameplay/powers/CampaignPowers.scala` | Retires the `BagOfSiegeworks` stub. |
+| Modify `src/main/scala/distantlands/gameplay/powers/CampaignPowers.scala` | Retires the `BagOfSiegeworks` stub. |
 | Create `.../campaign/Hospital.scala` | N3: counts the kills, places the saved warbands at the end (Task 5). |
 | Modify `.../campaign/PlanContext.scala` | `PlanUse` names a player defender before the outcome. |
 | Modify `.../campaign/PlanRules.scala` | Registers Horse Archers, Storm Caller, Bag of Siegeworks and Hospital. |
-| Modify `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala` | Adds `inert(suit, count)`. |
-| Create one suite per card in `src/test/scala/oathdigital/gameplay/powers/campaign/` | Walker-driven tests. |
-| Modify `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala` | Rewords the test that used Bag of Siegeworks as an unimplemented power. |
-| Modify `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala` | Pins the nine cards. |
+| Modify `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala` | Adds `inert(suit, count)`. |
+| Create one suite per card in `src/test/scala/distantlands/gameplay/powers/campaign/` | Walker-driven tests. |
+| Modify `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala` | Rewords the test that used Bag of Siegeworks as an unimplemented power. |
+| Modify `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala` | Pins the nine cards. |
 | Modify `docs/ROADMAP.md` | Records the slice. |
 
-`...` stands for `src/main/scala/oathdigital/gameplay/powers`.
+`...` stands for `src/main/scala/distantlands/gameplay/powers`.
 
 ---
 
 ### Task 1: Longbows, Black Sword and Fire Talkers
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDice.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/Longbows.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/BlackSword.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/FireTalkers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/LongbowsSuite.scala`, `BlackSwordSuite.scala`, `FireTalkersSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/PlanDice.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/Longbows.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/BlackSword.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/FireTalkers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/LongbowsSuite.scala`, `BlackSwordSuite.scala`, `FireTalkersSuite.scala`
 
 **Interfaces:**
 - Consumes: `BattlePlan`, `PlanContext.denizen(id)`, `PlanContext.relic(id)`, `PlanContext.user`, `PlanContext.ready`, `BannerRules.holder(current, banner): Option[PlayerId]`, `CatalogCards.denizen/relic`.
@@ -443,14 +443,14 @@ Expected: PASS, 12 tests in the new suites plus the unchanged Mercenaries suite.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/PlanDice.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/Longbows.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/BlackSword.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/FireTalkers.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/LongbowsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/BlackSwordSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/FireTalkersSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/PlanDice.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/Longbows.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/BlackSword.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/FireTalkers.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/LongbowsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/BlackSwordSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/FireTalkersSuite.scala
 git commit -m "feat(powers): Longbows, Black Sword and Fire Talkers battle plans"
 ```
 
@@ -459,11 +459,11 @@ git commit -m "feat(powers): Longbows, Black Sword and Fire Talkers battle plans
 ### Task 2: Nature Worship and Cracked Sage
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/NatureWorship.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/CrackedSage.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/NatureWorshipSuite.scala`, `CrackedSageSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/NatureWorship.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/CrackedSage.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/NatureWorshipSuite.scala`, `CrackedSageSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlanDice.effect`, `PlanDice.label` (Task 1); `PlanContext.setup: CampaignSetup` (fields `actor: PlayerId`, `defender: CampaignDefender`); `ExecutableCatalog.suitOf(id: CardId): Option[Suit]`; `PowerImplementationStatus.implemented(catalog): PowerId => Boolean`; `DenizenDefinition.suit`, `.handlers`.
@@ -786,12 +786,12 @@ Expected: PASS, every campaign plan suite including the 12 new tests.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/NatureWorship.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/CrackedSage.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/NatureWorshipSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/CrackedSageSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/NatureWorship.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/CrackedSage.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/NatureWorshipSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/CrackedSageSuite.scala
 git commit -m "feat(powers): Nature Worship and Cracked Sage battle plans"
 ```
 
@@ -800,11 +800,11 @@ git commit -m "feat(powers): Nature Worship and Cracked Sage battle plans"
 ### Task 3: Horse Archers and Storm Caller
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/HorseArchers.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/StormCaller.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/HorseArchersSuite.scala`, `StormCallerSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/HorseArchers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/StormCaller.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/HorseArchersSuite.scala`, `StormCallerSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlanDice` (Task 1); `PlanDiscard.denizen(catalog, user, card): Operation`; `PlanUse.user: Option[PlayerId]`, `PlanUse.actor: PlayerId`; `Note(power, build, covers)`; `NoteStates.previous: Option[(ReadyGame, ReadyGame)]`; `NoteText.said(id, keys, events)`, `NoteText.Said(key, text, covers)`.
@@ -1098,12 +1098,12 @@ Expected: PASS, including the 12 new tests.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/HorseArchers.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/StormCaller.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/HorseArchersSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/StormCallerSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/HorseArchers.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/StormCaller.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/HorseArchersSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/StormCallerSuite.scala
 git commit -m "feat(powers): Horse Archers and Storm Caller, discarded after the Campaign"
 ```
 
@@ -1112,11 +1112,11 @@ git commit -m "feat(powers): Horse Archers and Storm Caller, discarded after the
 ### Task 4: Bag of Siegeworks and the ignored defense faces (N2)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/BagOfSiegeworks.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/CampaignPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala:174-190`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/BagOfSiegeworksSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/BagOfSiegeworks.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/CampaignPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala:174-190`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/BagOfSiegeworksSuite.scala`
 
 **Interfaces:**
 - Consumes: `BattlePlan.wrapping`; `PowerWindow.CampaignDefenseResult`, whose children are the `BuildOps` that write the dice score plus the defender's force (`CampaignBattle.defenseResultOps`); `CampaignIds.defensePool`; `ModifyRollOutcome(pool, skulls, score)`; `DefenseDieFace.score`; `CampaignFixture.raidBoard`.
@@ -1356,11 +1356,11 @@ Expected: PASS, including the 7 new tests.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/BagOfSiegeworks.scala \
-  src/main/scala/oathdigital/gameplay/powers/CampaignPowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala \
-  src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/BagOfSiegeworksSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/BagOfSiegeworks.scala \
+  src/main/scala/distantlands/gameplay/powers/CampaignPowers.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala \
+  src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/BagOfSiegeworksSuite.scala
 git commit -m "feat(powers): Bag of Siegeworks ignores single-shield defense dice"
 ```
 
@@ -1369,10 +1369,10 @@ git commit -m "feat(powers): Bag of Siegeworks ignores single-shield defense dic
 ### Task 5: Hospital and the Campaign kill replacement (N3)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/Hospital.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala` (`PlanUse`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/HospitalSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/Hospital.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala` (`PlanUse`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/HospitalSuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -1804,10 +1804,10 @@ If the Sticky Fire test saves 2 and not 5, Hospital folded before Sticky Fire. C
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/Hospital.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/HospitalSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/Hospital.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/HospitalSuite.scala
 git commit -m "feat(powers): Hospital saves its user's killed warbands until the Campaign ends"
 ```
 
@@ -1816,7 +1816,7 @@ git commit -m "feat(powers): Hospital saves its user's killed warbands until the
 ### Task 6: Status pins, gates and roadmap
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala`
 - Modify: `docs/ROADMAP.md`
 
 - [ ] **Step 1: Pin the nine cards**
@@ -1866,7 +1866,7 @@ Expected: both pass.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala \
+git add src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala \
   docs/ROADMAP.md
 git commit -m "docs: record catalog batch 2 slice 2"
 ```

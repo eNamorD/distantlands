@@ -94,18 +94,18 @@ Check each of these in the code before Task 1. If a name or signature differs, r
 | File | Change | Task |
 |---|---|---|
 | `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md` | modify | 1, 4 |
-| `src/test/scala/oathdigital/testkit/{MenuPlay,ProjectedMenu}.scala` | modify, create | 1 |
-| `src/test/scala/oathdigital/testkit/StartPreview.scala` | create | 3 |
-| `src/test/scala/oathdigital/testkit/PhasePowerHarness.scala` | modify | 3 |
+| `src/test/scala/distantlands/testkit/{MenuPlay,ProjectedMenu}.scala` | modify, create | 1 |
+| `src/test/scala/distantlands/testkit/StartPreview.scala` | create | 3 |
+| `src/test/scala/distantlands/testkit/PhasePowerHarness.scala` | modify | 3 |
 | server test suites reading the deleted fields (listed in Task 1) | modify, rename | 1 |
-| `src/main/scala/oathdigital/application/{LegalActionProjector,PhasePowerProjector}.scala` | delete | 2 |
-| `src/main/scala/oathdigital/application/{GameProjection,ScopedProjectionContext,PendingProjector}.scala` | modify | 2 |
-| `shared/src/main/scala/oathdigital/protocol/projection/{GameProjectionDto,GameProjectionCodec,ActionProjectionDtos,ActionProjectionCodec}.scala` | modify | 2 |
-| `frontend/src/main/scala/oathdigital/frontend/frontend.scala` | modify | 2 |
+| `src/main/scala/distantlands/application/{LegalActionProjector,PhasePowerProjector}.scala` | delete | 2 |
+| `src/main/scala/distantlands/application/{GameProjection,ScopedProjectionContext,PendingProjector}.scala` | modify | 2 |
+| `shared/src/main/scala/distantlands/protocol/projection/{GameProjectionDto,GameProjectionCodec,ActionProjectionDtos,ActionProjectionCodec}.scala` | modify | 2 |
+| `frontend/src/main/scala/distantlands/frontend/frontend.scala` | modify | 2 |
 | frontend and shared test fixtures (listed in Task 2) | modify | 2 |
 | the nine procedures, `EconomyTree`, `WalkerSimulation`, `ModifierOffers`, `PhasePowerProcedure` | modify | 3 |
 | gameplay test suites calling the start checks (listed in Task 3) | modify | 3 |
-| `src/main/scala/oathdigital/model/ProcedureRef.scala` and other stale comments | modify | 4 |
+| `src/main/scala/distantlands/model/ProcedureRef.scala` and other stale comments | modify | 4 |
 | `docs/superpowers/specs/2026-10-09-modifier-walker-design.md` | modify | 4 |
 | `docs/architecture/{codebase-structure,rule-resolution,gameplay-modules}.md` | modify | 4 |
 | `docs/ROADMAP.md` | modify | 4 |
@@ -118,11 +118,11 @@ Every server test that reads `legalControls`, `actionSelectionOpen`, `phasePower
 
 **Files:**
 - Modify: `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md`
-- Modify: `src/test/scala/oathdigital/testkit/MenuPlay.scala`
-- Create: `src/test/scala/oathdigital/testkit/ProjectedMenu.scala`
+- Modify: `src/test/scala/distantlands/testkit/MenuPlay.scala`
+- Create: `src/test/scala/distantlands/testkit/ProjectedMenu.scala`
 - Modify tests: listed in Steps 4 to 7
-- Move: `src/test/scala/oathdigital/application/ModifierStartControlsSuite.scala` to `src/test/scala/oathdigital/gameplay/ModifierMenuOptionsSuite.scala`
-- Rename: `src/test/scala/oathdigital/application/PhasePowerProjectorSuite.scala` to `PhasePowerMenuSuite.scala`
+- Move: `src/test/scala/distantlands/application/ModifierStartControlsSuite.scala` to `src/test/scala/distantlands/gameplay/ModifierMenuOptionsSuite.scala`
+- Rename: `src/test/scala/distantlands/application/PhasePowerProjectorSuite.scala` to `PhasePowerMenuSuite.scala`
 
 **Interfaces:**
 - Produces, in `oathdigital.testkit.MenuPlay`:
@@ -208,7 +208,7 @@ In `testkit/MenuPlay.scala`, add after `options(state, catalog)`:
 
 If `DecisionOption` names its availability differently than `available`, use the name `PhaseMenu.onlyEnding` uses.
 
-Create `src/test/scala/oathdigital/testkit/ProjectedMenu.scala`:
+Create `src/test/scala/distantlands/testkit/ProjectedMenu.scala`:
 
 ```scala
 package oathdigital.testkit
@@ -355,11 +355,11 @@ Expected: PASS.
 
 ```bash
 git add docs/superpowers/specs/2026-10-09-walker-game-loop-design.md \
-  src/test/scala/oathdigital/testkit/MenuPlay.scala \
-  src/test/scala/oathdigital/testkit/ProjectedMenu.scala
+  src/test/scala/distantlands/testkit/MenuPlay.scala \
+  src/test/scala/distantlands/testkit/ProjectedMenu.scala
 git add -u src/test/scala
-git add src/test/scala/oathdigital/gameplay/ModifierMenuOptionsSuite.scala \
-  src/test/scala/oathdigital/application/PhasePowerMenuSuite.scala
+git add src/test/scala/distantlands/gameplay/ModifierMenuOptionsSuite.scala \
+  src/test/scala/distantlands/application/PhasePowerMenuSuite.scala
 git status --short
 git commit -m "test: suites read the phase menu instead of the legal controls"
 ```
@@ -371,11 +371,11 @@ git commit -m "test: suites read the phase menu instead of the legal controls"
 ### Task 2: The projection's leftovers go
 
 **Files:**
-- Delete: `src/main/scala/oathdigital/application/LegalActionProjector.scala`, `src/main/scala/oathdigital/application/PhasePowerProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala`, `ScopedProjectionContext.scala`, `PendingProjector.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala`, `GameProjectionCodec.scala`, `ActionProjectionDtos.scala`, `ActionProjectionCodec.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/frontend.scala`
-- Modify tests: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`, the frontend fixtures and suites `grep` finds in Step 4, and every test that expects the phase "act-action-selection"
+- Delete: `src/main/scala/distantlands/application/LegalActionProjector.scala`, `src/main/scala/distantlands/application/PhasePowerProjector.scala`
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala`, `ScopedProjectionContext.scala`, `PendingProjector.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala`, `GameProjectionCodec.scala`, `ActionProjectionDtos.scala`, `ActionProjectionCodec.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/frontend.scala`
+- Modify tests: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`, the frontend fixtures and suites `grep` finds in Step 4, and every test that expects the phase "act-action-selection"
 
 **Interfaces:**
 - Consumes: Task 1's converted suites.
@@ -434,16 +434,16 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git rm src/main/scala/oathdigital/application/LegalActionProjector.scala \
-  src/main/scala/oathdigital/application/PhasePowerProjector.scala
-git add src/main/scala/oathdigital/application/GameProjection.scala \
-  src/main/scala/oathdigital/application/ScopedProjectionContext.scala \
-  src/main/scala/oathdigital/application/PendingProjector.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala \
-  frontend/src/main/scala/oathdigital/frontend/frontend.scala
+git rm src/main/scala/distantlands/application/LegalActionProjector.scala \
+  src/main/scala/distantlands/application/PhasePowerProjector.scala
+git add src/main/scala/distantlands/application/GameProjection.scala \
+  src/main/scala/distantlands/application/ScopedProjectionContext.scala \
+  src/main/scala/distantlands/application/PendingProjector.scala \
+  shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala \
+  shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala \
+  frontend/src/main/scala/distantlands/frontend/frontend.scala
 git add -u src/test/scala shared/src/test/scala frontend/src/test/scala
 git status --short
 git commit -m "refactor: the legal controls and the Act panel's projection fields go"
@@ -454,11 +454,11 @@ git commit -m "refactor: the legal controls and the Act panel's projection field
 ### Task 3: The start checks go
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala`, `travel/TravelProcedure.scala`, `recover/RecoverProcedure.scala`, `challenge/ChallengeProcedure.scala`, `challenge/PlaceBannerResourceProcedure.scala`, `campaign/CampaignProcedure.scala`, `negotiation/NegotiationProcedure.scala`, `economy/MusterProcedure.scala`, `economy/TradeProcedure.scala`, `economy/EconomyTree.scala` (all under `gameplay/actions`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala`, `ModifierOffers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala`
-- Create: `src/test/scala/oathdigital/testkit/StartPreview.scala`
-- Modify: `src/test/scala/oathdigital/testkit/PhasePowerHarness.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala`, `travel/TravelProcedure.scala`, `recover/RecoverProcedure.scala`, `challenge/ChallengeProcedure.scala`, `challenge/PlaceBannerResourceProcedure.scala`, `campaign/CampaignProcedure.scala`, `negotiation/NegotiationProcedure.scala`, `economy/MusterProcedure.scala`, `economy/TradeProcedure.scala`, `economy/EconomyTree.scala` (all under `gameplay/actions`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala`, `ModifierOffers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala`
+- Create: `src/test/scala/distantlands/testkit/StartPreview.scala`
+- Modify: `src/test/scala/distantlands/testkit/PhasePowerHarness.scala`
 - Modify tests: listed in Step 3
 
 **Interfaces:**
@@ -479,7 +479,7 @@ git commit -m "refactor: the legal controls and the Act panel's projection field
 
 - [ ] **Step 1: The test helpers**
 
-Create `src/test/scala/oathdigital/testkit/StartPreview.scala`:
+Create `src/test/scala/distantlands/testkit/StartPreview.scala`:
 
 ```scala
 package oathdigital.testkit
@@ -605,20 +605,20 @@ Expected: PASS.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/MusterProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala \
-  src/main/scala/oathdigital/gameplay/walker/ModifierOffers.scala \
-  src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala \
-  src/test/scala/oathdigital/testkit/StartPreview.scala
+git add src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/MusterProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala \
+  src/main/scala/distantlands/gameplay/walker/ModifierOffers.scala \
+  src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala \
+  src/test/scala/distantlands/testkit/StartPreview.scala
 git add -u src/test/scala
 git status --short
 git commit -m "refactor: the procedures' start checks go; the menu's check is the only one"
@@ -629,8 +629,8 @@ git commit -m "refactor: the procedures' start checks go; the menu's check is th
 ### Task 4: Docs, and the gates
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala`, and the stale comments Step 1 finds
-- Modify: `src/test/scala/oathdigital/model/ProcedureRefSuite.scala`, if Step 2 deletes `StartableRef.fromKey`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala`, and the stale comments Step 1 finds
+- Modify: `src/test/scala/distantlands/model/ProcedureRefSuite.scala`, if Step 2 deletes `StartableRef.fromKey`
 - Modify: `docs/superpowers/specs/2026-10-09-modifier-walker-design.md`, `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md`
 - Modify: `docs/architecture/codebase-structure.md`, `docs/architecture/rule-resolution.md`, `docs/architecture/gameplay-modules.md`
 - Modify: `docs/ROADMAP.md`
@@ -726,7 +726,7 @@ Expected: all pass. Compare the test counts with the baseline and list every tes
 - [ ] **Step 7: Commit, and merge**
 
 ```bash
-git add src/main/scala/oathdigital/model/ProcedureRef.scala \
+git add src/main/scala/distantlands/model/ProcedureRef.scala \
   docs/superpowers/specs/2026-10-09-modifier-walker-design.md \
   docs/superpowers/specs/2026-10-09-walker-game-loop-design.md \
   docs/architecture/codebase-structure.md \

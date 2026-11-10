@@ -26,9 +26,9 @@
 The baseline every later task is measured against. It must be committed before anything else moves, so that a mistake in Task 2 onward shows up as a snapshot diff rather than as a blank line in someone's log.
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/powers/DeclaredNoteKeysSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/DeclaredNoteKeysSuite.scala`
 - Create: `src/test/resources/notes/declared-keys.txt` (generated, then reviewed)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala:31-36`
+- Modify: `src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala:31-36`
 - Modify: `CONTEXT.md` (the `## Language` section, which starts at line 8)
 
 **Interfaces:**
@@ -37,7 +37,7 @@ The baseline every later task is measured against. It must be committed before a
 
 - [ ] **Step 1: Write the snapshot suite**
 
-It follows `GameLogGoldenSuite`'s established pattern exactly: an env var rewrites the fixture, and a rewritten fixture is reviewed before it is committed. Create `src/test/scala/oathdigital/gameplay/powers/DeclaredNoteKeysSuite.scala`:
+It follows `GameLogGoldenSuite`'s established pattern exactly: an env var rewrites the fixture, and a rewritten fixture is reviewed before it is committed. Create `src/test/scala/distantlands/gameplay/powers/DeclaredNoteKeysSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -107,7 +107,7 @@ Expected: on the order of 200 lines, each `power.id: key, key, key`. Check three
 
 - [ ] **Step 5: Replace the two hand-picked pins with the snapshot**
 
-The snapshot now covers every power, so the two-power version is redundant. In `src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala`, delete lines 31-36 — the comment and the `"Gambling Hall and Vow of Peace keep their persisted note keys"` test. The `GamblingHall` and `VowOfPeaceContribution` imports at lines 4-5 become unused, and `-Werror` with `-Wunused:imports` will fail the build if you leave them, so delete those two import lines too. Leave the suite's other four tests alone.
+The snapshot now covers every power, so the two-power version is redundant. In `src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala`, delete lines 31-36 — the comment and the `"Gambling Hall and Vow of Peace keep their persisted note keys"` test. The `GamblingHall` and `VowOfPeaceContribution` imports at lines 4-5 become unused, and `-Werror` with `-Wunused:imports` will fail the build if you leave them, so delete those two import lines too. Leave the suite's other four tests alone.
 
 - [ ] **Step 6: Run the full suite**
 
@@ -144,9 +144,9 @@ for how a declared set is built.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/DeclaredNoteKeysSuite.scala \
+git add src/test/scala/distantlands/gameplay/powers/DeclaredNoteKeysSuite.scala \
         src/test/resources/notes/declared-keys.txt \
-        src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala \
+        src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala \
         CONTEXT.md
 git commit -m "$(cat <<'MSG'
 test(notes): snapshot every power's declared note keys
@@ -169,11 +169,11 @@ MSG
 Independent of every later task. All 12 powers whose card says "At end, discard" relist `PlanDiscard.discarded`; seven also carry a byte-identical `later` body. This is where the Warning Signals bug lived.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/DiscardedAtEnd.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/DiscardedAtEnd.scala`
 - Modify, dropping the relist and the shared body: `campaign/GreatCrusade.scala:30,39-41`, `campaign/MountedPatrol.scala:34,46-48`, `campaign/RivalKhan.scala:28,37-39`, `campaign/PledgeOfDefense.scala:28,38-40`, `campaign/WarningSignals.scala:42-43,50-52`, `campaign/HorseArchers.scala:27,34-36`, `campaign/StormCaller.scala:25,32-34`
 - Modify, dropping the relist and narrowing the discard: `campaign/HeartsAndMinds.scala:35,45-48`, `campaign/TravelingDoctor.scala:34-35,46-50`, `campaign/MountainGiant.scala:35-36,56-62`
 - Modify, dropping the relist and keeping a second window: `campaign/RainBoots.scala:30-31,37-41`, `campaign/Lancers.scala:30-31,37-44`
-- Test: `src/test/scala/oathdigital/gameplay/powers/DeclaredNoteKeysSuite.scala` (unchanged; it is the proof)
+- Test: `src/test/scala/distantlands/gameplay/powers/DeclaredNoteKeysSuite.scala` (unchanged; it is the proof)
 
 **Interfaces:**
 - Consumes: `src/test/resources/notes/declared-keys.txt` from Task 1.
@@ -187,7 +187,7 @@ Expected: PASS. If it fails here, Task 1 is not committed — stop.
 
 - [ ] **Step 2: Write the trait**
 
-`BattlePlan` (`campaign/BattlePlan.scala:47`) already defaults `later` to `Map.empty`. Create `src/main/scala/oathdigital/gameplay/powers/campaign/DiscardedAtEnd.scala`:
+`BattlePlan` (`campaign/BattlePlan.scala:47`) already defaults `later` to `Map.empty`. Create `src/main/scala/distantlands/gameplay/powers/campaign/DiscardedAtEnd.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -275,7 +275,7 @@ Expected: PASS, with the snapshot byte-identical. A snapshot diff here means a k
 - [ ] **Step 6: Commit the seven**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/
+git add src/main/scala/distantlands/gameplay/powers/campaign/
 git commit -m "$(cat <<'MSG'
 refactor(powers): one trait holds the end-of-Campaign discard and its line
 
@@ -351,7 +351,7 @@ Expected: PASS. The golden logs in `src/test/resources/gamelog/` are the real ch
 - [ ] **Step 11: Commit the five**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/
+git add src/main/scala/distantlands/gameplay/powers/campaign/
 git commit -m "$(cat <<'MSG'
 refactor(powers): the conditional end discards keep only their condition
 
@@ -372,17 +372,17 @@ MSG
 `NoteSet`, the one declared-set union, and the check where notes are journaled. Two powers are converted as proof; the other ~199 wait for Tasks 4 and 5.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala:58-66` (add `NoteSet`, 85 lines today)
-- Create: `src/main/scala/oathdigital/gameplay/powers/DeclaredNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/NoteWordings.scala:33-40`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:300-304`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/AdviserArrivalPass.scala:51-53`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/BurnTakes.scala:28-37`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/Defame.scala:38` and its companion at `:120`-ish (the `burned` key)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/WarningSignals.scala` (the `redistributed` key and `planNoteKeys`)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/DeclaredNoteKeysSuite.scala` (read the union from `DeclaredNotes`)
-- Create: `src/test/scala/oathdigital/model/NoteSetSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/walker/UndeclaredNoteSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala:58-66` (add `NoteSet`, 85 lines today)
+- Create: `src/main/scala/distantlands/gameplay/powers/DeclaredNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/NoteWordings.scala:33-40`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:300-304`
+- Modify: `src/main/scala/distantlands/gameplay/walker/AdviserArrivalPass.scala:51-53`
+- Modify: `src/main/scala/distantlands/gameplay/walker/BurnTakes.scala:28-37`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/Defame.scala:38` and its companion at `:120`-ish (the `burned` key)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/WarningSignals.scala` (the `redistributed` key and `planNoteKeys`)
+- Modify: `src/test/scala/distantlands/gameplay/powers/DeclaredNoteKeysSuite.scala` (read the union from `DeclaredNotes`)
+- Create: `src/test/scala/distantlands/model/NoteSetSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/walker/UndeclaredNoteSuite.scala`
 
 **Interfaces:**
 - Consumes: `DiscardedAtEnd.planNoteKeys` from Task 2.
@@ -393,7 +393,7 @@ MSG
 
 - [ ] **Step 1: Write the failing `NoteSet` test**
 
-Create `src/test/scala/oathdigital/model/NoteSetSuite.scala`:
+Create `src/test/scala/distantlands/model/NoteSetSuite.scala`:
 
 ```scala
 package oathdigital.model
@@ -440,7 +440,7 @@ Expected: FAIL to compile, "Not found: NoteSet".
 
 - [ ] **Step 3: Write `NoteSet`**
 
-Add to `src/main/scala/oathdigital/model/PowerNotes.scala`, directly after `object NoteKey` (which ends at line 66). The mutable buffer is filled as the owning object's initialiser runs; the three rules in the scaladoc are what keep that honest, and `DeclaredNoteKeysSuite` is what enforces them.
+Add to `src/main/scala/distantlands/model/PowerNotes.scala`, directly after `object NoteKey` (which ends at line 66). The mutable buffer is filled as the owning object's initialiser runs; the three rules in the scaladoc are what keep that honest, and `DeclaredNoteKeysSuite` is what enforces them.
 
 ```scala
 /** The keys one object declares (derive note keys design, "Mechanism"). A
@@ -491,8 +491,8 @@ Expected: PASS, four tests.
 - [ ] **Step 5: Commit the mechanism**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerNotes.scala \
-        src/test/scala/oathdigital/model/NoteSetSuite.scala
+git add src/main/scala/distantlands/model/PowerNotes.scala \
+        src/test/scala/distantlands/model/NoteSetSuite.scala
 git commit -m "$(cat <<'MSG'
 feat(notes): a key is declared by being created
 
@@ -508,7 +508,7 @@ MSG
 
 - [ ] **Step 6: Write the failing test for the one declared-set union**
 
-The union of walker powers, phase powers and `RuleNotes.all` is derived by hand in `NoteWordings.default` (`application/gamelog/NoteWordings.scala:33-40`) and again in two test suites. `application` sits downstream of `gameplay`, so the walker cannot reach `NoteWordings`; the union moves to `gameplay`. Create `src/test/scala/oathdigital/gameplay/powers/DeclaredNotesSuite.scala`:
+The union of walker powers, phase powers and `RuleNotes.all` is derived by hand in `NoteWordings.default` (`application/gamelog/NoteWordings.scala:33-40`) and again in two test suites. `application` sits downstream of `gameplay`, so the walker cannot reach `NoteWordings`; the union moves to `gameplay`. Create `src/test/scala/distantlands/gameplay/powers/DeclaredNotesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -543,7 +543,7 @@ Expected: FAIL to compile, "Not found: DeclaredNotes".
 
 - [ ] **Step 8: Write `DeclaredNotes`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/DeclaredNotes.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/DeclaredNotes.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -581,7 +581,7 @@ Expected: PASS, four tests.
 
 - [ ] **Step 10: Have `NoteWordings` and the snapshot suite read the union**
 
-In `src/main/scala/oathdigital/application/gamelog/NoteWordings.scala`, replace the body of `default` (lines 33-40) so it folds `DeclaredNotes` instead of walking the two catalogs again. The `sources` and `narrated` maps still come from the powers, which `default` already visits, so keep those two traversals and take only the keys from `DeclaredNotes`:
+In `src/main/scala/distantlands/application/gamelog/NoteWordings.scala`, replace the body of `default` (lines 33-40) so it folds `DeclaredNotes` instead of walking the two catalogs again. The `sources` and `narrated` maps still come from the powers, which `default` already visits, so keep those two traversals and take only the keys from `DeclaredNotes`:
 
 ```scala
   /** The walker powers', the phase powers' and the game rules' keys. */
@@ -614,10 +614,10 @@ Expected: PASS, snapshot byte-identical, every golden log unchanged. A golden di
 - [ ] **Step 12: Commit the union**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/DeclaredNotes.scala \
-        src/main/scala/oathdigital/application/gamelog/NoteWordings.scala \
-        src/test/scala/oathdigital/gameplay/powers/DeclaredNotesSuite.scala \
-        src/test/scala/oathdigital/gameplay/powers/DeclaredNoteKeysSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/DeclaredNotes.scala \
+        src/main/scala/distantlands/application/gamelog/NoteWordings.scala \
+        src/test/scala/distantlands/gameplay/powers/DeclaredNotesSuite.scala \
+        src/test/scala/distantlands/gameplay/powers/DeclaredNoteKeysSuite.scala
 git commit -m "$(cat <<'MSG'
 refactor(notes): one union of every declared note key
 
@@ -635,7 +635,7 @@ MSG
 
 - [ ] **Step 13: Write the failing test for the undeclared-key check**
 
-Create `src/test/scala/oathdigital/gameplay/walker/UndeclaredNoteSuite.scala`. It asserts the check directly, because reaching it through a real walk needs a power that is deliberately broken:
+Create `src/test/scala/distantlands/gameplay/walker/UndeclaredNoteSuite.scala`. It asserts the check directly, because reaching it through a real walk needs a power that is deliberately broken:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -676,7 +676,7 @@ Expected: FAIL to compile, "Not found: NoteCheck".
 
 - [ ] **Step 15: Write the check**
 
-`PowerNoted` is built at three places — `ProcedureWalker.scala:303`, `AdviserArrivalPass.scala:53` and `BurnTakes.scala:35` — so the check goes in one helper the three call. Add `src/main/scala/oathdigital/gameplay/walker/NoteCheck.scala`:
+`PowerNoted` is built at three places — `ProcedureWalker.scala:303`, `AdviserArrivalPass.scala:53` and `BurnTakes.scala:35` — so the check goes in one helper the three call. Add `src/main/scala/distantlands/gameplay/walker/NoteCheck.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -779,10 +779,10 @@ Expected: PASS, snapshot byte-identical.
 - [ ] **Step 21: Commit the check and the two converted powers**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/ \
-        src/main/scala/oathdigital/gameplay/powers/economy/Defame.scala \
-        src/main/scala/oathdigital/gameplay/powers/campaign/WarningSignals.scala \
-        src/test/scala/oathdigital/gameplay/walker/UndeclaredNoteSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/ \
+        src/main/scala/distantlands/gameplay/powers/economy/Defame.scala \
+        src/main/scala/distantlands/gameplay/powers/campaign/WarningSignals.scala \
+        src/test/scala/distantlands/gameplay/walker/UndeclaredNoteSuite.scala
 git commit -m "$(cat <<'MSG'
 feat(notes): the walker refuses a note no power declared
 
@@ -805,7 +805,7 @@ MSG
 
 The mechanical bulk: every power that owns its keys outright and has an id of its own. 112 of them, converted in two commits rather than one per directory, because the snapshot proves each batch inert and a scripted conversion either applies cleanly or refuses the file by name.
 
-**Files:** every file under `src/main/scala/oathdigital/gameplay/powers/` that contains `def noteKeys` and whose `noteKeys` vector names no key from another object. Counts of files containing `def noteKeys` by directory, for sizing: `action` 72, `campaign` 51, `whenplayed` 25, `economy` 10, `travel` 9, `cardplay` 7, `wake` 5, `targeting` 4, `search` 4, `banner` 4, `setup` 3, `rest` 3, `title` 1, `recover` 1, `dice` 1, `burn` 1.
+**Files:** every file under `src/main/scala/distantlands/gameplay/powers/` that contains `def noteKeys` and whose `noteKeys` vector names no key from another object. Counts of files containing `def noteKeys` by directory, for sizing: `action` 72, `campaign` 51, `whenplayed` 25, `economy` 10, `travel` 9, `cardplay` 7, `wake` 5, `targeting` 4, `search` 4, `banner` 4, `setup` 3, `rest` 3, `title` 1, `recover` 1, `dice` 1, `burn` 1.
 
 **Interfaces:**
 - Consumes: `NoteSet.apply`, `NoteSet.unowned` and `DeclaredNotes.of` from Task 3.
@@ -817,7 +817,7 @@ Run:
 
 ```bash
 cd /Users/roman/projects/oathdigital
-grep -rln 'def noteKeys' --include='*.scala' src/main/scala/oathdigital/gameplay/powers \
+grep -rln 'def noteKeys' --include='*.scala' src/main/scala/distantlands/gameplay/powers \
   | while read -r f; do
       if ! grep -A4 'def noteKeys' "$f" | grep -qE '[A-Z][A-Za-z]+\.[a-z][A-Za-z]*'; then
         echo "$f"
@@ -864,7 +864,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit the directory**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/<directory>/
+git add src/main/scala/distantlands/gameplay/powers/<directory>/
 git commit -m "$(cat <<'MSG'
 refactor(powers): <directory> powers declare their note keys by creating them
 
@@ -920,7 +920,7 @@ Run:
 cd /Users/roman/projects/oathdigital
 comm -13 <(sort /tmp/own-keys.txt) \
   <(grep -rln 'def noteKeys' --include='*.scala' \
-      src/main/scala/oathdigital/gameplay/powers | sort) \
+      src/main/scala/distantlands/gameplay/powers | sort) \
   | tee /tmp/borrowed-keys.txt | wc -l
 ```
 
@@ -965,7 +965,7 @@ Expected: PASS, byte-identical. Convert in batches of one directory and run this
 - [ ] **Step 5: Commit the includes**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/
+git add src/main/scala/distantlands/gameplay/powers/
 git commit -m "$(cat <<'MSG'
 refactor(powers): a borrowed note key is included, not relisted
 
@@ -981,7 +981,7 @@ MSG
 
 - [ ] **Step 6: Write the failing test for the evidence**
 
-The five helpers that build the note themselves can demand the inclusion in their signature. Create `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDiscardEvidenceSuite.scala`:
+The five helpers that build the note themselves can demand the inclusion in their signature. Create `src/test/scala/distantlands/gameplay/powers/campaign/PlanDiscardEvidenceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1068,9 +1068,9 @@ Expected: PASS, snapshot byte-identical, every golden log unchanged.
 - [ ] **Step 12: Commit the evidence**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerNotes.scala \
-        src/main/scala/oathdigital/gameplay/powers/ \
-        src/test/scala/oathdigital/gameplay/powers/campaign/PlanDiscardEvidenceSuite.scala
+git add src/main/scala/distantlands/model/PowerNotes.scala \
+        src/main/scala/distantlands/gameplay/powers/ \
+        src/test/scala/distantlands/gameplay/powers/campaign/PlanDiscardEvidenceSuite.scala
 git commit -m "$(cat <<'MSG'
 feat(notes): a helper that writes a note demands the caller declare it
 
@@ -1093,7 +1093,7 @@ MSG
 With every key created through a set, the bare constructor is the only way back to the old idiom.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala:58` (`NoteKey`'s constructor)
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala:58` (`NoteKey`'s constructor)
 - Modify: whatever the compiler then reports
 
 **Interfaces:**
@@ -1106,14 +1106,14 @@ Run:
 
 ```bash
 cd /Users/roman/projects/oathdigital
-grep -rn 'NoteKey(' --include='*.scala' src/main | grep -v 'src/main/scala/oathdigital/model/PowerNotes.scala'
+grep -rn 'NoteKey(' --include='*.scala' src/main | grep -v 'src/main/scala/distantlands/model/PowerNotes.scala'
 ```
 
 Expected: no output. Any hit is a power Tasks 4 and 5 missed — convert it before going on, and say which in the commit body.
 
 - [ ] **Step 2: Close the constructor**
 
-In `src/main/scala/oathdigital/model/PowerNotes.scala`, change the case class so only the model can construct it:
+In `src/main/scala/distantlands/model/PowerNotes.scala`, change the case class so only the model can construct it:
 
 ```scala
 final case class NoteKey private[model] (name: String,
@@ -1148,8 +1148,8 @@ Expected: PASS, snapshot byte-identical, every golden log unchanged.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerNotes.scala \
-        src/main/scala/oathdigital/application/gamelog/NoteWordings.scala
+git add src/main/scala/distantlands/model/PowerNotes.scala \
+        src/main/scala/distantlands/application/gamelog/NoteWordings.scala
 git commit -m "$(cat <<'MSG'
 refactor(notes): a note key can only be made by declaring it
 

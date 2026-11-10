@@ -18,7 +18,7 @@
 - `docs/superpowers/specs/2026-10-17-city-wall-as-if-site-design.md`: the whole design. This plan implements it.
 - `docs/superpowers/specs/2026-10-12-catalog-batch-8-design.md`: slice 7 ("An as-if pawn site for Trade", "'Start' judged with the walk's answers") and slice 10 ("Enemies", "Consent").
 - `docs/superpowers/specs/2026-10-12-catalog-batch-8-rulings.md`: 177 Small Friends, 224 Friendly Familiar, 252 City Wall.
-- `src/test/scala/oathdigital/gameplay/DeferralSuite.scala`: the model for Task 1. `Defer` is the precedent for walker scratch.
+- `src/test/scala/distantlands/gameplay/DeferralSuite.scala`: the model for Task 1. `Defer` is the precedent for walker scratch.
 
 **Starts from:** `main` at `819cbc87` or later, with this plan committed. Where this plan quotes code, read the file as it is on `main` and apply the change to what is there.
 
@@ -67,22 +67,22 @@ Task 4 records these in the design.
 ### Task 1: The as-if site as walker scratch
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (after `walkerDeferred`, about line 210)
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (after `TakeDeferred`, about line 688)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala` (after `takeDeferred`, about line 125)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala:210-211`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (lines 44, 256, 545)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:271-275`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala:150-162`
-- Create: `src/test/scala/oathdigital/gameplay/ActAsIfSuite.scala`
-- Modify: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala` (after the deferral test, about line 483)
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (after `walkerDeferred`, about line 210)
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (after `TakeDeferred`, about line 688)
+- Modify: `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala` (after `takeDeferred`, about line 125)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala:210-211`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (lines 44, 256, 545)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:271-275`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala:150-162`
+- Create: `src/test/scala/distantlands/gameplay/ActAsIfSuite.scala`
+- Modify: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala` (after the deferral test, about line 483)
 
 **Interfaces:**
 - Produces: `CurrentGameState.walkerAsIfSite: Option[SiteId]` (default `None`); `final case class ActAsIf(site: SiteId) extends PrimitiveOperation` in `oathdigital.model`; wire kind `"act-as-if"` with field `"siteId"`.
 
 - [ ] **Step 1: Write the failing model test**
 
-Create `src/test/scala/oathdigital/gameplay/ActAsIfSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/ActAsIfSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -235,7 +235,7 @@ Expected: PASS. If `-Werror` reports a non-exhaustive match over `CoreOperation`
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala src/test/scala/oathdigital/gameplay/ActAsIfSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala src/test/scala/distantlands/gameplay/ActAsIfSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(batch8): an as-if site is walker scratch, set by ActAsIf
 
@@ -249,17 +249,17 @@ EOF
 ### Task 2: The as-if readers read state
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/ActingSite.scala` (doc, `offerReason`, `selectionQuestions`)
-- Modify: `src/main/scala/oathdigital/gameplay/PowerAccess.scala:19-23,40-62,84-92`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala:77-89`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/MapLibrary.scala:16-45`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/SpitefulMirror.scala:43-47`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala:42-46`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/SkilledMerchants.scala:33-36`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala:29-59`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala:26-29,52-58`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerAccessSuite.scala:104-128`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/economy/SmallFriendsSuite.scala` (the test "acting at the chosen site, the Trade draws only on its cards, and the line names it")
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/ActingSite.scala` (doc, `offerReason`, `selectionQuestions`)
+- Modify: `src/main/scala/distantlands/gameplay/PowerAccess.scala:19-23,40-62,84-92`
+- Modify: `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala:77-89`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/MapLibrary.scala:16-45`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/SpitefulMirror.scala:43-47`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala:42-46`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/SkilledMerchants.scala:33-36`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala:29-59`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala:26-29,52-58`
+- Modify: `src/test/scala/distantlands/gameplay/PowerAccessSuite.scala:104-128`
+- Modify: `src/test/scala/distantlands/gameplay/powers/economy/SmallFriendsSuite.scala` (the test "acting at the chosen site, the Trade draws only on its cards, and the line names it")
 
 **Interfaces:**
 - Consumes: `CurrentGameState.walkerAsIfSite`, `ActAsIf(site: SiteId)` (Task 1).
@@ -538,7 +538,7 @@ Expected: PASS. `SmallFriendsSuite`, `FriendlyFamiliarSuite`, `MapLibrarySuite`,
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/PowerAccess.scala src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala src/main/scala/oathdigital/gameplay/powers/economy/ActingSite.scala src/main/scala/oathdigital/gameplay/powers/economy/MapLibrary.scala src/main/scala/oathdigital/gameplay/powers/economy/SpitefulMirror.scala src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala src/main/scala/oathdigital/gameplay/powers/economy/SkilledMerchants.scala src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala src/test/scala/oathdigital/gameplay/PowerAccessSuite.scala src/test/scala/oathdigital/gameplay/powers/economy/SmallFriendsSuite.scala
+git add src/main/scala/distantlands/gameplay/PowerAccess.scala src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala src/main/scala/distantlands/gameplay/powers/economy/ActingSite.scala src/main/scala/distantlands/gameplay/powers/economy/MapLibrary.scala src/main/scala/distantlands/gameplay/powers/economy/SpitefulMirror.scala src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala src/main/scala/distantlands/gameplay/powers/economy/SkilledMerchants.scala src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala src/test/scala/distantlands/gameplay/PowerAccessSuite.scala src/test/scala/distantlands/gameplay/powers/economy/SmallFriendsSuite.scala
 git commit -m "$(cat <<'EOF'
 refactor(batch8): the as-if Trade site is read from state
 
@@ -552,8 +552,8 @@ EOF
 ### Task 3: City Wall reads the as-if site
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala:1-9,19-30,63-72`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/poweruse/CityWallSuite.scala` (imports, and a new section after the Campaign origin tests, before the Tyrant helper `holdingTyrant`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala:1-9,19-30,63-72`
+- Modify: `src/test/scala/distantlands/gameplay/powers/poweruse/CityWallSuite.scala` (imports, and a new section after the Campaign origin tests, before the Tyrant helper `holdingTyrant`)
 
 **Interfaces:**
 - Consumes: `PowerAccess.asIfSite(ready, actor)` (Task 2); `ActAsIf`, `CurrentGameState.walkerAsIfSite` (Task 1); `PowerAccess.asIfDecision`.
@@ -736,7 +736,7 @@ If the bandit case's reason does not contain the text, print `reason` and compar
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala src/test/scala/oathdigital/gameplay/powers/poweruse/CityWallSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala src/test/scala/distantlands/gameplay/powers/poweruse/CityWallSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(batch8): City Wall walls in a player trading as if at its site
 

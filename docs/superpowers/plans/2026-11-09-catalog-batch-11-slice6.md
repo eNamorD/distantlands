@@ -138,15 +138,15 @@ Inventoried at `33c7be12`.
 
 ## File structure
 
-- Create `src/main/scala/oathdigital/gameplay/RevealedVisions.scala`: the
+- Create `src/main/scala/distantlands/gameplay/RevealedVisions.scala`: the
   victory read path.
-- Create `src/main/scala/oathdigital/gameplay/DesecratedGround.scala`:
+- Create `src/main/scala/distantlands/gameplay/DesecratedGround.scala`:
   `SacredGroundCard` (moved) and `DesecratedGroundRule`.
-- Create `src/main/scala/oathdigital/gameplay/powers/cardplay/DesecratedGround.scala`:
+- Create `src/main/scala/distantlands/gameplay/powers/cardplay/DesecratedGround.scala`:
   the registered power.
-- Create `src/test/scala/oathdigital/gameplay/powers/cardplay/DesecratedGroundSuite.scala`.
-- Create `src/test/scala/oathdigital/application/gamelog/DesecratedGroundLogSuite.scala`.
-- Create `src/test/scala/oathdigital/gameplay/RevealedVisionsSuite.scala`.
+- Create `src/test/scala/distantlands/gameplay/powers/cardplay/DesecratedGroundSuite.scala`.
+- Create `src/test/scala/distantlands/application/gamelog/DesecratedGroundLogSuite.scala`.
+- Create `src/test/scala/distantlands/gameplay/RevealedVisionsSuite.scala`.
 - Modify the files in finding 1, plus `model/GameEventProtocol.scala`,
   `serialization/EndingEventCodec.scala`, `application/DecisionOptionRows.scala`,
   `application/gamelog/GameLogFormatter.scala`,
@@ -164,26 +164,26 @@ The field becomes a list, and every bookkeeping site handles a list. No
 rule changes yet: a reveal still discards every Vision already there.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala:22`
-- Modify: `src/main/scala/oathdigital/model/CardIndex.scala:161-170`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateWrites.scala:85-88`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/CardMovementOperations.scala:252-253, 378-383`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationExecutor.scala:80-82`
-- Modify: `src/main/scala/oathdigital/gameplay/roles/RoleChanges.scala:132-140`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:174-206`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala:334-346`
-- Modify: `src/main/scala/oathdigital/application/DecisionOptionRows.scala:107-113`
-- Modify: `src/main/scala/oathdigital/gameplay/VisionVictoryEligibility.scala:11`
-- Modify: `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala:69, 214`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/SwearOath.scala:40`
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala:348-352`
+- Modify: `src/main/scala/distantlands/model/GameState.scala:22`
+- Modify: `src/main/scala/distantlands/model/CardIndex.scala:161-170`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateWrites.scala:85-88`
+- Modify: `src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala:252-253, 378-383`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationExecutor.scala:80-82`
+- Modify: `src/main/scala/distantlands/gameplay/roles/RoleChanges.scala:132-140`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala:174-206`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala:334-346`
+- Modify: `src/main/scala/distantlands/application/DecisionOptionRows.scala:107-113`
+- Modify: `src/main/scala/distantlands/gameplay/VisionVictoryEligibility.scala:11`
+- Modify: `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala:69, 214`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/SwearOath.scala:40`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala:348-352`
 - Modify: the other test files from finding 10.
-- Test: `src/test/scala/oathdigital/gameplay/operations/CardMovementOperationsSuite.scala` (or the suite that already tests `Location.PlayArea` moves; find it with `grep -rln "PlayArea" src/test/scala/oathdigital/gameplay/operations`)
-- Test: `src/test/scala/oathdigital/gameplay/roles/RoleChangesSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/VisionPlaySuite.scala`
-- Test: `src/test/scala/oathdigital/application/SlotOptionRowsSuite.scala`
-- Test: `src/test/scala/oathdigital/testkit/TableSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/operations/CardMovementOperationsSuite.scala` (or the suite that already tests `Location.PlayArea` moves; find it with `grep -rln "PlayArea" src/test/scala/distantlands/gameplay/operations`)
+- Test: `src/test/scala/distantlands/gameplay/roles/RoleChangesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/CardSlotsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/VisionPlaySuite.scala`
+- Test: `src/test/scala/distantlands/application/SlotOptionRowsSuite.scala`
+- Test: `src/test/scala/distantlands/testkit/TableSuite.scala`
 
 **Interfaces:**
 - Produces: `PlayerState.revealedVisions: Vector[VisionState]`;
@@ -479,7 +479,7 @@ suite's other tests do: read the test at the suite's "existing Vision"
 case and copy its call exactly.
 
 `gameplay/roles/RoleChangesSuite.scala`, beside its existing Vision test
-(`grep -n "revealedVision" src/test/scala/oathdigital/gameplay/roles/RoleChangesSuite.scala`):
+(`grep -n "revealedVision" src/test/scala/distantlands/gameplay/roles/RoleChangesSuite.scala`):
 the same setup with two Visions, asserting both are discarded and
 `revealedVisions` is empty after becoming a Citizen. Copy the existing
 test's setup and its assertion style, adding
@@ -518,18 +518,18 @@ Expected: PASS, except frontend tests, which Task 2 handles.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/model/CardIndex.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationStateWrites.scala \
-  src/main/scala/oathdigital/gameplay/operations/CardMovementOperations.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationExecutor.scala \
-  src/main/scala/oathdigital/gameplay/roles/RoleChanges.scala \
-  src/main/scala/oathdigital/gameplay/actions/CardPlay.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala \
-  src/main/scala/oathdigital/application/DecisionOptionRows.scala \
-  src/main/scala/oathdigital/gameplay/VisionVictoryEligibility.scala \
-  src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/SwearOath.scala
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/model/CardIndex.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationStateWrites.scala \
+  src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationExecutor.scala \
+  src/main/scala/distantlands/gameplay/roles/RoleChanges.scala \
+  src/main/scala/distantlands/gameplay/actions/CardPlay.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala \
+  src/main/scala/distantlands/application/DecisionOptionRows.scala \
+  src/main/scala/distantlands/gameplay/VisionVictoryEligibility.scala \
+  src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala \
+  src/main/scala/distantlands/gameplay/chronicle/SwearOath.scala
 git add $(git diff --name-only -- src/test)
 git commit -m "refactor(model): a player holds a list of revealed Visions" \
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -543,14 +543,14 @@ only the test files this task changed.
 ### Task 2: The projection and the board show several Visions
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:323`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala:223, 238, 249` and the board's constructor call below line 249
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala:187-188`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:108-120`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/TestTablePieces.scala:47`
-- Test: `frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala`
-- Test: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- Test: the projector suite that reads a board's Vision (`grep -rln "revealedVision\|revealedVisions" src/test/scala/oathdigital/application`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:323`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala:223, 238, 249` and the board's constructor call below line 249
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala:187-188`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:108-120`
+- Modify: `frontend/src/test/scala/distantlands/frontend/TestTablePieces.scala:47`
+- Test: `frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala`
+- Test: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- Test: the projector suite that reads a board's Vision (`grep -rln "revealedVision\|revealedVisions" src/test/scala/distantlands/application`)
 
 **Interfaces:**
 - Consumes: `PlayerState.revealedVisions` (Task 1).
@@ -560,7 +560,7 @@ only the test files this task changed.
 - [ ] **Step 1: Write the failing codec test**
 
 In `ProjectionProtocolSuite`, find the board round-trip test (`grep -n
-"PlayerBoardProjection(" shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`)
+"PlayerBoardProjection(" shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`)
 and add one with two Visions, built the same way:
 
 ```scala
@@ -628,7 +628,7 @@ In `PlayerBoardSuite`, change `revealedVision = Some(vision)` to
 
 Then add two tests for the lit spot. Find the suite's existing test that
 lights the `revealed-vision` key (`grep -n "revealed-vision"
-frontend/src/test/scala/oathdigital/frontend/*.scala`) and copy its
+frontend/src/test/scala/distantlands/frontend/*.scala`) and copy its
 decision setup:
 
 - An option with `replaces` set (a reveal elsewhere): every Vision pill
@@ -686,13 +686,13 @@ Expected: PASS, frontend included.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala \
-  src/main/scala/oathdigital/application/GamePresentationProjector.scala \
-  frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala \
-  frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/TestTablePieces.scala \
-  shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala \
+  src/main/scala/distantlands/application/GamePresentationProjector.scala \
+  frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala \
+  frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/TestTablePieces.scala \
+  shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala
 git commit -m "feat(projection): a board shows every revealed Vision" \
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
@@ -702,20 +702,20 @@ git commit -m "feat(projection): a board shows every revealed Vision" \
 ### Task 3: Desecrated Ground keeps the revealed Visions
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/DesecratedGround.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/DesecratedGround.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/SacredGround.scala:1-32`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:82-83`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala` (`plan`, `planVision`, `revealed`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala` (`faceup`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala:470-476, 505-510`
+- Create: `src/main/scala/distantlands/gameplay/DesecratedGround.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/DesecratedGround.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/SacredGround.scala:1-32`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:82-83`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala` (`plan`, `planVision`, `revealed`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala` (`faceup`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala:470-476, 505-510`
 - Modify: `src/test/resources/powers/unimplemented.txt` (delete `edifice.e08.ruined`)
 - Modify: `src/test/resources/notes/declared-keys.txt`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/cardplay/SacredGroundSuite.scala` (import)
-- Modify: `src/test/scala/oathdigital/application/CardPlayReasonsSuite.scala:8` (import)
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/DesecratedGroundSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/DesecratedGroundLogSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/cardplay/SacredGroundSuite.scala` (import)
+- Modify: `src/test/scala/distantlands/application/CardPlayReasonsSuite.scala:8` (import)
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/DesecratedGroundSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/DesecratedGroundLogSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlayerState.revealedVisions` (Task 1).
@@ -729,7 +729,7 @@ git commit -m "feat(projection): a board shows every revealed Vision" \
 
 - [ ] **Step 1: Move the card and add the rule**
 
-Create `src/main/scala/oathdigital/gameplay/DesecratedGround.scala`. The
+Create `src/main/scala/distantlands/gameplay/DesecratedGround.scala`. The
 `SacredGroundCard` object moves here unchanged from
 `powers/cardplay/SacredGround.scala:9-23`:
 
@@ -822,7 +822,7 @@ oathdigital.gameplay.SacredGroundCard`) and `CardPlayReasonsSuite.scala:8`.
 
 - [ ] **Step 2: Register the power**
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/DesecratedGround.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/DesecratedGround.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -870,7 +870,7 @@ edifice.e08.ruined kept = Kept {0}.
 
 - [ ] **Step 3: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/DesecratedGroundSuite.scala`.
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/DesecratedGroundSuite.scala`.
 It follows `SacredGroundSuite`: `SearchFixture.staged` stands p1 at
 Ancient City, with Broken Peaks elsewhere.
 
@@ -992,7 +992,7 @@ Notes for the implementer, checked against the fixtures at `33c7be12`:
   `PlacementPicks.parkedOptions` returns options with the look-ahead's
   wrappers, unwrap them the way `PlacementPicks.offered` does.
 
-Create `src/test/scala/oathdigital/application/gamelog/DesecratedGroundLogSuite.scala`,
+Create `src/test/scala/distantlands/application/gamelog/DesecratedGroundLogSuite.scala`,
 the golden line, following `HospitalityLogSuite`:
 
 ```scala
@@ -1167,20 +1167,20 @@ why in the test.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/DesecratedGround.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/DesecratedGround.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/SacredGround.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/main/scala/oathdigital/gameplay/actions/CardPlay.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala \
+git add src/main/scala/distantlands/gameplay/DesecratedGround.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/DesecratedGround.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/SacredGround.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/main/scala/distantlands/gameplay/actions/CardPlay.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala \
   src/test/resources/powers/unimplemented.txt \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/DesecratedGroundSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/SacredGroundSuite.scala \
-  src/test/scala/oathdigital/application/CardPlayReasonsSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/DesecratedGroundLogSuite.scala
+  src/test/scala/distantlands/gameplay/powers/cardplay/DesecratedGroundSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/cardplay/SacredGroundSuite.scala \
+  src/test/scala/distantlands/application/CardPlayReasonsSuite.scala \
+  src/test/scala/distantlands/application/gamelog/DesecratedGroundLogSuite.scala
 git commit -m "feat(powers): Desecrated Ground keeps every revealed Vision" \
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
@@ -1205,21 +1205,21 @@ Fix what it confirms before Task 4.
 ### Task 4: A win names every qualifying Vision
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/RevealedVisions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/VisionVictoryEligibility.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala:63-74, 145-150, 178-186, 207-218`
-- Modify: `src/main/scala/oathdigital/model/GameEventProtocol.scala:44-53`
-- Modify: `src/main/scala/oathdigital/model/GameState.scala:186-187`
-- Modify: `src/main/scala/oathdigital/serialization/EndingEventCodec.scala:23-26, 41-42, 60-66, 87-88`
-- Modify: `src/main/scala/oathdigital/gameplay/EmpireEndings.scala:40, 45`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala:183-187, 318-323`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/SwearOath.scala`
+- Create: `src/main/scala/distantlands/gameplay/RevealedVisions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/VisionVictoryEligibility.scala`
+- Modify: `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala:63-74, 145-150, 178-186, 207-218`
+- Modify: `src/main/scala/distantlands/model/GameEventProtocol.scala:44-53`
+- Modify: `src/main/scala/distantlands/model/GameState.scala:186-187`
+- Modify: `src/main/scala/distantlands/serialization/EndingEventCodec.scala:23-26, 41-42, 60-66, 87-88`
+- Modify: `src/main/scala/distantlands/gameplay/EmpireEndings.scala:40, 45`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala:183-187, 318-323`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/SwearOath.scala`
 - Modify: the test files that build the events (finding 10).
-- Test: `src/test/scala/oathdigital/gameplay/RevealedVisionsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/chronicle/SwearOathSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/GameEventFactsWireSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/RevealedVisionsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/chronicle/SwearOathSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/GameEventFactsWireSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlayerState.revealedVisions` (Task 1).
@@ -1235,7 +1235,7 @@ Fix what it confirms before Task 4.
 
 - [ ] **Step 1: Write the failing read-path and victory tests**
 
-Create `src/test/scala/oathdigital/gameplay/RevealedVisionsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/RevealedVisionsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1263,11 +1263,11 @@ class RevealedVisionsSuite extends munit.FunSuite:
 ```
 
 `Table.visionsDrawn` may be named differently: find the step that sets
-`tracks.visionsDrawn` (`grep -n "visionsDrawn" src/test/scala/oathdigital/testkit/Table.scala`)
+`tracks.visionsDrawn` (`grep -n "visionsDrawn" src/test/scala/distantlands/testkit/Table.scala`)
 and use it, or the suite's `update` fallback with a comment.
 
 In `StateBasedEvaluationSuite`, add beside its Wake Vision test (`grep -n
-"VisionVictory" src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala`),
+"VisionVictory" src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala`),
 copying that test's setup:
 
 - Two revealed Visions, both met: `visionAtWake` returns
@@ -1362,7 +1362,7 @@ Expected: compile errors for the missing names and fields.
 
 - [ ] **Step 2: Add the read path and the qualifying Visions**
 
-Create `src/main/scala/oathdigital/gameplay/RevealedVisions.scala`:
+Create `src/main/scala/distantlands/gameplay/RevealedVisions.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1517,7 +1517,7 @@ Every other `WarExhaustionResolved(..., None, ...)` in production
 ```
 
 If the decoder checks exact keys elsewhere (`grep -n "visionId"
-src/main/scala/oathdigital/serialization`), rename them there too.
+src/main/scala/distantlands/serialization`), rename them there too.
 
 `GameLogFormatter.scala:183-187`:
 
@@ -1631,16 +1631,16 @@ and review the diff before committing.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/RevealedVisions.scala \
-  src/main/scala/oathdigital/gameplay/VisionVictoryEligibility.scala \
-  src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala \
-  src/main/scala/oathdigital/gameplay/EmpireEndings.scala \
-  src/main/scala/oathdigital/model/GameEventProtocol.scala \
-  src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/serialization/EndingEventCodec.scala \
-  src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/SwearOath.scala \
-  src/test/scala/oathdigital/gameplay/RevealedVisionsSuite.scala
+git add src/main/scala/distantlands/gameplay/RevealedVisions.scala \
+  src/main/scala/distantlands/gameplay/VisionVictoryEligibility.scala \
+  src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala \
+  src/main/scala/distantlands/gameplay/EmpireEndings.scala \
+  src/main/scala/distantlands/model/GameEventProtocol.scala \
+  src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/serialization/EndingEventCodec.scala \
+  src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala \
+  src/main/scala/distantlands/gameplay/chronicle/SwearOath.scala \
+  src/test/scala/distantlands/gameplay/RevealedVisionsSuite.scala
 git add $(git diff --name-only -- src/test)
 git commit -m "feat(victory): a win names every qualifying Vision and Swear an Oath asks among them" \
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"

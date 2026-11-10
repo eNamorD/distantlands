@@ -76,18 +76,18 @@
 
 | File | Responsibility |
 |---|---|
-| Create `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala` | Registers slice 4's powers. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala` | Adds `OtherActionPowers.powers`. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/SpoiledSupplies.scala` | Every other player at the site loses 1 Supply. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/CharmingFriend.scala` | Take 1 favor from a player at the site. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/SiegeEngines.scala` | Kill up to 2 warbands at a site in the pawn's region. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/BookOfRecords.scala` | Take up to 2 from a banner held at the site. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/BarbedNet.scala` | Peek at the site's relics, take one facedown. |
-| Create one suite per card under `src/test/scala/oathdigital/gameplay/powers/action/` | Walker-driven suites. |
-| Modify `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` | A `barbed-net` script, added to `named`. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala` | Registers slice 4's powers. |
+| Modify `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala` | Adds `OtherActionPowers.powers`. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/SpoiledSupplies.scala` | Every other player at the site loses 1 Supply. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/CharmingFriend.scala` | Take 1 favor from a player at the site. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/SiegeEngines.scala` | Kill up to 2 warbands at a site in the pawn's region. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/BookOfRecords.scala` | Take up to 2 from a banner held at the site. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/BarbedNet.scala` | Peek at the site's relics, take one facedown. |
+| Create one suite per card under `src/test/scala/distantlands/gameplay/powers/action/` | Walker-driven suites. |
+| Modify `src/test/scala/distantlands/application/gamelog/LogScripts.scala` | A `barbed-net` script, added to `named`. |
 | Create `src/test/resources/gamelog/barbed-net.actor.log`, `barbed-net.other.log` | The script's golden logs. |
-| Modify `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala` | Barbed Net's two lines and who may read the relic. |
-| Modify `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala` | Pins the five powers. |
+| Modify `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala` | Barbed Net's two lines and who may read the relic. |
+| Modify `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala` | Pins the five powers. |
 | Modify `docs/ROADMAP.md` | Records slice 4 done. |
 
 ---
@@ -95,12 +95,12 @@
 ### Task 1: Spoiled Supplies and Charming Friend
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/SpoiledSupplies.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/CharmingFriend.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/SpoiledSuppliesSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/CharmingFriendSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/SpoiledSupplies.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/CharmingFriend.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/SpoiledSuppliesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/CharmingFriendSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction`, `NoteSupport.took`, `NoteSupport.favor`, `NoteSupport.supply`, `NoteSupport.answer`, `PowerAnswers.one`, `PowerAnswers.missing`, `PowerAccess.pawnSite`; in tests `PowerFixture`, `TargetsFixture`, `PaidActionHarness.wireRoundTrips`, `NoteText`.
@@ -108,7 +108,7 @@
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/SpoiledSuppliesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/SpoiledSuppliesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -195,7 +195,7 @@ class SpoiledSuppliesSuite extends munit.FunSuite:
     assert(use(ready, SpoiledSupplies, source).isLeft)
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/CharmingFriendSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/CharmingFriendSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -313,7 +313,7 @@ Expected: compilation fails: `SpoiledSupplies` and `CharmingFriend` are not foun
 
 - [ ] **Step 3: Write Spoiled Supplies**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/SpoiledSupplies.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/SpoiledSupplies.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -368,7 +368,7 @@ case object SpoiledSupplies extends PaidAction("denizen.spoiled-supplies",
 
 - [ ] **Step 4: Write Charming Friend**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/CharmingFriend.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/CharmingFriend.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -447,7 +447,7 @@ case object CharmingFriend extends PaidAction("denizen.charming-friend",
 
 - [ ] **Step 5: Register them**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -463,7 +463,7 @@ object OtherActionPowers:
     Vector[PhasePower](SpoiledSupplies, CharmingFriend)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`, add `OtherActionPowers` to the `oathdigital.gameplay.powers.action` import, keeping it alphabetical:
+In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`, add `OtherActionPowers` to the `oathdigital.gameplay.powers.action` import, keeping it alphabetical:
 
 ```scala
 import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, MagicWaterskin, MovementPowers, OtherActionPowers, SelfActionPowers, TargetPowers, WaysideInn}
@@ -497,12 +497,12 @@ Expected: PASS. `PowerNoteCatalogSuite` checks the new templates.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/SpoiledSupplies.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/CharmingFriend.scala \
-  src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/SpoiledSuppliesSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/CharmingFriendSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/main/scala/distantlands/gameplay/powers/action/SpoiledSupplies.scala \
+  src/main/scala/distantlands/gameplay/powers/action/CharmingFriend.scala \
+  src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/action/SpoiledSuppliesSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/CharmingFriendSuite.scala
 git commit -m "feat(powers): Spoiled Supplies and Charming Friend act on players at your site"
 ```
 
@@ -511,9 +511,9 @@ git commit -m "feat(powers): Spoiled Supplies and Charming Friend act on players
 ### Task 2: Siege Engines
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/SiegeEngines.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/SiegeEnginesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/SiegeEngines.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/SiegeEnginesSuite.scala`
 
 **Interfaces:**
 - Consumes: `OtherActionPowers.powers` from Task 1; `PlayerForceKind.of(ready, state): Option[ForceKind]`; `MapState.regionOf`; `Kill`; in tests `PowerFixture.warbandBank`, `PlayerFacts.forceKind`.
@@ -521,7 +521,7 @@ git commit -m "feat(powers): Spoiled Supplies and Charming Friend act on players
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/SiegeEnginesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/SiegeEnginesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -655,7 +655,7 @@ Expected: compilation fails: `SiegeEngines` is not found.
 
 - [ ] **Step 3: Write Siege Engines**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/SiegeEngines.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/SiegeEngines.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -772,9 +772,9 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/SiegeEngines.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/SiegeEnginesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/SiegeEngines.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/action/SiegeEnginesSuite.scala
 git commit -m "feat(powers): Siege Engines kills two warbands at a site in your region"
 ```
 
@@ -783,9 +783,9 @@ git commit -m "feat(powers): Siege Engines kills two warbands at a site in your 
 ### Task 3: Book of Records
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/BookOfRecords.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/BookOfRecordsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/BookOfRecords.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/BookOfRecordsSuite.scala`
 
 **Interfaces:**
 - Consumes: `OtherActionPowers.powers`; `BannerRules.holder`, `BannerRules.resources`; `DecisionOption.Banner`; in tests `PowerFixture.withRelic`, `PaidActionHarness.{secrets, tokensOn, wireRoundTrips}`.
@@ -793,7 +793,7 @@ git commit -m "feat(powers): Siege Engines kills two warbands at a site in your 
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/BookOfRecordsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/BookOfRecordsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -936,7 +936,7 @@ Expected: compilation fails: `BookOfRecords` is not found.
 
 - [ ] **Step 3: Write Book of Records**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/BookOfRecords.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/BookOfRecords.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1053,9 +1053,9 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/BookOfRecords.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/BookOfRecordsSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/BookOfRecords.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/action/BookOfRecordsSuite.scala
 git commit -m "feat(powers): Book of Records takes from a banner held at your site"
 ```
 
@@ -1064,12 +1064,12 @@ git commit -m "feat(powers): Book of Records takes from a banner held at your si
 ### Task 4: Barbed Net and its log
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/BarbedNet.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/BarbedNetSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/BarbedNet.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/BarbedNetSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
 - Create: `src/test/resources/gamelog/barbed-net.actor.log`, `src/test/resources/gamelog/barbed-net.other.log`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
 
 **Interfaces:**
 - Consumes: `OtherActionPowers.powers`; `Peek`; `NoteSupport.relicsGained`; `LogScripts`' `journaled`, `Situation.wake`, `active`, `pawn`, `Step.Arrange`, `withAnswers`; `GameLogPowerLinesSuite`'s `name`, `format`, `texts`.
@@ -1077,7 +1077,7 @@ git commit -m "feat(powers): Book of Records takes from a banner held at your si
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/BarbedNetSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/BarbedNetSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1195,7 +1195,7 @@ Expected: compilation fails: `BarbedNet` is not found.
 
 - [ ] **Step 3: Write Barbed Net**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/BarbedNet.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/BarbedNet.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1300,7 +1300,7 @@ Expected: PASS, 7 tests.
 
 - [ ] **Step 5: Write the failing log test**
 
-In `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, add `BarbedNet` to the `oathdigital.gameplay.powers.action` import:
+In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add `BarbedNet` to the `oathdigital.gameplay.powers.action` import:
 
 ```scala
 import oathdigital.gameplay.powers.action.{BarbedNet, GamblingHall, Oracle,
@@ -1350,7 +1350,7 @@ and add it to `named`, after `"oracle" -> (() => oracle)`:
 
 If `Step.Arrange` refuses a relic move from the relic deck because the deck position is unspecified, give the move `PositionedLocation(Location.Deck(CardDeck.Relic), StackPosition.Top)` and take `target` as the deck's first relic that is not Barbed Net only if the deck is stored top first; check `CommonCardsState` or an existing relic-deck test before choosing.
 
-In `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`, after the Oracle test, add:
+In `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`, after the Oracle test, add:
 
 ```scala
   test("Barbed Net writes its peek and its take as its action's lines, " +
@@ -1410,11 +1410,11 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/BarbedNet.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/BarbedNetSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala \
+git add src/main/scala/distantlands/gameplay/powers/action/BarbedNet.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/action/BarbedNetSuite.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala \
   src/test/resources/gamelog/barbed-net.actor.log \
   src/test/resources/gamelog/barbed-net.other.log
 git commit -m "feat(powers): Barbed Net peeks at your site's relics and takes one facedown"
@@ -1425,12 +1425,12 @@ git commit -m "feat(powers): Barbed Net peeks at your site's relics and takes on
 ### Task 5: Pin the cards, record the slice, run the gates
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala`
 - Modify: `docs/ROADMAP.md`
 
 - [ ] **Step 1: Pin the five powers**
 
-In `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala`, after the test "catalog batch 2's Vision draw is implemented", add:
+In `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala`, after the test "catalog batch 2's Vision draw is implemented", add:
 
 ```scala
 
@@ -1475,7 +1475,7 @@ Expected: both pass.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala \
+git add src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala \
   docs/ROADMAP.md
 git commit -m "docs: record catalog batch 2 slice 4"
 ```

@@ -14,9 +14,9 @@
 
 - Scala 3.9.0. `-Werror` is on: an unreachable match case, an unused import or an unused private member is a build failure, not a warning.
 - Production Scala files are capped at 800 lines, enforced by `scripts/check-architecture.py:29-30` and `BackendArchitectureSuite`. Run `python3 scripts/check-architecture.py` before every commit.
-- `src/main/scala/oathdigital/model` must not import `application`, `gameplay`, `persistence`, `serialization` or `server` (`scripts/check-architecture.py:32-37`).
+- `src/main/scala/distantlands/model` must not import `application`, `gameplay`, `persistence`, `serialization` or `server` (`scripts/check-architecture.py:32-37`).
 - The wire format does not change in this plan. Every encoded spelling stays byte-identical; `WalkerOperationWireSuite` is the pin.
-- Do not touch `src/test/scala/oathdigital/gameplay/HiddenScopeProbeSuite.scala` beyond the single annotation Task 2 Step 14 specifies. It was untracked when this plan was written -- another session owns it.
+- Do not touch `src/test/scala/distantlands/gameplay/HiddenScopeProbeSuite.scala` beyond the single annotation Task 2 Step 14 specifies. It was untracked when this plan was written -- another session owns it.
 - Measurements here were taken at `3dcbfd9a`. If `CoreOperations.scala` or `WalkerOperationCodec.scala` has changed since, re-run the line counts in Task 1 Step 1 and Task 2 Step 1 and adjust the expected numbers rather than assuming them.
 - Commit messages end with `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
 
@@ -24,12 +24,12 @@
 
 | File | Responsibility after this plan |
 | --- | --- |
-| `src/main/scala/oathdigital/serialization/WalkerValueCodec.scala` | **New.** Wire spellings for the values operations are made of: pieces, locations, positions, costs, gives, dice kinds, die faces, orientations, integers. No operation arms. |
-| `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` | Operation arms only: `encodeOperation`/`decodeOperation` and the four group helpers. 795 to roughly 522. |
-| `src/main/scala/oathdigital/model/Operation.scala` | The reusable walker algebra: `Operation`, `LeafOperation`, `RewritableComposite`, `EndWalk`, `Operation.flatten`, and the five control operations. 48 to roughly 160. |
-| `src/main/scala/oathdigital/model/CoreOperations.scala` | Oath's operations only. 784 to 681. |
-| `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` | Leaf dispatch retargeted to `LeafOperation`; `runNarrowed`'s fallthrough narrowed to `CoreOperation` with one `contractViolation` arm. |
-| `src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala` | Restriction screening, minus the container guard that becomes unreachable. |
+| `src/main/scala/distantlands/serialization/WalkerValueCodec.scala` | **New.** Wire spellings for the values operations are made of: pieces, locations, positions, costs, gives, dice kinds, die faces, orientations, integers. No operation arms. |
+| `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` | Operation arms only: `encodeOperation`/`decodeOperation` and the four group helpers. 795 to roughly 522. |
+| `src/main/scala/distantlands/model/Operation.scala` | The reusable walker algebra: `Operation`, `LeafOperation`, `RewritableComposite`, `EndWalk`, `Operation.flatten`, and the five control operations. 48 to roughly 160. |
+| `src/main/scala/distantlands/model/CoreOperations.scala` | Oath's operations only. 784 to 681. |
+| `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` | Leaf dispatch retargeted to `LeafOperation`; `runNarrowed`'s fallthrough narrowed to `CoreOperation` with one `contractViolation` arm. |
+| `src/main/scala/distantlands/gameplay/operations/OperationResolution.scala` | Restriction screening, minus the container guard that becomes unreachable. |
 
 ---
 
@@ -40,9 +40,9 @@ encoded output must be identical afterwards. This task alone takes the codec
 under the cap and unblocks new operations on the serialization side.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/serialization/WalkerValueCodec.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala` (run unchanged; it is the pin)
+- Create: `src/main/scala/distantlands/serialization/WalkerValueCodec.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala` (run unchanged; it is the pin)
 
 **Interfaces:**
 - Consumes: `GameEventJsonSupport`'s `traverse`, `safeIntField`, `requiredField`, `stringField` (via self-type), and `encodeCardId`/`decodeCardId`-style helpers it already uses.
@@ -52,8 +52,8 @@ under the cap and unblocks new operations on the serialization side.
 
 ```bash
 cd /Users/roman/projects/oathdigital
-wc -l src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala
-grep -n 'private def encodeGive' src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala
+wc -l src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
+grep -n 'private def encodeGive' src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
 ./sbtw -batch 'root/Test/compile'
 ```
 
@@ -79,8 +79,8 @@ Build the new file, then delete the block from the old one.
 
 ```bash
 cd /Users/roman/projects/oathdigital
-F=src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala
-N=src/main/scala/oathdigital/serialization/WalkerValueCodec.scala
+F=src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
+N=src/main/scala/distantlands/serialization/WalkerValueCodec.scala
 {
   cat <<'HDR'
 package oathdigital.serialization
@@ -122,11 +122,11 @@ for consistency.
 
 ```bash
 cd /Users/roman/projects/oathdigital
-N=src/main/scala/oathdigital/serialization/WalkerValueCodec.scala
+N=src/main/scala/distantlands/serialization/WalkerValueCodec.scala
 perl -pi -e 's/^  private def /  protected final def /' $N
-perl -0pi -e 's/private\[serialization\] trait WalkerOperationCodec extends CampaignResultCodec\n    with FollowUpWire with OathkeeperWire with PositionWire:/private[serialization] trait WalkerOperationCodec extends CampaignResultCodec\n    with FollowUpWire with OathkeeperWire with PositionWire with WalkerValueCodec:/s' src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala
+perl -0pi -e 's/private\[serialization\] trait WalkerOperationCodec extends CampaignResultCodec\n    with FollowUpWire with OathkeeperWire with PositionWire:/private[serialization] trait WalkerOperationCodec extends CampaignResultCodec\n    with FollowUpWire with OathkeeperWire with PositionWire with WalkerValueCodec:/s' src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
 grep -c '^  protected final def' $N
-grep -n 'with WalkerValueCodec' src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala
+grep -n 'with WalkerValueCodec' src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
 ```
 
 Expected: 26 `protected final def`; the mixin line matches.
@@ -144,9 +144,9 @@ encode half was already renamed to `orientationKey`; follow that convention.
 
 ```bash
 cd /Users/roman/projects/oathdigital
-perl -pi -e 's/\bdecodeOrientation\b/orientationFromKey/g' src/main/scala/oathdigital/serialization/WalkerValueCodec.scala
-perl -pi -e 's/\bdecodeOrientation\b/orientationFromKey/g' src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala
-grep -n 'orientationFromKey\|decodeOrientation' src/main/scala/oathdigital/serialization/WalkerValueCodec.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala
+perl -pi -e 's/\bdecodeOrientation\b/orientationFromKey/g' src/main/scala/distantlands/serialization/WalkerValueCodec.scala
+perl -pi -e 's/\bdecodeOrientation\b/orientationFromKey/g' src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
+grep -n 'orientationFromKey\|decodeOrientation' src/main/scala/distantlands/serialization/WalkerValueCodec.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
 ```
 
 Expected: four `orientationFromKey` -- one definition in `WalkerValueCodec`,
@@ -196,7 +196,7 @@ treatment.
 ```bash
 ./sbtw -batch 'testOnly oathdigital.serialization.WalkerOperationWireSuite'
 python3 scripts/check-architecture.py
-wc -l src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/serialization/WalkerValueCodec.scala
+wc -l src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/serialization/WalkerValueCodec.scala
 ```
 
 Expected: PASS with the same test count as Step 2; architecture check passes;
@@ -215,7 +215,7 @@ adjusting the test.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/serialization/WalkerValueCodec.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala
+git add src/main/scala/distantlands/serialization/WalkerValueCodec.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
 git commit -F - <<'MSG'
 refactor(serialization): split walker value codecs into their own trait
 
@@ -239,16 +239,16 @@ dead guard and the suite that pins the dead throw cannot be committed
 separately.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Operation.scala`
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala:15-20,667-784`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala:1-91`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala:55-70`
-- Modify: `src/test/scala/oathdigital/gameplay/HiddenScopeProbeSuite.scala:73` (one annotation)
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala` (delete one test)
+- Modify: `src/main/scala/distantlands/model/Operation.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala:15-20,667-784`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala:1-91`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationResolution.scala:55-70`
+- Modify: `src/test/scala/distantlands/gameplay/HiddenScopeProbeSuite.scala:73` (one annotation)
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala` (delete one test)
 
 **Interfaces:**
 - Produces: `trait LeafOperation extends Operation` with `final val children: Vector[Operation] = Vector(this)`; `Operation.required: Boolean = false`; `Decide` and `BuildOps` as `LeafOperation`; `Repeat`, `Branch`, `Sequence`, `CardPlayedFaceup`, `CardPlayedFacedown` as `Operation`; `sealed trait PrimitiveOperation extends CoreOperation, LeafOperation`.
@@ -258,8 +258,8 @@ separately.
 
 ```bash
 cd /Users/roman/projects/oathdigital
-wc -l src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/model/Operation.scala
-grep -n 'Parks a walker until\|^object Sequence:\|Semantic window for a card played faceup' src/main/scala/oathdigital/model/CoreOperations.scala
+wc -l src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/model/Operation.scala
+grep -n 'Parks a walker until\|^object Sequence:\|Semantic window for a card played faceup' src/main/scala/distantlands/model/CoreOperations.scala
 ./sbtw -batch 'root/Test/compile'
 ```
 
@@ -270,7 +270,7 @@ anchors if they differ.
 
 - [ ] **Step 2: Add `LeafOperation` and lift `required`**
 
-In `src/main/scala/oathdigital/model/Operation.scala`, replace the whole
+In `src/main/scala/distantlands/model/Operation.scala`, replace the whole
 root-trait declaration and its doc. Replace:
 
 ```scala
@@ -370,7 +370,7 @@ earlier line numbers stay valid.
 
 ```bash
 cd /Users/roman/projects/oathdigital
-M=src/main/scala/oathdigital/model
+M=src/main/scala/distantlands/model
 { echo; sed -n '667,761p' $M/CoreOperations.scala; echo; sed -n '779,784p' $M/CoreOperations.scala; } >> $M/Operation.scala
 sed -i '' '779,784d' $M/CoreOperations.scala
 sed -i '' '667,761d' $M/CoreOperations.scala
@@ -386,7 +386,7 @@ are leaves; the other three are composites.
 
 ```bash
 cd /Users/roman/projects/oathdigital
-M=src/main/scala/oathdigital/model
+M=src/main/scala/distantlands/model
 perl -0pi -e 's/^    extends PrimitiveOperation:$/    extends LeafOperation:/m' $M/Operation.scala
 perl -0pi -e 's/^    extends PrimitiveOperation$/    extends LeafOperation/m' $M/Operation.scala
 perl -0pi -e 's/^    body: Operation\) extends CoreOperation:$/    body: Operation) extends Operation:/m' $M/Operation.scala
@@ -401,7 +401,7 @@ Expected five hits among the moved classes: `Decide` and `BuildOps` on
 
 - [ ] **Step 6: Reparent the family roots and the card hooks**
 
-In `src/main/scala/oathdigital/model/CoreOperations.scala`, replace:
+In `src/main/scala/distantlands/model/CoreOperations.scala`, replace:
 
 ```scala
 sealed trait CoreOperation extends Operation:
@@ -459,10 +459,10 @@ operation, so the rename corrects the predicate.
 
 ```bash
 cd /Users/roman/projects/oathdigital
-for f in src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-         src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-         src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala \
-         src/main/scala/oathdigital/application/gamelog/DetailLines.scala; do
+for f in src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+         src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+         src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala \
+         src/main/scala/distantlands/application/gamelog/DetailLines.scala; do
   perl -pi -e 's/\bPrimitiveOperation\b/LeafOperation/g' $f
 done
 grep -rn 'PrimitiveOperation' src/main/scala | grep -v 'model/CoreOperations.scala'
@@ -486,7 +486,7 @@ point in the task and Step 9 handles it.
 
 - [ ] **Step 9: Narrow `runNarrowed`'s fallthrough**
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`,
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`,
 replace:
 
 ```scala
@@ -531,7 +531,7 @@ and read it -- this task should break nothing logical.
 
 - [ ] **Step 11: Delete the codec's throwing arms and class doc**
 
-In `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`,
+In `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`,
 delete lines 58-91 -- the comment block beginning
 `// The five arms below are the walker's own tree-control vocabulary` through
 the `CardPlayed` throw -- so that `encodeOperation` ends at its four group
@@ -566,7 +566,7 @@ total `` and running to the end of that doc comment with:
 
 - [ ] **Step 12: Delete the restriction screener's container guard**
 
-In `src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala`,
+In `src/main/scala/distantlands/gameplay/operations/OperationResolution.scala`,
 delete the arm:
 
 ```scala
@@ -592,7 +592,7 @@ guard is unreachable. Remove any import of `Sequence`, `Repeat`, `Branch`,
 ```bash
 ./sbtw -batch 'root/Compile/compile'
 python3 scripts/check-architecture.py
-wc -l src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/model/Operation.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala
+wc -l src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/model/Operation.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
 ```
 
 Expected: success with no warnings; architecture check passes;
@@ -606,8 +606,8 @@ Expected: success with no warnings; architecture check passes;
 ```
 
 Expected six errors: five at
-`src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala:453-458`
-and one at `src/test/scala/oathdigital/gameplay/HiddenScopeProbeSuite.scala:73`.
+`src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala:453-458`
+and one at `src/test/scala/distantlands/gameplay/HiddenScopeProbeSuite.scala:73`.
 
 Delete the whole test at `WalkerOperationWireSuite.scala:441-465`, from
 `test("a walker tree-control node can never be recorded, and surfaces a " +`
@@ -670,8 +670,8 @@ justification was that a control node might reach the encoder, and Task 2
 makes that unrepresentable.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/serialization/WireError.scala:30-43`
-- Modify: `src/main/scala/oathdigital/serialization/GameEventWire.scala:78-101`
+- Modify: `src/main/scala/distantlands/serialization/WireError.scala:30-43`
+- Modify: `src/main/scala/distantlands/serialization/GameEventWire.scala:78-101`
 
 **Interfaces:**
 - Consumes: nothing. Produces: nothing. This task only removes.
@@ -690,7 +690,7 @@ anywhere. If one remains, Task 2 is incomplete; stop.
 
 - [ ] **Step 2: Delete the catch arm**
 
-In `src/main/scala/oathdigital/serialization/GameEventWire.scala`, remove:
+In `src/main/scala/distantlands/serialization/GameEventWire.scala`, remove:
 
 ```scala
       case UnencodableOperation(error) => Left(error)
@@ -717,7 +717,7 @@ Replace the paragraph that explains the special case -- from
 
 - [ ] **Step 4: Delete the case class and its doc**
 
-In `src/main/scala/oathdigital/serialization/WireError.scala`, remove:
+In `src/main/scala/distantlands/serialization/WireError.scala`, remove:
 
 ```scala
 private[serialization] final case class UnencodableOperation(error: WireError)
@@ -741,7 +741,7 @@ suites pass; architecture check passes.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/serialization/WireError.scala src/main/scala/oathdigital/serialization/GameEventWire.scala
+git add src/main/scala/distantlands/serialization/WireError.scala src/main/scala/distantlands/serialization/GameEventWire.scala
 git commit -F - <<'MSG'
 refactor(serialization): retire UnencodableOperation
 
@@ -765,7 +765,7 @@ are stuck and becomes the extension point of the generic layer.
 handles the test-side copy and verifies no others remain.
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/testkit/WalkerStubs.scala:14-19`
+- Modify: `src/test/scala/distantlands/testkit/WalkerStubs.scala:14-19`
 
 **Interfaces:** none. Comments only.
 
@@ -776,12 +776,12 @@ cd /Users/roman/projects/oathdigital
 grep -rn '2\.13' src/main/scala src/test/scala
 ```
 
-Expected: one hit, `src/test/scala/oathdigital/testkit/WalkerStubs.scala:16`.
+Expected: one hit, `src/test/scala/distantlands/testkit/WalkerStubs.scala:16`.
 Rewrite any other hit this finds the same way.
 
 - [ ] **Step 2: Rewrite the stub's doc**
 
-In `src/test/scala/oathdigital/testkit/WalkerStubs.scala`, replace:
+In `src/test/scala/distantlands/testkit/WalkerStubs.scala`, replace:
 
 ```scala
   /** Stub of Operation: a test-only composite that hooks a `PowerWindow` on
@@ -817,7 +817,7 @@ Expected: compile succeeds, all suites green.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/testkit/WalkerStubs.scala
+git add src/test/scala/distantlands/testkit/WalkerStubs.scala
 git commit -F - <<'MSG'
 docs: correct the stale sealed-hierarchy note in WalkerStubs
 

@@ -31,7 +31,7 @@
 - `docs/superpowers/specs/2026-10-12-catalog-batch-8-design.md`: "The bar" (the slice 11 bullet), "Slice 11: Actor-aware lock" and "Testing".
 - `docs/superpowers/specs/2026-10-12-catalog-batch-8-rulings.md`: the slice 11 entry, which Task 2 extends with this plan's rulings.
 - `docs/superpowers/specs/2026-10-08-consent-system-design.md`: "Scope" ruling 1 (waivable powers) and the operation path (`ConsentedRestriction`, `OperationConsent`).
-- `src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala`: the pattern `AncientBloodline` follows.
+- `src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala`: the pattern `AncientBloodline` follows.
 
 **Starts from:** `main` at `c67d2aa4` ("slice 10 done") or later. Where this plan quotes code, read the file as it is on `main` and apply the change to what is there.
 
@@ -75,9 +75,9 @@
 ### Task 1: A move names its mover
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`Move`, `Swap`, `Take`, `Give`, `Discard`)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (move and swap, both ways)
-- Modify, to add the mover: `gameplay/actions/recover/RecoverProcedure.scala`, `gameplay/powers/action/SiteRelicTake.scala`, `gameplay/powers/wake/HornedMask.scala`, `gameplay/powers/action/SiteSlotMoves.scala`, `gameplay/powers/economy/MovingMarket.scala`, `gameplay/powers/whenplayed/GreatHerd.scala` (all under `src/main/scala/oathdigital/`)
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`Move`, `Swap`, `Take`, `Give`, `Discard`)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (move and swap, both ways)
+- Modify, to add the mover: `gameplay/actions/recover/RecoverProcedure.scala`, `gameplay/powers/action/SiteRelicTake.scala`, `gameplay/powers/wake/HornedMask.scala`, `gameplay/powers/action/SiteSlotMoves.scala`, `gameplay/powers/economy/MovingMarket.scala`, `gameplay/powers/whenplayed/GreatHerd.scala` (all under `src/main/scala/distantlands/`)
 - Modify, for the extractor's new field: every `case Move(a, b, c, d)` and `case Swap(a, b, c, d)` pattern. In main, these are:
   - `WalkerOperationCodec.scala:94,108`
   - `StateBasedOperationPolicy.scala:12`
@@ -95,8 +95,8 @@
   - `WalkerEvents.scala:35`
 
   The compiler names the test sites.
-- Create: `src/test/scala/oathdigital/model/MoveActorSuite.scala`
-- Modify: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Create: `src/test/scala/distantlands/model/MoveActorSuite.scala`
+- Modify: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -107,7 +107,7 @@
 
 - [ ] **Step 1: Write the failing model tests**
 
-Create `src/test/scala/oathdigital/model/MoveActorSuite.scala`:
+Create `src/test/scala/distantlands/model/MoveActorSuite.scala`:
 
 ```scala
 package oathdigital.model
@@ -285,10 +285,10 @@ Expected after the fixes: everything passes, with the 5 new tests.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala \
-  src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala \
-  src/test/scala/oathdigital/model/MoveActorSuite.scala \
-  src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala \
+  src/main/scala/distantlands/serialization/WalkerOperationCodec.scala \
+  src/test/scala/distantlands/model/MoveActorSuite.scala \
+  src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 # plus every other file Steps 4, 5 and 7 touched, each named explicitly
 git commit -m "feat(batch8): a move names the player who moves it"
 ```
@@ -298,15 +298,15 @@ git commit -m "feat(batch8): a move names the player who moves it"
 ### Task 2: Ancient Bloodline's lock
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/LockedCards.scala`
-- Create: `src/main/scala/oathdigital/gameplay/operations/AncientBloodline.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala` (`printedBy`, `implementedRules`, the class doc)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala` (`default`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/RuleNotes.scala` (`all`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala` (`reasons`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PowerImplementationStatus.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/LockedCards.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/AncientBloodline.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala` (`printedBy`, `implementedRules`, the class doc)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala` (`default`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/RuleNotes.scala` (`all`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala` (`reasons`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/PowerImplementationStatus.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Create: `src/test/scala/oathdigital/gameplay/operations/AncientBloodlineSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/operations/AncientBloodlineSuite.scala`
 - Modify: `docs/superpowers/specs/2026-10-12-catalog-batch-8-rulings.md` (slice 11)
 - Modify: `docs/superpowers/specs/2026-10-12-catalog-batch-8-design.md` ("The bar", the slice 11 bullet)
 
@@ -320,7 +320,7 @@ git commit -m "feat(batch8): a move names the player who moves it"
 
 - [ ] **Step 1: Write the failing restriction tests**
 
-Create `src/test/scala/oathdigital/gameplay/operations/AncientBloodlineSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/operations/AncientBloodlineSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -483,7 +483,7 @@ object LockedCards:
 
 - [ ] **Step 4: Write `AncientBloodline`**
 
-Create `src/main/scala/oathdigital/gameplay/operations/AncientBloodline.scala`:
+Create `src/main/scala/distantlands/gameplay/operations/AncientBloodline.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -640,15 +640,15 @@ Run: `./sbtw test`
 Expected: everything passes.
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/LockedCards.scala \
-  src/main/scala/oathdigital/gameplay/operations/AncientBloodline.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala \
-  src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala \
-  src/main/scala/oathdigital/gameplay/actions/RuleNotes.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala \
-  src/main/scala/oathdigital/gameplay/powers/PowerImplementationStatus.scala \
+git add src/main/scala/distantlands/gameplay/operations/LockedCards.scala \
+  src/main/scala/distantlands/gameplay/operations/AncientBloodline.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala \
+  src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala \
+  src/main/scala/distantlands/gameplay/actions/RuleNotes.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala \
+  src/main/scala/distantlands/gameplay/powers/PowerImplementationStatus.scala \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/operations/AncientBloodlineSuite.scala \
+  src/test/scala/distantlands/gameplay/operations/AncientBloodlineSuite.scala \
   docs/superpowers/specs/2026-10-12-catalog-batch-8-rulings.md \
   docs/superpowers/specs/2026-10-12-catalog-batch-8-design.md
 git commit -m "feat(batch8): Ancient Bloodline locks its holder's sites for enemies"
@@ -659,10 +659,10 @@ git commit -m "feat(batch8): Ancient Bloodline locks its holder's sites for enem
 ### Task 3: A locked relic or denizen shows why
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SiteRelicTake.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`
-- Create: `src/test/scala/oathdigital/gameplay/operations/AncientBloodlineTakesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SiteRelicTake.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`
+- Create: `src/test/scala/distantlands/gameplay/operations/AncientBloodlineTakesSuite.scala`
 
 **Interfaces:**
 - Consumes: `AncientBloodline` (Task 2) and `CardSlots.judge(catalog, ready, actor, option, planned, picked = Vector.empty): Option[DecisionOption]`.
@@ -674,7 +674,7 @@ git commit -m "feat(batch8): Ancient Bloodline locks its holder's sites for enem
 
 - [ ] **Step 1: Write the failing walker tests**
 
-Create `src/test/scala/oathdigital/gameplay/operations/AncientBloodlineTakesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/operations/AncientBloodlineTakesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -865,10 +865,10 @@ If a Skeleton Key or Horned Mask row is still `"available"`, the askable search 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/SiteRelicTake.scala \
-  src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala \
-  src/test/scala/oathdigital/gameplay/operations/AncientBloodlineTakesSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala \
+  src/main/scala/distantlands/gameplay/powers/action/SiteRelicTake.scala \
+  src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala \
+  src/test/scala/distantlands/gameplay/operations/AncientBloodlineTakesSuite.scala
 git commit -m "feat(batch8): a relic or denizen Ancient Bloodline locks shows why"
 ```
 
@@ -877,9 +877,9 @@ git commit -m "feat(batch8): a relic or denizen Ancient Bloodline locks shows wh
 ### Task 4: The paths that already judge
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/action/GiantPythonSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CardSlotsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/action/GiantPythonSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala`
 
 **Interfaces:**
 - Consumes: `AncientBloodline` (Task 2).
@@ -970,9 +970,9 @@ Expected: all pass, with the 3 new tests.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/GiantPythonSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala
+git add src/test/scala/distantlands/gameplay/CardSlotsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/GiantPythonSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala
 git commit -m "test(batch8): Ancient Bloodline in card play, Giant Python and Dazzle"
 ```
 

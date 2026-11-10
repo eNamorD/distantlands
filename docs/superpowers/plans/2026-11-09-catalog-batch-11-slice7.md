@@ -149,7 +149,7 @@ grep -rn "object RevealedVisions\|def qualifying\|object DesecratedGroundRule\|r
 
 ## File structure
 
-- Modify `src/main/scala/oathdigital/model/CardPlayHooks.scala`: the hook's
+- Modify `src/main/scala/distantlands/model/CardPlayHooks.scala`: the hook's
   `player`.
 - Modify `gameplay/actions/cardplay/CardPlayProcedure.scala`: build the
   hook with the player; off-turn lines.
@@ -184,17 +184,17 @@ grep -rn "object RevealedVisions\|def qualifying\|object DesecratedGroundRule\|r
 ### Task 1: The card-play hook names its player
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CardPlayHooks.scala:12-16`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala:292, 524-530`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/VisionPlay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala:58-65`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/SacredGround.scala:47-54`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfObedience.scala:45-47`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/BookBinders.scala:71-73`
+- Modify: `src/main/scala/distantlands/model/CardPlayHooks.scala:12-16`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala:292, 524-530`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/VisionPlay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala:58-65`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/SacredGround.scala:47-54`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/VowOfObedience.scala:45-47`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/BookBinders.scala:71-73`
 - Modify (pattern only): `whenplayed/WhenPlayedPower.scala:30`,
   `whenplayed/ConspiracyWhenPlayed.scala:41`, `cardplay/SaddleMakers.scala:57`,
   `cardplay/WildCry.scala:39`, `cardplay/WelcomingParty.scala:44`
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/VisionPlayPlayerSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/VisionPlayPlayerSuite.scala` (new)
 - Test (constructions): the 11 files `grep -rln "CardPlayedFaceup(" src/test/scala` lists
 
 **Interfaces:**
@@ -205,7 +205,7 @@ grep -rn "object RevealedVisions\|def qualifying\|object DesecratedGroundRule\|r
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/VisionPlayPlayerSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/VisionPlayPlayerSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -254,12 +254,12 @@ class VisionPlayPlayerSuite extends munit.FunSuite:
 ```
 
 Check three names before running: the Table step that puts a card in a
-discard pile (`grep -n "def discard" src/test/scala/oathdigital/testkit/Table.scala`),
+discard pile (`grep -n "def discard" src/test/scala/distantlands/testkit/Table.scala`),
 the source a revealed Vision's hook carries (`grep -n "def playedSource" -A12
-src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`; use what it
+src/main/scala/distantlands/gameplay/actions/CardPlay.scala`; use what it
 returns for `SearchPlacement.Adviser(Orientation.FaceUp, None)`), and how
 `ProcedureWalker.advance` reports a restriction's refusal (`grep -n
-"forbidden" src/test/scala/oathdigital/gameplay/powers/cardplay/*.scala`).
+"forbidden" src/test/scala/distantlands/gameplay/powers/cardplay/*.scala`).
 If a refusal is reported in another shape, assert on that shape instead.
 
 - [ ] **Step 2: Run the test to verify it fails**
@@ -373,19 +373,19 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CardPlayHooks.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/VisionPlay.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/SacredGround.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfObedience.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/BookBinders.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/SaddleMakers.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/WildCry.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/WelcomingParty.scala \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/VisionPlayPlayerSuite.scala
+git add src/main/scala/distantlands/model/CardPlayHooks.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/VisionPlay.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/SacredGround.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/VowOfObedience.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/BookBinders.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/SaddleMakers.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/WildCry.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/WelcomingParty.scala \
+  src/test/scala/distantlands/gameplay/powers/cardplay/VisionPlayPlayerSuite.scala
 git add $(grep -rln "CardPlayedFaceup(" src/test/scala)
 git commit -m "feat(cardplay): the faceup play hook names the player who plays" \
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -396,14 +396,14 @@ git commit -m "feat(cardplay): the faceup play hook names the player who plays" 
 ### Task 2: A warband on a Vision, the claim and the board
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateAdapter.scala:102-112`
-- Modify: `src/main/scala/oathdigital/gameplay/RevealedVisions.scala` (slice 6)
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala:187-188`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala` (slice 6's pill loop)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateAdapter.scala:102-112`
+- Modify: `src/main/scala/distantlands/gameplay/RevealedVisions.scala` (slice 6)
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala:187-188`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala` (slice 6's pill loop)
 - Modify: `frontend/styles.css` (after `.player-slot-vision-empty`, about line 1222)
-- Test: `src/test/scala/oathdigital/gameplay/RevealedVisionsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/RevealedVisionsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala`
 - Test: an operations suite for the move (see Step 1)
 
 **Interfaces:**
@@ -445,7 +445,7 @@ Add to `RevealedVisionsSuite`:
 Import `p3` from `Table`.
 
 Add to `StateBasedEvaluationSuite`, beside its Wake Vision test (`grep -n
-"VisionVictory" src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala`),
+"VisionVictory" src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala`),
 copying that test's turn and draw setup:
 
 ```scala
@@ -472,7 +472,7 @@ order the steps as the suite's other tests do. If slice 6 left
 first test fails for that reason; switch it to `qualifying` in Step 3.
 
 For the move, find the suite that covers Obsidian Cage's warbands on a
-card (`grep -rln "OnCard" src/test/scala/oathdigital/gameplay/operations`)
+card (`grep -rln "OnCard" src/test/scala/distantlands/gameplay/operations`)
 and add, following its style:
 
 ```scala
@@ -514,7 +514,7 @@ pill" test:
 ```
 
 Check the frontend card type's warband field and `SiteForces.Exile`'s
-constructor (`grep -n "warbands\|case class Exile" frontend/src/main/scala/oathdigital/frontend/*.scala | head`),
+constructor (`grep -n "warbands\|case class Exile" frontend/src/main/scala/distantlands/frontend/*.scala | head`),
 and the colour type's name; match them.
 
 - [ ] **Step 2: Run the tests to verify they fail**
@@ -617,14 +617,14 @@ Expected: PASS. If the frontend project id differs, read `build.sbt`.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/OperationStateAdapter.scala \
-  src/main/scala/oathdigital/gameplay/RevealedVisions.scala \
-  src/main/scala/oathdigital/application/GamePresentationProjector.scala \
-  frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala \
+git add src/main/scala/distantlands/gameplay/operations/OperationStateAdapter.scala \
+  src/main/scala/distantlands/gameplay/RevealedVisions.scala \
+  src/main/scala/distantlands/application/GamePresentationProjector.scala \
+  frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala \
   frontend/styles.css \
-  src/test/scala/oathdigital/gameplay/RevealedVisionsSuite.scala \
-  src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala
+  src/test/scala/distantlands/gameplay/RevealedVisionsSuite.scala \
+  src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala
 git add <the operations suite edited in Step 1>
 git commit -m "feat(gameplay): a warband on another player's Vision claims it" \
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -639,12 +639,12 @@ and 2's diff (`git diff <rebase base>..HEAD`), this plan's findings 1 to
 ### Task 3: False Prophet's When Played
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/FalseProphet.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala:15-22`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala:9-19`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/FalseProphet.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala:15-22`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala:9-19`
 - Modify: `src/test/resources/powers/unimplemented.txt` (delete `denizen.false-prophet`)
 - Modify: `src/test/resources/notes/declared-keys.txt`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/FalseProphetSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/FalseProphetSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `RevealedVisions.of` (Task 2), the `OnCard(VisionId)` read
@@ -862,12 +862,12 @@ Expected: PASS. If the declared-keys suite has another name, find it with
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/FalseProphet.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/FalseProphet.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
   src/test/resources/powers/unimplemented.txt \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/FalseProphetSuite.scala
+  src/test/scala/distantlands/gameplay/powers/whenplayed/FalseProphetSuite.scala
 git commit -m "feat(powers): False Prophet puts a warband on another player's Vision" \
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
@@ -877,13 +877,13 @@ git commit -m "feat(powers): False Prophet puts a warband on another player's Vi
 ### Task 4: A claimed Vision's discard
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/FalseProphetClaim.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:81-82`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala` (notes, `playedNote`)
-- Modify: `src/main/scala/oathdigital/gameplay/DesecratedGround.scala` (slice 6's `keptNote`)
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/FalseProphetClaim.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:81-82`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala` (notes, `playedNote`)
+- Modify: `src/main/scala/distantlands/gameplay/DesecratedGround.scala` (slice 6's `keptNote`)
 - Modify: `src/test/resources/notes/declared-keys.txt`
-- Test: `src/test/scala/oathdigital/gameplay/FalseProphetClaimSuite.scala` (new)
-- Test: `src/test/scala/oathdigital/application/gamelog/FalseProphetLogSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/FalseProphetClaimSuite.scala` (new)
+- Test: `src/test/scala/distantlands/application/gamelog/FalseProphetLogSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `RevealedVisions.claimants` (Task 2), `FalseProphet.id` and
@@ -899,7 +899,7 @@ git commit -m "feat(powers): False Prophet puts a warband on another player's Vi
 
 - [ ] **Step 1: Write the failing walk tests**
 
-Create `src/test/scala/oathdigital/gameplay/FalseProphetClaimSuite.scala`,
+Create `src/test/scala/distantlands/gameplay/FalseProphetClaimSuite.scala`,
 in package `oathdigital.gameplay` so it reaches `SearchPlay` and
 `PlacementFixture` as `VisionPlaySuite` does:
 
@@ -1046,7 +1046,7 @@ room (`CitizenshipSuite.exileWith`).
 
 - [ ] **Step 2: Write the failing log test**
 
-Create `src/test/scala/oathdigital/application/gamelog/FalseProphetLogSuite.scala`,
+Create `src/test/scala/distantlands/application/gamelog/FalseProphetLogSuite.scala`,
 following slice 6's `DesecratedGroundLogSuite`:
 
 ```scala
@@ -1372,13 +1372,13 @@ tree's shape.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/FalseProphetClaim.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala \
-  src/main/scala/oathdigital/gameplay/DesecratedGround.scala \
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/FalseProphetClaim.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala \
+  src/main/scala/distantlands/gameplay/DesecratedGround.scala \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/FalseProphetClaimSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/FalseProphetLogSuite.scala
+  src/test/scala/distantlands/gameplay/FalseProphetClaimSuite.scala \
+  src/test/scala/distantlands/application/gamelog/FalseProphetLogSuite.scala
 git commit -m "feat(powers): a claimed Vision's discard lets its claimant play it" \
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```

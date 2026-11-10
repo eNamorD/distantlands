@@ -36,45 +36,45 @@
 
 | File | Change |
 |---|---|
-| `src/main/scala/oathdigital/model/GameState.scala` | `EraEntry`, `EraGame`, `EraState.games`, `EraState.score` |
-| `src/main/scala/oathdigital/model/Chronicle.scala` | `name`, `Chronicle.nameProblem` |
-| `src/main/scala/oathdigital/gameplay/operations/ChronicleStateOperations.scala` | scoring writes the scorepad |
-| `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala` | the era is copied as it is |
-| `src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala` | name, scorepad, sorted maps and sets |
-| `src/main/scala/oathdigital/serialization/ChronicleJsonCodec.scala` | new: canonical JSON |
+| `src/main/scala/distantlands/model/GameState.scala` | `EraEntry`, `EraGame`, `EraState.games`, `EraState.score` |
+| `src/main/scala/distantlands/model/Chronicle.scala` | `name`, `Chronicle.nameProblem` |
+| `src/main/scala/distantlands/gameplay/operations/ChronicleStateOperations.scala` | scoring writes the scorepad |
+| `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala` | the era is copied as it is |
+| `src/main/scala/distantlands/serialization/GameEventJsonSupport.scala` | name, scorepad, sorted maps and sets |
+| `src/main/scala/distantlands/serialization/ChronicleJsonCodec.scala` | new: canonical JSON |
 | `src/main/resources/META-INF/services/oathdigital.application.chronicle.ChronicleJson` | new: service registration |
-| `src/main/scala/oathdigital/application/chronicle/ChronicleJson.scala` | new: the JSON boundary trait |
-| `src/main/scala/oathdigital/application/chronicle/ChronicleEntries.scala` | new: digest and summary |
-| `src/main/scala/oathdigital/application/chronicle/ChronicleConversion.scala` | new: the convert route's work |
-| `src/main/scala/oathdigital/application/chronicle/ChronicleTtsCodec.scala` | `decode(text, name)`, omitted list |
-| `src/main/scala/oathdigital/application/FirstGameChronicleGenerator.scala` | `name` parameter |
-| `src/main/scala/oathdigital/application/FirstGamePlanFactory.scala` | `ChronicleChoice` |
-| `src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala` | builds from a choice |
-| `src/main/scala/oathdigital/application/GameProjection.scala` | `chronicle` projection |
-| `shared/src/main/scala/oathdigital/protocol/ChronicleProtocol.scala` | new: entry, summary, convert DTOs and codecs |
-| `shared/src/main/scala/oathdigital/protocol/TrustedGameProtocol.scala` | `ChronicleRequest`, request and response fields |
-| `shared/src/main/scala/oathdigital/protocol/TrustedGameProtocolCodec.scala` | encode and decode those fields |
-| `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala` | `ChronicleProjection`, `GameProjection.chronicle` |
-| `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala` | the `chronicle` field |
-| `src/main/scala/oathdigital/server/TrustedGameProvisioning.scala` | `New` and `Saved`, `Refused` |
-| `src/main/scala/oathdigital/server/TrustedSeatRoutes.scala` | convert route, refusal answer |
-| `src/main/scala/oathdigital/server/ServerRuntime.scala`, `ServerRoutes.scala` | wiring |
-| `src/main/scala/oathdigital/server/AuthenticatedGameRoutes.scala` | names its Chronicle |
-| `frontend/src/main/scala/oathdigital/frontend/TrustedHostUi.scala` | sends `New("Chronicle <date>")` |
-| `src/test/scala/oathdigital/gameplay/chronicle/EvolvedChronicleFixture.scala` | new: the end-to-end walk, shared |
+| `src/main/scala/distantlands/application/chronicle/ChronicleJson.scala` | new: the JSON boundary trait |
+| `src/main/scala/distantlands/application/chronicle/ChronicleEntries.scala` | new: digest and summary |
+| `src/main/scala/distantlands/application/chronicle/ChronicleConversion.scala` | new: the convert route's work |
+| `src/main/scala/distantlands/application/chronicle/ChronicleTtsCodec.scala` | `decode(text, name)`, omitted list |
+| `src/main/scala/distantlands/application/FirstGameChronicleGenerator.scala` | `name` parameter |
+| `src/main/scala/distantlands/application/FirstGamePlanFactory.scala` | `ChronicleChoice` |
+| `src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala` | builds from a choice |
+| `src/main/scala/distantlands/application/GameProjection.scala` | `chronicle` projection |
+| `shared/src/main/scala/distantlands/protocol/ChronicleProtocol.scala` | new: entry, summary, convert DTOs and codecs |
+| `shared/src/main/scala/distantlands/protocol/TrustedGameProtocol.scala` | `ChronicleRequest`, request and response fields |
+| `shared/src/main/scala/distantlands/protocol/TrustedGameProtocolCodec.scala` | encode and decode those fields |
+| `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala` | `ChronicleProjection`, `GameProjection.chronicle` |
+| `shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala` | the `chronicle` field |
+| `src/main/scala/distantlands/server/TrustedGameProvisioning.scala` | `New` and `Saved`, `Refused` |
+| `src/main/scala/distantlands/server/TrustedSeatRoutes.scala` | convert route, refusal answer |
+| `src/main/scala/distantlands/server/ServerRuntime.scala`, `ServerRoutes.scala` | wiring |
+| `src/main/scala/distantlands/server/AuthenticatedGameRoutes.scala` | names its Chronicle |
+| `frontend/src/main/scala/distantlands/frontend/TrustedHostUi.scala` | sends `New("Chronicle <date>")` |
+| `src/test/scala/distantlands/gameplay/chronicle/EvolvedChronicleFixture.scala` | new: the end-to-end walk, shared |
 
 ---
 
 ### Task 1: The era scorepad
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala:40-48`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/ChronicleStateOperations.scala:65-74`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala:46-49`
-- Modify: `src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala` (`encodeChronicle`'s `"era"`, `decodeEra`)
-- Modify: `src/main/scala/oathdigital/application/chronicle/ChronicleTtsCodec.scala` (`defaultEra`, `omitted`)
-- Modify: `src/main/scala/oathdigital/application/FirstGameChronicleGenerator.scala:46`
-- Create: `src/test/scala/oathdigital/model/EraStateSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala:40-48`
+- Modify: `src/main/scala/distantlands/gameplay/operations/ChronicleStateOperations.scala:65-74`
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala:46-49`
+- Modify: `src/main/scala/distantlands/serialization/GameEventJsonSupport.scala` (`encodeChronicle`'s `"era"`, `decodeEra`)
+- Modify: `src/main/scala/distantlands/application/chronicle/ChronicleTtsCodec.scala` (`defaultEra`, `omitted`)
+- Modify: `src/main/scala/distantlands/application/FirstGameChronicleGenerator.scala:46`
+- Create: `src/test/scala/distantlands/model/EraStateSuite.scala`
 - Modify tests: `ChronicleStateOperationsSuite`, `GameStartRulesSuite`, `GameEventFactsWireSuite`, `ChronicleEndToEndSuite`, `ChronicleRecordSuite`, `ChronicleWindowsSuite`, `LineageScoringSuite`, `ChronicleTtsCodecSuite`, `FirstGameSetupFixture`, `TestGameFixtures`
 
 **Interfaces:**
@@ -85,7 +85,7 @@
 
 - [ ] **Step 1: Write the failing model test**
 
-Create `src/test/scala/oathdigital/model/EraStateSuite.scala`:
+Create `src/test/scala/distantlands/model/EraStateSuite.scala`:
 
 ```scala
 package oathdigital.model
@@ -329,13 +329,13 @@ Expected: all pass.
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/gameplay/operations/ChronicleStateOperations.scala \
-  src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala \
-  src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala \
-  src/main/scala/oathdigital/application/chronicle/ChronicleTtsCodec.scala \
-  src/main/scala/oathdigital/application/FirstGameChronicleGenerator.scala \
-  src/test/scala/oathdigital/model/EraStateSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/gameplay/operations/ChronicleStateOperations.scala \
+  src/main/scala/distantlands/gameplay/setup/GameStartRules.scala \
+  src/main/scala/distantlands/serialization/GameEventJsonSupport.scala \
+  src/main/scala/distantlands/application/chronicle/ChronicleTtsCodec.scala \
+  src/main/scala/distantlands/application/FirstGameChronicleGenerator.scala \
+  src/test/scala/distantlands/model/EraStateSuite.scala
 git add -u src/test
 git commit -m "feat(chronicle): record the era as a scorepad of games with each player's total and ending role
 
@@ -349,15 +349,15 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: The Chronicle's name and the plan factory's choice
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Chronicle.scala`
-- Modify: `src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala` (`encodeChronicle`, `decodeChronicle`)
-- Modify: `src/main/scala/oathdigital/application/chronicle/ChronicleTtsCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/FirstGameChronicleGenerator.scala`
-- Modify: `src/main/scala/oathdigital/application/FirstGamePlanFactory.scala`
-- Modify: `src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala`
-- Modify: `src/main/scala/oathdigital/server/TrustedGameProvisioning.scala:33`
-- Modify: `src/main/scala/oathdigital/server/AuthenticatedGameRoutes.scala:92`
-- Create: `src/test/scala/oathdigital/model/ChronicleSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Chronicle.scala`
+- Modify: `src/main/scala/distantlands/serialization/GameEventJsonSupport.scala` (`encodeChronicle`, `decodeChronicle`)
+- Modify: `src/main/scala/distantlands/application/chronicle/ChronicleTtsCodec.scala`
+- Modify: `src/main/scala/distantlands/application/FirstGameChronicleGenerator.scala`
+- Modify: `src/main/scala/distantlands/application/FirstGamePlanFactory.scala`
+- Modify: `src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala`
+- Modify: `src/main/scala/distantlands/server/TrustedGameProvisioning.scala:33`
+- Modify: `src/main/scala/distantlands/server/AuthenticatedGameRoutes.scala:92`
+- Create: `src/test/scala/distantlands/model/ChronicleSuite.scala`
 - Modify tests: `FirstGameSetupFixture`, `TestGameFixtures`, `GameEventFactsWireSuite`, `ChronicleTtsCodecSuite`, `GeneratedFirstGamePlanFactorySuite`, `GameServerGatewaySubmitBeginSuite`, `ChronicleEndToEndSuite`, and every caller of `FirstGameChronicleGenerator.generate` (`grep -rn "FirstGameChronicleGenerator.generate" src/test`).
 
 **Interfaces:**
@@ -372,7 +372,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing name test**
 
-Create `src/test/scala/oathdigital/model/ChronicleSuite.scala`:
+Create `src/test/scala/distantlands/model/ChronicleSuite.scala`:
 
 ```scala
 package oathdigital.model
@@ -577,15 +577,15 @@ Expected: all pass.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Chronicle.scala \
-  src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala \
-  src/main/scala/oathdigital/application/chronicle/ChronicleTtsCodec.scala \
-  src/main/scala/oathdigital/application/FirstGameChronicleGenerator.scala \
-  src/main/scala/oathdigital/application/FirstGamePlanFactory.scala \
-  src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala \
-  src/main/scala/oathdigital/server/TrustedGameProvisioning.scala \
-  src/main/scala/oathdigital/server/AuthenticatedGameRoutes.scala \
-  src/test/scala/oathdigital/model/ChronicleSuite.scala
+git add src/main/scala/distantlands/model/Chronicle.scala \
+  src/main/scala/distantlands/serialization/GameEventJsonSupport.scala \
+  src/main/scala/distantlands/application/chronicle/ChronicleTtsCodec.scala \
+  src/main/scala/distantlands/application/FirstGameChronicleGenerator.scala \
+  src/main/scala/distantlands/application/FirstGamePlanFactory.scala \
+  src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala \
+  src/main/scala/distantlands/server/TrustedGameProvisioning.scala \
+  src/main/scala/distantlands/server/AuthenticatedGameRoutes.scala \
+  src/test/scala/distantlands/model/ChronicleSuite.scala
 git add -u src/test
 git commit -m "feat(chronicle): name every Chronicle, and start a game from a new or saved one
 
@@ -597,17 +597,17 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: Canonical JSON, digest and summary
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala` (`encodeChronicle`'s `"foundations"`, `encodeFoundationState`)
-- Create: `src/main/scala/oathdigital/application/chronicle/ChronicleJson.scala`
-- Create: `src/main/scala/oathdigital/serialization/ChronicleJsonCodec.scala`
+- Modify: `src/main/scala/distantlands/serialization/GameEventJsonSupport.scala` (`encodeChronicle`'s `"foundations"`, `encodeFoundationState`)
+- Create: `src/main/scala/distantlands/application/chronicle/ChronicleJson.scala`
+- Create: `src/main/scala/distantlands/serialization/ChronicleJsonCodec.scala`
 - Create: `src/main/resources/META-INF/services/oathdigital.application.chronicle.ChronicleJson`
-- Create: `shared/src/main/scala/oathdigital/protocol/ChronicleProtocol.scala`
-- Create: `src/main/scala/oathdigital/application/chronicle/ChronicleEntries.scala`
-- Create: `src/test/scala/oathdigital/gameplay/chronicle/EvolvedChronicleFixture.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/chronicle/ChronicleEndToEndSuite.scala`
-- Create: `src/test/scala/oathdigital/serialization/ChronicleJsonCodecSuite.scala`
-- Create: `src/test/scala/oathdigital/application/chronicle/ChronicleEntriesSuite.scala`
-- Create: `shared/src/test/scala/oathdigital/protocol/ChronicleProtocolSuite.scala`
+- Create: `shared/src/main/scala/distantlands/protocol/ChronicleProtocol.scala`
+- Create: `src/main/scala/distantlands/application/chronicle/ChronicleEntries.scala`
+- Create: `src/test/scala/distantlands/gameplay/chronicle/EvolvedChronicleFixture.scala`
+- Modify: `src/test/scala/distantlands/gameplay/chronicle/ChronicleEndToEndSuite.scala`
+- Create: `src/test/scala/distantlands/serialization/ChronicleJsonCodecSuite.scala`
+- Create: `src/test/scala/distantlands/application/chronicle/ChronicleEntriesSuite.scala`
+- Create: `shared/src/test/scala/distantlands/protocol/ChronicleProtocolSuite.scala`
 
 **Interfaces:**
 - Consumes: `Chronicle.name`, `EraState.score`, `EraState.games` (Tasks 1-2).
@@ -620,7 +620,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Share the end-to-end walk**
 
-Create `src/test/scala/oathdigital/gameplay/chronicle/EvolvedChronicleFixture.scala`. Move `rules`, `usurperWakes` and the walk out of `ChronicleEndToEndSuite`'s first test into it:
+Create `src/test/scala/distantlands/gameplay/chronicle/EvolvedChronicleFixture.scala`. Move `rules`, `usurperWakes` and the walk out of `ChronicleEndToEndSuite`'s first test into it:
 
 ```scala
 package oathdigital.gameplay.chronicle
@@ -667,7 +667,7 @@ Expected: PASS.
 
 - [ ] **Step 2: Write the failing codec test**
 
-Create `src/test/scala/oathdigital/serialization/ChronicleJsonCodecSuite.scala`:
+Create `src/test/scala/distantlands/serialization/ChronicleJsonCodecSuite.scala`:
 
 ```scala
 package oathdigital.serialization
@@ -722,7 +722,7 @@ Expected: compile error, `Not found: ChronicleJsonCodec`.
 
 - [ ] **Step 4: Add the boundary trait**
 
-Create `src/main/scala/oathdigital/application/chronicle/ChronicleJson.scala`:
+Create `src/main/scala/distantlands/application/chronicle/ChronicleJson.scala`:
 
 ```scala
 package oathdigital.application.chronicle
@@ -761,7 +761,7 @@ In `encodeFoundationState`, sort the sources: `state.alterationSources.toVector.
 
 - [ ] **Step 6: Write the codec and register it**
 
-Create `src/main/scala/oathdigital/serialization/ChronicleJsonCodec.scala`:
+Create `src/main/scala/distantlands/serialization/ChronicleJsonCodec.scala`:
 
 ```scala
 package oathdigital.serialization
@@ -814,7 +814,7 @@ Expected: PASS.
 
 - [ ] **Step 8: Write the failing protocol and entries tests**
 
-Create `shared/src/test/scala/oathdigital/protocol/ChronicleProtocolSuite.scala`:
+Create `shared/src/test/scala/distantlands/protocol/ChronicleProtocolSuite.scala`:
 
 ```scala
 package oathdigital.protocol
@@ -842,7 +842,7 @@ class ChronicleProtocolSuite extends munit.FunSuite:
     assert(ChronicleEntryCodec.decodeValue(raw, "$").isLeft)
 ```
 
-Create `src/test/scala/oathdigital/application/chronicle/ChronicleEntriesSuite.scala`:
+Create `src/test/scala/distantlands/application/chronicle/ChronicleEntriesSuite.scala`:
 
 ```scala
 package oathdigital.application.chronicle
@@ -894,7 +894,7 @@ Expected: compile error, `Not found: ChronicleEntry`.
 
 - [ ] **Step 10: Add the protocol types and codec**
 
-Create `shared/src/main/scala/oathdigital/protocol/ChronicleProtocol.scala`:
+Create `shared/src/main/scala/distantlands/protocol/ChronicleProtocol.scala`:
 
 ```scala
 package oathdigital.protocol
@@ -963,7 +963,7 @@ object ChronicleEntryCodec:
 
 - [ ] **Step 11: Add digest and summary**
 
-Create `src/main/scala/oathdigital/application/chronicle/ChronicleEntries.scala`:
+Create `src/main/scala/distantlands/application/chronicle/ChronicleEntries.scala`:
 
 ```scala
 package oathdigital.application.chronicle
@@ -1010,17 +1010,17 @@ Expected: no errors. `application/chronicle` imports only `model` and `protocol`
 - [ ] **Step 13: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala \
-  src/main/scala/oathdigital/serialization/ChronicleJsonCodec.scala \
+git add src/main/scala/distantlands/serialization/GameEventJsonSupport.scala \
+  src/main/scala/distantlands/serialization/ChronicleJsonCodec.scala \
   src/main/resources/META-INF/services/oathdigital.application.chronicle.ChronicleJson \
-  src/main/scala/oathdigital/application/chronicle/ChronicleJson.scala \
-  src/main/scala/oathdigital/application/chronicle/ChronicleEntries.scala \
-  shared/src/main/scala/oathdigital/protocol/ChronicleProtocol.scala \
-  shared/src/test/scala/oathdigital/protocol/ChronicleProtocolSuite.scala \
-  src/test/scala/oathdigital/serialization/ChronicleJsonCodecSuite.scala \
-  src/test/scala/oathdigital/application/chronicle/ChronicleEntriesSuite.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/EvolvedChronicleFixture.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/ChronicleEndToEndSuite.scala
+  src/main/scala/distantlands/application/chronicle/ChronicleJson.scala \
+  src/main/scala/distantlands/application/chronicle/ChronicleEntries.scala \
+  shared/src/main/scala/distantlands/protocol/ChronicleProtocol.scala \
+  shared/src/test/scala/distantlands/protocol/ChronicleProtocolSuite.scala \
+  src/test/scala/distantlands/serialization/ChronicleJsonCodecSuite.scala \
+  src/test/scala/distantlands/application/chronicle/ChronicleEntriesSuite.scala \
+  src/test/scala/distantlands/gameplay/chronicle/EvolvedChronicleFixture.scala \
+  src/test/scala/distantlands/gameplay/chronicle/ChronicleEndToEndSuite.scala
 git commit -m "feat(chronicle): write Chronicles as canonical JSON with a digest and summary
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1031,13 +1031,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 4: The convert route
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/chronicle/ChronicleConversion.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/ChronicleProtocol.scala` (convert request and response)
-- Modify: `src/main/scala/oathdigital/server/TrustedSeatRoutes.scala`
-- Modify: `src/main/scala/oathdigital/server/ServerRuntime.scala`, `src/main/scala/oathdigital/server/ServerRoutes.scala`
-- Create: `src/test/scala/oathdigital/application/chronicle/ChronicleConversionSuite.scala`
-- Modify: `shared/src/test/scala/oathdigital/protocol/ChronicleProtocolSuite.scala`
-- Modify: `src/test/scala/oathdigital/server/TrustedSeatRoutesSuite.scala`
+- Create: `src/main/scala/distantlands/application/chronicle/ChronicleConversion.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/ChronicleProtocol.scala` (convert request and response)
+- Modify: `src/main/scala/distantlands/server/TrustedSeatRoutes.scala`
+- Modify: `src/main/scala/distantlands/server/ServerRuntime.scala`, `src/main/scala/distantlands/server/ServerRoutes.scala`
+- Create: `src/test/scala/distantlands/application/chronicle/ChronicleConversionSuite.scala`
+- Modify: `shared/src/test/scala/distantlands/protocol/ChronicleProtocolSuite.scala`
+- Modify: `src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala`
 
 **Interfaces:**
 - Consumes: `ChronicleEntries`, `ChronicleJson`, `ChronicleTtsCodec.decode(text, name)`, `ChronicleAccounting.knownAndUnique(catalog, chronicle): Either[String, Unit]`.
@@ -1054,7 +1054,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing conversion test**
 
-Create `src/test/scala/oathdigital/application/chronicle/ChronicleConversionSuite.scala`:
+Create `src/test/scala/distantlands/application/chronicle/ChronicleConversionSuite.scala`:
 
 ```scala
 package oathdigital.application.chronicle
@@ -1114,7 +1114,7 @@ Expected: compile error, `Not found: ChronicleConversion`.
 
 - [ ] **Step 3: Write the conversion**
 
-Create `src/main/scala/oathdigital/application/chronicle/ChronicleConversion.scala`:
+Create `src/main/scala/distantlands/application/chronicle/ChronicleConversion.scala`:
 
 ```scala
 package oathdigital.application.chronicle
@@ -1320,14 +1320,14 @@ Expected: all pass.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/chronicle/ChronicleConversion.scala \
-  shared/src/main/scala/oathdigital/protocol/ChronicleProtocol.scala \
-  shared/src/test/scala/oathdigital/protocol/ChronicleProtocolSuite.scala \
-  src/main/scala/oathdigital/server/TrustedSeatRoutes.scala \
-  src/main/scala/oathdigital/server/ServerRuntime.scala \
-  src/main/scala/oathdigital/server/ServerRoutes.scala \
-  src/test/scala/oathdigital/application/chronicle/ChronicleConversionSuite.scala \
-  src/test/scala/oathdigital/server/TrustedSeatRoutesSuite.scala
+git add src/main/scala/distantlands/application/chronicle/ChronicleConversion.scala \
+  shared/src/main/scala/distantlands/protocol/ChronicleProtocol.scala \
+  shared/src/test/scala/distantlands/protocol/ChronicleProtocolSuite.scala \
+  src/main/scala/distantlands/server/TrustedSeatRoutes.scala \
+  src/main/scala/distantlands/server/ServerRuntime.scala \
+  src/main/scala/distantlands/server/ServerRoutes.scala \
+  src/test/scala/distantlands/application/chronicle/ChronicleConversionSuite.scala \
+  src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala
 git commit -m "feat(chronicle): convert a Chronicle between JSON and TTS, checking its cards
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1338,13 +1338,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 5: Create from a new or saved Chronicle
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/TrustedGameProtocol.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/TrustedGameProtocolCodec.scala`
-- Modify: `src/main/scala/oathdigital/server/TrustedGameProvisioning.scala`
-- Modify: `src/main/scala/oathdigital/server/TrustedSeatRoutes.scala` (create answer)
-- Modify: `src/main/scala/oathdigital/server/ServerRuntime.scala` (provisioning gets `chronicles`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TrustedHostUi.scala:163`
-- Modify tests: `TrustedGameProvisioningSuite`, `TrustedSeatRoutesSuite`, `ServerRuntimeSuite`, `frontend/src/test/scala/oathdigital/frontend/ServerModeHostFormSuite.scala`, and a shared protocol suite for the create codec (find it with `grep -rln TrustedGameCreateRequestCodec shared/src/test`; if none exists, add the tests to `ChronicleProtocolSuite`).
+- Modify: `shared/src/main/scala/distantlands/protocol/TrustedGameProtocol.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/TrustedGameProtocolCodec.scala`
+- Modify: `src/main/scala/distantlands/server/TrustedGameProvisioning.scala`
+- Modify: `src/main/scala/distantlands/server/TrustedSeatRoutes.scala` (create answer)
+- Modify: `src/main/scala/distantlands/server/ServerRuntime.scala` (provisioning gets `chronicles`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/TrustedHostUi.scala:163`
+- Modify tests: `TrustedGameProvisioningSuite`, `TrustedSeatRoutesSuite`, `ServerRuntimeSuite`, `frontend/src/test/scala/distantlands/frontend/ServerModeHostFormSuite.scala`, and a shared protocol suite for the create codec (find it with `grep -rln TrustedGameCreateRequestCodec shared/src/test`; if none exists, add the tests to `ChronicleProtocolSuite`).
 
 **Interfaces:**
 - Consumes: `ChronicleChoice`, `ChronicleConversion.decode` and `.entry`, `ChronicleEntryCodec`.
@@ -1611,12 +1611,12 @@ Expected: all pass.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/TrustedGameProtocol.scala \
-  shared/src/main/scala/oathdigital/protocol/TrustedGameProtocolCodec.scala \
-  src/main/scala/oathdigital/server/TrustedGameProvisioning.scala \
-  src/main/scala/oathdigital/server/TrustedSeatRoutes.scala \
-  src/main/scala/oathdigital/server/ServerRuntime.scala \
-  frontend/src/main/scala/oathdigital/frontend/TrustedHostUi.scala
+git add shared/src/main/scala/distantlands/protocol/TrustedGameProtocol.scala \
+  shared/src/main/scala/distantlands/protocol/TrustedGameProtocolCodec.scala \
+  src/main/scala/distantlands/server/TrustedGameProvisioning.scala \
+  src/main/scala/distantlands/server/TrustedSeatRoutes.scala \
+  src/main/scala/distantlands/server/ServerRuntime.scala \
+  frontend/src/main/scala/distantlands/frontend/TrustedHostUi.scala
 git add -u src/test shared/src/test frontend/src/test
 git commit -m "feat(chronicle): create a game from a new or saved Chronicle, returning its entry
 
@@ -1628,11 +1628,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 6: The projection's Chronicle
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala`
-- Modify: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- Create: `src/test/scala/oathdigital/application/ChronicleProjectionSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala`
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala`
+- Modify: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- Create: `src/test/scala/distantlands/application/ChronicleProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes: `ChronicleEntries`, `ChronicleEntryCodec`, `CampaignState.baseline`, `CampaignState.evolved`.
@@ -1702,7 +1702,7 @@ Expected: PASS.
 
 - [ ] **Step 3: Write the failing projector test**
 
-Create `src/test/scala/oathdigital/application/ChronicleProjectionSuite.scala`:
+Create `src/test/scala/distantlands/application/ChronicleProjectionSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -1774,11 +1774,11 @@ Expected: all pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala \
-  shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala \
-  src/main/scala/oathdigital/application/GameProjection.scala \
-  src/test/scala/oathdigital/application/ChronicleProjectionSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala \
+  shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala \
+  shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala \
+  src/main/scala/distantlands/application/GameProjection.scala \
+  src/test/scala/distantlands/application/ChronicleProjectionSuite.scala
 git commit -m "feat(chronicle): show every seat the Chronicle's name, starting digest and evolved Chronicle
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"

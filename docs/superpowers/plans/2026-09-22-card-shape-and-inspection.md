@@ -44,15 +44,15 @@
 
 | File | Responsibility |
 | --- | --- |
-| `frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala` | The 17 `<symbol>` glyph definitions, their accessible names, and mounting the sprite once per document. |
-| `frontend/src/main/scala/oathdigital/frontend/RulesTextRenderer.scala` | Catalog markup → DOM: `[token]` → glyph, `**bold**`/`_italic_` → elements, blank line → one block per power. |
-| `frontend/src/main/scala/oathdigital/frontend/CardFace.scala` | The fixed-box card button: face-up summary, face-down letter, knowable pip, unimplemented marker. |
-| `frontend/src/main/scala/oathdigital/frontend/CardInspection.scala` | A one-slot handler registry decoupling the nine card call sites from the overlay. |
-| `frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala` | The full-screen overlay: contents, Escape / Close / click dismissal, focus return. |
-| `frontend/src/main/scala/oathdigital/frontend/DragClickGuard.scala` | Suppresses the click that follows a drag on a `.decision-option`. |
+| `frontend/src/main/scala/distantlands/frontend/TokenSprite.scala` | The 17 `<symbol>` glyph definitions, their accessible names, and mounting the sprite once per document. |
+| `frontend/src/main/scala/distantlands/frontend/RulesTextRenderer.scala` | Catalog markup → DOM: `[token]` → glyph, `**bold**`/`_italic_` → elements, blank line → one block per power. |
+| `frontend/src/main/scala/distantlands/frontend/CardFace.scala` | The fixed-box card button: face-up summary, face-down letter, knowable pip, unimplemented marker. |
+| `frontend/src/main/scala/distantlands/frontend/CardInspection.scala` | A one-slot handler registry decoupling the nine card call sites from the overlay. |
+| `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala` | The full-screen overlay: contents, Escape / Close / click dismissal, focus return. |
+| `frontend/src/main/scala/distantlands/frontend/DragClickGuard.scala` | Suppresses the click that follows a drag on a `.decision-option`. |
 | `frontend/styles.css` | Palette custom properties, box sizing, face layout, overlay, map-compact degradation. Deletions: `.card-popover`, `.peeked-relic`, the `position: static` override. |
 
-Tests mirror production one-to-one under `frontend/src/test/scala/oathdigital/frontend/`.
+Tests mirror production one-to-one under `frontend/src/test/scala/distantlands/frontend/`.
 
 ---
 
@@ -61,10 +61,10 @@ Tests mirror production one-to-one under `frontend/src/test/scala/oathdigital/fr
 Pure DOM builders with no layout dependency, so they can be written and tested before anything is wired.
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala`
-- Create: `frontend/src/main/scala/oathdigital/frontend/RulesTextRenderer.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/TokenSprite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/RulesTextRenderer.scala`
 - Modify: `frontend/styles.css` (add the palette block and glyph sizing at the top of the file, after the `:root` block ending at line 6)
-- Test: `frontend/src/test/scala/oathdigital/frontend/RulesTextRendererSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/RulesTextRendererSuite.scala`
 
 **Interfaces:**
 - Consumes: `ServerUiSupport.element`/`ServerUiSupport.text` (existing `private[frontend]` helpers).
@@ -77,7 +77,7 @@ Pure DOM builders with no layout dependency, so they can be written and tested b
 
 - [ ] **Step 1: Write the failing test**
 
-Create `frontend/src/test/scala/oathdigital/frontend/RulesTextRendererSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/RulesTextRendererSuite.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -157,7 +157,7 @@ Expected: FAIL to compile — `not found: value TokenSprite`.
 
 - [ ] **Step 3: Write `TokenSprite`**
 
-Create `frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala`. The paths are authored on a `0 0 24 24` grid and every one is filled `evenodd`, so an inner subpath is always a hole. They are deliberately geometric: shape, not colour, is what distinguishes a suit (see Global Constraints).
+Create `frontend/src/main/scala/distantlands/frontend/TokenSprite.scala`. The paths are authored on a `0 0 24 24` grid and every one is filled `evenodd`, so an inner subpath is always a hole. They are deliberately geometric: shape, not colour, is what distinguishes a suit (see Global Constraints).
 
 ```scala
 package oathdigital.frontend
@@ -260,7 +260,7 @@ private[frontend] object TokenSprite {
 
 - [ ] **Step 4: Write `RulesTextRenderer`**
 
-Create `frontend/src/main/scala/oathdigital/frontend/RulesTextRenderer.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/RulesTextRenderer.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -393,7 +393,7 @@ Expected: exit 0, no existing test broken (nothing calls the new code yet).
 - [ ] **Step 8: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala frontend/src/main/scala/oathdigital/frontend/RulesTextRenderer.scala frontend/src/test/scala/oathdigital/frontend/RulesTextRendererSuite.scala frontend/styles.css
+git add frontend/src/main/scala/distantlands/frontend/TokenSprite.scala frontend/src/main/scala/distantlands/frontend/RulesTextRenderer.scala frontend/src/test/scala/distantlands/frontend/RulesTextRendererSuite.scala frontend/styles.css
 git commit -m "$(cat <<'EOF'
 feat(frontend): render catalog token markup as inline SVG glyphs
 
@@ -414,9 +414,9 @@ EOF
 Builds the renderer and its CSS. Nothing calls it yet — Task 3 does the swap, so this task can be reviewed on its own output.
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/CardFace.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/CardFace.scala`
 - Modify: `frontend/styles.css` (add the card-box block immediately before the `.pile-display` rule, currently line 295)
-- Test: `frontend/src/test/scala/oathdigital/frontend/CardFaceSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/CardFaceSuite.scala`
 
 **Interfaces:**
 - Consumes: `TokenSprite`, `RulesTextRenderer` (Task 1) only indirectly — the face carries no rules text. `ServerUiSupport.element`/`text`.
@@ -428,7 +428,7 @@ Builds the renderer and its CSS. Nothing calls it yet — Task 3 does the swap, 
 
 - [ ] **Step 1: Write the failing test**
 
-Create `frontend/src/test/scala/oathdigital/frontend/CardFaceSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/CardFaceSuite.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -567,7 +567,7 @@ Expected: FAIL to compile — `not found: value CardFace`.
 
 - [ ] **Step 3: Write `CardFace`**
 
-Create `frontend/src/main/scala/oathdigital/frontend/CardFace.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/CardFace.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -751,7 +751,7 @@ Expected: exit 0.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/CardFace.scala frontend/src/test/scala/oathdigital/frontend/CardFaceSuite.scala frontend/styles.css
+git add frontend/src/main/scala/distantlands/frontend/CardFace.scala frontend/src/test/scala/distantlands/frontend/CardFaceSuite.scala frontend/styles.css
 git commit -m "$(cat <<'EOF'
 feat(frontend): add the fixed-size card face
 
@@ -774,16 +774,16 @@ EOF
 The reflow actually disappears here. The nine `cardDetailsPopover` call sites move to `CardFace.render`, and the three CSS causes — the in-flow popover, the mismatched face-down squares, the `.peeked-relic` grid overlay — are deleted.
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala` (delete `cardDetailsPopover` at 121-149 and `peekedRelic` at 151-163; rewrite the denizen and relic loops in `siteDetails` at 78-111)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:39,47,58`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:57`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/FacedownAdviserRenderer.scala:23`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala:314-316`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/DistributePanelRenderer.scala:45-47`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/SiteCardPresentation.scala` (drop the now-unused `PeekedRelicPresentation` reveal fields)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala` (delete `cardDetailsPopover` at 121-149 and `peekedRelic` at 151-163; rewrite the denizen and relic loops in `siteDetails` at 78-111)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:39,47,58`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:57`
+- Modify: `frontend/src/main/scala/distantlands/frontend/FacedownAdviserRenderer.scala:23`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala:314-316`
+- Modify: `frontend/src/main/scala/distantlands/frontend/DistributePanelRenderer.scala:45-47`
+- Modify: `frontend/src/main/scala/distantlands/frontend/SiteCardPresentation.scala` (drop the now-unused `PeekedRelicPresentation` reveal fields)
 - Modify: `frontend/styles.css` (delete `.card-detail`, `.card-detail-unimplemented`, `.card-popover`, its `:hover`/`:focus` rules, `.card-property`, `.empty-denizen-slot`/`.facedown-relic`, the whole `.peeked-relic` block at 343-351, and the `.game-table .card-popover` override at 430-432)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ServerUiSupportCardMarkerSuite.scala` (delete; `CardFaceSuite` covers it)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala:875-888` (the peeked-relic assertions)
+- Modify: `frontend/src/test/scala/distantlands/frontend/ServerUiSupportCardMarkerSuite.scala` (delete; `CardFaceSuite` covers it)
+- Modify: `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala:875-888` (the peeked-relic assertions)
 
 **Interfaces:**
 - Consumes: `CardFace.render` (Task 2).
@@ -791,7 +791,7 @@ The reflow actually disappears here. The nine `cardDetailsPopover` call sites mo
 
 - [ ] **Step 1: Write the failing test**
 
-Append to `frontend/src/test/scala/oathdigital/frontend/CardFaceSuite.scala`, inside the class:
+Append to `frontend/src/test/scala/distantlands/frontend/CardFaceSuite.scala`, inside the class:
 
 ```scala
   test("an empty denizen slot and an unknown relic occupy their type's box") {
@@ -831,7 +831,7 @@ Expected: FAIL to compile — `value emptySlot is not a member of object ServerU
 
 - [ ] **Step 3: Replace the popover helpers in `ServerUiSupport`**
 
-In `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala`, delete `cardDetailsPopover` (lines 121-149) and `peekedRelic` (lines 151-163) entirely and put in their place:
+In `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala`, delete `cardDetailsPopover` (lines 121-149) and `peekedRelic` (lines 151-163) entirely and put in their place:
 
 ```scala
   /** A site relic the viewer cannot identify. Same box as a real relic, so
@@ -917,7 +917,7 @@ Each is a one-word substitution of `CardFace.render` for `cardDetailsPopover`:
 
 - [ ] **Step 6: Drop the obsolete reveal metadata from `SiteCardPresentation`**
 
-In `frontend/src/main/scala/oathdigital/frontend/SiteCardPresentation.scala`, replace the `PeekedRelicPresentation` case class (line 6-8) with:
+In `frontend/src/main/scala/distantlands/frontend/SiteCardPresentation.scala`, replace the `PeekedRelicPresentation` case class (line 6-8) with:
 
 ```scala
 private[frontend] final case class PeekedRelicPresentation(card: CardDetails)
@@ -950,12 +950,12 @@ Add, to the card-box block from Task 2:
 - [ ] **Step 8: Delete the superseded suite and fix the peeked-relic assertions**
 
 ```bash
-git rm frontend/src/test/scala/oathdigital/frontend/ServerUiSupportCardMarkerSuite.scala
+git rm frontend/src/test/scala/distantlands/frontend/ServerUiSupportCardMarkerSuite.scala
 ```
 
 Its two cases moved into `CardFaceSuite` ("the unimplemented marker survives the redesign").
 
-In `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala`, replace the two obsolete assertions at lines 884-886 with nothing — delete these lines:
+In `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala`, replace the two obsolete assertions at lines 884-886 with nothing — delete these lines:
 
 ```scala
     assert(owner.peekedRelics.forall(_.concealedAtRest))
@@ -1004,12 +1004,12 @@ EOF
 ### Task 4: The inspection overlay
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/CardInspection.scala`
-- Create: `frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardFace.scala` (attach the click)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala` (own the overlay and the sprite)
+- Create: `frontend/src/main/scala/distantlands/frontend/CardInspection.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardFace.scala` (attach the click)
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala` (own the overlay and the sprite)
 - Modify: `frontend/styles.css` (append the overlay block at the end of the file)
-- Test: `frontend/src/test/scala/oathdigital/frontend/CardInspectionOverlaySuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala`
 
 **Interfaces:**
 - Consumes: `CardFace.render`, `CardFace.boxClass`, `CardFace.faceDown` (Task 2); `RulesTextRenderer.powers`, `TokenSprite.mount` (Task 1).
@@ -1023,7 +1023,7 @@ EOF
 
 - [ ] **Step 1: Write the failing test**
 
-Create `frontend/src/test/scala/oathdigital/frontend/CardInspectionOverlaySuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -1203,7 +1203,7 @@ Expected: FAIL to compile — `not found: type CardInspectionOverlay`.
 
 - [ ] **Step 3: Write `CardInspection`**
 
-Create `frontend/src/main/scala/oathdigital/frontend/CardInspection.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/CardInspection.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -1232,7 +1232,7 @@ private[frontend] object CardInspection {
 
 - [ ] **Step 4: Attach the click in `CardFace.render`**
 
-In `frontend/src/main/scala/oathdigital/frontend/CardFace.scala`, immediately before the closing `node` of `render`, add:
+In `frontend/src/main/scala/distantlands/frontend/CardFace.scala`, immediately before the closing `node` of `render`, add:
 
 ```scala
     // Unclaimed everywhere: `BoardTargetRefProjection` has only a `Site` case,
@@ -1244,7 +1244,7 @@ In `frontend/src/main/scala/oathdigital/frontend/CardFace.scala`, immediately be
 
 - [ ] **Step 5: Write `CardInspectionOverlay`**
 
-Create `frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -1344,7 +1344,7 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element) {
 
 - [ ] **Step 6: Wire the overlay into `GameTableShell`**
 
-In `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala`, after the `dev.addEventListener("keydown", escape)` line (line 81), add:
+In `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala`, after the `dev.addEventListener("keydown", escape)` line (line 81), add:
 
 ```scala
   private val inspector = new CardInspectionOverlay(mount)
@@ -1432,9 +1432,9 @@ EOF
 ### Task 5: Decision panels — drop the dead focus stop, keep drag working
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/DragClickGuard.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala:308-310`
-- Test: `frontend/src/test/scala/oathdigital/frontend/PartitionPanelRenderSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/DragClickGuard.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala:308-310`
+- Test: `frontend/src/test/scala/distantlands/frontend/PartitionPanelRenderSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing new.
@@ -1442,7 +1442,7 @@ EOF
 
 - [ ] **Step 1: Write the failing test**
 
-Append to `frontend/src/test/scala/oathdigital/frontend/PartitionPanelRenderSuite.scala`, inside the class. Match the suite's existing helper names (`all`, and however it builds a panel) — if `all(node, selector)` is not already defined there, copy the one-liner from `CardFaceSuite`.
+Append to `frontend/src/test/scala/distantlands/frontend/PartitionPanelRenderSuite.scala`, inside the class. Match the suite's existing helper names (`all`, and however it builds a panel) — if `all(node, selector)` is not already defined there, copy the one-liner from `CardFaceSuite`.
 
 ```scala
   test("a decision option is not a focus stop; the move buttons are the keyboard path") {
@@ -1489,7 +1489,7 @@ Expected: FAIL to compile — `not found: value DragClickGuard`.
 
 - [ ] **Step 3: Write `DragClickGuard`**
 
-Create `frontend/src/main/scala/oathdigital/frontend/DragClickGuard.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/DragClickGuard.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -1531,7 +1531,7 @@ private[frontend] object DragClickGuard {
 
 - [ ] **Step 4: Remove the dead tab stop and attach the guard**
 
-In `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala`, in `partitionOption`, delete line 309:
+In `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala`, in `partitionOption`, delete line 309:
 
 ```scala
     node.setAttribute("tabindex", "0")
@@ -1585,9 +1585,9 @@ EOF
 ### Task 6: Map degradation below 0.6 scale
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala:33-36`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala:33-36`
 - Modify: `frontend/styles.css` (the `.map-content` rule, currently line 399, plus a compact block)
-- Test: `frontend/src/test/scala/oathdigital/frontend/MapViewStateSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/MapViewStateSuite.scala`
 
 **Interfaces:**
 - Consumes: `MapViewport`'s existing `onScale: Double => Unit` callback, which `paint()` already fires on every change.
@@ -1595,7 +1595,7 @@ EOF
 
 - [ ] **Step 1: Write the failing test**
 
-Append to `frontend/src/test/scala/oathdigital/frontend/MapViewStateSuite.scala`, inside the class:
+Append to `frontend/src/test/scala/distantlands/frontend/MapViewStateSuite.scala`, inside the class:
 
 ```scala
   test("map cards drop to name only below 0.6 scale and not at or above it") {
@@ -1619,7 +1619,7 @@ Expected: FAIL to compile — `value compactAtScale is not a member of object Ga
 
 - [ ] **Step 3: Add the threshold and set the class**
 
-In `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala`, add a companion object at the bottom of the file:
+In `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala`, add a companion object at the bottom of the file:
 
 ```scala
 private[frontend] object GameTableShell {
@@ -1807,7 +1807,7 @@ Expected: exit 0.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add docs/testing/card-shape-verification.md docs/superpowers/specs/2026-09-22-card-shape-and-inspection-design.md frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala
+git add docs/testing/card-shape-verification.md docs/superpowers/specs/2026-09-22-card-shape-and-inspection-design.md frontend/src/main/scala/distantlands/frontend/TokenSprite.scala
 git commit -m "$(cat <<'EOF'
 docs: record the card shape and inspection browser verification
 

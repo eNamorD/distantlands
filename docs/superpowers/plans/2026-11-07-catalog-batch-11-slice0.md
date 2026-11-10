@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Bring `src/main/scala/oathdigital/model/CoreOperations.scala`
+**Goal:** Bring `src/main/scala/distantlands/model/CoreOperations.scala`
 from 787 lines to at most 720, with no change in behaviour, so that
 slices 3 and 7 have room for their operations under the 800-line cap.
 
@@ -76,11 +76,11 @@ read "Goal and scope" and "Slice 0: Room in CoreOperations".
 ### Task 1: Move the child builders to OperationChildren
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/OperationChildren.scala`
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala`
+- Create: `src/main/scala/distantlands/model/OperationChildren.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala`
   (`object Bury` 109-122, `object Discard` 125-251, `RemoveFromMap`
   260-268, `PayCost` 370-378)
-- Test: `src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala`
 
 **Interfaces:**
 - Produces: `private[model] object OperationChildren` with
@@ -303,7 +303,7 @@ Expected: PASS, with no compiler warning (`-Werror`).
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/OperationChildren.scala src/main/scala/oathdigital/model/CoreOperations.scala src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala
+git add src/main/scala/distantlands/model/OperationChildren.scala src/main/scala/distantlands/model/CoreOperations.scala src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala
 git commit -m "$(cat <<'EOF'
 refactor(model): build composite operations' children in OperationChildren
 
@@ -319,8 +319,8 @@ EOF
 ### Task 2: Move the card-play hooks, trim the banner, close the item
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/CardPlayHooks.scala`
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (the
+- Create: `src/main/scala/distantlands/model/CardPlayHooks.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (the
   walker banner at 481-496, the hooks at the end of the file)
 - Modify: `docs/ROADMAP.md`, `docs/superpowers/specs/2026-11-07-catalog-batch-11-design.md`
 
@@ -386,7 +386,7 @@ land.") with:
 - [ ] **Step 3: Check the line count and the gates**
 
 ```bash
-wc -l src/main/scala/oathdigital/model/CoreOperations.scala
+wc -l src/main/scala/distantlands/model/CoreOperations.scala
 ```
 
 Expected: at most 720 (about 717).
@@ -440,7 +440,7 @@ statement coverage is at least 92%.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CardPlayHooks.scala src/main/scala/oathdigital/model/CoreOperations.scala docs/ROADMAP.md docs/superpowers/specs/2026-11-07-catalog-batch-11-design.md
+git add src/main/scala/distantlands/model/CardPlayHooks.scala src/main/scala/distantlands/model/CoreOperations.scala docs/ROADMAP.md docs/superpowers/specs/2026-11-07-catalog-batch-11-design.md
 git commit -m "$(cat <<'EOF'
 refactor(model): move the card-play hooks out of CoreOperations.scala
 

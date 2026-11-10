@@ -74,13 +74,13 @@ This is the sixth of 14 slice plans, written against `0.2.0-alpha` at `d869897b`
 ### Task 1: The Dispossessed as a shuffle pile
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ActionValues.scala:76-108` (`ShufflePile`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/PileOperations.scala:28-46`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala:424-443`
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala` (new `dispossessed` step)
-- Test: `src/test/scala/oathdigital/gameplay/operations/ShuffleOperationSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala:455`
-- Test: `src/test/scala/oathdigital/testkit/TableSuite.scala`
+- Modify: `src/main/scala/distantlands/model/ActionValues.scala:76-108` (`ShufflePile`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/PileOperations.scala:28-46`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala:424-443`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala` (new `dispossessed` step)
+- Test: `src/test/scala/distantlands/gameplay/operations/ShuffleOperationSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala:455`
+- Test: `src/test/scala/distantlands/testkit/TableSuite.scala`
 
 **Interfaces:**
 - Consumes: `campaign.dispossessed: Vector[WorldCardId]`; `Table.worldDeckBottom`, `Table.moving`, `Table.update`.
@@ -188,13 +188,13 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ActionValues.scala \
-  src/main/scala/oathdigital/gameplay/operations/PileOperations.scala \
-  src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala \
-  src/test/scala/oathdigital/testkit/Table.scala \
-  src/test/scala/oathdigital/testkit/TableSuite.scala \
-  src/test/scala/oathdigital/gameplay/operations/ShuffleOperationSuite.scala \
-  src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/ActionValues.scala \
+  src/main/scala/distantlands/gameplay/operations/PileOperations.scala \
+  src/main/scala/distantlands/serialization/WalkerOperationCodec.scala \
+  src/test/scala/distantlands/testkit/Table.scala \
+  src/test/scala/distantlands/testkit/TableSuite.scala \
+  src/test/scala/distantlands/gameplay/operations/ShuffleOperationSuite.scala \
+  src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(operations): shuffle the Dispossessed with a recorded order
 
@@ -208,13 +208,13 @@ EOF
 ### Task 2: Great Spire
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/DispossessedDraws.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/GreatSpire.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala:53-67` (remove `GreatSpireCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/RuinedSiteSetupRules.scala` (receive `GreatSpireCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala:19`
+- Create: `src/main/scala/distantlands/gameplay/powers/DispossessedDraws.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/GreatSpire.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala:53-67` (remove `GreatSpireCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala` (receive `GreatSpireCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala:19`
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/powers/declared-keys.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/GreatSpireSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/GreatSpireSuite.scala`
 
 **Interfaces:**
 - Consumes: `ShufflePile.Dispossessed` and `Table.dispossessed` (Task 1); `PaidAction`; `EdificeSetupSupport.siteOf(ready, edifice, side): Option[SiteId]`; `ActPowerHarness.{rules, use, replayed}`; `WalkerDiceFixture.{shufflingBy, reversingShuffle}`; `PhasePowerHarness.backToActing`.
@@ -231,7 +231,7 @@ The quiet table (`PowerFixture.quietTable`): the regional discards are empty, an
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/GreatSpireSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/GreatSpireSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -360,7 +360,7 @@ Cut `object GreatSpireCard` (both faces, text unchanged) from `HoldingEdifices.s
 
 - [ ] **Step 4: Write the draws**
 
-Create `src/main/scala/oathdigital/gameplay/powers/DispossessedDraws.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/DispossessedDraws.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -407,7 +407,7 @@ object DispossessedDraws:
 
 - [ ] **Step 5: Write the action**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/GreatSpire.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/GreatSpire.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -488,14 +488,14 @@ Expected:
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/DispossessedDraws.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/GreatSpire.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/setup/RuinedSiteSetupRules.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala \
+git add src/main/scala/distantlands/gameplay/powers/DispossessedDraws.scala \
+  src/main/scala/distantlands/gameplay/powers/action/GreatSpire.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala \
   src/test/resources/powers/unimplemented.txt \
   src/test/resources/powers/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/powers/action/GreatSpireSuite.scala
+  src/test/scala/distantlands/gameplay/powers/action/GreatSpireSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Great Spire swaps cards between the Dispossessed and its region's discard pile
 
@@ -511,12 +511,12 @@ EOF
 ### Task 3: Fallen Spire
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/BannerSetupRules.scala:45-73` (`RuinedSetupRule` split)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/RuinedSiteSetupRules.scala` (new `FallenSpire`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:118`
-- Modify: `src/test/scala/oathdigital/gameplay/setup/SetupWalkDriver.scala:27-48` (a dice source)
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/BannerSetupRules.scala:45-73` (`RuinedSetupRule` split)
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala` (new `FallenSpire`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:118`
+- Modify: `src/test/scala/distantlands/gameplay/setup/SetupWalkDriver.scala:27-48` (a dice source)
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/powers/declared-keys.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/setup/RuinedSetupRulesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala`
 
 **Interfaces:**
 - Consumes: `DispossessedDraws` and `GreatSpireCard` (Task 2); `Table.dispossessed` (Task 1); `ProcedureWalker.advance(state, action, pending, powers, dice)` and `ProcedureWalker.resolve(state, action, pending, answer, powers, dice)`.
@@ -759,11 +759,11 @@ Expected:
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/setup/BannerSetupRules.scala \
-  src/main/scala/oathdigital/gameplay/powers/setup/RuinedSiteSetupRules.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/setup/SetupWalkDriver.scala \
-  src/test/scala/oathdigital/gameplay/powers/setup/RuinedSetupRulesSuite.scala \
+git add src/main/scala/distantlands/gameplay/powers/setup/BannerSetupRules.scala \
+  src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/setup/SetupWalkDriver.scala \
+  src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala \
   src/test/resources/powers/unimplemented.txt \
   src/test/resources/powers/declared-keys.txt
 git commit -m "$(cat <<'EOF'
@@ -781,12 +781,12 @@ EOF
 ### Task 4: `RemoveFromMap`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/Pieces.scala`
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala:23-51` (move out), and after `object Discard` (new composite)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/ResourceOperations.scala:19-27`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala:36-37`, the card-operation encoder and decoder
-- Test: `src/test/scala/oathdigital/gameplay/operations/RemoveFromMapOperationSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala:396`
+- Create: `src/main/scala/distantlands/model/Pieces.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala:23-51` (move out), and after `object Discard` (new composite)
+- Modify: `src/main/scala/distantlands/gameplay/operations/ResourceOperations.scala:19-27`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala:36-37`, the card-operation encoder and decoder
+- Test: `src/test/scala/distantlands/gameplay/operations/RemoveFromMapOperationSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala:396`
 
 **Interfaces:**
 - Consumes: `Discard.returns(card, suit, favor, secrets, actingPlayer): Vector[CoreOperation]` (`private[model]`); `LockedCards(cards).reason(ready, operation)`; `OperationExecutor.execute`.
@@ -794,7 +794,7 @@ EOF
 
 - [ ] **Step 1: Make room in `CoreOperations.scala`**
 
-Create `src/main/scala/oathdigital/model/Pieces.scala` with this header:
+Create `src/main/scala/distantlands/model/Pieces.scala` with this header:
 
 ```scala
 package oathdigital.model
@@ -815,7 +815,7 @@ Expected: success. The package is the same, so no import changes.
 
 - [ ] **Step 2: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/operations/RemoveFromMapOperationSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/operations/RemoveFromMapOperationSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -968,18 +968,18 @@ If the compiler names another exhaustive match over `CoreOperation`, handle `Rem
 Run: `./sbtw "testOnly oathdigital.gameplay.operations.* oathdigital.serialization.*"`
 Expected: PASS.
 
-Run: `wc -l src/main/scala/oathdigital/model/CoreOperations.scala`
+Run: `wc -l src/main/scala/distantlands/model/CoreOperations.scala`
 Expected: under 800.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Pieces.scala \
-  src/main/scala/oathdigital/model/CoreOperations.scala \
-  src/main/scala/oathdigital/gameplay/operations/ResourceOperations.scala \
-  src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala \
-  src/test/scala/oathdigital/gameplay/operations/RemoveFromMapOperationSuite.scala \
-  src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/Pieces.scala \
+  src/main/scala/distantlands/model/CoreOperations.scala \
+  src/main/scala/distantlands/gameplay/operations/ResourceOperations.scala \
+  src/main/scala/distantlands/serialization/WalkerOperationCodec.scala \
+  src/test/scala/distantlands/gameplay/operations/RemoveFromMapOperationSuite.scala \
+  src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(operations): RemoveFromMap takes a card off the map with its tokens returned
 
@@ -995,12 +995,12 @@ If Step 5 needed changes to another file the compiler named, add it to the commi
 ### Task 5: Pilgrimage, docs and gates
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/Pilgrimage.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala:19-26` (remove `PilgrimageCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/Pilgrimage.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala:19-26` (remove `PilgrimageCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/powers/declared-keys.txt` (regenerated)
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`, `docs/ROADMAP.md:70`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/PilgrimageSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/PilgrimageSuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -1016,7 +1016,7 @@ A `BuildOps` that is not `required` skips an operation a restriction refuses and
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/PilgrimageSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/PilgrimageSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -1172,7 +1172,7 @@ Expected: compile failure. `Pilgrimage` does not exist.
 
 Cut `object PilgrimageCard` from `HoldingNomadDenizens.scala`. If an import there is now unused, remove it.
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/Pilgrimage.scala`. Paste `PilgrimageCard` under the imports, unchanged, then add the power:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/Pilgrimage.scala`. Paste `PilgrimageCard` under the imports, unchanged, then add the power:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -1366,12 +1366,12 @@ Expected: both pass.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/Pilgrimage.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala \
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/Pilgrimage.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala \
   src/test/resources/powers/unimplemented.txt \
   src/test/resources/powers/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/PilgrimageSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/PilgrimageSuite.scala \
   docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md \
   docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'

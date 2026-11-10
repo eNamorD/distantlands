@@ -27,7 +27,7 @@ Read off the lines that are not in the ledger, so a flagged line is judged
 against its neighbours rather than against taste:
 
 - **The actor goes unnamed; anyone else is named.** `LogWords.subject`
-  (`src/main/scala/oathdigital/application/gamelog/LogWords.scala:21-25`)
+  (`src/main/scala/distantlands/application/gamelog/LogWords.scala:21-25`)
   writes "Verb " for the run's actor and "{Blue} verb " for others. Every
   procedure line follows it: "Travelled to", "Mustered 1 warband with",
   "Took 1 favor from", "Kept", "Drew", "Forged", "Recovered", "Failed to

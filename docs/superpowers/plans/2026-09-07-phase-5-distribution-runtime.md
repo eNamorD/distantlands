@@ -33,12 +33,12 @@ PATH=/Applications/ChatGPT.app/Contents/Resources/cua_node/bin:/usr/bin:/bin:/us
 
 ## File Structure
 
-- Create `src/main/scala/oathdigital/server/ServerConfig.scala`: typed runtime mode, validated values, CLI/environment parsing, usage text.
-- Create `src/test/scala/oathdigital/server/ServerConfigSuite.scala`: precedence and validation contract.
-- Create `src/main/scala/oathdigital/server/HealthRoutes.scala`: liveness and readiness HTTP routes.
-- Create `src/test/scala/oathdigital/server/HealthRoutesSuite.scala`: response/status contract without full process startup.
-- Create `src/main/scala/oathdigital/server/ProductionFrontendRoutes.scala`: classpath-backed SPA assets with production cache policy.
-- Create `src/test/scala/oathdigital/server/ProductionFrontendRoutesSuite.scala`: optimized resource and fallback routing contract.
+- Create `src/main/scala/distantlands/server/ServerConfig.scala`: typed runtime mode, validated values, CLI/environment parsing, usage text.
+- Create `src/test/scala/distantlands/server/ServerConfigSuite.scala`: precedence and validation contract.
+- Create `src/main/scala/distantlands/server/HealthRoutes.scala`: liveness and readiness HTTP routes.
+- Create `src/test/scala/distantlands/server/HealthRoutesSuite.scala`: response/status contract without full process startup.
+- Create `src/main/scala/distantlands/server/ProductionFrontendRoutes.scala`: classpath-backed SPA assets with production cache policy.
+- Create `src/test/scala/distantlands/server/ProductionFrontendRoutesSuite.scala`: optimized resource and fallback routing contract.
 - Create `frontend/production-index.html`: production shell referencing stable packaged assets.
 - Create `scripts/smoke-packaged-distribution.sh`: process-level Universal artifact smoke test.
 - Create `scripts/smoke-packaged-container.sh`: OCI artifact smoke test.
@@ -46,19 +46,19 @@ PATH=/Applications/ChatGPT.app/Contents/Resources/cua_node/bin:/usr/bin:/bin:/us
 - Create `docs/operations/packaged-smoke-test.md`: repeatable clean-environment test instructions.
 - Modify `project/plugins.sbt`: add sbt-native-packager.
 - Modify `build.sbt`: Java server packaging, optimized frontend resources, Universal and Docker settings, smoke aliases.
-- Modify `src/main/scala/oathdigital/server/OathServer.scala`: consume `ServerConfig`, readiness state, and packaged route mode.
-- Modify `src/main/scala/oathdigital/server/ServerRoutes.scala`: mount mode-specific frontend and health routes without exposing development routes in packaged mode.
-- Modify `src/main/scala/oathdigital/server/DevelopmentRoutes.scala`: delegate `/health` ownership and preserve development asset behavior.
-- Modify `src/test/scala/oathdigital/server/ServerRoutesSuite.scala`: prove route separation.
+- Modify `src/main/scala/distantlands/server/OathServer.scala`: consume `ServerConfig`, readiness state, and packaged route mode.
+- Modify `src/main/scala/distantlands/server/ServerRoutes.scala`: mount mode-specific frontend and health routes without exposing development routes in packaged mode.
+- Modify `src/main/scala/distantlands/server/DevelopmentRoutes.scala`: delegate `/health` ownership and preserve development asset behavior.
+- Modify `src/test/scala/distantlands/server/ServerRoutesSuite.scala`: prove route separation.
 - Modify `README.md`: link packaged build and runtime docs.
 - Modify `.gitignore`: ignore local package smoke-test output and databases.
 
 ### Task 1: Typed Server Configuration
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/ServerConfig.scala`
-- Create: `src/test/scala/oathdigital/server/ServerConfigSuite.scala`
-- Modify: `src/main/scala/oathdigital/server/OathServer.scala`
+- Create: `src/main/scala/distantlands/server/ServerConfig.scala`
+- Create: `src/test/scala/distantlands/server/ServerConfigSuite.scala`
+- Modify: `src/main/scala/distantlands/server/OathServer.scala`
 
 **Interfaces:**
 - Consumes: `Array[String]`, `Map[String, String]`, and build version string.
@@ -163,17 +163,17 @@ Expected: all tests pass.
 - [ ] **Step 6: Commit typed configuration**
 
 ```sh
-git add src/main/scala/oathdigital/server/ServerConfig.scala src/main/scala/oathdigital/server/OathServer.scala src/test/scala/oathdigital/server/ServerConfigSuite.scala
+git add src/main/scala/distantlands/server/ServerConfig.scala src/main/scala/distantlands/server/OathServer.scala src/test/scala/distantlands/server/ServerConfigSuite.scala
 git commit -m "feat(server): add typed runtime configuration"
 ```
 
 ### Task 2: Liveness, Readiness, and Lifecycle Diagnostics
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/HealthRoutes.scala`
-- Create: `src/test/scala/oathdigital/server/HealthRoutesSuite.scala`
-- Modify: `src/main/scala/oathdigital/server/OathServer.scala`
-- Modify: `src/main/scala/oathdigital/server/DevelopmentRoutes.scala`
+- Create: `src/main/scala/distantlands/server/HealthRoutes.scala`
+- Create: `src/test/scala/distantlands/server/HealthRoutesSuite.scala`
+- Modify: `src/main/scala/distantlands/server/OathServer.scala`
+- Modify: `src/main/scala/distantlands/server/DevelopmentRoutes.scala`
 
 **Interfaces:**
 - Consumes: readiness state controlled by `OathServer`.
@@ -245,7 +245,7 @@ Expected: all tests pass, including old `/health` compatibility check.
 - [ ] **Step 6: Commit health lifecycle**
 
 ```sh
-git add src/main/scala/oathdigital/server/HealthRoutes.scala src/main/scala/oathdigital/server/OathServer.scala src/main/scala/oathdigital/server/DevelopmentRoutes.scala src/test/scala/oathdigital/server/HealthRoutesSuite.scala
+git add src/main/scala/distantlands/server/HealthRoutes.scala src/main/scala/distantlands/server/OathServer.scala src/main/scala/distantlands/server/DevelopmentRoutes.scala src/test/scala/distantlands/server/HealthRoutesSuite.scala
 git commit -m "feat(server): add liveness and readiness lifecycle"
 ```
 
@@ -253,10 +253,10 @@ git commit -m "feat(server): add liveness and readiness lifecycle"
 
 **Files:**
 - Create: `frontend/production-index.html`
-- Create: `src/main/scala/oathdigital/server/ProductionFrontendRoutes.scala`
-- Create: `src/test/scala/oathdigital/server/ProductionFrontendRoutesSuite.scala`
-- Modify: `src/main/scala/oathdigital/server/ServerRoutes.scala`
-- Modify: `src/test/scala/oathdigital/server/ServerRoutesSuite.scala`
+- Create: `src/main/scala/distantlands/server/ProductionFrontendRoutes.scala`
+- Create: `src/test/scala/distantlands/server/ProductionFrontendRoutesSuite.scala`
+- Modify: `src/main/scala/distantlands/server/ServerRoutes.scala`
+- Modify: `src/test/scala/distantlands/server/ServerRoutesSuite.scala`
 - Modify: `build.sbt`
 
 **Interfaces:**
@@ -348,7 +348,7 @@ Expected: tests pass and packaged JAR contains index, stylesheet, and optimized 
 - [ ] **Step 7: Commit production resources**
 
 ```sh
-git add build.sbt frontend/production-index.html src/main/scala/oathdigital/server/ProductionFrontendRoutes.scala src/main/scala/oathdigital/server/ServerRoutes.scala src/test/scala/oathdigital/server/ProductionFrontendRoutesSuite.scala src/test/scala/oathdigital/server/ServerRoutesSuite.scala
+git add build.sbt frontend/production-index.html src/main/scala/distantlands/server/ProductionFrontendRoutes.scala src/main/scala/distantlands/server/ServerRoutes.scala src/test/scala/distantlands/server/ProductionFrontendRoutesSuite.scala src/test/scala/distantlands/server/ServerRoutesSuite.scala
 git commit -m "feat(server): serve optimized packaged frontend"
 ```
 

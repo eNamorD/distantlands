@@ -200,7 +200,7 @@ because the design did not anticipate them.
 - **`BackendArchitectureSuite`: a test outside the catalog suite names a
   catalog card through `CatalogNames`**, never as `DenizenId("179")` or
   `RelicId("R01")`. `CatalogNames` is at
-  `src/test/scala/oathdigital/testkit/Table.scala:14` and offers `site`,
+  `src/test/scala/distantlands/testkit/Table.scala:14` and offers `site`,
   `denizen`, `worldCard`, `relic` and `edifice`.
 - **A `Note` holds a closure, so case-class equality fails on it.** Any
   whole-tree `assertEquals` over a tree that gains a `Note` must become a
@@ -240,14 +240,14 @@ parameter that `MusterProcedure` fills, and the leaf is already placed last in
 the gain window. Only the words and the reading are new.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
   (the `ActionRef.Trade` arm)
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
   (delete `tradeLines`, `traded`, `source`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
 - Modify: `docs/superpowers/specs/2026-10-16-game-log-wording-ledger.md`
 - Rewrite: `src/test/resources/gamelog/trade.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
@@ -264,7 +264,7 @@ the gain window. Only the words and the reading are new.
 - [ ] **Step 1: Probe ruling 4's premise before changing anything**
 
 Copy `LogScripts.trade` (`LogScripts.scala:367-376`) into a throwaway suite
-under `src/test/scala/oathdigital/application/gamelog/`, change its table so
+under `src/test/scala/distantlands/application/gamelog/`, change its table so
 The Old Oak is the Trade's source — it is a denizen, so place it at the pawn's
 site the way `LogScripts.source` places the existing one — and count the lines
 the **current rule** posts. Run it, read the number, then delete the suite.
@@ -589,15 +589,15 @@ recovered line would come second. The window moves onto a `Sequence` holding
 the move and the note, exactly as slice 2's Setup fix did.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
   (the `ActionRef.Recover` arm)
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
   (delete `recoverLines`, `stopped`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/recover/RelicWorshipLogSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/recover/RelicWorshipLogSuite.scala`
 - Rewrite: `src/test/resources/gamelog/recover-succeeded.{actor,other}.log`,
   `src/test/resources/gamelog/recover-failed.{actor,other}.log`,
   `src/test/resources/gamelog/reveal-relic.{actor,other}.log`
@@ -612,7 +612,7 @@ the move and the note, exactly as slice 2's Setup fix did.
 - [ ] **Step 1: Write the failing ordering test first**
 
 This is the test that would have caught slice 2's second regression. Create
-`src/test/scala/oathdigital/gameplay/powers/recover/RelicWorshipLogSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/recover/RelicWorshipLogSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.recover
@@ -851,15 +851,15 @@ Ruling 2 puts the keys in `CardPlayProcedure`, owned by
 `ProcedureNotes.id(ActionRef.PlayFacedownAdviser)` wherever the play runs.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
   (the `ActionRef.PlayFacedownAdviser` arm)
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
   (delete `playedAdviser`, `played`; drop the call from `searchLines` and
   `usePowerLines`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/facedown-adviser.{actor,other}.log`,
   `heirloom-kept.{actor,other}.log`, `heirloom-returned.{actor,other}.log`,
   `oracle.{actor,other}.log`, `search.{actor,other}.log`,
@@ -1135,21 +1135,21 @@ the four powers that reshape it start naming it themselves. Split across two
 commits, the first would print both phrasings at once.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/WineOfWelcome.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/Mushrooms.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/PaintedTrumpet.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/SpinningBee.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/WineOfWelcome.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/Mushrooms.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/PaintedTrumpet.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/SpinningBee.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
   (the `ActionRef.Search` arm)
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
   (delete `searchLines`, `search`, `drawnFrom`, `inDiscardPile`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogSearchDrawSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogSearchKeepSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogSearchDrawSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogSearchKeepSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
 - Modify: `docs/superpowers/specs/2026-10-16-procedures-journal-their-notes-design.md`
 - Modify: `docs/superpowers/specs/2026-10-16-game-log-wording-ledger.md`
 - Rewrite: `src/test/resources/gamelog/search.{actor,other}.log`,
@@ -1662,8 +1662,8 @@ until slice 4 moved them. Remove them now, while it is obvious which rule each
 belonged to.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
+- Modify: `src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala`
   — only if it pins `ActionLines`' member list; check first.
 
 **Interfaces:**
@@ -1700,8 +1700,8 @@ were the last user of — `Piece.Favor` and `Piece.Secrets` are still matched by
 - [ ] **Step 3: Check what the file is now, and say so**
 
 ```bash
-grep -n "def \|val " src/main/scala/oathdigital/application/gamelog/ActionLines.scala
-wc -l src/main/scala/oathdigital/application/gamelog/ActionLines.scala
+grep -n "def \|val " src/main/scala/distantlands/application/gamelog/ActionLines.scala
+wc -l src/main/scala/distantlands/application/gamelog/ActionLines.scala
 ```
 
 Expected members, and nothing else: `campaigns`, `campaignLines`,

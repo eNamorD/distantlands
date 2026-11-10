@@ -97,31 +97,31 @@ Also settled at plan time:
 |---|---|---|
 | `docs/superpowers/specs/2026-10-09-catalog-batch-6-design.md` | modify | 1 |
 | `docs/superpowers/specs/2026-10-09-catalog-batch-6-rulings.md` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/actions/campaign/PlanPrice.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala` | create | 2, 3 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRewrites.scala` | create | 2, 4 |
-| `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` | modify | 2, 4 |
-| `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` | modify | 2 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoySuite.scala` | create | 2, 3 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/VictoriousNow.scala` | create | 3 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/LossRewrite.scala` | modify | 3 |
-| `src/main/scala/oathdigital/model/CampaignTypes.scala` | modify (doc only) | 3 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala` | modify | 4 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala` | modify | 4 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/WildMounts.scala` | create | 4 |
-| `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` | modify | 4 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/WildMountsSuite.scala` | create | 4 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/GreatCrusadeSuite.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/actions/campaign/PlanPrice.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala` | create | 2, 3 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/PlanRewrites.scala` | create | 2, 4 |
+| `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` | modify | 2, 4 |
+| `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` | modify | 2 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/PeaceEnvoySuite.scala` | create | 2, 3 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/VictoriousNow.scala` | create | 3 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/LossRewrite.scala` | modify | 3 |
+| `src/main/scala/distantlands/model/CampaignTypes.scala` | modify (doc only) | 3 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/WildMounts.scala` | create | 4 |
+| `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` | modify | 4 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala` | create | 4 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/GreatCrusadeSuite.scala` | modify | 4 |
 | `docs/ROADMAP.md` | modify | 5 |
 
 ### Moving a card out of holding
 
-Tasks 2 and 4 each move a card object from `src/main/scala/oathdigital/catalog/holding/` into its power's file, as slice 1 did:
+Tasks 2 and 4 each move a card object from `src/main/scala/distantlands/catalog/holding/` into its power's file, as slice 1 did:
 
 1. Delete the card's `object ...Card extends Denizen(...)` block from the holding file. The block is the `object` line, its `val power`, its `val powers` and the blank line after it.
 2. Paste it unchanged at the top of the power's file. Each task shows the block.
-3. In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add the card object to the `import oathdigital.gameplay.powers.campaign.{...}` list, after `TrueNamesCard`, wrapped at 80 columns. The `oathdigital.catalog.holding._` wildcard stops supplying it, so there is no ambiguity.
+3. In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add the card object to the `import oathdigital.gameplay.powers.campaign.{...}` list, after `TrueNamesCard`, wrapped at 80 columns. The `oathdigital.catalog.holding._` wildcard stops supplying it, so there is no ambiguity.
 
 The holding files' imports stay as they are: other cards there still use each name.
 
@@ -250,13 +250,13 @@ git commit -m "docs: record catalog batch 6 slice 2 plan-time rulings"
 The offer, the pawn rule, the gift and its price, "no other plans", and the defender's plans withheld. The battle itself is Task 3.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/PlanPrice.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRewrites.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/PlanPrice.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRewrites.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/PeaceEnvoySuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -269,7 +269,7 @@ The offer, the pawn rule, the gift and its price, "no other plans", and the defe
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/PeaceEnvoySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -391,7 +391,7 @@ Expected: compile failure, `Not found: PeaceEnvoy`.
 
 - [ ] **Step 3: Price a favor `Give`**
 
-In `src/main/scala/oathdigital/gameplay/actions/campaign/PlanPrice.scala`, replace the doc's first sentence block
+In `src/main/scala/distantlands/gameplay/actions/campaign/PlanPrice.scala`, replace the doc's first sentence block
 
 ```scala
 /** What a battle plan costs its user, for the option that offers it. The payments
@@ -421,9 +421,9 @@ and in `of`, before `      case (price, _) => price`, insert:
 
 - [ ] **Step 4: Move the card and write the power**
 
-Delete the `PeaceEnvoyCard` block from `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`, and add `PeaceEnvoyCard` to the campaign import in `NewFoundations.scala` (see "Moving a card out of holding").
+Delete the `PeaceEnvoyCard` block from `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`, and add `PeaceEnvoyCard` to the campaign import in `NewFoundations.scala` (see "Moving a card out of holding").
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -575,7 +575,7 @@ case object PeaceEnvoy extends BattlePlan:
 
 - [ ] **Step 5: Register it**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRewrites.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/PlanRewrites.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -593,7 +593,7 @@ object PlanRewrites:
     Vector(PeaceEnvoy)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`:
 
 - Make the campaign import
 
@@ -621,7 +621,7 @@ Expected: pass. No other plan's dry run records a favor `Give`, so no other pric
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/PlanPrice.scala src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRewrites.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoySuite.scala
+git add src/main/scala/distantlands/gameplay/actions/campaign/PlanPrice.scala src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRewrites.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/campaign/PeaceEnvoySuite.scala
 git commit -m "feat(powers): Peace Envoy gives favor per defense die and is used alone"
 ```
 
@@ -632,11 +632,11 @@ git commit -m "feat(powers): Peace Envoy gives favor per defense die and is used
 Nothing is rolled or sacrificed, the user's side wins, and no warband dies.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/VictoriousNow.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/LossRewrite.scala` (doc)
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala` (doc)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoySuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/VictoriousNow.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/LossRewrite.scala` (doc)
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala` (doc)
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/PeaceEnvoySuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -715,7 +715,7 @@ Expected: the three new tests fail. For example, `done.winner` is `Some(false)` 
 
 - [ ] **Step 3: Write `VictoriousNow`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/VictoriousNow.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/VictoriousNow.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -823,7 +823,7 @@ In `PeaceEnvoy.scala`:
 
 - [ ] **Step 5: Update the two docs**
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/LossRewrite.scala`, replace
+In `src/main/scala/distantlands/gameplay/powers/campaign/LossRewrite.scala`, replace
 
 ```scala
   * Billowing Fog and Traveling Doctor rewrite the losses with it. `counted`
@@ -836,7 +836,7 @@ with
   * it, and `VictoriousNow` the recorded result. `counted`
 ```
 
-In `src/main/scala/oathdigital/model/CampaignTypes.scala`, replace
+In `src/main/scala/distantlands/model/CampaignTypes.scala`, replace
 
 ```scala
   * `attackerWins` records that fact: it is true for an attacker victory and
@@ -865,7 +865,7 @@ If the attacker's test parks on the sacrifice decision, check two things:
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/VictoriousNow.scala src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala src/main/scala/oathdigital/gameplay/powers/campaign/LossRewrite.scala src/main/scala/oathdigital/model/CampaignTypes.scala src/test/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoySuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/VictoriousNow.scala src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala src/main/scala/distantlands/gameplay/powers/campaign/LossRewrite.scala src/main/scala/distantlands/model/CampaignTypes.scala src/test/scala/distantlands/gameplay/powers/campaign/PeaceEnvoySuite.scala
 git commit -m "feat(powers): Peace Envoy decides the battle and kills no warbands"
 ```
 
@@ -874,14 +874,14 @@ git commit -m "feat(powers): Peace Envoy decides the battle and kills no warband
 ### Task 4: Wild Mounts
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/WildMounts.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRewrites.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/WildMountsSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/GreatCrusadeSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/WildMounts.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRewrites.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/GreatCrusadeSuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -896,7 +896,7 @@ git commit -m "feat(powers): Peace Envoy decides the battle and kills no warband
 
 - [ ] **Step 1: Swap Great Crusade's filler**
 
-Wild Mounts becomes a battle plan, so `GreatCrusadeSuite`'s `planless(...)` check would fail on it. In `src/test/scala/oathdigital/gameplay/powers/campaign/GreatCrusadeSuite.scala`, replace
+Wild Mounts becomes a battle plan, so `GreatCrusadeSuite`'s `planless(...)` check would fail on it. In `src/test/scala/distantlands/gameplay/powers/campaign/GreatCrusadeSuite.scala`, replace
 
 ```scala
   private val nomads = planless("Hospitality", "Vow of Kinship", "Wild Mounts")
@@ -913,7 +913,7 @@ Spell Breaker is a site-only Nomad card, and the suite places `nomads(2)` at a s
 
 - [ ] **Step 2: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/WildMountsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1063,7 +1063,7 @@ Expected: compile failure, `Not found: WildMounts`.
 
 - [ ] **Step 4: Mark the plan discards**
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala`:
+In `src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala`:
 
 1. In the object doc, replace
 
@@ -1117,7 +1117,7 @@ Expected: everything passes except `WildMountsSuite`, which does not compile yet
 
 - [ ] **Step 5: Add the `rewrites` hook**
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`:
+In `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`:
 
 1. In the trait doc's bullet list, after the `restrictions` bullet, add:
 
@@ -1162,9 +1162,9 @@ with
 
 - [ ] **Step 6: Move the card and write the power**
 
-Delete the `WildMountsCard` block from `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`, and add `WildMountsCard` to the campaign import in `NewFoundations.scala`.
+Delete the `WildMountsCard` block from `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`, and add `WildMountsCard` to the campaign import in `NewFoundations.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/WildMounts.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/WildMounts.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1354,7 +1354,7 @@ If a test parks somewhere unexpected:
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala src/main/scala/oathdigital/gameplay/powers/campaign/WildMounts.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRewrites.scala src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/campaign/WildMountsSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/GreatCrusadeSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala src/main/scala/distantlands/gameplay/powers/campaign/WildMounts.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRewrites.scala src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/GreatCrusadeSuite.scala
 git commit -m "feat(powers): Wild Mounts discards a Beast card instead of Nomad plans"
 ```
 

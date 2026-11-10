@@ -135,9 +135,9 @@ Task 8 records the user's rulings in `docs/rules/ambiguities.md`.
 | `gameplay/powers/PhasePowerCatalog.scala` | registers it |
 | `gameplay/actions/minor/SelfExile.scala` (new) | the minor action |
 | `model/ProcedureRef.scala`, `gameplay/phases/ActOffers.scala`, `gameplay/walker/WalkerProcedureRegistry.scala`, `gameplay/actions/ProcedureNotes.scala`, `application/gamelog/ProcedureLog.scala` | wire self-exile in |
-| `src/test/scala/oathdigital/testkit/Table.scala` | `imperial` sets the starter; new `allowingCitizenshipPowers` and `roundStarter` |
+| `src/test/scala/distantlands/testkit/Table.scala` | `imperial` sets the starter; new `allowingCitizenshipPowers` and `roundStarter` |
 
-Paths without a prefix are under `src/main/scala/oathdigital/`.
+Paths without a prefix are under `src/main/scala/distantlands/`.
 
 ## Checkpoints
 
@@ -151,11 +151,11 @@ Dispatch a reviewer after Task 3 (state and operations), after Task 6
 **Files:**
 - Modify: `model/GameState.scala` (`GameTracks`, line ~159)
 - Modify: `gameplay/setup/FirstGameSetupMaterializer.scala:46`
-- Modify: `src/test/scala/oathdigital/model/TestGameFixtures.scala:148`
+- Modify: `src/test/scala/distantlands/model/TestGameFixtures.scala:148`
 - Modify: `gameplay/TurnOrder.scala`
 - Modify: `gameplay/StateBasedEvaluation.scala` (`RoundEnded` case, ~145-165)
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala` (`imperial`, ~285)
-- Test: `src/test/scala/oathdigital/gameplay/TurnOrderSuite.scala` (create
+- Modify: `src/test/scala/distantlands/testkit/Table.scala` (`imperial`, ~285)
+- Test: `src/test/scala/distantlands/gameplay/TurnOrderSuite.scala` (create
   it if it does not exist; otherwise add to it)
 
 **Interfaces:**
@@ -317,14 +317,14 @@ and expects turn order from them fails here; give it `.roundStarter(...)`.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/gameplay/setup/FirstGameSetupMaterializer.scala \
-  src/main/scala/oathdigital/gameplay/TurnOrder.scala \
-  src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala \
-  src/test/scala/oathdigital/model/TestGameFixtures.scala \
-  src/test/scala/oathdigital/testkit/Table.scala \
-  src/test/scala/oathdigital/gameplay/TurnOrderSuite.scala \
-  src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala \
+  src/main/scala/distantlands/gameplay/TurnOrder.scala \
+  src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala \
+  src/test/scala/distantlands/model/TestGameFixtures.scala \
+  src/test/scala/distantlands/testkit/Table.scala \
+  src/test/scala/distantlands/gameplay/TurnOrderSuite.scala \
+  src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala
 git commit -m "feat(empire): a round runs from its recorded starter (R4)"
 ```
 
@@ -338,8 +338,8 @@ git commit -m "feat(empire): a round runs from its recorded starter (R4)"
 - Modify: `gameplay/operations/OperationApplication.scala` (beside `AdvanceVisionsDrawn`, ~194)
 - Modify: `serialization/WalkerOperationCodec.scala` (`TurnOperation` type
   at :41, encoder at :232, decoder at :578)
-- Test: `src/test/scala/oathdigital/gameplay/operations/TurnStateOperationsSuite.scala`
-  (create it if missing), `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/operations/TurnStateOperationsSuite.scala`
+  (create it if missing), `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -463,12 +463,12 @@ so change the test's expectation.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala \
-  src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala \
-  src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala \
-  src/test/scala/oathdigital/gameplay/operations/TurnStateOperationsSuite.scala \
-  src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala \
+  src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationApplication.scala \
+  src/main/scala/distantlands/serialization/WalkerOperationCodec.scala \
+  src/test/scala/distantlands/gameplay/operations/TurnStateOperationsSuite.scala \
+  src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "feat(empire): remove the Usurper Limiter and turn a Usurper title back"
 ```
 
@@ -481,7 +481,7 @@ git commit -m "feat(empire): remove the Usurper Limiter and turn a Usurper title
 - Modify: `gameplay/chronicle/ChronicleCrown.scala` (use it; delete its
   private `scepter`)
 - Create: `gameplay/roles/RoleChanges.scala`
-- Test: `src/test/scala/oathdigital/gameplay/roles/RoleChangesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/roles/RoleChangesSuite.scala`
 
 **Interfaces:**
 - Consumes: `UsurperLimiterRemoved`, the relaxed `SetOathkeeper` (Task 2).
@@ -865,10 +865,10 @@ splitting the change into two batches.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/GrandScepter.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleCrown.scala \
-  src/main/scala/oathdigital/gameplay/roles/RoleChanges.scala \
-  src/test/scala/oathdigital/gameplay/roles/RoleChangesSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/GrandScepter.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleCrown.scala \
+  src/main/scala/distantlands/gameplay/roles/RoleChanges.scala \
+  src/test/scala/distantlands/gameplay/roles/RoleChangesSuite.scala
 git commit -m "feat(empire): the operations of becoming a Citizen, the Chancellor, or an Exile"
 ```
 
@@ -881,8 +881,8 @@ git commit -m "feat(empire): the operations of becoming a Citizen, the Chancello
 **Files:**
 - Modify: `model/Setup.scala` (`FirstGameSupportState`)
 - Create: `gameplay/roles/Citizenship.scala`
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala` (new step)
-- Test: `src/test/scala/oathdigital/gameplay/roles/CitizenshipSuite.scala`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala` (new step)
+- Test: `src/test/scala/distantlands/gameplay/roles/CitizenshipSuite.scala`
 
 **Interfaces:**
 - Consumes: `RoleChanges` (Task 3).
@@ -900,7 +900,7 @@ git commit -m "feat(empire): the operations of becoming a Citizen, the Chancello
 The tree is driven through a power in Tasks 5-7. This suite checks the
 query the tree asks and what an answer does, through the walker harness
 the Scepter suite will use. Read
-`src/test/scala/oathdigital/testkit/PhasePowerHarness.scala` first. If it
+`src/test/scala/distantlands/testkit/PhasePowerHarness.scala` first. If it
 runs an arbitrary `Operation` tree, use it. If not, test the two private
 pieces through package-private access instead:
 - the query, `Citizenship.query(ready, actor): Option[DecisionQuery]`;
@@ -1057,10 +1057,10 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Setup.scala \
-  src/main/scala/oathdigital/gameplay/roles/Citizenship.scala \
-  src/test/scala/oathdigital/testkit/Table.scala \
-  src/test/scala/oathdigital/gameplay/roles/CitizenshipSuite.scala
+git add src/main/scala/distantlands/model/Setup.scala \
+  src/main/scala/distantlands/gameplay/roles/Citizenship.scala \
+  src/test/scala/distantlands/testkit/Table.scala \
+  src/test/scala/distantlands/gameplay/roles/CitizenshipSuite.scala
 git commit -m "feat(empire): Citizenship trees and the first-game option"
 ```
 
@@ -1075,7 +1075,7 @@ git commit -m "feat(empire): Citizenship trees and the first-game option"
 - Modify: `gameplay/powers/PhasePowerCatalog.scala` (register it)
 - Modify: `src/test/resources/powers/unimplemented.txt` (delete
   `relic.the-grand-scepter.action`)
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/GrandScepterActionSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/GrandScepterActionSuite.scala`
 
 **Interfaces:**
 - Consumes: `Citizenship.become`, `Citizenship.ignored`,
@@ -1253,12 +1253,12 @@ find it by name.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala \
-  src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/GrandScepterAction.scala \
-  src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala \
+git add src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala \
+  src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala \
+  src/main/scala/distantlands/gameplay/powers/action/GrandScepterAction.scala \
+  src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/action/GrandScepterActionSuite.scala
+  src/test/scala/distantlands/gameplay/powers/action/GrandScepterActionSuite.scala
 git commit -m "feat(empire): the Grand Scepter's Action makes its Exile holder a Citizen"
 ```
 
@@ -1273,7 +1273,7 @@ git commit -m "feat(empire): the Grand Scepter's Action makes its Exile holder a
 - Modify: `gameplay/walker/WalkerProcedureRegistry.scala` (~275)
 - Modify: `gameplay/actions/ProcedureNotes.scala` (~94)
 - Modify: `application/gamelog/ProcedureLog.scala` (~274)
-- Test: `src/test/scala/oathdigital/gameplay/SelfExileSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/SelfExileSuite.scala`
 
 **Interfaces:**
 - Consumes: `Citizenship.exile` (Task 4).
@@ -1481,13 +1481,13 @@ needs the new one added; update its expected list.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/minor/SelfExile.scala \
-  src/main/scala/oathdigital/model/ProcedureRef.scala \
-  src/main/scala/oathdigital/gameplay/phases/ActOffers.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala \
-  src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala \
-  src/test/scala/oathdigital/gameplay/SelfExileSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/minor/SelfExile.scala \
+  src/main/scala/distantlands/model/ProcedureRef.scala \
+  src/main/scala/distantlands/gameplay/phases/ActOffers.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala \
+  src/main/scala/distantlands/application/gamelog/ProcedureLog.scala \
+  src/test/scala/distantlands/gameplay/SelfExileSuite.scala
 git commit -m "feat(empire): a Citizen may exile themself as a minor action"
 ```
 
@@ -1500,7 +1500,7 @@ Add any suite updated in Step 6 to the `git add` by name.
 ### Task 7: Scenario, projection and log
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/RoleChangesScenarioSuite.scala`
+- Create: `src/test/scala/distantlands/application/RoleChangesScenarioSuite.scala`
 
 **Interfaces:**
 - Consumes: everything above.
@@ -1612,7 +1612,7 @@ any production code.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/RoleChangesScenarioSuite.scala
+git add src/test/scala/distantlands/application/RoleChangesScenarioSuite.scala
 git commit -m "test(empire): an Exile becomes a Citizen by the Scepter and exiles themself"
 ```
 

@@ -182,15 +182,15 @@ Inventoried at `1cd65b43` (slice 3 merged; slice 4 planned, not built).
 ### Task 1: The draw and the Nomad-bank ending, on the wire and in the log
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (after `Give`, about line 297)
-- Modify: `src/main/scala/oathdigital/model/LogNotes.scala` (`NoteArg`, about lines 13-50)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (`PieceOperation`, encode, decode)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala` (`encodeNoteArg`, the note-arg decoder)
-- Modify: `src/main/scala/oathdigital/application/gamelog/NoteLines.scala` (`spoken`, `argument`)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/NoteText.scala` (`sentence`, `plain`)
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/LogNoteWireSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (after `Give`, about line 297)
+- Modify: `src/main/scala/distantlands/model/LogNotes.scala` (`NoteArg`, about lines 13-50)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (`PieceOperation`, encode, decode)
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala` (`encodeNoteArg`, the note-arg decoder)
+- Modify: `src/main/scala/distantlands/application/gamelog/NoteLines.scala` (`spoken`, `argument`)
+- Modify: `src/test/scala/distantlands/gameplay/powers/NoteText.scala` (`sentence`, `plain`)
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/LogNoteWireSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
 
 **Interfaces:**
 - Produces, in `oathdigital.model`:
@@ -366,7 +366,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/model/LogNotes.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/serialization/WalkerEventCodec.scala src/main/scala/oathdigital/application/gamelog/NoteLines.scala src/test/scala/oathdigital/gameplay/powers/NoteText.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala src/test/scala/oathdigital/serialization/LogNoteWireSuite.scala src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/model/LogNotes.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/serialization/WalkerEventCodec.scala src/main/scala/distantlands/application/gamelog/NoteLines.scala src/test/scala/distantlands/gameplay/powers/NoteText.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala src/test/scala/distantlands/serialization/LogNoteWireSuite.scala src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(model): a draw from the Nomad bank, and a line ending that says favor went there
 
@@ -382,13 +382,13 @@ Add any other file that `-Werror` made you touch in Steps 3 and 6.
 ### Task 2: The holder, their spendable favor, and favor redirected to the bank
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/VowOfKinship.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala:10-17` (delete the card)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala:5-6` (import)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/ResourceOperations.scala` (`applyCountedMoves`, lines 152-194)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala` (`applyFamilies`, about line 79)
+- Create: `src/main/scala/distantlands/gameplay/VowOfKinship.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala:10-17` (delete the card)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala:5-6` (import)
+- Modify: `src/main/scala/distantlands/gameplay/operations/ResourceOperations.scala` (`applyCountedMoves`, lines 152-194)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala` (`applyFamilies`, about line 79)
 - Modify: the four suites of finding 9 (imports)
-- Test: `src/test/scala/oathdigital/gameplay/VowOfKinshipCreditSuite.scala` (create)
+- Test: `src/test/scala/distantlands/gameplay/VowOfKinshipCreditSuite.scala` (create)
 
 **Interfaces:**
 - Consumes: `DrawNomadFavor` (Task 1).
@@ -404,7 +404,7 @@ Add any other file that `-Werror` made you touch in Steps 3 and 6.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/VowOfKinshipCreditSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/VowOfKinshipCreditSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -501,7 +501,7 @@ and `SpendableFavor` are not found.
 Delete `VowOfKinshipCard` from `HoldingNomadDenizens.scala` (lines
 10-17, with the blank line after it).
 
-Create `src/main/scala/oathdigital/gameplay/VowOfKinship.scala`:
+Create `src/main/scala/distantlands/gameplay/VowOfKinship.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -611,7 +611,7 @@ the Vow, held as an adviser, sends a gain to the bank, give that suite
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/VowOfKinship.scala src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/operations/ResourceOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/test/scala/oathdigital/gameplay/VowOfKinshipCreditSuite.scala src/test/scala/oathdigital/gameplay/powers/RuledCardsSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/PledgeOfDefenseSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/ImperialTacticsSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/GreatCrusadeSuite.scala
+git add src/main/scala/distantlands/gameplay/VowOfKinship.scala src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/operations/ResourceOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/test/scala/distantlands/gameplay/VowOfKinshipCreditSuite.scala src/test/scala/distantlands/gameplay/powers/RuledCardsSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/PledgeOfDefenseSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/ImperialTacticsSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/GreatCrusadeSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(gameplay): favor bound for a Vow of Kinship holder goes to the Nomad bank
 
@@ -625,19 +625,19 @@ EOF
 ### Task 3: A holder's spends draw on the Nomad bank
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/KinshipDraws.scala`
-- Modify: `src/main/scala/oathdigital/model/OperationChildren.scala:48-57` (`fromPlayArea`, `positiveMove`)
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`PayCost.favorMove`, about line 334)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala:222-226` (`payment`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala:73-76` (`placement`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/Revelation.scala:60-80` (`ask`, `settle`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WhisperingLeaves.scala:71-74` (`give`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala:61` (`recordBatch`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ModifierOffers.scala:44` (`paying`)
-- Test: `src/test/scala/oathdigital/gameplay/KinshipDrawsSuite.scala` (create)
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/RevelationSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/RoyalTaxSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/WhisperingLeavesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/KinshipDraws.scala`
+- Modify: `src/main/scala/distantlands/model/OperationChildren.scala:48-57` (`fromPlayArea`, `positiveMove`)
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`PayCost.favorMove`, about line 334)
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala:222-226` (`payment`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala:73-76` (`placement`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/Revelation.scala:60-80` (`ask`, `settle`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WhisperingLeaves.scala:71-74` (`give`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala:61` (`recordBatch`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ModifierOffers.scala:44` (`paying`)
+- Test: `src/test/scala/distantlands/gameplay/KinshipDrawsSuite.scala` (create)
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/RevelationSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/RoyalTaxSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/WhisperingLeavesSuite.scala`
 
 **Interfaces:**
 - Consumes: `DrawNomadFavor` (Task 1); `KinshipRule`, `SpendableFavor`,
@@ -650,7 +650,7 @@ EOF
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/KinshipDrawsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/KinshipDrawsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -858,7 +858,7 @@ In `WhisperingLeaves.give`, replace the `Give` with a move nobody makes
 
 - [ ] **Step 5: Write the pass**
 
-Create `src/main/scala/oathdigital/gameplay/KinshipDraws.scala`:
+Create `src/main/scala/distantlands/gameplay/KinshipDraws.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -961,7 +961,7 @@ Then run the whole suite once, since `PayCost`'s moves changed:
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/KinshipDraws.scala src/main/scala/oathdigital/model/OperationChildren.scala src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/oathdigital/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/Revelation.scala src/main/scala/oathdigital/gameplay/powers/action/WhisperingLeaves.scala src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala src/main/scala/oathdigital/gameplay/walker/ModifierOffers.scala src/test/scala/oathdigital/gameplay/KinshipDrawsSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/RevelationSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/RoyalTaxSuite.scala src/test/scala/oathdigital/gameplay/powers/action/WhisperingLeavesSuite.scala
+git add src/main/scala/distantlands/gameplay/KinshipDraws.scala src/main/scala/distantlands/model/OperationChildren.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/distantlands/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala src/main/scala/distantlands/gameplay/powers/whenplayed/Revelation.scala src/main/scala/distantlands/gameplay/powers/action/WhisperingLeaves.scala src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala src/main/scala/distantlands/gameplay/walker/ModifierOffers.scala src/test/scala/distantlands/gameplay/KinshipDrawsSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/RevelationSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/RoyalTaxSuite.scala src/test/scala/distantlands/gameplay/powers/action/WhisperingLeavesSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(gameplay): a Vow of Kinship holder's spends draw on the Nomad bank
 
@@ -986,23 +986,23 @@ checks:
 ### Task 4: Spend checks count the Nomad bank
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/PowerOperations.scala:28-29`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala:136-156`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala:116-121`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala:142-152`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala:185-191`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/PlanPrice.scala:70-75`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/PlanAid.scala:143-151,175-178`
-- Modify: `src/main/scala/oathdigital/application/PlanAidDesk.scala:72-78`
-- Modify: `src/main/scala/oathdigital/application/PlanAidProjector.scala:48`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationDeal.scala:90-96,145-151`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/minor/SelfExile.scala:40`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala:171-173`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RulerToll.scala:75-76`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala:165-166`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WitchsBargain.scala:120`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/BannerRules.scala:25-27`, and its six callers
-- Test: `src/test/scala/oathdigital/gameplay/SpendableFavorChecksSuite.scala` (create)
+- Modify: `src/main/scala/distantlands/gameplay/operations/PowerOperations.scala:28-29`
+- Modify: `src/main/scala/distantlands/gameplay/walker/PricedOptions.scala:136-156`
+- Modify: `src/main/scala/distantlands/gameplay/walker/QueuedStart.scala:116-121`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala:142-152`
+- Modify: `src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala:185-191`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/PlanPrice.scala:70-75`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/PlanAid.scala:143-151,175-178`
+- Modify: `src/main/scala/distantlands/application/PlanAidDesk.scala:72-78`
+- Modify: `src/main/scala/distantlands/application/PlanAidProjector.scala:48`
+- Modify: `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationDeal.scala:90-96,145-151`
+- Modify: `src/main/scala/distantlands/gameplay/actions/minor/SelfExile.scala:40`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala:171-173`
+- Modify: `src/main/scala/distantlands/gameplay/powers/RulerToll.scala:75-76`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala:165-166`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WitchsBargain.scala:120`
+- Modify: `src/main/scala/distantlands/gameplay/actions/BannerRules.scala:25-27`, and its six callers
+- Test: `src/test/scala/distantlands/gameplay/SpendableFavorChecksSuite.scala` (create)
 
 **Interfaces:**
 - Consumes: `SpendableFavor.of` (Task 2).
@@ -1012,7 +1012,7 @@ checks:
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/SpendableFavorChecksSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/SpendableFavorChecksSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1070,7 +1070,7 @@ Import `VowOfPovertyCard` beside `VowOfPoverty`, and
 
 The banner test needs p1 to hold the People's Favor with some favor on
 it. If `Table` has no `peoplesFavor` step, find the step other banner
-tests use (`grep -rn "peoplesFavor" src/test/scala/oathdigital/testkit/Table.scala`),
+tests use (`grep -rn "peoplesFavor" src/test/scala/distantlands/testkit/Table.scala`),
 or set the banner's holder and favor through `updateCurrent`. The Vow of
 Poverty test asserts the existing behavior and must already pass: it pins
 ruling 27 against a later change.
@@ -1162,7 +1162,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/PowerOperations.scala src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala src/main/scala/oathdigital/gameplay/actions/campaign/PlanPrice.scala src/main/scala/oathdigital/gameplay/actions/campaign/PlanAid.scala src/main/scala/oathdigital/application/PlanAidDesk.scala src/main/scala/oathdigital/application/PlanAidProjector.scala src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationDeal.scala src/main/scala/oathdigital/gameplay/actions/minor/SelfExile.scala src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala src/main/scala/oathdigital/gameplay/powers/RulerToll.scala src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala src/main/scala/oathdigital/gameplay/powers/action/WitchsBargain.scala src/main/scala/oathdigital/gameplay/actions/BannerRules.scala src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/oathdigital/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala src/test/scala/oathdigital/gameplay/SpendableFavorChecksSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/PowerOperations.scala src/main/scala/distantlands/gameplay/walker/PricedOptions.scala src/main/scala/distantlands/gameplay/walker/QueuedStart.scala src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala src/main/scala/distantlands/gameplay/actions/campaign/PlanPrice.scala src/main/scala/distantlands/gameplay/actions/campaign/PlanAid.scala src/main/scala/distantlands/application/PlanAidDesk.scala src/main/scala/distantlands/application/PlanAidProjector.scala src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationDeal.scala src/main/scala/distantlands/gameplay/actions/minor/SelfExile.scala src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala src/main/scala/distantlands/gameplay/powers/RulerToll.scala src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala src/main/scala/distantlands/gameplay/powers/action/WitchsBargain.scala src/main/scala/distantlands/gameplay/actions/BannerRules.scala src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/distantlands/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala src/test/scala/distantlands/gameplay/SpendableFavorChecksSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(gameplay): spend checks count a Vow of Kinship holder's Nomad bank
 
@@ -1176,17 +1176,17 @@ EOF
 ### Task 5: The source question, and the card registered
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/VowOfKinship.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/AsksBeforeBatch.scala` (`BatchContext`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/BatchQuestions.scala` (`of`; add `single`, `asked`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`runNarrowed`, `resumeAsked`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (`resolveAt`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` (`contributing`)
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/VowOfKinship.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/AsksBeforeBatch.scala` (`BatchContext`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/BatchQuestions.scala` (`of`; add `single`, `asked`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`runNarrowed`, `resumeAsked`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (`resolveAt`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` (`contributing`)
 - Modify: `src/test/resources/powers/unimplemented.txt` (delete `denizen.vow-of-kinship`)
 - Modify: `src/test/resources/notes/declared-keys.txt`
 - Modify: any test that builds a `BatchContext` (`grep -rn 'BatchContext(' src/test/scala`)
-- Test: `src/test/scala/oathdigital/gameplay/walker/BatchQuestionsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/VowOfKinshipSuite.scala` (create)
+- Test: `src/test/scala/distantlands/gameplay/walker/BatchQuestionsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/VowOfKinshipSuite.scala` (create)
 
 **Interfaces:**
 - Consumes: `DrawNomadFavor` (Task 1); `KinshipRule`, `VowOfKinshipCard`
@@ -1220,7 +1220,7 @@ Name the walker powers value as the suite names it (`asking` or the
 like). If the suite's stub needs the batch to hold the spend twice, adapt
 the expected path: the questions sit at `asked.0` to `asked.(n-1)`.
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/VowOfKinshipSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/VowOfKinshipSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1429,7 +1429,7 @@ composite's children are mistaken for questions.
 
 - [ ] **Step 4: Write the power**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/VowOfKinship.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/VowOfKinship.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1549,7 +1549,7 @@ Expected: passes. `ProcedureWalker.scala` grows by about 15 lines and
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/VowOfKinship.scala src/main/scala/oathdigital/gameplay/powerresolver/AsksBeforeBatch.scala src/main/scala/oathdigital/gameplay/walker/BatchQuestions.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/walker/BatchQuestionsSuite.scala src/test/scala/oathdigital/gameplay/powers/economy/VowOfKinshipSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/VowOfKinship.scala src/main/scala/distantlands/gameplay/powerresolver/AsksBeforeBatch.scala src/main/scala/distantlands/gameplay/walker/BatchQuestions.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/walker/BatchQuestionsSuite.scala src/test/scala/distantlands/gameplay/powers/economy/VowOfKinshipSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Vow of Kinship asks how much of a spend comes from the Nomad bank
 
@@ -1572,9 +1572,9 @@ checks:
 ### Task 6: The Vow's arrival moves the board's favor to the bank
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/VowOfKinship.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/VowOfKinship.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/VowOfKinshipSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/VowOfKinshipSuite.scala`
 
 **Interfaces:**
 - Consumes: `FollowsArrivals`, `AdviserArrivals`, `ArrivalFollowUp`
@@ -1676,7 +1676,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/VowOfKinship.scala src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/economy/VowOfKinshipSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/VowOfKinship.scala src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/economy/VowOfKinshipSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Vow of Kinship moves its holder's favor to the Nomad bank as it arrives
 
@@ -1690,9 +1690,9 @@ EOF
 ### Task 7: Favor lines count the bank, and gain lines say where it went
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/NoteSupport.scala`
+- Modify: `src/main/scala/distantlands/gameplay/NoteSupport.scala`
 - Modify: the files of finding 8's second list (one line each, below)
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/VowOfKinshipLinesSuite.scala` (create)
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/VowOfKinshipLinesSuite.scala` (create)
 
 **Interfaces:**
 - Consumes: `NoteArg.ToNomadBank` (Task 1); `KinshipRule` (Task 2).
@@ -1703,7 +1703,7 @@ EOF
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/VowOfKinshipLinesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/VowOfKinshipLinesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1843,7 +1843,7 @@ is the player who gained. A site that reads
 | `powers/RulerToll.scala` | `note` (`:99-105`), a toll to a player | the owner |
 | `powers/travel/TollRoads.scala` | its paid line (`:320-325`), a toll to a player | the owner |
 
-Paths are under `src/main/scala/oathdigital/gameplay/`. The toll lines
+Paths are under `src/main/scala/distantlands/gameplay/`. The toll lines
 name the ruler who received the favor; mark them for that ruler. A line
 about a loss or a payment (Revelation, Dissent, Defame, Plague Engines,
 Whispering Leaves, the Campaign's burn, Challenge, the banner action)
@@ -1864,8 +1864,8 @@ Expected: PASS, including Revelation's line.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/NoteSupport.scala src/test/scala/oathdigital/gameplay/powers/economy/VowOfKinshipLinesSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/RevelationSuite.scala
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/Blackmail.scala src/main/scala/oathdigital/gameplay/powers/title/ChaosCult.scala src/main/scala/oathdigital/gameplay/powers/economy/VowOfPoverty.scala src/main/scala/oathdigital/gameplay/powers/economy/SecretSignal.scala src/main/scala/oathdigital/gameplay/powers/economy/MovingMarket.scala src/main/scala/oathdigital/gameplay/powers/action/BookOfRecords.scala src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala src/main/scala/oathdigital/gameplay/powers/action/PiedPiper.scala src/main/scala/oathdigital/gameplay/powers/campaign/StickyFire.scala src/main/scala/oathdigital/gameplay/powers/action/Bog.scala src/main/scala/oathdigital/gameplay/powers/action/TamingCharm.scala src/main/scala/oathdigital/gameplay/powers/action/WitchsBargain.scala src/main/scala/oathdigital/gameplay/powers/action/CharmingFriend.scala src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/RoyalTax.scala src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala src/main/scala/oathdigital/gameplay/phases/wake/TakeWealthProcedure.scala src/main/scala/oathdigital/gameplay/powers/RulerToll.scala src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala
+git add src/main/scala/distantlands/gameplay/NoteSupport.scala src/test/scala/distantlands/gameplay/powers/economy/VowOfKinshipLinesSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/RevelationSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/Blackmail.scala src/main/scala/distantlands/gameplay/powers/title/ChaosCult.scala src/main/scala/distantlands/gameplay/powers/economy/VowOfPoverty.scala src/main/scala/distantlands/gameplay/powers/economy/SecretSignal.scala src/main/scala/distantlands/gameplay/powers/economy/MovingMarket.scala src/main/scala/distantlands/gameplay/powers/action/BookOfRecords.scala src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala src/main/scala/distantlands/gameplay/powers/action/PiedPiper.scala src/main/scala/distantlands/gameplay/powers/campaign/StickyFire.scala src/main/scala/distantlands/gameplay/powers/action/Bog.scala src/main/scala/distantlands/gameplay/powers/action/TamingCharm.scala src/main/scala/distantlands/gameplay/powers/action/WitchsBargain.scala src/main/scala/distantlands/gameplay/powers/action/CharmingFriend.scala src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala src/main/scala/distantlands/gameplay/powers/whenplayed/RoyalTax.scala src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala src/main/scala/distantlands/gameplay/phases/wake/TakeWealthProcedure.scala src/main/scala/distantlands/gameplay/powers/RulerToll.scala src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala
 git commit -m "$(cat <<'EOF'
 feat(gameplay): favor lines count the Nomad bank, and say when favor went there
 
@@ -1881,11 +1881,11 @@ Add any test file holding the Trade golden line from Step 1.
 ### Task 8: Wild Pastures and Master of Disguise, then close the slice
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/WildPastures.scala` (`askBefore`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/WildPastures.scala` (`askBefore`)
 - Modify: `docs/ROADMAP.md:96`
 - Modify: `docs/superpowers/specs/2026-11-07-catalog-batch-11-design.md:3`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/WildPasturesSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/MasterOfDisguiseSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/WildPasturesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/MasterOfDisguiseSuite.scala`
 
 **Interfaces:**
 - Consumes: `SpendableFavor.of` (Task 2); slice 4's `WildPastures`.
@@ -2008,7 +2008,7 @@ Expected: each passes, and coverage stays at 92% or more.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/WildPastures.scala src/test/scala/oathdigital/gameplay/powers/economy/WildPasturesSuite.scala src/test/scala/oathdigital/gameplay/powers/economy/MasterOfDisguiseSuite.scala docs/ROADMAP.md docs/superpowers/specs/2026-11-07-catalog-batch-11-design.md
+git add src/main/scala/distantlands/gameplay/powers/economy/WildPastures.scala src/test/scala/distantlands/gameplay/powers/economy/WildPasturesSuite.scala src/test/scala/distantlands/gameplay/powers/economy/MasterOfDisguiseSuite.scala docs/ROADMAP.md docs/superpowers/specs/2026-11-07-catalog-batch-11-design.md
 git commit -m "$(cat <<'EOF'
 docs(catalog): close catalog batch 11 slice 5, Vow of Kinship
 

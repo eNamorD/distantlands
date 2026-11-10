@@ -25,7 +25,7 @@
 **Spec:** `docs/superpowers/specs/2026-10-09-modifier-walker-design.md`. Read it whole, including "What goes away" and its "Plan-time rulings". The slice 2 and slice 3 plans (`docs/superpowers/plans/2026-10-09-modifier-walker-slice2.md`, `-slice3.md`) show how Travel, Muster and Trade moved; Task 3 copies that move for Recover. The files to copy from are:
 
 - `TravelProcedure` (`gameplay/actions/travel/`): `afterModifiers`, `startable` and the wrapped `tree`.
-- `TravelModifierChoiceSuite` (`src/test/scala/oathdigital/gameplay/powers/travel/`).
+- `TravelModifierChoiceSuite` (`src/test/scala/distantlands/gameplay/powers/travel/`).
 - `WineOfWelcome` (`gameplay/powers/search/`): an `offerReason`.
 
 **Starts from:** `main` at `3983af1f` (the slice 3 merge) or later.
@@ -86,9 +86,9 @@ Each task names its test files.
 ### Task 1: The client starts every action directly
 
 **Files:**
-- Delete: `frontend/src/main/scala/oathdigital/frontend/ModifierFlow.scala`, `ModifierFlowDraft.scala`, `ModifierSelectionState.scala`
-- Delete: `frontend/src/test/scala/oathdigital/frontend/ModifierFlowSuite.scala`, `ModifierSelectionStateSuite.scala`, `ModifierFlowDraftSuite.scala`, `ActionPanePromptSuite.scala`, `ModifierFlowDrafts.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableControls.scala`, `SessionDrafts.scala`, `TableSession.scala`, `TableScreen.scala`, `ServerModeUi.scala`, `ActionDecisionRenderer.scala`, `GameClient.scala`, `FollowUpControls.scala`
+- Delete: `frontend/src/main/scala/distantlands/frontend/ModifierFlow.scala`, `ModifierFlowDraft.scala`, `ModifierSelectionState.scala`
+- Delete: `frontend/src/test/scala/distantlands/frontend/ModifierFlowSuite.scala`, `ModifierSelectionStateSuite.scala`, `ModifierFlowDraftSuite.scala`, `ActionPanePromptSuite.scala`, `ModifierFlowDrafts.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableControls.scala`, `SessionDrafts.scala`, `TableSession.scala`, `TableScreen.scala`, `ServerModeUi.scala`, `ActionDecisionRenderer.scala`, `GameClient.scala`, `FollowUpControls.scala`
 - Modify: `frontend/styles.css`
 - Modify (tests): `RecordingControls.scala`, `ActionPanels.scala`, `SessionDraftsSuite.scala`, `TableSessionSuite.scala`, `ServerModeSessionSuite.scala`, `HttpGameClientSuite.scala`, `FollowUpControlsSuite.scala`, `BannerControlsSuite.scala`, `NegotiationControlsSuite.scala`, `CampaignControlsSuite.scala`, and every suite that reads `.element` off `actionsPanel` (Step 6)
 
@@ -105,14 +105,14 @@ The shared wire types (`MajorActionPreviewProtocol`, `ModifierInvocation`, `Game
 - [ ] **Step 1: Delete the flow and its suites**
 
 ```bash
-git rm frontend/src/main/scala/oathdigital/frontend/ModifierFlow.scala \
-  frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala \
-  frontend/src/main/scala/oathdigital/frontend/ModifierSelectionState.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierFlowSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierFlowDraftSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ActionPanePromptSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierFlowDrafts.scala
+git rm frontend/src/main/scala/distantlands/frontend/ModifierFlow.scala \
+  frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala \
+  frontend/src/main/scala/distantlands/frontend/ModifierSelectionState.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierFlowSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierFlowDraftSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ActionPanePromptSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierFlowDrafts.scala
 ```
 
 Three `ModifierFlowSuite` tests are about the session, not the flow. Step 9 moves them to `TableSessionSuite`: a command is sent as it is, nothing is sent with no projection, and staging replaces one slot and redraws.
@@ -228,7 +228,7 @@ Every caller that read `.element` off the result now takes the result itself. In
 
 ```bash
 perl -0pi -e 's/(actionsPanel\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))\.element/$1/g' \
-  frontend/src/test/scala/oathdigital/frontend/*.scala
+  frontend/src/test/scala/distantlands/frontend/*.scala
 ```
 
 Then compile (Step 12); fix by hand any `.element` the compiler still reports on an `actionsPanel` result.
@@ -440,12 +440,12 @@ git commit -m "feat(frontend): start every action directly and delete the modifi
 ### Task 2: Forge, Challenge and Campaign open with the modifier decision
 
 **Files:**
-- Create: `src/test/scala/oathdigital/testkit/EmptyWindowModifier.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/forge/ForgeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Test: `src/test/scala/oathdigital/gameplay/ForgeProcedureSuite.scala`, `ChallengeProcedureSuite.scala`, `CampaignProcedureSuite.scala`
+- Create: `src/test/scala/distantlands/testkit/EmptyWindowModifier.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/forge/ForgeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Test: `src/test/scala/distantlands/gameplay/ForgeProcedureSuite.scala`, `ChallengeProcedureSuite.scala`, `CampaignProcedureSuite.scala`
 
 **Interfaces:**
 - Consumes: `ModifierChoice.loop(actor, window, rest, startLabel, explain = None)` and `ModifierPicks.start`, from slice 1.
@@ -458,7 +458,7 @@ No power selects at these three windows, so with the production catalog the deci
 
 - [ ] **Step 1: A stand-in modifier for the empty windows**
 
-Create `src/test/scala/oathdigital/testkit/EmptyWindowModifier.scala`:
+Create `src/test/scala/distantlands/testkit/EmptyWindowModifier.scala`:
 
 ```scala
 package oathdigital.testkit
@@ -781,14 +781,14 @@ Expected: PASS, with 3 more server tests than the baseline. If another suite ass
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/testkit/EmptyWindowModifier.scala \
-  src/main/scala/oathdigital/gameplay/actions/forge/ForgeProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/test/scala/oathdigital/gameplay/ForgeProcedureSuite.scala \
-  src/test/scala/oathdigital/gameplay/ChallengeProcedureSuite.scala \
-  src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala
+git add src/test/scala/distantlands/testkit/EmptyWindowModifier.scala \
+  src/main/scala/distantlands/gameplay/actions/forge/ForgeProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/test/scala/distantlands/gameplay/ForgeProcedureSuite.scala \
+  src/test/scala/distantlands/gameplay/ChallengeProcedureSuite.scala \
+  src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala
 git commit -m "feat(walker): Forge, Challenge and Campaign open with the modifier decision"
 ```
 
@@ -798,14 +798,14 @@ Add any other suite Step 10 made you edit. End the message with your trailer.
 ### Task 3: Recover asks for its modifiers inside the walk
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/powers/recover/RecoverModifierChoiceSuite.scala`
-- Delete: `src/test/scala/oathdigital/gameplay/SelectionPaymentsSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/recover/CatacombsContribution.scala`, `RelicWorship.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/recover/RecoverModifierChoiceSuite.scala`
+- Delete: `src/test/scala/distantlands/gameplay/SelectionPaymentsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/recover/CatacombsContribution.scala`, `RelicWorship.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala`
 - Modify (tests): `testkit/CatacombsGame.scala`, `gameplay/powers/recover/RelicWorshipSuite.scala`, `gameplay/CatacombsContributionSuite.scala`, `gameplay/RecoverProcedureSuite.scala`, `gameplay/WalkerReplayDriftSuite.scala`, `gameplay/OathRulesWalkerPowerSuite.scala`, `gameplay/powers/SelectedModifierSuite.scala`, `application/GameApplicationServiceRecoverSuite.scala`, `application/WalkerDecisionProjectionSuite.scala`, `application/UndoServiceSuite.scala`, `application/gamelog/LogScripts.scala`, `application/gamelog/GameLogStartLineSuite.scala`, `frontend/.../ParkedDecisionSuite.scala`
 
 **Interfaces:**
@@ -822,7 +822,7 @@ Recover prices no option, so "Start Recover" reads "Cannot start now" when the R
 
 - [ ] **Step 1: Two test helpers in `CatacombsGame`**
 
-Add to `src/test/scala/oathdigital/testkit/CatacombsGame.scala`:
+Add to `src/test/scala/distantlands/testkit/CatacombsGame.scala`:
 
 ```scala
   /** "recover.modifiers". */
@@ -850,7 +850,7 @@ Imports: `oathdigital.gameplay.powerresolver.ModifierPicks`, `oathdigital.gamepl
 
 - [ ] **Step 2: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/recover/RecoverModifierChoiceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/recover/RecoverModifierChoiceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.recover
@@ -1216,7 +1216,7 @@ An un-asked Recover's dice-pool step is its first, so its lines and the goldens 
 
 - [ ] **Step 10: The board draws a Recover's modifier decision**
 
-In `frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala`:
+In `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala`:
 
 - Beside `recoverRelicDecisionId`, add:
 
@@ -1563,28 +1563,28 @@ If a suite not named here starts a Recover with modifiers, convert it to `Modifi
 - [ ] **Step 14: Commit**
 
 ```bash
-git rm src/test/scala/oathdigital/gameplay/SelectionPaymentsSuite.scala
-git add src/test/scala/oathdigital/gameplay/powers/recover/RecoverModifierChoiceSuite.scala \
-  src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala \
-  src/main/scala/oathdigital/gameplay/powers/recover/CatacombsContribution.scala \
-  src/main/scala/oathdigital/gameplay/powers/recover/RelicWorship.scala \
-  src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/application/gamelog/StartLines.scala \
-  frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala \
-  frontend/src/test/scala/oathdigital/frontend/ParkedDecisionSuite.scala \
-  src/test/scala/oathdigital/testkit/CatacombsGame.scala \
-  src/test/scala/oathdigital/gameplay/powers/recover/RelicWorshipSuite.scala \
-  src/test/scala/oathdigital/gameplay/CatacombsContributionSuite.scala \
-  src/test/scala/oathdigital/gameplay/RecoverProcedureSuite.scala \
-  src/test/scala/oathdigital/gameplay/WalkerReplayDriftSuite.scala \
-  src/test/scala/oathdigital/gameplay/OathRulesWalkerPowerSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/SelectedModifierSuite.scala \
-  src/test/scala/oathdigital/application/GameApplicationServiceRecoverSuite.scala \
-  src/test/scala/oathdigital/application/WalkerDecisionProjectionSuite.scala \
-  src/test/scala/oathdigital/application/UndoServiceSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala
+git rm src/test/scala/distantlands/gameplay/SelectionPaymentsSuite.scala
+git add src/test/scala/distantlands/gameplay/powers/recover/RecoverModifierChoiceSuite.scala \
+  src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala \
+  src/main/scala/distantlands/gameplay/powers/recover/CatacombsContribution.scala \
+  src/main/scala/distantlands/gameplay/powers/recover/RelicWorship.scala \
+  src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/application/gamelog/StartLines.scala \
+  frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala \
+  frontend/src/test/scala/distantlands/frontend/ParkedDecisionSuite.scala \
+  src/test/scala/distantlands/testkit/CatacombsGame.scala \
+  src/test/scala/distantlands/gameplay/powers/recover/RelicWorshipSuite.scala \
+  src/test/scala/distantlands/gameplay/CatacombsContributionSuite.scala \
+  src/test/scala/distantlands/gameplay/RecoverProcedureSuite.scala \
+  src/test/scala/distantlands/gameplay/WalkerReplayDriftSuite.scala \
+  src/test/scala/distantlands/gameplay/OathRulesWalkerPowerSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/SelectedModifierSuite.scala \
+  src/test/scala/distantlands/application/GameApplicationServiceRecoverSuite.scala \
+  src/test/scala/distantlands/application/WalkerDecisionProjectionSuite.scala \
+  src/test/scala/distantlands/application/UndoServiceSuite.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala
 git commit -m "feat(recover): choose Recover modifiers inside the walk"
 ```
 
@@ -1594,16 +1594,16 @@ End the message with your trailer.
 ### Task 4: Delete the preview endpoint and the ordered-modifiers channel
 
 **Files:**
-- Delete: `shared/src/main/scala/oathdigital/protocol/MajorActionPreviewProtocol.scala`
-- Delete: `src/main/scala/oathdigital/application/PreviewModifierDescriptions.scala`
-- Create: `src/main/scala/oathdigital/application/gamelog/PrintedCards.scala`
-- Delete: `src/test/scala/oathdigital/application/GameIntentMapperModifierSuite.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandProtocol.scala`
-- Modify: `src/main/scala/oathdigital/server/GameRoutes.scala`, `TrustedGameGateway.scala`, `TrustedSeatRoutes.scala`, `AuthenticatedGameRoutes.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala`, `GameCommands.scala`, `GameIntentMapper.scala`, `gamelog/LogWords.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/PowerRuntime.scala`, `walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/model/RuleFallbackProtocol.scala`, `GameViolation.scala`
-- Modify (tests): `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala`, `src/test/scala/oathdigital/server/TrustedSeatRoutesSuite.scala`, `CommandRejectionMessageSuite.scala`, `src/test/scala/oathdigital/application/GameApplicationServiceActionsSuite.scala`, `GameApplicationServiceRecoverSuite.scala`, `FollowUpServiceSuite.scala`, `PendingWalkerInvariantSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/banner/BannerFaceSourcesSuite.scala`, `src/test/scala/oathdigital/testkit/SituationDriver.scala`, `SituationSuite.scala`
+- Delete: `shared/src/main/scala/distantlands/protocol/MajorActionPreviewProtocol.scala`
+- Delete: `src/main/scala/distantlands/application/PreviewModifierDescriptions.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/PrintedCards.scala`
+- Delete: `src/test/scala/distantlands/application/GameIntentMapperModifierSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandProtocol.scala`
+- Modify: `src/main/scala/distantlands/server/GameRoutes.scala`, `TrustedGameGateway.scala`, `TrustedSeatRoutes.scala`, `AuthenticatedGameRoutes.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala`, `GameCommands.scala`, `GameIntentMapper.scala`, `gamelog/LogWords.scala`
+- Modify: `src/main/scala/distantlands/gameplay/PowerRuntime.scala`, `walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/model/RuleFallbackProtocol.scala`, `GameViolation.scala`
+- Modify (tests): `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`, `src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala`, `CommandRejectionMessageSuite.scala`, `src/test/scala/distantlands/application/GameApplicationServiceActionsSuite.scala`, `GameApplicationServiceRecoverSuite.scala`, `FollowUpServiceSuite.scala`, `PendingWalkerInvariantSuite.scala`, `src/test/scala/distantlands/gameplay/powers/banner/BannerFaceSourcesSuite.scala`, `src/test/scala/distantlands/testkit/SituationDriver.scala`, `SituationSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1 (the client no longer calls the preview or sends ordered modifiers).
@@ -1618,7 +1618,7 @@ End the message with your trailer.
 - [ ] **Step 1: Delete the shared preview protocol and the ordered modifiers**
 
 ```bash
-git rm shared/src/main/scala/oathdigital/protocol/MajorActionPreviewProtocol.scala
+git rm shared/src/main/scala/distantlands/protocol/MajorActionPreviewProtocol.scala
 ```
 
 In `CommandProtocol.scala`:
@@ -1684,7 +1684,7 @@ In `WalkerProcedureRegistry.scala`, `isRegistered`'s doc becomes "Whether `proce
 
 The Game Log named a modifier by the card it is printed on through `PreviewModifierDescriptions.printedOn`. Move that lookup into the log and delete the class.
 
-Create `src/main/scala/oathdigital/application/gamelog/PrintedCards.scala`:
+Create `src/main/scala/distantlands/application/gamelog/PrintedCards.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -1734,7 +1734,7 @@ private[gamelog] final class PrintedCards(catalog: ExecutableCatalog):
 The two methods are `printedOn` and `cardOf` from `PreviewModifierDescriptions`, unchanged. Compare them with the file before you delete it; if they differ from the code above, copy the file's.
 
 ```bash
-git rm src/main/scala/oathdigital/application/PreviewModifierDescriptions.scala
+git rm src/main/scala/distantlands/application/PreviewModifierDescriptions.scala
 ```
 
 In `LogWords.scala`:
@@ -1746,7 +1746,7 @@ In `LogWords.scala`:
 - [ ] **Step 5: The tests**
 
 ```bash
-git rm src/test/scala/oathdigital/application/GameIntentMapperModifierSuite.scala
+git rm src/test/scala/distantlands/application/GameIntentMapperModifierSuite.scala
 ```
 
 Delete these tests, each to the end of its body:
@@ -1813,7 +1813,7 @@ Expected: no output.
 
 ```bash
 git add -u src shared
-git add src/main/scala/oathdigital/application/gamelog/PrintedCards.scala
+git add src/main/scala/distantlands/application/gamelog/PrintedCards.scala
 git commit -m "refactor(server): delete the modifier preview and the ordered-modifiers channel"
 ```
 
@@ -1823,9 +1823,9 @@ git commit -m "refactor(server): delete the modifier preview and the ordered-mod
 ### Task 5: A start carries no modifiers
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala`
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`, `GameIntentMapper.scala`, `GameApplicationService.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`, `walker/WalkerProcedureRegistry.scala`, `walker/ModifierOffers.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`, `GameIntentMapper.scala`, `GameApplicationService.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, `walker/WalkerProcedureRegistry.scala`, `walker/ModifierOffers.scala`
 - Modify (frontend main): every file that builds a `StartWalker` (Step 5's script finds them)
 - Modify (tests): the suites listed in Steps 5 and 6
 
@@ -2074,12 +2074,12 @@ git commit -m "refactor(walker): a start carries no modifiers"
 ### Task 6: The picks are the only record of the selection
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`, `WalkerReplay.scala`, `WalkerPowers.scala`, `WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/model/GameState.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`, `OathRulesWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala`, `gameplay/operations/OperationRestrictions.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`, `gamelog/StartLines.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`, `WalkerReplay.scala`, `WalkerPowers.scala`, `WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`, `OathRulesWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala`, `gameplay/operations/OperationRestrictions.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`, `gamelog/StartLines.scala`
 - Modify (tests): `testkit/ParkedNode.scala`, `gameplay/CampaignProcedureSuite.scala`, `gameplay/powers/targeting/TargetingFixture.scala`, `gameplay/powers/campaign/PlanDriver.scala`, `gameplay/CardSlotsSuite.scala`, `serialization/WalkerDecisionWireSuite.scala`, `gameplay/WalkerReplayDriftSuite.scala`, `gameplay/walker/WalkerStartFactsReplaySuite.scala`, `gameplay/OathRulesWalkerPowerSuite.scala`, `application/ParkedServiceFixture.scala`
 
 **Interfaces:**

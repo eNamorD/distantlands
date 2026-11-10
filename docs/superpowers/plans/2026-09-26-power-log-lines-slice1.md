@@ -95,13 +95,13 @@ These were settled while planning (2026-09-26). Task 6 records each one in the s
 ### Task 1: Note vocabulary and the walker's `Note` node
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/PowerNotes.scala`
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (the `PowerSourceRef` companion)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/PowerNoteWalkerSuite.scala`
+- Create: `src/main/scala/distantlands/model/PowerNotes.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (the `PowerSourceRef` companion)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/PowerNoteWalkerSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -117,7 +117,7 @@ These were settled while planning (2026-09-26). Task 6 records each one in the s
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/test/scala/oathdigital/gameplay/PowerNoteWalkerSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/PowerNoteWalkerSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -238,7 +238,7 @@ Expected: compile failure, because `Note`, `NoteStates`, `PowerNote` and `PowerN
 
 - [ ] **Step 3: Write the model vocabulary**
 
-Create `src/main/scala/oathdigital/model/PowerNotes.scala`:
+Create `src/main/scala/distantlands/model/PowerNotes.scala`:
 
 ```scala
 package oathdigital.model
@@ -309,7 +309,7 @@ final case class Note(power: PowerId, build: NoteStates => Option[PowerNote],
   val children: Vector[Operation] = Vector.empty
 ```
 
-In `src/main/scala/oathdigital/model/GameState.scala`, add this at the end of `object PowerSourceRef` (after `final case class Banner`):
+In `src/main/scala/distantlands/model/GameState.scala`, add this at the end of `object PowerSourceRef` (after `final case class Banner`):
 
 ```scala
 
@@ -325,7 +325,7 @@ In `src/main/scala/oathdigital/model/GameState.scala`, add this at the end of `o
 
 - [ ] **Step 4: Add the event**
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`, add this after `WalkerCompleted`. Add `PowerNote` to the file's model import, or add `import oathdigital.model.PowerNote` if the file imports names one by one.
+In `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`, add this after `WalkerCompleted`. Add `PowerNote` to the file's model import, or add `import oathdigital.model.PowerNote` if the file imports names one by one.
 
 ```scala
 
@@ -340,7 +340,7 @@ final case class PowerNoted(power: PowerId, note: PowerNote, covers: Boolean)
 
 - [ ] **Step 5: Walk the `Note` node**
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`:
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`:
 
 1. Add `Note, NoteStates` to the `oathdigital.model.{...}` import.
 2. Give `WalkCtx` a last field, after `root: Operation`:
@@ -405,14 +405,14 @@ In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`:
 
 - [ ] **Step 6: Replay applies a note as nothing**
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala`, add this case immediately before `case step: WalkerStepRecorded =>` (the unsupported-payload catch-all):
+In `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`, add this case immediately before `case step: WalkerStepRecorded =>` (the unsupported-payload catch-all):
 
 ```scala
       // An audit fact for the Game Log; replay has nothing to apply.
       case _: PowerNoted => Right(ready)
 ```
 
-In `src/main/scala/oathdigital/gameplay/OathRules.scala`, add `PowerNoted` to the `oathdigital.gameplay.walker.{...}` import. Add this line after `case event: WalkerCompleted => ProcedureWalker.applyRecorded(state, event)`:
+In `src/main/scala/distantlands/gameplay/OathRules.scala`, add `PowerNoted` to the `oathdigital.gameplay.walker.{...}` import. Add this line after `case event: WalkerCompleted => ProcedureWalker.applyRecorded(state, event)`:
 
 ```scala
       case event: PowerNoted => ProcedureWalker.applyRecorded(state, event)
@@ -421,18 +421,18 @@ In `src/main/scala/oathdigital/gameplay/OathRules.scala`, add `PowerNoted` to th
 - [ ] **Step 7: Run the tests**
 
 Run: `./sbtw "testOnly oathdigital.gameplay.PowerNoteWalkerSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.RepeatPassSuite"`
-Expected: all pass. Then run `wc -l src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`. Expected: 800 or fewer.
+Expected: all pass. Then run `wc -l src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`. Expected: 800 or fewer.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerNotes.scala \
-  src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala \
-  src/main/scala/oathdigital/gameplay/OathRules.scala \
-  src/test/scala/oathdigital/gameplay/PowerNoteWalkerSuite.scala
+git add src/main/scala/distantlands/model/PowerNotes.scala \
+  src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala \
+  src/main/scala/distantlands/gameplay/OathRules.scala \
+  src/test/scala/distantlands/gameplay/PowerNoteWalkerSuite.scala
 git commit -m "feat(walker): journal a power's note where the walk reaches it"
 ```
 
@@ -441,11 +441,11 @@ git commit -m "feat(walker): journal a power's note where the walk reaches it"
 ### Task 2: The hide hook
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Test: `src/test/scala/oathdigital/gameplay/PowerNoteHideSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Test: `src/test/scala/distantlands/gameplay/PowerNoteHideSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerNote`, `PowerNoted`, `NoteKey` (Task 1).
@@ -458,7 +458,7 @@ git commit -m "feat(walker): journal a power's note where the walk reaches it"
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/test/scala/oathdigital/gameplay/PowerNoteHideSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/PowerNoteHideSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -580,7 +580,7 @@ Expected: compile failure, because `OptionRestriction` and `Restriction` take on
 
 - [ ] **Step 3: Give contributions their hook and powers their keys**
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`:
 
 1. Add `NoteKey, PowerNote` to the model import.
 2. Add a companion after `sealed trait Contribution extends Product with Serializable`:
@@ -620,7 +620,7 @@ final case class OptionRestriction(
   def noteKeys: Vector[NoteKey] = Vector.empty
 ```
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala`, add `NoteKey` to the model import and add the same member to `trait PhasePower`, after `build`:
+In `src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala`, add `NoteKey` to the model import and add the same member to `trait PhasePower`, after `build`:
 
 ```scala
   /** The Game Log lines this power can write. The key `NoteKey.Used` names
@@ -630,7 +630,7 @@ In `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala`, add `No
 
 - [ ] **Step 4: Note what option restrictions hide**
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, rename the body of `applyWindow` into `applyWindowNoted`, and keep `applyWindow` as a wrapper:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, rename the body of `applyWindow` into `applyWindowNoted`, and keep `applyWindow` as a wrapper:
 
 ```scala
   def applyWindow(window: Option[PowerWindow], operation: Operation,
@@ -811,16 +811,16 @@ In `runLeaf`, replace `case Some(narrowed) => runNarrowed(narrowed, ctx, path, c
 - [ ] **Step 7: Run the tests**
 
 Run: `./sbtw "testOnly oathdigital.gameplay.PowerNoteHideSuite oathdigital.gameplay.OptionRestrictionSuite oathdigital.gameplay.RestrictionLookAheadSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.PowerNoteWalkerSuite"`
-Expected: all pass. Then run `wc -l src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`. Expected: each 800 or fewer.
+Expected: all pass. Then run `wc -l src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`. Expected: each 800 or fewer.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala \
-  src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/test/scala/oathdigital/gameplay/PowerNoteHideSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala \
+  src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/test/scala/distantlands/gameplay/PowerNoteHideSuite.scala
 git commit -m "feat(walker): note the options a restriction hides at a fresh decision"
 ```
 
@@ -841,9 +841,9 @@ Fix what it finds before Task 3.
 ### Task 3: Wire format
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/serialization/GameEventWire.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala`
-- Test: `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`
+- Modify: `src/main/scala/distantlands/serialization/GameEventWire.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala`
+- Test: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerNoted`, `PowerNote`, `NoteArg`, `NoteUnit` (Task 1).
@@ -1011,9 +1011,9 @@ Expected: all pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/serialization/GameEventWire.scala \
-  src/main/scala/oathdigital/serialization/WalkerEventCodec.scala \
-  src/test/scala/oathdigital/serialization/GameEventWireSuite.scala
+git add src/main/scala/distantlands/serialization/GameEventWire.scala \
+  src/main/scala/distantlands/serialization/WalkerEventCodec.scala \
+  src/test/scala/distantlands/serialization/GameEventWireSuite.scala
 git commit -m "feat(serialization): journal power notes as walker.power-noted"
 ```
 
@@ -1022,16 +1022,16 @@ git commit -m "feat(serialization): journal power notes as walker.power-noted"
 ### Task 4: Power lines in the Game Log
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/gamelog/NoteWordings.scala`
-- Create: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogJournal.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogWords.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/NoteWordings.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/PowerLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/LogJournal.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/LogWords.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerNoted` (Task 1), `noteKeys` (Task 2).
@@ -1042,7 +1042,7 @@ git commit -m "feat(serialization): journal power notes as walker.power-noted"
 
 - [ ] **Step 1: Add the journal-editing test helper**
 
-In `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, add `import oathdigital.engine.{RecordedEvent, ReplayStep}`, and add to `object LogScripts`:
+In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add `import oathdigital.engine.{RecordedEvent, ReplayStep}`, and add to `object LogScripts`:
 
 ```scala
   /** `steps` with `events` journaled right after position `after`. Each
@@ -1059,7 +1059,7 @@ In `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, add `impor
 
 - [ ] **Step 2: Write the failing test**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -1226,7 +1226,7 @@ Expected: compile failure, because `NoteWordings` and the three-argument `GameLo
 
 - [ ] **Step 4: Wordings**
 
-Create `src/main/scala/oathdigital/application/gamelog/NoteWordings.scala`:
+Create `src/main/scala/distantlands/application/gamelog/NoteWordings.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -1329,7 +1329,7 @@ In `ActionLines.usedPower`, add `|| journal.notedUse(run, power, at)` to the con
 
 - [ ] **Step 7: Render the lines**
 
-Create `src/main/scala/oathdigital/application/gamelog/PowerLines.scala`:
+Create `src/main/scala/distantlands/application/gamelog/PowerLines.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -1443,16 +1443,16 @@ Expected: all pass, the existing suites included.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/NoteWordings.scala \
-  src/main/scala/oathdigital/application/gamelog/PowerLines.scala \
-  src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala \
-  src/main/scala/oathdigital/application/gamelog/LogJournal.scala \
-  src/main/scala/oathdigital/application/gamelog/LogWords.scala \
-  src/main/scala/oathdigital/application/gamelog/ActionLines.scala \
-  src/main/scala/oathdigital/application/gamelog/DetailLines.scala \
-  src/main/scala/oathdigital/application/gamelog/StartLines.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala
+git add src/main/scala/distantlands/application/gamelog/NoteWordings.scala \
+  src/main/scala/distantlands/application/gamelog/PowerLines.scala \
+  src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala \
+  src/main/scala/distantlands/application/gamelog/LogJournal.scala \
+  src/main/scala/distantlands/application/gamelog/LogWords.scala \
+  src/main/scala/distantlands/application/gamelog/ActionLines.scala \
+  src/main/scala/distantlands/application/gamelog/DetailLines.scala \
+  src/main/scala/distantlands/application/gamelog/StartLines.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala
 git commit -m "feat(log): render power notes as {card}: {sentence} lines"
 ```
 
@@ -1472,13 +1472,13 @@ Fix what it finds before Task 5.
 ### Task 5: Vow of Peace and Gambling Hall
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/VowOfPeaceContribution.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/VowOfPeaceSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/action/GamblingHallSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/VowOfPeaceContribution.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/VowOfPeaceSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/action/GamblingHallSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
 
 **Interfaces:**
 - Consumes: everything above.
@@ -1554,7 +1554,7 @@ Append to `GamblingHallSuite` (add `import oathdigital.gameplay.walker.PowerNote
 
 In the capped-gain test, `ready0.banks.favor(Suit.Nomad)` must be below 6 for the cap to show. The existing Doubler test already relies on this, by expecting the whole bank.
 
-Create `src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -1772,13 +1772,13 @@ Expected: all pass, `GameLogPropertiesSuite` over the new script included.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/VowOfPeaceContribution.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/VowOfPeaceSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/GamblingHallSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/VowOfPeaceContribution.scala \
+  src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/VowOfPeaceSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/GamblingHallSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala
 git commit -m "feat(powers): Vow of Peace and Gambling Hall write their own log lines"
 ```
 

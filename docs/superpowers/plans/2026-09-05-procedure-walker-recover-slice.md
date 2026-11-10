@@ -20,15 +20,15 @@
 - `usedPowers` tracking stays state (spec decision 11 of the old program, restated in the spec).
 - Commit per task with the exact message shown. Work on branch `feat/procedure-walker`.
 - Per-task gate: root suite `./sbtw "test"` green. Frontend gate (`frontend/test`, `frontend/fastLinkJS`) runs at the Task 8 checkpoint only — the Scala.js frontend source set excludes `gameplay/operations`, so per-task frontend runs add cost without signal.
-- All new leaf/composite `Operation` cases (walker leaves in Task 2, `Repeat`) are declared inside `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala`: `CoreOperation`/`PrimitiveOperation` are sealed and Scala 2.13 requires sealed subclasses in the same source file. (Task 1 review finding.)
+- All new leaf/composite `Operation` cases (walker leaves in Task 2, `Repeat`) are declared inside `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala`: `CoreOperation`/`PrimitiveOperation` are sealed and Scala 2.13 requires sealed subclasses in the same source file. (Task 1 review finding.)
 
 ---
 
 ### Task 1: Operation ADT core + tree math
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/Operation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala` (retarget hierarchy)
+- Create: `src/main/scala/distantlands/gameplay/operations/Operation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala` (retarget hierarchy)
 
 **Interfaces:**
 - Consumes: existing `PrimitiveOperation` case classes in `CoreOperations.scala` (their bodies unchanged).
@@ -106,9 +106,9 @@ git commit -m "refactor(operations): unify Operation ADT with children accessor"
 ### Task 2: Walker leaves (Decide/Roll/pool ops) + PendingTree state
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`CurrentGameState`, add pool state)
-- Create: `src/main/scala/oathdigital/model/PendingTree.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala` — new leaf cases go HERE (sealed `PrimitiveOperation` cannot be extended from another file on Scala 2.13; plan constraint). Do NOT create a separate walker operations file.
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`CurrentGameState`, add pool state)
+- Create: `src/main/scala/distantlands/model/PendingTree.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala` — new leaf cases go HERE (sealed `PrimitiveOperation` cannot be extended from another file on Scala 2.13; plan constraint). Do NOT create a separate walker operations file.
 
 **Interfaces:**
 - Consumes: Task 1 `Operation`; existing `OathState`/`ReadyGame`; `PlayerId`, `SiteId`, `PowerId`, `PowerWindow`.
@@ -121,7 +121,7 @@ git commit -m "refactor(operations): unify Operation ADT with children accessor"
     - `final case class Decide(payload: DecisionPayload, owner: OwnerQuery, decisionId: String) extends PrimitiveOperation`
   - Composite: `final case class Repeat(guard: (ReadyGame, PendingTree) => Boolean, body: Operation) extends CoreOperation { val children = Vector(body) }`.
   - `final case class PoolKey(value: String)` (e.g. `"recover"`, `"campaign.attack"`).
-  - `final case class DiceSpec(die: DiceKind)` where `sealed trait DiceKind { case object Defense, Attack }` — new file `src/main/scala/oathdigital/gameplay/DiceSpec.scala`.
+  - `final case class DiceSpec(die: DiceKind)` where `sealed trait DiceKind { case object Defense, Attack }` — new file `src/main/scala/distantlands/gameplay/DiceSpec.scala`.
   - `sealed trait DecisionPayload extends Product with Serializable` (open per D2; empty now).
   - `sealed trait OwnerQuery { def owner(ctx: WalkerCtx): Option[PlayerId] }`.
   - `PendingTree(at: Vector[String], answered: Vector[String], actor: PlayerId, action: Operation, ctx: WalkerCtx)` with `WalkerCtx` minimal case class holding `ready: ReadyGame` + node-local scratch `Map[String, Any]`.
@@ -136,9 +136,9 @@ Because `PendingTree` is stored in `CurrentGameState`, keep `PendingProcedure` a
 ### Task 3: ProcedureWalker core (auto-walk, park at Decide/Roll)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/model/GameEventProtocol.scala` (add walker event family)
+- Create: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`
+- Modify: `src/main/scala/distantlands/gameplay/model/GameEventProtocol.scala` (add walker event family)
 
 **Interfaces:**
 - Consumes: Task 1 `Operation.flatten`; Task 2 leaves + state; existing `OperationPipeline`, `OperationExecutor`, `OperationPolicy`, `OathLifecycle.validateAct`.
@@ -165,8 +165,8 @@ Because `PendingTree` is stored in `CurrentGameState`, keep `PendingProcedure` a
 ### Task 4: Roll node flow — faces ride command, count from state
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala` (Roll payload)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala` (Roll payload)
 - Test: `ProcedureWalkerSuite`
 
 **Interfaces:**
@@ -181,13 +181,13 @@ Because `PendingTree` is stored in `CurrentGameState`, keep `PendingProcedure` a
 ### Task 5: Recover tree declaration (no powers yet)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala`
-- Create: `src/main/scala/oathdigital/model/DecisionPayload.scala` (move open trait from walker/WalkerModel.scala)
-- Modify: `src/main/scala/oathdigital/model/PendingTree.scala` (answered: Vector[Answered])
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (resolve; BuildOps/Branch execution)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala` (ChoicePayload)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala` (BuildOps leaf, Branch composite; Decide.validate)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerModel.scala` (DecisionPayload removed)
+- Create: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala`
+- Create: `src/main/scala/distantlands/model/DecisionPayload.scala` (move open trait from walker/WalkerModel.scala)
+- Modify: `src/main/scala/distantlands/model/PendingTree.scala` (answered: Vector[Answered])
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (resolve; BuildOps/Branch execution)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala` (ChoicePayload)
+- Modify: `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala` (BuildOps leaf, Branch composite; Decide.validate)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerModel.scala` (DecisionPayload removed)
 - Test: `RecoverProcedureSuite`
 
 **Interfaces:**
@@ -226,9 +226,9 @@ during `advance`.
 ### Task 6: Command surface + application wiring (Recover slice)
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala`
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`
-- Modify: `src/main/scala/oathdigital/application/GameEventCodec.scala` + serialization codecs for walker events
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`
+- Modify: `src/main/scala/distantlands/application/GameEventCodec.scala` + serialization codecs for walker events
 - Test: application suite slice
 
 **Interfaces:**
@@ -248,7 +248,7 @@ during `advance`.
 ### Task 7: Projection + frontend minimal surface (Recover slice)
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala` / legal projector (parked decision → legal controls)
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala` / legal projector (parked decision → legal controls)
 - Modify frontend: `ActionDecisionRenderer`/`ServerModeUi` (render parked walker decision for Recover)
 - Test: frontend suite slice
 

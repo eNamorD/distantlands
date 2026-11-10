@@ -145,7 +145,7 @@ These settle what the spec and rulings leave open. Each one says what it costs i
 
 ## File Structure
 
-Production, under `src/main/scala/oathdigital/`:
+Production, under `src/main/scala/distantlands/`:
 
 | File | Change | Responsibility | Task |
 |---|---|---|---|
@@ -173,7 +173,7 @@ Production, under `src/main/scala/oathdigital/`:
 | `catalog/holding/HoldingRelics.scala` | modify | Singing Mask leaves | 7 |
 | `gameplay/cards/NewFoundations.scala` | modify | imports each moved card from `gameplay.powers.action` | 1–8 |
 
-Tests, under `src/test/scala/oathdigital/`:
+Tests, under `src/test/scala/distantlands/`:
 
 | File | Change | Tests | Task |
 |---|---|---|---|
@@ -196,11 +196,11 @@ Docs: `docs/ROADMAP.md` and the batch 4 design spec, in Task 9.
 ### Task 1: Terror Spells
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/TerrorSpells.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `TerrorSpellsCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `TerrorSpellsCard`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/TerrorSpellsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/TerrorSpells.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `TerrorSpellsCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `TerrorSpellsCard`)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/TerrorSpellsSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction`, `PowerAnswers.distribution`, `BannerRules.holder`, `PowerAccess.pawnSite`, `PlayerForceKind.of`.
@@ -208,7 +208,7 @@ Docs: `docs/ROADMAP.md` and the batch 4 design spec, in Task 9.
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/TerrorSpellsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/TerrorSpellsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -306,9 +306,9 @@ Expected: compile failure, `TerrorSpells` is not found.
 
 - [ ] **Step 3: Write Terror Spells**
 
-Remove `object TerrorSpellsCard` from `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala`.
+Remove `object TerrorSpellsCard` from `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/TerrorSpells.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/TerrorSpells.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -457,12 +457,12 @@ case object TerrorSpells extends PaidAction(TerrorSpellsCard.power):
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`:
+In `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`:
 
 - Add `TerrorSpells` to the first `Vector[PhasePower](...)`, after `BanditPaymaster`.
 - In the doc comment, change "The phase powers of catalog batch 3's slice 3c and catalog batch 4's Roving Terror, actions on sites, banks and banners," to "The phase powers of catalog batch 3's slice 3c and catalog batch 4's slices 2 and 3, actions on sites, banks and banners,". Keep the comment's line wrap within 80 columns.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `TerrorSpellsCard` to the `gameplay.powers.action` import, after `TavernSongsCard`.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `TerrorSpellsCard` to the `gameplay.powers.action` import, after `TavernSongsCard`.
 
 - [ ] **Step 5: Run the suite and the note catalog**
 
@@ -472,11 +472,11 @@ Expected: PASS, 5 tests in `TerrorSpellsSuite`.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/TerrorSpells.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/TerrorSpellsSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/TerrorSpells.scala \
+  src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/action/TerrorSpellsSuite.scala
 git commit -m "feat(action): Terror Spells kills two warbands in the region for the Darkest Secret's holder"
 ```
 
@@ -485,15 +485,15 @@ git commit -m "feat(action): Terror Spells kills two warbands in the region for 
 ### Task 2: `PowerAnswers.last`, `SecretMoves` and Witch's Bargain
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala` (add `last`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/PowerAnswersSuite.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/SecretMoves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SleightOfHand.scala` (class doc comment; `take`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/WitchsBargain.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `WitchsBargainCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `WitchsBargainCard`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/WitchsBargainSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala` (add `last`)
+- Create: `src/test/scala/distantlands/gameplay/powers/PowerAnswersSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/SecretMoves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SleightOfHand.scala` (class doc comment; `take`)
+- Create: `src/main/scala/distantlands/gameplay/powers/action/WitchsBargain.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `WitchsBargainCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `WitchsBargainCard`)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/WitchsBargainSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction`, `PlayerFacts.player`, `NoteSupport.favor`, `NoteSupport.secrets`.
@@ -504,7 +504,7 @@ git commit -m "feat(action): Terror Spells kills two warbands in the region for 
 
 - [ ] **Step 1: Write the failing `PowerAnswers` suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/PowerAnswersSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/PowerAnswersSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -541,7 +541,7 @@ Expected: compile failure, `last` is not a member of `PowerAnswers`.
 
 - [ ] **Step 3: Add `last`**
 
-In `src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala`, add after `one`:
+In `src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala`, add after `one`:
 
 ```scala
   /** The option the latest answer to any of `decisions` chose. A `Repeat`
@@ -563,7 +563,7 @@ Expected: PASS, 2 tests.
 
 - [ ] **Step 5: Share Sleight of Hand's flip**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/SecretMoves.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/SecretMoves.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -593,7 +593,7 @@ private[action] object SecretMoves:
     else Vector(move)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/action/SleightOfHand.scala`:
+In `src/main/scala/distantlands/gameplay/powers/action/SleightOfHand.scala`:
 
 - Replace `take` with:
 
@@ -615,7 +615,7 @@ Expected: PASS, unchanged.
 
 - [ ] **Step 6: Write the failing Witch's Bargain suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/WitchsBargainSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/WitchsBargainSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -736,9 +736,9 @@ Expected: compile failure, `WitchsBargain` is not found.
 
 - [ ] **Step 8: Write Witch's Bargain**
 
-Remove `object WitchsBargainCard` from `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala`.
+Remove `object WitchsBargainCard` from `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/WitchsBargain.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/WitchsBargain.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -936,12 +936,12 @@ case object WitchsBargain extends PaidAction(WitchsBargainCard.power):
 
 - [ ] **Step 9: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`:
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`:
 
 - Add `WitchsBargain` to the first `Vector[PhasePower](...)`, after `AmberFlame`.
 - In the doc comment, change "The phase powers of catalog batch 2's slice 4, catalog batch 3's slice 3b and catalog batch 4's Resettle, actions on others," to "The phase powers of catalog batch 2's slice 4, catalog batch 3's slice 3b and catalog batch 4's slices 2 and 3, actions on others,". Keep the comment's line wrap within 80 columns.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `WitchsBargainCard` to the `gameplay.powers.action` import, after `WhistleCard`.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `WitchsBargainCard` to the `gameplay.powers.action` import, after `WhistleCard`.
 
 - [ ] **Step 10: Run the suites**
 
@@ -951,15 +951,15 @@ Expected: PASS, 6 tests in `WitchsBargainSuite`.
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/SecretMoves.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/SleightOfHand.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/WitchsBargain.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/PowerAnswersSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/WitchsBargainSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala \
+  src/main/scala/distantlands/gameplay/powers/action/SecretMoves.scala \
+  src/main/scala/distantlands/gameplay/powers/action/SleightOfHand.scala \
+  src/main/scala/distantlands/gameplay/powers/action/WitchsBargain.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/PowerAnswersSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/WitchsBargainSuite.scala
 git commit -m "feat(action): Witch's Bargain trades secrets and favor with players at the site"
 ```
 
@@ -968,11 +968,11 @@ git commit -m "feat(action): Witch's Bargain trades secrets and favor with playe
 ### Task 3: Inquisitor
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Inquisitor.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `InquisitorCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `InquisitorCard`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/InquisitorSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Inquisitor.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `InquisitorCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `InquisitorCard`)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/InquisitorSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction`, `VisionRules`' five ids, `CardPlay.nextRegion`, `NoteSupport.answer`, and `Reveal` of a card in a discard pile, which records it as known to every player (Brass Horse uses it too).
@@ -980,7 +980,7 @@ git commit -m "feat(action): Witch's Bargain trades secrets and favor with playe
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/InquisitorSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/InquisitorSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1102,9 +1102,9 @@ Expected: compile failure, `Inquisitor` is not found.
 
 - [ ] **Step 3: Write Inquisitor**
 
-Remove `object InquisitorCard` from `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala`.
+Remove `object InquisitorCard` from `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/Inquisitor.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/Inquisitor.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1268,9 +1268,9 @@ case object Inquisitor extends PaidAction(InquisitorCard.power):
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`, add `Inquisitor` to the first `Vector[PhasePower](...)`, after `WitchsBargain`.
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`, add `Inquisitor` to the first `Vector[PhasePower](...)`, after `WitchsBargain`.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `InquisitorCard` to the `gameplay.powers.action` import, after `HonorGuardCard`.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `InquisitorCard` to the `gameplay.powers.action` import, after `HonorGuardCard`.
 
 - [ ] **Step 5: Run the suites**
 
@@ -1280,11 +1280,11 @@ Expected: PASS, 5 tests in `InquisitorSuite`.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/Inquisitor.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/InquisitorSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/Inquisitor.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/action/InquisitorSuite.scala
 git commit -m "feat(action): Inquisitor guesses a facedown Vision and discards it when right"
 ```
 
@@ -1293,12 +1293,12 @@ git commit -m "feat(action): Inquisitor guesses a facedown Vision and discards i
 ### Task 4: Relic Thief, and `LostTongue.protects`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/LostTongue.scala` (add `protects`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/RelicThief.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala` (remove `RelicThiefCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `RelicThiefCard`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/RelicThiefSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/LostTongue.scala` (add `protects`)
+- Create: `src/main/scala/distantlands/gameplay/powers/action/RelicThief.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala` (remove `RelicThiefCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `RelicThiefCard`)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/RelicThiefSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction`, `RollResults.score` (`private[action]`), `ActPowerHarness` with `defenseDice`.
@@ -1308,7 +1308,7 @@ git commit -m "feat(action): Inquisitor guesses a facedown Vision and discards i
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/RelicThiefSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/RelicThiefSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1426,7 +1426,7 @@ Expected: compile failure, `RelicThief` is not found.
 
 - [ ] **Step 3: Expose Lost Tongue's check**
 
-In `src/main/scala/oathdigital/gameplay/powers/targeting/LostTongue.scala`, add after `bannerShielded`:
+In `src/main/scala/distantlands/gameplay/powers/targeting/LostTongue.scala`, add after `bannerShielded`:
 
 ```scala
   /** Whether this card keeps `taker` from taking `owner`'s relics and
@@ -1440,9 +1440,9 @@ In `src/main/scala/oathdigital/gameplay/powers/targeting/LostTongue.scala`, add 
 
 - [ ] **Step 4: Write Relic Thief**
 
-Remove `object RelicThiefCard` from `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala`.
+Remove `object RelicThiefCard` from `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/RelicThief.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/RelicThief.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1583,9 +1583,9 @@ object RelicThief:
 
 - [ ] **Step 5: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`, append `++ Vector(RelicThief.forCatalog(catalog))` after `Vector(Resettle.forCatalog(catalog))`.
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`, append `++ Vector(RelicThief.forCatalog(catalog))` after `Vector(Resettle.forCatalog(catalog))`.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `RelicThiefCard` to the `gameplay.powers.action` import, after `RelicBreakerCard`.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `RelicThiefCard` to the `gameplay.powers.action` import, after `RelicBreakerCard`.
 
 - [ ] **Step 6: Run the suites**
 
@@ -1595,12 +1595,12 @@ Expected: PASS, 6 tests in `RelicThiefSuite`; `LostTongueSuite` unchanged.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/targeting/LostTongue.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/RelicThief.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/RelicThiefSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/targeting/LostTongue.scala \
+  src/main/scala/distantlands/gameplay/powers/action/RelicThief.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/action/RelicThiefSuite.scala
 git commit -m "feat(action): Relic Thief rolls for a faceup relic and takes it on no shield"
 ```
 
@@ -1609,13 +1609,13 @@ git commit -m "feat(action): Relic Thief rolls for a faceup relic and takes it o
 ### Task 5: `SecretBurns` and Ancient Binding
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/SecretBurns.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BookBurning.scala` (import; `burn`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/AncientBinding.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (remove `AncientBindingCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `AncientBindingCard`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/AncientBindingSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/SecretBurns.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BookBurning.scala` (import; `burn`)
+- Create: `src/main/scala/distantlands/gameplay/powers/action/AncientBinding.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (remove `AncientBindingCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `AncientBindingCard`)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/AncientBindingSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction`, `InPlayCardResources.discover` (`gameplay`), `PlayerSecretSummary.derive` (in the suite).
@@ -1623,7 +1623,7 @@ git commit -m "feat(action): Relic Thief rolls for a faceup relic and takes it o
 
 - [ ] **Step 1: Share Book Burning's burn**
 
-Create `src/main/scala/oathdigital/gameplay/powers/SecretBurns.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/SecretBurns.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -1648,7 +1648,7 @@ object SecretBurns:
       Burn.secrets(burnt, PositionedLocation(Location.PlayArea(held.player)))
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/BookBurning.scala`:
+In `src/main/scala/distantlands/gameplay/powers/campaign/BookBurning.scala`:
 
 - Change `import oathdigital.gameplay.powers.NoteSupport` to `import oathdigital.gameplay.powers.{NoteSupport, SecretBurns}`.
 - Replace `burn` and its doc comment with:
@@ -1665,7 +1665,7 @@ Expected: PASS, unchanged.
 
 - [ ] **Step 2: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/AncientBindingSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/AncientBindingSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1760,9 +1760,9 @@ Expected: compile failure, `AncientBinding` is not found.
 
 - [ ] **Step 4: Write Ancient Binding**
 
-Remove `object AncientBindingCard` from `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`.
+Remove `object AncientBindingCard` from `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/AncientBinding.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/AncientBinding.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1858,9 +1858,9 @@ case object AncientBinding extends PaidAction(AncientBindingCard.power):
 
 - [ ] **Step 5: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`, add `AncientBinding` to the first `Vector[PhasePower](...)`, after `TerrorSpells`.
+In `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`, add `AncientBinding` to the first `Vector[PhasePower](...)`, after `TerrorSpells`.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `AncientBindingCard` to the `gameplay.powers.action` import, after `AmberFlameCard`.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `AncientBindingCard` to the `gameplay.powers.action` import, after `AmberFlameCard`.
 
 - [ ] **Step 6: Run the suites, and the suites that hold Ancient Binding as filler**
 
@@ -1870,13 +1870,13 @@ Expected: PASS, 5 tests in `AncientBindingSuite`; the rest unchanged.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/SecretBurns.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/BookBurning.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/AncientBinding.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/AncientBindingSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/SecretBurns.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/BookBurning.scala \
+  src/main/scala/distantlands/gameplay/powers/action/AncientBinding.scala \
+  src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/action/AncientBindingSuite.scala
 git commit -m "feat(action): Ancient Binding burns every secret but each player's last"
 ```
 
@@ -1885,11 +1885,11 @@ git commit -m "feat(action): Ancient Binding burns every secret but each player'
 ### Task 6: Convoys
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Convoys.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (remove `ConvoysCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `ConvoysCard`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/ConvoysSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Convoys.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (remove `ConvoysCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `ConvoysCard`)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/ConvoysSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction`, `SearchSource.name`.
@@ -1897,7 +1897,7 @@ git commit -m "feat(action): Ancient Binding burns every secret but each player'
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/ConvoysSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/ConvoysSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1997,9 +1997,9 @@ Expected: compile failure, `Convoys` is not found.
 
 - [ ] **Step 3: Write Convoys**
 
-Remove `object ConvoysCard` from `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`. `SiteOnly` stays imported there: Spell Breaker, Way Station, Mounted Library and The Gathering use it.
+Remove `object ConvoysCard` from `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`. `SiteOnly` stays imported there: Spell Breaker, Way Station, Mounted Library and The Gathering use it.
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/Convoys.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/Convoys.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -2089,9 +2089,9 @@ case object Convoys extends PaidAction(ConvoysCard.power):
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`, add `Convoys` to the first `Vector[PhasePower](...)`, after `AncientBinding`.
+In `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`, add `Convoys` to the first `Vector[PhasePower](...)`, after `AncientBinding`.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `ConvoysCard` to the `gameplay.powers.action` import, after `ClayRattleCard`.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `ConvoysCard` to the `gameplay.powers.action` import, after `ClayRattleCard`.
 
 - [ ] **Step 5: Run the suites, and the suites that hold Convoys as filler**
 
@@ -2101,11 +2101,11 @@ Expected: PASS, 4 tests in `ConvoysSuite`; the rest unchanged.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/Convoys.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/ConvoysSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/Convoys.scala \
+  src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/action/ConvoysSuite.scala
 git commit -m "feat(action): Convoys puts another region's discard pile on the pawn's"
 ```
 
@@ -2114,11 +2114,11 @@ git commit -m "feat(action): Convoys puts another region's discard pile on the p
 ### Task 7: Singing Mask
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/SingingMask.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `SingingMaskCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `SingingMaskCard`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/SingingMaskSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/SingingMask.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `SingingMaskCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `SingingMaskCard`)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/SingingMaskSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction`, `SiteCards` (`private[action]`), `NoteSupport.bankPaid`, `PowerAnswers.amount`.
@@ -2126,7 +2126,7 @@ git commit -m "feat(action): Convoys puts another region's discard pile on the p
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/SingingMaskSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/SingingMaskSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -2240,9 +2240,9 @@ Expected: compile failure, `SingingMask` is not found.
 
 - [ ] **Step 3: Write Singing Mask**
 
-Remove `object SingingMaskCard` from `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala`.
+Remove `object SingingMaskCard` from `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/SingingMask.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/SingingMask.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -2418,9 +2418,9 @@ object SingingMask:
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`, append `++ Vector(SingingMask.forCatalog(catalog))` after `Vector(RovingTerror.forCatalog(catalog))`.
+In `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`, append `++ Vector(SingingMask.forCatalog(catalog))` after `Vector(RovingTerror.forCatalog(catalog))`.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `SingingMaskCard` to the `gameplay.powers.action` import, after `SiegeEnginesCard`.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `SingingMaskCard` to the `gameplay.powers.action` import, after `SiegeEnginesCard`.
 
 - [ ] **Step 5: Run the suites**
 
@@ -2430,11 +2430,11 @@ Expected: PASS, 5 tests in `SingingMaskSuite`.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/SingingMask.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/SingingMaskSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/SingingMask.scala \
+  src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingRelics.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/action/SingingMaskSuite.scala
 git commit -m "feat(action): Singing Mask moves favor between a bank and the People's Favor"
 ```
 
@@ -2443,13 +2443,13 @@ git commit -m "feat(action): Singing Mask moves favor between a bank and the Peo
 ### Task 8: Assassin
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Assassin.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala` (remove `AssassinCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `AssassinCard`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/AssassinSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Assassin.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala` (remove `AssassinCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `AssassinCard`)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/AssassinSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction`, `ContributingPower`, `HolderAdviserLimit` (`gameplay.powers.rest`), `CardPlay.nextRegion`.
@@ -2457,7 +2457,7 @@ git commit -m "feat(action): Singing Mask moves favor between a bank and the Peo
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/AssassinSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/AssassinSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -2587,9 +2587,9 @@ Expected: compile failure, `Assassin` is not found.
 
 - [ ] **Step 3: Write Assassin**
 
-Remove `object AssassinCard` from `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala`.
+Remove `object AssassinCard` from `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/Assassin.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/Assassin.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -2723,9 +2723,9 @@ object Assassin:
 
 - [ ] **Step 4: Register it and read its limit**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`, append `++ Vector(Assassin.forCatalog(catalog))` after `Vector(RelicThief.forCatalog(catalog))`.
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`, append `++ Vector(Assassin.forCatalog(catalog))` after `Vector(RelicThief.forCatalog(catalog))`.
 
-In `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala`:
+In `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala`:
 
 - Add `import oathdigital.gameplay.powers.action.Assassin` before the `rest` import.
 - Replace the body of `of` with:
@@ -2740,13 +2740,13 @@ In `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala`:
 
 - In the doc comment, the sentence that reads "which the [[oathdigital.gameplay.powers.rest.HolderAdviserLimit]] of Silver Tongue and of Insomnia narrows" (wrapped over two lines) becomes "... of Silver Tongue, of Insomnia and of Assassin narrows".
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`:
 
 - Add `import oathdigital.gameplay.powers.action.Assassin` before the `banner` import.
 - Add `Vector(Assassin.forCatalog(catalog)) ++` on the line after `Vector(Insomnia) ++`.
 - In the doc comment, change "Silver Tongue's and Insomnia's adviser limits are inert until Search walks `SearchPlayAdviser`." to "Silver Tongue's, Insomnia's and Assassin's adviser limits are inert until Search walks `SearchPlayAdviser`."
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `AssassinCard` to the `gameplay.powers.action` import, after `ArmedMobCard`.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `AssassinCard` to the `gameplay.powers.action` import, after `ArmedMobCard`.
 
 - [ ] **Step 5: Run the suites**
 
@@ -2756,13 +2756,13 @@ Expected: PASS, 6 tests in `AssassinSuite`; the rest unchanged.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/Assassin.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/AssassinSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/Assassin.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/action/AssassinSuite.scala
 git commit -m "feat(action): Assassin discards a faceup adviser at the site and limits its holder to two"
 ```
 

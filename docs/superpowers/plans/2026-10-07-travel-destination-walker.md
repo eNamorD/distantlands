@@ -49,14 +49,14 @@
 Persistence and threading for engine-derived start facts. No procedure declares any yet; Task 2's Travel is the first.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala:161-174`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala:95-111`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala:30-40,262-284`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala:99-155`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (`Entry`, accessors)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`startWalker`, `startTriggered`, the three `resumeWalker` callers, `walkerTransition`)
-- Test: `src/test/scala/oathdigital/serialization/WalkerDecisionWireSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/walker/WalkerStartFactsReplaySuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala:161-174`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala:95-111`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala:30-40,262-284`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala:99-155`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (`Entry`, accessors)
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`startWalker`, `startTriggered`, the three `resumeWalker` callers, `walkerTransition`)
+- Test: `src/test/scala/distantlands/serialization/WalkerDecisionWireSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/walker/WalkerStartFactsReplaySuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -86,7 +86,7 @@ Append to `WalkerDecisionWireSuite` after the test "a parked Travel round trips 
 
 Import `oathdigital.testkit.Unwrap.accepted` if the suite lacks it.
 
-Create `src/test/scala/oathdigital/gameplay/walker/WalkerStartFactsReplaySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/WalkerStartFactsReplaySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -248,14 +248,14 @@ Then run `./sbtw test`. Expected: PASS. Any other 5-field `WalkerParked` pattern
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala \
-  src/main/scala/oathdigital/serialization/WalkerEventCodec.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/test/scala/oathdigital/serialization/WalkerDecisionWireSuite.scala \
-  src/test/scala/oathdigital/gameplay/walker/WalkerStartFactsReplaySuite.scala
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala \
+  src/main/scala/distantlands/serialization/WalkerEventCodec.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/test/scala/distantlands/serialization/WalkerDecisionWireSuite.scala \
+  src/test/scala/distantlands/gameplay/walker/WalkerStartFactsReplaySuite.scala
 git commit -m "feat(walker): keep engine-derived start facts across a resume"
 ```
 
@@ -266,15 +266,15 @@ git commit -m "feat(walker): keep engine-derived start facts across a resume"
 The engine change breaks every test that starts a Travel with a site, so this task updates all of them. It ends with the whole server suite green. The frontend still sends the old start until Task 6; that is expected inside the branch.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala` (rewrite)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala:179-191`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala:24-28` (doc only)
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala:188-189`
-- Create: `src/test/scala/oathdigital/gameplay/TravelPlay.scala`
-- Create: `src/test/scala/oathdigital/application/TravelDestinationServiceSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/ParkedServiceFixture.scala` (add `startTravel`, `pickTravelDestination`)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala:73-81`
-- Modify: `src/test/scala/oathdigital/gameplay/TravelProcedureSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala` (rewrite)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala:179-191`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala:24-28` (doc only)
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala:188-189`
+- Create: `src/test/scala/distantlands/gameplay/TravelPlay.scala`
+- Create: `src/test/scala/distantlands/application/TravelDestinationServiceSuite.scala`
+- Modify: `src/test/scala/distantlands/application/ParkedServiceFixture.scala` (add `startTravel`, `pickTravelDestination`)
+- Modify: `src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala:73-81`
+- Modify: `src/test/scala/distantlands/gameplay/TravelProcedureSuite.scala`
 - Modify: every other test that starts a Travel with a site selection (Step 6 lists them)
 
 **Interfaces:**
@@ -288,7 +288,7 @@ The engine change breaks every test that starts a Travel with a site, so this ta
 
 - [ ] **Step 1: Write the test helper and the failing engine tests**
 
-Create `src/test/scala/oathdigital/gameplay/TravelPlay.scala`:
+Create `src/test/scala/distantlands/gameplay/TravelPlay.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -328,7 +328,7 @@ In `ParkedServiceFixture`, add (with `TravelProcedure` and `TravelPlay` imported
       TravelProcedure.destinationDecisionId, TravelPlay.destination(site)))
 ```
 
-Create `src/test/scala/oathdigital/application/TravelDestinationServiceSuite.scala`:
+Create `src/test/scala/distantlands/application/TravelDestinationServiceSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -651,7 +651,7 @@ Fix each with one rule: a Travel start no longer names a site; the site is the a
 - **Wire suites** (`server/GameHttpWireSuite`, `server/AuthenticatedGameRoutesSuite`, `shared/…/CommandProtocolSuite`) that only round-trip a `StartWalker` intent with start args keep their wire shape. Change only those that expect the command to be accepted.
 - **Undo, Redo and Game Log suites** that take back or log a Travel now see two command batches. Undo takes back the destination answer first; a test that expected one Undo to restore the pre-Travel table needs a second Undo, or asserts the parked destination decision after the first. Regenerate a changed golden log only when the only difference is the extra parked step and its narrated (absent) "Chose" line. Inspect each diff before accepting it.
 
-Files the grep found (spot-check; some only use the `"travel"` key and need no change): `application/{GameApplicationServiceActionsSuite, GameApplicationServiceProjectionSuite, GameApplicationServiceReopenSuite, JournalFoldSuite, JournalFoldRedoSuite, ParkedServiceFixture, RedoServiceSuite, UndoProjectionSuite, UndoServiceSuite}`, `application/gamelog/{GameLogPropertiesSuite, GameLogRareLinesSuite, GameLogRestoredSuite, GameLogRouteSuite, GameLogSectionSuite, GameLogTakenBackSuite, LogScripts}`, `gameplay/{CatacombsContributionSuite, NegotiationProcedureSuite, StateBasedEvaluationSuite}`, `gameplay/oathkeeper/OathkeeperProcedureSuite`, `gameplay/powers/cardplay/WildCrySuite`, `gameplay/powers/search/{AugurySuite, NewsFromAfarSuite}`, `gameplay/powers/title/ChaosCultSuite`, `gameplay/walker/WalkerProcedureRegistrySuite`, `serialization/WalkerDecisionWireSuite`, `server/{AuthenticatedGameRoutesSuite, GameHttpWireSuite, GameTrustBoundaryRoutesSuite, TrustedSeatRoutesSuite}`, `testkit/TableSuite`, all under `src/test/scala/oathdigital/`.
+Files the grep found (spot-check; some only use the `"travel"` key and need no change): `application/{GameApplicationServiceActionsSuite, GameApplicationServiceProjectionSuite, GameApplicationServiceReopenSuite, JournalFoldSuite, JournalFoldRedoSuite, ParkedServiceFixture, RedoServiceSuite, UndoProjectionSuite, UndoServiceSuite}`, `application/gamelog/{GameLogPropertiesSuite, GameLogRareLinesSuite, GameLogRestoredSuite, GameLogRouteSuite, GameLogSectionSuite, GameLogTakenBackSuite, LogScripts}`, `gameplay/{CatacombsContributionSuite, NegotiationProcedureSuite, StateBasedEvaluationSuite}`, `gameplay/oathkeeper/OathkeeperProcedureSuite`, `gameplay/powers/cardplay/WildCrySuite`, `gameplay/powers/search/{AugurySuite, NewsFromAfarSuite}`, `gameplay/powers/title/ChaosCultSuite`, `gameplay/walker/WalkerProcedureRegistrySuite`, `serialization/WalkerDecisionWireSuite`, `server/{AuthenticatedGameRoutesSuite, GameHttpWireSuite, GameTrustBoundaryRoutesSuite, TrustedSeatRoutesSuite}`, `testkit/TableSuite`, all under `src/test/scala/distantlands/`.
 
 Run `./sbtw test` again. Expected: PASS.
 
@@ -668,16 +668,16 @@ git commit -m "feat(travel): ask the destination inside the walker"
 ### Task 3: Badged destinations and the Travel control
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala` (`PreviewOutcome`, `previewParked`, `answer`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (`OptionPricing`, `Entry.optionPricing`, accessor, Travel entry)
-- Create: `src/main/scala/oathdigital/gameplay/actions/travel/TravelOptions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala` (add `startable`, delete `candidates`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (`playable`)
-- Modify: `src/main/scala/oathdigital/application/LegalActionProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala:189-263` (drop `walkerTargets`)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala` (`candidates`)
-- Modify: `src/test/scala/oathdigital/gameplay/TravelProcedureSuite.scala` (`simulate`)
-- Create: `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala` (`PreviewOutcome`, `previewParked`, `answer`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (`OptionPricing`, `Entry.optionPricing`, accessor, Travel entry)
+- Create: `src/main/scala/distantlands/gameplay/actions/travel/TravelOptions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala` (add `startable`, delete `candidates`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (`playable`)
+- Modify: `src/main/scala/distantlands/application/LegalActionProjector.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala:189-263` (drop `walkerTargets`)
+- Modify: `src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala` (`candidates`)
+- Modify: `src/test/scala/distantlands/gameplay/TravelProcedureSuite.scala` (`simulate`)
+- Create: `src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala`
 
 **Interfaces:**
 - Consumes (Task 2): `TravelProcedure.build`, `destinationDecisionId`.
@@ -691,7 +691,7 @@ git commit -m "feat(travel): ask the destination inside the walker"
 
 - [ ] **Step 1: Write the failing projection tests**
 
-Create `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`:
+Create `src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -864,7 +864,7 @@ Update `playable`'s doc with one sentence: "A procedure that prices its options 
 
 - [ ] **Step 5: Travel's pricing**
 
-Create `src/main/scala/oathdigital/gameplay/actions/travel/TravelOptions.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/travel/TravelOptions.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.travel
@@ -1025,16 +1025,16 @@ Expected: PASS. A projection test that read Travel's board targets now asserts t
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/actions/travel/TravelOptions.scala \
-  src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/application/LegalActionProjector.scala \
-  src/main/scala/oathdigital/application/GameApplicationService.scala \
-  src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala \
-  src/test/scala/oathdigital/gameplay/TravelProcedureSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/actions/travel/TravelOptions.scala \
+  src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/application/LegalActionProjector.scala \
+  src/main/scala/distantlands/application/GameApplicationService.scala \
+  src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala \
+  src/test/scala/distantlands/gameplay/TravelProcedureSuite.scala
 git commit -m "feat(travel): badge each destination with its cost, or say why not"
 ```
 
@@ -1045,13 +1045,13 @@ Stage any other test the step changed by explicit path too.
 ### Task 4: Way Station
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala:72-78` (remove `WayStationCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala:61-64` (import `WayStationCard` from `travel`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala:22-28`
-- Create: `src/test/scala/oathdigital/gameplay/powers/travel/WayStationSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala:72-78` (remove `WayStationCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala:61-64` (import `WayStationCard` from `travel`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala:22-28`
+- Create: `src/test/scala/distantlands/gameplay/powers/travel/WayStationSuite.scala`
+- Modify: `src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala`
 
 **Interfaces:**
 - Consumes: `TravelPlay`, `TravelFixture`, `TravelOptions.badge` (Task 3), `RulerToll` (`payment`, `note`, `keys`).
@@ -1302,13 +1302,13 @@ Expected: PASS. The card catalog suite also counts implemented cards; run `./sbt
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/WayStationSuite.scala \
-  src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/WayStationSuite.scala \
+  src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala
 git commit -m "feat(travel): Way Station spends no Supply for its ruler, or for a favor"
 ```
 
@@ -1317,12 +1317,12 @@ git commit -m "feat(travel): Way Station spends no Supply for its ruler, or for 
 ### Task 5: Hidden options explain themselves on hover only
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:300-315,426-462`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala:38-83,95-120`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala:144-219`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/VisionPlay.scala:31-38`
-- Modify: `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`
-- Modify: the suites that assert a hidden option's line: `application/CardPlayReasonsSuite`, `gameplay/CampaignPowersSuite`, `gameplay/powers/campaign/BagOfSiegeworksSuite`, `gameplay/powers/cardplay/{SacredGroundSuite, SecretPoliceSuite, VowOfObedienceSuite}`, `gameplay/powers/targeting/{CircletOfCommandSuite, ForgottenVaultSuite, FortressRulesSuite, LostTongueSuite, TargetingFixture}`, all under `src/test/scala/oathdigital/`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:300-315,426-462`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala:38-83,95-120`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala:144-219`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/VisionPlay.scala:31-38`
+- Modify: `src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala`
+- Modify: the suites that assert a hidden option's line: `application/CardPlayReasonsSuite`, `gameplay/CampaignPowersSuite`, `gameplay/powers/campaign/BagOfSiegeworksSuite`, `gameplay/powers/cardplay/{SacredGroundSuite, SecretPoliceSuite, VowOfObedienceSuite}`, `gameplay/powers/targeting/{CircletOfCommandSuite, ForgottenVaultSuite, FortressRulesSuite, LostTongueSuite, TargetingFixture}`, all under `src/test/scala/distantlands/`
 - Modify: `docs/superpowers/specs/2026-09-26-power-log-lines-design.md` (status note)
 
 **Interfaces:**
@@ -1444,19 +1444,19 @@ git commit -m "feat(walker): explain a hidden option on hover only, and Narrow P
 ### Task 6: Frontend — start Travel, badge sites, retire the board targets
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:166-190,256-272`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:165-220`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierFlow.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/SessionDrafts.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableControls.scala:19-29`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala` (`commandForSelection`, `candidateDetailBadge`, `candidateDetailText`, `actionLabel` and what only they use)
-- Delete: `frontend/src/main/scala/oathdigital/frontend/BoardTargetSelectionState.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:3-30` and its codec, the `GameProjection` DTO's `boardTargetActions`
-- Modify: `shared/src/main/scala/oathdigital/protocol/MajorActionPreviewProtocol.scala` (drop `PreviewTarget` and `targets`)
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala:96`, `LegalActionProjector.scala` (`LegalProjection.boardTargets`), `GameApplicationService.scala` (`MajorActionPreviewAccepted.targets`, `acceptPreview`'s `targets`), `server/GameRoutes.scala:97-128` (`MajorActionPreviewTargets.from`), `server/AuthenticatedGameRoutes.scala:98-102`, `server/TrustedGameGateway.scala:61-66`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:166-190,256-272`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:165-220`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierFlow.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/SessionDrafts.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableControls.scala:19-29`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala` (`commandForSelection`, `candidateDetailBadge`, `candidateDetailText`, `actionLabel` and what only they use)
+- Delete: `frontend/src/main/scala/distantlands/frontend/BoardTargetSelectionState.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:3-30` and its codec, the `GameProjection` DTO's `boardTargetActions`
+- Modify: `shared/src/main/scala/distantlands/protocol/MajorActionPreviewProtocol.scala` (drop `PreviewTarget` and `targets`)
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala:96`, `LegalActionProjector.scala` (`LegalProjection.boardTargets`), `GameApplicationService.scala` (`MajorActionPreviewAccepted.targets`, `acceptPreview`'s `targets`), `server/GameRoutes.scala:97-128` (`MajorActionPreviewTargets.from`), `server/AuthenticatedGameRoutes.scala:98-102`, `server/TrustedGameGateway.scala:61-66`
 - Modify and delete: the frontend and shared tests that exercise what is removed (Step 5 lists them)
-- Test: `frontend/src/test/scala/oathdigital/frontend/TravelLaunchSuite.scala` (create)
+- Test: `frontend/src/test/scala/distantlands/frontend/TravelLaunchSuite.scala` (create)
 
 **Interfaces:**
 - Consumes (Task 3): the `beginTravel` legal control; site options with `badge` and `reason`.
@@ -1464,7 +1464,7 @@ git commit -m "feat(walker): explain a hidden option on hover only, and Narrow P
 
 - [ ] **Step 1: Write the failing frontend tests**
 
-Create `frontend/src/test/scala/oathdigital/frontend/TravelLaunchSuite.scala`. It follows `FacedownAdviserPickSuite` (the launch) and `BoardOptionsRenderSuite` (the board):
+Create `frontend/src/test/scala/distantlands/frontend/TravelLaunchSuite.scala`. It follows `FacedownAdviserPickSuite` (the launch) and `BoardOptionsRenderSuite` (the board):
 
 ```scala
 package oathdigital.frontend

@@ -15,18 +15,18 @@
 - Every new power's `id` matches its catalog power id exactly: `edifice.e02.intact`, `edifice.e02.ruined`, `edifice.e06.intact`, `edifice.e06.ruined`, `edifice.e22.intact`, `edifice.e22.ruined` (already present in `docs/catalog/new-foundations-component-catalog.json`; no catalog data changes needed).
 - None of these six powers override `resolution` — they stay `ContributingPower`'s trait default, `PowerResolution.Automatic`. **Do not** call `CatalogResolution.of` for them: the catalog marks all six `"persistent": false`, which `CatalogResolution.of` maps to `PowerResolution.PlayerSelected` (a player-toggled modifier). These are mandatory, unconditional SETUP effects, not modifiers — the same category as `MountainSitePower`/`Dazzle`, which also never override `resolution`.
 - A power is inert (contributes nothing) whenever its edifice+side isn't actually on the board this game — a Homeland outside the first 8 Chronicle sites keeps its edifice in storage (spec, "The first-game generator"). Gate every power's `applicable` on the edifice actually being found at a site, never assume it is present.
-- Follow the existing file layout: one new package, `oathdigital.gameplay.powers.setup`, holding all production code for this slice; tests mirror it at `src/test/scala/oathdigital/gameplay/powers/setup/`.
+- Follow the existing file layout: one new package, `oathdigital.gameplay.powers.setup`, holding all production code for this slice; tests mirror it at `src/test/scala/distantlands/gameplay/powers/setup/`.
 
 ---
 
 ### Task 1: `WhenExplored` window, shared setup-power helpers, and a reusable walk driver
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala` (add `WhenExplored`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/setup/EdificeSetupSupport.scala`
-- Create: `src/test/scala/oathdigital/gameplay/setup/SetupWalkDriver.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/setup/SetupProcedureSuite.scala` (use the extracted driver)
-- Test: `src/test/scala/oathdigital/gameplay/powers/setup/EdificeSetupSupportSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala` (add `WhenExplored`)
+- Create: `src/main/scala/distantlands/gameplay/powers/setup/EdificeSetupSupport.scala`
+- Create: `src/test/scala/distantlands/gameplay/setup/SetupWalkDriver.scala`
+- Modify: `src/test/scala/distantlands/gameplay/setup/SetupProcedureSuite.scala` (use the extracted driver)
+- Test: `src/test/scala/distantlands/gameplay/powers/setup/EdificeSetupSupportSuite.scala`
 
 **Interfaces:**
 - Produces: `PowerWindow.WhenExplored` (an `OtherWindow`, key `"explore.when-explored"`), for Tasks 2-4 to name in their `contributions` maps.
@@ -35,7 +35,7 @@
 
 - [ ] **Step 1: Add the `WhenExplored` window**
 
-Open `src/main/scala/oathdigital/model/PowerWindow.scala` and add a case object next to `SetupEnd` (around line 192):
+Open `src/main/scala/distantlands/model/PowerWindow.scala` and add a case object next to `SetupEnd` (around line 192):
 
 ```scala
   /** Where an explored site's effects resolve, once an explore procedure
@@ -49,7 +49,7 @@ Open `src/main/scala/oathdigital/model/PowerWindow.scala` and add a case object 
 
 - [ ] **Step 2: Write the shared edifice/pawn-site helper**
 
-Create `src/main/scala/oathdigital/gameplay/powers/setup/EdificeSetupSupport.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/setup/EdificeSetupSupport.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.setup
@@ -92,7 +92,7 @@ object EdificeSetupSupport {
 
 - [ ] **Step 3: Write the helper's test**
 
-Create `src/test/scala/oathdigital/gameplay/powers/setup/EdificeSetupSupportSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/setup/EdificeSetupSupportSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.setup
@@ -129,7 +129,7 @@ Expected: both tests PASS (confirm `CardStaging.without` and the site/denizens u
 
 - [ ] **Step 4: Extract the walk driver out of `SetupProcedureSuite`**
 
-Create `src/test/scala/oathdigital/gameplay/setup/SetupWalkDriver.scala`:
+Create `src/test/scala/distantlands/gameplay/setup/SetupWalkDriver.scala`:
 
 ```scala
 package oathdigital.gameplay.setup
@@ -168,7 +168,7 @@ object SetupWalkDriver extends WalkerRecordedOpsReducer {
 
 - [ ] **Step 5: Point `SetupProcedureSuite` at the extracted driver**
 
-In `src/test/scala/oathdigital/gameplay/setup/SetupProcedureSuite.scala`, delete the private `driveToCompletion` method (lines 18-36) and its now-unused `WalkerRecordedOpsReducer`/`ProcedureWalker`/`WalkerOutcome` imports that only that method needed, then replace its one call site:
+In `src/test/scala/distantlands/gameplay/setup/SetupProcedureSuite.scala`, delete the private `driveToCompletion` method (lines 18-36) and its now-unused `WalkerRecordedOpsReducer`/`ProcedureWalker`/`WalkerOutcome` imports that only that method needed, then replace its one call site:
 
 ```scala
     val finished = SetupWalkDriver.driveToCompletion(ready, tree, WalkerPowers.empty)
@@ -182,11 +182,11 @@ Expected: PASS, same count as before this task (the driver's behavior is unchang
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala \
-  src/main/scala/oathdigital/gameplay/powers/setup/EdificeSetupSupport.scala \
-  src/test/scala/oathdigital/gameplay/powers/setup/EdificeSetupSupportSuite.scala \
-  src/test/scala/oathdigital/gameplay/setup/SetupWalkDriver.scala \
-  src/test/scala/oathdigital/gameplay/setup/SetupProcedureSuite.scala
+git add src/main/scala/distantlands/model/PowerWindow.scala \
+  src/main/scala/distantlands/gameplay/powers/setup/EdificeSetupSupport.scala \
+  src/test/scala/distantlands/gameplay/powers/setup/EdificeSetupSupportSuite.scala \
+  src/test/scala/distantlands/gameplay/setup/SetupWalkDriver.scala \
+  src/test/scala/distantlands/gameplay/setup/SetupProcedureSuite.scala
 git commit -m "$(cat <<'EOF'
 feat: add the WhenExplored window and slice-3 setup-power scaffolding
 
@@ -200,9 +200,9 @@ EOF
 ### Task 2: E02 Great Market / Bandit Market (`SetupEnd`)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/setup/GreatMarketRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` (register both faces)
-- Test: `src/test/scala/oathdigital/gameplay/powers/setup/GreatMarketRulesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/setup/GreatMarketRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` (register both faces)
+- Test: `src/test/scala/distantlands/gameplay/powers/setup/GreatMarketRulesSuite.scala`
 
 **Interfaces:**
 - Consumes: `EdificeSetupSupport.siteOf` (Task 1); `oathdigital.model.CoreOperations.{Move, Burn}`, `Location.FavorBank`/`Location.Site`, `SiteRule.ruler`, `SiteRuler.Bandits`, `catalog.suitOf` (all pre-existing).
@@ -212,7 +212,7 @@ EOF
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/setup/GreatMarketRulesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/setup/GreatMarketRulesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.setup
@@ -272,11 +272,11 @@ class GreatMarketRulesSuite extends munit.FunSuite {
 Run: `./sbtw "testOnly oathdigital.gameplay.powers.setup.GreatMarketRulesSuite"`
 Expected: FAIL (`GreatMarket`/`BanditMarket`/`SetupWalkDriver` in `oathdigital.gameplay.setup` not found -- fix the `SetupWalkDriver` import path if Task 1 placed it differently).
 
-> Before writing the assertion above, confirm `ready.banks` and its `favor: Map[Suit, Int]`-shaped (or similar) accessor exist with that exact name/shape by reading `ReadyGame`'s definition (`src/main/scala/oathdigital/model/*.scala`) -- adjust the two `startingBank`/`finished.banks.favor` lines to match whatever the real accessor is if it differs, keeping the intent: burning one favor of every suit from `banks.favor`, and Discord additionally losing one more to Bandit Market's own placement upkeep... re-derive `expected` directly from `startingBank` and the known operations instead of hand-deriving `-2`/`-1` if that's clearer once the real type is in hand.
+> Before writing the assertion above, confirm `ready.banks` and its `favor: Map[Suit, Int]`-shaped (or similar) accessor exist with that exact name/shape by reading `ReadyGame`'s definition (`src/main/scala/distantlands/model/*.scala`) -- adjust the two `startingBank`/`finished.banks.favor` lines to match whatever the real accessor is if it differs, keeping the intent: burning one favor of every suit from `banks.favor`, and Discord additionally losing one more to Bandit Market's own placement upkeep... re-derive `expected` directly from `startingBank` and the known operations instead of hand-deriving `-2`/`-1` if that's clearer once the real type is in hand.
 
 - [ ] **Step 3: Write the shared face base and both powers**
 
-Create `src/main/scala/oathdigital/gameplay/powers/setup/GreatMarketRules.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/setup/GreatMarketRules.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.setup
@@ -369,7 +369,7 @@ object BanditMarket {
 
 - [ ] **Step 4: Register both faces**
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, add the import and append both faces to `default`:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, add the import and append both faces to `default`:
 
 ```scala
 import oathdigital.gameplay.powers.setup.{BanditMarket, GreatMarket}
@@ -393,9 +393,9 @@ Expected: PASS -- confirms the new registrations don't perturb any other suite t
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/setup/GreatMarketRules.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/setup/GreatMarketRulesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/setup/GreatMarketRules.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/setup/GreatMarketRulesSuite.scala
 git commit -m "$(cat <<'EOF'
 feat: implement Great Market and Bandit Market (E02)
 
@@ -409,9 +409,9 @@ EOF
 ### Task 3: E06 Great Forge / Broken Forge (`SetupPawnPlaced`)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/setup/GreatForgeRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` (register both faces)
-- Test: `src/test/scala/oathdigital/gameplay/powers/setup/GreatForgeRulesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/setup/GreatForgeRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` (register both faces)
+- Test: `src/test/scala/distantlands/gameplay/powers/setup/GreatForgeRulesSuite.scala`
 
 **Interfaces:**
 - Consumes: `EdificeSetupSupport.siteOf`/`pawnPlacementSite` (Task 1); `oathdigital.gameplay.powers.RelicDraws.takeTop` (pre-existing, exact reuse for Great Forge); `Discard.Relic` (pre-existing).
@@ -419,7 +419,7 @@ EOF
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/setup/GreatForgeRulesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/setup/GreatForgeRulesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.setup
@@ -483,7 +483,7 @@ Expected: FAIL (`GreatForge`/`BrokenForge` not found). If the second test's `rel
 
 - [ ] **Step 3: Write both powers**
 
-Create `src/main/scala/oathdigital/gameplay/powers/setup/GreatForgeRules.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/setup/GreatForgeRules.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.setup
@@ -561,7 +561,7 @@ object BrokenForge {
 
 - [ ] **Step 4: Register both faces**
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`:
 
 ```scala
 import oathdigital.gameplay.powers.setup.{BanditMarket, BrokenForge, GreatForge, GreatMarket}
@@ -583,9 +583,9 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/setup/GreatForgeRules.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/setup/GreatForgeRulesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/setup/GreatForgeRules.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/setup/GreatForgeRulesSuite.scala
 git commit -m "$(cat <<'EOF'
 feat: implement Great Forge and Broken Forge (E06)
 
@@ -599,17 +599,17 @@ EOF
 ### Task 4: E22 Proving Grounds (`SetupPawnPlaced`) / Empty Grounds (`SetupEnd`)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` (register both faces)
-- Test: `src/test/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRulesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` (register both faces)
+- Test: `src/test/scala/distantlands/gameplay/powers/setup/ProvingGroundsRulesSuite.scala`
 
 **Interfaces:**
-- Consumes: `EdificeSetupSupport` (Task 1); `oathdigital.gameplay.powers.PlayerFacts.forceKind`, `Gain.Warbands`, `oathdigital.gameplay.actions.CardPlay.nextRegion`, `Discard.Denizen`/`Discard.RuinedEdifice`, `catalog.suitOf` (all pre-existing; the Empty Grounds shape directly mirrors `Dazzle`'s region-discard loop in `src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala`).
+- Consumes: `EdificeSetupSupport` (Task 1); `oathdigital.gameplay.powers.PlayerFacts.forceKind`, `Gain.Warbands`, `oathdigital.gameplay.actions.CardPlay.nextRegion`, `Discard.Denizen`/`Discard.RuinedEdifice`, `catalog.suitOf` (all pre-existing; the Empty Grounds shape directly mirrors `Dazzle`'s region-discard loop in `src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala`).
 - Produces: `ProvingGrounds.forCatalog`, `EmptyGrounds.forCatalog`.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRulesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/setup/ProvingGroundsRulesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.setup
@@ -679,7 +679,7 @@ Expected: FAIL (`ProvingGrounds`/`EmptyGrounds` not found). The second test's `r
 
 - [ ] **Step 3: Write both powers**
 
-Create `src/main/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRules.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.setup
@@ -787,7 +787,7 @@ object EmptyGrounds {
 
 - [ ] **Step 4: Register both faces**
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`:
 
 ```scala
 import oathdigital.gameplay.powers.setup.{BanditMarket, BrokenForge, EmptyGrounds, GreatForge, GreatMarket, ProvingGrounds}
@@ -810,9 +810,9 @@ Expected: PASS -- all six faces now registered together for the first time; this
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRules.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRulesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/setup/ProvingGroundsRulesSuite.scala
 git commit -m "$(cat <<'EOF'
 feat: implement Proving Grounds and Empty Grounds (E22)
 

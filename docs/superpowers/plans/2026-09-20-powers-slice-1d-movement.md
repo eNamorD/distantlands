@@ -48,12 +48,12 @@ Defaults used, decided with the user.
 
 ## File Structure
 
-- Modify `src/main/scala/oathdigital/gameplay/operations/OperationStateAdapter.scala`, `OperationValidator.scala` and `OperationStateMutation.scala` (Task 1).
-- Create `src/main/scala/oathdigital/gameplay/powers/action/PawnMoves.scala`: the pawn reads and writes shared by the three relics.
+- Modify `src/main/scala/distantlands/gameplay/operations/OperationStateAdapter.scala`, `OperationValidator.scala` and `OperationStateMutation.scala` (Task 1).
+- Create `src/main/scala/distantlands/gameplay/powers/action/PawnMoves.scala`: the pawn reads and writes shared by the three relics.
 - Create `.../action/Whistle.scala`, `MagicCarpet.scala`, `BrassHorse.scala` and `MovementPowers.scala`.
-- Modify `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala` (one added line).
-- Create test support `src/test/scala/oathdigital/gameplay/powers/action/MovementFixture.scala`, built on `TargetsFixture`.
-- Create `src/test/scala/oathdigital/gameplay/RevealDiscardSuite.scala` and, under `.../powers/action/`, `WhistleSuite.scala`, `MagicCarpetSuite.scala`, `BrassHorseSuite.scala`.
+- Modify `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala` (one added line).
+- Create test support `src/test/scala/distantlands/gameplay/powers/action/MovementFixture.scala`, built on `TargetsFixture`.
+- Create `src/test/scala/distantlands/gameplay/RevealDiscardSuite.scala` and, under `.../powers/action/`, `WhistleSuite.scala`, `MagicCarpetSuite.scala`, `BrassHorseSuite.scala`.
 - Modify the design's Slicing row and status line and the rulings appendix (Task 5).
 
 ---
@@ -61,10 +61,10 @@ Defaults used, decided with the user.
 ### Task 1: Accept `Reveal` of a regional discard
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateAdapter.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala`
-- Test: `src/test/scala/oathdigital/gameplay/RevealDiscardSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateAdapter.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationValidator.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala`
+- Test: `src/test/scala/distantlands/gameplay/RevealDiscardSuite.scala`
 
 **Interfaces:**
 - Produces `OperationStateAdapter.isDiscardLook(at: Location, orientation: Orientation): Boolean`, `private[operations]`. Both the validator and the mutation ask it, so the two cannot disagree.
@@ -72,7 +72,7 @@ Defaults used, decided with the user.
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/RevealDiscardSuite.scala`:
+`src/test/scala/distantlands/gameplay/RevealDiscardSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -183,12 +183,12 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 2: The movement kit and Whistle
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/PawnMoves.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Whistle.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/MovementPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/MovementFixture.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/WhistleSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/PawnMoves.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Whistle.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/MovementPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/MovementFixture.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/WhistleSuite.scala`
 
 **Interfaces:**
 - Consumes `PaidAction(idValue: String, cost: Cost)` from slice 1a, `PowerAnswers.one(pending, decision)` and `PowerAnswers.missing(decision)` from slice 1b, and `TargetsFixture` (`rules`, `withPawn`, `replayed`) from slice 1c.
@@ -200,7 +200,7 @@ Ruling: cost 1 secret placed on the Whistle. Choose another player whose pawn is
 
 - [ ] **Step 1: Write the test support**
 
-`src/test/scala/oathdigital/gameplay/powers/action/MovementFixture.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/MovementFixture.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -273,7 +273,7 @@ object MovementFixture {
 
 - [ ] **Step 2: Write the failing Whistle suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/WhistleSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/WhistleSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -359,7 +359,7 @@ Expected: FAIL to compile, `not found: value Whistle`.
 
 - [ ] **Step 4: Write `PawnMoves`, Whistle and the registration**
 
-`src/main/scala/oathdigital/gameplay/powers/action/PawnMoves.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/PawnMoves.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -388,7 +388,7 @@ object PawnMoves {
 }
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/action/Whistle.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/Whistle.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -443,7 +443,7 @@ case object Whistle extends PaidAction("relic.whistle", Cost(secret = 1)) {
 }
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/action/MovementPowers.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/MovementPowers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -487,10 +487,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 3: Magic Carpet
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/MagicCarpet.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/PawnMoves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/MovementPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/MagicCarpetSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/MagicCarpet.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/PawnMoves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/MovementPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/MagicCarpetSuite.scala`
 
 **Interfaces:**
 - Consumes `PawnMoves.pawnSite`, `atOtherSites` and the `MovementFixture` helpers from Task 2.
@@ -501,7 +501,7 @@ Ruling: no cost. Place your pawn at any site, including the current one, in whic
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/MagicCarpetSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/MagicCarpetSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -638,7 +638,7 @@ In `PawnMoves.scala`, add these members after `atOtherSites`:
     .toRight(PowerAnswers.missing(decisionId))
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/action/MagicCarpet.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/MagicCarpet.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -725,11 +725,11 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 4: Brass Horse
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/BrassHorse.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/PawnMoves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/MovementPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/MovementFixture.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/BrassHorseSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/BrassHorse.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/PawnMoves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/MovementPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/MovementFixture.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/BrassHorseSuite.scala`
 
 **Interfaces:**
 - Consumes `PawnMoves.pawnSite`, `siteChoice`, `relocate`, `chosenSite`, the `MovementFixture` helpers from Tasks 2 and 3, and `Reveal` at a regional discard from Task 1.
@@ -771,7 +771,7 @@ In `MovementFixture.scala`, insert these members before `def use(`:
 
 - [ ] **Step 2: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/BrassHorseSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/BrassHorseSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -903,7 +903,7 @@ In `PawnMoves.scala`, add this member before `atOtherSites`:
     ready.game.current.map.inPlay.filter(_ != site)
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/action/BrassHorse.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/BrassHorse.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action

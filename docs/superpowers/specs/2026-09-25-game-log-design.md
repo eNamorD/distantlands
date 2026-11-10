@@ -492,7 +492,7 @@ maintenance with a structure where knowledge cannot be left behind.
 > replaces; it is kept because the flat record was a deliberate choice at the
 > time, not an accident.
 
-The wire types live in `shared/src/main/scala/oathdigital/protocol/`, beside
+The wire types live in `shared/src/main/scala/distantlands/protocol/`, beside
 `GameProjectionDto`, so the server and the Scala.js client compile the same
 definitions.
 

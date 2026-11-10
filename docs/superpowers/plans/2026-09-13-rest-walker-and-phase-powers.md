@@ -44,39 +44,39 @@ The spec is binding. Implementation needs these changes to its letter; each is r
 
 | File | Responsibility | Tasks |
 |---|---|---|
-| `src/main/scala/oathdigital/model/Decisions.scala` | `FavorBank` ref and option, `DecisionOption.forRef`, `Distribute` query, `DistributeAnswer` | 1 |
-| `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala` | `Distribute` well-formedness and acceptance | 1 |
-| `src/main/scala/oathdigital/serialization/DecisionAnswerCodec.scala` | Journal spelling of `DistributeAnswer` | 1 |
-| `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` | `distribute` projection, `FavorBank` label, `UsePower` routing | 1, 2, 9 |
+| `src/main/scala/distantlands/model/Decisions.scala` | `FavorBank` ref and option, `DecisionOption.forRef`, `Distribute` query, `DistributeAnswer` | 1 |
+| `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala` | `Distribute` well-formedness and acceptance | 1 |
+| `src/main/scala/distantlands/serialization/DecisionAnswerCodec.scala` | Journal spelling of `DistributeAnswer` | 1 |
+| `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` | `distribute` projection, `FavorBank` label, `UsePower` routing | 1, 2, 9 |
 | `shared/.../protocol/projection/ActionProjectionDtos.scala`, `ActionProjectionCodec.scala` | Slot projection; `PhasePowerProjection` | 2, 11 |
 | `shared/.../protocol/CommandIntents.scala`, `CommandNestedCodecs.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala` | `DistributeWire`; `usePower` intent; Rest intent deletion | 2, 8, 11 |
-| `src/main/scala/oathdigital/application/GameIntentMapper.scala` | Distribute answer mapping; `usePower`; Rest intent deletion | 2, 8, 11 |
+| `src/main/scala/distantlands/application/GameIntentMapper.scala` | Distribute answer mapping; `usePower`; Rest intent deletion | 2, 8, 11 |
 | `frontend/.../DistributeDecisionState.scala`, `DistributePanelRenderer.scala` (new) | Pure stepper state, walker draft, Distribute panel | 3 |
 | `frontend/.../ServerUiSupport.scala`, `ServerModeUi.scala`, `ActionDecisionRenderer.scala` | Draft wiring; Rest renderer deletion; phase-power buttons | 3, 8, 12 |
 | `frontend/.../PhasePowerButtons.scala` (new) | Phase power buttons and the Finish Rest predicate | 12 |
-| `src/main/scala/oathdigital/model/GameState.scala` | `PowerSourceRef.Card` | 4 |
-| `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala`, `OperationStateMutation.scala`, `OperationError.scala` | `BeginTurn` | 4 |
-| `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` | `begin-turn`; card power source | 4 |
-| `src/main/scala/oathdigital/model/ProcedureRef.scala` | `BeginRest`, `FinishRest`, `UsePower` | 5, 9 |
-| `src/main/scala/oathdigital/gameplay/phases/rest/` (new) | `BeginRestProcedure`, `FinishRestProcedure`, `TurnBoundary`, `WarExhaustionRandomPort` | 5 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` | Rest and `UsePower` entries; optional fallback kind; phase powers | 5, 9 |
-| `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` | Rest continuation, turn boundary, auto-skip, `UsePower` routing | 5, 9 |
-| `src/main/scala/oathdigital/gameplay/OathRules.scala` | Turn boundary, legacy Rest removal, constructor, `handle` guard | 5, 7, 8, 9, 13 |
-| `src/main/scala/oathdigital/gameplay/model/GameProcedureProtocol.scala` | `AwaitingRestDecision`, `AwaitingPowerDecision` | 5, 8, 9 |
-| `src/main/scala/oathdigital/gameplay/phases/Rest.scala` | Delegates (5), trimmed (7), deleted (8) | 5, 7, 8 |
-| `src/main/scala/oathdigital/application/GameApplicationService.scala`, `LegalActionProjector.scala` | Rest routing and legal controls; `UsePower` command | 5, 7, 9, 11 |
-| `src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyContribution.scala` (new) | League Treaty as a `ContributingPower` | 6 |
-| `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` | Registers League Treaty and Silver Tongue | 6, 10 |
-| `src/main/scala/oathdigital/gameplay/powers/RestPowers.scala` | Reviewed handler inventory for League Treaty and Silver Tongue | 8, 10 |
-| `src/test/scala/oathdigital/application/ParkedServiceFixture.scala` (new) | Real service games parked on each of the four walker contexts | 7, 13 |
+| `src/main/scala/distantlands/model/GameState.scala` | `PowerSourceRef.Card` | 4 |
+| `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala`, `OperationStateMutation.scala`, `OperationError.scala` | `BeginTurn` | 4 |
+| `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` | `begin-turn`; card power source | 4 |
+| `src/main/scala/distantlands/model/ProcedureRef.scala` | `BeginRest`, `FinishRest`, `UsePower` | 5, 9 |
+| `src/main/scala/distantlands/gameplay/phases/rest/` (new) | `BeginRestProcedure`, `FinishRestProcedure`, `TurnBoundary`, `WarExhaustionRandomPort` | 5 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` | Rest and `UsePower` entries; optional fallback kind; phase powers | 5, 9 |
+| `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` | Rest continuation, turn boundary, auto-skip, `UsePower` routing | 5, 9 |
+| `src/main/scala/distantlands/gameplay/OathRules.scala` | Turn boundary, legacy Rest removal, constructor, `handle` guard | 5, 7, 8, 9, 13 |
+| `src/main/scala/distantlands/gameplay/model/GameProcedureProtocol.scala` | `AwaitingRestDecision`, `AwaitingPowerDecision` | 5, 8, 9 |
+| `src/main/scala/distantlands/gameplay/phases/Rest.scala` | Delegates (5), trimmed (7), deleted (8) | 5, 7, 8 |
+| `src/main/scala/distantlands/application/GameApplicationService.scala`, `LegalActionProjector.scala` | Rest routing and legal controls; `UsePower` command | 5, 7, 9, 11 |
+| `src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyContribution.scala` (new) | League Treaty as a `ContributingPower` | 6 |
+| `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` | Registers League Treaty and Silver Tongue | 6, 10 |
+| `src/main/scala/distantlands/gameplay/powers/RestPowers.scala` | Reviewed handler inventory for League Treaty and Silver Tongue | 8, 10 |
+| `src/test/scala/distantlands/application/ParkedServiceFixture.scala` (new) | Real service games parked on each of the four walker contexts | 7, 13 |
 | Legacy Rest seam (deleted) | `Rest.scala`, `RestPowerIntegration`, `RestPowerHandler`, `LeagueTreatyPower`, events, codecs, commands, projections | 8 |
-| `src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala`, `gameplay/powers/PowerSupport.scala` | One access rule for reviewed and phase powers | 9 |
-| `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala` (new) | `PhasePower`, `PhasePowers` | 9 |
-| `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala` (new) | Sources (with ruled sites), usability, tree | 9 |
-| `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala` (new) | Production phase powers | 9, 10 |
-| `src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala` (new) | Silver Tongue | 10 |
-| `src/main/scala/oathdigital/application/PhasePowerProjector.scala` (new) | `phasePowers` projection and `usePower` controls | 11 |
-| `src/test/scala/oathdigital/application/PendingWalkerInvariantSuite.scala`, `src/test/scala/oathdigital/gameplay/PendingWalkerRulesSuite.scala` (new) | The invariant, per layer | 13 |
+| `src/main/scala/distantlands/gameplay/RuleSourceIndex.scala`, `gameplay/powers/PowerSupport.scala` | One access rule for reviewed and phase powers | 9 |
+| `src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala` (new) | `PhasePower`, `PhasePowers` | 9 |
+| `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala` (new) | Sources (with ruled sites), usability, tree | 9 |
+| `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala` (new) | Production phase powers | 9, 10 |
+| `src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala` (new) | Silver Tongue | 10 |
+| `src/main/scala/distantlands/application/PhasePowerProjector.scala` (new) | `phasePowers` projection and `usePower` controls | 11 |
+| `src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala`, `src/test/scala/distantlands/gameplay/PendingWalkerRulesSuite.scala` (new) | The invariant, per layer | 13 |
 | `docs/superpowers/specs/2026-09-12-walker-ownership-and-phases-design.md` | Superseded statements corrected | 14 |
 
 ---
@@ -84,11 +84,11 @@ The spec is binding. Implementation needs these changes to its letter; each is r
 ### Task 1: Distribute vocabulary, validation and journal
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala`
-- Modify: `src/main/scala/oathdigital/serialization/DecisionAnswerCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:90-93,161-170,189-214`
-- Test: `src/test/scala/oathdigital/gameplay/walker/DecisionQuerySuite.scala`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala`
+- Modify: `src/main/scala/distantlands/serialization/DecisionAnswerCodec.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:90-93,161-170,189-214`
+- Test: `src/test/scala/distantlands/gameplay/walker/DecisionQuerySuite.scala`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing new.
@@ -444,7 +444,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add src/main/scala/oathdigital/model/Decisions.scala src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala src/main/scala/oathdigital/serialization/DecisionAnswerCodec.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/test/scala/oathdigital/gameplay/walker/DecisionQuerySuite.scala src/test/scala/oathdigital/serialization/GameEventWireSuite.scala
+git add src/main/scala/distantlands/model/Decisions.scala src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala src/main/scala/distantlands/serialization/DecisionAnswerCodec.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/test/scala/distantlands/gameplay/walker/DecisionQuerySuite.scala src/test/scala/distantlands/serialization/GameEventWireSuite.scala
 git commit -m "feat(walker): add the Distribute decision and favor-bank options
 
 Distribute spreads an exact total across bounded slots, and is the first
@@ -458,13 +458,13 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 2: Distribute on the command wire and in the projection
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala` (`DecisionAnswerWire`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandNestedCodecs.scala:79-110`
-- Modify: `src/main/scala/oathdigital/application/GameIntentMapper.scala:190-202`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:126`, `ActionProjectionCodec.scala:212-246`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (the Task 1 `Distribute` arm)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/package.scala:83` (alias)
-- Test: `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala`, `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`, `src/test/scala/oathdigital/server/GameHttpWireSuite.scala:78-96`, `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala` (`DecisionAnswerWire`)
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandNestedCodecs.scala:79-110`
+- Modify: `src/main/scala/distantlands/application/GameIntentMapper.scala:190-202`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:126`, `ActionProjectionCodec.scala:212-246`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (the Task 1 `Distribute` arm)
+- Modify: `frontend/src/main/scala/distantlands/frontend/package.scala:83` (alias)
+- Test: `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`, `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`, `src/test/scala/distantlands/server/GameHttpWireSuite.scala:78-96`, `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`
 
 **Interfaces:**
 - Consumes: `DistributeSlot`, `DecisionQuery.Distribute`, `DistributeAmount`, `DecisionAnswer.DistributeAnswer`, `DecisionOption.forRef` (Task 1).
@@ -745,7 +745,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/CommandIntents.scala shared/src/main/scala/oathdigital/protocol/CommandNestedCodecs.scala src/main/scala/oathdigital/application/GameIntentMapper.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala frontend/src/main/scala/oathdigital/frontend/package.scala shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala src/test/scala/oathdigital/server/GameHttpWireSuite.scala src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala
+git add shared/src/main/scala/distantlands/protocol/CommandIntents.scala shared/src/main/scala/distantlands/protocol/CommandNestedCodecs.scala src/main/scala/distantlands/application/GameIntentMapper.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala frontend/src/main/scala/distantlands/frontend/package.scala shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala src/test/scala/distantlands/server/GameHttpWireSuite.scala src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala
 git commit -m "feat(protocol): carry Distribute answers and project Distribute queries
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
@@ -756,14 +756,14 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 3: Distribute panel with Shift+click fill and drain
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/DistributeDecisionState.scala`
-- Create: `frontend/src/main/scala/oathdigital/frontend/DistributePanelRenderer.scala`
-- Create: `frontend/src/test/scala/oathdigital/frontend/RecordingServerUiView.scala` (moved out of `PartitionPanelRenderSuite`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:18-19` (trait members)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala:99-102,392-393`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:343-345`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/PartitionPanelRenderSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/DistributeDecisionStateSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/DistributePanelRenderSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/DistributeDecisionState.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/DistributePanelRenderer.scala`
+- Create: `frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala` (moved out of `PartitionPanelRenderSuite`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:18-19` (trait members)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala:99-102,392-393`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:343-345`
+- Modify: `frontend/src/test/scala/distantlands/frontend/PartitionPanelRenderSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/DistributeDecisionStateSuite.scala`, `frontend/src/test/scala/distantlands/frontend/DistributePanelRenderSuite.scala`
 
 **Interfaces:**
 - Consumes: `DecisionQueryState` with `form == "distribute"`, `slots: Vector[DecisionSlotState]` and `total: Option[Int]` (Task 2); `DecisionAnswerWire.DistributeWire` and `DistributeAmountWire` (Task 2); `WalkerPartitionDraft.itemId`.
@@ -981,7 +981,7 @@ import oathdigital.protocol.{DecisionAnswerWire, DecisionPlacementWire,
   GameIntent => Intent}
 ```
 
-Create `frontend/src/test/scala/oathdigital/frontend/RecordingServerUiView.scala` with exactly:
+Create `frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala` with exactly:
 
 ```scala
 package oathdigital.frontend
@@ -1269,7 +1269,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/DistributeDecisionState.scala frontend/src/main/scala/oathdigital/frontend/DistributePanelRenderer.scala frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala frontend/src/test/scala/oathdigital/frontend/RecordingServerUiView.scala frontend/src/test/scala/oathdigital/frontend/PartitionPanelRenderSuite.scala frontend/src/test/scala/oathdigital/frontend/DistributeDecisionStateSuite.scala frontend/src/test/scala/oathdigital/frontend/DistributePanelRenderSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/DistributeDecisionState.scala frontend/src/main/scala/distantlands/frontend/DistributePanelRenderer.scala frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala frontend/src/test/scala/distantlands/frontend/PartitionPanelRenderSuite.scala frontend/src/test/scala/distantlands/frontend/DistributeDecisionStateSuite.scala frontend/src/test/scala/distantlands/frontend/DistributePanelRenderSuite.scala
 git commit -m "feat(frontend): render Distribute decisions with Shift+click steppers
 
 A pure DistributeDecisionState clamps every step to its slot's bounds and
@@ -1283,12 +1283,12 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 4: `BeginTurn` and card power sources
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`PowerSourceRef`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala:503` (after `SetOathkeeper`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala:305-337`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationError.scala:112` (after `PhaseAlreadyEntered`)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala:48-60,205-225`
-- Test: `src/test/scala/oathdigital/gameplay/operations/OperationStateMutationSuite.scala`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala:526-607`
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`PowerSourceRef`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala:503` (after `SetOathkeeper`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala:305-337`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationError.scala:112` (after `PhaseAlreadyEntered`)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala:48-60,205-225`
+- Test: `src/test/scala/distantlands/gameplay/operations/OperationStateMutationSuite.scala`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala:526-607`
 
 **Interfaces:**
 - Consumes: nothing new.
@@ -1480,7 +1480,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala src/main/scala/oathdigital/gameplay/operations/OperationError.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/test/scala/oathdigital/gameplay/operations/OperationStateMutationSuite.scala src/test/scala/oathdigital/serialization/GameEventWireSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/gameplay/operations/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala src/main/scala/distantlands/gameplay/operations/OperationError.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/gameplay/operations/OperationStateMutationSuite.scala src/test/scala/distantlands/serialization/GameEventWireSuite.scala
 git commit -m "feat(walker): add BeginTurn and card power sources
 
 BeginTurn hands the turn over with its used powers cleared, and a
@@ -1496,15 +1496,15 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 This task adds walker Begin Rest and Finish Rest beside the legacy commands. Production still routes `beginRest` and `finishRest` to the legacy handlers, so legacy League Treaty stays reachable until Task 7 switches both at once (Correction 10).
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala` (`BeginRest`, `FinishRest`)
-- Create: `src/main/scala/oathdigital/gameplay/phases/rest/WarExhaustionRandomPort.scala`, `BeginRestProcedure.scala`, `FinishRestProcedure.scala`, `TurnBoundary.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/Rest.scala` (delegate to the new objects)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala:49-75,330-395`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala:11-12,36-45`
-- Modify: `src/main/scala/oathdigital/gameplay/model/GameProcedureProtocol.scala` (`AwaitingRestDecision`)
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala:17,84`, `src/main/scala/oathdigital/application/LegalActionProjector.scala:13,127`
-- Test: `src/test/scala/oathdigital/gameplay/RestWalkerSuite.scala` (new), `src/test/scala/oathdigital/gameplay/walker/WalkerProcedureRegistrySuite.scala`, `src/test/scala/oathdigital/gameplay/RestSuite.scala:3-4,362`, `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala:575,605`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala` (`BeginRest`, `FinishRest`)
+- Create: `src/main/scala/distantlands/gameplay/phases/rest/WarExhaustionRandomPort.scala`, `BeginRestProcedure.scala`, `FinishRestProcedure.scala`, `TurnBoundary.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/Rest.scala` (delegate to the new objects)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala:49-75,330-395`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala:11-12,36-45`
+- Modify: `src/main/scala/distantlands/gameplay/model/GameProcedureProtocol.scala` (`AwaitingRestDecision`)
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala:17,84`, `src/main/scala/distantlands/application/LegalActionProjector.scala:13,127`
+- Test: `src/test/scala/distantlands/gameplay/RestWalkerSuite.scala` (new), `src/test/scala/distantlands/gameplay/walker/WalkerProcedureRegistrySuite.scala`, `src/test/scala/distantlands/gameplay/RestSuite.scala:3-4,362`, `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala:575,605`
 
 **Interfaces:**
 - Consumes: `BeginTurn(player, phase)` (Task 4).
@@ -1520,7 +1520,7 @@ This task adds walker Begin Rest and Finish Rest beside the legacy commands. Pro
 
 - [x] **Step 1: Write the failing walker Rest suite**
 
-`src/test/scala/oathdigital/gameplay/RestWalkerSuite.scala`:
+`src/test/scala/distantlands/gameplay/RestWalkerSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -2072,7 +2072,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add src/main/scala/oathdigital/model/ProcedureRef.scala src/main/scala/oathdigital/gameplay/phases/rest/WarExhaustionRandomPort.scala src/main/scala/oathdigital/gameplay/phases/rest/BeginRestProcedure.scala src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala src/main/scala/oathdigital/gameplay/phases/rest/TurnBoundary.scala src/main/scala/oathdigital/gameplay/phases/Rest.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/gameplay/OathRulesWalker.scala src/main/scala/oathdigital/gameplay/OathRules.scala src/main/scala/oathdigital/gameplay/model/GameProcedureProtocol.scala src/main/scala/oathdigital/application/GameApplicationService.scala src/main/scala/oathdigital/application/LegalActionProjector.scala src/test/scala/oathdigital/gameplay/RestWalkerSuite.scala src/test/scala/oathdigital/gameplay/walker/WalkerProcedureRegistrySuite.scala src/test/scala/oathdigital/gameplay/RestSuite.scala src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala
+git add src/main/scala/distantlands/model/ProcedureRef.scala src/main/scala/distantlands/gameplay/phases/rest/WarExhaustionRandomPort.scala src/main/scala/distantlands/gameplay/phases/rest/BeginRestProcedure.scala src/main/scala/distantlands/gameplay/phases/rest/FinishRestProcedure.scala src/main/scala/distantlands/gameplay/phases/rest/TurnBoundary.scala src/main/scala/distantlands/gameplay/phases/Rest.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/gameplay/OathRulesWalker.scala src/main/scala/distantlands/gameplay/OathRules.scala src/main/scala/distantlands/gameplay/model/GameProcedureProtocol.scala src/main/scala/distantlands/application/GameApplicationService.scala src/main/scala/distantlands/application/LegalActionProjector.scala src/test/scala/distantlands/gameplay/RestWalkerSuite.scala src/test/scala/distantlands/gameplay/walker/WalkerProcedureRegistrySuite.scala src/test/scala/distantlands/gameplay/RestSuite.scala src/test/scala/distantlands/application/GameApplicationServiceSuite.scala
 git commit -m "feat(rest): add Begin Rest and Finish Rest walker procedures
 
 Begin Rest enters the Rest phase and, with no usable REST power, finishes
@@ -2088,11 +2088,11 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 6: League Treaty as a walker power
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyContribution.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/RestCleanup.scala` (widen `suitOf`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/rest/LeagueTreatyFixture.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/rest/LeagueTreatySuite.scala` (new)
+- Create: `src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyContribution.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/RestCleanup.scala` (widen `suitOf`)
+- Create: `src/test/scala/distantlands/gameplay/powers/rest/LeagueTreatyFixture.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/rest/LeagueTreatySuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `DecisionOptionRef.FavorBank`, `DecisionOption.FavorBank`, `DistributeSlot`, `DecisionQuery.Distribute`, `DistributeAmount`, `DecisionAnswer.DistributeAnswer` (Task 1); `PhaseTransitionRef.BeginRest`, `FinishRestProcedure`'s `RestReturnFavor` window, `OathContinue.AwaitingRestDecision` (Task 5).
@@ -2100,7 +2100,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 - [x] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/rest/LeagueTreatyFixture.scala`:
+`src/test/scala/distantlands/gameplay/powers/rest/LeagueTreatyFixture.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.rest
@@ -2474,7 +2474,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green. Production commands still route to legacy Rest until Task 7, so in this commit only `startWalker` reaches the new power and legacy League Treaty keeps serving production.
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyContribution.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/oathdigital/gameplay/phases/RestCleanup.scala src/test/scala/oathdigital/gameplay/powers/rest/LeagueTreatyFixture.scala src/test/scala/oathdigital/gameplay/powers/rest/LeagueTreatySuite.scala
+git add src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyContribution.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/distantlands/gameplay/phases/RestCleanup.scala src/test/scala/distantlands/gameplay/powers/rest/LeagueTreatyFixture.scala src/test/scala/distantlands/gameplay/powers/rest/LeagueTreatySuite.scala
 git commit -m "feat(rest): fold League Treaty into Finish Rest as a walker power
 
 The treaty site's ruler picks a destination bank or declines, then
@@ -2491,12 +2491,12 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 This is the switch. After this commit `beginRest` and `finishRest` run only the walker procedures, and League Treaty is reached through `LeagueTreatyContribution` (Task 6). No commit on the branch leaves League Treaty unreachable (Correction 10).
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala:486-490`
-- Modify: `src/main/scala/oathdigital/application/LegalActionProjector.scala:158`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala:168-183,244-246`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/Rest.scala` (trim to legacy League Treaty resolve and decline)
-- Create: `src/test/scala/oathdigital/application/ParkedServiceFixture.scala`
-- Test: `src/test/scala/oathdigital/gameplay/RestSuite.scala`, `src/test/scala/oathdigital/gameplay/RestWalkerSuite.scala`, `src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala:8,136-161`, `src/test/scala/oathdigital/application/ForgeWalkerFixture.scala:114-126`, `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala:601-603,1570-1591,1990-1998`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala:486-490`
+- Modify: `src/main/scala/distantlands/application/LegalActionProjector.scala:158`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala:168-183,244-246`
+- Modify: `src/main/scala/distantlands/gameplay/phases/Rest.scala` (trim to legacy League Treaty resolve and decline)
+- Create: `src/test/scala/distantlands/application/ParkedServiceFixture.scala`
+- Test: `src/test/scala/distantlands/gameplay/RestSuite.scala`, `src/test/scala/distantlands/gameplay/RestWalkerSuite.scala`, `src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala:8,136-161`, `src/test/scala/distantlands/application/ForgeWalkerFixture.scala:114-126`, `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala:601-603,1570-1591,1990-1998`
 
 **Interfaces:**
 - Consumes: `PhaseTransitionRef.BeginRest`/`FinishRest`, `FinishRestProcedure.gate` (Task 5); `LeagueTreatyContribution` and `WalkerPowerCatalog.default` registering it (Task 6).
@@ -2507,7 +2507,7 @@ This is the switch. After this commit `beginRest` and `finishRest` run only the 
 
 - [x] **Step 1: Write the service fixture**
 
-`src/test/scala/oathdigital/application/ParkedServiceFixture.scala`:
+`src/test/scala/distantlands/application/ParkedServiceFixture.scala`:
 
 ```scala
 package oathdigital.application
@@ -2830,7 +2830,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add src/main/scala/oathdigital/application/GameApplicationService.scala src/main/scala/oathdigital/application/LegalActionProjector.scala src/main/scala/oathdigital/gameplay/OathRules.scala src/main/scala/oathdigital/gameplay/phases/Rest.scala src/test/scala/oathdigital/application/ParkedServiceFixture.scala src/test/scala/oathdigital/gameplay/RestSuite.scala src/test/scala/oathdigital/gameplay/RestWalkerSuite.scala src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala src/test/scala/oathdigital/application/ForgeWalkerFixture.scala src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala
+git add src/main/scala/distantlands/application/GameApplicationService.scala src/main/scala/distantlands/application/LegalActionProjector.scala src/main/scala/distantlands/gameplay/OathRules.scala src/main/scala/distantlands/gameplay/phases/Rest.scala src/test/scala/distantlands/application/ParkedServiceFixture.scala src/test/scala/distantlands/gameplay/RestSuite.scala src/test/scala/distantlands/gameplay/RestWalkerSuite.scala src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala src/test/scala/distantlands/application/ForgeWalkerFixture.scala src/test/scala/distantlands/application/GameApplicationServiceSuite.scala
 git commit -m "feat(rest): route Begin Rest and Finish Rest to the walker
 
 Rest commands now run only the walker procedures, and League Treaty's
@@ -2847,7 +2847,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 This task deletes code and adds no behavior. Its test is the grep in Step 6, plus the full gate.
 
 **Files:**
-- Delete: `src/main/scala/oathdigital/gameplay/phases/Rest.scala`, `src/main/scala/oathdigital/gameplay/powers/rest/RestPowerIntegration.scala`, `RestPowerHandler.scala`, `LeagueTreatyPower.scala`, `frontend/src/main/scala/oathdigital/frontend/RestPowerDecisionRenderer.scala`
+- Delete: `src/main/scala/distantlands/gameplay/phases/Rest.scala`, `src/main/scala/distantlands/gameplay/powers/rest/RestPowerIntegration.scala`, `RestPowerHandler.scala`, `LeagueTreatyPower.scala`, `frontend/src/main/scala/distantlands/frontend/RestPowerDecisionRenderer.scala`
 - Modify (backend): `gameplay/OathRules.scala`, `gameplay/powers/RestPowers.scala`, `gameplay/model/GameProcedureProtocol.scala`, `gameplay/model/GameEventProtocol.scala`, `gameplay/model/GameViolation.scala`, `gameplay/setup/FirstGameSetup.scala:248-249`, `model/PendingProcedures.scala:42-126,354-369`, `serialization/GameEventWire.scala:38-43`, `serialization/LifecycleEventCodec.scala`, `application/GameCommands.scala:98-101`, `application/Authorization.scala:72-77`, `application/GameIntentMapper.scala`, `application/GameApplicationService.scala:491-495`, `application/PendingProcedureProjector.scala`, `application/ScopedProjectionContext.scala:36-37`, `application/GameProjection.scala:156-157`
 - Modify (shared): `protocol/CommandIntents.scala:13,16,90-91`, `CommandIntentCodec.scala:12-16,69`, `CommandIntentDecoders.scala:12-27,170-176`, `projection/GameProjectionDto.scala:40-41`, `projection/GameProjectionCodec.scala:21,95-96,158-159,166,169-206`, `projection/ActionProjectionDtos.scala:283-291`
 - Modify (frontend): `ActionDecisionRenderer.scala:563-567`, `ServerUiSupport.scala:319-326`, `package.scala:132-137`
@@ -2862,7 +2862,7 @@ This task deletes code and adds no behavior. Its test is the grep in Step 6, plu
 - Delete the four backend files:
 
 ```bash
-git rm src/main/scala/oathdigital/gameplay/phases/Rest.scala src/main/scala/oathdigital/gameplay/powers/rest/RestPowerIntegration.scala src/main/scala/oathdigital/gameplay/powers/rest/RestPowerHandler.scala src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyPower.scala
+git rm src/main/scala/distantlands/gameplay/phases/Rest.scala src/main/scala/distantlands/gameplay/powers/rest/RestPowerIntegration.scala src/main/scala/distantlands/gameplay/powers/rest/RestPowerHandler.scala src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyPower.scala
 ```
 
 - `OathRules`: delete `handle(state, command: RestCommand)`, the `RestPowerEvent`/`RestStarted`/`RestCompleted` evolve arms and the `phases.{Rest, RestCommand}` import.
@@ -2889,7 +2889,7 @@ git rm src/main/scala/oathdigital/gameplay/phases/Rest.scala src/main/scala/oath
 
 - [x] **Step 4: Delete the frontend branches**
 
-- `git rm frontend/src/main/scala/oathdigital/frontend/RestPowerDecisionRenderer.scala`.
+- `git rm frontend/src/main/scala/distantlands/frontend/RestPowerDecisionRenderer.scala`.
 - `ActionDecisionRenderer`: delete the `value.restPower...foreach` block. `ServerUiSupport`: delete the `restPower`/`restPowerWaiting` branches. `package.scala`: delete `RestFavorSourceState`, `RestPowerState` and `LeagueTreatyState`.
 - Tests: delete the two Rest power helpers in `ProtocolTestCommands`, the resolve/decline encoding assertions in `HttpGameClientSuite:184-198` (keep the Begin/Finish Rest encoding), and the "Rest power owner controls the off-turn choice..." test in `ServerModeUiSuite:611-630`.
 
@@ -2913,7 +2913,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green. Neither fingerprint changes: `ReviewedPowerCatalog.AuditedCatalogFingerprint` and the Rest handler inventory both hash the catalog, not the Scala `Power` objects. Dropping `LeagueTreatyPower` from `RestPowers` follows Catacombs, which left `RecoverPowers` the same way and stays audited through `CatalogHandlerInventory.handlerIds`.
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/OathRules.scala src/main/scala/oathdigital/gameplay/powers/RestPowers.scala src/main/scala/oathdigital/gameplay/model/GameProcedureProtocol.scala src/main/scala/oathdigital/gameplay/model/GameEventProtocol.scala src/main/scala/oathdigital/gameplay/model/GameViolation.scala src/main/scala/oathdigital/gameplay/setup/FirstGameSetup.scala src/main/scala/oathdigital/model/PendingProcedures.scala src/main/scala/oathdigital/serialization/GameEventWire.scala src/main/scala/oathdigital/serialization/LifecycleEventCodec.scala src/main/scala/oathdigital/application/GameCommands.scala src/main/scala/oathdigital/application/Authorization.scala src/main/scala/oathdigital/application/GameIntentMapper.scala src/main/scala/oathdigital/application/GameApplicationService.scala src/main/scala/oathdigital/application/PendingProcedureProjector.scala src/main/scala/oathdigital/application/ScopedProjectionContext.scala src/main/scala/oathdigital/application/GameProjection.scala shared/src/main/scala/oathdigital/protocol/CommandIntents.scala shared/src/main/scala/oathdigital/protocol/CommandIntentCodec.scala shared/src/main/scala/oathdigital/protocol/CommandIntentDecoders.scala shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala frontend/src/main/scala/oathdigital/frontend/package.scala src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala src/test/scala/oathdigital/serialization/GameEventWireSuite.scala src/test/scala/oathdigital/server/GameHttpWireSuite.scala shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala frontend/src/test/scala/oathdigital/frontend/ProtocolTestCommands.scala frontend/src/test/scala/oathdigital/frontend/HttpGameClientSuite.scala frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala
+git add src/main/scala/distantlands/gameplay/OathRules.scala src/main/scala/distantlands/gameplay/powers/RestPowers.scala src/main/scala/distantlands/gameplay/model/GameProcedureProtocol.scala src/main/scala/distantlands/gameplay/model/GameEventProtocol.scala src/main/scala/distantlands/gameplay/model/GameViolation.scala src/main/scala/distantlands/gameplay/setup/FirstGameSetup.scala src/main/scala/distantlands/model/PendingProcedures.scala src/main/scala/distantlands/serialization/GameEventWire.scala src/main/scala/distantlands/serialization/LifecycleEventCodec.scala src/main/scala/distantlands/application/GameCommands.scala src/main/scala/distantlands/application/Authorization.scala src/main/scala/distantlands/application/GameIntentMapper.scala src/main/scala/distantlands/application/GameApplicationService.scala src/main/scala/distantlands/application/PendingProcedureProjector.scala src/main/scala/distantlands/application/ScopedProjectionContext.scala src/main/scala/distantlands/application/GameProjection.scala shared/src/main/scala/distantlands/protocol/CommandIntents.scala shared/src/main/scala/distantlands/protocol/CommandIntentCodec.scala shared/src/main/scala/distantlands/protocol/CommandIntentDecoders.scala shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala frontend/src/main/scala/distantlands/frontend/package.scala src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala src/test/scala/distantlands/serialization/GameEventWireSuite.scala src/test/scala/distantlands/server/GameHttpWireSuite.scala shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala frontend/src/test/scala/distantlands/frontend/ProtocolTestCommands.scala frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala
 git commit -m "refactor(rest): delete the legacy Rest power seam
 
 Rest events, League Treaty events, the Rest power pending procedure,
@@ -2928,17 +2928,17 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 9: The phase power engine
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala`
-- Create: `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala` (add `RuleSourceAccess`), `gameplay/powers/PowerSupport.scala:25-48` (delegate to it)
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/model/GameProcedureProtocol.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`buildWalker`), `gameplay/OathRules.scala` (constructor, `restPowerUsable`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:42-49,322-327`, `application/GameApplicationService.scala:78-95`
-- Create: `src/test/scala/oathdigital/gameplay/PhasePowerFixture.scala`
-- Test: `src/test/scala/oathdigital/gameplay/PhasePowerSuite.scala` (new), `src/test/scala/oathdigital/model/ProcedureRefSuite.scala` (new), `walker/WalkerProcedureRegistrySuite.scala`, `serialization/GameEventWireSuite.scala`, `gameplay/BackendArchitectureSuite.scala:~254`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala`
+- Create: `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/RuleSourceIndex.scala` (add `RuleSourceAccess`), `gameplay/powers/PowerSupport.scala:25-48` (delegate to it)
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala`
+- Modify: `src/main/scala/distantlands/gameplay/model/GameProcedureProtocol.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`buildWalker`), `gameplay/OathRules.scala` (constructor, `restPowerUsable`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:42-49,322-327`, `application/GameApplicationService.scala:78-95`
+- Create: `src/test/scala/distantlands/gameplay/PhasePowerFixture.scala`
+- Test: `src/test/scala/distantlands/gameplay/PhasePowerSuite.scala` (new), `src/test/scala/distantlands/model/ProcedureRefSuite.scala` (new), `walker/WalkerProcedureRegistrySuite.scala`, `serialization/GameEventWireSuite.scala`, `gameplay/BackendArchitectureSuite.scala:~254`
 
 **Interfaces:**
 - Consumes: `PowerSourceRef.Card`, `BeginTurn` (Task 4); `restPowerUsable` stub, `continuationIn(Phase.Rest)` (Task 5).
@@ -2955,7 +2955,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 - [x] **Step 1: Write the failing reference test**
 
-`src/test/scala/oathdigital/model/ProcedureRefSuite.scala`:
+`src/test/scala/distantlands/model/ProcedureRefSuite.scala`:
 
 ```scala
 package oathdigital.model
@@ -2978,7 +2978,7 @@ class ProcedureRefSuite extends munit.FunSuite {
 
 - [x] **Step 2: Write the failing engine suite**
 
-`src/test/scala/oathdigital/gameplay/PhasePowerFixture.scala`:
+`src/test/scala/distantlands/gameplay/PhasePowerFixture.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -3038,7 +3038,7 @@ object PhasePowerFixture {
 }
 ```
 
-`src/test/scala/oathdigital/gameplay/PhasePowerSuite.scala`:
+`src/test/scala/distantlands/gameplay/PhasePowerSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -3560,7 +3560,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala src/main/scala/oathdigital/gameplay/powers/PowerSupport.scala src/main/scala/oathdigital/model/ProcedureRef.scala src/main/scala/oathdigital/gameplay/model/GameProcedureProtocol.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/gameplay/OathRulesWalker.scala src/main/scala/oathdigital/gameplay/OathRules.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/main/scala/oathdigital/application/GameApplicationService.scala src/test/scala/oathdigital/gameplay/PhasePowerFixture.scala src/test/scala/oathdigital/gameplay/PhasePowerSuite.scala src/test/scala/oathdigital/model/ProcedureRefSuite.scala src/test/scala/oathdigital/gameplay/walker/WalkerProcedureRegistrySuite.scala src/test/scala/oathdigital/serialization/GameEventWireSuite.scala src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala src/main/scala/distantlands/gameplay/RuleSourceIndex.scala src/main/scala/distantlands/gameplay/powers/PowerSupport.scala src/main/scala/distantlands/model/ProcedureRef.scala src/main/scala/distantlands/gameplay/model/GameProcedureProtocol.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/gameplay/OathRulesWalker.scala src/main/scala/distantlands/gameplay/OathRules.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/main/scala/distantlands/application/GameApplicationService.scala src/test/scala/distantlands/gameplay/PhasePowerFixture.scala src/test/scala/distantlands/gameplay/PhasePowerSuite.scala src/test/scala/distantlands/model/ProcedureRefSuite.scala src/test/scala/distantlands/gameplay/walker/WalkerProcedureRegistrySuite.scala src/test/scala/distantlands/serialization/GameEventWireSuite.scala src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala
 git commit -m "feat(walker): use WAKE, ACTION and REST powers through one procedure
 
 UsePower(powerId) gates on one usability function, walks the power's
@@ -3575,9 +3575,9 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 10: Silver Tongue
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`, `WalkerPowerCatalog.scala`, `RestPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/rest/SilverTongueSuite.scala` (new), `src/test/scala/oathdigital/gameplay/RestSuite.scala` ("each relevant Rest handler records fallback diagnostics without blocking")
+- Create: `src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`, `WalkerPowerCatalog.scala`, `RestPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/rest/SilverTongueSuite.scala` (new), `src/test/scala/distantlands/gameplay/RestSuite.scala` ("each relevant Rest handler records fallback diagnostics without blocking")
 
 **Interfaces:**
 - Consumes: `PhasePower`, `PhasePowers`, `PhasePowerProcedure`, `ActionRef.UsePower`, `OathContinue.AwaitingPowerDecision` (Task 9); `DecisionOptionRef.FavorBank` (Task 1); `RestCleanupPlan.suitOf` (Task 6).
@@ -3832,7 +3832,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/oathdigital/gameplay/powers/RestPowers.scala src/test/scala/oathdigital/gameplay/powers/rest/SilverTongueSuite.scala src/test/scala/oathdigital/gameplay/RestSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/distantlands/gameplay/powers/RestPowers.scala src/test/scala/distantlands/gameplay/powers/rest/SilverTongueSuite.scala src/test/scala/distantlands/gameplay/RestSuite.scala
 git commit -m "feat(rest): add Silver Tongue as the first REST power
 
 Silver Tongue takes one favor from a bank matching a card at the pawn
@@ -3848,11 +3848,11 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 11: Phase power projection, intent and command
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/PhasePowerProjector.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala`, `ActionProjectionCodec.scala:212-236`, `GameProjectionDto.scala:41-43`, `GameProjectionCodec.scala:20-22,87-98,142-167`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`, `CommandIntentCodec.scala:45-52`, `CommandIntentDecoders.scala:117-129`
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala:55-60`, `GameApplicationService.scala:355-357`, `WalkerDecisionProjector.scala:189`, `LegalActionProjector.scala`, `GameProjection.scala`
-- Test: `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala`, `ProjectionProtocolSuite.scala`, `src/test/scala/oathdigital/application/PhasePowerProjectorSuite.scala` (new), `src/test/scala/oathdigital/gameplay/powers/rest/SilverTongueFixture.scala` (new), `src/test/scala/oathdigital/gameplay/powers/rest/SilverTongueSuite.scala`, `src/test/scala/oathdigital/server/GameHttpWireSuite.scala`
+- Create: `src/main/scala/distantlands/application/PhasePowerProjector.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala`, `ActionProjectionCodec.scala:212-236`, `GameProjectionDto.scala:41-43`, `GameProjectionCodec.scala:20-22,87-98,142-167`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`, `CommandIntentCodec.scala:45-52`, `CommandIntentDecoders.scala:117-129`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala:55-60`, `GameApplicationService.scala:355-357`, `WalkerDecisionProjector.scala:189`, `LegalActionProjector.scala`, `GameProjection.scala`
+- Test: `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`, `ProjectionProtocolSuite.scala`, `src/test/scala/distantlands/application/PhasePowerProjectorSuite.scala` (new), `src/test/scala/distantlands/gameplay/powers/rest/SilverTongueFixture.scala` (new), `src/test/scala/distantlands/gameplay/powers/rest/SilverTongueSuite.scala`, `src/test/scala/distantlands/server/GameHttpWireSuite.scala`
 
 **Interfaces:**
 - Consumes: `PhasePowerProcedure.usable`, `PhasePowerCatalog.default`, `ActionRef.UsePower` (Task 9); `SilverTongue` (Task 10); `PhasePowerFixture` (Task 9).
@@ -3878,7 +3878,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 - [x] **Step 2: Write the failing projector test**
 
-Move Silver Tongue's arrangement into a shared test object. Create `src/test/scala/oathdigital/gameplay/powers/rest/SilverTongueFixture.scala`:
+Move Silver Tongue's arrangement into a shared test object. Create `src/test/scala/distantlands/gameplay/powers/rest/SilverTongueFixture.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.rest
@@ -3940,7 +3940,7 @@ object SilverTongueFixture {
 
 In `SilverTongueSuite`, delete the members `tongue`, `suitOf` and `arranged` and the import `oathdigital.gameplay.setup.FirstGameSetupRules`, and make `import SilverTongueFixture._` the first line of the class body. Every test in the suite then reads `tongue` and `arranged` from the fixture unchanged.
 
-`src/test/scala/oathdigital/application/PhasePowerProjectorSuite.scala`:
+`src/test/scala/distantlands/application/PhasePowerProjectorSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -4283,7 +4283,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add src/main/scala/oathdigital/application/PhasePowerProjector.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala shared/src/main/scala/oathdigital/protocol/CommandIntents.scala shared/src/main/scala/oathdigital/protocol/CommandIntentCodec.scala shared/src/main/scala/oathdigital/protocol/CommandIntentDecoders.scala src/main/scala/oathdigital/application/GameCommands.scala src/main/scala/oathdigital/application/Authorization.scala src/main/scala/oathdigital/application/GameIntentMapper.scala src/main/scala/oathdigital/application/GameApplicationService.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/main/scala/oathdigital/application/LegalActionProjector.scala src/main/scala/oathdigital/application/GameProjection.scala shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala src/test/scala/oathdigital/application/PhasePowerProjectorSuite.scala src/test/scala/oathdigital/gameplay/powers/rest/SilverTongueFixture.scala src/test/scala/oathdigital/gameplay/powers/rest/SilverTongueSuite.scala src/test/scala/oathdigital/server/GameHttpWireSuite.scala
+git add src/main/scala/distantlands/application/PhasePowerProjector.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala shared/src/main/scala/distantlands/protocol/CommandIntents.scala shared/src/main/scala/distantlands/protocol/CommandIntentCodec.scala shared/src/main/scala/distantlands/protocol/CommandIntentDecoders.scala src/main/scala/distantlands/application/GameCommands.scala src/main/scala/distantlands/application/Authorization.scala src/main/scala/distantlands/application/GameIntentMapper.scala src/main/scala/distantlands/application/GameApplicationService.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/main/scala/distantlands/application/LegalActionProjector.scala src/main/scala/distantlands/application/GameProjection.scala shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala src/test/scala/distantlands/application/PhasePowerProjectorSuite.scala src/test/scala/distantlands/gameplay/powers/rest/SilverTongueFixture.scala src/test/scala/distantlands/gameplay/powers/rest/SilverTongueSuite.scala src/test/scala/distantlands/server/GameHttpWireSuite.scala
 git commit -m "feat(protocol): project usable phase powers and accept usePower
 
 The projection lists the viewer's usable phase powers with their source
@@ -4298,9 +4298,9 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 12: Phase power buttons and Finish Rest in the frontend
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/PhasePowerButtons.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:95-106,329-335,568-577`, `frontend/src/main/scala/oathdigital/frontend/package.scala` (alias)
-- Test: `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/PhasePowerButtons.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:95-106,329-335,568-577`, `frontend/src/main/scala/distantlands/frontend/package.scala` (alias)
+- Test: `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala`
 
 **Interfaces:**
 - Consumes: `GameProjection.phasePowers`, `PhasePowerProjection`, `GameIntent.UsePower`, `WalkerStartArgWire` (Task 11).
@@ -4403,7 +4403,7 @@ In `ActionDecisionRenderer`:
    }
 ```
 
-   Run `wc -l frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala`. Expected: at most 800 lines; Task 8 removed the Rest power branch.
+   Run `wc -l frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala`. Expected: at most 800 lines; Task 8 removed the Rest power branch.
 
 - [x] **Step 4: Run the UI suite**
 
@@ -4416,7 +4416,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/PhasePowerButtons.scala frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala frontend/src/main/scala/oathdigital/frontend/package.scala frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/PhasePowerButtons.scala frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala frontend/src/main/scala/distantlands/frontend/package.scala frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala
 git commit -m "feat(frontend): render phase power buttons and legal-only Finish Rest
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
@@ -4427,11 +4427,11 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 13: The pending-walker invariant
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala` (every `handle` overload)
-- Modify: `src/test/scala/oathdigital/application/ParkedServiceFixture.scala` (three more parks)
-- Modify: `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala:1339-1409` (use the Oathkeeper park)
-- Create: `src/test/scala/oathdigital/application/PendingWalkerInvariantSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/PendingWalkerRulesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala` (every `handle` overload)
+- Modify: `src/test/scala/distantlands/application/ParkedServiceFixture.scala` (three more parks)
+- Modify: `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala:1339-1409` (use the Oathkeeper park)
+- Create: `src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/PendingWalkerRulesSuite.scala`
 
 **Interfaces:**
 - Consumes: `ParkedServiceFixture` (Task 7), `GameCommand.UsePower` (Task 11), `SilverTongue` (Task 10), `LeagueTreatyFixture` (Task 6), `SilverTongueFixture` (Task 11).
@@ -4566,7 +4566,7 @@ Expected: PASS, with no behavior change.
 
 - [x] **Step 2: Write the failing rules-level suite**
 
-`src/test/scala/oathdigital/gameplay/PendingWalkerRulesSuite.scala`:
+`src/test/scala/distantlands/gameplay/PendingWalkerRulesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -4812,7 +4812,7 @@ Expected: PASS.
 
 - [x] **Step 6: Write the service-level matrix**
 
-`src/test/scala/oathdigital/application/PendingWalkerInvariantSuite.scala`:
+`src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -4890,7 +4890,7 @@ class PendingWalkerInvariantSuite extends munit.FunSuite {
 
   test("the sample holds every GameCommand constructor") {
     val source = Files.readString(Paths.get(
-      "src/main/scala/oathdigital/application/GameCommands.scala"))
+      "src/main/scala/distantlands/application/GameCommands.scala"))
     val start = source.indexOf("object GameCommand {")
     val body = source.substring(start, source.indexOf("\n}\n", start))
     val declared = "final case class (\\w+)".r.findAllMatchIn(body)
@@ -4980,7 +4980,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/che
 Expected: all green.
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/OathRules.scala src/test/scala/oathdigital/application/ParkedServiceFixture.scala src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala src/test/scala/oathdigital/application/PendingWalkerInvariantSuite.scala src/test/scala/oathdigital/gameplay/PendingWalkerRulesSuite.scala
+git add src/main/scala/distantlands/gameplay/OathRules.scala src/test/scala/distantlands/application/ParkedServiceFixture.scala src/test/scala/distantlands/application/GameApplicationServiceSuite.scala src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala src/test/scala/distantlands/gameplay/PendingWalkerRulesSuite.scala
 git commit -m "feat(walker): refuse every non-resume command over a parked walker
 
 The rules boundary now refuses legacy handles while a walker is parked,

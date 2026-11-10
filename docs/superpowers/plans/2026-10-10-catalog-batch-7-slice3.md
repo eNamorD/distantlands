@@ -23,7 +23,7 @@
 
 Task 1 amends both with this plan's rulings, so read them again after Task 1.
 
-**Starts from:** `main` with catalog batch 7 slices 1 and 2 merged. In `docs/ROADMAP.md`, "### Phase - Catalog batch 7 - Campaign dice" must show `- [x] Slice 1` and `- [x] Slice 2`, and `RollOutcome` in `src/main/scala/oathdigital/model/DicePoolState.scala` must have a `throws` field. If not, stop: this plan relies on slice 2's throw count.
+**Starts from:** `main` with catalog batch 7 slices 1 and 2 merged. In `docs/ROADMAP.md`, "### Phase - Catalog batch 7 - Campaign dice" must show `- [x] Slice 1` and `- [x] Slice 2`, and `RollOutcome` in `src/main/scala/distantlands/model/DicePoolState.scala` must have a `throws` field. If not, stop: this plan relies on slice 2's throw count.
 
 Slices 1 and 2 were written from plans, and their executors may have adapted names or line positions. Where this plan quotes their code, read the file as it is on `main` and apply the change to what is there.
 
@@ -87,34 +87,34 @@ The product owner reviews these with the plan. Task 1 writes all of them into th
 ## File map
 
 **The fixed-faces operation (Task 2):**
-- `src/main/scala/oathdigital/model/CoreOperations.scala`: `SetDieFaces`.
-- `src/main/scala/oathdigital/gameplay/operations/RollOperations.scala`: `setFaces`.
-- `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`: applies it.
-- `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`: its wire form.
+- `src/main/scala/distantlands/model/CoreOperations.scala`: `SetDieFaces`.
+- `src/main/scala/distantlands/gameplay/operations/RollOperations.scala`: `setFaces`.
+- `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`: applies it.
+- `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`: its wire form.
 - Tests: `RollOperationsSuite` gains three tests; `WalkerOperationWireSuite` round-trips it.
 
 **An amount inside a battle plan, and Unstable Summon (Task 3):**
-- `src/main/scala/oathdigital/model/CampaignTypes.scala`: `PlanAmount`, and `CampaignPlanOffer.amount`.
-- `src/main/scala/oathdigital/gameplay/actions/campaign/PlanAmounts.scala`: new.
-- `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala`: asks the amount and applies it.
-- `src/main/scala/oathdigital/gameplay/powers/campaign/UnstableSummon.scala`: new. `UnstableSummonCard` moves out of `catalog/holding/HoldingDiscordDenizens.scala`.
+- `src/main/scala/distantlands/model/CampaignTypes.scala`: `PlanAmount`, and `CampaignPlanOffer.amount`.
+- `src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala`: new.
+- `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala`: asks the amount and applies it.
+- `src/main/scala/distantlands/gameplay/powers/campaign/UnstableSummon.scala`: new. `UnstableSummonCard` moves out of `catalog/holding/HoldingDiscordDenizens.scala`.
 - Registration: `PlanRules.scala`, and the import in `NewFoundations.scala`.
 - Tests: new `UnstableSummonSuite`.
 
 **An amount that costs secrets, and Arcane Armor (Task 4):**
-- `src/main/scala/oathdigital/model/CampaignTypes.scala`: `PlanAmount.secretsEach`.
-- `src/main/scala/oathdigital/model/Decisions.scala`: `OptionPrice.secretsX`.
-- `src/main/scala/oathdigital/gameplay/actions/campaign/PlanAmounts.scala`: `range` takes `secretsEach`.
-- `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala`: pays for the amount.
-- `src/main/scala/oathdigital/gameplay/actions/campaign/PlanPrice.scala`: prices it.
-- `src/main/scala/oathdigital/application/PriceDetails.scala`: words it.
-- `src/main/scala/oathdigital/gameplay/powers/campaign/ArcaneArmor.scala`: new. `ArcaneArmorCard` moves out of `catalog/holding/HoldingArcaneDenizens.scala`.
+- `src/main/scala/distantlands/model/CampaignTypes.scala`: `PlanAmount.secretsEach`.
+- `src/main/scala/distantlands/model/Decisions.scala`: `OptionPrice.secretsX`.
+- `src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala`: `range` takes `secretsEach`.
+- `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala`: pays for the amount.
+- `src/main/scala/distantlands/gameplay/actions/campaign/PlanPrice.scala`: prices it.
+- `src/main/scala/distantlands/application/PriceDetails.scala`: words it.
+- `src/main/scala/distantlands/gameplay/powers/campaign/ArcaneArmor.scala`: new. `ArcaneArmorCard` moves out of `catalog/holding/HoldingArcaneDenizens.scala`.
 - Registration: `PlanRules.scala`, and the import in `NewFoundations.scala`.
 - Tests: new `ArcaneArmorSuite`; `PricedOptionProjectionSuite` gains one test.
 
 **A choice of amounts, and Mountain Giant (Task 5):**
-- `src/main/scala/oathdigital/gameplay/actions/campaign/PlanAmounts.scala`: `oneOf` and `button`.
-- `src/main/scala/oathdigital/gameplay/powers/campaign/MountainGiant.scala`: new. `MountainGiantCard` moves out of `catalog/holding/HoldingNomadDenizens.scala`, with its corrected text.
+- `src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala`: `oneOf` and `button`.
+- `src/main/scala/distantlands/gameplay/powers/campaign/MountainGiant.scala`: new. `MountainGiantCard` moves out of `catalog/holding/HoldingNomadDenizens.scala`, with its corrected text.
 - Registration: `PlanRules.scala`, and the import in `NewFoundations.scala`.
 - Tests: new `MountainGiantSuite`; `KindredWarriorsSuite` and `SaltTheEarthSuite` use Search Party.
 
@@ -214,11 +214,11 @@ git commit -m "docs(batch7): record slice 3 plan-time rulings"
 ### Task 2: The fixed-faces operation
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (after `Reroll`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/RollOperations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala` (beside the `Reroll` arm)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
-- Test: `src/test/scala/oathdigital/gameplay/operations/RollOperationsSuite.scala`, `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (after `Reroll`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/RollOperations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala` (beside the `Reroll` arm)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
+- Test: `src/test/scala/distantlands/gameplay/operations/RollOperationsSuite.scala`, `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Consumes: `RollOutcome(pool, count, faces, skulls, score, throws, rerolled)` and `RollOutcome.derive` (slice 2).
@@ -377,7 +377,7 @@ In `WalkerOperationCodec.scala`:
       SetDieFaces(PoolKey(value("pool").str), faces))
 ```
 
-Run: `wc -l src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
+Run: `wc -l src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
 Expected: 800 or fewer.
 
 - [ ] **Step 5: Run the tests to verify they pass**
@@ -390,7 +390,7 @@ Then run `./sbtw test`. Every `CoreOperation` match the compiler checks for exha
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/RollOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/test/scala/oathdigital/gameplay/operations/RollOperationsSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/RollOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/gameplay/operations/RollOperationsSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "feat(dice): a fixed-faces operation, set before a roll"
 ```
 
@@ -399,14 +399,14 @@ git commit -m "feat(dice): a fixed-faces operation, set before a roll"
 ### Task 3: An amount inside a battle plan, and Unstable Summon
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala` (`CampaignPlanOffer`, and a new `PlanAmount` before it)
-- Create: `src/main/scala/oathdigital/gameplay/actions/campaign/PlanAmounts.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/UnstableSummon.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala` (remove `UnstableSummonCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala` (register)
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/UnstableSummonSuite.scala` (new)
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala` (`CampaignPlanOffer`, and a new `PlanAmount` before it)
+- Create: `src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/UnstableSummon.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala` (remove `UnstableSummonCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala` (register)
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/UnstableSummonSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `BattlePlan`, `PlanContext`, `CampaignPlanOffer`, `CampaignPlanEffect`, `PlanDriver` (tests), `Burn.secrets`, `Table.darkestSecret(holder, secrets)` (tests).
@@ -418,7 +418,7 @@ git commit -m "feat(dice): a fixed-faces operation, set before a roll"
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/UnstableSummonSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/UnstableSummonSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -540,7 +540,7 @@ and add the field after `alone`:
 
 - [ ] **Step 4: Add the builders**
 
-Create `src/main/scala/oathdigital/gameplay/actions/campaign/PlanAmounts.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.campaign
@@ -611,7 +611,7 @@ In `CampaignPlanApplication.scala`:
 
 - [ ] **Step 6: Write Unstable Summon**
 
-Delete `object UnstableSummonCard` from `HoldingDiscordDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/powers/campaign/UnstableSummon.scala`:
+Delete `object UnstableSummonCard` from `HoldingDiscordDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/campaign/UnstableSummon.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -702,7 +702,7 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CampaignTypes.scala src/main/scala/oathdigital/gameplay/actions/campaign/PlanAmounts.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala src/main/scala/oathdigital/gameplay/powers/campaign/UnstableSummon.scala src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/UnstableSummonSuite.scala
+git add src/main/scala/distantlands/model/CampaignTypes.scala src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala src/main/scala/distantlands/gameplay/powers/campaign/UnstableSummon.scala src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/UnstableSummonSuite.scala
 git commit -m "feat(batch7): Unstable Summon burns banner secrets for attack dice"
 ```
 
@@ -711,17 +711,17 @@ git commit -m "feat(batch7): Unstable Summon burns banner secrets for attack dic
 ### Task 4: An amount that costs secrets, and Arcane Armor
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala` (`PlanAmount`)
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala` (`OptionPrice`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/PlanAmounts.scala` (`range`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/PlanPrice.scala`
-- Modify: `src/main/scala/oathdigital/application/PriceDetails.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/ArcaneArmor.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `ArcaneArmorCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala` (register)
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/ArcaneArmorSuite.scala` (new), `src/test/scala/oathdigital/application/PricedOptionProjectionSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala` (`PlanAmount`)
+- Modify: `src/main/scala/distantlands/model/Decisions.scala` (`OptionPrice`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala` (`range`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/PlanPrice.scala`
+- Modify: `src/main/scala/distantlands/application/PriceDetails.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/ArcaneArmor.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `ArcaneArmorCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala` (register)
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/ArcaneArmorSuite.scala` (new), `src/test/scala/distantlands/application/PricedOptionProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes: `SetDieFaces` (Task 2); `PlanAmount`, `PlanAmounts.range`, the application's `ask` and `chosenEffects` (Task 3); `RerollChoice.decisionId(pool, number)` and Jinx (slice 1); `PowerStubs.ContributingStub` (tests).
@@ -741,7 +741,7 @@ In `PricedOptionProjectionSuite`, append:
       Vector("Cost: X secrets"))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/ArcaneArmorSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/ArcaneArmorSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1027,7 +1027,7 @@ In `CampaignPlanApplication.scala`:
 
 - [ ] **Step 5: Write Arcane Armor**
 
-Delete `object ArcaneArmorCard` from `HoldingArcaneDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/powers/campaign/ArcaneArmor.scala`:
+Delete `object ArcaneArmorCard` from `HoldingArcaneDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/campaign/ArcaneArmor.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1140,7 +1140,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CampaignTypes.scala src/main/scala/oathdigital/model/Decisions.scala src/main/scala/oathdigital/gameplay/actions/campaign/PlanAmounts.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala src/main/scala/oathdigital/gameplay/actions/campaign/PlanPrice.scala src/main/scala/oathdigital/application/PriceDetails.scala src/main/scala/oathdigital/gameplay/powers/campaign/ArcaneArmor.scala src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/ArcaneArmorSuite.scala src/test/scala/oathdigital/application/PricedOptionProjectionSuite.scala
+git add src/main/scala/distantlands/model/CampaignTypes.scala src/main/scala/distantlands/model/Decisions.scala src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala src/main/scala/distantlands/gameplay/actions/campaign/PlanPrice.scala src/main/scala/distantlands/application/PriceDetails.scala src/main/scala/distantlands/gameplay/powers/campaign/ArcaneArmor.scala src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/ArcaneArmorSuite.scala src/test/scala/distantlands/application/PricedOptionProjectionSuite.scala
 git commit -m "feat(batch7): Arcane Armor sets defense dice to double shields"
 ```
 
@@ -1149,13 +1149,13 @@ git commit -m "feat(batch7): Arcane Armor sets defense dice to double shields"
 ### Task 5: A choice of amounts, and Mountain Giant
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/PlanAmounts.scala` (`oneOf`, `button`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/MountainGiant.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (remove `MountainGiantCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala` (register)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/KindredWarriorsSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/campaign/SaltTheEarthSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/MountainGiantSuite.scala` (new)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala` (`oneOf`, `button`)
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/MountainGiant.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (remove `MountainGiantCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala` (register)
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/KindredWarriorsSuite.scala`, `src/test/scala/distantlands/gameplay/powers/campaign/SaltTheEarthSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/MountainGiantSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `PlanAmount` and the application's amount slots (Tasks 3 and 4); `PlanDice.effect(side, dice)`; `PlanDiscard.afterCampaign` and `PlanDiscard.discarded`; `PowerAnswers.one`.
@@ -1170,7 +1170,7 @@ Mountain Giant now offers a plan, so `PlanDriver.planless` refuses it. Search Pa
 
 - [ ] **Step 2: Write the failing test**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/MountainGiantSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/MountainGiantSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1302,7 +1302,7 @@ In `PlanAmounts.scala`, add:
 
 - [ ] **Step 5: Write Mountain Giant**
 
-Delete `object MountainGiantCard` from `HoldingNomadDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/powers/campaign/MountainGiant.scala`:
+Delete `object MountainGiantCard` from `HoldingNomadDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/campaign/MountainGiant.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1430,7 +1430,7 @@ Then run `./sbtw test`. If another suite fails because one of this slice's three
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/PlanAmounts.scala src/main/scala/oathdigital/gameplay/powers/campaign/MountainGiant.scala src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/MountainGiantSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/KindredWarriorsSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/SaltTheEarthSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala src/main/scala/distantlands/gameplay/powers/campaign/MountainGiant.scala src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/MountainGiantSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/KindredWarriorsSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/SaltTheEarthSuite.scala
 git commit -m "feat(batch7): Mountain Giant adds or removes one or three dice"
 ```
 

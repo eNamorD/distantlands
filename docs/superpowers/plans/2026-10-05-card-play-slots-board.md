@@ -44,11 +44,11 @@
 ### Task 1: Option variant and the Replace summary
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:170-176` (`DecisionOptionProjection`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala:349-371` (`encodeOptionRow`, `decodeOptionRow`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (`optionProjection`'s `AdviserPlay` case near line 390, `headed` near line 487)
-- Test: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- Test: `src/test/scala/oathdigital/application/SlotOptionRowsSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:170-176` (`DecisionOptionProjection`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala:349-371` (`encodeOptionRow`, `decodeOptionRow`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (`optionProjection`'s `AdviserPlay` case near line 390, `headed` near line 487)
+- Test: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- Test: `src/test/scala/distantlands/application/SlotOptionRowsSuite.scala`
 
 **Interfaces:**
 - Consumes: plan 1's `DecisionOptionProjection.replaces: Option[CardDetailsProjection]`, `WalkerDecisionProjector.optionProjection`, `subjectCards`.
@@ -247,7 +247,7 @@ Expected: PASS. If a golden or projector suite compares a Replace option's label
 - [ ] **Step 7: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala src/test/scala/oathdigital/application/SlotOptionRowsSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala src/test/scala/distantlands/application/SlotOptionRowsSuite.scala
 git commit -m "feat(cardplay): project an adviser play's facing as its variant, and word a Replace option as the board's summary"
 ```
 
@@ -256,17 +256,17 @@ git commit -m "feat(cardplay): project an adviser play's facing as its variant, 
 ### Task 2: Board homes for card slots, and the Replace badge
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardHomes.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardOptionViews.scala` (`home`, `of`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardOptions.scala` (`control`, `card`, `mark`, `cardKind`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:47-78` (`siteDetails`), `:142-147` (`emptySlot`), `:158-185` (`pileDisplay`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:78-108` (player board slots and cards), `:180-182` (discard pile)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardDecisionPanel.scala` (`row`'s `data-option-ref`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardHomes.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardOptionViews.scala` (`home`, `of`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardOptions.scala` (`control`, `card`, `mark`, `cardKind`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:47-78` (`siteDetails`), `:142-147` (`emptySlot`), `:158-185` (`pileDisplay`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:78-108` (player board slots and cards), `:180-182` (discard pile)
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardDecisionPanel.scala` (`row`'s `data-option-ref`)
 - Modify: `frontend/styles.css` (after `.board-option-inspect` near line 297, and after `.player-slot-vision` near line 821)
-- Test: `frontend/src/test/scala/oathdigital/frontend/BoardHomesSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/BoardOptionsRenderSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/DiscardPileSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/BoardHomesSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/BoardOptionsRenderSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/DiscardPileSuite.scala`
 
 **Interfaces:**
 - Consumes: wire kinds and ids from plan 1: `site-slot` `{site}:{index}`, `adviser-play` `{owner}:{index}:{faceup|facedown}`, `revealed-vision` `{owner}`, `discard-pile` `{region}`; `PlayerBoard.adviserLimit`; `DecisionOptionState.replaces`.
@@ -709,7 +709,7 @@ Expected: PASS. A suite that counted `.card-face` or `.card-slot-empty` on a pla
 - [ ] **Step 12: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/BoardHomes.scala frontend/src/main/scala/oathdigital/frontend/BoardOptionViews.scala frontend/src/main/scala/oathdigital/frontend/BoardOptions.scala frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala frontend/src/main/scala/oathdigital/frontend/BoardDecisionPanel.scala frontend/styles.css frontend/src/test/scala/oathdigital/frontend/BoardHomesSuite.scala frontend/src/test/scala/oathdigital/frontend/BoardOptionsRenderSuite.scala frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala frontend/src/test/scala/oathdigital/frontend/DiscardPileSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/BoardHomes.scala frontend/src/main/scala/distantlands/frontend/BoardOptionViews.scala frontend/src/main/scala/distantlands/frontend/BoardOptions.scala frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala frontend/src/main/scala/distantlands/frontend/BoardDecisionPanel.scala frontend/styles.css frontend/src/test/scala/distantlands/frontend/BoardHomesSuite.scala frontend/src/test/scala/distantlands/frontend/BoardOptionsRenderSuite.scala frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala frontend/src/test/scala/distantlands/frontend/DiscardPileSuite.scala
 git commit -m "feat(board): draw card slots, the Vision spot and the discard piles as board options, with a Replace badge"
 ```
 
@@ -718,12 +718,12 @@ git commit -m "feat(board): draw card slots, the Vision spot and the discard pil
 ### Task 3: Several options on one home, and the facing toggle
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardOptionViews.scala` (`of`, `atHome`, `variant`, `variantPrompt`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardSelectionDraft.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardDecisionPanel.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardOptionViews.scala` (`of`, `atHome`, `variant`, `variantPrompt`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardSelectionDraft.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardDecisionPanel.scala`
 - Modify: `frontend/styles.css` (after `.board-decision-row.board-option-hover` near line 602)
-- Test: `frontend/src/test/scala/oathdigital/frontend/BoardSelectionDraftSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/BoardDecisionPanelSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/BoardSelectionDraftSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/BoardDecisionPanelSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `DecisionOptionState.variant`; Task 2's `BoardOptionViews.home`.
@@ -1088,7 +1088,7 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/BoardOptionViews.scala frontend/src/main/scala/oathdigital/frontend/BoardSelectionDraft.scala frontend/src/main/scala/oathdigital/frontend/BoardDecisionPanel.scala frontend/styles.css frontend/src/test/scala/oathdigital/frontend/BoardSelectionDraftSuite.scala frontend/src/test/scala/oathdigital/frontend/BoardDecisionPanelSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/BoardOptionViews.scala frontend/src/main/scala/distantlands/frontend/BoardSelectionDraft.scala frontend/src/main/scala/distantlands/frontend/BoardDecisionPanel.scala frontend/styles.css frontend/src/test/scala/distantlands/frontend/BoardSelectionDraftSuite.scala frontend/src/test/scala/distantlands/frontend/BoardDecisionPanelSuite.scala
 git commit -m "feat(board): open a home that several options share, and pick among them with a toggle in the Action panel"
 ```
 
@@ -1097,12 +1097,12 @@ git commit -m "feat(board): open a home that several options share, and pick amo
 ### Task 4: Play a facedown adviser by picking it on the board
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardOptions.scala` (companion: `facedown`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/FacedownAdviserRenderer.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala:94-100`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/RecordingControls.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/CardChoicePanelSuite.scala` (remove the facedown-adviser tests)
-- Create: `frontend/src/test/scala/oathdigital/frontend/FacedownAdviserPickSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardOptions.scala` (companion: `facedown`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/FacedownAdviserRenderer.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala:94-100`
+- Modify: `frontend/src/test/scala/distantlands/frontend/RecordingControls.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/CardChoicePanelSuite.scala` (remove the facedown-adviser tests)
+- Create: `frontend/src/test/scala/distantlands/frontend/FacedownAdviserPickSuite.scala`
 
 **Interfaces:**
 - Consumes: `FacedownAdviserDraft` (`advisers`, `selectedCardId`, `selected`, `command`), `ActionControls.chooseFacedownAdviser`, `submitTargetCommand`, `cancelTargetAction`; Task 2's `BoardOptions.cardKind` and `cardKey`.
@@ -1296,7 +1296,7 @@ Expected: PASS. If the facedown CSS rules `.card-choices`/`.card-choice` have no
 - [ ] **Step 9: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/BoardOptions.scala frontend/src/main/scala/oathdigital/frontend/FacedownAdviserRenderer.scala frontend/src/main/scala/oathdigital/frontend/TableScreen.scala frontend/src/test/scala/oathdigital/frontend/RecordingControls.scala frontend/src/test/scala/oathdigital/frontend/CardChoicePanelSuite.scala frontend/src/test/scala/oathdigital/frontend/FacedownAdviserPickSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/BoardOptions.scala frontend/src/main/scala/distantlands/frontend/FacedownAdviserRenderer.scala frontend/src/main/scala/distantlands/frontend/TableScreen.scala frontend/src/test/scala/distantlands/frontend/RecordingControls.scala frontend/src/test/scala/distantlands/frontend/CardChoicePanelSuite.scala frontend/src/test/scala/distantlands/frontend/FacedownAdviserPickSuite.scala
 git commit -m "feat(board): pick the facedown adviser to play on the board, and play it by name from the panel"
 ```
 

@@ -5,7 +5,7 @@ import scala.jdk.CollectionConverters._
 
 class BackendArchitectureSuite extends munit.FunSuite:
   test("gameplay production sources never infer mechanics from rulesText"):
-    val root = Paths.get("src/main/scala/oathdigital/gameplay")
+    val root = Paths.get("src/main/scala/distantlands/gameplay")
     val offenders = Files.walk(root).iterator.asScala.filter(path =>
       path.toString.endsWith(".scala") &&
         Files.readString(path).contains("rulesText")).map(_.toString).toVector
@@ -19,13 +19,13 @@ class BackendArchitectureSuite extends munit.FunSuite:
     // route every Recover command generically and never learn Catacombs'
     // name -- while the walker's typed contribution is the one place that
     // does.
-    val contribution = Paths.get("src/main/scala/oathdigital/gameplay/" +
+    val contribution = Paths.get("src/main/scala/distantlands/gameplay/" +
       "powers/recover/CatacombsContribution.scala")
     assert(Files.exists(contribution), s"$contribution must exist")
     Vector(
-      Paths.get("src/main/scala/oathdigital/application/GameApplicationService.scala"),
-      Paths.get("src/main/scala/oathdigital/gameplay/OathRules.scala"),
-      Paths.get("src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala")
+      Paths.get("src/main/scala/distantlands/application/GameApplicationService.scala"),
+      Paths.get("src/main/scala/distantlands/gameplay/OathRules.scala"),
+      Paths.get("src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala")
     ).foreach { path =>
       assert(!Files.readString(path).toLowerCase.contains("catacombs"),
         s"$path must use the typed Recover power boundary")
@@ -63,7 +63,7 @@ class BackendArchitectureSuite extends munit.FunSuite:
     // guard that fires falsely gets deleted rather than fixed; and the engine
     // scan is a lowercase substring match, so rename a power that collides
     // with unrelated engine text rather than loosening the scan.
-    val powersRoot = Paths.get("src/main/scala/oathdigital/gameplay/powers")
+    val powersRoot = Paths.get("src/main/scala/distantlands/gameplay/powers")
     val declaresPower = "(?:extends|with)\\s+(?:ContributingPower|PhasePower)\\b".r
     val declaration = "(?:class|object|trait)\\s+([A-Za-z0-9_]+)".r
     val contributionStream = Files.walk(powersRoot)
@@ -100,8 +100,8 @@ class BackendArchitectureSuite extends munit.FunSuite:
       s"scan for safely; rename the power. Names were $powerNames")
 
     val engineRoots = Vector(
-      Paths.get("src/main/scala/oathdigital/gameplay/walker"),
-      Paths.get("src/main/scala/oathdigital/gameplay/operations"))
+      Paths.get("src/main/scala/distantlands/gameplay/walker"),
+      Paths.get("src/main/scala/distantlands/gameplay/operations"))
     val offenders = engineRoots.flatMap { root =>
       val stream = Files.walk(root)
       try stream.iterator.asScala.filter(path =>
@@ -142,7 +142,7 @@ class BackendArchitectureSuite extends munit.FunSuite:
     // Like this suite's other file-content guards, it scans text, so a `.str`
     // written inside a comment trips it too -- reword the comment rather than
     // loosening the pattern.
-    val protocolRoot = Paths.get("shared/src/main/scala/oathdigital/protocol")
+    val protocolRoot = Paths.get("shared/src/main/scala/distantlands/protocol")
     val stream = Files.walk(protocolRoot)
     val sources =
       try stream.iterator.asScala
@@ -167,7 +167,7 @@ class BackendArchitectureSuite extends munit.FunSuite:
       Paths.get("shared/src/main/scala"), Paths.get("frontend/src/main/scala"))
       .filter(Files.exists(_))
     val owner = Paths.get(
-      "src/main/scala/oathdigital/application/GameApplicationService.scala")
+      "src/main/scala/distantlands/application/GameApplicationService.scala")
     val offenders = scalaFilesUnder(roots).filter(path =>
       path != owner && Files.readString(path).toLowerCase.contains("genesis"))
       .map(_.toString)
@@ -186,7 +186,7 @@ class BackendArchitectureSuite extends munit.FunSuite:
     assertEquals(offenders, Vector.empty)
 
   test("application never imports server or serialization layers"):
-    val root = Paths.get("src/main/scala/oathdigital/application")
+    val root = Paths.get("src/main/scala/distantlands/application")
     val forbidden = Vector("import oathdigital.server", "import oathdigital.persistence",
       "import oathdigital.serialization")
     val offenders = Files.walk(root).iterator.asScala.filter(path =>
@@ -199,13 +199,13 @@ class BackendArchitectureSuite extends munit.FunSuite:
     assert(build.contains("shared\" / \"src\" / \"main\" / \"scala"))
     assert(build.contains("shared\" / \"src\" / \"test\" / \"scala"))
     assert(Files.exists(Paths.get(
-      "shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala")))
+      "shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala")))
 
   test("client and server define no duplicate command intent DTO vocabulary"):
     val roots = Vector(Paths.get("src/main/scala"), Paths.get("frontend/src/main/scala"))
     val offenders = roots.flatMap(root => Files.walk(root).iterator.asScala)
       .filter(path => path.toString.endsWith(".scala") &&
-        !path.endsWith("oathdigital/application/GameCommands.scala") &&
+        !path.endsWith("distantlands/application/GameCommands.scala") &&
         Files.readAllLines(path).asScala.exists(_.matches(
           "\\s*(sealed trait|final case class) (GameIntent|GameCommand)(\\s|\\().*")))
       .map(_.toString).sorted
@@ -225,10 +225,10 @@ class BackendArchitectureSuite extends munit.FunSuite:
       }.sorted
     assertEquals(offenders, Vector.empty)
     assert(Files.exists(Paths.get(
-      "shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala")))
+      "shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala")))
     assert(Files.exists(Paths.get(
-      "shared/src/main/scala/oathdigital/protocol/BootstrapProtocolCodec.scala")))
-    assert(Files.exists(Paths.get("shared/src/main/scala/oathdigital/" +
+      "shared/src/main/scala/distantlands/protocol/BootstrapProtocolCodec.scala")))
+    assert(Files.exists(Paths.get("shared/src/main/scala/distantlands/" +
       "protocol/projection/LogProjectionDtos.scala")))
 
   /** The hard limit docs/architecture/codebase-structure.md sets for a Scala
@@ -278,7 +278,7 @@ class BackendArchitectureSuite extends munit.FunSuite:
     // so a comment here must not spell a whole id construction.
     val exempt = Set(
       // Ledger 08-049: the numeric id of the Alchemist is the subject.
-      "src/test/scala/oathdigital/catalog/ExecutableCatalogSuite.scala")
+      "src/test/scala/distantlands/catalog/ExecutableCatalogSuite.scala")
     val catalogId = (
       """(Denizen|Vision|Site)Id\("[0-9]+"\)|""" +
         """(Relic|Edifice)Id\("[RE][0-9]{2}"\)""").r
@@ -380,9 +380,9 @@ class BackendArchitectureSuite extends munit.FunSuite:
   // DecisionQueries is deliberately absent — accepts must stay blind to
   // copy (Decisions.scala:435-438).
   private val PinnedQueryReaders = Vector(
-    "shared/src/main/scala/oathdigital/protocol/projection/" +
+    "shared/src/main/scala/distantlands/protocol/projection/" +
       "ActionProjectionCodec.scala",
-    "src/main/scala/oathdigital/application/WalkerDecisionProjector.scala")
+    "src/main/scala/distantlands/application/WalkerDecisionProjector.scala")
 
   test("the wire-facing query patterns stay fully bound"):
     val roots = PinnedQueryReaders.map(Paths.get(_))
@@ -393,9 +393,9 @@ class BackendArchitectureSuite extends munit.FunSuite:
 
   test("inner production packages do not import outer adapters"):
     val constraints = Vector(
-      Paths.get("src/main/scala/oathdigital/model") -> Vector(
+      Paths.get("src/main/scala/distantlands/model") -> Vector(
         "application", "gameplay", "persistence", "serialization", "server"),
-      Paths.get("src/main/scala/oathdigital/gameplay") -> Vector(
+      Paths.get("src/main/scala/distantlands/gameplay") -> Vector(
         "application", "persistence", "protocol",
         "serialization", "server"))
     val offenders = constraints.flatMap { case (root, packages) =>
@@ -414,15 +414,15 @@ class BackendArchitectureSuite extends munit.FunSuite:
     // removals, which run after the operation batch validates and whose nearest
     // preceding comment line is the strict `// executor bypass:` sentinel.
     val migrated = Vector(
-      Paths.get("src/main/scala/oathdigital/gameplay/actions"),
-      Paths.get("src/main/scala/oathdigital/gameplay/phases"),
-      Paths.get("src/main/scala/oathdigital/gameplay/powers"))
+      Paths.get("src/main/scala/distantlands/gameplay/actions"),
+      Paths.get("src/main/scala/distantlands/gameplay/phases"),
+      Paths.get("src/main/scala/distantlands/gameplay/powers"))
     val files = migrated.flatMap { root =>
       val stream = Files.walk(root)
       try stream.iterator.asScala.filter(_.toString.endsWith(".scala")).toVector
       finally stream.close()
     } ++
-      Vector(Paths.get("src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala"))
+      Vector(Paths.get("src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala"))
     val markers = Vector(
       "advisers.filterNot(_.id == ",
       "copy(advisers =",

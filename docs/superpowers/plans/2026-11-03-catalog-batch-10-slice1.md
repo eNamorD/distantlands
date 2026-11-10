@@ -31,7 +31,7 @@ This is the first of 14 slice plans. Each later slice's plan is written just bef
   - `python3 scripts/check-architecture.py`, which caps files at 800 lines and enforces the layer import rules
   - `python3 scripts/check-markdown-links.py`
 - **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write` (`src/test/resources/notes/declared-keys.txt`) and `UNIMPLEMENTED_SNAPSHOT=write` (`src/test/resources/powers/unimplemented.txt`), then read the diff. Commit only the lines the task explains. Each card task drops exactly its own power id from `unimplemented.txt`.
-- **Moving a card out of holding:** delete its object from `src/main/scala/oathdigital/catalog/holding/*.scala` and define it, unchanged except where a task says otherwise, beside its power. `gameplay/cards/NewFoundations.scala` imports every `gameplay.powers.*` package by wildcard. A card defined in `gameplay.roles` needs a named import there.
+- **Moving a card out of holding:** delete its object from `src/main/scala/distantlands/catalog/holding/*.scala` and define it, unchanged except where a task says otherwise, beside its power. `gameplay/cards/NewFoundations.scala` imports every `gameplay.powers.*` package by wildcard. A card defined in `gameplay.roles` needs a named import there.
 - **Log lines:** a power's line names only non-actors (memory: "Log lines omit actor"). A line that replaces a generic line is declared with `covers = true`.
 - **Hover reasons:** show an unavailable option disabled with a reason. Hide only the options the player's role can never use.
 - **Wire:** this slice adds no wire types. Old journals need not decode.
@@ -42,13 +42,13 @@ This is the first of 14 slice plans. Each later slice's plan is written just bef
 ### Task 1: `NonPersistentPowerRestriction` and Bandit Forest
 
 **Files:**
-- Delete: `src/main/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestriction.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/poweruse/NonPersistentPowerRestriction.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:73`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/GiantPython.scala:32` (doc comment)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/ForbiddenForest.scala` (doc comment's last sentence)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/poweruse/BanditForestSuite.scala`
+- Delete: `src/main/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestriction.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/poweruse/NonPersistentPowerRestriction.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:73`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/GiantPython.scala:32` (doc comment)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/ForbiddenForest.scala` (doc comment's last sentence)
+- Modify: `src/test/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/poweruse/BanditForestSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt`, `src/test/resources/powers/unimplemented.txt`
 
 **Interfaces:**
@@ -59,14 +59,14 @@ This is the first of 14 slice plans. Each later slice's plan is written just bef
 In `GiantPythonRestrictionSuite.scala`, replace every `GiantPythonRestriction` with `NonPersistentPowerRestriction.giantPython`. There are 11 occurrences, at lines 38 to 74. The suite keeps its name: it tests Giant Python's instance.
 
 ```bash
-sed -i '' 's/GiantPythonRestriction\./NonPersistentPowerRestriction.giantPython./g' src/test/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala
+sed -i '' 's/GiantPythonRestriction\./NonPersistentPowerRestriction.giantPython./g' src/test/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala
 ```
 
 Check that the class line (`class GiantPythonRestrictionSuite`) is unchanged.
 
 - [ ] **Step 2: Write the failing Bandit Forest suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/poweruse/BanditForestSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/poweruse/BanditForestSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.poweruse
@@ -299,8 +299,8 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/poweruse/NonPersistentPowerRestriction.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/oathdigital/gameplay/powers/action/GiantPython.scala src/main/scala/oathdigital/gameplay/powers/travel/ForbiddenForest.scala src/test/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala src/test/scala/oathdigital/gameplay/powers/poweruse/BanditForestSuite.scala src/test/resources/notes/declared-keys.txt src/test/resources/powers/unimplemented.txt
-git rm src/main/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestriction.scala
+git add src/main/scala/distantlands/gameplay/powers/poweruse/NonPersistentPowerRestriction.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/distantlands/gameplay/powers/action/GiantPython.scala src/main/scala/distantlands/gameplay/powers/travel/ForbiddenForest.scala src/test/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala src/test/scala/distantlands/gameplay/powers/poweruse/BanditForestSuite.scala src/test/resources/notes/declared-keys.txt src/test/resources/powers/unimplemented.txt
+git rm src/main/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestriction.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Bandit Forest through NonPersistentPowerRestriction
 
@@ -319,16 +319,16 @@ EOF
 ### Task 2: Council Seat
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/roles/CouncilSeat.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` (remove `CouncilSeatCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `oathdigital.gameplay.roles.CouncilSeatCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/roles/Citizenship.scala:35-36`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/GrandScepterPlan.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/ActOffers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala:131` (the `acting` builder)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` (register `CouncilSeat`)
-- Create: `src/test/scala/oathdigital/gameplay/roles/CouncilSeatSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/GrandScepterPlanSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/roles/CouncilSeat.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` (remove `CouncilSeatCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `oathdigital.gameplay.roles.CouncilSeatCard`)
+- Modify: `src/main/scala/distantlands/gameplay/roles/Citizenship.scala:35-36`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/GrandScepterPlan.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/ActOffers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala:131` (the `acting` builder)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` (register `CouncilSeat`)
+- Create: `src/test/scala/distantlands/gameplay/roles/CouncilSeatSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/GrandScepterPlanSuite.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt`
 
 **Interfaces:**
@@ -342,7 +342,7 @@ EOF
 
 - [ ] **Step 1: Write the failing self-exile tests**
 
-Create `src/test/scala/oathdigital/gameplay/roles/CouncilSeatSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/roles/CouncilSeatSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.roles
@@ -455,7 +455,7 @@ Expected: compile failure, `Not found: CouncilSeatCard`.
 
 - [ ] **Step 4: Write `CouncilSeat`**
 
-Remove `CouncilSeatCard` from `HoldingOrderDenizens.scala`. Remove that file's imports that are now unused; `-Werror` will name them. Create `src/main/scala/oathdigital/gameplay/roles/CouncilSeat.scala`:
+Remove `CouncilSeatCard` from `HoldingOrderDenizens.scala`. Remove that file's imports that are now unused; `-Werror` will name them. Create `src/main/scala/distantlands/gameplay/roles/CouncilSeat.scala`:
 
 ```scala
 package oathdigital.gameplay.roles
@@ -589,7 +589,7 @@ Expected diff: `unimplemented.txt` loses exactly `denizen.council-seat`.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/roles/CouncilSeat.scala src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/roles/Citizenship.scala src/main/scala/oathdigital/gameplay/powers/campaign/GrandScepterPlan.scala src/main/scala/oathdigital/gameplay/phases/ActOffers.scala src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/roles/CouncilSeatSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/GrandScepterPlanSuite.scala src/test/resources/powers/unimplemented.txt
+git add src/main/scala/distantlands/gameplay/roles/CouncilSeat.scala src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/roles/Citizenship.scala src/main/scala/distantlands/gameplay/powers/campaign/GrandScepterPlan.scala src/main/scala/distantlands/gameplay/phases/ActOffers.scala src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/roles/CouncilSeatSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/GrandScepterPlanSuite.scala src/test/resources/powers/unimplemented.txt
 git commit -m "$(cat <<'EOF'
 feat(powers): Council Seat guards its Citizen from exile
 
@@ -608,10 +608,10 @@ EOF
 ### Task 3: Naysayers
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/rest/Naysayers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala` (remove `NaysayersCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/rest/NaysayersSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/rest/Naysayers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala` (remove `NaysayersCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/rest/NaysayersSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt`, `src/test/resources/powers/unimplemented.txt`
 
 **Interfaces:**
@@ -619,7 +619,7 @@ EOF
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/rest/NaysayersSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/rest/NaysayersSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.rest
@@ -688,7 +688,7 @@ Expected: compile failure, `Not found: Naysayers`.
 
 - [ ] **Step 3: Write `Naysayers`**
 
-Remove `NaysayersCard` from `HoldingDiscordDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/powers/rest/Naysayers.scala`:
+Remove `NaysayersCard` from `HoldingDiscordDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/rest/Naysayers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.rest
@@ -772,7 +772,7 @@ Expected diff:
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/rest/Naysayers.scala src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/rest/NaysayersSuite.scala src/test/resources/notes/declared-keys.txt src/test/resources/powers/unimplemented.txt
+git add src/main/scala/distantlands/gameplay/powers/rest/Naysayers.scala src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala src/test/scala/distantlands/gameplay/powers/rest/NaysayersSuite.scala src/test/resources/notes/declared-keys.txt src/test/resources/powers/unimplemented.txt
 git commit -m "$(cat <<'EOF'
 feat(powers): Naysayers takes favor from the Chancellor at Rest
 
@@ -789,11 +789,11 @@ EOF
 ### Task 4: Imperial Seal
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/ImperialSeal.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `ImperialSealCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/SiteRulers.scala` (add `imperialSites`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/ImperialSealSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/ImperialSeal.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `ImperialSealCard`)
+- Modify: `src/main/scala/distantlands/gameplay/SiteRulers.scala` (add `imperialSites`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/action/ImperialSealSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt`, `src/test/resources/powers/unimplemented.txt`
 
 **Interfaces:**
@@ -804,7 +804,7 @@ EOF
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/ImperialSealSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/ImperialSealSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -922,7 +922,7 @@ In `SiteRulers.scala`, after `protectedAt`:
 
 - [ ] **Step 4: Write `ImperialSeal`**
 
-Remove `ImperialSealCard` from `HoldingRelics.scala`. Create `src/main/scala/oathdigital/gameplay/powers/action/ImperialSeal.scala`:
+Remove `ImperialSealCard` from `HoldingRelics.scala`. Create `src/main/scala/distantlands/gameplay/powers/action/ImperialSeal.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1057,7 +1057,7 @@ Expected diff:
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/ImperialSeal.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/main/scala/oathdigital/gameplay/SiteRulers.scala src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/action/ImperialSealSuite.scala src/test/resources/notes/declared-keys.txt src/test/resources/powers/unimplemented.txt
+git add src/main/scala/distantlands/gameplay/powers/action/ImperialSeal.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/main/scala/distantlands/gameplay/SiteRulers.scala src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala src/test/scala/distantlands/gameplay/powers/action/ImperialSealSuite.scala src/test/resources/notes/declared-keys.txt src/test/resources/powers/unimplemented.txt
 git commit -m "$(cat <<'EOF'
 feat(powers): Imperial Seal moves Imperial warbands from your site
 

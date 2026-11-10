@@ -55,8 +55,8 @@ formatter's types to the wire rather than mirroring them there.
 ### The types move, they are not duplicated
 
 `LogSpan`, `LogEntry`, `LogSection`, `LogTakenBack` and `LogKind` move from
-`src/main/scala/oathdigital/application/gamelog/LogEntry.scala` to
-`shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`.
+`src/main/scala/distantlands/application/gamelog/LogEntry.scala` to
+`shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`.
 `LogSpanWire`, `LogEntryWire`, `LogSectionWire` and `LogTakenBackWire` are
 deleted, and `LogPageWire` is renamed `LogPage`. Both of
 `GameLogProjector`'s mapping functions, `span` and `wire`, are deleted with

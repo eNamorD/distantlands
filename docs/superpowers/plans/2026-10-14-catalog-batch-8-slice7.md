@@ -47,7 +47,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
 - **Never touch the live database `var/oathdigital`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
-  - Stage explicit paths only; never `git add -A`. An untracked `src/test/scala/oathdigital/gameplay/HiddenScopeProbeSuite.scala` belongs to another session; leave it alone.
+  - Stage explicit paths only; never `git add -A`. An untracked `src/test/scala/distantlands/gameplay/HiddenScopeProbeSuite.scala` belongs to another session; leave it alone.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -124,32 +124,32 @@ Agreed with the product owner on 2026-10-14. Task 1 writes them into the design 
 ## File map
 
 - Modify:
-  - `src/main/scala/oathdigital/gameplay/PowerAccess.scala`: the as-if site.
-  - `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`: `selectionQuestions`.
-  - `src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala`: answers to `locate`, the questions after a pick, the seeded dry runs, `ModifierHost`.
-  - `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`: `advance`'s `seed`.
-  - `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala`: `preview` and `refusal` take answers.
-  - `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala`: `Kind.selection`.
-  - `src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala`: passes its selection.
-  - `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`: `selectable` takes answers.
-  - `src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala`, `MapLibrary.scala`, `SkilledMerchants.scala`, `EconomySources.scala`.
-  - `src/main/scala/oathdigital/gameplay/powers/economy/MovingMarket.scala`: records its favor.
-  - `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`: registers the three powers.
-  - `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`, `HoldingDiscordDenizens.scala`, `HoldingArcaneDenizens.scala`: the cards move out.
-  - `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`: imports the moved cards.
-  - `src/test/scala/oathdigital/gameplay/PowerAccessSuite.scala`: 2 tests.
-  - `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`: 3 ids.
+  - `src/main/scala/distantlands/gameplay/PowerAccess.scala`: the as-if site.
+  - `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`: `selectionQuestions`.
+  - `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala`: answers to `locate`, the questions after a pick, the seeded dry runs, `ModifierHost`.
+  - `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`: `advance`'s `seed`.
+  - `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala`: `preview` and `refusal` take answers.
+  - `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala`: `Kind.selection`.
+  - `src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala`: passes its selection.
+  - `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`: `selectable` takes answers.
+  - `src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala`, `MapLibrary.scala`, `SkilledMerchants.scala`, `EconomySources.scala`.
+  - `src/main/scala/distantlands/gameplay/powers/economy/MovingMarket.scala`: records its favor.
+  - `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`: registers the three powers.
+  - `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`, `HoldingDiscordDenizens.scala`, `HoldingArcaneDenizens.scala`: the cards move out.
+  - `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`: imports the moved cards.
+  - `src/test/scala/distantlands/gameplay/PowerAccessSuite.scala`: 2 tests.
+  - `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`: 3 ids.
   - Docs: the design, the rulings appendix, `docs/ROADMAP.md`.
 - Create:
-  - `src/main/scala/oathdigital/gameplay/powerresolver/ModifierHost.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/economy/ActingSite.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/economy/SmallFriends.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/economy/FriendlyFamiliar.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/economy/TradeFavor.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/economy/SecretSignal.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/economy/SmallFriendsSuite.scala`: 6 tests.
-  - `src/test/scala/oathdigital/gameplay/powers/economy/FriendlyFamiliarSuite.scala`: 4 tests.
-  - `src/test/scala/oathdigital/gameplay/powers/economy/SecretSignalSuite.scala`: 4 tests.
+  - `src/main/scala/distantlands/gameplay/powerresolver/ModifierHost.scala`
+  - `src/main/scala/distantlands/gameplay/powers/economy/ActingSite.scala`
+  - `src/main/scala/distantlands/gameplay/powers/economy/SmallFriends.scala`
+  - `src/main/scala/distantlands/gameplay/powers/economy/FriendlyFamiliar.scala`
+  - `src/main/scala/distantlands/gameplay/powers/economy/TradeFavor.scala`
+  - `src/main/scala/distantlands/gameplay/powers/economy/SecretSignal.scala`
+  - `src/test/scala/distantlands/gameplay/powers/economy/SmallFriendsSuite.scala`: 6 tests.
+  - `src/test/scala/distantlands/gameplay/powers/economy/FriendlyFamiliarSuite.scala`: 4 tests.
+  - `src/test/scala/distantlands/gameplay/powers/economy/SecretSignalSuite.scala`: 4 tests.
 
 ---
 
@@ -281,20 +281,20 @@ git commit -m "docs(batch8): slice 7 rulings: the as-if site, pick order, Secret
 ### Task 2: The as-if site, questions after a pick, and seeded dry runs
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/PowerAccess.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/ModifierHost.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/MapLibrary.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/SkilledMerchants.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala`
-- Test: `src/test/scala/oathdigital/gameplay/PowerAccessSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/PowerAccess.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/ModifierHost.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/MapLibrary.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/SkilledMerchants.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala`
+- Test: `src/test/scala/distantlands/gameplay/PowerAccessSuite.scala`
 
 **Interfaces:**
 - Produces, for Tasks 3 and 4: every name in Global Constraints' "Names" list except the economy files.
@@ -411,7 +411,7 @@ In `ContributingPower.scala`, add after `selectionWindows`:
       : Vector[Operation] = Vector.empty
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powerresolver/ModifierHost.scala`:
+Create `src/main/scala/distantlands/gameplay/powerresolver/ModifierHost.scala`:
 
 ```scala
 package oathdigital.gameplay.powerresolver
@@ -698,20 +698,20 @@ Expected: PASS, the baseline plus 2.
 - [ ] **Step 13: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/PowerAccess.scala \
-  src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala \
-  src/main/scala/oathdigital/gameplay/powerresolver/ModifierHost.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala \
-  src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala \
-  src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/MapLibrary.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/SkilledMerchants.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala \
-  src/test/scala/oathdigital/gameplay/PowerAccessSuite.scala
+git add src/main/scala/distantlands/gameplay/PowerAccess.scala \
+  src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala \
+  src/main/scala/distantlands/gameplay/powerresolver/ModifierHost.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala \
+  src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala \
+  src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/MapLibrary.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/SkilledMerchants.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala \
+  src/test/scala/distantlands/gameplay/PowerAccessSuite.scala
 git commit -m "feat(batch8): a modifier may place its user at an as-if site"
 ```
 
@@ -720,23 +720,23 @@ git commit -m "feat(batch8): a modifier may place its user at an as-if site"
 ### Task 3: Small Friends and Friendly Familiar
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/ActingSite.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/SmallFriends.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/FriendlyFamiliar.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/SmallFriendsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/FriendlyFamiliarSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/ActingSite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/SmallFriends.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/FriendlyFamiliar.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/SmallFriendsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/FriendlyFamiliarSuite.scala`
 
 **Interfaces:**
 - Consumes from Task 2: `PowerAccess.asIfDecision`, `asIfSite`, `pawnSite`, `ruledSites`; `ContributingPower.selectionQuestions`; `EconomySources.relocated`, `cardsAt`, `RelocationPriority`; `ModifierPicks.cards`.
 
 - [ ] **Step 1: Write the failing tests for Small Friends**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/SmallFriendsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/SmallFriendsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -891,7 +891,7 @@ class SmallFriendsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Write the failing tests for Friendly Familiar**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/FriendlyFamiliarSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/FriendlyFamiliarSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1013,7 +1013,7 @@ In `NewFoundations.scala`, add `FriendlyFamiliarCard` and `SmallFriendsCard` to 
 
 - [ ] **Step 5: The shared trait**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/ActingSite.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/ActingSite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1112,7 +1112,7 @@ object ActingSite:
 
 - [ ] **Step 6: Small Friends**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/SmallFriends.scala`. Start it with the package line, these imports, then the moved `SmallFriendsCard`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/SmallFriends.scala`. Start it with the package line, these imports, then the moved `SmallFriendsCard`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1148,7 +1148,7 @@ object SmallFriends:
 
 - [ ] **Step 7: Friendly Familiar**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/FriendlyFamiliar.scala`, the same way, with the moved `FriendlyFamiliarCard`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/FriendlyFamiliar.scala`, the same way, with the moved `FriendlyFamiliarCard`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1215,16 +1215,16 @@ Expected: PASS, the baseline plus 12.
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/ActingSite.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/SmallFriends.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/FriendlyFamiliar.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/SmallFriendsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/FriendlyFamiliarSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/ActingSite.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/SmallFriends.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/FriendlyFamiliar.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/SmallFriendsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/FriendlyFamiliarSuite.scala
 git commit -m "feat(batch8): Small Friends and Friendly Familiar trade at another site"
 ```
 
@@ -1233,21 +1233,21 @@ git commit -m "feat(batch8): Small Friends and Friendly Familiar trade at anothe
 ### Task 4: Secret Signal
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/TradeFavor.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/SecretSignal.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/MovingMarket.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/SecretSignalSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/TradeFavor.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/SecretSignal.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/MovingMarket.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/SecretSignalSuite.scala`
 
 **Interfaces:**
 - Consumes from Task 2: `ModifierHost.startSelection`; `TradeProcedure.selection`.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/SecretSignalSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/SecretSignalSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1366,7 +1366,7 @@ Expected: compile failure: `SecretSignal` is not found.
 
 - [ ] **Step 3: The shared record**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/TradeFavor.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/TradeFavor.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1408,7 +1408,7 @@ Add to the class doc: "The gain is recorded under `TradeFavor.key`, at what the 
 
 Cut `SecretSignalCard` from `HoldingArcaneDenizens.scala`, removing any import that file no longer uses. Add `SecretSignalCard` to `NewFoundations.scala`'s `economy` import.
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/SecretSignal.scala`, with the moved card under the imports:
+Create `src/main/scala/distantlands/gameplay/powers/economy/SecretSignal.scala`, with the moved card under the imports:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1531,14 +1531,14 @@ Expected: PASS, the baseline plus 16.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/TradeFavor.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/SecretSignal.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/MovingMarket.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/SecretSignalSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/TradeFavor.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/SecretSignal.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/MovingMarket.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/SecretSignalSuite.scala
 git commit -m "feat(batch8): Secret Signal doubles a Trade's lone favor"
 ```
 

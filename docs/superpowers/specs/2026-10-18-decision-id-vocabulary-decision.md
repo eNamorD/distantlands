@@ -29,7 +29,7 @@ wearing one description, and they get three different answers.
    the shared face vocabulary is read rather than restated. The two face tables
    in `serialization` stay as they are.
 
-No shared constants object is created. `shared/src/main/scala/oathdigital/protocol`
+No shared constants object is created. `shared/src/main/scala/distantlands/protocol`
 holds the shapes the two sides mail each other and the codecs for them; a
 hand-maintained copy of names the engine owns is a different kind of resident,
 and `scripts/check-architecture.py` keeps that module from reaching the engine's

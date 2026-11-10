@@ -52,9 +52,9 @@
 **Goal:** Delete `OperationReceipt` and `OperationExecution`, returning `ReadyGame` straight from the executor/transaction, without any behavior change.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationExecutor.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationExecutor.scala`
 - Modify (call sites — drop `.ready` / `.map(_.ready)` / deref): `actions/CardPlay.scala`, `actions/MinorActions.scala`, `actions/Economy.scala`, `actions/Visions.scala`, `actions/Negotiation.scala`, `actions/Challenge.scala`, `actions/Campaign.scala`, `actions/Search.scala`, `actions/Recover.scala`, `actions/Forge.scala`, `actions/Travel.scala`, `phases/Rest.scala`, `powers/rest/LeagueTreatyPower.scala`
-- Test: `src/test/scala/oathdigital/gameplay/OperationExecutorSuite.scala`, `src/test/scala/oathdigital/gameplay/PowerOperationsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/OperationExecutorSuite.scala`, `src/test/scala/distantlands/gameplay/PowerOperationsSuite.scala`
 
 **Interfaces:**
 - Before: `OperationExecutor.execute(ready, op): Either[OperationError, OperationExecution]`; `executeAll(...): Either[OperationError, OperationExecution]`; `OperationTransaction.evolve(...)(update): Either[OathViolation, OperationExecution]`; `OperationExecution(ready: ReadyGame, receipts: Vector[OperationReceipt])`; `OperationReceipt(operation: CoreOperation, primitives: Vector[PrimitiveOperation])`.
@@ -63,7 +63,7 @@
 ## Task 1: Retype the executor core
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationExecutor.scala:55-119`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationExecutor.scala:55-119`
 
 **Interfaces:**
 - Consumes: nothing new.
@@ -145,7 +145,7 @@ Expected: FAIL — compile errors at each production consumer of `OperationExecu
 - [ ] **Step 6: Commit the breaking change deliberately**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/OperationExecutor.scala
+git add src/main/scala/distantlands/gameplay/operations/OperationExecutor.scala
 git commit -m "refactor(operations): executor returns ReadyGame, drop receipts"
 ```
 
@@ -153,14 +153,14 @@ git commit -m "refactor(operations): executor returns ReadyGame, drop receipts"
 
 **Files:**
 - Modify (each drops the trailing `.map(_.ready)` — the value is already `Either[OathViolation, ReadyGame]` now):
-  - `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:340`
-  - `src/main/scala/oathdigital/gameplay/actions/MinorActions.scala:229-230`
-  - `src/main/scala/oathdigital/gameplay/actions/Economy.scala:254-262`
-  - `src/main/scala/oathdigital/gameplay/actions/Visions.scala:252-253`
-  - `src/main/scala/oathdigital/gameplay/actions/Negotiation.scala:269-271`
-  - `src/main/scala/oathdigital/gameplay/actions/Challenge.scala:314`
-  - `src/main/scala/oathdigital/gameplay/actions/Campaign.scala:538`
-  - `src/main/scala/oathdigital/gameplay/phases/Rest.scala:242-243`
+  - `src/main/scala/distantlands/gameplay/actions/CardPlay.scala:340`
+  - `src/main/scala/distantlands/gameplay/actions/MinorActions.scala:229-230`
+  - `src/main/scala/distantlands/gameplay/actions/Economy.scala:254-262`
+  - `src/main/scala/distantlands/gameplay/actions/Visions.scala:252-253`
+  - `src/main/scala/distantlands/gameplay/actions/Negotiation.scala:269-271`
+  - `src/main/scala/distantlands/gameplay/actions/Challenge.scala:314`
+  - `src/main/scala/distantlands/gameplay/actions/Campaign.scala:538`
+  - `src/main/scala/distantlands/gameplay/phases/Rest.scala:242-243`
 
 **Interfaces:**
 - Consumes: Task 1 `OperationTransaction.evolve: Either[OathViolation, ReadyGame]`.
@@ -191,7 +191,7 @@ Expected: no compile errors from these 8 sites (remaining errors are Task 3/4 fi
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/CardPlay.scala src/main/scala/oathdigital/gameplay/actions/MinorActions.scala src/main/scala/oathdigital/gameplay/actions/Economy.scala src/main/scala/oathdigital/gameplay/actions/Visions.scala src/main/scala/oathdigital/gameplay/actions/Negotiation.scala src/main/scala/oathdigital/gameplay/actions/Challenge.scala src/main/scala/oathdigital/gameplay/actions/Campaign.scala src/main/scala/oathdigital/gameplay/phases/Rest.scala
+git add src/main/scala/distantlands/gameplay/actions/CardPlay.scala src/main/scala/distantlands/gameplay/actions/MinorActions.scala src/main/scala/distantlands/gameplay/actions/Economy.scala src/main/scala/distantlands/gameplay/actions/Visions.scala src/main/scala/distantlands/gameplay/actions/Negotiation.scala src/main/scala/distantlands/gameplay/actions/Challenge.scala src/main/scala/distantlands/gameplay/actions/Campaign.scala src/main/scala/distantlands/gameplay/phases/Rest.scala
 git commit -m "refactor(actions): drop .map(_.ready) after executor retype"
 ```
 
@@ -199,15 +199,15 @@ git commit -m "refactor(actions): drop .map(_.ready) after executor retype"
 
 **Files:**
 - Modify:
-  - `src/main/scala/oathdigital/gameplay/actions/Visions.scala:152-154` (`execution <- ...; } yield Ready(execution.ready)`)
-  - `src/main/scala/oathdigital/gameplay/actions/Challenge.scala:257-259` (`evolved <- ...; } yield Ready(evolved.ready)`)
-  - `src/main/scala/oathdigital/gameplay/actions/Campaign.scala:442-445` (`.map(execution => Ready(execution.ready))`)
-  - `src/main/scala/oathdigital/gameplay/actions/Travel.scala:65-82` (`.map(execution => Ready(execution.ready))`)
-  - `src/main/scala/oathdigital/gameplay/actions/Search.scala:99-117` (`execution <- ...; } yield Ready(execution.ready)`)
-  - `src/main/scala/oathdigital/gameplay/actions/Recover.scala:70-76` (`execution <- ...; } yield Ready(execution.ready)`)
-  - `src/main/scala/oathdigital/gameplay/actions/Recover.scala:255-262` (`.map(execution => Ready(execution.ready))`)
-  - `src/main/scala/oathdigital/gameplay/actions/Forge.scala:136-139` (`execution <- ...; } yield Ready(execution.ready)`)
-  - `src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyPower.scala:237-240` (`execution <- ...; } yield execution.ready`)
+  - `src/main/scala/distantlands/gameplay/actions/Visions.scala:152-154` (`execution <- ...; } yield Ready(execution.ready)`)
+  - `src/main/scala/distantlands/gameplay/actions/Challenge.scala:257-259` (`evolved <- ...; } yield Ready(evolved.ready)`)
+  - `src/main/scala/distantlands/gameplay/actions/Campaign.scala:442-445` (`.map(execution => Ready(execution.ready))`)
+  - `src/main/scala/distantlands/gameplay/actions/Travel.scala:65-82` (`.map(execution => Ready(execution.ready))`)
+  - `src/main/scala/distantlands/gameplay/actions/Search.scala:99-117` (`execution <- ...; } yield Ready(execution.ready)`)
+  - `src/main/scala/distantlands/gameplay/actions/Recover.scala:70-76` (`execution <- ...; } yield Ready(execution.ready)`)
+  - `src/main/scala/distantlands/gameplay/actions/Recover.scala:255-262` (`.map(execution => Ready(execution.ready))`)
+  - `src/main/scala/distantlands/gameplay/actions/Forge.scala:136-139` (`execution <- ...; } yield Ready(execution.ready)`)
+  - `src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyPower.scala:237-240` (`execution <- ...; } yield execution.ready`)
 
 **Interfaces:**
 - Consumes: Task 1 `OperationTransaction.evolve: Either[OathViolation, ReadyGame]`.
@@ -238,15 +238,15 @@ Expected: no compile errors from production code; only the two test files (Task 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/Visions.scala src/main/scala/oathdigital/gameplay/actions/Challenge.scala src/main/scala/oathdigital/gameplay/actions/Campaign.scala src/main/scala/oathdigital/gameplay/actions/Travel.scala src/main/scala/oathdigital/gameplay/actions/Search.scala src/main/scala/oathdigital/gameplay/actions/Recover.scala src/main/scala/oathdigital/gameplay/actions/Forge.scala src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyPower.scala
+git add src/main/scala/distantlands/gameplay/actions/Visions.scala src/main/scala/distantlands/gameplay/actions/Challenge.scala src/main/scala/distantlands/gameplay/actions/Campaign.scala src/main/scala/distantlands/gameplay/actions/Travel.scala src/main/scala/distantlands/gameplay/actions/Search.scala src/main/scala/distantlands/gameplay/actions/Recover.scala src/main/scala/distantlands/gameplay/actions/Forge.scala src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyPower.scala
 git commit -m "refactor(actions): executor result is ReadyGame, drop field derefs"
 ```
 
 ## Task 4: Fix the test suites
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/OperationExecutorSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerOperationsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/OperationExecutorSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerOperationsSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1 result types (`execute`/`executeAll`/`evolve` all return `ReadyGame`).
@@ -304,7 +304,7 @@ Expected: no matches (empty output).
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/OperationExecutorSuite.scala src/test/scala/oathdigital/gameplay/PowerOperationsSuite.scala
+git add src/test/scala/distantlands/gameplay/OperationExecutorSuite.scala src/test/scala/distantlands/gameplay/PowerOperationsSuite.scala
 git commit -m "test(operations): drop receipts assertions after executor retype"
 ```
 

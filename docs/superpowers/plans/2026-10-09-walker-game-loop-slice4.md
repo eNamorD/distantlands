@@ -115,30 +115,30 @@ Check each of these in the code before Task 1. If a name or signature differs, r
 | File | Change | Task |
 |---|---|---|
 | `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md` | modify | 1, 6 |
-| `src/main/scala/oathdigital/model/GameViolation.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/walker/{WalkerSimulation,PricedOptions,QueuedStart}.scala` | modify | 1 |
-| `src/main/scala/oathdigital/model/ProcedureRef.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/phases/ActOffers.scala` | create | 2 |
-| `src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/{OathRulesWalker,OathDriver}.scala` | modify | 2, 3 |
-| `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` | modify | 2 |
-| `src/main/scala/oathdigital/application/gamelog/ActionLines.scala` (and any match the compiler names) | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/OathLifecycle.scala` and the procedures that call it | modify | 5 |
-| `src/main/scala/oathdigital/application/{GameCommands,Authorization,GameIntentMapper,GameApplicationService}.scala` | modify | 5 |
-| `shared/src/main/scala/oathdigital/protocol/{CommandIntents,CommandIntentCodec,CommandIntentDecoders}.scala` | modify | 5 |
-| `frontend/src/main/scala/oathdigital/frontend/MenuPanel.scala` | create | 4 |
-| `frontend/src/main/scala/oathdigital/frontend/{ParkedDecision,ActionDecisionRenderer,ServerUiSupport}.scala` | modify | 4 |
-| `frontend/src/main/scala/oathdigital/frontend/{EconomyControls,BannerControls,NegotiationControls,CampaignControls,PhasePowerButtons}.scala` | delete | 4 |
-| `src/test/scala/oathdigital/gameplay/walker/StartSearchSuite.scala` | create | 1 |
-| `src/test/scala/oathdigital/gameplay/QueuedStartSuite.scala` | create | 1 |
-| `src/test/scala/oathdigital/testkit/{MenuPlay,Situation,SituationDriver}.scala` | modify | 2, 5 |
-| `src/test/scala/oathdigital/gameplay/{PhaseMenuSuite,OathDriverSuite}.scala` | modify | 2, 3 |
-| `src/test/scala/oathdigital/gameplay/ActMenuBudget.scala` | create | 2 |
-| `src/test/scala/oathdigital/model/ProcedureRefSuite.scala` | modify | 2 |
-| `src/test/scala/oathdigital/application/PhaseMenuServiceSuite.scala` | modify | 3 |
-| `frontend/src/test/scala/oathdigital/frontend/MenuPanelSuite.scala` | create | 4 |
+| `src/main/scala/distantlands/model/GameViolation.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/walker/{WalkerSimulation,PricedOptions,QueuedStart}.scala` | modify | 1 |
+| `src/main/scala/distantlands/model/ProcedureRef.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/phases/ActOffers.scala` | create | 2 |
+| `src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/{OathRulesWalker,OathDriver}.scala` | modify | 2, 3 |
+| `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` | modify | 2 |
+| `src/main/scala/distantlands/application/gamelog/ActionLines.scala` (and any match the compiler names) | modify | 2 |
+| `src/main/scala/distantlands/gameplay/OathLifecycle.scala` and the procedures that call it | modify | 5 |
+| `src/main/scala/distantlands/application/{GameCommands,Authorization,GameIntentMapper,GameApplicationService}.scala` | modify | 5 |
+| `shared/src/main/scala/distantlands/protocol/{CommandIntents,CommandIntentCodec,CommandIntentDecoders}.scala` | modify | 5 |
+| `frontend/src/main/scala/distantlands/frontend/MenuPanel.scala` | create | 4 |
+| `frontend/src/main/scala/distantlands/frontend/{ParkedDecision,ActionDecisionRenderer,ServerUiSupport}.scala` | modify | 4 |
+| `frontend/src/main/scala/distantlands/frontend/{EconomyControls,BannerControls,NegotiationControls,CampaignControls,PhasePowerButtons}.scala` | delete | 4 |
+| `src/test/scala/distantlands/gameplay/walker/StartSearchSuite.scala` | create | 1 |
+| `src/test/scala/distantlands/gameplay/QueuedStartSuite.scala` | create | 1 |
+| `src/test/scala/distantlands/testkit/{MenuPlay,Situation,SituationDriver}.scala` | modify | 2, 5 |
+| `src/test/scala/distantlands/gameplay/{PhaseMenuSuite,OathDriverSuite}.scala` | modify | 2, 3 |
+| `src/test/scala/distantlands/gameplay/ActMenuBudget.scala` | create | 2 |
+| `src/test/scala/distantlands/model/ProcedureRefSuite.scala` | modify | 2 |
+| `src/test/scala/distantlands/application/PhaseMenuServiceSuite.scala` | modify | 3 |
+| `frontend/src/test/scala/distantlands/frontend/MenuPanelSuite.scala` | create | 4 |
 | other test suites (listed per task) | modify | 2-5 |
 | `docs/ROADMAP.md` | modify | 6 |
 
@@ -150,9 +150,9 @@ A start is searched through its modifier decision and priced. Nothing shows pric
 
 **Files:**
 - Modify: `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md`
-- Modify: `src/main/scala/oathdigital/model/GameViolation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala`, `PricedOptions.scala`, `QueuedStart.scala`
-- Create tests: `src/test/scala/oathdigital/gameplay/walker/StartSearchSuite.scala`, `src/test/scala/oathdigital/gameplay/QueuedStartSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameViolation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala`, `PricedOptions.scala`, `QueuedStart.scala`
+- Create tests: `src/test/scala/distantlands/gameplay/walker/StartSearchSuite.scala`, `src/test/scala/distantlands/gameplay/QueuedStartSuite.scala`
 
 **Interfaces:**
 - Produces, in `oathdigital.model.OathViolation`: `final case class StartUnavailable(reason: String)`.
@@ -190,7 +190,7 @@ In the spec, add a section `## Plan-time rulings (slice 4)` after "Plan-time rul
 
 - [ ] **Step 3: Write the failing search tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/StartSearchSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/StartSearchSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -309,7 +309,7 @@ class StartSearchSuite extends munit.FunSuite:
       SpendSupply(p1, 1))))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/QueuedStartSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/QueuedStartSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -634,12 +634,12 @@ Expected: PASS. The follow-up offer and the Wake and Rest menus now use the exac
 
 ```bash
 git add docs/superpowers/specs/2026-10-09-walker-game-loop-design.md \
-  src/main/scala/oathdigital/model/GameViolation.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala \
-  src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala \
-  src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala \
-  src/test/scala/oathdigital/gameplay/walker/StartSearchSuite.scala \
-  src/test/scala/oathdigital/gameplay/QueuedStartSuite.scala
+  src/main/scala/distantlands/model/GameViolation.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala \
+  src/main/scala/distantlands/gameplay/walker/PricedOptions.scala \
+  src/main/scala/distantlands/gameplay/walker/QueuedStart.scala \
+  src/test/scala/distantlands/gameplay/walker/StartSearchSuite.scala \
+  src/test/scala/distantlands/gameplay/QueuedStartSuite.scala
 git status --short
 git commit -m "feat(walker): a start is searched through its modifier decision and priced"
 ```
@@ -653,15 +653,15 @@ Add any test you updated in Step 9 to the `git add` list.
 The Act menu exists, lists every option with its price or reason, and starts what is picked. The driver does not park it yet: a one-line guard holds it back until Task 3.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala`
-- Create: `src/main/scala/oathdigital/gameplay/phases/ActOffers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`, `OathDriver.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`, `application/gamelog/ActionLines.scala`
-- Modify tests: `src/test/scala/oathdigital/testkit/{MenuPlay,Situation,SituationDriver}.scala`, `src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala`, `src/test/scala/oathdigital/model/ProcedureRefSuite.scala`
-- Create test: `src/test/scala/oathdigital/gameplay/ActMenuBudget.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala`
+- Create: `src/main/scala/distantlands/gameplay/phases/ActOffers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, `OathDriver.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`, `application/gamelog/ActionLines.scala`
+- Modify tests: `src/test/scala/distantlands/testkit/{MenuPlay,Situation,SituationDriver}.scala`, `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala`, `src/test/scala/distantlands/model/ProcedureRefSuite.scala`
+- Create test: `src/test/scala/distantlands/gameplay/ActMenuBudget.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `QueuedStart.priced`, `needs`, `StartCost.words` and `OathViolation.StartUnavailable`.
@@ -910,7 +910,7 @@ In `TradeProcedure.scala`, after `resourceOf`, add:
 
 - [ ] **Step 6: The Act offers**
 
-Create `src/main/scala/oathdigital/gameplay/phases/ActOffers.scala`:
+Create `src/main/scala/distantlands/gameplay/phases/ActOffers.scala`:
 
 ```scala
 package oathdigital.gameplay.phases
@@ -1113,7 +1113,7 @@ If "an Act option carries its start's price" fails on Search's badge because the
 
 - [ ] **Step 11: The budget benchmark**
 
-Create `src/test/scala/oathdigital/gameplay/ActMenuBudget.scala`:
+Create `src/test/scala/distantlands/gameplay/ActMenuBudget.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1186,21 +1186,21 @@ Expected: PASS. If a projection or Game Log test lists every triggered procedure
 - [ ] **Step 13: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ProcedureRef.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala \
-  src/main/scala/oathdigital/gameplay/phases/ActOffers.scala \
-  src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/main/scala/oathdigital/gameplay/OathDriver.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/application/gamelog/ActionLines.scala \
-  src/test/scala/oathdigital/testkit/MenuPlay.scala \
-  src/test/scala/oathdigital/testkit/Situation.scala \
-  src/test/scala/oathdigital/testkit/SituationDriver.scala \
-  src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala \
-  src/test/scala/oathdigital/gameplay/ActMenuBudget.scala \
-  src/test/scala/oathdigital/model/ProcedureRefSuite.scala
+git add src/main/scala/distantlands/model/ProcedureRef.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala \
+  src/main/scala/distantlands/gameplay/phases/ActOffers.scala \
+  src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/main/scala/distantlands/gameplay/OathDriver.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/application/gamelog/ActionLines.scala \
+  src/test/scala/distantlands/testkit/MenuPlay.scala \
+  src/test/scala/distantlands/testkit/Situation.scala \
+  src/test/scala/distantlands/testkit/SituationDriver.scala \
+  src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala \
+  src/test/scala/distantlands/gameplay/ActMenuBudget.scala \
+  src/test/scala/distantlands/model/ProcedureRefSuite.scala
 git status --short
 git commit -m "feat(walker): the Act menu"
 ```
@@ -1214,8 +1214,8 @@ Add every other file you changed for a compiler-named match.
 Act is played at its menu. Tests that started actions with commands pick them from the menu.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/OathDriver.scala`
-- Modify tests: `src/test/scala/oathdigital/gameplay/OathDriverSuite.scala`, `src/test/scala/oathdigital/application/PhaseMenuServiceSuite.scala`, the Game Log menu suite, and the suites listed in Step 5
+- Modify: `src/main/scala/distantlands/gameplay/OathDriver.scala`
+- Modify tests: `src/test/scala/distantlands/gameplay/OathDriverSuite.scala`, `src/test/scala/distantlands/application/PhaseMenuServiceSuite.scala`, the Game Log menu suite, and the suites listed in Step 5
 
 **Interfaces:**
 - Consumes: Task 2's `PhaseMenu.Menu.Act`, `MenuPlay.start`, `starting` and `started`.
@@ -1254,7 +1254,7 @@ In `PhaseMenuServiceSuite.scala`, add:
     assertEquals(MenuPlay.parked(undone.state), Some(PhaseMenu.Menu.Act))
 ```
 
-In the Game Log suite that tests the Wake menu's silent pick (slice 2 created `GameLogPhaseMenuSuite`; find it with `grep -rln "a pick writes nothing\|PhaseMenu" src/test/scala/oathdigital/application/gamelog`), add the same test for an Act pick: the lines after picking Search from the Act menu are exactly the lines Search's start writes, with no menu line and no menu section. Follow the Wake test's shape.
+In the Game Log suite that tests the Wake menu's silent pick (slice 2 created `GameLogPhaseMenuSuite`; find it with `grep -rln "a pick writes nothing\|PhaseMenu" src/test/scala/distantlands/application/gamelog`), add the same test for an Act pick: the lines after picking Search from the Act menu are exactly the lines Search's start writes, with no menu line and no menu section. Follow the Wake test's shape.
 
 - [ ] **Step 2: Run them to see them fail**
 
@@ -1302,7 +1302,7 @@ Any other failure: stop and report.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/OathDriver.scala \
+git add src/main/scala/distantlands/gameplay/OathDriver.scala \
   src/test/scala
 git status --short
 git commit -m "feat(walker): the driver parks the Act menu"
@@ -1317,10 +1317,10 @@ Check that `git status --short` lists no file outside `src/` you did not mean to
 The frontend draws every phase menu as one grouped panel. The hand-mapped Act buttons go.
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/MenuPanel.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala`, `ActionDecisionRenderer.scala`, `ServerUiSupport.scala`
-- Delete: `frontend/src/main/scala/oathdigital/frontend/{EconomyControls,BannerControls,NegotiationControls,CampaignControls,PhasePowerButtons}.scala`
-- Create test: `frontend/src/test/scala/oathdigital/frontend/MenuPanelSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/MenuPanel.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala`, `ActionDecisionRenderer.scala`, `ServerUiSupport.scala`
+- Delete: `frontend/src/main/scala/distantlands/frontend/{EconomyControls,BannerControls,NegotiationControls,CampaignControls,PhasePowerButtons}.scala`
+- Create test: `frontend/src/test/scala/distantlands/frontend/MenuPanelSuite.scala`
 - Modify or delete tests: listed in Step 5
 
 **Interfaces:**
@@ -1328,7 +1328,7 @@ The frontend draws every phase menu as one grouped panel. The hand-mapped Act bu
 
 - [ ] **Step 1: Write the failing frontend test**
 
-Create `frontend/src/test/scala/oathdigital/frontend/MenuPanelSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/MenuPanelSuite.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -1411,7 +1411,7 @@ Expected: compile failure: `MenuPanel` and `Surface.Menu` do not exist.
 
 - [ ] **Step 2: The panel**
 
-Create `frontend/src/main/scala/oathdigital/frontend/MenuPanel.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/MenuPanel.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -1529,16 +1529,16 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/MenuPanel.scala \
-  frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala \
-  frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala \
+git add frontend/src/main/scala/distantlands/frontend/MenuPanel.scala \
+  frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala \
+  frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala \
   frontend/src/test/scala
-git rm frontend/src/main/scala/oathdigital/frontend/EconomyControls.scala \
-  frontend/src/main/scala/oathdigital/frontend/BannerControls.scala \
-  frontend/src/main/scala/oathdigital/frontend/NegotiationControls.scala \
-  frontend/src/main/scala/oathdigital/frontend/CampaignControls.scala \
-  frontend/src/main/scala/oathdigital/frontend/PhasePowerButtons.scala
+git rm frontend/src/main/scala/distantlands/frontend/EconomyControls.scala \
+  frontend/src/main/scala/distantlands/frontend/BannerControls.scala \
+  frontend/src/main/scala/distantlands/frontend/NegotiationControls.scala \
+  frontend/src/main/scala/distantlands/frontend/CampaignControls.scala \
+  frontend/src/main/scala/distantlands/frontend/PhasePowerButtons.scala
 git status --short
 git commit -m "feat(frontend): every phase menu is one grouped panel"
 ```
@@ -1552,9 +1552,9 @@ Use `git rm` for each deleted test suite too.
 Nothing sends `StartWalker`, `UsePower` or `BeginRest` any more, and the procedures stop checking the phase they start in.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala`
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala`, `GameApplicationService.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathLifecycle.scala` and its callers (Step 3)
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala`, `GameApplicationService.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathLifecycle.scala` and its callers (Step 3)
 - Modify tests: listed in Step 4
 
 **Interfaces:**

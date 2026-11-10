@@ -49,17 +49,17 @@ Found while reading the code for this plan. Task 19 folds each into the spec.
 ## File structure
 
 New:
-- `src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala`: roll outcome derivation, `recordRoll` and `writeRollOutcome`, moved out of `ProcedureWalker`.
-- `src/main/scala/oathdigital/gameplay/walker/WalkerDice.scala`: the dice source.
-- `src/main/scala/oathdigital/model/CampaignTypes.scala`: `CampaignKind`, `CampaignDefender`, `CampaignRaidTarget`, the plan vocabulary and `CampaignResult`, moved out of `PendingProcedures.scala`.
-- `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala`: what the answers say (kind, defender, targets, force) and who may be chosen.
-- `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`: the tree, `build`, `rebuild`, `startable`, the decision ids.
-- `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlans.scala`: the plan registry, trimmed, and the plan steps.
-- `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala`: pools, results, victor, losses.
-- `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignConquest.scala`, `CampaignRaid.scala`: the two resolutions.
-- `src/main/scala/oathdigital/gameplay/powers/campaign/CampaignPowers.scala`: Vow of Peace and the Narrow Pass campaign contribution (the existing `powers/CampaignPowers.scala` reviewed catalog stays).
-- `src/main/scala/oathdigital/application/CampaignResultProjector.scala`.
-- `frontend/src/main/scala/oathdigital/frontend/CampaignResultPanel.scala`.
+- `src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala`: roll outcome derivation, `recordRoll` and `writeRollOutcome`, moved out of `ProcedureWalker`.
+- `src/main/scala/distantlands/gameplay/walker/WalkerDice.scala`: the dice source.
+- `src/main/scala/distantlands/model/CampaignTypes.scala`: `CampaignKind`, `CampaignDefender`, `CampaignRaidTarget`, the plan vocabulary and `CampaignResult`, moved out of `PendingProcedures.scala`.
+- `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala`: what the answers say (kind, defender, targets, force) and who may be chosen.
+- `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`: the tree, `build`, `rebuild`, `startable`, the decision ids.
+- `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlans.scala`: the plan registry, trimmed, and the plan steps.
+- `src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala`: pools, results, victor, losses.
+- `src/main/scala/distantlands/gameplay/actions/campaign/CampaignConquest.scala`, `CampaignRaid.scala`: the two resolutions.
+- `src/main/scala/distantlands/gameplay/powers/campaign/CampaignPowers.scala`: Vow of Peace and the Narrow Pass campaign contribution (the existing `powers/CampaignPowers.scala` reviewed catalog stays).
+- `src/main/scala/distantlands/application/CampaignResultProjector.scala`.
+- `frontend/src/main/scala/distantlands/frontend/CampaignResultPanel.scala`.
 - Tests: `CampaignFixture.scala`, `CampaignSetupSuite.scala`, `CampaignProcedureSuite.scala`, `CampaignBattleSuite.scala`, `CampaignRaidSuite.scala`, `CampaignPowersSuite.scala`, `CampaignParitySuite.scala`, `AutomaticRollSuite.scala`, `OptionRestrictionSuite.scala`, `CampaignWindowsSuite.scala`, `CampaignResultSuite.scala`, `CampaignResultProjectionSuite.scala`, frontend `CampaignResultPanelSuite.scala`.
 
 Modified throughout: `Decisions.scala`, `DecisionQueries.scala`, `CoreOperations.scala`, `OperationStateMutation.scala`, `ProcedureWalker.scala`, `WalkerPowerGather.scala`, `WalkerReplay.scala`, `WalkerSimulation.scala`, `WalkerProcedureRegistry.scala`, `ContributingPower.scala`, `ContributionCollector.scala`, `OathRules.scala`, `OathRulesWalker.scala`, `PowerWindow.scala`, `ProcedureRef.scala`, `GameProcedureProtocol.scala`, `GameState.scala`, `WalkerEventCodec.scala`, `WalkerOperationCodec.scala`, `GameRandomPorts.scala`, `GameApplicationService.scala`, `WalkerDecisionProjector.scala`, `LegalActionProjector.scala`, `GameProjection.scala`, `ActionProjectionDtos.scala`, `ActionProjectionCodec.scala`, `GameProjectionDto.scala`, `GameProjectionCodec.scala`, `WalkerPowerCatalog.scala`, `TravelSitePowers.scala`, frontend files.
@@ -69,8 +69,8 @@ Modified throughout: `Decisions.scala`, `DecisionQueries.scala`, `CoreOperations
 ### Task 1: `ChooseMany` may take zero options
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala:254-260`, `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala:74-88`
-- Modify tests: `src/test/scala/oathdigital/gameplay/walker/DecisionQuerySuite.scala:418-464`, `frontend/src/test/scala/oathdigital/frontend/WalkerSelectionDraftSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala:254-260`, `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala:74-88`
+- Modify tests: `src/test/scala/distantlands/gameplay/walker/DecisionQuerySuite.scala:418-464`, `frontend/src/test/scala/distantlands/frontend/WalkerSelectionDraftSuite.scala`
 
 **Interfaces:**
 - Produces: `DecisionQuery.ChooseMany(min, max, options, heading)` is well-formed for `0 <= min <= max <= options.size` with `max >= 1`, and is still rejected when it takes every option (`min == max == options.size`). `accepts` already checks `min <= selected.size <= max`, so an empty selection is a valid answer when `min == 0`. The wire, journal and projection codecs already carry an empty selection, and the frontend draft already confirms at its minimum, so nothing outside `wellFormed` changes.
@@ -195,8 +195,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 2: `Distribute` takes a total range
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala:267-287`, `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala:152-192,248-253,270-292`, `src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyContribution.scala:82`, `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:239-249`, `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:145`, `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala:212-267`, `frontend/src/main/scala/oathdigital/frontend/DistributeDecisionState.scala`, `frontend/src/main/scala/oathdigital/frontend/DistributePanelRenderer.scala:24-32`
-- Modify tests: `src/test/scala/oathdigital/gameplay/walker/DecisionQuerySuite.scala:328-331`, `src/test/scala/oathdigital/gameplay/walker/WalkerPreviewSuite.scala:70`, `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala:128-142`, `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala:153-162`, `frontend/src/test/scala/oathdigital/frontend/DistributePanelRenderSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/DistributeDecisionStateSuite.scala:12,21`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala:267-287`, `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala:152-192,248-253,270-292`, `src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyContribution.scala:82`, `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:239-249`, `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:145`, `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala:212-267`, `frontend/src/main/scala/distantlands/frontend/DistributeDecisionState.scala`, `frontend/src/main/scala/distantlands/frontend/DistributePanelRenderer.scala:24-32`
+- Modify tests: `src/test/scala/distantlands/gameplay/walker/DecisionQuerySuite.scala:328-331`, `src/test/scala/distantlands/gameplay/walker/WalkerPreviewSuite.scala:70`, `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala:128-142`, `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala:153-162`, `frontend/src/test/scala/distantlands/frontend/DistributePanelRenderSuite.scala`, `frontend/src/test/scala/distantlands/frontend/DistributeDecisionStateSuite.scala:12,21`
 
 **Interfaces:**
 - Produces: `DecisionQuery.Distribute(slots, minTotal, maxTotal, heading, confirmLabel)` and `DecisionQuery.Distribute.exactly(slots, total, heading, confirmLabel)`, which sets both totals. The answer's sum must satisfy `minTotal <= sum <= maxTotal`. `DecisionQueryProjection` carries `minTotal: Option[Int]` and `maxTotal: Option[Int]` in place of `total`. `DistributeDecisionState(slots, minTotal, maxTotal, amounts)` with `allocated`, `remaining = maxTotal - allocated` and `canConfirm = minTotal <= allocated <= maxTotal`, and `DistributeDecisionState.opened(slots, minTotal, maxTotal, suggested)`.
@@ -266,8 +266,8 @@ In `WalkerPreviewSuite.scala` (line 70) and `WalkerDecisionProjectorSuite.scala`
 
 ```bash
 perl -pi -e 's/DecisionQuery\.Distribute\(/DecisionQuery.Distribute.exactly(/' \
-  src/test/scala/oathdigital/gameplay/walker/WalkerPreviewSuite.scala \
-  src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala
+  src/test/scala/distantlands/gameplay/walker/WalkerPreviewSuite.scala \
+  src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala
 ```
 
 In `WalkerDecisionProjectorSuite.scala` replace `assertEquals(query.total, Some(2))` (line 141) with `assertEquals(query.minTotal -> query.maxTotal, Some(2) -> Some(2))` and add after that test:
@@ -562,9 +562,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 The walker derives a roll outcome only from defense faces, and `ModifyRollOutcome` is defined but silently ignored by the executor (its catch-all `case (result, _) => result`). Campaign needs both. The roll code also moves out of `ProcedureWalker.scala` (705 lines, cap 800) into its own file so Task 4 has room.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (imports; `parkedRoll` at 205-208; `poolCount` at 265; `recordRoll` at 644-680; `writeRollOutcome` at 682-705; the class doc at 135-150), `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala:52-70`, `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala:78-99`, `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala:311`
-- Test: create `src/test/scala/oathdigital/gameplay/walker/WalkerRollsSuite.scala`, `src/test/scala/oathdigital/gameplay/operations/ModifyRollOutcomeSuite.scala`; modify `src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala:646-655`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`, `src/test/scala/oathdigital/gameplay/WalkerRecordedOpsReducer.scala:37-56`
+- Create: `src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (imports; `parkedRoll` at 205-208; `poolCount` at 265; `recordRoll` at 644-680; `writeRollOutcome` at 682-705; the class doc at 135-150), `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala:52-70`, `src/main/scala/distantlands/serialization/WalkerEventCodec.scala:78-99`, `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala:311`
+- Test: create `src/test/scala/distantlands/gameplay/walker/WalkerRollsSuite.scala`, `src/test/scala/distantlands/gameplay/operations/ModifyRollOutcomeSuite.scala`; modify `src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala:646-655`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, `src/test/scala/distantlands/gameplay/WalkerRecordedOpsReducer.scala:37-56`
 
 **Interfaces:**
 - Produces: `WalkerRolls.poolCount(state, pool): Int`; `WalkerRolls.outcomeFor(roll: Roll, state: ReadyGame, faces: Vector[DieFace]): Either[OathViolation, RollOutcome]` (live walk); `WalkerRolls.outcomeForRecorded(state, pool, faces): Either[OathViolation, RollOutcome]` (replay); `WalkerRolls.write(ready, outcome): ReadyGame` (accumulating merge). An `Attack` roll derives `skulls = AttackDieFace.skulls(faces)` and `score = AttackDieFace.score(faces)`; a `Defense` roll derives `skulls = 0` and `score = DefenseDieFace.score(faces)`. `ModifyRollOutcome(pool, skulls, score)` writes the given fields into `rollOutcomes(pool)`, creating an empty outcome (`count = 0`, no faces) when the pool has none.
@@ -572,7 +572,7 @@ The walker derives a roll outcome only from defense faces, and `ModifyRollOutcom
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/WalkerRollsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/WalkerRollsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -661,7 +661,7 @@ class WalkerRollsSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/operations/ModifyRollOutcomeSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/operations/ModifyRollOutcomeSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -979,7 +979,7 @@ and the method beside `adjustDicePool`:
 
 - [ ] **Step 5: Run and commit**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerRollsSuite oathdigital.gameplay.operations.ModifyRollOutcomeSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.serialization.GameEventWireSuite oathdigital.gameplay.RecoverProcedureSuite oathdigital.gameplay.WalkerReplayDriftSuite oathdigital.gameplay.OathRulesWalkerPowerSuite" && wc -l src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
+Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerRollsSuite oathdigital.gameplay.operations.ModifyRollOutcomeSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.serialization.GameEventWireSuite oathdigital.gameplay.RecoverProcedureSuite oathdigital.gameplay.WalkerReplayDriftSuite oathdigital.gameplay.OathRulesWalkerPowerSuite" && wc -l src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
 Expected: PASS, and `ProcedureWalker.scala` is about 630 lines.
 
 ```bash
@@ -1002,9 +1002,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 A `Roll` currently parks and waits for a `RollWalker` command carrying faces. Campaign's rolls carry no decision, so a `Roll` can opt in to `RollMode.Automatic`: the walker asks a per-command dice source for faces, records a `RollPayload` step and keeps walking. Recover stays `Parked`. Spec: "all rolls should eventually become automatic" is deferred and recorded in Task 19.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/DiceSpec.scala` (add `RollMode`), `src/main/scala/oathdigital/model/CoreOperations.scala:532` (`Roll`), `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala:51` (`RollPayload`), `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`WalkCtx`, `advance`, `roll`, `resolve`, `runLeaf`, `parkedRoll`, `recordRoll`, class doc), `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala` (the `RollPayload` arm), `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala:54,75,88,128`, `src/main/scala/oathdigital/gameplay/OathRules.scala:33-41`, `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala:22-40,71,115,235,263`, `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala` (the `RollPayload` arms), `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala:154,403` (the `Roll` arms), `src/main/scala/oathdigital/application/GameRandomPorts.scala`, `src/main/scala/oathdigital/application/GameApplicationService.scala:84-88`
-- Create: `src/main/scala/oathdigital/gameplay/walker/WalkerDice.scala`
-- Test: create `src/test/scala/oathdigital/gameplay/AutomaticRollSuite.scala`, `src/test/scala/oathdigital/application/WalkerDiceAdapterSuite.scala`; modify `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`, `src/test/scala/oathdigital/gameplay/WalkerRecordedOpsReducer.scala`
+- Modify: `src/main/scala/distantlands/model/DiceSpec.scala` (add `RollMode`), `src/main/scala/distantlands/model/CoreOperations.scala:532` (`Roll`), `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala:51` (`RollPayload`), `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`WalkCtx`, `advance`, `roll`, `resolve`, `runLeaf`, `parkedRoll`, `recordRoll`, class doc), `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala` (the `RollPayload` arm), `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala:54,75,88,128`, `src/main/scala/distantlands/gameplay/OathRules.scala:33-41`, `src/main/scala/distantlands/gameplay/OathRulesWalker.scala:22-40,71,115,235,263`, `src/main/scala/distantlands/serialization/WalkerEventCodec.scala` (the `RollPayload` arms), `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala:154,403` (the `Roll` arms), `src/main/scala/distantlands/application/GameRandomPorts.scala`, `src/main/scala/distantlands/application/GameApplicationService.scala:84-88`
+- Create: `src/main/scala/distantlands/gameplay/walker/WalkerDice.scala`
+- Test: create `src/test/scala/distantlands/gameplay/AutomaticRollSuite.scala`, `src/test/scala/distantlands/application/WalkerDiceAdapterSuite.scala`; modify `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, `src/test/scala/distantlands/gameplay/WalkerRecordedOpsReducer.scala`
 
 **Interfaces:**
 - Produces: `RollMode.{Parked, Automatic}`; `Roll(pool, dice, mode = RollMode.Parked, window = None)`; `RollPayload(pool, faces, automatic: Boolean = false)`; `trait WalkerDice { def roll(kind: DiceKind, count: Int): Either[OathViolation, Vector[DieFace]] }` with `WalkerDice.unavailable` (fails with a typed violation) and `WalkerDice.placeholder` (fixed faces, for simulations); `ProcedureWalker.advance/resolve/roll(..., powers, dice: WalkerDice = WalkerDice.unavailable)`; `OathRules(..., walkerDice: WalkerDice = WalkerDice.unavailable)`; `CampaignDicePort.walkerDice(port): WalkerDice`.
@@ -1013,7 +1013,7 @@ A `Roll` currently parks and waits for a `RollWalker` command carrying faces. Ca
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/AutomaticRollSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/AutomaticRollSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1125,7 +1125,7 @@ class AutomaticRollSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/application/WalkerDiceAdapterSuite.scala`:
+Create `src/test/scala/distantlands/application/WalkerDiceAdapterSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -1341,7 +1341,7 @@ In `GameApplicationService.scala` extend the `new OathRules(...)` call (line 84)
 
 - [ ] **Step 7: Run and commit**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.AutomaticRollSuite oathdigital.application.WalkerDiceAdapterSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.walker.WalkerRollsSuite oathdigital.serialization.GameEventWireSuite oathdigital.gameplay.RecoverProcedureSuite oathdigital.gameplay.WalkerReplayDriftSuite oathdigital.application.GameApplicationServiceSuite oathdigital.gameplay.BackendArchitectureSuite" && wc -l src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
+Run: `./sbtw "testOnly oathdigital.gameplay.AutomaticRollSuite oathdigital.application.WalkerDiceAdapterSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.walker.WalkerRollsSuite oathdigital.serialization.GameEventWireSuite oathdigital.gameplay.RecoverProcedureSuite oathdigital.gameplay.WalkerReplayDriftSuite oathdigital.application.GameApplicationServiceSuite oathdigital.gameplay.BackendArchitectureSuite" && wc -l src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
 Expected: PASS, `ProcedureWalker.scala` under 700 lines. Then the full gate: `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`.
 
 ```bash
@@ -1364,8 +1364,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 A `Restriction` rejects a whole action, and a `Transform` rewrites operations; neither is the channel for "this option may not be offered". `OptionRestriction` is: a power hooked at a `Decide`'s window forbids options, the walker removes them once, in the window fold, before the query is parked, so projection, answer validation and simulation all see the filtered set. Narrow Pass's Campaign rule (Task 8) is its first user.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala:22-50`, `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`, `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala:31-49,63-100`
-- Test: create `src/test/scala/oathdigital/gameplay/OptionRestrictionSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala:22-50`, `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`, `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala:31-49,63-100`
+- Test: create `src/test/scala/distantlands/gameplay/OptionRestrictionSuite.scala`
 
 **Interfaces:**
 - Produces: `OptionRestriction(fn: (PowerCtx, DecisionOptionRef) => Option[OathViolation]) extends Contribution`. `GatheredContributions` gains `optionRestrictions: Vector[(PowerId, OptionRestriction)] = Vector.empty`. Semantics, applied only when the hooked node is a `Decide`:
@@ -1377,7 +1377,7 @@ A `Restriction` rejects a whole action, and a `Transform` rewrites operations; n
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/OptionRestrictionSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/OptionRestrictionSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1649,9 +1649,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 The battle-plan vocabulary (`CampaignPlanSource`, `Side`, `Cost`, `Effect`, `Resolution`) is nested inside `object PendingProcedure`, which Task 18 deletes, and the new walker code needs it. It moves to a top-level file now, mechanically, so nothing later has to move it while legacy code still uses it. The new Campaign windows are added as audited vocabulary.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/CampaignTypes.scala`
-- Modify: `src/main/scala/oathdigital/model/PendingProcedures.scala:108-172` (delete the nested plan types), `src/main/scala/oathdigital/model/PowerWindow.scala` (add the windows), and every file naming `PendingProcedure.CampaignPlan*` (about 140 references in `src` production and tests, listed by the `git grep` in Step 2)
-- Test: create `src/test/scala/oathdigital/model/CampaignWindowsSuite.scala`
+- Create: `src/main/scala/distantlands/model/CampaignTypes.scala`
+- Modify: `src/main/scala/distantlands/model/PendingProcedures.scala:108-172` (delete the nested plan types), `src/main/scala/distantlands/model/PowerWindow.scala` (add the windows), and every file naming `PendingProcedure.CampaignPlan*` (about 140 references in `src` production and tests, listed by the `git grep` in Step 2)
+- Test: create `src/test/scala/distantlands/model/CampaignWindowsSuite.scala`
 
 **Interfaces:**
 - Produces: top-level `oathdigital.model.CampaignPlanSide`, `CampaignPlanCost`, `CampaignPlanEffect`, `CampaignPlanSource` and `CampaignPlanResolution`, unchanged in shape. Windows, all `CampaignWindow`s (associated major action `Campaign`): `CampaignCost` (`campaign.cost`), `CampaignKindSelection` (`campaign.kind-selection`), `CampaignDefenderSelection` (`campaign.defender-selection`), `CampaignTargetSelection` (`campaign.target-selection`), `CampaignForceSelection` (`campaign.force-selection`), `CampaignGatherPools` (`campaign.gather-pools`), `CampaignAttackRoll` (`campaign.attack-roll`), `CampaignAttackResult` (`campaign.attack-result`), `CampaignSacrificeSelection` (`campaign.sacrifice-selection`), `CampaignDefenseRoll` (`campaign.defense-roll`), `CampaignDefenseResult` (`campaign.defense-result`), `CampaignLosses` (`campaign.losses`), `CampaignPlacement` (`campaign.placement`), `CampaignRaidTransfer` (`campaign.raid-transfer`), `CampaignRaidRelocation` (`campaign.raid-relocation`). The existing `CampaignActionEligibility`, `CampaignModifierSelection`, `CampaignBeforeTargets`, `CampaignAttackerBattlePlans`, `CampaignDefenderBattlePlans` and `CampaignAfterOutcome` are unchanged.
@@ -1659,7 +1659,7 @@ The battle-plan vocabulary (`CampaignPlanSource`, `Side`, `Cost`, `Effect`, `Res
 
 - [ ] **Step 1: Write the failing windows test**
 
-Create `src/test/scala/oathdigital/model/CampaignWindowsSuite.scala`:
+Create `src/test/scala/distantlands/model/CampaignWindowsSuite.scala`:
 
 ```scala
 package oathdigital.model
@@ -1763,7 +1763,7 @@ In `PowerWindow.scala` add after `CampaignAfterOutcome`:
 
 - [ ] **Step 4: Move the plan vocabulary**
 
-Create `src/main/scala/oathdigital/model/CampaignTypes.scala` holding exactly the nested definitions of `PendingProcedure` lines 109-172, now top-level:
+Create `src/main/scala/distantlands/model/CampaignTypes.scala` holding exactly the nested definitions of `PendingProcedure` lines 109-172, now top-level:
 
 ```scala
 package oathdigital.model
@@ -1867,9 +1867,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 Players need to see the dice and the victor of a Campaign, including a Conquest that ends in the same command as its defense roll. There is no action-history feed, and roll outcomes are cleared when the walker completes, so the result is a public fact in state, written by an operation the tree records (and therefore replayed from the journal). This task adds the fact and its operation; Task 11 records it and Tasks 13 and 14 show it.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala` (add `CampaignResult`), `src/main/scala/oathdigital/model/CoreOperations.scala` (add `RecordCampaignResult` near `SetOathkeeper`, line 510), `src/main/scala/oathdigital/model/GameState.scala:130-160` (add the state field), `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala:311-321`, `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala:40,231` (extend the trait and add both arms)
-- Create: `src/main/scala/oathdigital/serialization/CampaignResultCodec.scala`
-- Test: create `src/test/scala/oathdigital/gameplay/operations/RecordCampaignResultSuite.scala`, `src/test/scala/oathdigital/serialization/CampaignResultCodecSuite.scala`; modify `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala` (the operation list near line 640)
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala` (add `CampaignResult`), `src/main/scala/distantlands/model/CoreOperations.scala` (add `RecordCampaignResult` near `SetOathkeeper`, line 510), `src/main/scala/distantlands/model/GameState.scala:130-160` (add the state field), `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala:311-321`, `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala:40,231` (extend the trait and add both arms)
+- Create: `src/main/scala/distantlands/serialization/CampaignResultCodec.scala`
+- Test: create `src/test/scala/distantlands/gameplay/operations/RecordCampaignResultSuite.scala`, `src/test/scala/distantlands/serialization/CampaignResultCodecSuite.scala`; modify `src/test/scala/distantlands/serialization/GameEventWireSuite.scala` (the operation list near line 640)
 
 **Interfaces:**
 - Produces: `CampaignResult(attacker, kind, defender, targetSites, raidTargets, force, attackFaces: Vector[AttackDieFace], attackScore, skullLosses, sacrificed, defenseFaces: Vector[DefenseDieFace], defenseScore, victorious)` with `attackTotal = attackScore + sacrificed`; `RecordCampaignResult(result)`; `CurrentGameState.lastCampaignResult: Option[CampaignResult] = None`, overwritten by the next Campaign and never cleared by `WalkerCompleted`. `attackScore` is the score after the skull cap and Outriders and before the sacrifice; `defenseScore` is the dice score plus the defender's board force. Every field is public information: dice are public, and Raid targets are faceup relics, banners and a pawn.
@@ -1878,7 +1878,7 @@ Players need to see the dice and the victor of a Campaign, including a Conquest 
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/operations/RecordCampaignResultSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/operations/RecordCampaignResultSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -1915,7 +1915,7 @@ class RecordCampaignResultSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/serialization/CampaignResultCodecSuite.scala`:
+Create `src/test/scala/distantlands/serialization/CampaignResultCodecSuite.scala`:
 
 ```scala
 package oathdigital.serialization
@@ -2140,7 +2140,7 @@ In `WalkerOperationCodec.scala` change the head to `private[serialization] trait
 
 - [ ] **Step 5: Run and commit**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.RecordCampaignResultSuite oathdigital.serialization.CampaignResultCodecSuite oathdigital.serialization.GameEventWireSuite oathdigital.gameplay.operations.OperationStateMutationSuite oathdigital.gameplay.BackendArchitectureSuite" && wc -l src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
+Run: `./sbtw "testOnly oathdigital.gameplay.operations.RecordCampaignResultSuite oathdigital.serialization.CampaignResultCodecSuite oathdigital.serialization.GameEventWireSuite oathdigital.gameplay.operations.OperationStateMutationSuite oathdigital.gameplay.BackendArchitectureSuite" && wc -l src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
 Expected: PASS, the codec under 700 lines.
 
 ```bash
@@ -2163,9 +2163,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 Both rules exist today as private legacy checks (`vowOfPeace` in `CampaignRules`, `passAllowsTarget`). They become walker powers, so the Campaign tree in Tasks 9 to 12 asks no question about either: Vow of Peace is a root `Restriction` at `CampaignActionEligibility`, and Narrow Pass gains an `OptionRestriction` at `CampaignTargetSelection` beside its Travel restriction. The legacy checks stay until Task 17 (the parity suite compares against them).
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/VowOfPeaceContribution.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala:64-100` (`NarrowPassSitePower`), `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:24-29`
-- Test: create `src/test/scala/oathdigital/gameplay/CampaignPowersSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/VowOfPeaceContribution.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala:64-100` (`NarrowPassSitePower`), `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:24-29`
+- Test: create `src/test/scala/distantlands/gameplay/CampaignPowersSuite.scala`
 
 **Interfaces:**
 - Produces: `VowOfPeaceContribution.forCatalog(catalog): Option[VowOfPeaceContribution]`, a `ContributingPower` with id `denizen.vow-of-peace` whose `Restriction` at `PowerWindow.CampaignActionEligibility` returns `OathViolation.CampaignUnavailable("Vow of Peace prevents its ruler from campaigning")` when the acting player holds the card faceup as an adviser. `NarrowPassSitePower` additionally hooks `PowerWindow.CampaignTargetSelection` with an `OptionRestriction` that forbids a `DecisionOptionRef.Site(target)` when the acting player's pawn is outside the Pass's region, `target` is another site in that region, and the actor does not rule the Pass. Both are in `WalkerPowerCatalog.default(catalog)`.
@@ -2174,7 +2174,7 @@ Both rules exist today as private legacy checks (`vowOfPeace` in `CampaignRules`
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/CampaignPowersSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/CampaignPowersSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -2455,9 +2455,9 @@ The first four steps of the tree (cost, kind and defender, targets, force) and t
 - Both pools are gathered once, after the force answer: the attack pool holds the committed force, the defense pool the targets' printed defense. Nothing on the board changes before the terminal steps, so the counts are stable.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala:52-67` (add `ActionRef.Campaign`), `src/main/scala/oathdigital/model/GameProcedureProtocol.scala:38-50` (add `AwaitingCampaignDecision`), `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (the entry and its import), `src/test/scala/oathdigital/model/ActionValuesSuite.scala:18-20`
-- Create: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala`, `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala`, `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`
-- Test: create `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`, `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, `src/test/scala/oathdigital/gameplay/CampaignSetupSuite.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala:52-67` (add `ActionRef.Campaign`), `src/main/scala/distantlands/model/GameProcedureProtocol.scala:38-50` (add `AwaitingCampaignDecision`), `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (the entry and its import), `src/test/scala/distantlands/model/ActionValuesSuite.scala:18-20`
+- Create: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala`, `src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala`, `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`
+- Test: create `src/test/scala/distantlands/gameplay/CampaignFixture.scala`, `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, `src/test/scala/distantlands/gameplay/CampaignSetupSuite.scala`
 
 **Interfaces:**
 - Produces: `ActionRef.Campaign` (key `"campaign"`, last in `ActionRef.all`); `OathContinue.AwaitingCampaignDecision(playerId, decision)`; `CampaignIds` (decision ids `campaign.kind`, `.defender`, `.targets`, `.force`, `.attacker-plan`, `.defender-plan`, `.sacrifice`, `.placement`, `.relocation`; pools `campaign.attack` and `campaign.defense`; `SupplyCost = 2`; `finish`); `CampaignSetup(actor, kind, origin, defender, targetSites, raidTargets, force)` and `object CampaignSetup` (`originOf`, `defenderAt`, `conquestDefender`, `raidDefenders`, `legalKinds`, `kindOptions`, `defenderOptions`, `targetOptions`, `kindOf`, `defenderOf`, `setup`); `CampaignAnswers` (readers over `PendingTree`); `CampaignBattle.printedDefense` and `gatherPools`; `CampaignProcedure.build/rebuild/startable/decisionIds`.
@@ -2465,7 +2465,7 @@ The first four steps of the tree (cost, kind and defender, targets, force) and t
 
 - [ ] **Step 1: Write the fixture and the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`:
+Create `src/test/scala/distantlands/gameplay/CampaignFixture.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -2546,7 +2546,7 @@ object CampaignFixture {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala` (Tasks 10 to 12 add tests to it):
+Create `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala` (Tasks 10 to 12 add tests to it):
 
 ```scala
 package oathdigital.gameplay
@@ -2745,7 +2745,7 @@ class CampaignProcedureSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/CampaignSetupSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/CampaignSetupSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -3298,9 +3298,9 @@ The attacker's plan window, the defender's (owned by the defender when the defen
 - A bandit defender applies its cost-free, faceup, choice-free plans automatically in one `BuildOps`. A defender plan with a cost is never offered (none is registered).
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlans.scala`, `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanSteps.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala` (`CampaignAnswers.lastPick`), `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala` (the tree)
-- Test: create `src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala`; modify `src/test/scala/oathdigital/gameplay/CampaignFixture.scala` and `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlans.scala`, `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanSteps.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala` (`CampaignAnswers.lastPick`), `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala` (the tree)
+- Test: create `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala`; modify `src/test/scala/distantlands/gameplay/CampaignFixture.scala` and `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`
 
 **Interfaces:**
 - Produces: `CampaignPlanOption(ref, source, handlerId, side, costs, effects, order, label)` with `queryOption: DecisionOption`; `CampaignPlans.options(catalog, ready, setup, side, owner)`, `.available(catalog, ready, setup, side, owner, picked)`, `.banditPlans(catalog, ready, setup)`, `.apply(option, owner): Vector[CoreOperation]`, `.ignoresSkulls(catalog, picks): Boolean`; `CampaignAnswers.lastPick(pending, decisionId)`; `CampaignPlanSteps.attacker(catalog, actor)` and `.defender(catalog, actor)`.
@@ -3350,7 +3350,7 @@ Add to `CampaignFixture.scala`:
     catalog.relics.find(_.handlers.contains(handler)).get.id.value
 ```
 
-Create `src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -3925,9 +3925,9 @@ The attack roll, the recorded attack result, the sacrifice, the defense roll, th
 - Placement: `ChooseAmount(0, survivors)` for one target and `Distribute(minTotal = 0, maxTotal = survivors)` for several (Deviation 2). It is omitted when nothing survives.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignOutcome.scala`, `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignConquest.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala`, `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`
-- Test: create `src/test/scala/oathdigital/gameplay/CampaignBattleSuite.scala`; modify `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala` and `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignOutcome.scala`, `src/main/scala/distantlands/gameplay/actions/campaign/CampaignConquest.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala`, `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`
+- Test: create `src/test/scala/distantlands/gameplay/CampaignBattleSuite.scala`; modify `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala` and `src/test/scala/distantlands/gameplay/CampaignFixture.scala`
 
 **Interfaces:**
 - Produces: `CampaignBattle.attackResult(faces, force, ignoreSkulls): (score, skulls)`, `.attackResultOps`, `.defenderForce`, `.defenseResultOps`, `.sacrificeMax`, `.sacrificeHeading`, `.result`, `.losses`; `CampaignConquest.steps(actor, result)`; `CampaignOutcome.steps(ready, catalog, actor, result)`.
@@ -3951,7 +3951,7 @@ In `CampaignFixture.board`, keep the bank consistent when sites are cleared or f
         ForceKind.Bandit, base.banks.warbandSupply.getOrElse(ForceKind.Bandit, 0) + delta)))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/CampaignBattleSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/CampaignBattleSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -4480,7 +4480,7 @@ Also change the gather step in `tree` to use `withSetup`:
 
 - [ ] **Step 5: Run and commit**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignBattleSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.CampaignPlansSuite oathdigital.gameplay.CampaignSetupSuite oathdigital.gameplay.BackendArchitectureSuite" && wc -l src/main/scala/oathdigital/gameplay/actions/campaign/*.scala`
+Run: `./sbtw "testOnly oathdigital.gameplay.CampaignBattleSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.CampaignPlansSuite oathdigital.gameplay.CampaignSetupSuite oathdigital.gameplay.BackendArchitectureSuite" && wc -l src/main/scala/distantlands/gameplay/actions/campaign/*.scala`
 Expected: PASS, every new file well under 800 lines. Then the full gate: `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`.
 
 ```bash
@@ -4509,9 +4509,9 @@ A Raid victory resolves in the rulebook's printed order and then relocates the d
 - The relocation is not Travel: it is one `Move` of the defender's pawn.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignRaid.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignOutcome.scala` (the Raid arm)
-- Test: create `src/test/scala/oathdigital/gameplay/CampaignRaidSuite.scala`; modify `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignRaid.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignOutcome.scala` (the Raid arm)
+- Test: create `src/test/scala/distantlands/gameplay/CampaignRaidSuite.scala`; modify `src/test/scala/distantlands/gameplay/CampaignFixture.scala`
 
 **Interfaces:**
 - Produces: `CampaignRaid.steps(actor, result): Vector[Operation]`, `CampaignRaid.transfer(ready, result): Either[OathViolation, Vector[CoreOperation]]`, `CampaignRaid.relocationSites(ready, defender): Vector[SiteId]`.
@@ -4557,7 +4557,7 @@ Add to `CampaignFixture.scala` (import `oathdigital.gameplay.actions.VisionRules
   }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/CampaignRaidSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/CampaignRaidSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -4836,7 +4836,7 @@ In `CampaignOutcome.steps` replace the Raid arm `case CampaignKind.Raid => Vecto
 
 - [ ] **Step 4: Run and commit**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.CampaignBattleSuite oathdigital.gameplay.BackendArchitectureSuite" && wc -l src/main/scala/oathdigital/gameplay/actions/campaign/*.scala`
+Run: `./sbtw "testOnly oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.CampaignBattleSuite oathdigital.gameplay.BackendArchitectureSuite" && wc -l src/main/scala/distantlands/gameplay/actions/campaign/*.scala`
 Expected: PASS. Then the full gate `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`.
 
 ```bash
@@ -4859,9 +4859,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 Every viewer sees the last Campaign's result; the start control is offered exactly when the dry run of the start walk accepts; a defender's plan decision is shown to the defender and as a waiting notice to everyone else (the generic walker projection already does this once the decision is parked); and the Recover-only roll feedback stops leaking onto other procedures' decisions.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/CampaignResultProjector.scala`, `shared/src/main/scala/oathdigital/protocol/projection/CampaignResultProjectionCodec.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala` (add the DTO), `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala:1-40` (add `lastCampaign`), `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala` (the `Fields` set, the encoder, the decoder and its constructor call), `src/main/scala/oathdigital/application/GameProjection.scala:100-160` (assign it), `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:141-175,310-330` (gate the roll feedback), `src/main/scala/oathdigital/application/LegalActionProjector.scala:75-90,150-170` (the start control)
-- Test: create `src/test/scala/oathdigital/application/CampaignResultProjectionSuite.scala`; modify `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`, `src/test/scala/oathdigital/application/WalkerDecisionProjectionSuite.scala`
+- Create: `src/main/scala/distantlands/application/CampaignResultProjector.scala`, `shared/src/main/scala/distantlands/protocol/projection/CampaignResultProjectionCodec.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala` (add the DTO), `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala:1-40` (add `lastCampaign`), `shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala` (the `Fields` set, the encoder, the decoder and its constructor call), `src/main/scala/distantlands/application/GameProjection.scala:100-160` (assign it), `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:141-175,310-330` (gate the roll feedback), `src/main/scala/distantlands/application/LegalActionProjector.scala:75-90,150-170` (the start control)
+- Test: create `src/test/scala/distantlands/application/CampaignResultProjectionSuite.scala`; modify `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`, `src/test/scala/distantlands/application/WalkerDecisionProjectionSuite.scala`
 
 **Interfaces:**
 - Produces: `CampaignResultProjection(attackerPlayerId, kind: String, defenderPlayerId: Option[String], targetSiteIds: Vector[String], raidTargets: Vector[String], force: Int, attackDice: Vector[String], attackScore: Int, skullLosses: Int, sacrificed: Int, defenseDice: Vector[String], defenseScore: Int, victorious: Boolean)` (`defenderPlayerId = None` is the bandits; `raidTargets` are stable keys such as `pawn:blue`, `relic:blue:r1`, `banner:blue:peoples-favor`; dice spellings are the wire's `hollow-sword`, `one-sword`, `two-swords-skull`, `blank`, `one-shield`, `two-shields`, `doubler`); `GameProjection.lastCampaign: Option[CampaignResultProjection] = None` as its last field; the control string `"beginCampaign"`.
@@ -4870,7 +4870,7 @@ Every viewer sees the last Campaign's result; the start control is offered exact
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/application/CampaignResultProjectionSuite.scala`:
+Create `src/test/scala/distantlands/application/CampaignResultProjectionSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -5170,9 +5170,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 14: The frontend start control and the result panel
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/CampaignControls.scala`, `frontend/src/main/scala/oathdigital/frontend/CampaignResultPanel.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:262,337` (two call lines), `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:307-315` (the `campaign` kind is a major action), `frontend/src/main/scala/oathdigital/frontend/package.scala` (alias)
-- Test: create `frontend/src/test/scala/oathdigital/frontend/CampaignControlsSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/CampaignResultPanelSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/CampaignControls.scala`, `frontend/src/main/scala/distantlands/frontend/CampaignResultPanel.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:262,337` (two call lines), `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:307-315` (the `campaign` kind is a major action), `frontend/src/main/scala/distantlands/frontend/package.scala` (alias)
+- Test: create `frontend/src/test/scala/distantlands/frontend/CampaignControlsSuite.scala`, `frontend/src/test/scala/distantlands/frontend/CampaignResultPanelSuite.scala`
 
 **Interfaces:**
 - Produces: `CampaignControls.render(value, canControl, groups, submit)`, drawing "Campaign (2 Supply)" when `legalControls` contains `beginCampaign` and submitting `StartWalker("campaign", Vector.empty)`; `CampaignResultPanel.render(value, panel)`, drawing the last result to every viewer. The plan, sacrifice, placement and relocation decisions use the existing generic walker panels (`ChooseOne`, `ChooseAmount`, `Distribute`), so nothing else is drawn: the increment and decrement widgets of the legacy force and placement drafts are gone (spec, "Visibility and presentation").
@@ -5391,7 +5391,7 @@ Before any deletion, run the same legal Campaigns through the legacy commands an
 Parity is possible only where both accept: the unaltered exile-only state, injected dice, and no relevant unsupported power. The deliberate differences (no first-game gate, ignored powers, no cancel) are tested in Tasks 9 to 12 as new walker behaviour. Projections are not compared: the legacy Campaign projection is deleted by design and the new result projection has its own suite (Task 13).
 
 **Files:**
-- Test: create `src/test/scala/oathdigital/gameplay/CampaignParitySuite.scala`
+- Test: create `src/test/scala/distantlands/gameplay/CampaignParitySuite.scala`
 
 **Interfaces:**
 - Consumes: the walker Campaign (Tasks 9 to 12), `CampaignFixture` (Tasks 9 to 12), and the legacy `CampaignCommand` path, which still exists.
@@ -5660,9 +5660,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 The parity suite proved the walker path, so the ways a client reached the legacy one go, top layer first so every commit builds: (1) the server stops offering the legacy start, (2) the frontend drops its legacy panels, force draft and helpers, (3) the seven commands, intents and mapper arms go. The legacy projection is Task 17.1 and the legacy rules and events are Task 17.2.
 
 **Files (by step):**
-- 16.1: `src/main/scala/oathdigital/application/LegalActionProjector.scala:5,124-145,196-275`, `src/test/scala/oathdigital/application/CampaignResultProjectionSuite.scala`
-- 16.2: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:156-206,341-452`, `ServerUiSupport.scala:14-21,276-279,296-325,387-476,521-536`, `ServerModeUi.scala` (`campaignPlacementState`, `boardFormationState`), `BoardTargetSelectionState.scala`, `ModifierWorkflow.scala:39-44`, `package.scala:49-50,74-105`, delete `CampaignPlacementState.scala`; tests `frontend/src/test/scala/oathdigital/frontend/BoardTargetSelectionStateSuite.scala`, `HttpGameClientSuite.scala`, `ProtocolTestCommands.scala`, `RecordingServerUiView.scala`, `ServerModeUiSuite.scala`
-- 16.3: `src/main/scala/oathdigital/application/GameCommands.scala:35-55`, `Authorization.scala:79-98`, `GameApplicationService.scala:6,400-430,455-462`, `GameIntentMapper.scala:28-34,85-96`, `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala:18-30,66-79`, `CommandIntentCodec.scala:17-23,43-53`, `CommandIntentDecoders.scala:32-59,100-112`; tests `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala:9-22`, `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala`, `PendingWalkerInvariantSuite.scala:35-45`, `ForgeWalkerFixture.scala:81-98`, `src/test/scala/oathdigital/gameplay/PendingWalkerRulesSuite.scala:58-60`
+- 16.1: `src/main/scala/distantlands/application/LegalActionProjector.scala:5,124-145,196-275`, `src/test/scala/distantlands/application/CampaignResultProjectionSuite.scala`
+- 16.2: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:156-206,341-452`, `ServerUiSupport.scala:14-21,276-279,296-325,387-476,521-536`, `ServerModeUi.scala` (`campaignPlacementState`, `boardFormationState`), `BoardTargetSelectionState.scala`, `ModifierWorkflow.scala:39-44`, `package.scala:49-50,74-105`, delete `CampaignPlacementState.scala`; tests `frontend/src/test/scala/distantlands/frontend/BoardTargetSelectionStateSuite.scala`, `HttpGameClientSuite.scala`, `ProtocolTestCommands.scala`, `RecordingServerUiView.scala`, `ServerModeUiSuite.scala`
+- 16.3: `src/main/scala/distantlands/application/GameCommands.scala:35-55`, `Authorization.scala:79-98`, `GameApplicationService.scala:6,400-430,455-462`, `GameIntentMapper.scala:28-34,85-96`, `shared/src/main/scala/distantlands/protocol/CommandIntents.scala:18-30,66-79`, `CommandIntentCodec.scala:17-23,43-53`, `CommandIntentDecoders.scala:32-59,100-112`; tests `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala:9-22`, `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala`, `PendingWalkerInvariantSuite.scala:35-45`, `ForgeWalkerFixture.scala:81-98`, `src/test/scala/distantlands/gameplay/PendingWalkerRulesSuite.scala:58-60`
 
 **Interfaces:**
 - Produces: nothing new. After 16.3 a client can only start Campaign with `StartWalker("campaign")` and answer it with `ResolveWalker`.
@@ -5824,8 +5824,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 17: Retire the legacy Campaign projection, rules, events and vocabulary
 
 **Files (by step):**
-- 17.1: `src/main/scala/oathdigital/application/PendingProcedureProjector.scala:4,14-160`, `ScopedProjectionContext.scala:24-33` (`PendingProjection`), `GameProjection.scala:140,152`, `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:250-270`, `GameProjectionDto.scala:23-24`, `GameProjectionCodec.scala` (`Fields`, the `campaign` and `campaignRaidRelocation` lines, `decodeRelocation`), delete `CampaignProjectionCodec.scala`; tests `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- 17.2: delete `src/main/scala/oathdigital/gameplay/actions/Campaign.scala`, `CampaignRules.scala`, `CampaignPlans.scala`, `CampaignResolution.scala`, `CampaignHandlerClassifications.scala`, `src/main/scala/oathdigital/serialization/CampaignEventCodec.scala`; edit `OathRules.scala:5-6,33-35,67-90,117-130`, `GameEventProtocol.scala:40-130`, `GameEventWire.scala:21,36-42,275-296`, `GameEventJsonSupport.scala`, `FirstGameSetup.scala:200-201`, `PendingProcedures.scala`, `GameProcedureProtocol.scala:43-50`, `GameViolation.scala`, `RuleSources.scala:100-135`, `CampaignTypes.scala`, `GameApplicationService.scala` (imports); tests listed in step 17.2.3
+- 17.1: `src/main/scala/distantlands/application/PendingProcedureProjector.scala:4,14-160`, `ScopedProjectionContext.scala:24-33` (`PendingProjection`), `GameProjection.scala:140,152`, `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:250-270`, `GameProjectionDto.scala:23-24`, `GameProjectionCodec.scala` (`Fields`, the `campaign` and `campaignRaidRelocation` lines, `decodeRelocation`), delete `CampaignProjectionCodec.scala`; tests `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- 17.2: delete `src/main/scala/distantlands/gameplay/actions/Campaign.scala`, `CampaignRules.scala`, `CampaignPlans.scala`, `CampaignResolution.scala`, `CampaignHandlerClassifications.scala`, `src/main/scala/distantlands/serialization/CampaignEventCodec.scala`; edit `OathRules.scala:5-6,33-35,67-90,117-130`, `GameEventProtocol.scala:40-130`, `GameEventWire.scala:21,36-42,275-296`, `GameEventJsonSupport.scala`, `FirstGameSetup.scala:200-201`, `PendingProcedures.scala`, `GameProcedureProtocol.scala:43-50`, `GameViolation.scala`, `RuleSources.scala:100-135`, `CampaignTypes.scala`, `GameApplicationService.scala` (imports); tests listed in step 17.2.3
 
 **Interfaces:**
 - Consumes: Tasks 9 to 16.
@@ -5941,7 +5941,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 After Campaign, `PendingProcedure` has no cases and `CurrentGameState.pending` is always `None`. The dual-pending guard exists only to protect that slot. This task is its own commit so it can be reviewed, or split out of the slice, on its own.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala:141-147`, `PendingProcedures.scala` (delete the file after moving what remains), `src/main/scala/oathdigital/model/GameViolation.scala:34`, `src/main/scala/oathdigital/gameplay/OathLifecycle.scala:35-42`, `StateBasedEvaluation.scala:65-70,146-152`, `OathRulesWalker.scala:100-108,305-312`, `phases/PhasePowerProcedure.scala:70-75,94-97`, `phases/rest/FinishRestProcedure.scala:32-40`, `walker/ProcedureWalker.scala` (the dual-pending comments), `src/main/scala/oathdigital/application/GameProjection.scala:128-132`, `LegalActionProjector.scala:104-112,127-146`, `GameApplicationService.scala` (the `unblocked` guard's legacy half), `PendingProcedureProjector.scala`, and every test constructing `CurrentGameState` with `pending = ...`
+- Modify: `src/main/scala/distantlands/model/GameState.scala:141-147`, `PendingProcedures.scala` (delete the file after moving what remains), `src/main/scala/distantlands/model/GameViolation.scala:34`, `src/main/scala/distantlands/gameplay/OathLifecycle.scala:35-42`, `StateBasedEvaluation.scala:65-70,146-152`, `OathRulesWalker.scala:100-108,305-312`, `phases/PhasePowerProcedure.scala:70-75,94-97`, `phases/rest/FinishRestProcedure.scala:32-40`, `walker/ProcedureWalker.scala` (the dual-pending comments), `src/main/scala/distantlands/application/GameProjection.scala:128-132`, `LegalActionProjector.scala:104-112,127-146`, `GameApplicationService.scala` (the `unblocked` guard's legacy half), `PendingProcedureProjector.scala`, and every test constructing `CurrentGameState` with `pending = ...`
 
 **Interfaces:**
 - Produces: `CurrentGameState` without `pending`; no `PendingProcedure`, no `OathViolation.PendingProcedureBlocksAction`. What remains in `PendingProcedures.scala` (`SiteDenizenTarget`, `CampaignKind`, `CampaignRaidTarget`, `CampaignDefender`) moves to `CampaignTypes.scala` (or its own file when the name is not a Campaign type) and the file is deleted.

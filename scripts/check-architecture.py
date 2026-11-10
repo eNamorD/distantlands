@@ -37,20 +37,20 @@ for path in sources:
                       f"exceeds {MAX_SCALA_FILE_LINES} lines")
 
 forbidden_imports = {
-    "src/main/scala/oathdigital/model": (
+    "src/main/scala/distantlands/model": (
         "application", "gameplay", "persistence", "serialization", "server"
     ),
-    "src/main/scala/oathdigital/gameplay": (
+    "src/main/scala/distantlands/gameplay": (
         "application", "persistence", "presentation", "protocol",
         "serialization", "server"
     ),
-    "src/main/scala/oathdigital/application": (
+    "src/main/scala/distantlands/application": (
         "persistence", "serialization", "server"
     ),
     # Actions are the engine's procedures; powers contribute to them through
     # power windows (docs/architecture/gameplay-modules.md).
-    "src/main/scala/oathdigital/gameplay/actions": ("gameplay.powers",),
-    "src/main/scala/oathdigital/catalog": (
+    "src/main/scala/distantlands/gameplay/actions": ("gameplay.powers",),
+    "src/main/scala/distantlands/catalog": (
         "application", "gameplay", "persistence", "serialization", "server"
     ),
 }
@@ -58,7 +58,7 @@ forbidden_imports = {
 # line counts skull faces as the chosen plans score them, which only the
 # plan cards know (ROADMAP "Campaign notes read the attack rules").
 allowed_imports = {
-    "src/main/scala/oathdigital/gameplay/actions/campaign/CampaignNotes.scala":
+    "src/main/scala/distantlands/gameplay/actions/campaign/CampaignNotes.scala":
         "import oathdigital.gameplay.powers.campaign.AttackScore\n",
 }
 for prefix, packages in forbidden_imports.items():
@@ -123,7 +123,7 @@ for path in scala_sources(ROOT / "shared/src/main/scala"):
         )
 
 printed_text = re.compile(r"\.text\b")
-for path in scala_sources(ROOT / "src/main/scala/oathdigital/gameplay"):
+for path in scala_sources(ROOT / "src/main/scala/distantlands/gameplay"):
     text = path.read_text(encoding="utf-8")
     if "rulesText" in text:
         errors.append(f"{relative(path)}: gameplay must not inspect catalog rulesText")
@@ -176,7 +176,7 @@ for path in sources:
 # ExecutableCatalog` constructor parameter or offers a `forCatalog`
 # constructor; the only files allowed one are the context records listed
 # here, each with its reason.
-POWERS_ROOT = "src/main/scala/oathdigital/gameplay/powers"
+POWERS_ROOT = "src/main/scala/distantlands/gameplay/powers"
 catalog_parameter = re.compile(
     r"(?:class|trait|object)\s+\w+[^\n(]*\(\s*catalog: ExecutableCatalog"
     r"|def forCatalog\b|def catalog: ExecutableCatalog")

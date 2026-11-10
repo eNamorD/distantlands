@@ -44,26 +44,26 @@ This is the third of 14 slice plans, written against `0.2.0-alpha` at `c849c8c5`
 ### Task 1: The round die
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/DiceSpec.scala:3-4`
-- Modify: `src/main/scala/oathdigital/model/ActionValues.scala:12-21` (add `RoundDieFace` after `DefenseDieFace`)
-- Modify: `src/main/scala/oathdigital/model/DicePoolState.scala:43-52` (`RollOutcome.derive`, new `oneFamily`)
-- Modify: `src/main/scala/oathdigital/model/DieFace.scala:7` (doc)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/RollOperations.scala:31, 59-60, 72-74`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala:3-4, 29-35, 50-52`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerRerolls.scala:3-4, 22-24`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerDice.scala:3-4, 40-43`
-- Modify: `src/main/scala/oathdigital/application/GameRandomPorts.scala`
-- Modify: `src/main/scala/oathdigital/application/RolledFaces.scala:16-19` (doc only)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerValueCodec.scala:57-65, 254-264`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala:120-122`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/dice/Jinx.scala:48-50, 69-85`
-- Modify: `src/test/scala/oathdigital/gameplay/WalkerDiceFixture.scala` (every stub)
-- Modify: `src/test/scala/oathdigital/gameplay/AutomaticRollSuite.scala:18-22`
-- Modify: `src/test/scala/oathdigital/testkit/ActPowerHarness.scala:53` (add `roundDie` after `attackDice`)
-- Test: `src/test/scala/oathdigital/gameplay/walker/WalkerRollsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/walker/WalkerDiceContract.scala`
-- Test: `src/test/scala/oathdigital/application/CampaignDicePortContract.scala`
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/DiceSpec.scala:3-4`
+- Modify: `src/main/scala/distantlands/model/ActionValues.scala:12-21` (add `RoundDieFace` after `DefenseDieFace`)
+- Modify: `src/main/scala/distantlands/model/DicePoolState.scala:43-52` (`RollOutcome.derive`, new `oneFamily`)
+- Modify: `src/main/scala/distantlands/model/DieFace.scala:7` (doc)
+- Modify: `src/main/scala/distantlands/gameplay/operations/RollOperations.scala:31, 59-60, 72-74`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala:3-4, 29-35, 50-52`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerRerolls.scala:3-4, 22-24`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerDice.scala:3-4, 40-43`
+- Modify: `src/main/scala/distantlands/application/GameRandomPorts.scala`
+- Modify: `src/main/scala/distantlands/application/RolledFaces.scala:16-19` (doc only)
+- Modify: `src/main/scala/distantlands/serialization/WalkerValueCodec.scala:57-65, 254-264`
+- Modify: `src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala:120-122`
+- Modify: `src/main/scala/distantlands/gameplay/powers/dice/Jinx.scala:48-50, 69-85`
+- Modify: `src/test/scala/distantlands/gameplay/WalkerDiceFixture.scala` (every stub)
+- Modify: `src/test/scala/distantlands/gameplay/AutomaticRollSuite.scala:18-22`
+- Modify: `src/test/scala/distantlands/testkit/ActPowerHarness.scala:53` (add `roundDie` after `attackDice`)
+- Test: `src/test/scala/distantlands/gameplay/walker/WalkerRollsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/walker/WalkerDiceContract.scala`
+- Test: `src/test/scala/distantlands/application/CampaignDicePortContract.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces: `DiceKind.Round`.
@@ -399,26 +399,26 @@ Expected: PASS. Gambling Hall's Jinx test shows Jinx still rerolls defense dice.
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/DiceSpec.scala \
-  src/main/scala/oathdigital/model/ActionValues.scala \
-  src/main/scala/oathdigital/model/DicePoolState.scala \
-  src/main/scala/oathdigital/model/DieFace.scala \
-  src/main/scala/oathdigital/gameplay/operations/RollOperations.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerRerolls.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerDice.scala \
-  src/main/scala/oathdigital/application/GameRandomPorts.scala \
-  src/main/scala/oathdigital/application/RolledFaces.scala \
-  src/main/scala/oathdigital/serialization/WalkerValueCodec.scala \
-  src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala \
-  src/main/scala/oathdigital/gameplay/powers/dice/Jinx.scala \
-  src/test/scala/oathdigital/gameplay/WalkerDiceFixture.scala \
-  src/test/scala/oathdigital/gameplay/AutomaticRollSuite.scala \
-  src/test/scala/oathdigital/testkit/ActPowerHarness.scala \
-  src/test/scala/oathdigital/gameplay/walker/WalkerRollsSuite.scala \
-  src/test/scala/oathdigital/gameplay/walker/WalkerDiceContract.scala \
-  src/test/scala/oathdigital/application/CampaignDicePortContract.scala \
-  src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/DiceSpec.scala \
+  src/main/scala/distantlands/model/ActionValues.scala \
+  src/main/scala/distantlands/model/DicePoolState.scala \
+  src/main/scala/distantlands/model/DieFace.scala \
+  src/main/scala/distantlands/gameplay/operations/RollOperations.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerRerolls.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerDice.scala \
+  src/main/scala/distantlands/application/GameRandomPorts.scala \
+  src/main/scala/distantlands/application/RolledFaces.scala \
+  src/main/scala/distantlands/serialization/WalkerValueCodec.scala \
+  src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala \
+  src/main/scala/distantlands/gameplay/powers/dice/Jinx.scala \
+  src/test/scala/distantlands/gameplay/WalkerDiceFixture.scala \
+  src/test/scala/distantlands/gameplay/AutomaticRollSuite.scala \
+  src/test/scala/distantlands/testkit/ActPowerHarness.scala \
+  src/test/scala/distantlands/gameplay/walker/WalkerRollsSuite.scala \
+  src/test/scala/distantlands/gameplay/walker/WalkerDiceContract.scala \
+  src/test/scala/distantlands/application/CampaignDicePortContract.scala \
+  src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "feat(dice): add the round die, a d6 that scores its number
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -431,10 +431,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: Shattered Portal
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/ShatteredPortal.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/StonePortal.scala:25-34` (doc)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala:19`
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/ShatteredPortalSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/ShatteredPortal.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/StonePortal.scala:25-34` (doc)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala:19`
+- Create: `src/test/scala/distantlands/gameplay/powers/action/ShatteredPortalSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt`, `src/test/resources/powers/unimplemented.txt` (snapshots)
 - Modify: `docs/ROADMAP.md:69`, `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md:3`
 
@@ -672,10 +672,10 @@ Expected: both pass.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/ShatteredPortal.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/StonePortal.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/ShatteredPortalSuite.scala \
+git add src/main/scala/distantlands/gameplay/powers/action/ShatteredPortal.scala \
+  src/main/scala/distantlands/gameplay/powers/action/StonePortal.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/action/ShatteredPortalSuite.scala \
   src/test/resources/notes/declared-keys.txt \
   src/test/resources/powers/unimplemented.txt \
   docs/ROADMAP.md docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md

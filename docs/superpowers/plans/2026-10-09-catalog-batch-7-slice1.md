@@ -84,37 +84,37 @@ The product owner reviews these with the plan. Task 1 writes all of them into th
 ## File map
 
 **The reroll operation (Task 2):**
-- `src/main/scala/oathdigital/model/CoreOperations.scala`: `Reroll`.
-- `src/main/scala/oathdigital/model/DicePoolState.scala`: `RollOutcome.derive`.
-- `src/main/scala/oathdigital/gameplay/operations/RollOperations.scala`: new, `reroll`.
-- `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`: applies it.
-- `src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala`: uses `RollOutcome.derive`.
-- `src/main/scala/oathdigital/gameplay/walker/WalkerRerolls.scala`: new, fills the faces.
-- `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`: runs a declared reroll.
-- `src/main/scala/oathdigital/gameplay/walker/HiddenOutcomes.scala`: `Reroll` hides.
-- `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` and `WalkerEventCodec.scala`: the `reroll` kind.
+- `src/main/scala/distantlands/model/CoreOperations.scala`: `Reroll`.
+- `src/main/scala/distantlands/model/DicePoolState.scala`: `RollOutcome.derive`.
+- `src/main/scala/distantlands/gameplay/operations/RollOperations.scala`: new, `reroll`.
+- `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`: applies it.
+- `src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala`: uses `RollOutcome.derive`.
+- `src/main/scala/distantlands/gameplay/walker/WalkerRerolls.scala`: new, fills the faces.
+- `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`: runs a declared reroll.
+- `src/main/scala/distantlands/gameplay/walker/HiddenOutcomes.scala`: `Reroll` hides.
+- `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` and `WalkerEventCodec.scala`: the `reroll` kind.
 - Tests: new `RollOperationsSuite` and `ProcedureWalkerRerollSuite`; extended `WalkerOperationWireSuite`.
 
 **The roll step (Task 3):**
-- `src/main/scala/oathdigital/model/PowerWindow.scala`: `Reroll`.
-- `src/main/scala/oathdigital/model/RerollOffers.scala`: new, `RerollOffer` and `OfferedReroll`.
-- `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`: `OfferReroll` and `RerollHost`.
-- `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`: gathers `rerolls`.
-- `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`: expands a `RerollHost`.
-- `src/main/scala/oathdigital/gameplay/actions/dice/DiceThrow.scala`, `RerollChoice.scala` and `RollStep.scala`: new.
+- `src/main/scala/distantlands/model/PowerWindow.scala`: `Reroll`.
+- `src/main/scala/distantlands/model/RerollOffers.scala`: new, `RerollOffer` and `OfferedReroll`.
+- `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`: `OfferReroll` and `RerollHost`.
+- `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`: gathers `rerolls`.
+- `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`: expands a `RerollHost`.
+- `src/main/scala/distantlands/gameplay/actions/dice/DiceThrow.scala`, `RerollChoice.scala` and `RollStep.scala`: new.
 - The six roll sites: `CampaignProcedure.scala`, `RecoverProcedure.scala`, `GamblingHall.scala`, `RelicThief.scala`, `BoneDice.scala` and `MurkyFountain.scala`.
-- `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`: the reroll decision's roll panel.
-- `src/main/scala/oathdigital/application/gamelog/DetailLines.scala`: the line after a reroll, and the silent decisions.
+- `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`: the reroll decision's roll panel.
+- `src/main/scala/distantlands/application/gamelog/DetailLines.scala`: the line after a reroll, and the silent decisions.
 - Tests: new `RerollChoiceSuite` and `GameLogRerollSuite`, and the tests' own reroll power `FreeReroll`.
 
 **Jinx (Task 4):**
-- `src/main/scala/oathdigital/gameplay/powers/dice/Jinx.scala`: new. `JinxCard` moves out of `catalog/holding/HoldingArcaneDenizens.scala`.
+- `src/main/scala/distantlands/gameplay/powers/dice/Jinx.scala`: new. `JinxCard` moves out of `catalog/holding/HoldingArcaneDenizens.scala`.
 - Registration: `WalkerPowerCatalog.scala`, and the import in `NewFoundations.scala`.
 - Tests: new `JinxSuite`; one test each added to `GamblingHallSuite`, `RelicThiefSuite`, `BoneDiceSuite` and `MurkyFountainSuite`.
 
 **Master at Arms (Task 5):**
-- `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`: `otherContributions`.
-- `src/main/scala/oathdigital/gameplay/powers/campaign/MasterAtArms.scala`: new. `MasterAtArmsCard` moves out of `catalog/holding/HoldingOrderDenizens.scala`.
+- `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`: `otherContributions`.
+- `src/main/scala/distantlands/gameplay/powers/campaign/MasterAtArms.scala`: new. `MasterAtArmsCard` moves out of `catalog/holding/HoldingOrderDenizens.scala`.
 - Registration: `PlanRules.scala`, and the import in `NewFoundations.scala`.
 - Tests: new `MasterAtArmsSuite`.
 
@@ -220,17 +220,17 @@ git commit -m "docs(batch7): record slice 1 plan-time rulings"
 ### Task 2: The reroll operation
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (after `ModifyRollOutcome`, near line 588)
-- Modify: `src/main/scala/oathdigital/model/DicePoolState.scala`
-- Create: `src/main/scala/oathdigital/gameplay/operations/RollOperations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala` (`applyNonMoveLeaves`, near line 200)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/WalkerRerolls.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`runLeaf`, near line 615)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/HiddenOutcomes.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (the `TurnOperation` union near line 47, `encodePieceOperation` near line 247, the decoder near line 515)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala` (`encodeDieFace` near line 121, `decodeDieFace` near line 202)
-- Test: `src/test/scala/oathdigital/gameplay/operations/RollOperationsSuite.scala`, `src/test/scala/oathdigital/gameplay/ProcedureWalkerRerollSuite.scala`, `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (after `ModifyRollOutcome`, near line 588)
+- Modify: `src/main/scala/distantlands/model/DicePoolState.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/RollOperations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala` (`applyNonMoveLeaves`, near line 200)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/WalkerRerolls.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`runLeaf`, near line 615)
+- Modify: `src/main/scala/distantlands/gameplay/walker/HiddenOutcomes.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (the `TurnOperation` union near line 47, `encodePieceOperation` near line 247, the decoder near line 515)
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala` (`encodeDieFace` near line 121, `decodeDieFace` near line 202)
+- Test: `src/test/scala/distantlands/gameplay/operations/RollOperationsSuite.scala`, `src/test/scala/distantlands/gameplay/ProcedureWalkerRerollSuite.scala`, `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -242,7 +242,7 @@ git commit -m "docs(batch7): record slice 1 plan-time rulings"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/operations/RollOperationsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/operations/RollOperationsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -302,7 +302,7 @@ class RollOperationsSuite extends munit.FunSuite:
       Some(Vector(DefenseDieFace.Blank))).isLeft)
 ```
 
-Create `src/test/scala/oathdigital/gameplay/ProcedureWalkerRerollSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/ProcedureWalkerRerollSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -397,7 +397,7 @@ In `WalkerRolls.scala`, delete the private `derive` method and replace its three
 
 - [ ] **Step 4: Apply it**
 
-Create `src/main/scala/oathdigital/gameplay/operations/RollOperations.scala`:
+Create `src/main/scala/distantlands/gameplay/operations/RollOperations.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -455,7 +455,7 @@ In `OperationApplication.applyNonMoveLeaves`, after the `ModifyRollOutcome` case
 
 - [ ] **Step 5: Fill and run a declared reroll**
 
-Create `src/main/scala/oathdigital/gameplay/walker/WalkerRerolls.scala`:
+Create `src/main/scala/distantlands/gameplay/walker/WalkerRerolls.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -549,7 +549,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/model/DicePoolState.scala src/main/scala/oathdigital/gameplay/operations/RollOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala src/main/scala/oathdigital/gameplay/walker/WalkerRerolls.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/walker/HiddenOutcomes.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/serialization/WalkerEventCodec.scala src/test/scala/oathdigital/gameplay/operations/RollOperationsSuite.scala src/test/scala/oathdigital/gameplay/ProcedureWalkerRerollSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/model/DicePoolState.scala src/main/scala/distantlands/gameplay/operations/RollOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala src/main/scala/distantlands/gameplay/walker/WalkerRerolls.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/HiddenOutcomes.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/serialization/WalkerEventCodec.scala src/test/scala/distantlands/gameplay/operations/RollOperationsSuite.scala src/test/scala/distantlands/gameplay/ProcedureWalkerRerollSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "feat(dice): a reroll operation, filled from the dice source"
 ```
 
@@ -558,20 +558,20 @@ git commit -m "feat(dice): a reroll operation, filled from the dice source"
 ### Task 3: The roll step
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala`
-- Create: `src/main/scala/oathdigital/model/RerollOffers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (`applyWindow`, near line 74)
-- Create: `src/main/scala/oathdigital/gameplay/actions/dice/DiceThrow.scala`
-- Create: `src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala`
-- Create: `src/main/scala/oathdigital/gameplay/actions/dice/RollStep.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala` (`battle`, lines 101-109)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala` (`recovery`, line 211, and `rollFeedback`, line 80)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala`, `RelicThief.scala`, `BoneDice.scala`, `MurkyFountain.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (`rollFeedback`, near line 506)
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala`
-- Test: `src/test/scala/oathdigital/gameplay/actions/dice/FreeReroll.scala` (new), `src/test/scala/oathdigital/gameplay/actions/dice/RerollChoiceSuite.scala`, `src/test/scala/oathdigital/application/gamelog/GameLogRerollSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala`
+- Create: `src/main/scala/distantlands/model/RerollOffers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (`applyWindow`, near line 74)
+- Create: `src/main/scala/distantlands/gameplay/actions/dice/DiceThrow.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/dice/RollStep.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala` (`battle`, lines 101-109)
+- Modify: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala` (`recovery`, line 211, and `rollFeedback`, line 80)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala`, `RelicThief.scala`, `BoneDice.scala`, `MurkyFountain.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (`rollFeedback`, near line 506)
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala`
+- Test: `src/test/scala/distantlands/gameplay/actions/dice/FreeReroll.scala` (new), `src/test/scala/distantlands/gameplay/actions/dice/RerollChoiceSuite.scala`, `src/test/scala/distantlands/application/gamelog/GameLogRerollSuite.scala`
 
 **Interfaces:**
 - Consumes, from Task 2: `Reroll`.
@@ -589,7 +589,7 @@ git commit -m "feat(dice): a reroll operation, filled from the dice source"
 
 The seam is tested with a power of the tests' own: Wrestlers, held faceup, offers a free reroll of the whole throw. Wrestlers prints no implemented power; the suite checks it with `PlanDriver.planlessCard`.
 
-Create `src/test/scala/oathdigital/gameplay/actions/dice/FreeReroll.scala`:
+Create `src/test/scala/distantlands/gameplay/actions/dice/FreeReroll.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.dice
@@ -617,7 +617,7 @@ object FreeReroll extends ContributingPower:
         Vector(Reroll(rolled.pool, rolled.indices)))))))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/actions/dice/RerollChoiceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/actions/dice/RerollChoiceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.dice
@@ -727,7 +727,7 @@ class RerollChoiceSuite extends munit.FunSuite:
     assert(RerollChoice.isDecision(attackReroll))
 ```
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogRerollSuite.scala`. It appends a Recover roll and its reroll to `LogScripts.recordedEventsBoard`, as `GameLogCampaignSuite` appends plan events. A Recover decision is not narrated by any prefix, so it tests the new silent rule. `formatAppended` gives every appended step the same state after it, so `lastStateAfter` writes the rerolled outcome the reroll line reads:
+Create `src/test/scala/distantlands/application/gamelog/GameLogRerollSuite.scala`. It appends a Recover roll and its reroll to `LogScripts.recordedEventsBoard`, as `GameLogCampaignSuite` appends plan events. A Recover decision is not narrated by any prefix, so it tests the new silent rule. `formatAppended` gives every appended step the same state after it, so `lastStateAfter` writes the rerolled outcome the reroll line reads:
 
 ```scala
 package oathdigital.application.gamelog
@@ -812,7 +812,7 @@ In `PowerWindow.scala`, after `PayOrAsk`:
   case object Reroll extends OtherWindow { val key = "dice.reroll" }
 ```
 
-Create `src/main/scala/oathdigital/model/RerollOffers.scala`:
+Create `src/main/scala/distantlands/model/RerollOffers.scala`:
 
 ```scala
 package oathdigital.model
@@ -887,7 +887,7 @@ Add `RerollHost` to the `powerresolver` import and `OfferedReroll` to the `model
 
 - [ ] **Step 4: The throw, the choice and the roll step**
 
-Create `src/main/scala/oathdigital/gameplay/actions/dice/DiceThrow.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/dice/DiceThrow.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.dice
@@ -918,7 +918,7 @@ object DiceThrow:
     else (faces - thrown until faces).toVector
 ```
 
-Create `src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.dice
@@ -1096,7 +1096,7 @@ object RerollChoice:
 
 `Cost`'s fields are `favor`, `secret`, `favorBurnt` and `secretBurnt`, as `CampaignPlanApplication.pay` builds it.
 
-Create `src/main/scala/oathdigital/gameplay/actions/dice/RollStep.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/dice/RollStep.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.dice
@@ -1227,7 +1227,7 @@ Expected: PASS. No existing suite changes: with no reroll power registered, ever
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala src/main/scala/oathdigital/model/RerollOffers.scala src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala src/main/scala/oathdigital/gameplay/actions/dice src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala src/main/scala/oathdigital/gameplay/powers/action/RelicThief.scala src/main/scala/oathdigital/gameplay/powers/action/BoneDice.scala src/main/scala/oathdigital/gameplay/powers/action/MurkyFountain.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/application/gamelog/DetailLines.scala src/test/scala/oathdigital/gameplay/actions/dice src/test/scala/oathdigital/application/gamelog/GameLogRerollSuite.scala
+git add src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/model/RerollOffers.scala src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala src/main/scala/distantlands/gameplay/actions/dice src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala src/main/scala/distantlands/gameplay/powers/action/RelicThief.scala src/main/scala/distantlands/gameplay/powers/action/BoneDice.scala src/main/scala/distantlands/gameplay/powers/action/MurkyFountain.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/application/gamelog/DetailLines.scala src/test/scala/distantlands/gameplay/actions/dice src/test/scala/distantlands/application/gamelog/GameLogRerollSuite.scala
 git commit -m "feat(dice): a reroll choice after every roll"
 ```
 
@@ -1238,11 +1238,11 @@ Stage any other file the compiler made you touch in Step 3 by its path.
 ### Task 4: Jinx
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/dice/Jinx.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `JinxCard`, lines 76-82)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `JinxCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/dice/JinxSuite.scala`, plus `GamblingHallSuite`, `RelicThiefSuite`, `BoneDiceSuite` and `MurkyFountainSuite`
+- Create: `src/main/scala/distantlands/gameplay/powers/dice/Jinx.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `JinxCard`, lines 76-82)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `JinxCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/dice/JinxSuite.scala`, plus `GamblingHallSuite`, `RelicThiefSuite`, `BoneDiceSuite` and `MurkyFountainSuite`
 
 **Interfaces:**
 - Consumes, from Task 3: `OfferReroll`, `RerollOffer`, `RerollChoice.throwOf`, `RerollChoice.word`, `RerollChoice.decisionId`, `DiceThrow`.
@@ -1250,7 +1250,7 @@ Stage any other file the compiler made you touch in Step 3 by its path.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/dice/JinxSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/dice/JinxSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.dice
@@ -1451,7 +1451,7 @@ Expected: compilation fails: `Jinx` is not defined.
 
 - [ ] **Step 3: Write Jinx**
 
-Create `src/main/scala/oathdigital/gameplay/powers/dice/Jinx.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/dice/Jinx.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.dice
@@ -1544,7 +1544,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/dice/Jinx.scala src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/dice/JinxSuite.scala src/test/scala/oathdigital/gameplay/powers/action/GamblingHallSuite.scala src/test/scala/oathdigital/gameplay/powers/action/RelicThiefSuite.scala src/test/scala/oathdigital/gameplay/powers/action/BoneDiceSuite.scala src/test/scala/oathdigital/gameplay/powers/action/MurkyFountainSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/dice/Jinx.scala src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/powers/dice/JinxSuite.scala src/test/scala/distantlands/gameplay/powers/action/GamblingHallSuite.scala src/test/scala/distantlands/gameplay/powers/action/RelicThiefSuite.scala src/test/scala/distantlands/gameplay/powers/action/BoneDiceSuite.scala src/test/scala/distantlands/gameplay/powers/action/MurkyFountainSuite.scala
 git commit -m "feat(batch7): Jinx rerolls any roll its ruler makes"
 ```
 
@@ -1555,12 +1555,12 @@ Stage any power file whose `pool` you made public.
 ### Task 5: Master at Arms
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/MasterAtArms.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` (remove `MasterAtArmsCard`, lines 49-54)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import `MasterAtArmsCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/MasterAtArmsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/MasterAtArms.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` (remove `MasterAtArmsCard`, lines 49-54)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `MasterAtArmsCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/MasterAtArmsSuite.scala`
 
 **Interfaces:**
 - Consumes, from Tasks 3 and 4: `OfferReroll`, `RerollOffer`, `RerollChoice.throwOf`, `RerollChoice.decisionId`, `DiceThrow`, `Jinx`.
@@ -1570,7 +1570,7 @@ Stage any power file whose `pool` you made public.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/MasterAtArmsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/MasterAtArmsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1718,7 +1718,7 @@ In `contributions`, add `otherContributions.keySet` to the union of window keys,
 
 - [ ] **Step 4: Write Master at Arms**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/MasterAtArms.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/MasterAtArms.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1831,7 +1831,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala src/main/scala/oathdigital/gameplay/powers/campaign/MasterAtArms.scala src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/MasterAtArmsSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala src/main/scala/distantlands/gameplay/powers/campaign/MasterAtArms.scala src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/MasterAtArmsSuite.scala
 git commit -m "feat(batch7): Master at Arms rerolls hollow swords"
 ```
 

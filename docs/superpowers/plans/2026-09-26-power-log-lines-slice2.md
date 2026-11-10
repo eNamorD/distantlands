@@ -112,14 +112,14 @@ These were settled while planning (2026-09-26). Task 8 records each one in the s
 ### Task 1: The formatter reads `used` variants and judges a note's cards at three states
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala` (the `NoteKey` companion)
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`PowerSourceRef.of`)
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogWords.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogJournal.scala` (`notedUse`)
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:302`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala` (the `NoteKey` companion)
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`PowerSourceRef.of`)
+- Modify: `src/main/scala/distantlands/application/gamelog/LogWords.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/LogJournal.scala` (`notedUse`)
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:302`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -324,7 +324,7 @@ Expected: PASS, the golden logs included: no journal has a variant or a banner n
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerNotes.scala src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/application/gamelog/LogWords.scala src/main/scala/oathdigital/application/gamelog/PowerLines.scala src/main/scala/oathdigital/application/gamelog/LogJournal.scala src/main/scala/oathdigital/application/gamelog/ActionLines.scala src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala
+git add src/main/scala/distantlands/model/PowerNotes.scala src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/application/gamelog/LogWords.scala src/main/scala/distantlands/application/gamelog/PowerLines.scala src/main/scala/distantlands/application/gamelog/LogJournal.scala src/main/scala/distantlands/application/gamelog/ActionLines.scala src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala
 git commit -m "feat(log): used-line variants and cards judged at the restated step"
 ```
 
@@ -333,27 +333,27 @@ git commit -m "feat(log): used-line variants and cards judged at the restated st
 ### Task 2: Note reads, and the powers that gain
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/NoteSupport.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/NoteSupport.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/NoteText.scala`
 - Modify:
-  - `src/main/scala/oathdigital/gameplay/powers/action/Elders.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/action/WaysideInn.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/action/MagicWaterskin.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/action/Alchemist.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/wake/MarbleFountains.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala`
-  - `src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfObedience.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (`withoutNotes`, `formatWithoutNotes`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`, `GameLogDecisionSuite.scala`, `GameLogExchangeSuite.scala`
+  - `src/main/scala/distantlands/gameplay/powers/action/Elders.scala`
+  - `src/main/scala/distantlands/gameplay/powers/action/WaysideInn.scala`
+  - `src/main/scala/distantlands/gameplay/powers/action/MagicWaterskin.scala`
+  - `src/main/scala/distantlands/gameplay/powers/action/Alchemist.scala`
+  - `src/main/scala/distantlands/gameplay/powers/wake/MarbleFountains.scala`
+  - `src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala`
+  - `src/main/scala/distantlands/gameplay/powers/cardplay/VowOfObedience.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (`withoutNotes`, `formatWithoutNotes`)
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`, `GameLogDecisionSuite.scala`, `GameLogExchangeSuite.scala`
 - Modify: `src/test/resources/gamelog/use-power.actor.log`, `use-power.other.log` (regenerated)
 - Test:
-  - `src/test/scala/oathdigital/gameplay/powers/action/ElderSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/action/WaysideInnSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/action/MagicWaterskinSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/action/AlchemistSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/wake/MarbleFountainsSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/rest/SilverTongueSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfObedienceSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/action/ElderSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/action/WaysideInnSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/action/MagicWaterskinSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/action/AlchemistSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/wake/MarbleFountainsSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/rest/SilverTongueSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/cardplay/VowOfObedienceSuite.scala`
 
 **Interfaces:**
 - Consumes: `NoteKey.isUse` (Task 1).
@@ -373,7 +373,7 @@ git commit -m "feat(log): used-line variants and cards judged at the restated st
 
 - [ ] **Step 1: Create the test helper**
 
-Create `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/NoteText.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -525,7 +525,7 @@ Expected: the new tests fail with `Vector()` against the expected notes. None of
 
 - [ ] **Step 4: Create `NoteSupport`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/NoteSupport.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/NoteSupport.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -843,7 +843,7 @@ Expected: PASS. A suite that asserts one of these seven powers' exact event list
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/NoteSupport.scala src/main/scala/oathdigital/gameplay/powers/action/Elders.scala src/main/scala/oathdigital/gameplay/powers/action/WaysideInn.scala src/main/scala/oathdigital/gameplay/powers/action/MagicWaterskin.scala src/main/scala/oathdigital/gameplay/powers/action/Alchemist.scala src/main/scala/oathdigital/gameplay/powers/wake/MarbleFountains.scala src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfObedience.scala src/test/scala/oathdigital/gameplay/powers/NoteText.scala src/test/scala/oathdigital/gameplay/powers/action/ElderSuite.scala src/test/scala/oathdigital/gameplay/powers/action/WaysideInnSuite.scala src/test/scala/oathdigital/gameplay/powers/action/MagicWaterskinSuite.scala src/test/scala/oathdigital/gameplay/powers/action/AlchemistSuite.scala src/test/scala/oathdigital/gameplay/powers/wake/MarbleFountainsSuite.scala src/test/scala/oathdigital/gameplay/powers/rest/SilverTongueSuite.scala src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfObedienceSuite.scala src/test/scala/oathdigital/application/gamelog/LogScripts.scala src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogDecisionSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogExchangeSuite.scala src/test/resources/gamelog/use-power.actor.log src/test/resources/gamelog/use-power.other.log
+git add src/main/scala/distantlands/gameplay/powers/NoteSupport.scala src/main/scala/distantlands/gameplay/powers/action/Elders.scala src/main/scala/distantlands/gameplay/powers/action/WaysideInn.scala src/main/scala/distantlands/gameplay/powers/action/MagicWaterskin.scala src/main/scala/distantlands/gameplay/powers/action/Alchemist.scala src/main/scala/distantlands/gameplay/powers/wake/MarbleFountains.scala src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala src/main/scala/distantlands/gameplay/powers/cardplay/VowOfObedience.scala src/test/scala/distantlands/gameplay/powers/NoteText.scala src/test/scala/distantlands/gameplay/powers/action/ElderSuite.scala src/test/scala/distantlands/gameplay/powers/action/WaysideInnSuite.scala src/test/scala/distantlands/gameplay/powers/action/MagicWaterskinSuite.scala src/test/scala/distantlands/gameplay/powers/action/AlchemistSuite.scala src/test/scala/distantlands/gameplay/powers/wake/MarbleFountainsSuite.scala src/test/scala/distantlands/gameplay/powers/rest/SilverTongueSuite.scala src/test/scala/distantlands/gameplay/powers/cardplay/VowOfObedienceSuite.scala src/test/scala/distantlands/application/gamelog/LogScripts.scala src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala src/test/scala/distantlands/application/gamelog/GameLogDecisionSuite.scala src/test/scala/distantlands/application/gamelog/GameLogExchangeSuite.scala src/test/resources/gamelog/use-power.actor.log src/test/resources/gamelog/use-power.other.log
 git commit -m "feat(powers): gain and take powers write their own log lines"
 ```
 
@@ -865,12 +865,12 @@ Fix what it finds before Task 3.
 ### Task 3: The dice powers
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/RollResults.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/BoneDice.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/MurkyFountain.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/BoneDiceSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/MurkyFountainSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/RollResults.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/BoneDice.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/MurkyFountain.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/BoneDiceSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/MurkyFountainSuite.scala`
 
 **Interfaces:**
 - Consumes: `NoteSupport.gainedKey`, `NoteSupport.gainNote`, `NoteSupport.supply`, `NoteSupport.favor`, `NoteSupport.relicsLost` (Task 2).
@@ -1057,7 +1057,7 @@ Expected: PASS. `GamblingHallSuite` and the `gambling-hall` golden are unchanged
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/RollResults.scala src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala src/main/scala/oathdigital/gameplay/powers/action/BoneDice.scala src/main/scala/oathdigital/gameplay/powers/action/MurkyFountain.scala src/test/scala/oathdigital/gameplay/powers/action/BoneDiceSuite.scala src/test/scala/oathdigital/gameplay/powers/action/MurkyFountainSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/RollResults.scala src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala src/main/scala/distantlands/gameplay/powers/action/BoneDice.scala src/main/scala/distantlands/gameplay/powers/action/MurkyFountain.scala src/test/scala/distantlands/gameplay/powers/action/BoneDiceSuite.scala src/test/scala/distantlands/gameplay/powers/action/MurkyFountainSuite.scala
 git commit -m "feat(powers): dice powers write their roll and its outcome"
 ```
 
@@ -1066,16 +1066,16 @@ git commit -m "feat(powers): dice powers write their roll and its outcome"
 ### Task 4: Relic draws, burials and peeks
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/DowsingSticks.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/FaeMerchant.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/CrystalVial.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/IvoryEye.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/RelicDraws.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/DowsingSticks.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/FaeMerchant.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/CrystalVial.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/IvoryEye.scala`
 - Test:
-  - `src/test/scala/oathdigital/gameplay/powers/action/DowsingSticksSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/action/FaeMerchantSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/action/CrystalVialSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/action/IvoryEyeSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/action/DowsingSticksSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/action/FaeMerchantSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/action/CrystalVialSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/action/IvoryEyeSuite.scala`
 
 **Interfaces:**
 - Consumes: `NoteSupport.relicsGained`, `relicsLost`, `answer` (Task 2).
@@ -1318,7 +1318,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala src/main/scala/oathdigital/gameplay/powers/action/DowsingSticks.scala src/main/scala/oathdigital/gameplay/powers/action/FaeMerchant.scala src/main/scala/oathdigital/gameplay/powers/action/CrystalVial.scala src/main/scala/oathdigital/gameplay/powers/action/IvoryEye.scala src/test/scala/oathdigital/gameplay/powers/action/DowsingSticksSuite.scala src/test/scala/oathdigital/gameplay/powers/action/FaeMerchantSuite.scala src/test/scala/oathdigital/gameplay/powers/action/CrystalVialSuite.scala src/test/scala/oathdigital/gameplay/powers/action/IvoryEyeSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/RelicDraws.scala src/main/scala/distantlands/gameplay/powers/action/DowsingSticks.scala src/main/scala/distantlands/gameplay/powers/action/FaeMerchant.scala src/main/scala/distantlands/gameplay/powers/action/CrystalVial.scala src/main/scala/distantlands/gameplay/powers/action/IvoryEye.scala src/test/scala/distantlands/gameplay/powers/action/DowsingSticksSuite.scala src/test/scala/distantlands/gameplay/powers/action/FaeMerchantSuite.scala src/test/scala/distantlands/gameplay/powers/action/CrystalVialSuite.scala src/test/scala/distantlands/gameplay/powers/action/IvoryEyeSuite.scala
 git commit -m "feat(powers): relic draws, burials and peeks write their own lines"
 ```
 
@@ -1327,12 +1327,12 @@ git commit -m "feat(powers): relic draws, burials and peeks write their own line
 ### Task 5: The powers that target a player
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SleightOfHand.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/Whistle.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/Wolves.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/SleightOfHandSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/WhistleSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/WolvesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SleightOfHand.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/Whistle.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/Wolves.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/SleightOfHandSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/WhistleSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/WolvesSuite.scala`
 
 **Interfaces:**
 - Consumes: `NoteSupport.took`, `secrets`, `warbands` and `answer` (Task 2), and `NoteKey.isUse` for the `used.none` variants (Task 1).
@@ -1520,7 +1520,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/SleightOfHand.scala src/main/scala/oathdigital/gameplay/powers/action/Whistle.scala src/main/scala/oathdigital/gameplay/powers/action/Wolves.scala src/test/scala/oathdigital/gameplay/powers/action/SleightOfHandSuite.scala src/test/scala/oathdigital/gameplay/powers/action/WhistleSuite.scala src/test/scala/oathdigital/gameplay/powers/action/WolvesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/SleightOfHand.scala src/main/scala/distantlands/gameplay/powers/action/Whistle.scala src/main/scala/distantlands/gameplay/powers/action/Wolves.scala src/test/scala/distantlands/gameplay/powers/action/SleightOfHandSuite.scala src/test/scala/distantlands/gameplay/powers/action/WhistleSuite.scala src/test/scala/distantlands/gameplay/powers/action/WolvesSuite.scala
 git commit -m "feat(powers): targeting powers write what they did, or that nothing could"
 ```
 
@@ -1529,18 +1529,18 @@ git commit -m "feat(powers): targeting powers write what they did, or that nothi
 ### Task 6: The powers that place a pawn or take a card
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/PawnMoves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/BrassHorse.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/MagicCarpet.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/banner/WanderingFlameMove.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/banner/WanderingFlamePlace.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/PawnMoves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/BrassHorse.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/MagicCarpet.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/banner/WanderingFlameMove.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/banner/WanderingFlamePlace.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`
 - Test:
-  - `src/test/scala/oathdigital/gameplay/powers/action/BrassHorseSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/action/MagicCarpetSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/banner/WanderingFlameMoveSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/banner/WanderingFlamePlaceSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/wake/HornedMaskSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/action/BrassHorseSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/action/MagicCarpetSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/banner/WanderingFlameMoveSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/banner/WanderingFlamePlaceSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/wake/HornedMaskSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerSourceRef.of` for banners (Task 1), `NoteSupport.answer` and `secrets` (Task 2).
@@ -1833,7 +1833,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/PawnMoves.scala src/main/scala/oathdigital/gameplay/powers/action/BrassHorse.scala src/main/scala/oathdigital/gameplay/powers/action/MagicCarpet.scala src/main/scala/oathdigital/gameplay/powers/banner/WanderingFlameMove.scala src/main/scala/oathdigital/gameplay/powers/banner/WanderingFlamePlace.scala src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala src/test/scala/oathdigital/gameplay/powers/action/BrassHorseSuite.scala src/test/scala/oathdigital/gameplay/powers/action/MagicCarpetSuite.scala src/test/scala/oathdigital/gameplay/powers/banner/WanderingFlameMoveSuite.scala src/test/scala/oathdigital/gameplay/powers/banner/WanderingFlamePlaceSuite.scala src/test/scala/oathdigital/gameplay/powers/wake/HornedMaskSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/PawnMoves.scala src/main/scala/distantlands/gameplay/powers/action/BrassHorse.scala src/main/scala/distantlands/gameplay/powers/action/MagicCarpet.scala src/main/scala/distantlands/gameplay/powers/banner/WanderingFlameMove.scala src/main/scala/distantlands/gameplay/powers/banner/WanderingFlamePlace.scala src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala src/test/scala/distantlands/gameplay/powers/action/BrassHorseSuite.scala src/test/scala/distantlands/gameplay/powers/action/MagicCarpetSuite.scala src/test/scala/distantlands/gameplay/powers/banner/WanderingFlameMoveSuite.scala src/test/scala/distantlands/gameplay/powers/banner/WanderingFlamePlaceSuite.scala src/test/scala/distantlands/gameplay/powers/wake/HornedMaskSuite.scala
 git commit -m "feat(powers): placements and takes write their own lines"
 ```
 
@@ -1853,9 +1853,9 @@ Fix what it finds before Task 7.
 ### Task 7: Every phase power has a line, shown through a real log
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (the `wolves` script, added to `named`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (the `wolves` script, added to `named`)
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
 - Create: `src/test/resources/gamelog/wolves.actor.log`, `src/test/resources/gamelog/wolves.other.log`
 
 **Interfaces:**
@@ -1945,7 +1945,7 @@ Expected: PASS. `GameLogPropertiesSuite` now also holds the Wolves script to pre
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/PowerNoteCatalogSuite.scala src/test/scala/oathdigital/application/gamelog/LogScripts.scala src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala src/test/resources/gamelog/wolves.actor.log src/test/resources/gamelog/wolves.other.log
+git add src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala src/test/scala/distantlands/application/gamelog/LogScripts.scala src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala src/test/resources/gamelog/wolves.actor.log src/test/resources/gamelog/wolves.other.log
 git commit -m "test(log): every phase power has its line; Wolves through a real log"
 ```
 

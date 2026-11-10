@@ -48,7 +48,7 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
 
 ### Facts this plan relies on (verified against the code on 2026-09-26, at `3f9448fe`)
 
-- **The pane.** `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala` (67 lines) is `final class GameLogPane(content: dom.html.Element)`.
+- **The pane.** `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala` (67 lines) is `final class GameLogPane(content: dom.html.Element)`.
   - `show(sessionKey, entries, colors)` appends when the new entries extend the ones shown, and otherwise redraws the list in full.
   - It follows the end only when the reader was at the end, where `GameLogPane.atEnd` allows 4px of slack.
   - `GameLogPane.item(entry, colors)` builds an `li` with the classes `log-entry log-headline|log-line log-{kind}` and a `title` of `"{sequence}.{ordinal}"`.
@@ -59,7 +59,7 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
   - `dispose()` tears the shell down. The development panel's dialog pattern (hidden attribute, Escape, focus return) lives in the same file.
 - **The card overlay.** `CardInspectionOverlay(root)` is an `aside.card-overlay` with `role="dialog"` and `aria-modal="true"`, appended to the mount. It uses the hidden attribute, and a click on the scrim or on Close dismisses it. Escape closes it, and focus returns to the opener when the opener is still in the document. Its suite dispatches `KeyboardEvent("keydown", {key, bubbles: true})` and `MouseEvent("click", {bubbles: true})`.
 - **The seat.** `ServerModeUi.start` builds `new GameTableShell(mount, !trusted)`. On a trusted table the first player id is `""`, and `TableSession` fills it in when the server names the seat. The development table always has a seat, and a seat switch or session change resets the log (`TableSession.resetLog`).
-- **The test browser.** `TestBrowser` (`frontend/src/test/scala/oathdigital/frontend/TestBrowser.scala`) makes `window.localStorage` and `window.sessionStorage` throw "Unexpected credential storage". It queues `window.setTimeout` callbacks, which `tick()` runs, and stubs `ResizeObserver`, which `MapViewport` and therefore `GameTableShell` need. `ServerModeUiSuite` drives the whole table through it and calls `tick()` for the poll timer. A new timer in that queue would change which callback `tick()` runs, and that is why a blocked store must schedule nothing.
+- **The test browser.** `TestBrowser` (`frontend/src/test/scala/distantlands/frontend/TestBrowser.scala`) makes `window.localStorage` and `window.sessionStorage` throw "Unexpected credential storage". It queues `window.setTimeout` callbacks, which `tick()` runs, and stubs `ResizeObserver`, which `MapViewport` and therefore `GameTableShell` need. `ServerModeUiSuite` drives the whole table through it and calls `tick()` for the poll timer. A new timer in that queue would change which callback `tick()` runs, and that is why a blocked store must schedule nothing.
 - **Helpers.** `ServerUiSupport` has `element(tag, className)`, `text(tag, className, value)` and `button(label, className)`.
 - **Styles.** `frontend/styles.css`:
   - The log rules are at lines 845–858. `.pane-content` has 12px padding, 8px in the narrowest layout, and `overflow: auto`. The pane fill is `#211f1b`.
@@ -70,11 +70,11 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
 
 ## File Structure
 
-- Create `frontend/src/main/scala/oathdigital/frontend/LogMarker.scala`: `LogStore`, the seam over `localStorage`, and its `browser` constructor. Also `LogMarker`, which reads the marker per seat and writes it after one second at the end or on flush.
-- Modify `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`. It gains the divider, the chip, headings mode, the reading position, a scroll callback, `last` and `dispose`.
-- Create `frontend/src/main/scala/oathdigital/frontend/GameLogOverlay.scala`, the full-height dialog around a headings-mode `GameLogPane`.
-- Modify `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala`. The heading becomes a button, and the shell gains the overlay, the marker, the `pagehide` flush and the new `showLog(gameId, seatId, entries, colors)`.
-- Modify `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala`, the one `showLog` call.
+- Create `frontend/src/main/scala/distantlands/frontend/LogMarker.scala`: `LogStore`, the seam over `localStorage`, and its `browser` constructor. Also `LogMarker`, which reads the marker per seat and writes it after one second at the end or on flush.
+- Modify `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`. It gains the divider, the chip, headings mode, the reading position, a scroll callback, `last` and `dispose`.
+- Create `frontend/src/main/scala/distantlands/frontend/GameLogOverlay.scala`, the full-height dialog around a headings-mode `GameLogPane`.
+- Modify `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala`. The heading becomes a button, and the shell gains the overlay, the marker, the `pagehide` flush and the new `showLog(gameId, seatId, entries, colors)`.
+- Modify `frontend/src/main/scala/distantlands/frontend/TableScreen.scala`, the one `showLog` call.
 - Modify `frontend/styles.css`: sticky headlines, divider, chip, overlay and the heading's affordance.
 - Tests:
   - Create `LogMarkerSuite`.
@@ -90,8 +90,8 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
 ### Task 1: The marker and its store
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/LogMarker.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/LogMarkerSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/LogMarker.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/LogMarkerSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -303,7 +303,7 @@ If `Try(dom.window.localStorage)` does not catch the harness's throw, that is be
 - [ ] **Step 5: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/LogMarker.scala frontend/src/test/scala/oathdigital/frontend/LogMarkerSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/LogMarker.scala frontend/src/test/scala/distantlands/frontend/LogMarkerSuite.scala
 git commit -m "feat(log): keep each seat's last-looked place in the browser"
 ```
 
@@ -312,8 +312,8 @@ git commit -m "feat(log): keep each seat's last-looked place in the browser"
 ### Task 2: The pane's divider, chip, headings and reading position
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala` (the whole file)
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala` (the whole file)
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from Task 1. The shell connects the two in Task 3.
@@ -646,7 +646,7 @@ Expected: all pass. `GameTableShell` still calls `show(sessionKey, entries, colo
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/GameLogPane.scala frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala
 git commit -m "feat(log): the pane marks where the reader left off and offers new entries"
 ```
 
@@ -657,10 +657,10 @@ git commit -m "feat(log): the pane marks where the reader left off and offers ne
 ### Task 3: The overlay, and the shell that wires the reading aids
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/GameLogOverlay.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala`: the constructor, the log pane lines 30–31, `showLog`, and `dispose`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala:114-117`
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogOverlaySuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/GameLogOverlay.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala`: the constructor, the log pane lines 30–31, `showLog`, and `dispose`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala:114-117`
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogOverlaySuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -1012,7 +1012,7 @@ Expected: all pass. The count is the baseline plus 10 from Task 1, 12 from Task 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/GameLogOverlay.scala frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala frontend/src/main/scala/oathdigital/frontend/TableScreen.scala frontend/src/test/scala/oathdigital/frontend/GameLogOverlaySuite.scala
+git add frontend/src/main/scala/distantlands/frontend/GameLogOverlay.scala frontend/src/main/scala/distantlands/frontend/GameTableShell.scala frontend/src/main/scala/distantlands/frontend/TableScreen.scala frontend/src/test/scala/distantlands/frontend/GameLogOverlaySuite.scala
 git commit -m "feat(log): the pane heading opens the whole log, and each seat keeps its place"
 ```
 
@@ -1028,13 +1028,13 @@ git commit -m "feat(log): the pane heading opens the whole log, and each seat ke
 
 **Files:**
 - Modify: `frontend/styles.css`: the log block after line 858, the Control face lists at lines 687 and 692–693, and a new overlay block after the card overlay's rules
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`, only if this task adds a class
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`, only if this task adds a class
 
 This task follows Impeccable's `craft` discipline for a bounded styling change.
 
 - [ ] **Step 1: Load the Impeccable playbook**
 
-From the worktree root, run `~/.claude/skills/impeccable/scripts/impeccable context --target frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`, unless this session has already run it. Read DESIGN.md's Panes, Buttons (Control), Shadow Vocabulary and Named Rules sections. Immediately before the first CSS edit, read `reference/craft-floor.md`.
+From the worktree root, run `~/.claude/skills/impeccable/scripts/impeccable context --target frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`, unless this session has already run it. Read DESIGN.md's Panes, Buttons (Control), Shadow Vocabulary and Named Rules sections. Immediately before the first CSS edit, read `reference/craft-floor.md`.
 
 - [ ] **Step 2: Add the rules**
 

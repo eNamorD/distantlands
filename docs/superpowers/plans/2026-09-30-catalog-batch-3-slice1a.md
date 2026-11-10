@@ -6,7 +6,7 @@
 
 **Architecture:**
 
-- Every card is a `BattlePlan` (`src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`).
+- Every card is a `BattlePlan` (`src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`).
   - Its `plan` builds a `CampaignPlanOffer` from where the card stands and the Campaign's setup.
   - A plan whose condition fails, or whose dice count would be zero, returns `None`.
 - `PlanContext` gains three reads of the enemy: `enemy`, `enemyHasAdviser` and `enemyHolds`. Cracked Sage switches to `enemyHasAdviser`, with its suite unchanged.
@@ -58,7 +58,7 @@ These settle what the spec and rulings leave open. Each one names what it costs 
 
 ## File Structure
 
-Production, all under `src/main/scala/oathdigital/gameplay/powers/campaign/`:
+Production, all under `src/main/scala/distantlands/gameplay/powers/campaign/`:
 
 | File | Change | Responsibility |
 |---|---|---|
@@ -75,7 +75,7 @@ Production, all under `src/main/scala/oathdigital/gameplay/powers/campaign/`:
 | `SimplePlans.scala` | Modify | Registers the seven dice-only plans |
 | `PlanRules.scala` | Modify | Registers Rival Khan |
 
-Tests, all under `src/test/scala/oathdigital/gameplay/powers/campaign/`:
+Tests, all under `src/test/scala/distantlands/gameplay/powers/campaign/`:
 
 | File | Change |
 |---|---|
@@ -88,7 +88,7 @@ Docs: `docs/ROADMAP.md` (Task 4).
 
 ### How the suites drive a Campaign
 
-Read `PlanDriver.scala` and `src/test/scala/oathdigital/gameplay/CampaignFixture.scala` before writing a suite. In short:
+Read `PlanDriver.scala` and `src/test/scala/distantlands/gameplay/CampaignFixture.scala` before writing a suite. In short:
 
 - `board(extras, warbands, supply)`: p1, the actor, stands at the origin, which two bandits rule. `extras` further sites are bandit-ruled too (`b.extras`). Every other site starts empty and holds no card. p2 (`b.other`) and p3 stand at the first site nobody rules.
 - `againstPlayer(b)`: p2 rules the origin with two warbands and holds the Oath title, so p2 is offered the title's defense plan (`TitleDefensePlan`) until they use it. That keeps p2's plan window open, so a "not offered" check against a player defender is not vacuous.
@@ -105,17 +105,17 @@ Read `PlanDriver.scala` and `src/test/scala/oathdigital/gameplay/CampaignFixture
 ### Task 1: The enemy on `PlanContext`, then Village Constable, Banner Breakers and Rival Khan
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/CrackedSage.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/VillageConstable.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/BannerBreakers.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/RivalKhan.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/VillageConstableSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/BannerBreakersSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/RivalKhanSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/CrackedSage.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/VillageConstable.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/BannerBreakers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/RivalKhan.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/VillageConstableSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/BannerBreakersSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/RivalKhanSuite.scala`
 
 **Interfaces:**
 - Consumes: `BattlePlan`, `PlanContext.denizen`, `PlanDice.label/effect`, `PlanDiscard.afterCampaign/discarded`, `CatalogCards.denizen`, `BannerRules.holder(current, banner): Option[PlayerId]`.
@@ -542,17 +542,17 @@ Expected: PASS, including the unchanged `CrackedSageSuite` and the 12 new tests.
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/CrackedSage.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/VillageConstable.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/BannerBreakers.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/RivalKhan.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/VillageConstableSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/BannerBreakersSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/RivalKhanSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/CrackedSage.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/VillageConstable.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/BannerBreakers.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/RivalKhan.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/VillageConstableSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/BannerBreakersSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/RivalKhanSuite.scala
 git commit -m "feat(powers): add Village Constable, Banner Breakers and Rival Khan"
 ```
 
@@ -563,13 +563,13 @@ git commit -m "feat(powers): add Village Constable, Banner Breakers and Rival Kh
 These plans count something on the board for their dice.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/CrackingGround.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/WalledGarden.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/BanditStandard.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/CrackingGroundSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/WalledGardenSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/BanditStandardSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/CrackingGround.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/WalledGarden.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/BanditStandard.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/CrackingGroundSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/WalledGardenSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/BanditStandardSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlanDriver.Run.offers` (Task 1), `PlanContext.denizen/relic/targets`, `CampaignSetup.targetSites/origin/kind/defender`, `CampaignPlans.appliedMarker`, `CatalogCards.denizen/relic`.
@@ -904,13 +904,13 @@ If `WalledGardenSuite`'s first test counts one die too many or too few, check wh
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/CrackingGround.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/WalledGarden.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/BanditStandard.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/CrackingGroundSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/WalledGardenSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/BanditStandardSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/CrackingGround.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/WalledGarden.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/BanditStandard.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/CrackingGroundSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/WalledGardenSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/BanditStandardSuite.scala
 git commit -m "feat(powers): add Cracking Ground, Walled Garden and Bandit Standard"
 ```
 
@@ -921,11 +921,11 @@ git commit -m "feat(powers): add Cracking Ground, Walled Garden and Bandit Stand
 These plans cost a favor placed, so a bandit defender never applies them.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/ExtraProvisions.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/Encirclement.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/ExtraProvisionsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/EncirclementSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/ExtraProvisions.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/Encirclement.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/ExtraProvisionsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/EncirclementSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlanDriver.Run.offers` (Task 1), `CampaignBattle.defenderForce(ready: ReadyGame, setup: CampaignSetup): Int`, `CampaignSetup.force`, `CampaignPlans.appliedMarker`.
@@ -1162,11 +1162,11 @@ Expected: PASS, with the 8 new tests.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/ExtraProvisions.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/Encirclement.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/ExtraProvisionsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/EncirclementSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/ExtraProvisions.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/Encirclement.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/ExtraProvisionsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/EncirclementSuite.scala
 git commit -m "feat(powers): add Extra Provisions and Encirclement"
 ```
 

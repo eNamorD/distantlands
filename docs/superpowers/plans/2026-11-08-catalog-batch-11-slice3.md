@@ -149,26 +149,26 @@ Inventoried at `07c7769a`.
 ### Task 1: The as-if-advisers record and its readers
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (after `ActAsIf`, line 692)
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (after `walkerAsIfSite`, line 277)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala` (after `actAsIf`, line 129)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala` (after the `ActAsIf` case, line 216)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:213`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala:172`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (lines 43, 318, 696)
-- Modify: `src/main/scala/oathdigital/gameplay/PowerAccess.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/EffectiveSuit.scala` (`count`)
-- Create: `src/test/scala/oathdigital/gameplay/ActAsIfAdvisersSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerAccessSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/EffectiveSuitSuite.scala`
-- Modify: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (after `ActAsIf`, line 692)
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (after `walkerAsIfSite`, line 277)
+- Modify: `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala` (after `actAsIf`, line 129)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala` (after the `ActAsIf` case, line 216)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:213`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala:172`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (lines 43, 318, 696)
+- Modify: `src/main/scala/distantlands/gameplay/PowerAccess.scala`
+- Modify: `src/main/scala/distantlands/gameplay/EffectiveSuit.scala` (`count`)
+- Create: `src/test/scala/distantlands/gameplay/ActAsIfAdvisersSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerAccessSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/EffectiveSuitSuite.scala`
+- Modify: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces: `final case class ActAsIfAdvisers(player: PlayerId) extends PrimitiveOperation` in `oathdigital.model`; `CurrentGameState.walkerAsIfAdvisers: Option[PlayerId]` (default `None`); wire kind `"act-as-if-advisers"` with field `"playerId"`; `PowerAccess.advisingPlayer(ready: ReadyGame, player: PlayerId): PlayerId`; `PowerAccess.advisersOf(ready: ReadyGame, player: PlayerId): Vector[AdviserState]`.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/ActAsIfAdvisersSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/ActAsIfAdvisersSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -220,7 +220,7 @@ class ActAsIfAdvisersSuite extends munit.FunSuite:
       None)
 ```
 
-In `src/test/scala/oathdigital/gameplay/PowerAccessSuite.scala`, append
+In `src/test/scala/distantlands/gameplay/PowerAccessSuite.scala`, append
 after the last test (it uses the suite's `actor` = p1, `other` = p2,
 `card` = Errand Boy and `wrestlers`):
 
@@ -266,7 +266,7 @@ after the last test (it uses the suite's `actor` = p1, `other` = p2,
     assertEquals(PowerAccess.locate(eachHoldingOneAdviser, actor, card), None)
 ```
 
-In `src/test/scala/oathdigital/gameplay/EffectiveSuitSuite.scala`, append
+In `src/test/scala/distantlands/gameplay/EffectiveSuitSuite.scala`, append
 after the last test (it already imports `Table`, `p1`, `p2`, `catalog`,
 and names `wrestlers`, an Order card, and `homesteaders`, a Hearth card):
 
@@ -280,7 +280,7 @@ and names `wrestlers`, an Order card, and `homesteaders`, a Hearth card):
     assertEquals(EffectiveSuit.count(catalog, state, p1, Suit.Hearth), 1)
 ```
 
-In `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`,
+In `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`,
 after the test "an as-if site round trips":
 
 ```scala
@@ -301,7 +301,7 @@ are not found.
 
 - [ ] **Step 3: Add the primitive and the scratch**
 
-In `src/main/scala/oathdigital/model/CoreOperations.scala`, after the
+In `src/main/scala/distantlands/model/CoreOperations.scala`, after the
 `ActAsIf` case class:
 
 ```scala
@@ -316,7 +316,7 @@ In `src/main/scala/oathdigital/model/CoreOperations.scala`, after the
 final case class ActAsIfAdvisers(player: PlayerId) extends PrimitiveOperation
 ```
 
-In `src/main/scala/oathdigital/model/GameState.scala`, after
+In `src/main/scala/distantlands/model/GameState.scala`, after
 `walkerAsIfSite: Option[SiteId] = None,`:
 
 ```scala
@@ -328,7 +328,7 @@ In `src/main/scala/oathdigital/model/GameState.scala`, after
     walkerAsIfAdvisers: Option[PlayerId] = None,
 ```
 
-In `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala`,
+In `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala`,
 after `actAsIf`:
 
 ```scala
@@ -346,7 +346,7 @@ after `actAsIf`:
     else Right(ready.updateCurrent(_.copy(walkerAsIfAdvisers = Some(player))))
 ```
 
-In `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`,
+In `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`,
 after the `ActAsIf` case:
 
 ```scala
@@ -354,7 +354,7 @@ after the `ActAsIf` case:
         result.flatMap(TurnStateOperations.actAsIfAdvisers(_, player))
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`,
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`,
 `finish`, change
 
 ```scala
@@ -368,14 +368,14 @@ to
         walkerPicks = Vector.empty,
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala`, the
+In `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`, the
 `WalkerCompleted` case, after `walkerAsIfSite = None,`:
 
 ```scala
             walkerAsIfAdvisers = None,
 ```
 
-In `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`:
+In `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`:
 - In `TurnOperation`, end the union's last two lines as
 
 ```scala
@@ -398,7 +398,7 @@ In `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`:
 
 - [ ] **Step 4: Read the advisers through one reader**
 
-In `src/main/scala/oathdigital/gameplay/PowerAccess.scala`:
+In `src/main/scala/distantlands/gameplay/PowerAccess.scala`:
 
 Replace the adviser helpers
 
@@ -514,7 +514,7 @@ add:
   * `locate`, `accessible` and `holdsFaceupAdviser` ([[advisersOf]]).
 ```
 
-In `src/main/scala/oathdigital/gameplay/EffectiveSuit.scala`, `count`,
+In `src/main/scala/distantlands/gameplay/EffectiveSuit.scala`, `count`,
 replace
 
 ```scala
@@ -545,7 +545,7 @@ reader answers as before.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/gameplay/PowerAccess.scala src/main/scala/oathdigital/gameplay/EffectiveSuit.scala src/test/scala/oathdigital/gameplay/ActAsIfAdvisersSuite.scala src/test/scala/oathdigital/gameplay/PowerAccessSuite.scala src/test/scala/oathdigital/gameplay/EffectiveSuitSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/gameplay/PowerAccess.scala src/main/scala/distantlands/gameplay/EffectiveSuit.scala src/test/scala/distantlands/gameplay/ActAsIfAdvisersSuite.scala src/test/scala/distantlands/gameplay/PowerAccessSuite.scala src/test/scala/distantlands/gameplay/EffectiveSuitSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(gameplay): act as if holding another player's advisers for a walk
 
@@ -559,12 +559,12 @@ EOF
 ### Task 2: Master of Disguise
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/MasterOfDisguise.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala:17-22` (remove the card)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/MasterOfDisguise.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala:17-22` (remove the card)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt` (remove `denizen.master-of-disguise`)
 - Modify: `src/test/resources/notes/declared-keys.txt` (snapshot)
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/MasterOfDisguiseSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/MasterOfDisguiseSuite.scala`
 
 **Interfaces:**
 - Consumes: `ActAsIfAdvisers(player: PlayerId)` and `CurrentGameState.walkerAsIfAdvisers` (Task 1).
@@ -573,7 +573,7 @@ EOF
 - [ ] **Step 1: Write the failing suite**
 
 Create
-`src/test/scala/oathdigital/gameplay/powers/economy/MasterOfDisguiseSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/economy/MasterOfDisguiseSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -774,11 +774,11 @@ Expected: compilation fails: `MasterOfDisguiseCard` is not in
 - [ ] **Step 3: Move the card and write the power**
 
 Delete lines 17 to 22 of
-`src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala`
+`src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala`
 (`object MasterOfDisguiseCard` and its body) and the blank line before
 them. Council Arbiter still uses every import.
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/MasterOfDisguise.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/MasterOfDisguise.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -863,7 +863,7 @@ case object MasterOfDisguise extends SelectedModifier, AsksOnSelection:
     }
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`, add
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`, add
 `MasterOfDisguise` to the `economy` import (alphabetically, after
 `MapLibrary`) and to `all` after `SmallFriends,`:
 
@@ -896,7 +896,7 @@ the start, read finding 8 and stop.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/MasterOfDisguise.scala src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/economy/MasterOfDisguiseSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/MasterOfDisguise.scala src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/economy/MasterOfDisguiseSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Master of Disguise trades with another player's advisers
 

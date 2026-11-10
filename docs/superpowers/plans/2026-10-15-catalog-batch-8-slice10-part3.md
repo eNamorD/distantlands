@@ -41,7 +41,7 @@
 - `docs/superpowers/specs/2026-10-04-card-play-slots-design.md`, for the slot options `CardSlots` builds.
 - The part 1 and part 2 plans of this slice, `docs/superpowers/plans/2026-10-14-catalog-batch-8-slice10-part1.md` and `2026-10-15-catalog-batch-8-slice10-part2.md`, for the names this plan consumes.
 
-**Starts from:** `main` with slice 10 parts 1 and 2 merged. Check that `src/main/scala/oathdigital/gameplay/powers/poweruse/Placements.scala` exists. Where this plan quotes code, read the file as it is on `main` and apply the change to what is there.
+**Starts from:** `main` with slice 10 parts 1 and 2 merged. Check that `src/main/scala/distantlands/gameplay/powers/poweruse/Placements.scala` exists. Where this plan quotes code, read the file as it is on `main` and apply the change to what is there.
 
 ## Global Constraints
 
@@ -73,20 +73,20 @@
   - Giant Python's lines: "Moved {card} to {site}." and "Replaced {card} at {site}."
   - Giant Python's hover reasons: "Giant Python: Cards at its site cannot be used for non-persistent powers." and "Giant Python: Cannot place favor or secrets on cards at its site."
 - **Names, exactly:**
-  - File `src/main/scala/oathdigital/gameplay/powers/action/SiteSlotMoves.scala`: `private[powers] final class SiteSlotMoves` and `final case class SlotMove`.
-  - File `src/main/scala/oathdigital/gameplay/powers/action/GiantPython.scala`: `GiantPythonCard` (moved unchanged from `HoldingBeastDenizens.scala`), `final case class GiantPython`, and `object GiantPython` with `forCatalog`, `decisionId`, `moved` and `replaced`.
-  - File `src/main/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestriction.scala`: `case object GiantPythonRestriction`.
+  - File `src/main/scala/distantlands/gameplay/powers/action/SiteSlotMoves.scala`: `private[powers] final class SiteSlotMoves` and `final case class SlotMove`.
+  - File `src/main/scala/distantlands/gameplay/powers/action/GiantPython.scala`: `GiantPythonCard` (moved unchanged from `HoldingBeastDenizens.scala`), `final case class GiantPython`, and `object GiantPython` with `forCatalog`, `decisionId`, `moved` and `replaced`.
+  - File `src/main/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestriction.scala`: `case object GiantPythonRestriction`.
 
 ---
 
 ### Task 1: The slot question, with Roving Terror
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/SiteSlotMoves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/RovingTerror.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/action/RovingTerrorSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/operations/HallOfMinistersConsentSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/HallOfMinistersConsentServiceSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/SiteSlotMoves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/RovingTerror.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/action/RovingTerrorSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/operations/HallOfMinistersConsentSuite.scala`
+- Modify: `src/test/scala/distantlands/application/HallOfMinistersConsentServiceSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -245,7 +245,7 @@ The projection of a `Replacing` site slot names the card it replaces, as card pl
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/SiteSlotMoves.scala src/main/scala/oathdigital/gameplay/powers/action/RovingTerror.scala src/test/scala/oathdigital/gameplay/powers/action/RovingTerrorSuite.scala src/test/scala/oathdigital/gameplay/operations/HallOfMinistersConsentSuite.scala src/test/scala/oathdigital/application/HallOfMinistersConsentServiceSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/SiteSlotMoves.scala src/main/scala/distantlands/gameplay/powers/action/RovingTerror.scala src/test/scala/distantlands/gameplay/powers/action/RovingTerrorSuite.scala src/test/scala/distantlands/gameplay/operations/HallOfMinistersConsentSuite.scala src/test/scala/distantlands/application/HallOfMinistersConsentServiceSuite.scala
 git commit -m "feat(batch8): Roving Terror asks which slot to move to"
 ```
 
@@ -254,11 +254,11 @@ git commit -m "feat(batch8): Roving Terror asks which slot to move to"
 ### Task 2: Giant Python's ACTION
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/GiantPython.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `GiantPythonCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/GiantPython.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `GiantPythonCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/GiantPythonSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/GiantPythonSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `SiteSlotMoves`; `CardPowerBanners.holdsDarkestSecret(ready, player)`.
@@ -269,7 +269,7 @@ git commit -m "feat(batch8): Roving Terror asks which slot to move to"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/GiantPythonSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/GiantPythonSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -493,7 +493,7 @@ Expected: all pass. GiantPythonSuite has 5 tests.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/GiantPython.scala src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/action/GiantPythonSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/GiantPython.scala src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/action/GiantPythonSuite.scala
 git commit -m "feat(batch8): Giant Python moves to a slot it picks"
 ```
 
@@ -502,11 +502,11 @@ git commit -m "feat(batch8): Giant Python moves to a slot it picks"
 ### Task 3: Giant Python's restriction
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestriction.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestriction.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala`
 
 **Interfaces:**
 - Consumes: part 2's `Placements.onto` and `Placements.byUse`; Task 2's `GiantPythonCard`.
@@ -514,7 +514,7 @@ git commit -m "feat(batch8): Giant Python moves to a slot it picks"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.poweruse
@@ -684,7 +684,7 @@ Expected: all pass. GiantPythonRestrictionSuite has 5 tests.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestriction.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestriction.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala
 git commit -m "feat(batch8): Giant Python's site cards cannot be used"
 ```
 

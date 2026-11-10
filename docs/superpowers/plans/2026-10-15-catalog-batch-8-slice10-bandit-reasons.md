@@ -37,13 +37,13 @@
 ### Task 1: Plain reasons on the operation path
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/OperationReason.scala` (`OperationWaiver.plain`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationConsent.scala` (add `shown`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala` (`noDiscard`, `plain`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/RulerBans.scala` (`reason` always waives, `plain`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/ForestCouncil.scala`, `CityWall.scala` (pass the plain key)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/OperationAsks.scala` (`OperationConsent.shown`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`narrowAt`, `reach`: only an ask keeps a decision)
+- Modify: `src/main/scala/distantlands/model/OperationReason.scala` (`OperationWaiver.plain`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationConsent.scala` (add `shown`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala` (`noDiscard`, `plain`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/RulerBans.scala` (`reason` always waives, `plain`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/ForestCouncil.scala`, `CityWall.scala` (pass the plain key)
+- Modify: `src/main/scala/distantlands/gameplay/walker/OperationAsks.scala` (`OperationConsent.shown`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`narrowAt`, `reach`: only an ask keeps a decision)
 - Modify: `docs/superpowers/specs/2026-10-12-catalog-batch-8-design.md` (the gap bullet)
 - Test: `OperationAsksSuite`, `ForestCouncilSuite`, `CityWallSuite`, `OperationRestrictionsSuite`, `PowerUseRulesSuite`
 

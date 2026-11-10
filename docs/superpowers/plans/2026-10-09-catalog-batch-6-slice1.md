@@ -84,43 +84,43 @@ Also settled at plan time:
 |---|---|---|
 | `docs/superpowers/specs/2026-10-09-catalog-batch-6-design.md` | modify | 1 |
 | `docs/superpowers/specs/2026-10-09-catalog-batch-6-rulings.md` | modify | 1 |
-| `src/main/scala/oathdigital/model/CampaignTypes.scala` | modify | 2, 4 |
-| `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlans.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala` | modify | 2, 4 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/Encirclement.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` | modify | 2 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala` | modify | 2 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/PlanOfferRestrictionSuite.scala` | create | 2 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala` | modify | 3 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/Specialist.scala` | create | 3 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala` | create | 3, 4, 5, 6, 7 |
-| `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` | modify | 3 |
-| `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` | modify | 3, 4, 5, 6, 7 |
-| `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` | modify | 3, 4 |
-| `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` | modify | 5, 7 |
-| `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala` | modify | 6 |
-| `src/test/scala/oathdigital/gameplay/powers/NoteText.scala` | modify | 3 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/SpecialistSuite.scala` | create | 3 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/SolePlan.scala` | create | 4 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/CodeOfHonor.scala` | create | 4 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/CodeOfHonorSuite.scala` | create | 4 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/MarshSpirit.scala` | create | 5 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/MarshSpiritSuite.scala` | create | 5 |
-| `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala` | modify | 5, 6, 7 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/EnemyPlans.scala` | create | 6 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/BeastTamer.scala` | create | 6 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/BeastTamerSuite.scala` | create | 6 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/TrueNames.scala` | create | 7 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/TrueNamesSuite.scala` | create | 7 |
+| `src/main/scala/distantlands/model/CampaignTypes.scala` | modify | 2, 4 |
+| `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlans.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala` | modify | 2, 4 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/Encirclement.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` | modify | 2 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala` | modify | 2 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/PlanOfferRestrictionSuite.scala` | create | 2 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala` | modify | 3 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/Specialist.scala` | create | 3 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala` | create | 3, 4, 5, 6, 7 |
+| `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` | modify | 3 |
+| `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` | modify | 3, 4, 5, 6, 7 |
+| `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` | modify | 3, 4 |
+| `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` | modify | 5, 7 |
+| `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala` | modify | 6 |
+| `src/test/scala/distantlands/gameplay/powers/NoteText.scala` | modify | 3 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/SpecialistSuite.scala` | create | 3 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/SolePlan.scala` | create | 4 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/CodeOfHonor.scala` | create | 4 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/CodeOfHonorSuite.scala` | create | 4 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/MarshSpirit.scala` | create | 5 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/MarshSpiritSuite.scala` | create | 5 |
+| `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala` | modify | 5, 6, 7 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/EnemyPlans.scala` | create | 6 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/BeastTamer.scala` | create | 6 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/BeastTamerSuite.scala` | create | 6 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/TrueNames.scala` | create | 7 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/TrueNamesSuite.scala` | create | 7 |
 | `docs/ROADMAP.md` | modify | 8 |
 
 ### Moving a card out of holding
 
-Tasks 3 to 7 each move a card object from `src/main/scala/oathdigital/catalog/holding/` into its power's file, as earlier batches did:
+Tasks 3 to 7 each move a card object from `src/main/scala/distantlands/catalog/holding/` into its power's file, as earlier batches did:
 
 1. Delete the card's `object ...Card extends Denizen(...)` block from the holding file. The block is the `object` line, its `val power`, its `val powers` and the blank line after it.
 2. Paste it unchanged at the top of the power's file. Each task shows the block.
-3. In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add the card object to the `import oathdigital.gameplay.powers.campaign.{...}` list, wrapped at 80 columns. The `oathdigital.catalog.holding._` wildcard stops supplying it, so there is no ambiguity.
+3. In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add the card object to the `import oathdigital.gameplay.powers.campaign.{...}` list, wrapped at 80 columns. The `oathdigital.catalog.holding._` wildcard stops supplying it, so there is no ambiguity.
 
 ---
 
@@ -226,13 +226,13 @@ git commit -m "docs: record catalog batch 6 slice 1 plan-time rulings"
 ### Task 2: Option restrictions over offers
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlans.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/Encirclement.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/PlanOfferRestrictionSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlans.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/Encirclement.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/PlanOfferRestrictionSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -288,7 +288,7 @@ In `PlanDriver.scala`, `Run.query` rebuilds the parked decision with the product
 
 - [ ] **Step 2: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/PlanOfferRestrictionSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/PlanOfferRestrictionSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -405,7 +405,7 @@ Expected: 4 failures. The first three find Longbows offered, and the last finds 
 
 - [ ] **Step 4: Name a plan source's option in the model**
 
-In `src/main/scala/oathdigital/model/CampaignTypes.scala`, replace the `CampaignPlanSource` trait and object with:
+In `src/main/scala/distantlands/model/CampaignTypes.scala`, replace the `CampaignPlanSource` trait and object with:
 
 ```scala
 sealed trait CampaignPlanSource extends Product with Serializable:
@@ -589,13 +589,13 @@ Expected: PASS, the new suite included.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CampaignTypes.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlans.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/Encirclement.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/PlanOfferRestrictionSuite.scala
+git add src/main/scala/distantlands/model/CampaignTypes.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlans.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/Encirclement.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/PlanOfferRestrictionSuite.scala
 git commit -m "feat(walker): run option restrictions over battle plan offers"
 ```
 
@@ -604,14 +604,14 @@ git commit -m "feat(walker): run option restrictions over battle plan offers"
 ### Task 3: Specialist
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/Specialist.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/SpecialistSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/Specialist.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/NoteText.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/SpecialistSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's restrictions over offers.
@@ -623,7 +623,7 @@ git commit -m "feat(walker): run option restrictions over battle plan offers"
 
 - [ ] **Step 1: Make the test sentence helper public**
 
-In `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`, replace
+In `src/test/scala/distantlands/gameplay/powers/NoteText.scala`, replace
 
 ```scala
   private def sentence(keys: Vector[NoteKey], note: PowerNote): String =
@@ -638,7 +638,7 @@ with
 
 - [ ] **Step 2: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/SpecialistSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/SpecialistSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -759,7 +759,7 @@ with
 
 - [ ] **Step 5: Write Specialist**
 
-Delete `SpecialistCard` from `HoldingOrderDenizens.scala` (see "Moving a card out of holding"). Create `src/main/scala/oathdigital/gameplay/powers/campaign/Specialist.scala`:
+Delete `SpecialistCard` from `HoldingOrderDenizens.scala` (see "Moving a card out of holding"). Create `src/main/scala/distantlands/gameplay/powers/campaign/Specialist.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -818,7 +818,7 @@ Add `SpecialistCard` to the campaign import in `NewFoundations.scala`.
 
 - [ ] **Step 6: Register it**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -847,14 +847,14 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/Specialist.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/NoteText.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/SpecialistSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/Specialist.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/NoteText.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/SpecialistSuite.scala
 git commit -m "feat(powers): Specialist keeps the defender from using battle plans"
 ```
 
@@ -863,14 +863,14 @@ git commit -m "feat(powers): Specialist keeps the defender from using battle pla
 ### Task 4: Code of Honor
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/SolePlan.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/CodeOfHonor.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/CodeOfHonorSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/SolePlan.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/CodeOfHonor.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/CodeOfHonorSuite.scala`
 
 **Interfaces:**
 - Consumes: `BattlePlan#restrictions` (Task 3), `NoteText.sentence` (Task 3).
@@ -881,7 +881,7 @@ git commit -m "feat(powers): Specialist keeps the defender from using battle pla
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/CodeOfHonorSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/CodeOfHonorSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1001,7 +1001,7 @@ In `CampaignPlanChoice.scala`, replace `banditPlans` with:
 
 - [ ] **Step 4: Write the shared restrictions of a plan used alone**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/SolePlan.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/SolePlan.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1039,7 +1039,7 @@ private[campaign] object SolePlan:
 
 - [ ] **Step 5: Write Code of Honor**
 
-Delete `CodeOfHonorCard` from `HoldingOrderDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/powers/campaign/CodeOfHonor.scala`:
+Delete `CodeOfHonorCard` from `HoldingOrderDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/campaign/CodeOfHonor.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1102,14 +1102,14 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CampaignTypes.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SolePlan.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/CodeOfHonor.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/CodeOfHonorSuite.scala
+git add src/main/scala/distantlands/model/CampaignTypes.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SolePlan.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/CodeOfHonor.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/CodeOfHonorSuite.scala
 git commit -m "feat(powers): Code of Honor is used with no other battle plan"
 ```
 
@@ -1118,12 +1118,12 @@ git commit -m "feat(powers): Code of Honor is used with no other battle plan"
 ### Task 5: Marsh Spirit
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/MarshSpirit.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/MarshSpiritSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/MarshSpirit.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/MarshSpiritSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's restrictions over offers; `NoteText.sentence` (Task 3).
@@ -1131,7 +1131,7 @@ git commit -m "feat(powers): Code of Honor is used with no other battle plan"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/MarshSpiritSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/MarshSpiritSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1212,7 +1212,7 @@ Expected: compilation failure, `Not found: MarshSpirit`.
 
 - [ ] **Step 3: Write Marsh Spirit**
 
-Delete `MarshSpiritCard` from `HoldingBeastDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/powers/campaign/MarshSpirit.scala`:
+Delete `MarshSpiritCard` from `HoldingBeastDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/campaign/MarshSpirit.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1279,12 +1279,12 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/MarshSpirit.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/MarshSpiritSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/MarshSpirit.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/MarshSpiritSuite.scala
 git commit -m "feat(powers): Marsh Spirit keeps players who target its site from battle plans"
 ```
 
@@ -1293,13 +1293,13 @@ git commit -m "feat(powers): Marsh Spirit keeps players who target its site from
 ### Task 6: Beast Tamer
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/EnemyPlans.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/BeastTamer.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/BeastTamerSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/EnemyPlans.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/BeastTamer.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/BeastTamerSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's restrictions over offers; `NoteText.sentence` (Task 3).
@@ -1310,7 +1310,7 @@ git commit -m "feat(powers): Marsh Spirit keeps players who target its site from
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/BeastTamerSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/BeastTamerSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1415,7 +1415,7 @@ Expected: compilation failure, `Not found: BeastTamer`.
 
 - [ ] **Step 3: Write the shared helper and Beast Tamer**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/EnemyPlans.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/EnemyPlans.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1453,7 +1453,7 @@ private[campaign] object EnemyPlans:
     case _ => None
 ```
 
-Delete `BeastTamerCard` from `HoldingDiscordDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/powers/campaign/BeastTamer.scala`:
+Delete `BeastTamerCard` from `HoldingDiscordDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/campaign/BeastTamer.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1526,13 +1526,13 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/EnemyPlans.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/BeastTamer.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/BeastTamerSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/EnemyPlans.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/BeastTamer.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/BeastTamerSuite.scala
 git commit -m "feat(powers): Beast Tamer keeps enemies from Beast and Nomad battle plans"
 ```
 
@@ -1541,12 +1541,12 @@ git commit -m "feat(powers): Beast Tamer keeps enemies from Beast and Nomad batt
 ### Task 7: True Names
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/TrueNames.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/TrueNamesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/TrueNames.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/TrueNamesSuite.scala`
 
 **Interfaces:**
 - Consumes: `EnemyPlans` (Task 6), `CodeOfHonor` (Task 4), `NoteText.sentence` (Task 3).
@@ -1554,7 +1554,7 @@ git commit -m "feat(powers): Beast Tamer keeps enemies from Beast and Nomad batt
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/TrueNamesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/TrueNamesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1679,7 +1679,7 @@ Expected: compilation failure, `Not found: TrueNames`.
 
 - [ ] **Step 3: Write True Names**
 
-Delete `TrueNamesCard` from `HoldingBeastDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/powers/campaign/TrueNames.scala`:
+Delete `TrueNamesCard` from `HoldingBeastDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/campaign/TrueNames.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1766,12 +1766,12 @@ If "a plan chosen before an adviser turns faceup stays chosen" fails because the
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/TrueNames.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRestrictions.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/TrueNamesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/TrueNames.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRestrictions.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/TrueNamesSuite.scala
 git commit -m "feat(powers): True Names keeps enemies from plans matching its holder's advisers"
 ```
 

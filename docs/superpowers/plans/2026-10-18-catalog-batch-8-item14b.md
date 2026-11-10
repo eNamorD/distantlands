@@ -52,7 +52,7 @@ Task 1 Step 3 repeats this check against the diff.
 **Files:**
 - Modify: every `src/**/*.scala` file that reads `ctx.activePlayer` or `ran.activePlayer` (113 files on `c46fc524`).
 - Modify, bare names: the 17 files listed in `BARE` below.
-- Keep: `src/main/scala/oathdigital/model/GameState.scala`, `src/test/scala/oathdigital/gameplay/powers/poweruse/ForestCouncilSuite.scala`, every `turn.activePlayer` and `next.activePlayer` (a `TurnState`), and `frontend/`.
+- Keep: `src/main/scala/distantlands/model/GameState.scala`, `src/test/scala/distantlands/gameplay/powers/poweruse/ForestCouncilSuite.scala`, every `turn.activePlayer` and `next.activePlayer` (a `TurnState`), and `frontend/`.
 
 **Interfaces:**
 - Produces: `PowerCtx.actor: PlayerId` and `WalkCtx.actor: PlayerId`. Every procedure builder's player parameter is named `actor`.
@@ -65,8 +65,8 @@ Save it as `rename_actor.py` in the scratchpad:
 import os, re, sys
 root = sys.argv[1]
 SRC = root + '/src'
-M = 'src/main/scala/oathdigital/'
-T = 'src/test/scala/oathdigital/'
+M = 'src/main/scala/distantlands/'
+T = 'src/test/scala/distantlands/'
 # Files whose every bare `activePlayer` holds the walk's actor.
 BARE = [
     M + 'application/WalkerDecisionProjector.scala',

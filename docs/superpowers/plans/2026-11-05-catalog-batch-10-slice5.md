@@ -26,7 +26,7 @@
 - "Testing"
 - "Out of scope"
 
-Card text (`src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala`):
+Card text (`src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala`):
 - Grand Canal: "Act as if this site is a Coast along with its other powers."
 - Lost Lagoon: "Act as if this site is an Island along with its other powers."
 
@@ -63,12 +63,12 @@ This is the fifth of 14 slice plans, written against `0.2.0-alpha` at `53959740`
 ### Task 1: Live terrain sets and Grand Canal
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/GrandCanal.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala:1-23`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:80`
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/GrandCanal.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala:1-23`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:80`
 - Modify: `src/test/resources/powers/unimplemented.txt` (drops `edifice.e03.intact`)
-- Test: `src/test/scala/oathdigital/gameplay/powers/travel/GrandCanalSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/travel/GrandCanalSuite.scala`
 
 **Interfaces:**
 - Consumes: `EdificeSetupSupport.siteOf(ready, edifice, side): Option[SiteId]`; `TravelRoute.pawnMove`, `TravelRoute.adjustSupply`, `TravelRoute.PawnMove`; `TravelFixture` (`board`, `on`, `candidates`, `travel`, the named sites).
@@ -84,7 +84,7 @@ The Travel board (`TravelFixture`): the Cradle holds `cradlePlains` (Buried Gian
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/GrandCanalSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/GrandCanalSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -172,9 +172,9 @@ import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
 import oathdigital.model.{Cost, EdificeId, PowerId, Suit}
 ```
 
-Check with `grep -n "ModifierMark\|MajorActionType" src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala`; it must print nothing after the edit. `NewFoundations.scala` already imports `oathdigital.gameplay.powers.travel._`, so its `GrandCanalCard` entry needs no change.
+Check with `grep -n "ModifierMark\|MajorActionType" src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala`; it must print nothing after the edit. `NewFoundations.scala` already imports `oathdigital.gameplay.powers.travel._`, so its `GrandCanalCard` entry needs no change.
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/GrandCanal.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/GrandCanal.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -357,12 +357,12 @@ Expected: `unimplemented.txt` drops exactly `edifice.e03.intact`. `declared-keys
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/GrandCanal.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
+git add src/main/scala/distantlands/gameplay/powers/travel/GrandCanal.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/travel/GrandCanalSuite.scala
+  src/test/scala/distantlands/gameplay/powers/travel/GrandCanalSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Grand Canal makes its site a Coast, read live from the state
 
@@ -378,14 +378,14 @@ EOF
 ### Task 2: Lost Lagoon, Forest Paths and the face flip
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/GrandCanal.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala` (`TravelTerrain`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/ForestPaths.scala` (`ignores` and its doc)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/GrandCanal.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala` (`TravelTerrain`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/ForestPaths.scala` (`ignores` and its doc)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt` (drops `edifice.e03.ruined`)
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`
 - Modify: `docs/ROADMAP.md:68`
-- Test: `src/test/scala/oathdigital/gameplay/powers/travel/GrandCanalSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/travel/GrandCanalSuite.scala`
 
 **Interfaces:**
 - Consumes: everything Task 1 produces; `ForestPaths`, `ErrandBoyCard` (a Beast denizen with no power these tests use); `ContributionCollector.gather`, `PowerWindowIndex.of`, `PowerCtx(catalog, ready, actor, source, window, answered, operation)`.
@@ -624,12 +624,12 @@ Expected: both pass.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/GrandCanal.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/ForestPaths.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
+git add src/main/scala/distantlands/gameplay/powers/travel/GrandCanal.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/ForestPaths.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/travel/GrandCanalSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/GrandCanalSuite.scala \
   docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md \
   docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'

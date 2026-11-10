@@ -40,10 +40,10 @@
 - `shared/.../projection/ActionProjectionDtos.scala` — `PlayerBoardProjection` bag fields; new `SupplyBandProjection`.
 - `shared/.../projection/GameProjectionDto.scala` — `supplyBands`.
 - `shared/.../projection/WorldProjectionCodec.scala`, `GameProjectionCodec.scala` — the codecs.
-- `src/main/scala/oathdigital/gameplay/powers/PlayerFacts.scala` — `onBoards`, `atSites`, `banked`.
-- `src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala` — reads `PlayerFacts.banked`.
-- `src/main/scala/oathdigital/application/GamePresentationProjector.scala` — discard cards, bag fields.
-- `src/main/scala/oathdigital/application/GameProjection.scala` — `supplyBands`.
+- `src/main/scala/distantlands/gameplay/powers/PlayerFacts.scala` — `onBoards`, `atSites`, `banked`.
+- `src/main/scala/distantlands/gameplay/phases/rest/FinishRestProcedure.scala` — reads `PlayerFacts.banked`.
+- `src/main/scala/distantlands/application/GamePresentationProjector.scala` — discard cards, bag fields.
+- `src/main/scala/distantlands/application/GameProjection.scala` — `supplyBands`.
 - `frontend/.../SupplyAtRest.scala` — new, pure: the overlay's lines.
 - `frontend/.../ServerUiSupport.scala` — `pileDisplay` as a button.
 - `frontend/.../WorldBoardRenderer.scala` — pile and Supply clicks.
@@ -57,11 +57,11 @@
 ### Task 1: Project a discard pile's cards
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionDtos.scala:62-67`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala:143-153`
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala:60-96`
-- Test: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- Test: `src/test/scala/oathdigital/application/GamePresentationProjectorDiscardSuite.scala` (new)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala:62-67`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala:143-153`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala:60-96`
+- Test: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- Test: `src/test/scala/distantlands/application/GamePresentationProjectorDiscardSuite.scala` (new)
 
 **Interfaces:**
 - Produces: `SetupRegionProjection.discardCards: Vector[CardDetailsProjection]`, top of the pile first. A card the viewer may identify is `cardDetails(id, None, hidden = false)`; any other is `hiddenCard(kind)` (`cardId == "hidden"`, `hidden == true`).
@@ -137,7 +137,7 @@ Expected: PASS, including the suite's existing unexpected-field rejection tests.
 
 - [ ] **Step 5: Write the failing projector test**
 
-Create `src/test/scala/oathdigital/application/GamePresentationProjectorDiscardSuite.scala`:
+Create `src/test/scala/distantlands/application/GamePresentationProjectorDiscardSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -218,7 +218,7 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala src/main/scala/oathdigital/application/GamePresentationProjector.scala shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala src/test/scala/oathdigital/application/GamePresentationProjectorDiscardSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala src/main/scala/distantlands/application/GamePresentationProjector.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala src/test/scala/distantlands/application/GamePresentationProjectorDiscardSuite.scala
 git commit -m "feat(projection): carry a discard pile's cards, top first"
 ```
 
@@ -227,16 +227,16 @@ git commit -m "feat(projection): carry a discard pile's cards, top first"
 ### Task 2: Project banked warbands and the Supply bands
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PlayerFacts.scala:19-29`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala:73-89`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:264-285`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala:33-35`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala:155-191`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala:15-23, 63-75, 104-137`
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala:157-187`
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala:108-114`
-- Test: `src/test/scala/oathdigital/application/SupplyProjectionSuite.scala`
-- Test: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PlayerFacts.scala:19-29`
+- Modify: `src/main/scala/distantlands/gameplay/phases/rest/FinishRestProcedure.scala:73-89`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:264-285`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala:33-35`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala:155-191`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala:15-23, 63-75, 104-137`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala:157-187`
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala:108-114`
+- Test: `src/test/scala/distantlands/application/SupplyProjectionSuite.scala`
+- Test: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
 
 **Interfaces:**
 - Produces: `PlayerBoardProjection.bankedWarbands`, `printedWarbands`, `siteWarbands`, `restSupplyBase: Int`; `GameProjection.supplyBands: Vector[SupplyBandProjection]` with `SupplyBandProjection(from: Int, to: Option[Int], supply: Int)`, in the engine's band order (9+, 4–8, 0–3); `PlayerFacts.onBoards(ready, kind)`, `PlayerFacts.atSites(ready, kind)`, `PlayerFacts.banked(ready, kind)`.
@@ -463,7 +463,7 @@ Expected: PASS. If the rest package has no suites under that name, run `./sbtw t
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/PlayerFacts.scala src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala src/main/scala/oathdigital/application/GamePresentationProjector.scala src/main/scala/oathdigital/application/GameProjection.scala src/test/scala/oathdigital/application/SupplyProjectionSuite.scala shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/PlayerFacts.scala src/main/scala/distantlands/gameplay/phases/rest/FinishRestProcedure.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala src/main/scala/distantlands/application/GamePresentationProjector.scala src/main/scala/distantlands/application/GameProjection.scala src/test/scala/distantlands/application/SupplyProjectionSuite.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala
 git commit -m "feat(projection): banked warbands and the Supply bands on every board"
 ```
 
@@ -472,10 +472,10 @@ git commit -m "feat(projection): banked warbands and the Supply bands on every b
 ### Task 3: The discard pile opens as a card list
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:144-166`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:161-162`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:144-166`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:161-162`
 - Modify: `frontend/styles.css:581-588, 747`
-- Test: `frontend/src/test/scala/oathdigital/frontend/DiscardPileSuite.scala` (new)
+- Test: `frontend/src/test/scala/distantlands/frontend/DiscardPileSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `GameRegion.discardCards` (Task 1); `CardInspection.openCards(title, cards, origin)`.
@@ -483,7 +483,7 @@ git commit -m "feat(projection): banked warbands and the Supply bands on every b
 
 - [ ] **Step 1: Write the failing test**
 
-Create `frontend/src/test/scala/oathdigital/frontend/DiscardPileSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/DiscardPileSuite.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -625,7 +625,7 @@ Expected: no new finding against the lines you added. Fix any it reports.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala frontend/styles.css frontend/src/test/scala/oathdigital/frontend/DiscardPileSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala frontend/styles.css frontend/src/test/scala/distantlands/frontend/DiscardPileSuite.scala
 git commit -m "feat(frontend): a discard pile opens its cards in the overlay"
 ```
 
@@ -634,12 +634,12 @@ git commit -m "feat(frontend): a discard pile opens its cards in the overlay"
 ### Task 4: Supply opens "Supply at Rest"
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/SupplyAtRest.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/frontend.scala` (one alias)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:61-62`
+- Create: `frontend/src/main/scala/distantlands/frontend/SupplyAtRest.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/frontend.scala` (one alias)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:61-62`
 - Modify: `frontend/styles.css` (one rule beside `.pile-open`)
-- Test: `frontend/src/test/scala/oathdigital/frontend/SupplyAtRestSuite.scala` (new)
-- Test: `frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/SupplyAtRestSuite.scala` (new)
+- Test: `frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlayerBoard.bankedWarbands`, `printedWarbands`, `siteWarbands`, `restSupplyBase`; `GameProjection.supplyBands`, `supplyMaximum` (Task 2); `CardInspection.openText`.
@@ -647,7 +647,7 @@ git commit -m "feat(frontend): a discard pile opens its cards in the overlay"
 
 - [ ] **Step 1: Write the failing pure test**
 
-Create `frontend/src/test/scala/oathdigital/frontend/SupplyAtRestSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/SupplyAtRestSuite.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -689,13 +689,13 @@ Expected: compile error, `SupplyBand` and `SupplyAtRest` not found.
 
 - [ ] **Step 3: Write the alias and the object**
 
-In `frontend/src/main/scala/oathdigital/frontend/frontend.scala`, next to the `PlayerBoard` alias (line 74):
+In `frontend/src/main/scala/distantlands/frontend/frontend.scala`, next to the `PlayerBoard` alias (line 74):
 
 ```scala
 type SupplyBand = protocol.projection.SupplyBandProjection
 ```
 
-Create `frontend/src/main/scala/oathdigital/frontend/SupplyAtRest.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/SupplyAtRest.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -796,7 +796,7 @@ Run: `~/.claude/skills/impeccable/scripts/impeccable detect --json frontend/styl
 Expected: nothing new.
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/SupplyAtRest.scala frontend/src/main/scala/oathdigital/frontend/frontend.scala frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala frontend/styles.css frontend/src/test/scala/oathdigital/frontend/SupplyAtRestSuite.scala frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/SupplyAtRest.scala frontend/src/main/scala/distantlands/frontend/frontend.scala frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala frontend/styles.css frontend/src/test/scala/distantlands/frontend/SupplyAtRestSuite.scala frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala
 git commit -m "feat(frontend): Supply opens the bag, the band table and the Rest it returns"
 ```
 
@@ -805,8 +805,8 @@ git commit -m "feat(frontend): Supply opens the bag, the band table and the Rest
 ### Task 5: Secret and defense-die glyphs get their own shapes
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala:23-27, 47-49, 66-95`
-- Test: `frontend/src/test/scala/oathdigital/frontend/SuitGlyphSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TokenSprite.scala:23-27, 47-49, 66-95`
+- Test: `frontend/src/test/scala/distantlands/frontend/SuitGlyphSuite.scala`
 
 **Interfaces:**
 - Produces: sprite symbols `secret`, `secret-burnt`, `defense-die` with the spec's paths and `fill-rule="evenodd"` on their `<path>`.
@@ -870,7 +870,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala frontend/src/test/scala/oathdigital/frontend/SuitGlyphSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/TokenSprite.scala frontend/src/test/scala/distantlands/frontend/SuitGlyphSuite.scala
 git commit -m "feat(frontend): a solid book for secrets and a shield for the defense die"
 ```
 
@@ -982,7 +982,7 @@ git commit -m "style(frontend): the player strip is one card row tall"
 
 **Files:**
 - Modify: `frontend/styles.css:220, 287-293, 793, 800-810`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:82-84` (one comment)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:82-84` (one comment)
 
 An Impeccable `layout` pass on the site box. Brief: the compact map no longer hides the footer; the box grows so the footer never costs the card row; powers wrap to two lines; text on the map may fall under 11px (spec, "Ruling on map text").
 
@@ -1018,7 +1018,7 @@ Run: `~/.claude/skills/impeccable/scripts/impeccable detect --json --scope layou
 Expected: nothing new.
 
 ```bash
-git add frontend/styles.css frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala
+git add frontend/styles.css frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala
 git commit -m "style(frontend): site powers stay on the map and scale with it"
 ```
 

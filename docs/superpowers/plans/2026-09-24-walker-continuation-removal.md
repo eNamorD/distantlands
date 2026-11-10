@@ -59,8 +59,8 @@ Expected: the suites pass; the last command prints `218`. If it prints a differe
 
 Created:
 
-- `src/test/scala/oathdigital/gameplay/walker/ParkedDecisionAssertions.scala` — `ParkedDecisionFacts` and the assertion class.
-- `src/test/scala/oathdigital/gameplay/walker/ParkedDecisionAssertionsSuite.scala` — the module's own tests.
+- `src/test/scala/distantlands/gameplay/walker/ParkedDecisionAssertions.scala` — `ParkedDecisionFacts` and the assertion class.
+- `src/test/scala/distantlands/gameplay/walker/ParkedDecisionAssertionsSuite.scala` — the module's own tests.
 
 Modified (production):
 
@@ -81,8 +81,8 @@ Deleted: nothing but the members above. No test file is deleted.
 ### Task 1: The shared assertion module
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/walker/ParkedDecisionAssertions.scala`
-- Create: `src/test/scala/oathdigital/gameplay/walker/ParkedDecisionAssertionsSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/walker/ParkedDecisionAssertions.scala`
+- Create: `src/test/scala/distantlands/gameplay/walker/ParkedDecisionAssertionsSuite.scala`
 
 **Interfaces:**
 - Consumes: `CurrentGameState.walkerProcedure`/`walkerPending`/`walkerModifiers`/`walkerStartArgs`, `WalkerProcedureRegistry.rebuild`/`rollDecisionId`, `ProcedureWalker.parkedDecide`/`parkedRoll`/`awaitedPlayer`/`awaitedPlayers`, `WalkerPowers.selected`.
@@ -222,7 +222,7 @@ Expected: PASS, 5 tests.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/walker/ParkedDecisionAssertions.scala src/test/scala/oathdigital/gameplay/walker/ParkedDecisionAssertionsSuite.scala
+git add src/test/scala/distantlands/gameplay/walker/ParkedDecisionAssertions.scala src/test/scala/distantlands/gameplay/walker/ParkedDecisionAssertionsSuite.scala
 git commit -m "test(walker): add ParkedDecisionAssertions, derived from the parked tree
 
 The parked decision's procedure, id and owner are recomputed from the rebuilt
@@ -241,10 +241,10 @@ only through `PlanDriver.awaits` and never name `OathContinue`. Re-implementing
 the two `awaits` helpers converts them without touching a call site.
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CampaignPlanWindowSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CampaignRaidSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CampaignPlanWindowSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CampaignRaidSuite.scala`
 - Unchanged but re-run: `MercenariesSuite`, `GleamingArmorSuite`, `RampartSuite`, `StickyFireSuite`, `FearsomeShieldSuite`, `BattleHonorsSuite`, `WrestlersSuite`, `WarningSignalsSuite` (all in `gameplay/powers/campaign/`).
 
 - [ ] **Step 1: Give `PlanDriver` a `ParkedDecisionAssertions`**
@@ -341,7 +341,7 @@ Expected: PASS, with no change in test counts.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala src/test/scala/oathdigital/gameplay/CampaignPlanWindowSuite.scala src/test/scala/oathdigital/gameplay/CampaignRaidSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/
+git add src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala src/test/scala/distantlands/gameplay/CampaignPlanWindowSuite.scala src/test/scala/distantlands/gameplay/CampaignRaidSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/
 git commit -m "test(campaign): assert the parked decision, not the continuation value
 
 PlanDriver's awaits becomes a predicate over the parked decision, so the eight
@@ -359,9 +359,9 @@ Three fixtures carry boolean helpers used by fifteen suites. Re-implementing
 the bodies converts every user; only the clue strings move.
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/TargetsFixture.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/action/MovementFixture.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/banner/BannerFixture.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/TargetsFixture.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/action/MovementFixture.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/banner/BannerFixture.scala`
 - Modify (clue strings and negatives): `powers/wake/HornedMaskSuite.scala`, `powers/action/IvoryEyeSuite.scala`, `powers/action/CrystalVialSuite.scala`, `powers/action/SleightOfHandSuite.scala`, `powers/action/AlchemistSuite.scala`, `powers/action/WolvesSuite.scala`, `powers/banner/PeoplesFavorMobSuite.scala`
 - Unchanged but re-run: `CoOwnedDecideSuite`, `CatacombsContributionSuite`, `powers/action/BrassHorseSuite`, `powers/action/MagicCarpetSuite`, `powers/action/WhistleSuite`, `powers/banner/WanderingFlameMoveSuite`, `powers/banner/WanderingFlamePlaceSuite`
 
@@ -440,7 +440,7 @@ imports `TargetsFixture`, so it is the one consumer the package run misses.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/ src/test/scala/oathdigital/gameplay/CoOwnedDecideSuite.scala src/test/scala/oathdigital/gameplay/CatacombsContributionSuite.scala
+git add src/test/scala/distantlands/gameplay/powers/ src/test/scala/distantlands/gameplay/CoOwnedDecideSuite.scala src/test/scala/distantlands/gameplay/CatacombsContributionSuite.scala
 git commit -m "test(powers): assert nothing is parked, not that one family is absent
 
 The power fixtures' predicates now read the parked decision, and eighteen
@@ -454,11 +454,11 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ### Task 4: The application and server suites
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/application/ParkedServiceFixture.scala`
-- Modify: `src/test/scala/oathdigital/application/ForgeWalkerFixture.scala`
-- Modify: `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/PendingWalkerInvariantSuite.scala`
-- Modify: `src/test/scala/oathdigital/server/TrustedGameProvisioningSuite.scala`
+- Modify: `src/test/scala/distantlands/application/ParkedServiceFixture.scala`
+- Modify: `src/test/scala/distantlands/application/ForgeWalkerFixture.scala`
+- Modify: `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala`
+- Modify: `src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala`
+- Modify: `src/test/scala/distantlands/server/TrustedGameProvisioningSuite.scala`
 
 **Interfaces:**
 - These suites hold `GameAccepted`, not `OathTransition`. Pass `accepted.state`; the module takes an `OathState` for exactly this reason.
@@ -523,7 +523,7 @@ Expected: PASS, three fewer assertions and no fewer tests.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/ src/test/scala/oathdigital/server/TrustedGameProvisioningSuite.scala
+git add src/test/scala/distantlands/application/ src/test/scala/distantlands/server/TrustedGameProvisioningSuite.scala
 git commit -m "test(application): assert the parked decision behind GameAccepted
 
 Three assertions go: two restated a line above them, one restated its own
@@ -627,7 +627,7 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/
+git add src/test/scala/distantlands/gameplay/
 git commit -m "test(gameplay): assert the park, the phase and the winner directly
 
 Continuations that named a phase become an assertion that nothing is parked
@@ -645,8 +645,8 @@ These are the assertions that restate the registry's own lambdas: they are
 tautologies that die with the code they describe.
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/walker/WalkerProcedureRegistrySuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/walker/WalkerProcedureRegistrySuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala`
 
 - [ ] **Step 1: Delete the four `continuationFor` assertions**
 
@@ -685,7 +685,7 @@ Expected: PASS, with four fewer assertions and the same test count.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/walker/WalkerProcedureRegistrySuite.scala
+git add src/test/scala/distantlands/gameplay/walker/WalkerProcedureRegistrySuite.scala
 git commit -m "test(walker): drop the assertions that restate the registry's lambdas
 
 Four assertions checked that a continuation lambda returns what its literal
@@ -704,17 +704,17 @@ remaining site: `OathTransition` is a case class and every construction is
 exhaustive.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameProcedureProtocol.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathLifecycle.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/MinorActions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/rest/TurnBoundary.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/oathkeeper/OathkeeperProcedureSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/OathRulesWalkerPowerSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameProcedureProtocol.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathLifecycle.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/MinorActions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/rest/TurnBoundary.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala`
+- Modify: `src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/oathkeeper/OathkeeperProcedureSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/OathRulesWalkerPowerSuite.scala`
 
 - [ ] **Step 1: Replace `parkedContinue` with `checkAnswerable`**
 
@@ -850,7 +850,7 @@ are records.)
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital src/test/scala/oathdigital
+git add src/main/scala/distantlands src/test/scala/distantlands
 git commit -m "refactor(walker): delete OathContinue, a fact with no reader
 
 Every command constructed one and nothing read it: not a route, not a codec,

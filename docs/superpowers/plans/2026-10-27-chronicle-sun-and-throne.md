@@ -54,7 +54,7 @@ Digital accounting choices made here, inside the rules:
 
 ## File Structure
 
-Paths below are relative to the repo root. `M/` is `src/main/scala/oathdigital/` and `T/` is `src/test/scala/oathdigital/`.
+Paths below are relative to the repo root. `M/` is `src/main/scala/distantlands/` and `T/` is `src/test/scala/distantlands/`.
 
 - Modify `M/model/ActionValues.scala`: add `ShufflePile`.
 - Modify `M/model/CoreOperations.scala`: change `Shuffle` to take `ShufflePile` and `CardId`; add `Location.SetAsideEdifices`; send `Discard.RuinedEdifice` to the set-aside list.
@@ -261,7 +261,7 @@ Expected: PASS. Fix any wire round-trip suite that builds a `Shuffle` (the compi
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ActionValues.scala src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/PileOperations.scala src/main/scala/oathdigital/gameplay/walker/WalkerShuffles.scala src/main/scala/oathdigital/gameplay/powers/action/ClayRattle.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/test/scala/oathdigital/gameplay/operations/ShufflePileSuite.scala
+git add src/main/scala/distantlands/model/ActionValues.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/PileOperations.scala src/main/scala/distantlands/gameplay/walker/WalkerShuffles.scala src/main/scala/distantlands/gameplay/powers/action/ClayRattle.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/gameplay/operations/ShufflePileSuite.scala
 # plus every other file this task touched, by path
 git commit -m "feat(walker): shuffle the edifice deck and set-aside relics with a recorded order
 
@@ -670,7 +670,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ChronicleOperations.scala src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/gameplay/operations/ChronicleStateOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala src/test/scala/oathdigital/gameplay/operations/ChronicleStateOperationsSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala src/test/scala/oathdigital/serialization/GameEventFactsWireSuite.scala
+git add src/main/scala/distantlands/model/ChronicleOperations.scala src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/gameplay/operations/ChronicleStateOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/serialization/GameEventJsonSupport.scala src/test/scala/distantlands/gameplay/operations/ChronicleStateOperationsSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala src/test/scala/distantlands/serialization/GameEventFactsWireSuite.scala
 # plus every other file the compiler made you touch
 git commit -m "feat(chronicle): journal roles, tasks, the Scepter, Imperial supply, lineage points and built edifices
 
@@ -849,7 +849,7 @@ Expected: PASS. `ChronicleBeginSuite` still passes, because empty windows ask no
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala src/main/scala/oathdigital/model/ProcedureRef.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleWindows.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleSunProcedure.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleThroneProcedure.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleSequence.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleWindowsSuite.scala
+git add src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/model/ProcedureRef.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleWindows.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleSunProcedure.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleThroneProcedure.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleSequence.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleWindowsSuite.scala
 # plus the updated ref and golden files, by path
 git commit -m "feat(chronicle): chain the Sun and Throne tasks with one power window per step
 
@@ -1145,7 +1145,7 @@ Expected: PASS. The shared `ChronicleWalk` helper and the windows suite now answ
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/ShapeEmpire.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/oathdigital/gameplay/chronicle/ShapeEmpireSuite.scala
+git add src/main/scala/distantlands/gameplay/chronicle/ShapeEmpire.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/distantlands/gameplay/chronicle/ShapeEmpireSuite.scala
 git commit -m "feat(chronicle): Shape Empire removes the Chancellor's warbands and discards unruled denizens
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1230,7 +1230,7 @@ Expected: PASS. Extend `ChronicleWalk` so it answers any `chronicle.build-edific
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/BuildEdifice.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/oathdigital/gameplay/chronicle/BuildEdificeSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleWalk.scala
+git add src/main/scala/distantlands/gameplay/chronicle/BuildEdifice.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/distantlands/gameplay/chronicle/BuildEdificeSuite.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleWalk.scala
 git commit -m "feat(chronicle): Build Edifice offers a random edifice per suit and falls back to set-aside ones
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1289,7 +1289,7 @@ Expected: PASS. Extend `ChronicleWalk` to answer `chronicle.stock-reliquary.disc
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/ReliquaryAndRelics.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/oathdigital/gameplay/chronicle/ReliquaryAndRelicsSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleWalk.scala
+git add src/main/scala/distantlands/gameplay/chronicle/ReliquaryAndRelics.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/distantlands/gameplay/chronicle/ReliquaryAndRelicsSuite.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleWalk.scala
 git commit -m "feat(chronicle): stock the Reliquary and scatter relics Hinterward
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1474,7 +1474,7 @@ Expected: all pass, and the coverage ratchet holds. If coverage drops, add tests
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/ChronicleRecord.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleFinishProcedure.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleRecordSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleSunThroneEndToEndSuite.scala docs/rules/chronicle.md docs/rules/implementation-traceability.md docs/architecture/game-setup.md CONTEXT.md docs/ROADMAP.md
+git add src/main/scala/distantlands/gameplay/chronicle/ChronicleRecord.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleFinishProcedure.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleRecordSuite.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleSunThroneEndToEndSuite.scala docs/rules/chronicle.md docs/rules/implementation-traceability.md docs/architecture/game-setup.md CONTEXT.md docs/ROADMAP.md
 git commit -m "feat(chronicle): the journaled Chronicle carries the Sun and Throne's roles, scores and Oath
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"

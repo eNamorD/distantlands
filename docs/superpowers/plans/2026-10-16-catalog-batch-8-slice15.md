@@ -143,12 +143,12 @@ The product owner settled these on 2026-10-16. They replace the slice 15 entry o
 ### Task 1: A Travel sent to a site
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`QueuedProcedure` and its doc)
-- Modify: `src/main/scala/oathdigital/serialization/FollowUpWire.scala` (encode and decode `senderId`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (`queuedAnswers`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (`waived`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/travel/SentTravelSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`QueuedProcedure` and its doc)
+- Modify: `src/main/scala/distantlands/serialization/FollowUpWire.scala` (encode and decode `senderId`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (`queuedAnswers`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (`waived`)
+- Create: `src/test/scala/distantlands/gameplay/powers/travel/SentTravelSuite.scala`
 
 **Interfaces:**
 - Produces: `QueuedProcedure.sender`, `TravelProcedure.queuedDestination`, `TravelProcedure.queuedAnswers` and `WalkerProcedureRegistry.queuedAnswers(state)`. Tasks 2, 3 and 5 rely on a queued Travel `Run` with `Vector(Site(dest))` start args walking to `dest` for its actor, with its sender's waivable restrictions lifted.
@@ -395,12 +395,12 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/serialization/FollowUpWire.scala \
-  src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/SentTravelSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/serialization/FollowUpWire.scala \
+  src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/SentTravelSuite.scala
 git commit -m "feat(travel): a queued Travel goes to the site its sender named"
 ```
 
@@ -411,14 +411,14 @@ Add `QueuedStart.scala` to the list if Step 6 changed it.
 ### Task 2: Palanquin, and Ward of Silence's reason
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Palanquin.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` (remove `PalanquinCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/MovementPowers.scala` (register `Palanquin`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/PawnMoves.scala` (`noValidEnemyPawn`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WardOfSilence.scala` (`usable`, `refusal`, doc)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/action/WardOfSilenceSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Palanquin.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` (remove `PalanquinCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/MovementPowers.scala` (register `Palanquin`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/PawnMoves.scala` (`noValidEnemyPawn`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WardOfSilence.scala` (`usable`, `refusal`, doc)
+- Modify: `src/test/scala/distantlands/gameplay/powers/action/WardOfSilenceSuite.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/PalanquinSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/action/PalanquinSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's sent Travel.
@@ -800,13 +800,13 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/Palanquin.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/MovementPowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/PawnMoves.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/WardOfSilence.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/PalanquinSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/WardOfSilenceSuite.scala \
+git add src/main/scala/distantlands/gameplay/powers/action/Palanquin.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala \
+  src/main/scala/distantlands/gameplay/powers/action/MovementPowers.scala \
+  src/main/scala/distantlands/gameplay/powers/action/PawnMoves.scala \
+  src/main/scala/distantlands/gameplay/powers/action/WardOfSilence.scala \
+  src/test/scala/distantlands/gameplay/powers/action/PalanquinSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/WardOfSilenceSuite.scala \
   src/test/resources/powers/unimplemented.txt \
   src/test/resources/notes/declared-keys.txt
 git commit -m "feat(action): Palanquin sends a player at your site where you go"
@@ -817,11 +817,11 @@ git commit -m "feat(action): Palanquin sends a player at your site where you go"
 ### Task 3: The consent a queued start waits on
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala` (`QueuedStarts`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala` (`consent`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (`waivableBreaches`)
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala` (`startsFor`)
-- Create: `src/test/scala/oathdigital/gameplay/walker/QueuedStartConsentSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala` (`QueuedStarts`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/QueuedStart.scala` (`consent`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (`waivableBreaches`)
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala` (`startsFor`)
+- Create: `src/test/scala/distantlands/gameplay/walker/QueuedStartConsentSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `WalkerProcedureRegistry.queuedAnswers` and the sender.
@@ -1046,11 +1046,11 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala \
-  src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala \
-  src/test/scala/oathdigital/gameplay/walker/QueuedStartConsentSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala \
+  src/main/scala/distantlands/gameplay/walker/QueuedStart.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala \
+  src/test/scala/distantlands/gameplay/walker/QueuedStartConsentSuite.scala
 git commit -m "feat(walker): a queued start names the grants it waits on"
 ```
 
@@ -1059,16 +1059,16 @@ git commit -m "feat(walker): a queued start names the grants it waits on"
 ### Task 4: Consent from either of several players
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Consent.scala` (`ConsentAsk`, `ConsentRequest`, `ConsentState.requested`, `answered`, `grantedBy`)
-- Modify: `src/main/scala/oathdigital/serialization/ConsentEventCodec.scala` (`alternative`)
-- Modify: `src/main/scala/oathdigital/application/ConsentDesk.scala` (`request`, `automatic`)
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`, `GameApplicationService.scala`, `Authorization.scala`, `GameIntentMapper.scala` (`granters`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala` (`granters`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionDtos.scala` and its codec `ConsentProjectionCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (the ask projection, about line 363)
-- Modify: `src/main/scala/oathdigital/application/ConsentProjector.scala` (`consentWaiting`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ConsentAsking.scala`, `ConsentPanels.scala`, and `CardInspection.scala` if it has no multi-button dialog
-- Test: `src/test/scala/oathdigital/model/ConsentStateSuite.scala`, `ConsentEventWireSuite`, `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/ConsentAskingSuite.scala`, `ConsentPromptPanelSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Consent.scala` (`ConsentAsk`, `ConsentRequest`, `ConsentState.requested`, `answered`, `grantedBy`)
+- Modify: `src/main/scala/distantlands/serialization/ConsentEventCodec.scala` (`alternative`)
+- Modify: `src/main/scala/distantlands/application/ConsentDesk.scala` (`request`, `automatic`)
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`, `GameApplicationService.scala`, `Authorization.scala`, `GameIntentMapper.scala` (`granters`)
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala` (`granters`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionDtos.scala` and its codec `ConsentProjectionCodec.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (the ask projection, about line 363)
+- Modify: `src/main/scala/distantlands/application/ConsentProjector.scala` (`consentWaiting`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ConsentAsking.scala`, `ConsentPanels.scala`, and `CardInspection.scala` if it has no multi-button dialog
+- Test: `src/test/scala/distantlands/model/ConsentStateSuite.scala`, `ConsentEventWireSuite`, `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`, `frontend/src/test/scala/distantlands/frontend/ConsentAskingSuite.scala`, `ConsentPromptPanelSuite.scala`
 
 **Interfaces:**
 - Produces: alternative asks end to end. Task 5 builds an `OptionReason.Askable` whose asks are `ConsentAsk(..., alternative = true)`, and relies on the desk, the projection and the client handling them.
@@ -1379,26 +1379,26 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Consent.scala \
-  src/main/scala/oathdigital/serialization/ConsentEventCodec.scala \
-  src/main/scala/oathdigital/application/ConsentDesk.scala \
-  src/main/scala/oathdigital/application/GameCommands.scala \
-  src/main/scala/oathdigital/application/GameApplicationService.scala \
-  src/main/scala/oathdigital/application/Authorization.scala \
-  src/main/scala/oathdigital/application/GameIntentMapper.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/application/ConsentProjector.scala \
-  shared/src/main/scala/oathdigital/protocol/CommandIntents.scala \
-  shared/src/main/scala/oathdigital/protocol/CommandIntentCodec.scala \
-  shared/src/main/scala/oathdigital/protocol/CommandIntentDecoders.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionCodec.scala \
-  frontend/src/main/scala/oathdigital/frontend/ConsentAsking.scala \
-  frontend/src/main/scala/oathdigital/frontend/ConsentPanels.scala \
-  frontend/src/main/scala/oathdigital/frontend/frontend.scala
-git add src/test/scala/oathdigital/model/ConsentStateSuite.scala \
-  shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ConsentAskingSuite.scala
+git add src/main/scala/distantlands/model/Consent.scala \
+  src/main/scala/distantlands/serialization/ConsentEventCodec.scala \
+  src/main/scala/distantlands/application/ConsentDesk.scala \
+  src/main/scala/distantlands/application/GameCommands.scala \
+  src/main/scala/distantlands/application/GameApplicationService.scala \
+  src/main/scala/distantlands/application/Authorization.scala \
+  src/main/scala/distantlands/application/GameIntentMapper.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/application/ConsentProjector.scala \
+  shared/src/main/scala/distantlands/protocol/CommandIntents.scala \
+  shared/src/main/scala/distantlands/protocol/CommandIntentCodec.scala \
+  shared/src/main/scala/distantlands/protocol/CommandIntentDecoders.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionCodec.scala \
+  frontend/src/main/scala/distantlands/frontend/ConsentAsking.scala \
+  frontend/src/main/scala/distantlands/frontend/ConsentPanels.scala \
+  frontend/src/main/scala/distantlands/frontend/frontend.scala
+git add src/test/scala/distantlands/model/ConsentStateSuite.scala \
+  shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ConsentAskingSuite.scala
 git commit -m "feat(consent): ask either of several players"
 ```
 
@@ -1409,18 +1409,18 @@ Add `CardInspection.scala`, the wire suite and the panel suite to the list if th
 ### Task 5: Palanquin's consent, and Toll Roads on a sent Travel
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/Palanquin.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala` (`payments`, `paying`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`narrowAt`, `reach`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (`paying`)
-- Modify: `src/main/scala/oathdigital/application/ConsentProjector.scala` (the prompt)
-- Modify: `src/main/scala/oathdigital/application/gamelog/ConsentLines.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ConsentPanels.scala` (the paying prompt)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/Palanquin.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala` (`payments`, `paying`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`narrowAt`, `reach`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (`paying`)
+- Modify: `src/main/scala/distantlands/application/ConsentProjector.scala` (the prompt)
+- Modify: `src/main/scala/distantlands/application/gamelog/ConsentLines.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ConsentPanels.scala` (the paying prompt)
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/PalanquinConsentSuite.scala`
-- Create: `src/test/scala/oathdigital/application/PalanquinConsentServiceSuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ConsentPromptPanelSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/action/PalanquinConsentSuite.scala`
+- Create: `src/test/scala/distantlands/application/PalanquinConsentServiceSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ConsentPromptPanelSuite.scala`
 
 **Interfaces:**
 - Consumes: `QueuedStarts.consent` (Task 3), alternative asks and `granters` (Task 4), `Palanquin` (Task 2).
@@ -2036,17 +2036,17 @@ Expected: PASS.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/Palanquin.scala \
-  src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/application/ConsentProjector.scala \
-  src/main/scala/oathdigital/application/gamelog/ConsentLines.scala \
-  frontend/src/main/scala/oathdigital/frontend/ConsentPanels.scala \
+git add src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala \
+  src/main/scala/distantlands/gameplay/powers/action/Palanquin.scala \
+  src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/application/ConsentProjector.scala \
+  src/main/scala/distantlands/application/gamelog/ConsentLines.scala \
+  frontend/src/main/scala/distantlands/frontend/ConsentPanels.scala \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/powers/action/PalanquinConsentSuite.scala \
-  src/test/scala/oathdigital/application/PalanquinConsentServiceSuite.scala
+  src/test/scala/distantlands/gameplay/powers/action/PalanquinConsentSuite.scala \
+  src/test/scala/distantlands/application/PalanquinConsentServiceSuite.scala
 git commit -m "feat(action): Palanquin asks the target, the toll's ruler or a Pass"
 ```
 
@@ -2057,8 +2057,8 @@ Add `TollRoadsSent.scala` and the panel suite if this task created or changed th
 ### Task 6: The Game Log
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/gamelog/PalanquinLogScripts.scala`
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogPalanquinSuite.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/PalanquinLogScripts.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogPalanquinSuite.scala`
 
 **Interfaces:**
 - Consumes: Palanquin's line (Task 2) and slice 14's off-turn tag.
@@ -2134,8 +2134,8 @@ Expected: PASS. If the Palanquin line reads differently (for example a "Chose" l
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/gamelog/PalanquinLogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPalanquinSuite.scala
+git add src/test/scala/distantlands/application/gamelog/PalanquinLogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPalanquinSuite.scala
 git commit -m "test(log): Palanquin's line and the target's tagged Travel"
 ```
 

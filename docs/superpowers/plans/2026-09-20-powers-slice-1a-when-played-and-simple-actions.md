@@ -36,30 +36,30 @@ These facts are read from the code and shape the tasks. They are not in the desi
 
 ## File Structure
 
-- Create `src/main/scala/oathdigital/gameplay/powers/PlayerFacts.scala`: `player` and `forceKind` reads shared by powers.
-- Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala`: the trait and `cardOf`.
+- Create `src/main/scala/distantlands/gameplay/powers/PlayerFacts.scala`: `player` and `forceKind` reads shared by powers.
+- Create `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala`: the trait and `cardOf`.
 - Create `.../whenplayed/ASmallFavor.scala`, `FaithfulFriend.scala`, `Garrison.scala`, `FamilyHeirloom.scala`.
-- Create `src/main/scala/oathdigital/gameplay/powers/action/PaidAction.scala`, `WaysideInn.scala`, `Elders.scala`, `MagicWaterskin.scala`.
-- Create `src/main/scala/oathdigital/gameplay/powers/wake/MarbleFountains.scala`.
+- Create `src/main/scala/distantlands/gameplay/powers/action/PaidAction.scala`, `WaysideInn.scala`, `Elders.scala`, `MagicWaterskin.scala`.
+- Create `src/main/scala/distantlands/gameplay/powers/wake/MarbleFountains.scala`.
 - Modify `WalkerPowerCatalog.scala`, `PhasePowerCatalog.scala`, `ActionPowers.scala` (flags).
-- Create test support `src/test/scala/oathdigital/gameplay/powers/PowerFixture.scala` and `whenplayed/WhenPlayedHarness.scala`.
-- Create one suite per power under `src/test/scala/oathdigital/gameplay/powers/{whenplayed,action,wake}/`.
+- Create test support `src/test/scala/distantlands/gameplay/powers/PowerFixture.scala` and `whenplayed/WhenPlayedHarness.scala`.
+- Create one suite per power under `src/test/scala/distantlands/gameplay/powers/{whenplayed,action,wake}/`.
 
 ---
 
 ### Task 1: The When Played kit, A Small Favor and Faithful Friend
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/PlayerFacts.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/ASmallFavor.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/FaithfulFriend.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/PowerFixture.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedHarness.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/ASmallFavorSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/FaithfulFriendSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/PlayerFacts.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/ASmallFavor.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/FaithfulFriend.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/PowerFixture.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedHarness.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/ASmallFavorSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/FaithfulFriendSuite.scala`
 
 **Interfaces:**
 - Produces `PlayerFacts.player(ready, actor): Either[OathViolation, PlayerState]` and `PlayerFacts.forceKind(ready, actor): Either[OathViolation, ForceKind]`.
@@ -68,7 +68,7 @@ These facts are read from the code and shape the tasks. They are not in the desi
 
 - [ ] **Step 1: Write the test support**
 
-`src/test/scala/oathdigital/gameplay/powers/PowerFixture.scala`:
+`src/test/scala/distantlands/gameplay/powers/PowerFixture.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -170,7 +170,7 @@ object PowerFixture {
 }
 ```
 
-`src/test/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedHarness.scala`:
+`src/test/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedHarness.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -216,7 +216,7 @@ object WhenPlayedHarness {
 
 - [ ] **Step 2: Write the failing A Small Favor suite**
 
-`src/test/scala/oathdigital/gameplay/powers/whenplayed/ASmallFavorSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/whenplayed/ASmallFavorSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -277,7 +277,7 @@ Expected: FAIL to compile, `not found: value ASmallFavor`.
 
 - [ ] **Step 4: Write `PlayerFacts` and `WhenPlayedPower`**
 
-`src/main/scala/oathdigital/gameplay/powers/PlayerFacts.scala`:
+`src/main/scala/distantlands/gameplay/powers/PlayerFacts.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -300,7 +300,7 @@ object PlayerFacts {
 }
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala`:
+`src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -407,7 +407,7 @@ object FaithfulFriend {
 
 - [ ] **Step 6: Write the Faithful Friend suite**
 
-`src/test/scala/oathdigital/gameplay/powers/whenplayed/FaithfulFriendSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/whenplayed/FaithfulFriendSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -500,9 +500,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 2: Garrison
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/Garrison.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/Garrison.scala`
 - Modify: `WalkerPowerCatalog.scala`, `ActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/GarrisonSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/GarrisonSuite.scala`
 
 **Interfaces:**
 - Consumes `WhenPlayedPower`, `PlayerFacts`, `PowerAccess.ruledSites` (`private[gameplay]`, reachable from `gameplay.powers`).
@@ -731,9 +731,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 3: Family Heirloom
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/FamilyHeirloom.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/FamilyHeirloom.scala`
 - Modify: `WalkerPowerCatalog.scala`, `ActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/FamilyHeirloomSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/FamilyHeirloomSuite.scala`
 
 **Interfaces:**
 - Produces `FamilyHeirloom.decisionId = "cardplay.family-heirloom.keep"`, `FamilyHeirloom.keep` and `FamilyHeirloom.bottom` (`DecisionOptionRef.Button`).
@@ -928,10 +928,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 4: The ACTION kit, Wayside Inn and Elders
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/PaidAction.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/PaidAction.scala`
 - Create: `.../action/WaysideInn.scala`, `.../action/Elders.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/WaysideInnSuite.scala`, `ElderSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/WaysideInnSuite.scala`, `ElderSuite.scala`
 
 **Interfaces:**
 - Produces `abstract class PaidAction(idValue: String, override val cost: Cost) extends PhasePower`, an Act-timed power gated only by its cost. Later slices extend it.
@@ -1151,9 +1151,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 5: Magic Waterskin
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/MagicWaterskin.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/MagicWaterskin.scala`
 - Modify: `PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/MagicWaterskinSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/MagicWaterskinSuite.scala`
 
 Ruling: the relic must be faceup in your play area. Bury it first, with the standard returns, then gain 4 Supply. No cost.
 
@@ -1276,9 +1276,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 6: Marble Fountains
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/wake/MarbleFountains.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/wake/MarbleFountains.scala`
 - Modify: `PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/wake/MarbleFountainsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/wake/MarbleFountainsSuite.scala`
 
 Ruling: Wake. If your pawn is at this site, refresh Supply to the leftmost space (7). Once per turn. Both faces of an edifice are sources, but only the intact face carries this power id, so a ruined Marble Fountains offers nothing.
 

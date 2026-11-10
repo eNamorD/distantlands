@@ -102,18 +102,18 @@ Expected: four `same:` lines. A difference is a stage failure to investigate, no
 ### Task 1: Convert the implicit values and parameters to `given`/`using`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/server/OathServer.scala:39-41`
-- Modify: `src/test/scala/oathdigital/server/AuthenticatedGameRoutesSuite.scala:27,126`
-- Modify: `src/test/scala/oathdigital/server/ServerRoutesSuite.scala:25,80,119,175-176`
-- Modify: `src/test/scala/oathdigital/server/GameRoutesSuite.scala:31`
-- Modify: `src/test/scala/oathdigital/server/GameTrustBoundaryRoutesSuite.scala:29`
-- Modify: `src/test/scala/oathdigital/server/SessionSecuritySuite.scala:26`
-- Modify: `src/test/scala/oathdigital/server/TrustedSeatRoutesSuite.scala:270,404`
-- Modify: `src/test/scala/oathdigital/server/ProductionFrontendRoutesSuite.scala:16,52`
-- Modify: `src/test/scala/oathdigital/server/AuthenticatedGameBootstrapRoutesSuite.scala:31`
-- Modify: `src/test/scala/oathdigital/server/HealthRoutesSuite.scala:15,73-74`
-- Modify: `src/test/scala/oathdigital/persistence/HsqldbDatabaseOwnerSuite.scala:14`
-- Modify: `src/test/scala/oathdigital/persistence/HsqldbEventStreamRepositorySuite.scala:21`
+- Modify: `src/main/scala/distantlands/server/OathServer.scala:39-41`
+- Modify: `src/test/scala/distantlands/server/AuthenticatedGameRoutesSuite.scala:27,126`
+- Modify: `src/test/scala/distantlands/server/ServerRoutesSuite.scala:25,80,119,175-176`
+- Modify: `src/test/scala/distantlands/server/GameRoutesSuite.scala:31`
+- Modify: `src/test/scala/distantlands/server/GameTrustBoundaryRoutesSuite.scala:29`
+- Modify: `src/test/scala/distantlands/server/SessionSecuritySuite.scala:26`
+- Modify: `src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala:270,404`
+- Modify: `src/test/scala/distantlands/server/ProductionFrontendRoutesSuite.scala:16,52`
+- Modify: `src/test/scala/distantlands/server/AuthenticatedGameBootstrapRoutesSuite.scala:31`
+- Modify: `src/test/scala/distantlands/server/HealthRoutesSuite.scala:15,73-74`
+- Modify: `src/test/scala/distantlands/persistence/HsqldbDatabaseOwnerSuite.scala:14`
+- Modify: `src/test/scala/distantlands/persistence/HsqldbEventStreamRepositorySuite.scala:21`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -142,22 +142,22 @@ sed -i '' -E \
   -e 's/implicit private val/private given/' \
   -e 's/implicit val/given/' \
   -e 's/\(implicit/(using/' \
-  src/main/scala/oathdigital/server/OathServer.scala \
-  src/test/scala/oathdigital/server/AuthenticatedGameRoutesSuite.scala \
-  src/test/scala/oathdigital/server/ServerRoutesSuite.scala \
-  src/test/scala/oathdigital/server/GameRoutesSuite.scala \
-  src/test/scala/oathdigital/server/GameTrustBoundaryRoutesSuite.scala \
-  src/test/scala/oathdigital/server/SessionSecuritySuite.scala \
-  src/test/scala/oathdigital/server/TrustedSeatRoutesSuite.scala \
-  src/test/scala/oathdigital/server/ProductionFrontendRoutesSuite.scala \
-  src/test/scala/oathdigital/server/AuthenticatedGameBootstrapRoutesSuite.scala \
-  src/test/scala/oathdigital/server/HealthRoutesSuite.scala \
-  src/test/scala/oathdigital/persistence/HsqldbDatabaseOwnerSuite.scala \
-  src/test/scala/oathdigital/persistence/HsqldbEventStreamRepositorySuite.scala
+  src/main/scala/distantlands/server/OathServer.scala \
+  src/test/scala/distantlands/server/AuthenticatedGameRoutesSuite.scala \
+  src/test/scala/distantlands/server/ServerRoutesSuite.scala \
+  src/test/scala/distantlands/server/GameRoutesSuite.scala \
+  src/test/scala/distantlands/server/GameTrustBoundaryRoutesSuite.scala \
+  src/test/scala/distantlands/server/SessionSecuritySuite.scala \
+  src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala \
+  src/test/scala/distantlands/server/ProductionFrontendRoutesSuite.scala \
+  src/test/scala/distantlands/server/AuthenticatedGameBootstrapRoutesSuite.scala \
+  src/test/scala/distantlands/server/HealthRoutesSuite.scala \
+  src/test/scala/distantlands/persistence/HsqldbDatabaseOwnerSuite.scala \
+  src/test/scala/distantlands/persistence/HsqldbEventStreamRepositorySuite.scala
 grep -rn "implicit" --include='*.scala' src frontend/src shared
 ```
 
-Expected: the grep prints only `src/main/scala/oathdigital/gameplay/actions/Search.scala:44:  private implicit final class TakeThrough...` (converted in Task 2) and nothing else.
+Expected: the grep prints only `src/main/scala/distantlands/gameplay/actions/Search.scala:44:  private implicit final class TakeThrough...` (converted in Task 2) and nothing else.
 
 The result at `OathServer.scala:39-41` must read:
 
@@ -193,8 +193,8 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 2: Replace the `TakeThrough` implicit class with an extension method
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/Search.scala:44-50`
-- Test: `src/test/scala/oathdigital/gameplay/actions/SearchSuite.scala` (existing; find it with `ls src/test/scala/oathdigital/gameplay/actions/ | grep -i search`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/Search.scala:44-50`
+- Test: `src/test/scala/distantlands/gameplay/actions/SearchSuite.scala` (existing; find it with `ls src/test/scala/distantlands/gameplay/actions/ | grep -i search`)
 
 **Interfaces:**
 - Produces: `extension [A](values: Vector[A]) private def takeThrough(stop: A => Boolean): Vector[A]`, private to `Search`. The call at `Search.scala:38` (`.takeThrough(_.isInstanceOf[VisionId])`) does not change.
@@ -224,7 +224,7 @@ Expected: pass, zero warnings, the grep prints nothing.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/Search.scala
+git add src/main/scala/distantlands/gameplay/actions/Search.scala
 git commit -m "refactor: express takeThrough as an extension method
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
@@ -233,7 +233,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 3: Replace the frontend package object with top-level definitions
 
 **Files:**
-- Rename: `frontend/src/main/scala/oathdigital/frontend/package.scala` to `frontend/src/main/scala/oathdigital/frontend/frontend.scala`
+- Rename: `frontend/src/main/scala/distantlands/frontend/package.scala` to `frontend/src/main/scala/distantlands/frontend/frontend.scala`
 
 **Interfaces:**
 - Produces: the same `type`/`val` pairs (`GameProjection`, `CardDetails`, ..., `WalkerWaitingState`) and `object MinorAdviserPlacement`, now top level in package `oathdigital.frontend`. Every frontend source already sits in that package and uses the names unqualified; no importer changes.
@@ -241,7 +241,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Rename the file**
 
 ```bash
-git mv frontend/src/main/scala/oathdigital/frontend/package.scala frontend/src/main/scala/oathdigital/frontend/frontend.scala
+git mv frontend/src/main/scala/distantlands/frontend/package.scala frontend/src/main/scala/distantlands/frontend/frontend.scala
 ```
 
 - [ ] **Step 2: Unwrap the object**
@@ -267,7 +267,7 @@ Delete the final closing `}` of the object, and dedent every remaining line by t
 ```bash
 python3 - <<'PY'
 from pathlib import Path
-p = Path("frontend/src/main/scala/oathdigital/frontend/frontend.scala")
+p = Path("frontend/src/main/scala/distantlands/frontend/frontend.scala")
 lines = p.read_text().splitlines()
 assert lines[0] == "package oathdigital" and lines[2] == "package object frontend {" and lines[-1] == "}"
 body = [l[2:] if l.startswith("  ") else l for l in lines[3:-1]]
@@ -294,7 +294,7 @@ Expected: zero warnings, all frontend tests pass.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add -A frontend/src/main/scala/oathdigital/frontend/
+git add -A frontend/src/main/scala/distantlands/frontend/
 git commit -m "refactor: replace the frontend package object with top-level definitions
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
@@ -369,10 +369,10 @@ Follow the API snapshot recipe with `LABEL=before` (copy `var/oathdigital*` to t
 ### Task 6: Make `PlayerId`, `LineageId`, `DecisionId` and `PowerId` opaque
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Identity.scala:8-36`
-- Modify: `src/main/scala/oathdigital/catalog/CatalogModel.scala:13-16` (delete the `apply(id: String, ...)` overload)
+- Modify: `src/main/scala/distantlands/model/Identity.scala:8-36`
+- Modify: `src/main/scala/distantlands/catalog/CatalogModel.scala:13-16` (delete the `apply(id: String, ...)` overload)
 - Modify: the five `CatalogPower("...", ...)` call sites (`grep -rn 'CatalogPower("' --include='*.scala' src`)
-- Create: `src/test/scala/oathdigital/model/OpaqueIdSuite.scala`
+- Create: `src/test/scala/distantlands/model/OpaqueIdSuite.scala`
 - Modify: whatever else the compiler reports (see Step 5)
 
 **Interfaces:**
@@ -380,7 +380,7 @@ Follow the API snapshot recipe with `LABEL=before` (copy `var/oathdigital*` to t
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/test/scala/oathdigital/model/OpaqueIdSuite.scala`:
+Create `src/test/scala/distantlands/model/OpaqueIdSuite.scala`:
 
 ```scala
 package oathdigital.model
@@ -508,8 +508,8 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 7: Make `DefinitionId` opaque
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/catalog/CatalogModel.scala:6-8`
-- Modify: `src/test/scala/oathdigital/model/OpaqueIdSuite.scala`
+- Modify: `src/main/scala/distantlands/catalog/CatalogModel.scala:6-8`
+- Modify: `src/test/scala/distantlands/model/OpaqueIdSuite.scala`
 
 **Interfaces:**
 - Produces: `opaque type DefinitionId = String` in package `oathdigital.catalog` with `apply`, `unapply` and `extension (id: DefinitionId) def value: String`, same shape as Task 6.
@@ -563,8 +563,8 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 8: Make `UserId` opaque
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/IdentityRepository.scala:3`
-- Modify: `src/test/scala/oathdigital/model/OpaqueIdSuite.scala`
+- Modify: `src/main/scala/distantlands/application/IdentityRepository.scala:3`
+- Modify: `src/test/scala/distantlands/model/OpaqueIdSuite.scala`
 
 **Interfaces:**
 - Produces: `opaque type UserId = String` in `oathdigital.application` with `apply` (no validation, as today), `unapply`, `extension (id: UserId) def value: String`.
@@ -615,8 +615,8 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 9: Make `ViewId` opaque
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/presentation/ViewModel.scala:3-6`
-- Modify: `src/test/scala/oathdigital/model/OpaqueIdSuite.scala`
+- Modify: `src/main/scala/distantlands/presentation/ViewModel.scala:3-6`
+- Modify: `src/test/scala/distantlands/model/OpaqueIdSuite.scala`
 
 **Interfaces:**
 - Produces: `opaque type ViewId = String` in `oathdigital.presentation` with `apply` (blank rejected), `unapply`, `extension (id: ViewId) def value: String`.
@@ -779,32 +779,32 @@ Expected: one line per sealed family. Every family named in Tasks 12 to 15 print
 ### Task 12: Convert the `model` package families
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ActionValues.scala:3-7,17-22`
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala:3-9,50-54`
-- Modify: `src/main/scala/oathdigital/model/CardDeck.scala:11-21`
-- Modify: `src/main/scala/oathdigital/model/CardIndex.scala:3-21`
-- Modify: `src/main/scala/oathdigital/model/Cards.scala:3-13,54-66`
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala:68-79`
-- Modify: `src/main/scala/oathdigital/model/DiceSpec.scala:4-8,18-24`
-- Modify: `src/main/scala/oathdigital/model/GameEventProtocol.scala:56-60,67-75`
-- Modify: `src/main/scala/oathdigital/model/GameState.scala:90-95,129-135`
-- Modify: `src/main/scala/oathdigital/model/OperationReason.scala:6-10`
-- Modify: `src/main/scala/oathdigital/model/PlayerColor.scala:10-21`
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala:3-16,209-213`
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala:33-35,41-43,97-118`
-- Modify: `src/main/scala/oathdigital/model/Resources.scala:102-124`
-- Modify: `src/main/scala/oathdigital/model/RuleFallbackProtocol.scala:6-34`
-- Modify: `src/main/scala/oathdigital/model/Setup.scala:24-27`
-- Modify: `src/main/scala/oathdigital/model/World.scala:3-16,186-196,219-267`
+- Modify: `src/main/scala/distantlands/model/ActionValues.scala:3-7,17-22`
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala:3-9,50-54`
+- Modify: `src/main/scala/distantlands/model/CardDeck.scala:11-21`
+- Modify: `src/main/scala/distantlands/model/CardIndex.scala:3-21`
+- Modify: `src/main/scala/distantlands/model/Cards.scala:3-13,54-66`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala:68-79`
+- Modify: `src/main/scala/distantlands/model/DiceSpec.scala:4-8,18-24`
+- Modify: `src/main/scala/distantlands/model/GameEventProtocol.scala:56-60,67-75`
+- Modify: `src/main/scala/distantlands/model/GameState.scala:90-95,129-135`
+- Modify: `src/main/scala/distantlands/model/OperationReason.scala:6-10`
+- Modify: `src/main/scala/distantlands/model/PlayerColor.scala:10-21`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala:3-16,209-213`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala:33-35,41-43,97-118`
+- Modify: `src/main/scala/distantlands/model/Resources.scala:102-124`
+- Modify: `src/main/scala/distantlands/model/RuleFallbackProtocol.scala:6-34`
+- Modify: `src/main/scala/distantlands/model/Setup.scala:24-27`
+- Modify: `src/main/scala/distantlands/model/World.scala:3-16,186-196,219-267`
 - Modify: the four callers of `MajorActionType.values` and `ActionKind.values`
-- Create: `src/test/scala/oathdigital/model/EnumShapeSuite.scala`
+- Create: `src/test/scala/distantlands/model/EnumShapeSuite.scala`
 
 **Interfaces:**
 - Produces: 37 `model` families as enums with the same type names, case names and companion members. `MajorActionType.all: Vector[MajorActionType]` and `ActionKind.all: Vector[ActionKind]` replace the two `values` members (rule 7); `ActionKind.fromKey` reads `all`.
 
 - [ ] **Step 1: Write the failing test that pins the observable shape**
 
-Create `src/test/scala/oathdigital/model/EnumShapeSuite.scala`:
+Create `src/test/scala/distantlands/model/EnumShapeSuite.scala`:
 
 ```scala
 package oathdigital.model
@@ -1249,10 +1249,10 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 13: Convert the `gameplay` package families
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala:8-23` (`RuleSourceFace`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:14-18` (`Origin`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala:11-15` (`Origin`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala:138-142` (`Terrain`)
+- Modify: `src/main/scala/distantlands/gameplay/RuleSourceIndex.scala:8-23` (`RuleSourceFace`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala:14-18` (`Origin`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala:11-15` (`Origin`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala:138-142` (`Terrain`)
 
 **Interfaces:**
 - Produces: the same four type names and case names as enums. `RuleSourceState` in `RuleSourceIndex.scala` is mixed and stays sealed.
@@ -1302,12 +1302,12 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 14: Convert the `catalog`, `application` and `server` families
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/catalog/CatalogModel.scala:32-45` (`CardRestrictions`, `RelicRole`)
-- Modify: `src/main/scala/oathdigital/application/IdentityRepository.scala:46-51` (`MembershipRole`)
-- Modify: `src/main/scala/oathdigital/application/TrustedGameStore.scala:3-9` (`TrustedGameStoreFailure`)
-- Modify: `src/main/scala/oathdigital/server/HealthRoutes.scala:10-16` (`ReadinessState`)
-- Modify: `src/main/scala/oathdigital/server/ServerConfig.scala:9-14` (`ServerMode`)
-- Modify: `src/main/scala/oathdigital/server/TrustedGameProvisioning.scala:10-16` (`TrustedGameFailure`)
+- Modify: `src/main/scala/distantlands/catalog/CatalogModel.scala:32-45` (`CardRestrictions`, `RelicRole`)
+- Modify: `src/main/scala/distantlands/application/IdentityRepository.scala:46-51` (`MembershipRole`)
+- Modify: `src/main/scala/distantlands/application/TrustedGameStore.scala:3-9` (`TrustedGameStoreFailure`)
+- Modify: `src/main/scala/distantlands/server/HealthRoutes.scala:10-16` (`ReadinessState`)
+- Modify: `src/main/scala/distantlands/server/ServerConfig.scala:9-14` (`ServerMode`)
+- Modify: `src/main/scala/distantlands/server/TrustedGameProvisioning.scala:10-16` (`TrustedGameFailure`)
 
 **Interfaces:**
 - Produces: seven enums with the same type and case names. `AuthenticationFailure` and `RepositoryAppendResult` in `application` are mixed and stay sealed. `IdentityRepository.scala` line numbers here are pre-Stage-B; `UserId` grew by five lines in Task 8, so `MembershipRole` sits near line 51.
@@ -1370,8 +1370,8 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 15: Convert the `frontend` family
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierWorkflow.scala:5-9` (`ModifierWorkflowStage`)
-- Test: `frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala` (existing)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierWorkflow.scala:5-9` (`ModifierWorkflowStage`)
+- Test: `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala` (existing)
 
 **Interfaces:**
 - Produces: `private[frontend] enum ModifierWorkflowStage { case Ordering, Targets }`; the empty companion is deleted (rule 5). `ServerConnectionState` is mixed (`Disconnected` is a case class) and stays sealed. No family under `shared/src/main/scala` is flat.
@@ -1605,7 +1605,7 @@ git config blame.ignoreRevsFile .git-blame-ignore-revs
 
 ```bash
 git config blame.ignoreRevsFile .git-blame-ignore-revs
-git blame -L 1,5 src/main/scala/oathdigital/model/Identity.scala | cut -c1-9 | sort -u
+git blame -L 1,5 src/main/scala/distantlands/model/Identity.scala | cut -c1-9 | sort -u
 python3 scripts/check-markdown-links.py
 ```
 
@@ -1663,7 +1663,7 @@ git worktree remove --force .claude/worktrees/modernize-syntax && git branch -d 
 
 ```bash
 cd /Users/roman/projects/oathdigital && git checkout main
-grep -rnc "given " --include='*.scala' src/main/scala/oathdigital/server/OathServer.scala src/test/scala/oathdigital/server src/test/scala/oathdigital/persistence | awk -F: '{s+=$2} END {print "givens:", s}'
+grep -rnc "given " --include='*.scala' src/main/scala/distantlands/server/OathServer.scala src/test/scala/distantlands/server src/test/scala/distantlands/persistence | awk -F: '{s+=$2} END {print "givens:", s}'
 grep -rnE "^opaque type" --include='*.scala' src | wc -l
 grep -rnE "^\s*(private(\[\w+\])?\s+)?enum\s+\w+" --include='*.scala' src/main shared frontend/src/main | wc -l
 ```

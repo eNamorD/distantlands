@@ -121,12 +121,12 @@ post at another kind. Ruling 2 forbids `gameplay` naming a kind, so the
 registry entry — which is already in `application/gamelog` — declares it.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
-- Create: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
 - Modify: `docs/superpowers/specs/2026-10-16-procedures-journal-their-notes-design.md`
 - Modify: `docs/superpowers/specs/2026-10-16-game-log-wording-ledger.md`
 
@@ -140,7 +140,7 @@ registry entry — which is already in `application/gamelog` — declares it.
 
 - [ ] **Step 1: Write the failing kind tests**
 
-Create `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -381,12 +381,12 @@ MSGEOF
 ### Task 2: Travel journals its own line
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala:47-50`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:142-145`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:28-35`
-- Modify: `src/test/scala/oathdigital/gameplay/walker/UndeclaredNoteSuite.scala:81-88`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala:47-50`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:142-145`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:28-35`
+- Modify: `src/test/scala/distantlands/gameplay/walker/UndeclaredNoteSuite.scala:81-88`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/round.{actor,other}.log`,
   `src/test/resources/gamelog/oathkeeper.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
@@ -540,12 +540,12 @@ MSGEOF
 ### Task 3: Take Wealth journals its own line
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/phases/wake/TakeWealthProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:165-166`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:89-97`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/wake/TakeWealthProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:165-166`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:89-97`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/take-wealth.{actor,other}.log`,
   `src/test/resources/gamelog/menu-wealth.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
@@ -692,12 +692,12 @@ consecutive sequences, each at ordinal `0`. The order between them must not
 change.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/forge/ForgeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:137-139`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:122-145`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/forge/ForgeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:137-139`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:122-145`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/forge.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
 
@@ -889,12 +889,12 @@ wordings of one sentence, so Challenge declares four keys and its entry
 names none of them in `Told`.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:154-157`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:151-163,354-362`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:154-157`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:151-163,354-362`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/banners.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
 
@@ -1083,12 +1083,12 @@ MSGEOF
 ### Task 6: Place Banner Resource journals its own line
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:168-171`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:165-174`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:168-171`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:165-174`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/banners.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
 
@@ -1238,11 +1238,11 @@ three `NoteSet`s — one per procedure id — and three `noteKeys` defs. This
 task adds the first; Tasks 8 and 9 add the others to the same object.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:176-177`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:176-185`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:176-177`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:176-185`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/peek-relics.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
 
@@ -1356,11 +1356,11 @@ MSGEOF
 ### Task 8: Reveal Owned Relic journals its own line
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:178-179`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:187-194`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:178-179`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:187-194`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/reveal-relic.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
 
@@ -1482,11 +1482,11 @@ MSGEOF
 ### Task 9: Move Warbands journals its own line
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:180-181`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:196-210`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:180-181`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:196-210`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/warbands-moved.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
 
@@ -1620,12 +1620,12 @@ The first task to use Task 1's kind declaration. `oathkeeper.*` and
 `trigger` must survive.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/oathkeeper/OathkeeperProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:194-197`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:37-43`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/oathkeeper/OathkeeperProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:194-197`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:37-43`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/oathkeeper.{actor,other}.log`,
   `src/test/resources/gamelog/warbands-moved.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
@@ -1793,12 +1793,12 @@ MSGEOF
 ### Task 11: Finish Rest journals its own line, at `Delta`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:192-193`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:45-52`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/rest/FinishRestProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:192-193`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:45-52`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/round.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
 
@@ -1943,14 +1943,14 @@ order — `NegotiationDeal.settle` is `knowledge(deal) ++ transfers(deal)`,
 so disclosures come first.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationDeal.scala:39-51`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:172-175`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:21-26,212-214`
-- Delete: `src/main/scala/oathdigital/application/gamelog/NegotiationLines.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationDeal.scala:39-51`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:172-175`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:21-26,212-214`
+- Delete: `src/main/scala/distantlands/application/gamelog/NegotiationLines.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/negotiation-agreed.{actor,other}.log`,
   `negotiation-declined.{actor,other}.log`,
   `negotiation-disclosed.{actor,other}.log`
@@ -2169,7 +2169,7 @@ In `ProcedureLog.scala`, add
 
 In `ActionLines.scala`, delete `negotiationLines` (lines 212-214) and the
 field `private val negotiations = new NegotiationLines(words)` (line 26).
-Then delete `src/main/scala/oathdigital/application/gamelog/NegotiationLines.scala`.
+Then delete `src/main/scala/distantlands/application/gamelog/NegotiationLines.scala`.
 
 `LogWords.slotted` keeps its other caller, `ChoiceWords.scala:34`. Leave it.
 
@@ -2227,13 +2227,13 @@ the branch that asks is walked, so the notes come from a second `Branch`
 after the reveal.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/setup/SetupProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:198-201`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:21-26,54-56`
-- Delete: `src/main/scala/oathdigital/application/gamelog/SetupLines.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ProcedureNoteLinesSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:198-201`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:21-26,54-56`
+- Delete: `src/main/scala/distantlands/application/gamelog/SetupLines.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 - Rewrite: `src/test/resources/gamelog/woken.{actor,other}.log`
 - Rewrite: `src/test/resources/notes/declared-keys.txt`
 
@@ -2425,7 +2425,7 @@ and:
 
 In `ActionLines.scala`, delete `setupLines` (lines 54-56) and the field
 `private val setup = new SetupLines(words)` (line 24). Then delete
-`src/main/scala/oathdigital/application/gamelog/SetupLines.scala`.
+`src/main/scala/distantlands/application/gamelog/SetupLines.scala`.
 
 - [ ] **Step 7: Raise the count for the last time**
 

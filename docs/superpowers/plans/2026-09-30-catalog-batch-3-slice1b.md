@@ -6,7 +6,7 @@
 
 **Architecture:**
 
-- Every card is a `BattlePlan` (`src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`).
+- Every card is a `BattlePlan` (`src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`).
   - Its `plan` builds a `CampaignPlanOffer` from where the card stands and the Campaign's setup.
   - A plan whose condition fails returns `None`.
 - **P1.** A new `RuledCards.of` in `gameplay/powers/` lists the cards of a suit a ruler rules. `PlanContext` gains `cardsRuled`, and its private `ruler` becomes public. Later slices (Lost Tongue, Fabled Feast, Town Meeting) reuse `RuledCards` outside battle plans, so it lives outside `campaign/`.
@@ -89,9 +89,9 @@ Production:
 | `gameplay/powers/campaign/SimplePlans.scala` | Modify | Registers Disgraced Captain and Battle Axes |
 | `gameplay/powers/campaign/PlanRules.scala` | Modify | Registers Great Crusade, Pledge of Defense, Rain Boots, The Great Levy and Garrison Armory |
 
-All production paths are under `src/main/scala/oathdigital/`.
+All production paths are under `src/main/scala/distantlands/`.
 
-Tests, under `src/test/scala/oathdigital/gameplay/powers/`:
+Tests, under `src/test/scala/distantlands/gameplay/powers/`:
 
 | File | Change |
 |---|---|
@@ -108,7 +108,7 @@ Docs: `docs/ROADMAP.md` (Task 6).
 
 ### How the suites drive a Campaign
 
-Read `campaign/PlanDriver.scala` and `src/test/scala/oathdigital/gameplay/CampaignFixture.scala` before writing a suite. In short:
+Read `campaign/PlanDriver.scala` and `src/test/scala/distantlands/gameplay/CampaignFixture.scala` before writing a suite. In short:
 
 - `board(extras, warbands, supply)`: p1, the actor, stands at the origin (Ancient City, defense 2), which two bandits rule. `extras` further sites are bandit-ruled too (`b.extras`). Every other site starts empty and holds no card. p2 (`b.other`) and p3 stand at the first site nobody rules, which is the first site after the origin when `extras` is 0.
 - `againstPlayer(b)`: p2 rules the origin with two warbands and holds the Oath title, so p2 is offered the title's defense plan until they use it. That keeps p2's plan window open, so a "not offered" check against a player defender is not vacuous.
@@ -128,14 +128,14 @@ Read `campaign/PlanDriver.scala` and `src/test/scala/oathdigital/gameplay/Campai
 ### Task 1: `RuledCards` (P1), then Disgraced Captain and Battle Axes
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/RuledCards.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/DisgracedCaptain.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/BattleAxes.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/RuledCardsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/DisgracedCaptainSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/BattleAxesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/RuledCards.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/DisgracedCaptain.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/BattleAxes.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/RuledCardsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/DisgracedCaptainSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/BattleAxesSuite.scala`
 
 **Interfaces:**
 - Consumes: `BattlePlan`, `PlanContext.denizen/enemy/setup/side`, `PlanDice.label/effect`, `CatalogCards.denizen`, `SiteRulers.rulerOf(ready, site): Option[SiteRuler]`, `ExecutableCatalog.suitOf(id: CardId): Option[Suit]`.
@@ -146,7 +146,7 @@ Read `campaign/PlanDriver.scala` and `src/test/scala/oathdigital/gameplay/Campai
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/RuledCardsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/RuledCardsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -196,7 +196,7 @@ class RuledCardsSuite extends munit.FunSuite:
     assertEquals(nomadsOf(b, SiteRuler.Player(b.actor)), Set.empty[CardId])
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/DisgracedCaptainSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/DisgracedCaptainSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -277,7 +277,7 @@ class DisgracedCaptainSuite extends munit.FunSuite:
       ModifyDicePool(CampaignPlans.appliedMarker(ref), 1)))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/BattleAxesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/BattleAxesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -350,7 +350,7 @@ Expected: compile failure, `Not found: RuledCards`.
 
 - [ ] **Step 3: Create `RuledCards`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/RuledCards.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/RuledCards.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -388,7 +388,7 @@ object RuledCards:
 
 - [ ] **Step 4: Open `ruler` and add `cardsRuled` to `PlanContext`**
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala`, add this import after `import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds, CampaignPlans, CampaignSetup}`:
+In `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala`, add this import after `import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds, CampaignPlans, CampaignSetup}`:
 
 ```scala
 import oathdigital.gameplay.powers.RuledCards
@@ -426,7 +426,7 @@ After the `enemyHolds` method (the last method of `final case class PlanContext`
 
 - [ ] **Step 5: Create the two plans**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/DisgracedCaptain.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/DisgracedCaptain.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -471,7 +471,7 @@ object DisgracedCaptain:
     CatalogCards.denizen(catalog, id).map(new DisgracedCaptain(_, catalog))
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/BattleAxes.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/BattleAxes.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -514,7 +514,7 @@ object BattleAxes:
 
 - [ ] **Step 6: Register them in `SimplePlans`**
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`, replace the doc comment and the last line of the body.
+In `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`, replace the doc comment and the last line of the body.
 
 Replace:
 
@@ -554,7 +554,7 @@ Expected: PASS. 13 new tests (3, 5 and 5), and every existing campaign plan suit
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/RuledCards.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala src/main/scala/oathdigital/gameplay/powers/campaign/DisgracedCaptain.scala src/main/scala/oathdigital/gameplay/powers/campaign/BattleAxes.scala src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala src/test/scala/oathdigital/gameplay/powers/RuledCardsSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/DisgracedCaptainSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/BattleAxesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/RuledCards.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala src/main/scala/distantlands/gameplay/powers/campaign/DisgracedCaptain.scala src/main/scala/distantlands/gameplay/powers/campaign/BattleAxes.scala src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala src/test/scala/distantlands/gameplay/powers/RuledCardsSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/DisgracedCaptainSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/BattleAxesSuite.scala
 git commit -m "feat(powers): add ruled cards, Disgraced Captain and Battle Axes"
 ```
 
@@ -563,11 +563,11 @@ git commit -m "feat(powers): add ruled cards, Disgraced Captain and Battle Axes"
 ### Task 2: Great Crusade and Pledge of Defense
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/GreatCrusade.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/PledgeOfDefense.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/GreatCrusadeSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/PledgeOfDefenseSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/GreatCrusade.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/PledgeOfDefense.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/GreatCrusadeSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/PledgeOfDefenseSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlanContext.cardsRuled` and `PlanContext.ruler` (Task 1), `PlanDice.label/effect`, `PlanDiscard.afterCampaign/discarded`, `CatalogCards.denizen`.
@@ -575,7 +575,7 @@ git commit -m "feat(powers): add ruled cards, Disgraced Captain and Battle Axes"
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/GreatCrusadeSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/GreatCrusadeSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -669,7 +669,7 @@ class GreatCrusadeSuite extends munit.FunSuite:
       .contains(ModifyDicePool(CampaignIds.attackPool, -2)))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/PledgeOfDefenseSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/PledgeOfDefenseSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -753,7 +753,7 @@ Expected: compile failure, `Not found: GreatCrusade`.
 
 - [ ] **Step 3: Create the two plans**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/GreatCrusade.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/GreatCrusade.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -806,7 +806,7 @@ object GreatCrusade:
     CatalogCards.denizen(catalog, id).map(new GreatCrusade(_, catalog))
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/PledgeOfDefense.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/PledgeOfDefense.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -852,7 +852,7 @@ object PledgeOfDefense:
 
 - [ ] **Step 4: Register them in `PlanRules`**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -890,7 +890,7 @@ Expected: PASS. 9 new tests (6 and 3), and every existing campaign plan suite st
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/GreatCrusade.scala src/main/scala/oathdigital/gameplay/powers/campaign/PledgeOfDefense.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/GreatCrusadeSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/PledgeOfDefenseSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/GreatCrusade.scala src/main/scala/distantlands/gameplay/powers/campaign/PledgeOfDefense.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/GreatCrusadeSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/PledgeOfDefenseSuite.scala
 git commit -m "feat(powers): add Great Crusade and Pledge of Defense"
 ```
 
@@ -899,11 +899,11 @@ git commit -m "feat(powers): add Great Crusade and Pledge of Defense"
 ### Task 3: `SingleShields` (P2), then Rain Boots
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/SingleShields.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BagOfSiegeworks.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/RainBoots.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/RainBootsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/SingleShields.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BagOfSiegeworks.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/RainBoots.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/RainBootsSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlanDiscard.afterCampaign/discarded`, `BattlePlan.wrapping`, `CampaignIds.defensePool`, `DefenseDieFace.score`.
@@ -915,7 +915,7 @@ git commit -m "feat(powers): add Great Crusade and Pledge of Defense"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/RainBootsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/RainBootsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1012,7 +1012,7 @@ Expected: compile failure, `Not found: SingleShields`.
 
 - [ ] **Step 3: Create `SingleShields`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/SingleShields.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/SingleShields.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1061,7 +1061,7 @@ private[campaign] object SingleShields:
 
 - [ ] **Step 4: Make Bag of Siegeworks use it**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/campaign/BagOfSiegeworks.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/campaign/BagOfSiegeworks.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1113,7 +1113,7 @@ object BagOfSiegeworks:
 
 - [ ] **Step 5: Create Rain Boots**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/RainBoots.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/RainBoots.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1163,7 +1163,7 @@ object RainBoots:
 
 - [ ] **Step 6: Register it in `PlanRules`**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1203,7 +1203,7 @@ Expected: PASS. 5 new tests, and `BagOfSiegeworksSuite` passes unchanged.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/SingleShields.scala src/main/scala/oathdigital/gameplay/powers/campaign/BagOfSiegeworks.scala src/main/scala/oathdigital/gameplay/powers/campaign/RainBoots.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/RainBootsSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/SingleShields.scala src/main/scala/distantlands/gameplay/powers/campaign/BagOfSiegeworks.scala src/main/scala/distantlands/gameplay/powers/campaign/RainBoots.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/RainBootsSuite.scala
 git commit -m "feat(powers): share the single-shield rescoring and add Rain Boots"
 ```
 
@@ -1212,10 +1212,10 @@ git commit -m "feat(powers): share the single-shield rescoring and add Rain Boot
 ### Task 4: `Outriders.ignoreSkulls`, then The Great Levy
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/Outriders.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/GreatLevy.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/GreatLevySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/Outriders.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/GreatLevy.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/GreatLevySuite.scala`
 
 **Interfaces:**
 - Consumes: `PlanContext.enemyHolds`, `PlanDice.label/effect`, `CampaignBattle.attackFacesOf`, `AttackDieFace.score/skulls`, `PlanUse.side`.
@@ -1224,7 +1224,7 @@ git commit -m "feat(powers): share the single-shield rescoring and add Rain Boot
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/GreatLevySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/GreatLevySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1339,7 +1339,7 @@ Expected: compile failure, `Not found: GreatLevy`.
 
 - [ ] **Step 3: Move Outriders' rewrite into its companion**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/campaign/Outriders.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/campaign/Outriders.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1401,7 +1401,7 @@ object Outriders:
 
 - [ ] **Step 4: Create The Great Levy**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/GreatLevy.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/GreatLevy.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1460,7 +1460,7 @@ object GreatLevy:
 
 - [ ] **Step 5: Register it in `PlanRules`**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1502,7 +1502,7 @@ Expected: PASS. 6 new tests, and `OutridersSuite` passes unchanged.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/Outriders.scala src/main/scala/oathdigital/gameplay/powers/campaign/GreatLevy.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/GreatLevySuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/Outriders.scala src/main/scala/distantlands/gameplay/powers/campaign/GreatLevy.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/GreatLevySuite.scala
 git commit -m "feat(powers): share the skull rewrite and add The Great Levy"
 ```
 
@@ -1511,9 +1511,9 @@ git commit -m "feat(powers): share the skull rewrite and add The Great Levy"
 ### Task 5: Garrison Armory
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/GarrisonArmory.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/GarrisonArmorySuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/GarrisonArmory.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/GarrisonArmorySuite.scala`
 
 **Interfaces:**
 - Consumes: `CampaignSetup.setup(ready, actor, pending): Option[CampaignSetup]`, `CampaignBattle.defenderForce(ready, setup): Int`, `CampaignIds.defensePool`, `NoteStates.previous`, `PlanUse.actor`.
@@ -1521,7 +1521,7 @@ git commit -m "feat(powers): share the skull rewrite and add The Great Levy"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/GarrisonArmorySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/GarrisonArmorySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1630,7 +1630,7 @@ Expected: compile failure, `Not found: GarrisonArmory`.
 
 - [ ] **Step 3: Create Garrison Armory**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/GarrisonArmory.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/GarrisonArmory.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1706,7 +1706,7 @@ object GarrisonArmory:
 
 - [ ] **Step 4: Register it in `PlanRules`**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.campaign
@@ -1752,7 +1752,7 @@ If the setup does not resolve inside the step (the `InvalidEventOrder` above), s
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/GarrisonArmory.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/GarrisonArmorySuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/GarrisonArmory.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/GarrisonArmorySuite.scala
 git commit -m "feat(powers): add Garrison Armory"
 ```
 

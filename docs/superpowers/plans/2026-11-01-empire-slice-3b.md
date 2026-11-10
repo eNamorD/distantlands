@@ -118,7 +118,7 @@ Task 10 records them in `docs/rules/ambiguities.md`.
 | `gameplay/chronicle/OfferCitizenship.scala` (new), `ChronicleThroneProcedure.scala` | the Throne's first step |
 | `gameplay/operations/{OperationApplication,ChronicleStateOperations}.scala` | applies `ImperialWarbandsAdded` |
 
-Paths without a prefix are under `src/main/scala/oathdigital/`.
+Paths without a prefix are under `src/main/scala/distantlands/`.
 
 ## Checkpoints
 
@@ -134,7 +134,7 @@ Dispatch a reviewer after Task 2 (mechanics), Task 6 (the card powers), Task 7 (
 - Modify: `gameplay/powers/whenplayed/BanditPrince.scala` (~l.86), `gameplay/powers/action/BallotBox.scala` (~l.102)
 - Modify: `gameplay/powers/economy/VowOfWandering.scala` (`placing`, `places`)
 - Modify: `gameplay/roles/RoleChanges.scala`, `gameplay/chronicle/ChronicleCrown.scala` (only the doc comment on `Replace` use: they already pass no `by`)
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/VowOfWanderingSuite.scala`, `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`, `src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/VowOfWanderingSuite.scala`, `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`, `src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala`
 
 **Interfaces:**
 - Produces: `Replace(removed, replacements, at, required = false, by: Option[PlayerId] = None)`. Its children are `Move(..., by = by)`.
@@ -235,7 +235,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/BanditPrince.scala src/main/scala/oathdigital/gameplay/powers/action/BallotBox.scala src/main/scala/oathdigital/gameplay/powers/economy/VowOfWandering.scala src/test/scala/oathdigital/gameplay/powers/economy/VowOfWanderingSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/gameplay/powers/whenplayed/BanditPrince.scala src/main/scala/distantlands/gameplay/powers/action/BallotBox.scala src/main/scala/distantlands/gameplay/powers/economy/VowOfWandering.scala src/test/scala/distantlands/gameplay/powers/economy/VowOfWanderingSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala
 git commit -m "feat(empire): role changes replace warbands with no actor (R20)
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -249,7 +249,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `gameplay/roles/Citizenship.scala`
 - Create: `gameplay/roles/RoleNotes.scala`
 - Modify: `gameplay/powers/action/GrandScepterAction.scala`
-- Test: `src/test/scala/oathdigital/gameplay/roles/CitizenshipSuite.scala`, and every test that names `Citizenship.replaceDecisionId` (grep)
+- Test: `src/test/scala/distantlands/gameplay/roles/CitizenshipSuite.scala`, and every test that names `Citizenship.replaceDecisionId` (grep)
 
 **Interfaces:**
 - Produces:
@@ -327,7 +327,7 @@ Expected: PASS. The note keys and golden logs are unchanged: the same ids, keys 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/roles/Citizenship.scala src/main/scala/oathdigital/gameplay/roles/RoleNotes.scala src/main/scala/oathdigital/gameplay/powers/action/GrandScepterAction.scala <the updated tests>
+git add src/main/scala/distantlands/gameplay/roles/Citizenship.scala src/main/scala/distantlands/gameplay/roles/RoleNotes.scala src/main/scala/distantlands/gameplay/powers/action/GrandScepterAction.scala <the updated tests>
 git commit -m "refactor(empire): name the warband split per player; share role lines
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -343,7 +343,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `gameplay/powers/campaign/SimplePlans.scala` (register)
 - Modify: `src/test/resources/powers/unimplemented.txt` (delete `relic.the-grand-scepter.campaign`)
 - Modify: `src/test/resources/notes/declared-keys.txt`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/GrandScepterPlanSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/GrandScepterPlanSuite.scala`
 
 **Interfaces:**
 - Consumes: `Citizenship.exile`, `BattlePlan`, `PlanContext.relic`, `PlanUse`.
@@ -473,7 +473,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/GrandScepter.scala src/main/scala/oathdigital/gameplay/powers/campaign/GrandScepterPlan.scala src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/campaign/GrandScepterPlanSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/GrandScepter.scala src/main/scala/distantlands/gameplay/powers/campaign/GrandScepterPlan.scala src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/campaign/GrandScepterPlanSuite.scala
 git commit -m "feat(empire): the Grand Scepter's battle plan exiles a defeated Citizen
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -488,7 +488,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Create: `gameplay/powers/campaign/MartialCulture.scala`
 - Modify: `gameplay/powers/campaign/SimplePlans.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/notes/declared-keys.txt`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/MartialCultureSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/MartialCultureSuite.scala`
 
 **Interfaces:**
 - Consumes: `Citizenship.become`, `Citizenship.ignored`, `Citizenship.ignoredReason`, `RoleNotes`.
@@ -589,7 +589,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala src/main/scala/oathdigital/gameplay/powers/campaign/MartialCulture.scala src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/campaign/MartialCultureSuite.scala
+git add src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala src/main/scala/distantlands/gameplay/powers/campaign/MartialCulture.scala src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/campaign/MartialCultureSuite.scala
 git commit -m "feat(empire): Martial Culture makes a victorious Exile a Citizen
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -604,7 +604,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `gameplay/operations/PileOperations.scala` (`withCards`, ~l.28-44)
 - Modify: `serialization/WalkerOperationCodec.scala` (shuffle pile codec, ~l.419-433)
 - Create: `gameplay/powers/ReliquaryDraws.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/ReliquaryDrawsSuite.scala`, `WalkerOperationWireSuite`
+- Test: `src/test/scala/distantlands/gameplay/powers/ReliquaryDrawsSuite.scala`, `WalkerOperationWireSuite`
 
 **Interfaces:**
 - Produces:
@@ -670,7 +670,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ActionValues.scala src/main/scala/oathdigital/gameplay/operations/PileOperations.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/gameplay/powers/ReliquaryDraws.scala src/test/scala/oathdigital/gameplay/powers/ReliquaryDrawsSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/ActionValues.scala src/main/scala/distantlands/gameplay/operations/PileOperations.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/gameplay/powers/ReliquaryDraws.scala src/test/scala/distantlands/gameplay/powers/ReliquaryDrawsSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "feat(empire): take a random relic from the Reliquary
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -686,7 +686,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `catalog/holding/Holding{Beast,Arcane,Nomad,Discord}Denizens.scala`
 - Modify: `gameplay/powers/whenplayed/WhenPlayedPowers.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/notes/declared-keys.txt`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/CitizenshipWhenPlayedSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/CitizenshipWhenPlayedSuite.scala`
 
 **Interfaces:**
 - Consumes: `Citizenship`, `RoleNotes`, `ReliquaryDraws.steps`, `PlayerSecretSummary.derive`, `PowerAccess.ruledSites`, `CardPowerBanners.holdsDarkestSecret`.
@@ -850,7 +850,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add <the four new power files> src/main/scala/oathdigital/gameplay/powers/whenplayed/CitizenshipWhenPlayed.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/whenplayed/CitizenshipWhenPlayedSuite.scala
+git add <the four new power files> src/main/scala/distantlands/gameplay/powers/whenplayed/CitizenshipWhenPlayed.scala src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/whenplayed/CitizenshipWhenPlayedSuite.scala
 git commit -m "feat(empire): four When Played denizens make an Exile a Citizen
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -865,10 +865,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `gameplay/actions/negotiation/NegotiationDeal.scala`, `NegotiationProcedure.scala`
 - Modify: `gameplay/walker/DecisionQueries.scala` (`acceptsTerms`)
 - Modify: `serialization/NegotiationTermsCodec.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`, `CommandNestedCodecs.scala`, `projection/ActionProjectionDtos.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`, `CommandNestedCodecs.scala`, `projection/ActionProjectionDtos.scala`
 - Modify: `application/GameIntentMapper.scala`, `application/NegotiationDealProjector.scala`, `serialization/ActionProjectionCodec.scala`
 - Modify: `application/gamelog/ProcedureLog.scala` (the Negotiation `Notes` map)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/{NegotiationDealPanel,ServerUiSupport,GameClient}.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/{NegotiationDealPanel,ServerUiSupport,GameClient}.scala`
 - Modify: `gameplay/operations/GrandScepter.scala` (no change to the `negotiation` printed power; delete its `unimplemented.txt` line)
 - Test: `NegotiationDealSuite`, `NegotiationProcedureSuite`, `DecisionQuerySuite`, `WalkerDecisionWireSuite`, `NegotiationDealProjectionSuite`, `GameIntentMapperNegotiationSuite`, `shared/.../CommandProtocolSuite`, `ProjectionProtocolSuite`, `frontend/.../NegotiationDealPanelSuite`, `ServerUiSupportSuite`
 
@@ -990,7 +990,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 **Files:**
 - Modify: `gameplay/chronicle/ChronicleCrown.scala` (`empireBreaks`)
-- Test: `src/test/scala/oathdigital/gameplay/chronicle/ChronicleSunSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/chronicle/ChronicleSunSuite.scala`
 
 **Interfaces:**
 - Produces: after an Exile's win, each in-play site that held Imperial warbands holds one warband of the former Chancellor's colour. If the former Chancellor is boxed, those sites stay empty.
@@ -1037,7 +1037,7 @@ Expected: PASS. Fix any end-to-end expectation the new pieces move, and explain 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/ChronicleCrown.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleSunSuite.scala
+git add src/main/scala/distantlands/gameplay/chronicle/ChronicleCrown.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleSunSuite.scala
 git commit -m "feat(chronicle): a broken Empire leaves its sites to the former Chancellor
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1053,7 +1053,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `serialization/WalkerOperationCodec.scala`
 - Create: `gameplay/chronicle/OfferCitizenship.scala`
 - Modify: `gameplay/chronicle/ChronicleThroneProcedure.scala`
-- Test: `src/test/scala/oathdigital/gameplay/chronicle/OfferCitizenshipSuite.scala`, `ChronicleStateOperationsSuite`, `WalkerOperationWireSuite`, and fixes in `ShapeEmpireSuite` and `LineageScoringSuite`
+- Test: `src/test/scala/distantlands/gameplay/chronicle/OfferCitizenshipSuite.scala`, `ChronicleStateOperationsSuite`, `WalkerOperationWireSuite`, and fixes in `ShapeEmpireSuite` and `LineageScoringSuite`
 
 **Interfaces:**
 - Produces:
@@ -1214,7 +1214,7 @@ Expected: PASS once `chronicle-started` golden logs are regenerated. The only ne
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/gameplay/operations/ChronicleStateOperations.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/gameplay/chronicle/OfferCitizenship.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleThroneProcedure.scala <the tests and regenerated snapshots>
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/gameplay/operations/ChronicleStateOperations.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/gameplay/chronicle/OfferCitizenship.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleThroneProcedure.scala <the tests and regenerated snapshots>
 git commit -m "feat(chronicle): the Throne offers Citizenship to the Exiles
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1225,8 +1225,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 10: Scenario, golden logs, docs and gates
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/application/RoleChangesScenarioSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/ImperialLogScripts.scala` (or the registry the 3a `scepter-citizen` script uses)
+- Modify: `src/test/scala/distantlands/application/RoleChangesScenarioSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/ImperialLogScripts.scala` (or the registry the 3a `scepter-citizen` script uses)
 - Create: golden logs `scepter-exiled` and `deal-citizen` (`.actor.log`, `.other.log`)
 - Modify: `docs/rules/ambiguities.md`, `docs/rules/implementation-traceability.md` (rows 110, 120 and 129), `docs/rules/chronicle.md` (Crown and Throne digital notes), `docs/rules/rules-reference.md` if it lists the cards, `docs/ROADMAP.md`, `docs/superpowers/specs/2026-10-29-empire-phase-design.md`
 

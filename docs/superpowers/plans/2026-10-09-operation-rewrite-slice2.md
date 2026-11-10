@@ -103,26 +103,26 @@ Task 1 writes these into the spec.
 | File | Change | Task |
 |---|---|---|
 | `docs/superpowers/specs/2026-10-09-operation-rewrite-design.md` | modify | 1, 5 |
-| `src/main/scala/oathdigital/gameplay/operations/SupplyStrip.scala` | modify | 1 |
-| `src/test/scala/oathdigital/gameplay/operations/SupplyStripSuite.scala` | create | 1 |
-| `src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/powers/search/{Mushrooms,NewsFromAfar}.scala` | modify | 1 (Mushrooms also 3) |
-| `src/main/scala/oathdigital/gameplay/powers/travel/{AFastSteed,ForestPaths,SpecialEnvoy,Tents}.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala` | modify | 1, 5 |
-| `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/powers/travel/RoyalStables.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/powers/search/Disciples.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/powers/economy/{InitiationRite,SuitSupplyWaiver,ExtraWarbands,VowOfBeastkin}.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/powers/economy/VowOfWandering.scala` | modify | 2, 3 |
-| `src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala` | modify | 2, 3 |
-| `src/main/scala/oathdigital/gameplay/powers/economy/{OldSongs,Pressgangs}.scala` | modify | 2, 3 |
-| `src/main/scala/oathdigital/gameplay/powers/economy/{GolemLegions,MapLibrary,SkilledMerchants}.scala` | modify | 3 |
-| `src/main/scala/oathdigital/gameplay/powers/search/{SearchSources,ErrandBoy,Observatory,LandWarden,SpinningBee}.scala` | modify | 3 |
-| `src/main/scala/oathdigital/gameplay/powers/targeting/{ConspiracyTargets,LostTongue}.scala` | modify | 3 |
-| `src/main/scala/oathdigital/gameplay/powers/economy/{TheOldOak,MountedLibrary}.scala` | modify | 4 |
-| `src/test/scala/oathdigital/gameplay/powers/economy/MountedLibrarySuite.scala` | modify | 4 |
-| `src/test/scala/oathdigital/gameplay/powers/travel/WayStationSuite.scala` | modify | 5 |
+| `src/main/scala/distantlands/gameplay/operations/SupplyStrip.scala` | modify | 1 |
+| `src/test/scala/distantlands/gameplay/operations/SupplyStripSuite.scala` | create | 1 |
+| `src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/powers/search/{Mushrooms,NewsFromAfar}.scala` | modify | 1 (Mushrooms also 3) |
+| `src/main/scala/distantlands/gameplay/powers/travel/{AFastSteed,ForestPaths,SpecialEnvoy,Tents}.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala` | modify | 1, 5 |
+| `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/powers/travel/RoyalStables.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/powers/search/Disciples.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/powers/economy/{InitiationRite,SuitSupplyWaiver,ExtraWarbands,VowOfBeastkin}.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/powers/economy/VowOfWandering.scala` | modify | 2, 3 |
+| `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala` | modify | 2, 3 |
+| `src/main/scala/distantlands/gameplay/powers/economy/{OldSongs,Pressgangs}.scala` | modify | 2, 3 |
+| `src/main/scala/distantlands/gameplay/powers/economy/{GolemLegions,MapLibrary,SkilledMerchants}.scala` | modify | 3 |
+| `src/main/scala/distantlands/gameplay/powers/search/{SearchSources,ErrandBoy,Observatory,LandWarden,SpinningBee}.scala` | modify | 3 |
+| `src/main/scala/distantlands/gameplay/powers/targeting/{ConspiracyTargets,LostTongue}.scala` | modify | 3 |
+| `src/main/scala/distantlands/gameplay/powers/economy/{TheOldOak,MountedLibrary}.scala` | modify | 4 |
+| `src/test/scala/distantlands/gameplay/powers/economy/MountedLibrarySuite.scala` | modify | 4 |
+| `src/test/scala/distantlands/gameplay/powers/travel/WayStationSuite.scala` | modify | 5 |
 | `docs/ROADMAP.md` | modify | 5 |
 
 ---
@@ -131,10 +131,10 @@ Task 1 writes these into the spec.
 
 **Files:**
 - Modify: `docs/superpowers/specs/2026-10-09-operation-rewrite-design.md`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/SupplyStrip.scala`
-- Create: `src/test/scala/oathdigital/gameplay/operations/SupplyStripSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala`
-- Modify: `AwaitedReturn.scala` (economy), `Mushrooms.scala` and `NewsFromAfar.scala` (search), `AFastSteed.scala`, `ForestPaths.scala`, `SpecialEnvoy.scala`, `Tents.scala` and `WayStation.scala` (travel), all under `src/main/scala/oathdigital/gameplay/powers/`
+- Modify: `src/main/scala/distantlands/gameplay/operations/SupplyStrip.scala`
+- Create: `src/test/scala/distantlands/gameplay/operations/SupplyStripSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala`
+- Modify: `AwaitedReturn.scala` (economy), `Mushrooms.scala` and `NewsFromAfar.scala` (search), `AFastSteed.scala`, `ForestPaths.scala`, `SpecialEnvoy.scala`, `Tents.scala` and `WayStation.scala` (travel), all under `src/main/scala/distantlands/gameplay/powers/`
 
 **Interfaces:**
 - Consumes: `OperationRewrite.ops` (slice 1).
@@ -142,7 +142,7 @@ Task 1 writes these into the spec.
 
 - [ ] **Step 1: Check that slice 1 has merged**
 
-Run: `git log --oneline -15 main && ls src/main/scala/oathdigital/gameplay/powerresolver/`
+Run: `git log --oneline -15 main && ls src/main/scala/distantlands/gameplay/powerresolver/`
 Expected: a merge of operation rewrite slice 1 on `main`, and both `OperationRewrite.scala` and `Deferred.scala` listed. Then check the names under "What slice 1 provides" in the code. If anything is missing, stop and report.
 
 - [ ] **Step 2: Set up the worktree and record the baseline**
@@ -217,7 +217,7 @@ Expected: pass for this file.
 
 - [ ] **Step 4: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/operations/SupplyStripSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/operations/SupplyStripSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -269,7 +269,7 @@ Expected: compile failure: `SupplyStrip.apply` takes two arguments, not three.
 
 - [ ] **Step 6: Move `SupplyStrip` onto `ops`**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/operations/SupplyStrip.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/operations/SupplyStrip.scala` with:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -298,12 +298,12 @@ object SupplyStrip:
 Run:
 
 ```bash
-sed -i '' 's/SupplyStrip(ctx.activePlayer, operations)/SupplyStrip(ctx, ctx.activePlayer, operations)/' src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala src/main/scala/oathdigital/gameplay/powers/search/Mushrooms.scala src/main/scala/oathdigital/gameplay/powers/search/NewsFromAfar.scala src/main/scala/oathdigital/gameplay/powers/travel/AFastSteed.scala src/main/scala/oathdigital/gameplay/powers/travel/ForestPaths.scala src/main/scala/oathdigital/gameplay/powers/travel/SpecialEnvoy.scala src/main/scala/oathdigital/gameplay/powers/travel/Tents.scala
+sed -i '' 's/SupplyStrip(ctx.activePlayer, operations)/SupplyStrip(ctx, ctx.activePlayer, operations)/' src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala src/main/scala/distantlands/gameplay/powers/search/Mushrooms.scala src/main/scala/distantlands/gameplay/powers/search/NewsFromAfar.scala src/main/scala/distantlands/gameplay/powers/travel/AFastSteed.scala src/main/scala/distantlands/gameplay/powers/travel/ForestPaths.scala src/main/scala/distantlands/gameplay/powers/travel/SpecialEnvoy.scala src/main/scala/distantlands/gameplay/powers/travel/Tents.scala
 ```
 
 Then `git grep -n "SupplyStrip(" -- src/main` must show three arguments at every call except in `FollowUpSupplyWaiver.scala` and `WayStation.scala`, which the next two edits change.
 
-In `src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala`, replace
+In `src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala`, replace
 
 ```scala
       (ctx, operations) => ctx.state.game.current.walkerFollowUp
@@ -318,7 +318,7 @@ with
           SupplyStrip(ctx, entry.player, operations)))))
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala`, replace `        rewrite(ctx.state, traveller, ruler, operations)))))` with `        rewrite(ctx, traveller, ruler, operations)))))`, and replace the whole `rewrite` method with:
+In `src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala`, replace `        rewrite(ctx.state, traveller, ruler, operations)))))` with `        rewrite(ctx, traveller, ruler, operations)))))`, and replace the whole `rewrite` method with:
 
 ```scala
   private def rewrite(ctx: PowerCtx, traveller: PlayerId, ruler: SiteRuler,
@@ -368,7 +368,7 @@ Expected: pass, with 2 more server tests than the baseline.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add docs/superpowers/specs/2026-10-09-operation-rewrite-design.md src/main/scala/oathdigital/gameplay/operations/SupplyStrip.scala src/test/scala/oathdigital/gameplay/operations/SupplyStripSuite.scala src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala src/main/scala/oathdigital/gameplay/powers/search/Mushrooms.scala src/main/scala/oathdigital/gameplay/powers/search/NewsFromAfar.scala src/main/scala/oathdigital/gameplay/powers/travel/AFastSteed.scala src/main/scala/oathdigital/gameplay/powers/travel/ForestPaths.scala src/main/scala/oathdigital/gameplay/powers/travel/SpecialEnvoy.scala src/main/scala/oathdigital/gameplay/powers/travel/Tents.scala src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala
+git add docs/superpowers/specs/2026-10-09-operation-rewrite-design.md src/main/scala/distantlands/gameplay/operations/SupplyStrip.scala src/test/scala/distantlands/gameplay/operations/SupplyStripSuite.scala src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala src/main/scala/distantlands/gameplay/powers/search/Mushrooms.scala src/main/scala/distantlands/gameplay/powers/search/NewsFromAfar.scala src/main/scala/distantlands/gameplay/powers/travel/AFastSteed.scala src/main/scala/distantlands/gameplay/powers/travel/ForestPaths.scala src/main/scala/distantlands/gameplay/powers/travel/SpecialEnvoy.scala src/main/scala/distantlands/gameplay/powers/travel/Tents.scala src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala
 git commit -m "refactor(powers): SupplyStrip finds a payment wherever its window holds it"
 ```
 
@@ -379,9 +379,9 @@ git commit -m "refactor(powers): SupplyStrip finds a payment wherever its window
 Refactor only: no test is added or changed. On paper, each rewrite now also reaches a `Sequence`, `Repeat` or `Branch` in its window. None of these windows holds a matching op there before the rewrite folds, so no test should notice.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala`, `RoyalStables.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/Disciples.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/InitiationRite.scala`, `EconomySources.scala`, `OldSongs.scala`, `Pressgangs.scala`, `SuitSupplyWaiver.scala`, `ExtraWarbands.scala`, `VowOfBeastkin.scala`, `VowOfWandering.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala`, `RoyalStables.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/Disciples.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/InitiationRite.scala`, `EconomySources.scala`, `OldSongs.scala`, `Pressgangs.scala`, `SuitSupplyWaiver.scala`, `ExtraWarbands.scala`, `VowOfBeastkin.scala`, `VowOfWandering.scala`
 
 **Interfaces:**
 - Consumes: `OperationRewrite.ops` and `.nodes` (slice 1).
@@ -392,7 +392,7 @@ Refactor only: no test is added or changed. On paper, each rewrite now also reac
 
 - [ ] **Step 1: `TravelRoute.adjustSupply` on `ops`**
 
-In `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala`, replace the `adjustSupply` method with the following. The file imports `powerresolver._` already.
+In `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala`, replace the `adjustSupply` method with the following. The file imports `powerresolver._` already.
 
 ```scala
   /** `operations` with `rewrite` applied to the amount of each of the
@@ -409,7 +409,7 @@ In `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala`, r
 Then run:
 
 ```bash
-sed -i '' 's/TravelRoute.adjustSupply(operations, ctx.activePlayer)/TravelRoute.adjustSupply(ctx, operations)/' src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala src/main/scala/oathdigital/gameplay/powers/travel/RoyalStables.scala
+sed -i '' 's/TravelRoute.adjustSupply(operations, ctx.activePlayer)/TravelRoute.adjustSupply(ctx, operations)/' src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala src/main/scala/distantlands/gameplay/powers/travel/RoyalStables.scala
 ```
 
 Run: `git grep -n "adjustSupply(" -- src/main`
@@ -417,7 +417,7 @@ Expected: the definition and four calls, each `adjustSupply(ctx, operations)`.
 
 - [ ] **Step 2: Disciples on `ops`**
 
-In `src/main/scala/oathdigital/gameplay/powers/search/Disciples.scala`:
+In `src/main/scala/distantlands/gameplay/powers/search/Disciples.scala`:
 
 Replace the `powerresolver` import with `import oathdigital.gameplay.powerresolver.{Contribution, OperationRewrite, Transform}` and re-wrap it:
 
@@ -457,7 +457,7 @@ Replace `effects` and delete `capped`:
 
 - [ ] **Step 3: Initiation Rite on `ops`**
 
-In `src/main/scala/oathdigital/gameplay/powers/economy/InitiationRite.scala`, replace the `powerresolver` import with:
+In `src/main/scala/distantlands/gameplay/powers/economy/InitiationRite.scala`, replace the `powerresolver` import with:
 
 ```scala
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
@@ -479,7 +479,7 @@ and replace `contributions` with:
 
 - [ ] **Step 4: `EconomySources.intoOccupied` on `ops`**
 
-In `src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala`, add this import after the `actions.economy` one:
+In `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala`, add this import after the `actions.economy` one:
 
 ```scala
 import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
@@ -535,7 +535,7 @@ with
 
 - [ ] **Step 5: `SuitSupplyWaiver` on `nodes`**
 
-In `src/main/scala/oathdigital/gameplay/powers/economy/SuitSupplyWaiver.scala`, replace the `powerresolver` import with:
+In `src/main/scala/distantlands/gameplay/powers/economy/SuitSupplyWaiver.scala`, replace the `powerresolver` import with:
 
 ```scala
 import oathdigital.gameplay.powerresolver.{Contribution, OperationRewrite,
@@ -566,7 +566,7 @@ Replace `effects` with:
 
 - [ ] **Step 6: `ExtraWarbands` on `nodes`**
 
-In `src/main/scala/oathdigital/gameplay/powers/economy/ExtraWarbands.scala`, add this import before the `powers.NoteSupport` one:
+In `src/main/scala/distantlands/gameplay/powers/economy/ExtraWarbands.scala`, add this import before the `powers.NoteSupport` one:
 
 ```scala
 import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
@@ -626,7 +626,7 @@ Expected: pass, with the same count as after Task 1.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala src/main/scala/oathdigital/gameplay/powers/travel/RoyalStables.scala src/main/scala/oathdigital/gameplay/powers/search/Disciples.scala src/main/scala/oathdigital/gameplay/powers/economy/InitiationRite.scala src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala src/main/scala/oathdigital/gameplay/powers/economy/OldSongs.scala src/main/scala/oathdigital/gameplay/powers/economy/Pressgangs.scala src/main/scala/oathdigital/gameplay/powers/economy/SuitSupplyWaiver.scala src/main/scala/oathdigital/gameplay/powers/economy/ExtraWarbands.scala src/main/scala/oathdigital/gameplay/powers/economy/VowOfBeastkin.scala src/main/scala/oathdigital/gameplay/powers/economy/VowOfWandering.scala
+git add src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala src/main/scala/distantlands/gameplay/powers/travel/RoyalStables.scala src/main/scala/distantlands/gameplay/powers/search/Disciples.scala src/main/scala/distantlands/gameplay/powers/economy/InitiationRite.scala src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala src/main/scala/distantlands/gameplay/powers/economy/OldSongs.scala src/main/scala/distantlands/gameplay/powers/economy/Pressgangs.scala src/main/scala/distantlands/gameplay/powers/economy/SuitSupplyWaiver.scala src/main/scala/distantlands/gameplay/powers/economy/ExtraWarbands.scala src/main/scala/distantlands/gameplay/powers/economy/VowOfBeastkin.scala src/main/scala/distantlands/gameplay/powers/economy/VowOfWandering.scala
 git commit -m "refactor(powers): the cost and gain rewrites find their ops through OperationRewrite"
 ```
 
@@ -637,9 +637,9 @@ git commit -m "refactor(powers): the cost and gain rewrites find their ops throu
 Refactor only: no test is added or changed. Each decision these rewrites change sits directly in its window's children, mostly as the window's own leaf, so the result is the same. Only `ConspiracyTargets` leaves an empty `Sequence` where it drops a decision (ruling 8).
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala`, `GolemLegions.scala`, `MapLibrary.scala`, `SkilledMerchants.scala`, `OldSongs.scala`, `Pressgangs.scala`, `VowOfWandering.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/SearchSources.scala`, `ErrandBoy.scala`, `Observatory.scala`, `Mushrooms.scala`, `LandWarden.scala`, `SpinningBee.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/ConspiracyTargets.scala`, `LostTongue.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala`, `GolemLegions.scala`, `MapLibrary.scala`, `SkilledMerchants.scala`, `OldSongs.scala`, `Pressgangs.scala`, `VowOfWandering.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/SearchSources.scala`, `ErrandBoy.scala`, `Observatory.scala`, `Mushrooms.scala`, `LandWarden.scala`, `SpinningBee.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/ConspiracyTargets.scala`, `LostTongue.scala`
 
 **Interfaces:**
 - Consumes: `OperationRewrite.nodes` (slice 1).
@@ -720,7 +720,7 @@ Update the callers:
 
 - [ ] **Step 2: `SearchSources` on `nodes`**
 
-In `src/main/scala/oathdigital/gameplay/powers/search/SearchSources.scala`:
+In `src/main/scala/distantlands/gameplay/powers/search/SearchSources.scala`:
 
 Add after the `SearchProcedure` import:
 
@@ -883,7 +883,7 @@ and replace the `contributions` of `case object VowOfWandering` with:
 
 - [ ] **Step 5: `ConspiracyTargets.narrowed` on `nodes`**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/targeting/ConspiracyTargets.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/targeting/ConspiracyTargets.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -937,7 +937,7 @@ Expected: pass, with the same count as after Task 1.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala src/main/scala/oathdigital/gameplay/powers/economy/GolemLegions.scala src/main/scala/oathdigital/gameplay/powers/economy/MapLibrary.scala src/main/scala/oathdigital/gameplay/powers/economy/SkilledMerchants.scala src/main/scala/oathdigital/gameplay/powers/economy/OldSongs.scala src/main/scala/oathdigital/gameplay/powers/economy/Pressgangs.scala src/main/scala/oathdigital/gameplay/powers/economy/VowOfWandering.scala src/main/scala/oathdigital/gameplay/powers/search/SearchSources.scala src/main/scala/oathdigital/gameplay/powers/search/ErrandBoy.scala src/main/scala/oathdigital/gameplay/powers/search/Observatory.scala src/main/scala/oathdigital/gameplay/powers/search/Mushrooms.scala src/main/scala/oathdigital/gameplay/powers/search/LandWarden.scala src/main/scala/oathdigital/gameplay/powers/search/SpinningBee.scala src/main/scala/oathdigital/gameplay/powers/targeting/ConspiracyTargets.scala src/main/scala/oathdigital/gameplay/powers/targeting/LostTongue.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala src/main/scala/distantlands/gameplay/powers/economy/GolemLegions.scala src/main/scala/distantlands/gameplay/powers/economy/MapLibrary.scala src/main/scala/distantlands/gameplay/powers/economy/SkilledMerchants.scala src/main/scala/distantlands/gameplay/powers/economy/OldSongs.scala src/main/scala/distantlands/gameplay/powers/economy/Pressgangs.scala src/main/scala/distantlands/gameplay/powers/economy/VowOfWandering.scala src/main/scala/distantlands/gameplay/powers/search/SearchSources.scala src/main/scala/distantlands/gameplay/powers/search/ErrandBoy.scala src/main/scala/distantlands/gameplay/powers/search/Observatory.scala src/main/scala/distantlands/gameplay/powers/search/Mushrooms.scala src/main/scala/distantlands/gameplay/powers/search/LandWarden.scala src/main/scala/distantlands/gameplay/powers/search/SpinningBee.scala src/main/scala/distantlands/gameplay/powers/targeting/ConspiracyTargets.scala src/main/scala/distantlands/gameplay/powers/targeting/LostTongue.scala
 git commit -m "refactor(powers): the decision rewrites find their decision through OperationRewrite"
 ```
 
@@ -948,9 +948,9 @@ git commit -m "refactor(powers): the decision rewrites find their decision throu
 `TheOldOakSuite` and `MountedLibrarySuite` must pass unchanged. They check the secrets, the lines, the replay and the wire round trip, so they cover the record, its codec and its take. One test is new: Mounted Library's two rewrites fold `Late`.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/TheOldOak.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/MountedLibrary.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/MountedLibrarySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/TheOldOak.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/MountedLibrary.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/MountedLibrarySuite.scala`
 
 **Interfaces:**
 - Consumes: `OperationRewrite.ops`, `Deferred.resolve`, `Defer`, `DeferralKey`, `FoldPhase` (slice 1).
@@ -1128,7 +1128,7 @@ Expected: pass, with 3 more server tests than the baseline.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/TheOldOak.scala src/main/scala/oathdigital/gameplay/powers/economy/MountedLibrary.scala src/test/scala/oathdigital/gameplay/powers/economy/MountedLibrarySuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/TheOldOak.scala src/main/scala/distantlands/gameplay/powers/economy/MountedLibrary.scala src/test/scala/distantlands/gameplay/powers/economy/MountedLibrarySuite.scala
 git commit -m "refactor(powers): The Old Oak and Mounted Library read the Trade's gain from a record"
 ```
 
@@ -1137,8 +1137,8 @@ git commit -m "refactor(powers): The Old Oak and Mounted Library read the Trade'
 ### Task 5: Way Station folds `Late`, and the records
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/travel/WayStationSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/travel/WayStationSuite.scala`
 - Modify: `docs/superpowers/specs/2026-10-09-operation-rewrite-design.md` (Status)
 - Modify: `docs/ROADMAP.md` ("### Phase - Operation rewrite")
 
@@ -1217,7 +1217,7 @@ Expected: pass. `WayStationSuite` has one more test than before.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala src/test/scala/oathdigital/gameplay/powers/travel/WayStationSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala src/test/scala/distantlands/gameplay/powers/travel/WayStationSuite.scala
 git commit -m "refactor(powers): Way Station folds Late instead of at priority 3"
 ```
 

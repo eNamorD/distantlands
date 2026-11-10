@@ -27,10 +27,10 @@
 ### Task 1: `TableSession`, `Navigation`, `TableView`, and the wiring
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/TableSession.scala`
-- Create: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala` (the `TableView` trait only; Task 2 adds the class)
-- Create: `frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala` (whole file; its current 289 lines are the source of every moved function)
+- Create: `frontend/src/main/scala/distantlands/frontend/TableSession.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala` (the `TableView` trait only; Task 2 adds the class)
+- Create: `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` (whole file; its current 289 lines are the source of every moved function)
 
 **Interfaces:**
 - Consumes: `GameClient` (`load`, `submit`, `preview`), `HttpGameClient.loadRawEventHistory`, `ServerSessionCoordinator`, `SnapshotPollingCoordinator(clock, requestPoll)`, `PollClock`, `BrowserPollClock`, `SessionDrafts`, `SessionControls`, `FlowHost`, `ModifierFlow(host)`, `ServerUiSupport.{queryParameter, freshGameId, updateUrl}`.
@@ -43,7 +43,7 @@
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -372,7 +372,7 @@ Expected: compile error, `Navigation` / `TableSession` not found.
 
 - [ ] **Step 3: Write `TableView`**
 
-Create `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/TableScreen.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -659,7 +659,7 @@ Temporarily change `coordinator.recordSnapshotSuccess(coordinator.capture)` in `
 
 - [ ] **Step 7: Wire `ServerModeUi` to the session**
 
-Replace `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala` with the following. `render` keeps its body; its reads go through `view` (the session as a `TableView`), `ui` is the flow over the session, and the Reconnect button calls `session.reconnectSession()`.
+Replace `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` with the following. `render` keeps its body; its reads go through `view` (the session as a `TableView`), `ui` is the flow over the session, and the Reconnect button calls `session.reconnectSession()`.
 
 ```scala
 package oathdigital.frontend
@@ -779,7 +779,7 @@ Expected: all green, 420 + 15 = 435, every `ServerModeUiSuite` test unchanged.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/TableSession.scala frontend/src/main/scala/oathdigital/frontend/TableScreen.scala frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/TableSession.scala frontend/src/main/scala/distantlands/frontend/TableScreen.scala frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala
 git commit -m "refactor(frontend): move the session out of ServerModeUi into TableSession
 
 The state, loads, routing, polling and submit leave ServerModeUi.start
@@ -796,8 +796,8 @@ Co-Authored-By: <the committing model's trailer>"
 ### Task 2: `TableScreen`, and `start` as composition only
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala` (add the class)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala` (remove `render`, add `screen`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala` (add the class)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` (remove `render`, add `screen`)
 
 **Interfaces:**
 - Consumes: `TableView`, `TableSession` (Task 1), `ActionControls`, `SessionControls`, `GameTableShell.update(gameId, decisionKey, playerContent, worldContent, actionContent, development)`.
@@ -908,29 +908,29 @@ Run: `./sbtw "frontend/test"`
 Expected: all green, 435.
 
 ```bash
-grep -c "var " frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala
+grep -c "var " frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala
 ```
 Expected: `0`.
 
 ```bash
-grep -n "dom\." frontend/src/main/scala/oathdigital/frontend/TableSession.scala
+grep -n "dom\." frontend/src/main/scala/distantlands/frontend/TableSession.scala
 ```
 Expected: no output.
 
 ```bash
-grep -n "client\." frontend/src/main/scala/oathdigital/frontend/TableScreen.scala
+grep -n "client\." frontend/src/main/scala/distantlands/frontend/TableScreen.scala
 ```
 Expected: no output.
 
 ```bash
-wc -l frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala frontend/src/main/scala/oathdigital/frontend/TableSession.scala frontend/src/main/scala/oathdigital/frontend/TableScreen.scala
+wc -l frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala frontend/src/main/scala/distantlands/frontend/TableSession.scala frontend/src/main/scala/distantlands/frontend/TableScreen.scala
 ```
 Expected: about 35, 250 and 100.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/TableScreen.scala frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala
+git add frontend/src/main/scala/distantlands/frontend/TableScreen.scala frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala
 git commit -m "refactor(frontend): draw the table from TableScreen, leaving start as composition
 
 Co-Authored-By: <the committing model's trailer>"
@@ -941,8 +941,8 @@ Co-Authored-By: <the committing model's trailer>"
 ### Task 3: Fix 1, a stale-position submit renders at once
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableSession.scala` (`submitTransport`'s `StalePosition` branch)
-- Test: `frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableSession.scala` (`submitTransport`'s `StalePosition` branch)
+- Test: `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala`
 
 **Interfaces:**
 - Consumes: `TableSession`, the suite's `displayed`, `settle`, `FakeClient.answerSubmit` (Task 1).
@@ -995,7 +995,7 @@ Expected: all green, 436. In particular "trusted UI reloads after command confli
 - [ ] **Step 5: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/TableSession.scala frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/TableSession.scala frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala
 git commit -m "fix(frontend): show a stale-position notice as soon as the submit is refused
 
 The draft set was emptied and the notice set without a redraw, so until
@@ -1010,8 +1010,8 @@ Co-Authored-By: <the committing model's trailer>"
 ### Task 4: Fix 2, drop a preview response from another session
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableSession.scala` (`preview`, one import)
-- Test: `frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableSession.scala` (`preview`, one import)
+- Test: `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala`
 
 **Interfaces:**
 - Consumes: `TableSession.preview`, `reconnectSession`, the suite's `displayed`, `settle`, `FakeClient.answerPreview` (Task 1).
@@ -1072,7 +1072,7 @@ Expected: all green, 438, including every `ModifierFlowSuite` test and "a previe
 - [ ] **Step 5: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/TableSession.scala frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/TableSession.scala frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala
 git commit -m "fix(frontend): drop a preview response that lands after the session changed
 
 Load, poll and submit responses were already checked against the session

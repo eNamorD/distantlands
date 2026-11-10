@@ -14,43 +14,43 @@
 
 - Scala 3.9.0 with `-Werror` (`build.sbt:61-68`): every compiler warning fails the build. `-Wunused:imports,privates,locals,implicits,nowarn` is on, so an unused binder is an error.
 - Production Scala files stay at or below 800 lines, enforced by `scripts/check-architecture.py` and `BackendArchitectureSuite`. Test files have the same cap in the suite.
-- `DecisionQuery` and `DecisionQueryProjection` each have **seven** subtypes: `ChooseOne`, `ChooseMany`, `ChooseAmount`, `Partition`, `Distribute`, `Negotiate`, `Inspect`. `CONTEXT.md`'s **Form** entry lists only six and omits `Inspect`; work from the ADT in `src/main/scala/oathdigital/model/Decisions.scala`, not from the vocabulary.
-- `DecisionQueryState` is a type and value alias for `DecisionQueryProjection` (`frontend/src/main/scala/oathdigital/frontend/frontend.scala:30-31`). Both spellings reach the same seven case classes.
+- `DecisionQuery` and `DecisionQueryProjection` each have **seven** subtypes: `ChooseOne`, `ChooseMany`, `ChooseAmount`, `Partition`, `Distribute`, `Negotiate`, `Inspect`. `CONTEXT.md`'s **Form** entry lists only six and omits `Inspect`; work from the ADT in `src/main/scala/distantlands/model/Decisions.scala`, not from the vocabulary.
+- `DecisionQueryState` is a type and value alias for `DecisionQueryProjection` (`frontend/src/main/scala/distantlands/frontend/frontend.scala:30-31`). Both spellings reach the same seven case classes.
 - Binder naming follows the existing 83 typed binds: `one`, `many`, `amount`, `partition`, `distribute`, `negotiate`, `inspect`.
-- Copy never affects legality (`src/main/scala/oathdigital/model/Decisions.scala:435-438`). Nothing in this plan may make `DecisionQueries.accepts` read `heading` or a confirm label.
+- Copy never affects legality (`src/main/scala/distantlands/model/Decisions.scala:435-438`). Nothing in this plan may make `DecisionQueries.accepts` read `heading` or a confirm label.
 - The three-table form/answer tag separation recorded in `docs/superpowers/specs/2026-09-25-decision-form-tag-separation-decision.md` is settled. This plan does not touch tag spellings.
 - Commit messages end with `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
 
 ## Out of scope
 
-The 56 positional whole-query equality assertions in tests (for example `assertEquals(asked.query, DecisionQuery.ChooseOne(options, Some(heading), Some(verb)))` at `src/test/scala/oathdigital/gameplay/SearchProcedureSuite.scala:55` and `TravelProcedureSuite.scala:248`). These are fully bound, so the rule in Task 2 permits them. Converting them decides what each test is for, one at a time. Leave every one of them alone.
+The 56 positional whole-query equality assertions in tests (for example `assertEquals(asked.query, DecisionQuery.ChooseOne(options, Some(heading), Some(verb)))` at `src/test/scala/distantlands/gameplay/SearchProcedureSuite.scala:55` and `TravelProcedureSuite.scala:248`). These are fully bound, so the rule in Task 2 permits them. Converting them decides what each test is for, one at a time. Leave every one of them alone.
 
 ---
 
 ## File Structure
 
 **Modified in Task 1 — production (3 files, 10 sites):**
-- `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala` — 8 sites in `wellFormed` and `accepts`
-- `src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala` — 1 site in `options`
-- `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala` — 1 site in the preview walk
+- `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala` — 8 sites in `wellFormed` and `accepts`
+- `src/main/scala/distantlands/gameplay/walker/PricedOptions.scala` — 1 site in `options`
+- `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala` — 1 site in the preview walk
 
 **Modified in Task 1 — test (31 files, 42 sites):** listed site by site in Step 6 below.
 
 **Unchanged, and must stay unchanged (the pinned sites):**
-- `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala:75,81,90,97,104,111` plus its `Inspect` arm — seven fully-bound patterns, one per form
-- `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:278,299,304,308,314` — five fully-bound patterns
+- `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala:75,81,90,97,104,111` plus its `Inspect` arm — seven fully-bound patterns, one per form
+- `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:278,299,304,308,314` — five fully-bound patterns
 
 **Modified in Task 2:**
-- `src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala` — two new tests appended
+- `src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala` — two new tests appended
 
 ---
 
 ## Task 1: Migrate every wildcard-bearing read site to a typed bind
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala:67,90,152,242,272,279,286,292`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala:49`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala:236`
+- Modify: `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala:67,90,152,242,272,279,286,292`
+- Modify: `src/main/scala/distantlands/gameplay/walker/PricedOptions.scala:49`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala:236`
 - Modify: 31 test files, enumerated in Step 6
 - Test: the existing suites cover every site; no new test file
 
@@ -203,136 +203,136 @@ Expected: success, no warnings. `-Werror` means an unused binder or a stale refe
 
 Each entry gives the line, the binder to introduce, and every name whose references in that arm must become a field read. The transformation is the same at every site: replace `Form(a, _, _)` with `binder: Hier.Form` and prefix each previously-bound name with `binder.`. Where an arm reads a name more than two or three times, alias instead — `val (sections, options) = (partition.sections, partition.options)` — which is the idiom `DecisionQueries.scala:105-106` already uses and leaves the body unchanged. Leave each arm's `case other => fail(...)` or `case _ =>` fallback alone.
 
-`src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
+`src/test/scala/distantlands/application/gamelog/LogScripts.scala`
 
 - `:552` — bind `amount: DecisionQuery.ChooseAmount`; rewrite `max` as `amount.max`
 - `:555` — bind `amount: DecisionQuery.ChooseAmount`; rewrite `max` as `amount.max`
 
-`src/test/scala/oathdigital/gameplay/CampaignPlanWindowSuite.scala`
+`src/test/scala/distantlands/gameplay/CampaignPlanWindowSuite.scala`
 
 - `:92` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala`
+`src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala`
 
 - `:118` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/ChallengeProcedureSuite.scala`
+`src/test/scala/distantlands/gameplay/ChallengeProcedureSuite.scala`
 
 - `:213` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`, `heading` as `one.heading`
 - `:242` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/EconomyFixture.scala`
+`src/test/scala/distantlands/gameplay/EconomyFixture.scala`
 
 - `:20` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`, `heading` as `one.heading`
 
-`src/test/scala/oathdigital/gameplay/LazyPruningSuite.scala`
+`src/test/scala/distantlands/gameplay/LazyPruningSuite.scala`
 
 - `:50` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 - `:129` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/ModifierMenuOptionsSuite.scala`
+`src/test/scala/distantlands/gameplay/ModifierMenuOptionsSuite.scala`
 
 - `:55` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 - `:100` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 - `:138` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 - `:172` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/PassWhenEmptySuite.scala`
+`src/test/scala/distantlands/gameplay/PassWhenEmptySuite.scala`
 
 - `:46` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/PowerNoteHideSuite.scala`
+`src/test/scala/distantlands/gameplay/PowerNoteHideSuite.scala`
 
 - `:30` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/SearchModifierChoiceSuite.scala`
+`src/test/scala/distantlands/gameplay/SearchModifierChoiceSuite.scala`
 
 - `:43` — bind `one: DecisionQuery.ChooseOne`; rewrite `listed` as `one.listed`
 
-`src/test/scala/oathdigital/gameplay/VisionPlaySuite.scala`
+`src/test/scala/distantlands/gameplay/VisionPlaySuite.scala`
 
 - `:159` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/powers/action/OracularPigSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/action/OracularPigSuite.scala`
 
 - `:36` — bind `inspect: DecisionQueryProjection.Inspect`; rewrite `cards` as `inspect.cards`, `heading` as `inspect.heading`
 
-`src/test/scala/oathdigital/gameplay/powers/action/TavernSongsSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/action/TavernSongsSuite.scala`
 
 - `:42` — bind `inspect: DecisionQueryProjection.Inspect`; rewrite `cards` as `inspect.cards`, `heading` as `inspect.heading`
 - `:68` — bind `inspect: DecisionQueryProjection.Inspect`; rewrite `cards` as `inspect.cards`
 
-`src/test/scala/oathdigital/gameplay/powers/action/TheRedSeerSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/action/TheRedSeerSuite.scala`
 
 - `:44` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/powers/action/WardOfSilenceSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/action/WardOfSilenceSuite.scala`
 
 - `:38` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala`
+`src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala`
 
 - `:138` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/powers/campaign/VowOfUnionSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/campaign/VowOfUnionSuite.scala`
 
 - `:118` — bind `amount: DecisionQuery.ChooseAmount`; rewrite `min` as `amount.min`, `max` as `amount.max`
 
-`src/test/scala/oathdigital/gameplay/powers/campaign/WarningSignalsSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/campaign/WarningSignalsSuite.scala`
 
 - `:114` — bind `distribute: DecisionQuery.Distribute`; rewrite `slots` as `distribute.slots`, `min` as `distribute.min`, `max` as `distribute.max`
 
-`src/test/scala/oathdigital/gameplay/powers/economy/MusterModifierChoiceSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/economy/MusterModifierChoiceSuite.scala`
 
 - `:45` — bind `one: DecisionQuery.ChooseOne`; rewrite `listed` as `one.listed`
 
-`src/test/scala/oathdigital/gameplay/powers/economy/TradeModifierChoiceSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/economy/TradeModifierChoiceSuite.scala`
 
 - `:43` — bind `one: DecisionQuery.ChooseOne`; rewrite `listed` as `one.listed`
 - `:57` — bind `one: DecisionQuery.ChooseOne`; rewrite `heading` as `one.heading`
 
-`src/test/scala/oathdigital/gameplay/powers/search/LandWardenSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/search/LandWardenSuite.scala`
 
 - `:75` — bind `partition: DecisionQuery.Partition`; rewrite `sections` as `partition.sections`, `heading` as `partition.heading`
 
-`src/test/scala/oathdigital/gameplay/powers/travel/TentsSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/travel/TentsSuite.scala`
 
 - `:87` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/powers/travel/TravelModifierChoiceSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/travel/TravelModifierChoiceSuite.scala`
 
 - `:30` — bind `one: DecisionQuery.ChooseOne`; rewrite `listed` as `one.listed`
 
-`src/test/scala/oathdigital/gameplay/powers/wake/HungerSuite.scala`
+`src/test/scala/distantlands/gameplay/powers/wake/HungerSuite.scala`
 
 - `:50` — bind `partition: DecisionQuery.Partition`; rewrite `options` as `partition.options`
 
-`src/test/scala/oathdigital/gameplay/walker/ChooseOneConsentSuite.scala`
+`src/test/scala/distantlands/gameplay/walker/ChooseOneConsentSuite.scala`
 
 - `:69` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/gameplay/walker/ModifierChoiceSuite.scala`
+`src/test/scala/distantlands/gameplay/walker/ModifierChoiceSuite.scala`
 
 - `:100` — bind `one: DecisionQuery.ChooseOne`; rewrite `listed` as `one.listed`
 
-`src/test/scala/oathdigital/gameplay/walker/WalkerPreviewSuite.scala`
+`src/test/scala/distantlands/gameplay/walker/WalkerPreviewSuite.scala`
 
 - `:90` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`, `heading` as `one.heading`
 
-`src/test/scala/oathdigital/testkit/CatacombsGame.scala`
+`src/test/scala/distantlands/testkit/CatacombsGame.scala`
 
 - `:75` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/testkit/EmptyWindowModifier.scala`
+`src/test/scala/distantlands/testkit/EmptyWindowModifier.scala`
 
 - `:35` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/testkit/PlacementPicks.scala`
+`src/test/scala/distantlands/testkit/PlacementPicks.scala`
 
 - `:52` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 - `:82` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 
-`src/test/scala/oathdigital/testkit/Situation.scala`
+`src/test/scala/distantlands/testkit/Situation.scala`
 
 - `:122` — bind `one: DecisionQuery.ChooseOne`; rewrite `options` as `one.options`
 - `:125` — bind `partition: DecisionQuery.Partition`; rewrite `sections` as `partition.sections`, `options` as `partition.options`
@@ -448,7 +448,7 @@ Expected: both pass.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker src/test/scala shared/src/test frontend/src/test
+git add src/main/scala/distantlands/gameplay/walker src/test/scala shared/src/test frontend/src/test
 git commit -F - <<'MSG'
 refactor: parked-decision query read sites bind by name
 
@@ -473,7 +473,7 @@ MSG
 ## Task 2: Enforce the convention in BackendArchitectureSuite
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala` (append two tests)
+- Modify: `src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala` (append two tests)
 
 **Interfaces:**
 - Consumes: the migrated tree from Task 1. The first test fails if any site was missed.
@@ -564,7 +564,7 @@ Temporarily reintroduce one violation:
 ```bash
 python3 - <<'EOF'
 from pathlib import Path
-p = Path("src/test/scala/oathdigital/testkit/PlacementPicks.scala")
+p = Path("src/test/scala/distantlands/testkit/PlacementPicks.scala")
 t = p.read_text()
 t = t.replace("case one: DecisionQuery.ChooseOne => one.options",
               "case DecisionQuery.ChooseOne(options, _, _) => options", 1)
@@ -573,12 +573,12 @@ EOF
 ./sbtw "testOnly oathdigital.gameplay.BackendArchitectureSuite"
 ```
 
-Expected: FAIL, naming `src/test/scala/oathdigital/testkit/PlacementPicks.scala` and its line. A pass here means the matcher never reached test sources — fix it before continuing.
+Expected: FAIL, naming `src/test/scala/distantlands/testkit/PlacementPicks.scala` and its line. A pass here means the matcher never reached test sources — fix it before continuing.
 
 - [ ] **Step 4: Revert the deliberate violation**
 
 ```bash
-git checkout -- src/test/scala/oathdigital/testkit/PlacementPicks.scala
+git checkout -- src/test/scala/distantlands/testkit/PlacementPicks.scala
 ./sbtw "testOnly oathdigital.gameplay.BackendArchitectureSuite"
 ```
 
@@ -599,9 +599,9 @@ Append immediately after the first test, so the pair reads as one intent:
   // DecisionQueries is deliberately absent — accepts must stay blind to
   // copy (Decisions.scala:435-438).
   private val PinnedQueryReaders = Vector(
-    "shared/src/main/scala/oathdigital/protocol/projection/" +
+    "shared/src/main/scala/distantlands/protocol/projection/" +
       "ActionProjectionCodec.scala",
-    "src/main/scala/oathdigital/application/WalkerDecisionProjector.scala")
+    "src/main/scala/distantlands/application/WalkerDecisionProjector.scala")
 
   test("the wire-facing query patterns stay fully bound"):
     val roots = PinnedQueryReaders.map(Paths.get(_))
@@ -630,7 +630,7 @@ Expected: PASS, both tests.
 ```bash
 python3 - <<'EOF'
 from pathlib import Path
-p = Path("src/main/scala/oathdigital/application/WalkerDecisionProjector.scala")
+p = Path("src/main/scala/distantlands/application/WalkerDecisionProjector.scala")
 t = p.read_text()
 t = t.replace("case DecisionQuery.ChooseOne(options, heading, confirmVerb) =>",
               "case DecisionQuery.ChooseOne(options, heading, _) =>", 1)
@@ -647,7 +647,7 @@ dropped silently. Either outcome proves the pin.)
 - [ ] **Step 8: Revert and run the whole gate**
 
 ```bash
-git checkout -- src/main/scala/oathdigital/application/WalkerDecisionProjector.scala
+git checkout -- src/main/scala/distantlands/application/WalkerDecisionProjector.scala
 ./sbtw test frontend/test 2>&1 | tail -20
 python3 scripts/check-architecture.py
 ```
@@ -657,7 +657,7 @@ Expected: all suites pass with the Task 1 test count plus two; the architecture 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala
+git add src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala
 git commit -F - <<'MSG'
 test(architecture): a query pattern binds no wildcard
 

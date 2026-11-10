@@ -57,7 +57,7 @@ Edifices in the edifice deck and denizens in the suited reserves are derived vie
 
 ## File Structure
 
-`M/` is `src/main/scala/oathdigital/` and `T/` is `src/test/scala/oathdigital/`.
+`M/` is `src/main/scala/distantlands/` and `T/` is `src/test/scala/distantlands/`.
 
 - Create `M/gameplay/setup/ChronicleAccounting.scala`: `knownAndUnique` and `conserves`.
 - Modify `M/gameplay/setup/GameStartRules.scala`: `validateIds` delegates to `ChronicleAccounting.knownAndUnique`.
@@ -76,9 +76,9 @@ Edifices in the edifice deck and denizens in the suited reserves are derived vie
 ### Task 1: Chronicle accounting shared with game start
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/setup/ChronicleAccounting.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala:90-121`
-- Test: `src/test/scala/oathdigital/gameplay/setup/ChronicleAccountingSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/setup/ChronicleAccounting.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala:90-121`
+- Test: `src/test/scala/distantlands/gameplay/setup/ChronicleAccountingSuite.scala`
 
 **Interfaces:**
 - Produces: `ChronicleAccounting.knownAndUnique(catalog: ExecutableCatalog, chronicle: Chronicle): Either[String, Unit]` and `ChronicleAccounting.conserves(baseline: Chronicle, evolved: Chronicle): Either[String, Unit]`.
@@ -278,9 +278,9 @@ Expected: all pass. The four existing messages in `GameStartRulesSuite` are unch
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/setup/ChronicleAccounting.scala \
-  src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala \
-  src/test/scala/oathdigital/gameplay/setup/ChronicleAccountingSuite.scala
+git add src/main/scala/distantlands/gameplay/setup/ChronicleAccounting.scala \
+  src/main/scala/distantlands/gameplay/setup/GameStartRules.scala \
+  src/test/scala/distantlands/gameplay/setup/ChronicleAccountingSuite.scala
 git commit -m "feat(chronicle): check every Chronicle field for known, unique cards and conserved sites and relics
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -291,13 +291,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: Extract the table into the journaled Chronicle
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Chronicle.scala`
-- Modify: `src/main/scala/oathdigital/model/World.scala:85-91`
-- Create: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleExtraction.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleRecord.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleFinishProcedure.scala`
-- Test: `src/test/scala/oathdigital/gameplay/chronicle/ChronicleExtractionSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/chronicle/ChronicleRecordSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Chronicle.scala`
+- Modify: `src/main/scala/distantlands/model/World.scala:85-91`
+- Create: `src/main/scala/distantlands/gameplay/chronicle/ChronicleExtraction.scala`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleRecord.scala`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleFinishProcedure.scala`
+- Test: `src/test/scala/distantlands/gameplay/chronicle/ChronicleExtractionSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/chronicle/ChronicleRecordSuite.scala`
 
 **Interfaces:**
 - Consumes: `ChronicleAccounting.knownAndUnique`, `ChronicleAccounting.conserves` (Task 1); `ChronicleTasks.rules(ready, player, site): Boolean`.
@@ -613,13 +613,13 @@ Expected: PASS. `GameApplicationServiceStreamSuite`, the log goldens and `Chroni
 - [ ] **Step 13: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Chronicle.scala \
-  src/main/scala/oathdigital/model/World.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleExtraction.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleRecord.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleFinishProcedure.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/ChronicleExtractionSuite.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/ChronicleRecordSuite.scala
+git add src/main/scala/distantlands/model/Chronicle.scala \
+  src/main/scala/distantlands/model/World.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleExtraction.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleRecord.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleFinishProcedure.scala \
+  src/test/scala/distantlands/gameplay/chronicle/ChronicleExtractionSuite.scala \
+  src/test/scala/distantlands/gameplay/chronicle/ChronicleRecordSuite.scala
 git commit -m "feat(chronicle): journal the table's sites, decks, Dispossessed, Reliquary and starting advisers
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -630,15 +630,15 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: The Stars task
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleStarsProcedure.scala`
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala:91-94,145-149`
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala:225`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleWindows.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleSequence.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala:357-366`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala:101-103`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:346-351`
-- Test: `src/test/scala/oathdigital/gameplay/chronicle/StarsTaskSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/chronicle/ChronicleStarsProcedure.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala:91-94,145-149`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala:225`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleWindows.scala`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleSequence.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala:357-366`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala:101-103`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:346-351`
+- Test: `src/test/scala/distantlands/gameplay/chronicle/StarsTaskSuite.scala`
 - Test: `ChronicleWindowsSuite`, `ProcedureRefSuite`, `EnumWireKeySuite`, the note-key snapshot, the `chronicle-started` goldens
 
 **Interfaces:**
@@ -908,18 +908,18 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/ChronicleStarsProcedure.scala \
-  src/main/scala/oathdigital/model/ProcedureRef.scala \
-  src/main/scala/oathdigital/model/PowerWindow.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleWindows.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleSequence.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala \
-  src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/StarsTaskSuite.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/ChronicleWindowsSuite.scala \
-  src/test/scala/oathdigital/model/ProcedureRefSuite.scala \
-  src/test/scala/oathdigital/model/EnumWireKeySuite.scala
+git add src/main/scala/distantlands/gameplay/chronicle/ChronicleStarsProcedure.scala \
+  src/main/scala/distantlands/model/ProcedureRef.scala \
+  src/main/scala/distantlands/model/PowerWindow.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleWindows.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleSequence.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala \
+  src/main/scala/distantlands/application/gamelog/ProcedureLog.scala \
+  src/test/scala/distantlands/gameplay/chronicle/StarsTaskSuite.scala \
+  src/test/scala/distantlands/gameplay/chronicle/ChronicleWindowsSuite.scala \
+  src/test/scala/distantlands/model/ProcedureRefSuite.scala \
+  src/test/scala/distantlands/model/EnumWireKeySuite.scala
 git add $(git diff --name-only -- '*declared-keys.txt' '*chronicle-started*')
 git commit -m "feat(chronicle): the Stars archive rival sites and keep the Empire's sites
 
@@ -931,7 +931,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 4: The round trip end to end, and the docs
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/chronicle/ChronicleEndToEndSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/chronicle/ChronicleEndToEndSuite.scala`
 - Modify: `docs/rules/ambiguities.md`, `docs/rules/chronicle.md`, `docs/rules/implementation-traceability.md`, `docs/ROADMAP.md`, `CONTEXT.md`
 
 **Interfaces:**
@@ -1018,7 +1018,7 @@ Expected: all pass; statement coverage at least 92%.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/chronicle/ChronicleEndToEndSuite.scala \
+git add src/test/scala/distantlands/gameplay/chronicle/ChronicleEndToEndSuite.scala \
   docs/rules/ambiguities.md docs/rules/chronicle.md \
   docs/rules/implementation-traceability.md docs/ROADMAP.md CONTEXT.md
 git commit -m "test(chronicle): the journaled Chronicle passes game start's accounting; document the Stars and rulings 17-18

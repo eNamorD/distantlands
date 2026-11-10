@@ -30,11 +30,11 @@
 ## File Structure
 
 Create:
-- `src/main/scala/oathdigital/gameplay/PowerAccess.scala`: E1, the access rule.
-- `src/main/scala/oathdigital/gameplay/operations/PayCostRules.scala`: the empty-card check.
-- `src/main/scala/oathdigital/gameplay/operations/PayCostSettlement.scala`: off-turn settlement.
-- `src/main/scala/oathdigital/gameplay/powers/CatalogResolution.scala`: E2.
-- Tests: `PayCostSuite`, `PayCostSettlementSuite`, `PowerAccessSuite`, `PowerKindsCatalogSuite`, `OperationVocabularySuite` (all under `src/test/scala/oathdigital/gameplay/`), `PayCostWireSuite` (`src/test/scala/oathdigital/serialization/`), and Slice 0 conformance additions to the existing Dazzle, Catacombs and League Treaty suites.
+- `src/main/scala/distantlands/gameplay/PowerAccess.scala`: E1, the access rule.
+- `src/main/scala/distantlands/gameplay/operations/PayCostRules.scala`: the empty-card check.
+- `src/main/scala/distantlands/gameplay/operations/PayCostSettlement.scala`: off-turn settlement.
+- `src/main/scala/distantlands/gameplay/powers/CatalogResolution.scala`: E2.
+- Tests: `PayCostSuite`, `PayCostSettlementSuite`, `PowerAccessSuite`, `PowerKindsCatalogSuite`, `OperationVocabularySuite` (all under `src/test/scala/distantlands/gameplay/`), `PayCostWireSuite` (`src/test/scala/distantlands/serialization/`), and Slice 0 conformance additions to the existing Dazzle, Catacombs and League Treaty suites.
 
 Modify:
 - `model/CoreOperations.scala`, `model/OperationError.scala`, `model/GameState.scala`.
@@ -49,10 +49,10 @@ Modify:
 ### Task 1: Operation vocabulary (E5)
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`Give`, `BuryableCard`, `Bury`, `Discard`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala` (`OperationRun.canonical`)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (`encodeBuryableCard`, `decodeBuryableCard`)
-- Test: `src/test/scala/oathdigital/gameplay/OperationVocabularySuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`Give`, `BuryableCard`, `Bury`, `Discard`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala` (`OperationRun.canonical`)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (`encodeBuryableCard`, `decodeBuryableCard`)
+- Test: `src/test/scala/distantlands/gameplay/OperationVocabularySuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -62,7 +62,7 @@ Modify:
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/OperationVocabularySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/OperationVocabularySuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -262,13 +262,13 @@ git commit -m "feat: add Give.required, BuryableCard.Vision and Bury.standard"
 ### Task 2: `PayCost` placement rule (E4, part 1)
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`PayCost`)
-- Modify: `src/main/scala/oathdigital/model/OperationError.scala`
-- Create: `src/main/scala/oathdigital/gameplay/operations/PayCostRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala` (one line in `OperationShape.violations`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/PowerOperations.scala` (`Costs`)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (`PayCost` encode and decode)
-- Test: `src/test/scala/oathdigital/gameplay/PayCostSuite.scala`, `src/test/scala/oathdigital/serialization/PayCostWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`PayCost`)
+- Modify: `src/main/scala/distantlands/model/OperationError.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/PayCostRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationValidator.scala` (one line in `OperationShape.violations`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/PowerOperations.scala` (`Costs`)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (`PayCost` encode and decode)
+- Test: `src/test/scala/distantlands/gameplay/PayCostSuite.scala`, `src/test/scala/distantlands/serialization/PayCostWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -281,7 +281,7 @@ git commit -m "feat: add Give.required, BuryableCard.Vision and Bury.standard"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/PayCostSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/PayCostSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -357,7 +357,7 @@ class PayCostSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/serialization/PayCostWireSuite.scala`:
+Create `src/test/scala/distantlands/serialization/PayCostWireSuite.scala`:
 
 ```scala
 package oathdigital.serialization
@@ -571,11 +571,11 @@ git commit -m "feat: place PayCost costs only onto empty cards, with intoOccupie
 ### Task 3: Off-turn settlement (E4, part 2)
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`PayCost.offTurn`, children)
-- Create: `src/main/scala/oathdigital/gameplay/operations/PayCostSettlement.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/PayCostRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/PayCostSettlementSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`PayCost.offTurn`, children)
+- Create: `src/main/scala/distantlands/gameplay/operations/PayCostSettlement.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/PayCostRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/PayCostSettlementSuite.scala`
 
 **Interfaces:**
 - Consumes: `PayCost(..., intoOccupied, matchingBank)` from Task 2.
@@ -798,11 +798,11 @@ git commit -m "feat: settle PayCost immediately when the payer is not the active
 ### Task 4: `PowerAccess` (E1)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/PowerAccess.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala` (`accessible` only)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/recover/CatacombsContribution.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CatacombsContributionSuite.scala` (expected `PayCost` only)
-- Test: `src/test/scala/oathdigital/gameplay/PowerAccessSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/PowerAccess.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala` (`accessible` only)
+- Modify: `src/main/scala/distantlands/gameplay/powers/recover/CatacombsContribution.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CatacombsContributionSuite.scala` (expected `PayCost` only)
+- Test: `src/test/scala/distantlands/gameplay/PowerAccessSuite.scala`
 
 **Interfaces:**
 - Consumes: `Costs.onCard` (Task 2).
@@ -1112,12 +1112,12 @@ git commit -m "feat: add PowerAccess and use it for phase powers and Catacombs"
 ### Task 5: Phase-power costs, card-or-banner sources, Act use tracking (E3)
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala`
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`PowerSourceRef.Banner`)
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (`record-power-use`)
-- Modify: `src/main/scala/oathdigital/application/PhasePowerProjector.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PhasePowerFixture.scala`, `PhasePowerSuite.scala`, `src/test/scala/oathdigital/application/PhasePowerProjectorSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`PowerSourceRef.Banner`)
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (`record-power-use`)
+- Modify: `src/main/scala/distantlands/application/PhasePowerProjector.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PhasePowerFixture.scala`, `PhasePowerSuite.scala`, `src/test/scala/distantlands/application/PhasePowerProjectorSuite.scala`
 - Test: `PhasePowerSuite.scala`, `PayCostWireSuite.scala`
 
 **Interfaces:**
@@ -1540,10 +1540,10 @@ git commit -m "feat: phase powers carry a cost, accept edifice and banner source
 ### Task 6: Activation from the catalog (E2)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/CatalogResolution.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/recover/CatacombsContribution.scala`, `rest/LeagueTreatyContribution.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/CatalogResolution.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/recover/CatacombsContribution.scala`, `rest/LeagueTreatyContribution.scala`
 - Modify: `docs/superpowers/specs/2026-09-20-powers-design.md` (E2)
-- Test: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -1677,8 +1677,8 @@ The design says slice 0 checks these three against the rulings and reports misma
 Write conformance tests for the rulings. A test that fails for any other reason is a finding to report.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala`, `src/test/scala/oathdigital/gameplay/CatacombsContributionSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/rest/LeagueTreatySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala`, `src/test/scala/distantlands/gameplay/CatacombsContributionSuite.scala`, `src/test/scala/distantlands/gameplay/powers/rest/LeagueTreatySuite.scala`
 - Modify: `docs/superpowers/specs/2026-09-20-powers-rulings.md` (append a results section)
 
 - [ ] **Step 1: Dazzle, ruined edifices (fix), suits and regions**
@@ -1945,7 +1945,7 @@ Expected: exits 0.
 Run: `python3 scripts/check-markdown-links.py`
 Expected: no new failures. Report any that exist on `main` separately.
 
-Run: `wc -l src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
+Run: `wc -l src/main/scala/distantlands/gameplay/operations/OperationValidator.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
 Expected: each under 800.
 
 - [ ] **Step 3: Commit**

@@ -52,13 +52,13 @@ gate scripts).
 
 | Path | Responsibility |
 |------|----------------|
-| `src/main/scala/oathdigital/catalog/Cards.scala` (new) | Card types, printed power, restriction traits |
-| `src/main/scala/oathdigital/catalog/CatalogModel.scala` | `ExecutableCatalog` and its indexes, over the new types |
-| `src/main/scala/oathdigital/catalog/holding/*.scala` (generated) | One object per card not yet beside its power |
-| `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (generated, then edited) | Registry: every card, and the production catalog |
-| `src/test/scala/oathdigital/testkit/TestCards.scala` (new) | Variant cards for suites that graft powers or names |
-| `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala` (new) | The validator's checks, on the Scala catalog |
-| `src/main/scala/oathdigital/catalog/CatalogLoader.scala` | Deleted |
+| `src/main/scala/distantlands/catalog/Cards.scala` (new) | Card types, printed power, restriction traits |
+| `src/main/scala/distantlands/catalog/CatalogModel.scala` | `ExecutableCatalog` and its indexes, over the new types |
+| `src/main/scala/distantlands/catalog/holding/*.scala` (generated) | One object per card not yet beside its power |
+| `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (generated, then edited) | Registry: every card, and the production catalog |
+| `src/test/scala/distantlands/testkit/TestCards.scala` (new) | Variant cards for suites that graft powers or names |
+| `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala` (new) | The validator's checks, on the Scala catalog |
+| `src/main/scala/distantlands/catalog/CatalogLoader.scala` | Deleted |
 | `scripts/validate-component-catalog.py`, the schema | Deleted |
 
 Task order: (1) retire the audit fingerprints, (2) add types and generated
@@ -76,23 +76,23 @@ Rest begins). Once the catalog is code they guard nothing, and the switch in
 Task 3 would trip them. Retire both first.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ReviewedPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/PowerRuntime.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ForgeRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/Search.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationProcedure.scala`
-- Modify: `src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/rest/BeginRestProcedure.scala`
-- Modify: `src/main/scala/oathdigital/catalog/CatalogHandlerInventory.scala`
-- Modify: `src/main/scala/oathdigital/model/GameViolation.scala`
-- Test: `src/test/scala/oathdigital/catalog/CatalogHandlerInventorySuite.scala`,
-  `src/test/scala/oathdigital/gameplay/RestSuite.scala`,
-  `src/test/scala/oathdigital/gameplay/ForgeProcedureSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ReviewedPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/PowerRuntime.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ForgeRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/Search.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationProcedure.scala`
+- Modify: `src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/rest/BeginRestProcedure.scala`
+- Modify: `src/main/scala/distantlands/catalog/CatalogHandlerInventory.scala`
+- Modify: `src/main/scala/distantlands/model/GameViolation.scala`
+- Test: `src/test/scala/distantlands/catalog/CatalogHandlerInventorySuite.scala`,
+  `src/test/scala/distantlands/gameplay/RestSuite.scala`,
+  `src/test/scala/distantlands/gameplay/ForgeProcedureSuite.scala`
 
 **Interfaces:**
 - Produces: `ReviewedPowerCatalog.resolver(catalog)` and `.registry(catalog)`
@@ -222,23 +222,23 @@ Expected: all pass. `grep -rn "requireAudited\|AuditedCatalogFingerprint\|Expect
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/ReviewedPowerCatalog.scala \
-  src/main/scala/oathdigital/gameplay/PowerRuntime.scala \
-  src/main/scala/oathdigital/gameplay/actions/ForgeRules.scala \
-  src/main/scala/oathdigital/gameplay/actions/Search.scala \
-  src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala \
-  src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationProcedure.scala \
-  src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala \
-  src/main/scala/oathdigital/gameplay/phases/rest/BeginRestProcedure.scala \
-  src/main/scala/oathdigital/catalog/CatalogHandlerInventory.scala \
-  src/main/scala/oathdigital/model/GameViolation.scala \
-  src/test/scala/oathdigital/catalog/CatalogHandlerInventorySuite.scala \
-  src/test/scala/oathdigital/gameplay/RestSuite.scala \
-  src/test/scala/oathdigital/gameplay/ForgeProcedureSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/ReviewedPowerCatalog.scala \
+  src/main/scala/distantlands/gameplay/PowerRuntime.scala \
+  src/main/scala/distantlands/gameplay/actions/ForgeRules.scala \
+  src/main/scala/distantlands/gameplay/actions/Search.scala \
+  src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/challenge/PlaceBannerResourceProcedure.scala \
+  src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationProcedure.scala \
+  src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala \
+  src/main/scala/distantlands/gameplay/phases/rest/BeginRestProcedure.scala \
+  src/main/scala/distantlands/catalog/CatalogHandlerInventory.scala \
+  src/main/scala/distantlands/model/GameViolation.scala \
+  src/test/scala/distantlands/catalog/CatalogHandlerInventorySuite.scala \
+  src/test/scala/distantlands/gameplay/RestSuite.scala \
+  src/test/scala/distantlands/gameplay/ForgeProcedureSuite.scala
 git commit -m "refactor(catalog): retire the audit fingerprints"
 ```
 
@@ -252,10 +252,10 @@ Add the new types beside the old definitions, generate every card into Scala,
 and prove the result equals the JSON. Nothing switches yet.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/catalog/Cards.scala`
-- Create (generated): `src/main/scala/oathdigital/catalog/holding/*.scala`
-- Create (generated): `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/cards/NewFoundationsEquivalenceSuite.scala`
+- Create: `src/main/scala/distantlands/catalog/Cards.scala`
+- Create (generated): `src/main/scala/distantlands/catalog/holding/*.scala`
+- Create (generated): `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/cards/NewFoundationsEquivalenceSuite.scala`
 - Scratch (not committed): `<scratchpad>/generate_cards.py`
 
 **Interfaces:**
@@ -279,7 +279,7 @@ and prove the result equals the JSON. Nothing switches yet.
 
 - [ ] **Step 1: Write the equivalence suite (fails: types missing)**
 
-Create `src/test/scala/oathdigital/gameplay/cards/NewFoundationsEquivalenceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/cards/NewFoundationsEquivalenceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.cards
@@ -357,7 +357,7 @@ Expected: compile errors, `Not found: type Locked`, `NewFoundations`, and so on.
 
 - [ ] **Step 3: Write the card types**
 
-Create `src/main/scala/oathdigital/catalog/Cards.scala`:
+Create `src/main/scala/distantlands/catalog/Cards.scala`:
 
 ```scala
 package oathdigital.catalog
@@ -444,8 +444,8 @@ from pathlib import Path
 ROOT = Path(sys.argv[1])
 CATALOG = json.loads((ROOT / "docs/catalog/new-foundations-component-catalog.json")
                      .read_text(encoding="utf-8"))
-HOLDING = ROOT / "src/main/scala/oathdigital/catalog/holding"
-REGISTRY = ROOT / "src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala"
+HOLDING = ROOT / "src/main/scala/distantlands/catalog/holding"
+REGISTRY = ROOT / "src/main/scala/distantlands/gameplay/cards/NewFoundations.scala"
 LIMIT = 780
 COST = [("favor", "favor"), ("secret", "secret"),
         ("favor-burnt", "favorBurnt"), ("secret-burnt", "secretBurnt")]
@@ -679,7 +679,7 @@ relics, edifices, legacies, sites, `NewFoundations.scala`), then
 `counts (255, 48, 30, 36, 24)`. No assertion error. Every holding file is
 under 800 lines.
 
-Read two generated cards by eye: `grep -n -A8 "object AlchemistCard" src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens*.scala`
+Read two generated cards by eye: `grep -n -A8 "object AlchemistCard" src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens*.scala`
 should show `extends Denizen(DenizenId("9"), "Alchemist", Suit.Arcane) with SiteOnly:`
 and `cost = Cost(secret = 1, secretBurnt = 1)`. `HallOfDebateCard` should
 have `object intact extends EdificeFace("Hall of Debate") with Locked:`.
@@ -699,10 +699,10 @@ Expected: all pass.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/catalog/Cards.scala \
-  src/main/scala/oathdigital/catalog/holding \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/cards/NewFoundationsEquivalenceSuite.scala
+git add src/main/scala/distantlands/catalog/Cards.scala \
+  src/main/scala/distantlands/catalog/holding \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/cards/NewFoundationsEquivalenceSuite.scala
 git commit -m "feat(catalog): generate every card as a Scala object"
 ```
 
@@ -718,25 +718,25 @@ equivalence suite go. This is the largest task; the compiler lists every site
 to change.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/catalog/CatalogModel.scala` (rewrite)
-- Delete: `src/main/scala/oathdigital/catalog/CatalogLoader.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/SetupProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala`
-- Modify: `src/main/scala/oathdigital/application/ImplementedCardCatalog.scala`
-- Modify: `src/main/scala/oathdigital/application/FirstGameChronicleGenerator.scala`
-- Modify: `src/main/scala/oathdigital/application/PhasePowerProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala`
-- Modify: `src/main/scala/oathdigital/server/ServerConfig.scala`,
+- Modify: `src/main/scala/distantlands/catalog/CatalogModel.scala` (rewrite)
+- Delete: `src/main/scala/distantlands/catalog/CatalogLoader.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/RuleSourceIndex.scala`
+- Modify: `src/main/scala/distantlands/application/ImplementedCardCatalog.scala`
+- Modify: `src/main/scala/distantlands/application/FirstGameChronicleGenerator.scala`
+- Modify: `src/main/scala/distantlands/application/PhasePowerProjector.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala`
+- Modify: `src/main/scala/distantlands/server/ServerConfig.scala`,
   `ServerRuntime.scala`, `OathServer.scala`
 - Modify: `build.sbt` (frontend `unmanagedSources`)
 - Modify: `scripts/check-architecture.py`
-- Create: `src/test/scala/oathdigital/testkit/TestCards.scala`
-- Delete: `src/test/scala/oathdigital/catalog/CatalogLoaderSuite.scala`,
+- Create: `src/test/scala/distantlands/testkit/TestCards.scala`
+- Delete: `src/test/scala/distantlands/catalog/CatalogLoaderSuite.scala`,
   `src/test/resources/catalog/executable-subset.json`,
-  `src/test/scala/oathdigital/gameplay/cards/NewFoundationsEquivalenceSuite.scala`
+  `src/test/scala/distantlands/gameplay/cards/NewFoundationsEquivalenceSuite.scala`
 - Modify tests: listed in Step 6.
 
 **Interfaces:**
@@ -750,7 +750,7 @@ to change.
 
 - [ ] **Step 1: Write the test helper**
 
-Create `src/test/scala/oathdigital/testkit/TestCards.scala`:
+Create `src/test/scala/distantlands/testkit/TestCards.scala`:
 
 ```scala
 package oathdigital.testkit
@@ -817,7 +817,7 @@ object TestCards:
 
 - [ ] **Step 2: Rewrite `ExecutableCatalog` and add `NewFoundations.catalog`**
 
-Replace `src/main/scala/oathdigital/catalog/CatalogModel.scala` with:
+Replace `src/main/scala/distantlands/catalog/CatalogModel.scala` with:
 
 ```scala
 package oathdigital.catalog
@@ -891,7 +891,7 @@ final case class ExecutableCatalog(
       legacies.flatMap(_.powers)).map(p => p.id -> p))
 ```
 
-Delete `src/main/scala/oathdigital/catalog/CatalogLoader.scala`.
+Delete `src/main/scala/distantlands/catalog/CatalogLoader.scala`.
 
 In `NewFoundations.scala`, add `import oathdigital.catalog.ExecutableCatalog`
 and `import oathdigital.model.CatalogRef` (merge into the existing catalog
@@ -1025,14 +1025,14 @@ trailing comma on the line before), and call
 
 `build.sbt`: in the `frontend` project's `Compile / unmanagedSources`,
 delete the line
-`shared / "oathdigital" / "catalog" / "CatalogModel.scala"` and the comma
+`shared / "distantlands" / "catalog" / "CatalogModel.scala"` and the comma
 that ended the line before it. Nothing in the frontend uses the catalog.
 
 `scripts/check-architecture.py`: add a `catalog` entry to
 `forbidden_imports`:
 
 ```python
-    "src/main/scala/oathdigital/catalog": (
+    "src/main/scala/distantlands/catalog": (
         "application", "gameplay", "persistence", "serialization", "server"
     ),
 ```
@@ -1041,7 +1041,7 @@ and extend the gameplay text rule:
 
 ```python
 printed_text = re.compile(r"\.text\b")
-for path in scala_sources(ROOT / "src/main/scala/oathdigital/gameplay"):
+for path in scala_sources(ROOT / "src/main/scala/distantlands/gameplay"):
     text = path.read_text(encoding="utf-8")
     if "rulesText" in text:
         errors.append(f"{relative(path)}: gameplay must not inspect catalog rulesText")
@@ -1216,8 +1216,8 @@ validator's checks into `CardCatalogSuite`.
 - Modify: `reference/catalog-ingestion/README.md`
 - Modify: `build.sbt`, `scripts/smoke-packaged-distribution.sh`,
   `scripts/verify-alpha-release.sh`, `README.md`, `.claude/launch.json`
-- Modify: `src/test/scala/oathdigital/server/DesktopLaunchProfileSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`
+- Modify: `src/test/scala/distantlands/server/DesktopLaunchProfileSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `NewFoundations.catalog`; `WalkerPowerCatalog.default(catalog).powers`
@@ -1225,7 +1225,7 @@ validator's checks into `CardCatalogSuite`.
 
 - [ ] **Step 1: Write `CardCatalogSuite`**
 
-Create `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.cards
@@ -1331,7 +1331,7 @@ Create `docs/catalog/reference/README.md`:
 loaded before the card classes phase (version `2026.08.29-pre5`). It is
 reference only. The game no longer reads it, and it is not kept in sync.
 
-The card data is Scala: card types in `src/main/scala/oathdigital/catalog/`,
+The card data is Scala: card types in `src/main/scala/distantlands/catalog/`,
 cards not yet implemented in `catalog/holding/`, each implemented card beside
 its power under `gameplay/powers/`, and the full list in
 `gameplay/cards/NewFoundations.scala`.
@@ -1411,8 +1411,8 @@ Expected: all pass.
 git add docs/catalog/reference/README.md reference/catalog-ingestion/README.md \
   build.sbt scripts/smoke-packaged-distribution.sh scripts/verify-alpha-release.sh \
   README.md .claude/launch.json \
-  src/test/scala/oathdigital/server/DesktopLaunchProfileSuite.scala \
-  src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala
+  src/test/scala/distantlands/server/DesktopLaunchProfileSuite.scala \
+  src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala
 git commit -m "refactor(catalog): retire the runtime JSON pipeline"
 ```
 
@@ -1427,14 +1427,14 @@ The catalog is code, so the game's build is the pin. `CatalogRef` leaves
 field in stored events, so existing journals still load.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Identity.scala` (delete `CatalogRef`)
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`OathGame`)
-- Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala`
-- Modify: `src/main/scala/oathdigital/catalog/CatalogModel.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/application/GameEventCodec.scala`,
+- Modify: `src/main/scala/distantlands/model/Identity.scala` (delete `CatalogRef`)
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`OathGame`)
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala`
+- Modify: `src/main/scala/distantlands/catalog/CatalogModel.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/application/GameEventCodec.scala`,
   `GameApplicationService.scala`
-- Modify: `src/main/scala/oathdigital/serialization/GameEventWire.scala`,
+- Modify: `src/main/scala/distantlands/serialization/GameEventWire.scala`,
   `GameEventJsonSupport.scala`, `GameEventCodecAdapter.scala`,
   `WireError.scala`, `LifecycleEventCodec.scala`, `ActionEventCodec.scala`,
   `EndingEventCodec.scala`, `WalkerEventCodec.scala`

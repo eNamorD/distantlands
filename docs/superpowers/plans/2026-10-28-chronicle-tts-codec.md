@@ -41,12 +41,12 @@
 ### Task 1: `LineageState.startingRelics`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala:29-35`
-- Modify: `src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala:127-149`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/ChronicleAccounting.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala:62-65`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleRecord.scala:41-42`
-- Test: `src/test/scala/oathdigital/gameplay/setup/ChronicleAccountingSuite.scala`, `src/test/scala/oathdigital/gameplay/setup/GameStartRulesSuite.scala`, `src/test/scala/oathdigital/serialization/GameEventFactsWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala:29-35`
+- Modify: `src/main/scala/distantlands/serialization/GameEventJsonSupport.scala:127-149`
+- Modify: `src/main/scala/distantlands/gameplay/setup/ChronicleAccounting.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala:62-65`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleRecord.scala:41-42`
+- Test: `src/test/scala/distantlands/gameplay/setup/ChronicleAccountingSuite.scala`, `src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala`, `src/test/scala/distantlands/serialization/GameEventFactsWireSuite.scala`
 
 **Interfaces:**
 - Produces: `LineageState(id, previousPlayer, role, legacies, startingAdvisers, startingRelics: Vector[RelicId] = Vector.empty)`.
@@ -164,7 +164,7 @@ Expected: all pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala src/main/scala/oathdigital/gameplay/setup/ChronicleAccounting.scala src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleRecord.scala src/test/scala/oathdigital/gameplay/setup/ChronicleAccountingSuite.scala src/test/scala/oathdigital/gameplay/setup/GameStartRulesSuite.scala src/test/scala/oathdigital/serialization/GameEventFactsWireSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/serialization/GameEventJsonSupport.scala src/main/scala/distantlands/gameplay/setup/ChronicleAccounting.scala src/main/scala/distantlands/gameplay/setup/GameStartRules.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleRecord.scala src/test/scala/distantlands/gameplay/setup/ChronicleAccountingSuite.scala src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala src/test/scala/distantlands/serialization/GameEventFactsWireSuite.scala
 git commit -m "feat(chronicle): a lineage keeps starting relics, which game start refuses until Legacies
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -175,9 +175,9 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: `TtsIds`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/chronicle/TtsIds.scala`
+- Create: `src/main/scala/distantlands/application/chronicle/TtsIds.scala`
 - Create: `src/test/resources/tts/chronicle-codec-mapping.json`
-- Test: `src/test/scala/oathdigital/application/chronicle/TtsIdsSuite.scala`
+- Test: `src/test/scala/distantlands/application/chronicle/TtsIdsSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -367,7 +367,7 @@ Expected: PASS. If a name test fails, the message lists each mismatch. Fix the t
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/chronicle/TtsIds.scala src/test/resources/tts/chronicle-codec-mapping.json src/test/scala/oathdigital/application/chronicle/TtsIdsSuite.scala
+git add src/main/scala/distantlands/application/chronicle/TtsIds.scala src/test/resources/tts/chronicle-codec-mapping.json src/test/scala/distantlands/application/chronicle/TtsIdsSuite.scala
 git commit -m "feat(chronicle): map TTS Chronicle numbers to catalog ids, checked against the TTS codec's names
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -378,8 +378,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: `TtsWire`, the exact port
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/chronicle/TtsWire.scala`
-- Test: `src/test/scala/oathdigital/application/chronicle/TtsWireSuite.scala`
+- Create: `src/main/scala/distantlands/application/chronicle/TtsWire.scala`
+- Test: `src/test/scala/distantlands/application/chronicle/TtsWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -562,7 +562,7 @@ Expected: PASS. If the Lua export test fails while the plain round trip passes, 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/chronicle/TtsWire.scala src/test/scala/oathdigital/application/chronicle/TtsWireSuite.scala
+git add src/main/scala/distantlands/application/chronicle/TtsWire.scala src/test/scala/distantlands/application/chronicle/TtsWireSuite.scala
 git commit -m "feat(chronicle): port the TTS Chronicle string format, matching the Lua exporter's strings
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -573,8 +573,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 4: `ChronicleTtsCodec`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/chronicle/ChronicleTtsCodec.scala`
-- Test: `src/test/scala/oathdigital/application/chronicle/ChronicleTtsCodecSuite.scala`
+- Create: `src/main/scala/distantlands/application/chronicle/ChronicleTtsCodec.scala`
+- Test: `src/test/scala/distantlands/application/chronicle/ChronicleTtsCodecSuite.scala`
 - Modify: `docs/superpowers/specs/2026-10-28-chronicle-tts-codec-design.md` (Components line), `docs/rules/implementation-traceability.md` (row "Full campaign serialization and migration"), `docs/ROADMAP.md` ("Chronicle import and export")
 
 **Interfaces:**
@@ -745,7 +745,7 @@ Expected: statements at 92% or more. Uncovered refusal branches in `TtsWire` are
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/chronicle/ChronicleTtsCodec.scala src/test/scala/oathdigital/application/chronicle/ChronicleTtsCodecSuite.scala docs/superpowers/specs/2026-10-28-chronicle-tts-codec-design.md docs/rules/implementation-traceability.md docs/ROADMAP.md
+git add src/main/scala/distantlands/application/chronicle/ChronicleTtsCodec.scala src/test/scala/distantlands/application/chronicle/ChronicleTtsCodecSuite.scala docs/superpowers/specs/2026-10-28-chronicle-tts-codec-design.md docs/rules/implementation-traceability.md docs/ROADMAP.md
 git commit -m "feat(chronicle): read and write Chronicles as TTS strings, listing what an export leaves out
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"

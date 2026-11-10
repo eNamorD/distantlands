@@ -42,10 +42,10 @@
 Pure addition: the new restrictions and the set exist and are tested, and nothing uses them yet.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala`
-- Create: `src/main/scala/oathdigital/gameplay/operations/LockedCard.scala`
-- Create: `src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala`
-- Test: `src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/LockedCard.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala`
+- Test: `src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala`
 
 **Interfaces:**
 - Consumes: `OperationRestriction`, `OperationReason`, `OperationReasonKind` (`model/OperationReason.scala`); `Operation.flatten` (`model/Operation.scala:27`); `ExecutableCatalog` (`catalog/CatalogModel.scala:78`).
@@ -58,7 +58,7 @@ Pure addition: the new restrictions and the set exist and are tested, and nothin
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala`:
+`src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -214,7 +214,7 @@ Expected: compile failure, `value OperationRestrictions is not a member of oathd
 
 - [ ] **Step 3: Write `LockedCard`**
 
-`src/main/scala/oathdigital/gameplay/operations/LockedCard.scala`:
+`src/main/scala/distantlands/gameplay/operations/LockedCard.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -262,7 +262,7 @@ object LockedCard:
 
 - [ ] **Step 4: Write `HallOfMinisters`**
 
-`src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala`. The rule is `DiscardRestrictions.hallReason` (`gameplay/operations/DiscardRestrictions.scala:102-134`), except the actor is the discard's own acting player (the active player for a Vision, which names none), so one instance serves every path:
+`src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala`. The rule is `DiscardRestrictions.hallReason` (`gameplay/operations/DiscardRestrictions.scala:102-134`), except the actor is the discard's own acting player (the active player for a Vision, which names none), so one instance serves every path:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -324,7 +324,7 @@ final case class HallOfMinisters(catalog: ExecutableCatalog)
 
 - [ ] **Step 5: Write `OperationRestrictions` and `ActiveModifier`**
 
-`src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala`:
+`src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -430,7 +430,7 @@ Expected: PASS, 13 tests.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala src/main/scala/oathdigital/gameplay/operations/LockedCard.scala src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala src/main/scala/distantlands/gameplay/operations/LockedCard.scala src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala
 git commit -m "feat(restrictions): add the global operation restriction set"
 ```
 
@@ -439,12 +439,12 @@ git commit -m "feat(restrictions): add the global operation restriction set"
 ### Task 2: Every walker step applies the set
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (remove `WalkerPowers` and its companion, lines 34-65; `recordBatch`, lines 651-669)
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` (the `ContributingPower` trait, around line 162)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:43-68`
-- Test: `src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/GlobalRestrictionsWalkerSuite.scala` (create)
+- Create: `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (remove `WalkerPowers` and its companion, lines 34-65; `recordBatch`, lines 651-669)
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` (the `ContributingPower` trait, around line 162)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:43-68`
+- Test: `src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/GlobalRestrictionsWalkerSuite.scala` (create)
 
 **Interfaces:**
 - Consumes: `OperationRestrictions` (Task 1).
@@ -501,7 +501,7 @@ and the test:
       None, restricting(noSpending)).isLeft)
 ```
 
-Create `src/test/scala/oathdigital/gameplay/GlobalRestrictionsWalkerSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/GlobalRestrictionsWalkerSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -575,7 +575,7 @@ In `ContributingPower.scala`, add `OperationRestriction` to the `oathdigital.mod
 
 - [ ] **Step 4: Move `WalkerPowers` to its own file and give it the set**
 
-Cut the `WalkerPowers` case class, its doc comment and its companion object from `ProcedureWalker.scala` (the doc starting "The powers available to one `advance`/`roll`/`resolve` command" through the end of `WalkerPowers.selected`). Create `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala`:
+Cut the `WalkerPowers` case class, its doc comment and its companion object from `ProcedureWalker.scala` (the doc starting "The powers available to one `advance`/`roll`/`resolve` command" through the end of `WalkerPowers.selected`). Create `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -629,7 +629,7 @@ object WalkerPowers:
         modifiers.contains(power.id)), modifiers = modifiers)
 ```
 
-Keep the moved doc text verbatim where it existed; compare with `git show HEAD:src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`. Remove `ContributingPower`, `Restriction` and `PowerResolution` from `ProcedureWalker.scala`'s imports if nothing else there uses them.
+Keep the moved doc text verbatim where it existed; compare with `git show HEAD:src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`. Remove `ContributingPower`, `Restriction` and `PowerResolution` from `ProcedureWalker.scala`'s imports if nothing else there uses them.
 
 - [ ] **Step 5: Run every step with the set**
 
@@ -664,7 +664,7 @@ Expected: PASS. A failure here is a path that discarded or moved a locked card, 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala src/test/scala/oathdigital/gameplay/GlobalRestrictionsWalkerSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala src/test/scala/distantlands/gameplay/GlobalRestrictionsWalkerSuite.scala
 git commit -m "feat(walker): run every walker step with the global restrictions"
 ```
 
@@ -673,9 +673,9 @@ git commit -m "feat(walker): run every walker step with the global restrictions"
 ### Task 3: Composites are checked whole
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`walkComposite`, around line 398)
-- Test: `src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationResolution.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`walkComposite`, around line 398)
+- Test: `src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala`
 
 **Interfaces:**
 - Consumes: `WalkerPowers.operationRestrictions` (Task 2), `restricting` (Task 2).
@@ -781,7 +781,7 @@ Expected: PASS. Handle a failure as in Task 2, Step 8.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/OperationResolution.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala
 git commit -m "feat(walker): check a composite whole before splitting it"
 ```
 
@@ -790,25 +790,25 @@ git commit -m "feat(walker): check a composite whole before splitting it"
 ### Task 4: `DiscardRestrictions` retires
 
 **Files:**
-- Delete: `src/main/scala/oathdigital/gameplay/operations/DiscardRestrictions.scala`
-- Delete: `src/test/scala/oathdigital/gameplay/DiscardRestrictionsSuite.scala`
-- Delete: `src/test/scala/oathdigital/gameplay/DiscardRestrictionsCoverageSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/CardPlayRestrictionsSuite.scala`
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala:602-617` (`BuildOps`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`runBuildOps`, `recordBatch`, imports)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala:31-33`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRules.scala:5,116-117`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala:3,6,41-43,71-78`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala:5,17,23-25`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/TwinBrother.scala:3,51,89-90`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala:6,216-217`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:5,29-33,344-368,378-381`
-- Modify: `src/main/scala/oathdigital/model/GameViolation.scala:70`
-- Test: `src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala:157-205`
-- Test: `src/test/scala/oathdigital/gameplay/OperationResolutionSuite.scala:143-160`
-- Test: `src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala:138-157`
-- Test: `src/test/scala/oathdigital/gameplay/powers/wake/HornedMaskSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala:217-218` (comment)
+- Delete: `src/main/scala/distantlands/gameplay/operations/DiscardRestrictions.scala`
+- Delete: `src/test/scala/distantlands/gameplay/DiscardRestrictionsSuite.scala`
+- Delete: `src/test/scala/distantlands/gameplay/DiscardRestrictionsCoverageSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/CardPlayRestrictionsSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala:602-617` (`BuildOps`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`runBuildOps`, `recordBatch`, imports)
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala:31-33`
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala:5,116-117`
+- Modify: `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala:3,6,41-43,71-78`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala:5,17,23-25`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/TwinBrother.scala:3,51,89-90`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala:6,216-217`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala:5,29-33,344-368,378-381`
+- Modify: `src/main/scala/distantlands/model/GameViolation.scala:70`
+- Test: `src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala:157-205`
+- Test: `src/test/scala/distantlands/gameplay/OperationResolutionSuite.scala:143-160`
+- Test: `src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala:138-157`
+- Test: `src/test/scala/distantlands/gameplay/powers/wake/HornedMaskSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/MinorActionsSuite.scala:217-218` (comment)
 
 **Interfaces:**
 - Consumes: `OperationRestrictions.forCatalog`, `.active`, `.isLocked`, `HallOfMinisters` (Task 1); `restricting` (Task 2).
@@ -816,7 +816,7 @@ git commit -m "feat(walker): check a composite whole before splitting it"
 
 - [ ] **Step 1: Write the failing facedown tests**
 
-Create `src/test/scala/oathdigital/gameplay/CardPlayRestrictionsSuite.scala`, carrying over `DiscardRestrictionsSuite`'s card-play tests with the facedown fix:
+Create `src/test/scala/distantlands/gameplay/CardPlayRestrictionsSuite.scala`, carrying over `DiscardRestrictionsSuite`'s card-play tests with the facedown fix:
 
 ```scala
 package oathdigital.gameplay
@@ -1020,7 +1020,7 @@ Imports: `oathdigital.catalog.ExecutableCatalog` (drop `CardRestrictions`), and 
 - [ ] **Step 5: Delete `DiscardRestrictions` and fix its last users**
 
 ```bash
-git rm src/main/scala/oathdigital/gameplay/operations/DiscardRestrictions.scala src/test/scala/oathdigital/gameplay/DiscardRestrictionsSuite.scala src/test/scala/oathdigital/gameplay/DiscardRestrictionsCoverageSuite.scala
+git rm src/main/scala/distantlands/gameplay/operations/DiscardRestrictions.scala src/test/scala/distantlands/gameplay/DiscardRestrictionsSuite.scala src/test/scala/distantlands/gameplay/DiscardRestrictionsCoverageSuite.scala
 ```
 
 `OperationResolutionSuite` (lines 143-160) builds `DiscardRestrictions` for two actors. Replace both with one restriction, since the Hall now reads the discard's acting player:
@@ -1051,7 +1051,7 @@ Expected: PASS, including `DazzleSuite`, the Proving Grounds, Horned Mask, `Plan
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/model/GameViolation.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala src/main/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRules.scala src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/TwinBrother.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/oathdigital/gameplay/actions/CardPlay.scala src/test/scala/oathdigital/gameplay/CardPlayRestrictionsSuite.scala src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala src/test/scala/oathdigital/gameplay/powers/wake/HornedMaskSuite.scala src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala src/test/scala/oathdigital/gameplay/OperationResolutionSuite.scala src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/model/GameViolation.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala src/main/scala/distantlands/gameplay/powers/whenplayed/TwinBrother.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/distantlands/gameplay/actions/CardPlay.scala src/test/scala/distantlands/gameplay/CardPlayRestrictionsSuite.scala src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala src/test/scala/distantlands/gameplay/powers/wake/HornedMaskSuite.scala src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala src/test/scala/distantlands/gameplay/OperationResolutionSuite.scala src/test/scala/distantlands/gameplay/MinorActionsSuite.scala
 git commit -m "refactor(restrictions): retire DiscardRestrictions for the global set"
 ```
 
@@ -1062,14 +1062,14 @@ git commit -m "refactor(restrictions): retire DiscardRestrictions for the global
 ### Task 5: The pipeline requires the set
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala:58-66`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/MinorActions.scala` (`handle`, `evolve`, `evolveOperations`, `transition`)
-- Modify: `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala` (`evolve`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala:59,88-97`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala:220`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala:58-66`
+- Modify: `src/main/scala/distantlands/gameplay/actions/MinorActions.scala` (`handle`, `evolve`, `evolveOperations`, `transition`)
+- Modify: `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala` (`evolve`)
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala:59,88-97`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala:220`
 - Modify: every test file that calls `OperationPipeline.run`, `MinorActions.handle`/`evolve` or `StateBasedEvaluation.evolve` (the compiler lists them)
 - Modify: `docs/ROADMAP.md` (the restrictions phase's slice list)
-- Test: `src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/MinorActionsSuite.scala`
 
 **Interfaces:**
 - Consumes: `WalkerPowers.selected(...).operationRestrictions` (Task 2).
@@ -1157,7 +1157,7 @@ Expected: both pass.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala src/main/scala/oathdigital/gameplay/actions/MinorActions.scala src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala src/main/scala/oathdigital/gameplay/OathRules.scala src/main/scala/oathdigital/gameplay/OathRulesWalker.scala docs/ROADMAP.md
+git add src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala src/main/scala/distantlands/gameplay/actions/MinorActions.scala src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala src/main/scala/distantlands/gameplay/OathRules.scala src/main/scala/distantlands/gameplay/OathRulesWalker.scala docs/ROADMAP.md
 git add $(git diff --name-only -- src/test)
 git commit -m "feat(restrictions): require the restriction set at every pipeline call"
 ```

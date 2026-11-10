@@ -19,14 +19,14 @@
 
 ## File map and interfaces
 
-- `src/main/scala/oathdigital/application/LegalActionProjector.scala`: only production edit. `project(context, projectedPhasePowers): LegalProjection` remains unchanged; private `boardTargetActions` consumes the already-computed Travel candidates.
-- `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala`: strengthen the existing `Wake projection is actor-private and Act boundary is informational` test to compare the two Travel views and public omission. No production test seam is introduced.
+- `src/main/scala/distantlands/application/LegalActionProjector.scala`: only production edit. `project(context, projectedPhasePowers): LegalProjection` remains unchanged; private `boardTargetActions` consumes the already-computed Travel candidates.
+- `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala`: strengthen the existing `Wake projection is actor-private and Act boundary is informational` test to compare the two Travel views and public omission. No production test seam is introduced.
 
 ---
 
 ### Task 1: Reuse Travel candidates within one projection
 
-**Files:** Modify `src/main/scala/oathdigital/application/LegalActionProjector.scala:68-102,232-238`; test `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala:1559-1600`.
+**Files:** Modify `src/main/scala/distantlands/application/LegalActionProjector.scala:68-102,232-238`; test `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala:1559-1600`.
 
 **Interfaces:** `LegalActionProjector.project(context, projectedPhasePowers)` stays unchanged. Private `boardTargetActions` takes `travelFacts: Vector[(SiteId, Int)]` in addition to `context`; caller passes the same vector used for `LegalProjection.travel`.
 
@@ -57,7 +57,7 @@ travelFacts.map { case (site, cost) =>
 boardTargetActions(context, travelFacts)
 ```
 
-- [ ] **Step 5: Verify.** Run `./sbtw 'testOnly oathdigital.application.GameApplicationServiceSuite'`, then `./sbtw 'test' 'frontend/test' 'frontend/fastLinkJS'`, `python3 scripts/check-architecture.py`, `python3 scripts/check-markdown-links.py`, and `git diff --check`. Check `rg -n 'travelCandidates\(context\)' src/main/scala/oathdigital/application/LegalActionProjector.scala` shows one invocation. Check other walker-backed paths remain procedure-owned and no DTO/codec or frontend files changed.
+- [ ] **Step 5: Verify.** Run `./sbtw 'testOnly oathdigital.application.GameApplicationServiceSuite'`, then `./sbtw 'test' 'frontend/test' 'frontend/fastLinkJS'`, `python3 scripts/check-architecture.py`, `python3 scripts/check-markdown-links.py`, and `git diff --check`. Check `rg -n 'travelCandidates\(context\)' src/main/scala/distantlands/application/LegalActionProjector.scala` shows one invocation. Check other walker-backed paths remain procedure-owned and no DTO/codec or frontend files changed.
 
 - [ ] **Step 6: Commit.** Stage only the two task files; commit `refactor(projection): reuse Travel candidates within one view`. Leave the approved design and this plan as documentation, with their review status explicit before execution.
 

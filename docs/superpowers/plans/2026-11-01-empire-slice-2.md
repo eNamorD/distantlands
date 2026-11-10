@@ -101,8 +101,8 @@ Successor goal wins instead.
 | test kit: `Table`, `Situation`, `SituationDriver`, `RoundEndChoices` | port rename and die stubs |
 | docs | ambiguities R17, traceability rows 117, 119 and 141, spec status and rulings, ROADMAP |
 
-All `src` paths are under `src/main/scala/oathdigital/`, and frontend paths
-are under `frontend/src/main/scala/oathdigital/`.
+All `src` paths are under `src/main/scala/distantlands/`, and frontend paths
+are under `frontend/src/main/scala/distantlands/`.
 
 ## Pre-flight
 
@@ -122,9 +122,9 @@ All later commands run inside `.worktrees/empire-slice-2`.
 ### Task 1: The round-end random port rolls the end die
 
 **Files:**
-- Rename: `src/main/scala/oathdigital/gameplay/phases/rest/WarExhaustionRandomPort.scala` to `RoundEndRandomPort.scala`
-- Rename: `src/test/scala/oathdigital/testkit/WarExhaustionChoices.scala` to `RoundEndChoices.scala`
-- Rename: `src/test/scala/oathdigital/gameplay/WarExhaustionRandomPortSuite.scala` to `RoundEndRandomPortSuite.scala`
+- Rename: `src/main/scala/distantlands/gameplay/phases/rest/WarExhaustionRandomPort.scala` to `RoundEndRandomPort.scala`
+- Rename: `src/test/scala/distantlands/testkit/WarExhaustionChoices.scala` to `RoundEndChoices.scala`
+- Rename: `src/test/scala/distantlands/gameplay/WarExhaustionRandomPortSuite.scala` to `RoundEndRandomPortSuite.scala`
 - Modify (mechanical rename): every file that names `WarExhaustionRandomPort`, `warExhaustionRandomPort` or `WarExhaustionChoices`, and the `warExhaustion` parameters of `Table.service`, `Situation.rules`, `Situation.productionRules` and `SituationDriver`
 
 **Interfaces:**
@@ -142,12 +142,12 @@ All later commands run inside `.worktrees/empire-slice-2`.
 - [ ] **Step 1: Rename the files and the names**
 
 ```bash
-git mv src/main/scala/oathdigital/gameplay/phases/rest/WarExhaustionRandomPort.scala \
-  src/main/scala/oathdigital/gameplay/phases/rest/RoundEndRandomPort.scala
-git mv src/test/scala/oathdigital/testkit/WarExhaustionChoices.scala \
-  src/test/scala/oathdigital/testkit/RoundEndChoices.scala
-git mv src/test/scala/oathdigital/gameplay/WarExhaustionRandomPortSuite.scala \
-  src/test/scala/oathdigital/gameplay/RoundEndRandomPortSuite.scala
+git mv src/main/scala/distantlands/gameplay/phases/rest/WarExhaustionRandomPort.scala \
+  src/main/scala/distantlands/gameplay/phases/rest/RoundEndRandomPort.scala
+git mv src/test/scala/distantlands/testkit/WarExhaustionChoices.scala \
+  src/test/scala/distantlands/testkit/RoundEndChoices.scala
+git mv src/test/scala/distantlands/gameplay/WarExhaustionRandomPortSuite.scala \
+  src/test/scala/distantlands/gameplay/RoundEndRandomPortSuite.scala
 git grep -l -e WarExhaustionRandomPort -e warExhaustionRandomPort \
   -e WarExhaustionChoices -- src frontend shared docs/rules docs/architecture \
   | xargs sed -i '' -e 's/WarExhaustionRandomPort/RoundEndRandomPort/g' \
@@ -163,7 +163,7 @@ there are records.
 
 - [ ] **Step 2: Write the port**
 
-`src/main/scala/oathdigital/gameplay/phases/rest/RoundEndRandomPort.scala`:
+`src/main/scala/distantlands/gameplay/phases/rest/RoundEndRandomPort.scala`:
 
 ```scala
 package oathdigital.gameplay.phases.rest
@@ -187,7 +187,7 @@ object RoundEndRandomPort:
 
 - [ ] **Step 3: Write the stubs**
 
-`src/test/scala/oathdigital/testkit/RoundEndChoices.scala`:
+`src/test/scala/distantlands/testkit/RoundEndChoices.scala`:
 
 ```scala
 package oathdigital.testkit
@@ -242,9 +242,9 @@ Expected: PASS.
 
 ```bash
 git add -u src frontend shared docs/rules docs/architecture
-git add src/main/scala/oathdigital/gameplay/phases/rest/RoundEndRandomPort.scala \
-  src/test/scala/oathdigital/testkit/RoundEndChoices.scala \
-  src/test/scala/oathdigital/gameplay/RoundEndRandomPortSuite.scala
+git add src/main/scala/distantlands/gameplay/phases/rest/RoundEndRandomPort.scala \
+  src/test/scala/distantlands/testkit/RoundEndChoices.scala \
+  src/test/scala/distantlands/gameplay/RoundEndRandomPortSuite.scala
 git commit -m "refactor(empire): the round-end random port also rolls the end die
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -255,11 +255,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: The Empire's victory kinds
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`VictoryKind`, about line 168)
-- Modify: `src/main/scala/oathdigital/serialization/EndingEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` (`exhaustion`, about line 298)
-- Test: `src/test/scala/oathdigital/serialization/GameEventFactsWireSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`VictoryKind`, about line 168)
+- Modify: `src/main/scala/distantlands/serialization/EndingEventCodec.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` (`exhaustion`, about line 298)
+- Test: `src/test/scala/distantlands/serialization/GameEventFactsWireSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -358,11 +358,11 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/serialization/EndingEventCodec.scala \
-  src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala \
-  src/test/scala/oathdigital/serialization/GameEventFactsWireSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/serialization/EndingEventCodec.scala \
+  src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala \
+  src/test/scala/distantlands/serialization/GameEventFactsWireSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala
 git commit -m "feat(empire): Stable Regime, Chancellor and Successor victory kinds
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -373,10 +373,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: The Empire's endings as rules
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/EmpireEndings.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala` (share the Visionary step)
-- Test: `src/test/scala/oathdigital/gameplay/EmpireEndingsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala` (the no-Empire tie order)
+- Create: `src/main/scala/distantlands/gameplay/EmpireEndings.scala`
+- Modify: `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala` (share the Visionary step)
+- Test: `src/test/scala/distantlands/gameplay/EmpireEndingsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala` (the no-Empire tie order)
 
 **Interfaces:**
 - Consumes: the `VictoryKind` cases from Task 2.
@@ -392,7 +392,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/EmpireEndingsSuite.scala`:
+`src/test/scala/distantlands/gameplay/EmpireEndingsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -579,7 +579,7 @@ add a test with the same loop and its own copy of `meetingVision`. The loop buil
 
 The four relics are catalog names: `Yew Staff` and `Dowsing Sticks` are
 used by existing suites, and `Cracked Horn` and `Cup of Plenty` are relic
-cards in `src/main/scala/oathdigital`.
+cards in `src/main/scala/distantlands`.
 
 - [ ] **Step 2: Run it to see it fail**
 
@@ -611,7 +611,7 @@ path is unchanged.
 
 - [ ] **Step 4: Write the rules**
 
-`src/main/scala/oathdigital/gameplay/EmpireEndings.scala`:
+`src/main/scala/distantlands/gameplay/EmpireEndings.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -704,10 +704,10 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/EmpireEndings.scala \
-  src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala \
-  src/test/scala/oathdigital/gameplay/EmpireEndingsSuite.scala \
-  src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala
+git add src/main/scala/distantlands/gameplay/EmpireEndings.scala \
+  src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala \
+  src/test/scala/distantlands/gameplay/EmpireEndingsSuite.scala \
+  src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala
 git commit -m "feat(empire): Stable Regime, War Exhaustion and Successor rules
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -718,13 +718,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 4: The end-die event, its wire and its log line
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameEventProtocol.scala` (beside `RoundEnded`)
-- Modify: `src/main/scala/oathdigital/serialization/GameEventWire.scala`
-- Modify: `src/main/scala/oathdigital/serialization/EndingEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala` (the `evolve` match, about line 69)
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` (`eventLines`, about line 170)
-- Test: `src/test/scala/oathdigital/serialization/GameEventFactsWireSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameEventProtocol.scala` (beside `RoundEnded`)
+- Modify: `src/main/scala/distantlands/serialization/GameEventWire.scala`
+- Modify: `src/main/scala/distantlands/serialization/EndingEventCodec.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala` (the `evolve` match, about line 69)
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` (`eventLines`, about line 170)
+- Test: `src/test/scala/distantlands/serialization/GameEventFactsWireSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala`
 
 **Interfaces:**
 - Consumes: `EmpireEndings.threshold` (Task 3); `EndingEventCodec.victoryKind` (Task 2).
@@ -873,13 +873,13 @@ Expected: PASS, and the architecture check passes.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameEventProtocol.scala \
-  src/main/scala/oathdigital/serialization/GameEventWire.scala \
-  src/main/scala/oathdigital/serialization/EndingEventCodec.scala \
-  src/main/scala/oathdigital/gameplay/OathRules.scala \
-  src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala \
-  src/test/scala/oathdigital/serialization/GameEventFactsWireSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala
+git add src/main/scala/distantlands/model/GameEventProtocol.scala \
+  src/main/scala/distantlands/serialization/GameEventWire.scala \
+  src/main/scala/distantlands/serialization/EndingEventCodec.scala \
+  src/main/scala/distantlands/gameplay/OathRules.scala \
+  src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala \
+  src/test/scala/distantlands/serialization/GameEventFactsWireSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala
 git commit -m "feat(empire): journal and log the end die
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -890,10 +890,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 5: The round's end with an Empire
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala` (`endRound`, `evolve`, `endRoundWinner`)
-- Modify: `src/main/scala/oathdigital/gameplay/phases/rest/TurnBoundary.scala`
-- Test: `src/test/scala/oathdigital/gameplay/EmpireRoundEndSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala` (callers of the new `endRound` signature)
+- Modify: `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala` (`endRound`, `evolve`, `endRoundWinner`)
+- Modify: `src/main/scala/distantlands/gameplay/phases/rest/TurnBoundary.scala`
+- Test: `src/test/scala/distantlands/gameplay/EmpireRoundEndSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala` (callers of the new `endRound` signature)
 
 **Interfaces:**
 - Consumes: `RoundEndRandomPort` and `RoundEndChoices` (Task 1); `EmpireEndings` (Task 3); `EndDieRolled` (Task 4).
@@ -901,7 +901,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/EmpireRoundEndSuite.scala`:
+`src/test/scala/distantlands/gameplay/EmpireRoundEndSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1107,10 +1107,10 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala \
-  src/main/scala/oathdigital/gameplay/phases/rest/TurnBoundary.scala \
-  src/test/scala/oathdigital/gameplay/EmpireRoundEndSuite.scala \
-  src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala
+git add src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala \
+  src/main/scala/distantlands/gameplay/phases/rest/TurnBoundary.scala \
+  src/test/scala/distantlands/gameplay/EmpireRoundEndSuite.scala \
+  src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala
 git commit -m "feat(empire): roll the end die and resolve the Empire's War Exhaustion
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1121,10 +1121,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 6: The victory screen names the win
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/VictoryWords.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala` (about lines 27 and 56)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala` (`winnerBanner`, about line 340)
-- Test: `frontend/src/test/scala/oathdigital/frontend/VictoryWordsSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/VictoryWords.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala` (about lines 27 and 56)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala` (`winnerBanner`, about line 340)
+- Test: `frontend/src/test/scala/distantlands/frontend/VictoryWordsSuite.scala`
 
 **Interfaces:**
 - Consumes: the wire keys of every `VictoryKind` (Task 2).
@@ -1132,7 +1132,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing suite**
 
-`frontend/src/test/scala/oathdigital/frontend/VictoryWordsSuite.scala`:
+`frontend/src/test/scala/distantlands/frontend/VictoryWordsSuite.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -1166,7 +1166,7 @@ Expected: compile failure, `Not found: VictoryWords`.
 
 - [ ] **Step 3: Write the words**
 
-`frontend/src/main/scala/oathdigital/frontend/VictoryWords.scala`:
+`frontend/src/main/scala/distantlands/frontend/VictoryWords.scala`:
 
 ```scala
 package oathdigital.frontend
@@ -1215,10 +1215,10 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/VictoryWords.scala \
-  frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala \
-  frontend/src/test/scala/oathdigital/frontend/VictoryWordsSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/VictoryWords.scala \
+  frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala \
+  frontend/src/test/scala/distantlands/frontend/VictoryWordsSuite.scala
 git commit -m "feat(empire): the victory screen names Stable Regime and the Successor
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1232,15 +1232,15 @@ to change.
 ### Task 7: Scenarios through the service
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/EmpireEndingsScenarioSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/PlanAidServiceSuite.scala` (the 1b-ii gap)
+- Create: `src/test/scala/distantlands/application/EmpireEndingsScenarioSuite.scala`
+- Modify: `src/test/scala/distantlands/application/PlanAidServiceSuite.scala` (the 1b-ii gap)
 
 **Interfaces:**
 - Consumes: `Table.service(..., roundEnd = ...)` (Task 1); everything above.
 
 - [ ] **Step 1: Write the Stable Regime scenario**
 
-`src/test/scala/oathdigital/application/EmpireEndingsScenarioSuite.scala`:
+`src/test/scala/distantlands/application/EmpireEndingsScenarioSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -1360,8 +1360,8 @@ clearing (`PlanAidDesk.stale`), not in the test. Read the rule in
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/EmpireEndingsScenarioSuite.scala \
-  src/test/scala/oathdigital/application/PlanAidServiceSuite.scala
+git add src/test/scala/distantlands/application/EmpireEndingsScenarioSuite.scala \
+  src/test/scala/distantlands/application/PlanAidServiceSuite.scala
 git commit -m "test(empire): a Successor takes a Stable Regime win; aid clears between windows
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"

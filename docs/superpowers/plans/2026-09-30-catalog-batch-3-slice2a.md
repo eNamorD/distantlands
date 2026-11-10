@@ -7,7 +7,7 @@
 **Architecture:**
 
 - Slice 2 of the spec is split in two plans. This one, 2a, holds the cards that change a Muster, a Trade or a Search. Slice 2b holds the triggers, the Rest and Wake powers, Lost Tongue and the target-protection fix.
-- Five of the six are `SelectedModifier`s (`src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`), each copying an implemented modifier:
+- Five of the six are `SelectedModifier`s (`src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`), each copying an implemented modifier:
   - Village Idiot and Downtrodden add a node to `MusterGain`, as Rowdy Pub does.
   - The Old Oak adds a node to `TradeGain`.
   - Disciples rewrites the Search's `SearchCost` node.
@@ -72,7 +72,7 @@ These settle what the spec and rulings leave open. Each one names what it costs 
 
 ## File Structure
 
-Production, under `src/main/scala/oathdigital/gameplay/powers/`:
+Production, under `src/main/scala/distantlands/gameplay/powers/`:
 
 | File | Change | Responsibility |
 |---|---|---|
@@ -84,7 +84,7 @@ Production, under `src/main/scala/oathdigital/gameplay/powers/`:
 | `search/CropRotation.scala` | Create | A play to a site may discard a card there first |
 | `ActionModifiers.scala` | Modify | Registers all six |
 
-Tests, under `src/test/scala/oathdigital/`:
+Tests, under `src/test/scala/distantlands/`:
 
 | File | Change |
 |---|---|
@@ -99,7 +99,7 @@ Docs: `docs/ROADMAP.md` (Task 6).
 
 ### How the suites drive an action
 
-Read `economy/RowdyPubSuite.scala`, `economy/AnimalPlaymatesSuite.scala`, `banner/PeoplesFavorMobSuite.scala` and `SearchFixture.scala` under `src/test/scala/oathdigital/gameplay/powers/` before writing a suite. In short:
+Read `economy/RowdyPubSuite.scala`, `economy/AnimalPlaymatesSuite.scala`, `banner/PeoplesFavorMobSuite.scala` and `SearchFixture.scala` under `src/test/scala/distantlands/gameplay/powers/` before writing a suite. In short:
 
 - `Table.start` is the quiet table: p1, p2 and p3 at Ancient City, Broken Peaks and Buried Giant, p1's Act, no card at any site, every board with 1 favor, 1 faceup secret, 3 warbands and 7 Supply. Steps such as `.adviser(p1, name)`, `.denizen(name, at = Table.homeOf(p1))`, `.favor(p1, n)`, `.bankFavor(suit, n)`, `.secrets(p1, faceUp, faceDown)` and `.darkestSecret(holder, n)` each state one fact. `.ready` checks the card inventory.
 - `SearchFixture.rules` is an `OathRules` with the production walker powers. `rules.startWalker(Ready(ready), action, p1, modifiers, args)` starts an action with the selected modifiers, and `rules.resolveWalker(state, p1, decisionId, answer)` answers a parked decision.
@@ -114,11 +114,11 @@ Read `economy/RowdyPubSuite.scala`, `economy/AnimalPlaymatesSuite.scala`, `banne
 ### Task 1: Village Idiot and Downtrodden
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/VillageIdiot.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/Downtrodden.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/VillageIdiotSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/DowntroddenSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/VillageIdiot.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/Downtrodden.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/VillageIdiotSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/DowntroddenSuite.scala`
 
 **Interfaces:**
 - Consumes: `SelectedModifier`, `PowerAnswers.one(pending, decisionId): Option[DecisionOptionRef]`, `PlayerFacts.forceKind(ready, actor): Either[OathViolation, ForceKind]`, `MusterProcedure.decisionId`.
@@ -126,7 +126,7 @@ Read `economy/RowdyPubSuite.scala`, `economy/AnimalPlaymatesSuite.scala`, `banne
 
 - [ ] **Step 1: Write the failing Village Idiot suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/VillageIdiotSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/VillageIdiotSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -203,7 +203,7 @@ class VillageIdiotSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Write the failing Downtrodden suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/DowntroddenSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/DowntroddenSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -282,7 +282,7 @@ Expected: compile FAIL with "Not found: VillageIdiot" and "Not found: Downtrodde
 
 - [ ] **Step 4: Create Village Idiot**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/VillageIdiot.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/VillageIdiot.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -326,7 +326,7 @@ object VillageIdiot:
 
 - [ ] **Step 5: Create Downtrodden**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/Downtrodden.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/Downtrodden.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -385,7 +385,7 @@ object Downtrodden:
 
 - [ ] **Step 6: Register them**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -421,7 +421,7 @@ Expected: PASS. 9 new tests (4 in `VillageIdiotSuite`, 5 in `DowntroddenSuite`),
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/VillageIdiot.scala src/main/scala/oathdigital/gameplay/powers/economy/Downtrodden.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/economy/VillageIdiotSuite.scala src/test/scala/oathdigital/gameplay/powers/economy/DowntroddenSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/VillageIdiot.scala src/main/scala/distantlands/gameplay/powers/economy/Downtrodden.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/economy/VillageIdiotSuite.scala src/test/scala/distantlands/gameplay/powers/economy/DowntroddenSuite.scala
 git commit -m "feat(powers): add Village Idiot and Downtrodden"
 ```
 
@@ -430,11 +430,11 @@ git commit -m "feat(powers): add Village Idiot and Downtrodden"
 ### Task 2: Initiation Rite
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/InitiationRite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/InitiationRiteSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/InitiationRite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/InitiationRiteSuite.scala`
 
 **Interfaces:**
 - Consumes: `ContributingPower`, `PowerCtx`, `PayCost(player, placedAt, cost, ...)` (a case class), `Cost(favor, secret, favorBurnt, secretBurnt)`.
@@ -442,7 +442,7 @@ git commit -m "feat(powers): add Village Idiot and Downtrodden"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/InitiationRiteSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/InitiationRiteSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -522,7 +522,7 @@ class InitiationRiteSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Add the Game Log script and test**
 
-In `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, add this method directly after `def muster`:
+In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add this method directly after `def muster`:
 
 ```scala
   /** p1 musters at Deep Woods holding Initiation Rite, so the card mustered
@@ -534,7 +534,7 @@ In `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, add this m
     Script("initiated-muster", service, active(act))
 ```
 
-In `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`, add this test directly after the test "Muster: the start line waits for the cost, then names the card":
+In `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`, add this test directly after the test "Muster: the start line waits for the cost, then names the card":
 
 ```scala
   test("Muster under Initiation Rite: the start line still waits for the " +
@@ -554,7 +554,7 @@ Expected: compile FAIL with "Not found: InitiationRite".
 
 - [ ] **Step 4: Create Initiation Rite**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/InitiationRite.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/InitiationRite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -612,7 +612,7 @@ object InitiationRite:
 
 - [ ] **Step 5: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`:
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 
 - Change the economy import to:
 
@@ -639,7 +639,7 @@ Expected: PASS. 6 new tests (5 in `InitiationRiteSuite`, 1 in `GameLogActionLine
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/InitiationRite.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/economy/InitiationRiteSuite.scala src/test/scala/oathdigital/application/gamelog/LogScripts.scala src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/InitiationRite.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/economy/InitiationRiteSuite.scala src/test/scala/distantlands/application/gamelog/LogScripts.scala src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala
 git commit -m "feat(powers): add Initiation Rite"
 ```
 
@@ -648,9 +648,9 @@ git commit -m "feat(powers): add Initiation Rite"
 ### Task 3: The Old Oak
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/TheOldOak.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/TheOldOakSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/TheOldOak.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/TheOldOakSuite.scala`
 
 **Interfaces:**
 - Consumes: `SelectedModifier`, `PowerAnswers.one`, `TradeProcedure.decisionId`, `SearchFixture.denizensOf(suit): Vector[DenizenId]`.
@@ -658,7 +658,7 @@ git commit -m "feat(powers): add Initiation Rite"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/TheOldOakSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/TheOldOakSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -739,7 +739,7 @@ Expected: compile FAIL with "Not found: TheOldOak".
 
 - [ ] **Step 3: Create The Old Oak**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/TheOldOak.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/TheOldOak.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -792,7 +792,7 @@ object TheOldOak:
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`:
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 
 - Change the economy import to:
 
@@ -811,7 +811,7 @@ Expected: PASS. 4 new tests in `TheOldOakSuite`, and every existing economy suit
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/TheOldOak.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/economy/TheOldOakSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/TheOldOak.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/economy/TheOldOakSuite.scala
 git commit -m "feat(powers): add The Old Oak"
 ```
 
@@ -820,9 +820,9 @@ git commit -m "feat(powers): add The Old Oak"
 ### Task 4: Disciples
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/Disciples.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/DisciplesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/Disciples.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/DisciplesSuite.scala`
 
 **Interfaces:**
 - Consumes: `SelectedModifier`, `BannerRules.holder(current: CurrentGameState, banner: Banner): Option[PlayerId]`, `BuildOps(build, window, required)` (a case class), `SpendSupply(player, amount, required)` (a case class).
@@ -830,7 +830,7 @@ git commit -m "feat(powers): add The Old Oak"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/DisciplesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/DisciplesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -912,7 +912,7 @@ Expected: compile FAIL with "Not found: Disciples".
 
 - [ ] **Step 3: Create Disciples**
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/Disciples.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/Disciples.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -968,7 +968,7 @@ object Disciples:
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`:
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 
 - Change the search import to:
 
@@ -986,7 +986,7 @@ Expected: PASS. 5 new tests in `DisciplesSuite`, and `AugurySuite` and `Truthful
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/Disciples.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/search/DisciplesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/search/Disciples.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/search/DisciplesSuite.scala
 git commit -m "feat(powers): add Disciples"
 ```
 
@@ -995,9 +995,9 @@ git commit -m "feat(powers): add Disciples"
 ### Task 5: Crop Rotation
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/CropRotation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/CropRotationSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/CropRotation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/CropRotationSuite.scala`
 
 **Interfaces:**
 - Consumes: `SelectedModifier`, `CardPlayProcedure.PlacementTree.adjust(children)(change)`, `PlacementRules.withSiteDiscardFirstBy(note: Note)`, `PlacementRules.discardFirst: NoteKey`, `CardPlayProcedure.noReplacement`, `BannerFixture.holdingFavor(ready)`.
@@ -1005,7 +1005,7 @@ git commit -m "feat(powers): add Disciples"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/CropRotationSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/CropRotationSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -1140,7 +1140,7 @@ Expected: compile FAIL with "Not found: CropRotation".
 
 - [ ] **Step 3: Create Crop Rotation**
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/CropRotation.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/CropRotation.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -1193,7 +1193,7 @@ object CropRotation:
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`:
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 
 - Change the search import to:
 
@@ -1214,7 +1214,7 @@ If "a full site takes the play only with a discard" fails on `toSite(full, Vecto
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/CropRotation.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/search/CropRotationSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/search/CropRotation.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/search/CropRotationSuite.scala
 git commit -m "feat(powers): add Crop Rotation"
 ```
 

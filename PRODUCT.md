@@ -86,7 +86,7 @@ is heavily inspired by the HRF (haunt-roll-fail) implementation of Arcs.
 
 - Rules reference, glossary, rule index and traceability: `docs/rules/`.
 - Component catalog: the Scala card catalog, listed in
-  `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`; the old JSON
+  `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`; the old JSON
   is kept as reference data in `docs/catalog/reference/`.
 - Operations and release docs: `docs/operations/`; acceptance records:
   `docs/testing/`.

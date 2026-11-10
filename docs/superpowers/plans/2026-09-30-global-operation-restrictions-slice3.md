@@ -52,13 +52,13 @@ already records them.
 
 ## File Structure
 
-- Create `src/main/scala/oathdigital/gameplay/operations/GrandScepter.scala`: the printed restriction.
-- Modify `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala`: `printed` adds one `GrandScepter` per scepter relic.
-- Modify `src/main/scala/oathdigital/model/CoreOperations.scala`: `Decide.passWhenEmpty`; `Take.required`.
-- Modify `src/main/scala/oathdigital/gameplay/walker/WalkerSearch.scala`: a choose-one passed when empty, in `narrow`, `narrowed` and `reach`.
-- Modify `src/main/scala/oathdigital/gameplay/powers/action/FaeMerchant.scala` (becomes a `case object`), `DiceAndRelicDrawPowers.scala` and `gameplay/powers/PhasePowerCatalog.scala`.
-- Modify `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala` and `gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`: `Take`.
-- Modify `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` and `application/gamelog/CampaignLines.scala`: the `Take` patterns gain a sixth `_`.
+- Create `src/main/scala/distantlands/gameplay/operations/GrandScepter.scala`: the printed restriction.
+- Modify `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala`: `printed` adds one `GrandScepter` per scepter relic.
+- Modify `src/main/scala/distantlands/model/CoreOperations.scala`: `Decide.passWhenEmpty`; `Take.required`.
+- Modify `src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala`: a choose-one passed when empty, in `narrow`, `narrowed` and `reach`.
+- Modify `src/main/scala/distantlands/gameplay/powers/action/FaeMerchant.scala` (becomes a `case object`), `DiceAndRelicDrawPowers.scala` and `gameplay/powers/PhasePowerCatalog.scala`.
+- Modify `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala` and `gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`: `Take`.
+- Modify `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` and `application/gamelog/CampaignLines.scala`: the `Take` patterns gain a sixth `_`.
 - Tests: `OperationRestrictionsSuite`, `WalkerSearchSuite`, new `gameplay/PassWhenEmptySuite`, `FaeMerchantSuite`, `DicePowerDecisionProjectionSuite`, `ChallengeProcedureSuite`, `ConspiracyWhenPlayedSuite`.
 - Docs: the spec's status line and `docs/ROADMAP.md`.
 
@@ -67,9 +67,9 @@ already records them.
 ### Task 1: The Grand Scepter restriction
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/GrandScepter.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala`
-- Test: `src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/GrandScepter.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala`
+- Test: `src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala`
 
 **Interfaces:**
 - Produces: `final case class GrandScepter(relic: RelicId) extends OperationRestriction`, refusing with code `"grand-scepter"`. `OperationRestrictions.forCatalog(catalog).printed` holds one per `RelicRole.GrandScepter` relic.
@@ -161,7 +161,7 @@ Expected: PASS. Fae Merchant still filters the scepter itself, so its suite is u
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/GrandScepter.scala src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/GrandScepter.scala src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala
 git commit -m "feat(restrictions): keep the Grand Scepter in play"
 ```
 
@@ -170,10 +170,10 @@ git commit -m "feat(restrictions): keep the Grand Scepter in play"
 ### Task 2: Choices passed when empty
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala:589-600` (`Decide`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSearch.scala`
-- Create: `src/test/scala/oathdigital/gameplay/PassWhenEmptySuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/walker/WalkerSearchSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala:589-600` (`Decide`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala`
+- Create: `src/test/scala/distantlands/gameplay/PassWhenEmptySuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/walker/WalkerSearchSuite.scala`
 
 **Interfaces:**
 - Produces: `Decide(decisionId, owner, query, window = None, coOwners = Vector.empty, passWhenEmpty: Boolean = false)`, with `passWhenEmpty` allowed only on a `ChooseOne`. `WalkerSearch.narrow` returns `Right(None)` and `WalkerSearch.reach` returns `Right(Reach.Skipped)` for such a decision with no surviving option. `ProcedureWalker` is unchanged: its `runLeaf` already passes a decision `narrow` returns as `None`.
@@ -374,10 +374,10 @@ git commit -m "feat(walker): pass a choose-one the search leaves empty when it a
 ### Task 3: Fae Merchant offers every relic held
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/FaeMerchant.scala` (whole file)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala:20`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/FaeMerchantSuite.scala`, `src/test/scala/oathdigital/application/DicePowerDecisionProjectionSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/FaeMerchant.scala` (whole file)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala:20`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/FaeMerchantSuite.scala`, `src/test/scala/distantlands/application/DicePowerDecisionProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes: `Decide(..., passWhenEmpty = true)` (Task 2), `GrandScepter` (Task 1), `BuildOps(build, required = true)` (slice 2).
@@ -601,12 +601,12 @@ git commit -m "refactor(powers): hide the Grand Scepter from Fae Merchant throug
 ### Task 4: Challenge and Conspiracy take the banner
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala:434-444` (`Take`)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala:151`
-- Modify: `src/main/scala/oathdigital/application/gamelog/CampaignLines.scala:128,130`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala:131-137`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala:108-110`
-- Test: `src/test/scala/oathdigital/gameplay/ChallengeProcedureSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala:434-444` (`Take`)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala:151`
+- Modify: `src/main/scala/distantlands/application/gamelog/CampaignLines.scala:128,130`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala:131-137`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala:108-110`
+- Test: `src/test/scala/distantlands/gameplay/ChallengeProcedureSuite.scala`, `src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala`
 
 **Interfaces:**
 - Produces: `Take(piece, player, from, to, sourcePosition = StackPosition.Unspecified, required: Boolean = false)`. `required` is not on the wire.

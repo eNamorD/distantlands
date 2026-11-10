@@ -92,26 +92,26 @@ The product owner reviews these with the plan. Task 1 writes all of them into th
 ## File map
 
 **The throw (Task 2):**
-- `src/main/scala/oathdigital/model/DicePoolState.scala`: `RollOutcome.throws` and `RollOutcome.rerolled`.
-- `src/main/scala/oathdigital/gameplay/operations/RollOperations.scala`: a reroll records its dice.
-- `src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala`: `write` counts the throw.
-- `src/main/scala/oathdigital/gameplay/actions/dice/DiceThrow.scala`: `lastIndices` adds the rerolled dice.
-- `src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala`: `throwAt` numbers the throw by `throws`.
+- `src/main/scala/distantlands/model/DicePoolState.scala`: `RollOutcome.throws` and `RollOutcome.rerolled`.
+- `src/main/scala/distantlands/gameplay/operations/RollOperations.scala`: a reroll records its dice.
+- `src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala`: `write` counts the throw.
+- `src/main/scala/distantlands/gameplay/actions/dice/DiceThrow.scala`: `lastIndices` adds the rerolled dice.
+- `src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala`: `throwAt` numbers the throw by `throws`.
 - Tests: `RollOperationsSuite` gains one test and `WalkerRollsSuite` two; new `DiceThrowSuite`; `WalkerRollsSuite`'s accumulation test and the `WalkerRecordedOpsReducer` helper count throws.
 
 **Silver Charm (Task 3):**
-- `src/main/scala/oathdigital/model/PowerWindow.scala`: `RecoverRoll`.
-- `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala`: the roll step's window.
-- `src/main/scala/oathdigital/gameplay/powers/recover/SilverCharm.scala`: new. `SilverCharmCard` moves out of `catalog/holding/HoldingRelics.scala`.
+- `src/main/scala/distantlands/model/PowerWindow.scala`: `RecoverRoll`.
+- `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala`: the roll step's window.
+- `src/main/scala/distantlands/gameplay/powers/recover/SilverCharm.scala`: new. `SilverCharmCard` moves out of `catalog/holding/HoldingRelics.scala`.
 - Registration: `ActionModifiers.scala`, and the import in `NewFoundations.scala`.
 - Tests: new `SilverCharmSuite` and `GameLogSilverCharmSuite`; a new script in `LogScripts`; `RecoverProcedureSuite` updated.
 
 **Dice beside a reroll power's question (Task 4):**
-- `src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala`: `followUpId`, and `poolOf` reads it.
-- `src/main/scala/oathdigital/gameplay/powers/campaign/MasterAtArms.scala`: its question's id names the throw.
-- `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala`: `decisionPrefix`, and `rollFeedback` for every Recover decision but the modifier decision.
-- `src/main/scala/oathdigital/gameplay/powers/recover/SilverCharm.scala`: its id uses the prefix.
-- `frontend/src/main/scala/oathdigital/frontend/WalkerSelectionPanels.scala`: the choose-many panel draws the roll.
+- `src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala`: `followUpId`, and `poolOf` reads it.
+- `src/main/scala/distantlands/gameplay/powers/campaign/MasterAtArms.scala`: its question's id names the throw.
+- `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala`: `decisionPrefix`, and `rollFeedback` for every Recover decision but the modifier decision.
+- `src/main/scala/distantlands/gameplay/powers/recover/SilverCharm.scala`: its id uses the prefix.
+- `frontend/src/main/scala/distantlands/frontend/WalkerSelectionPanels.scala`: the choose-many panel draws the roll.
 - Tests: `RerollChoiceSuite`, `MasterAtArmsSuite` and `SilverCharmSuite` gain one test each; `WalkerSelectionPanelsSuite` gains one.
 
 **Roadmap (Task 5):** `docs/ROADMAP.md`, and the design's status.
@@ -221,13 +221,13 @@ git commit -m "docs(batch7): record slice 2 plan-time rulings"
 ### Task 2: A throw keeps its rerolled dice, and is numbered by counting rolls
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/DicePoolState.scala` (`RollOutcome`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/RollOperations.scala` (`reroll`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala` (`write`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/dice/DiceThrow.scala` (`lastIndices`, and the case class's doc comment)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala` (`throwAt`)
-- Modify: `src/test/scala/oathdigital/gameplay/WalkerRecordedOpsReducer.scala` (its roll accumulation)
-- Test: `src/test/scala/oathdigital/gameplay/operations/RollOperationsSuite.scala`, `src/test/scala/oathdigital/gameplay/walker/WalkerRollsSuite.scala`, `src/test/scala/oathdigital/gameplay/actions/dice/DiceThrowSuite.scala` (new)
+- Modify: `src/main/scala/distantlands/model/DicePoolState.scala` (`RollOutcome`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/RollOperations.scala` (`reroll`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala` (`write`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/dice/DiceThrow.scala` (`lastIndices`, and the case class's doc comment)
+- Modify: `src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala` (`throwAt`)
+- Modify: `src/test/scala/distantlands/gameplay/WalkerRecordedOpsReducer.scala` (its roll accumulation)
+- Test: `src/test/scala/distantlands/gameplay/operations/RollOperationsSuite.scala`, `src/test/scala/distantlands/gameplay/walker/WalkerRollsSuite.scala`, `src/test/scala/distantlands/gameplay/actions/dice/DiceThrowSuite.scala` (new)
 
 **Interfaces:**
 - Consumes, from slice 1: `RollOutcome.derive`, `RollOperations.reroll`, `DiceThrow.lastIndices(ready, pool)`, `DiceThrow.count(ready, pool)` and `RerollChoice.throwAt(ready)`.
@@ -283,7 +283,7 @@ In `WalkerRollsSuite`, after the test "two attack rolls of one pool accumulate f
 
 In the same suite, the test "two attack rolls of one pool accumulate faces, skulls and a re-scored total" compares the whole outcome. Add `throws = 2` to its expected `RollOutcome(...)`, after `score = ...`.
 
-Create `src/test/scala/oathdigital/gameplay/actions/dice/DiceThrowSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/actions/dice/DiceThrowSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.dice
@@ -418,7 +418,7 @@ Expected: PASS. Slice 1's suites are unchanged: their rerolls touch only faces o
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/DicePoolState.scala src/main/scala/oathdigital/gameplay/operations/RollOperations.scala src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala src/main/scala/oathdigital/gameplay/actions/dice/DiceThrow.scala src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala src/test/scala/oathdigital/gameplay/WalkerRecordedOpsReducer.scala src/test/scala/oathdigital/gameplay/operations/RollOperationsSuite.scala src/test/scala/oathdigital/gameplay/walker/WalkerRollsSuite.scala src/test/scala/oathdigital/gameplay/actions/dice/DiceThrowSuite.scala
+git add src/main/scala/distantlands/model/DicePoolState.scala src/main/scala/distantlands/gameplay/operations/RollOperations.scala src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala src/main/scala/distantlands/gameplay/actions/dice/DiceThrow.scala src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala src/test/scala/distantlands/gameplay/WalkerRecordedOpsReducer.scala src/test/scala/distantlands/gameplay/operations/RollOperationsSuite.scala src/test/scala/distantlands/gameplay/walker/WalkerRollsSuite.scala src/test/scala/distantlands/gameplay/actions/dice/DiceThrowSuite.scala
 git commit -m "feat(dice): a throw keeps its rerolled dice and counts its rolls"
 ```
 
@@ -429,13 +429,13 @@ Stage any other suite Step 4 made you change by its path.
 ### Task 3: Silver Charm
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala` (after `RecoverCost`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala` (the tree's doc comment, and `recovery`'s `RollStep`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/recover/SilverCharm.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `SilverCharmCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (the `powers.recover` import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/recover/SilverCharmSuite.scala` (new), `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, `src/test/scala/oathdigital/application/gamelog/GameLogSilverCharmSuite.scala` (new), `src/test/scala/oathdigital/gameplay/RecoverProcedureSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala` (after `RecoverCost`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala` (the tree's doc comment, and `recovery`'s `RollStep`)
+- Create: `src/main/scala/distantlands/gameplay/powers/recover/SilverCharm.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `SilverCharmCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (the `powers.recover` import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/recover/SilverCharmSuite.scala` (new), `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, `src/test/scala/distantlands/application/gamelog/GameLogSilverCharmSuite.scala` (new), `src/test/scala/distantlands/gameplay/RecoverProcedureSuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -448,7 +448,7 @@ Stage any other suite Step 4 made you change by its path.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/recover/SilverCharmSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/recover/SilverCharmSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.recover
@@ -686,7 +686,7 @@ In `LogScripts.scala`, add after `recoverWorship`:
 
 Change the file's imports: `import oathdigital.gameplay.powers.recover.{RelicWorship, SilverCharm}`, and add `ChooseManyAnswer` to the `oathdigital.model.DecisionAnswer` import.
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogSilverCharmSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogSilverCharmSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -748,7 +748,7 @@ In the tree diagram of `RecoverProcedure`'s doc comment, mark the roll step `// 
 
 - [ ] **Step 4: Write Silver Charm**
 
-Create `src/main/scala/oathdigital/gameplay/powers/recover/SilverCharm.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/recover/SilverCharm.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.recover
@@ -902,7 +902,7 @@ Run the full server suite: `./sbtw test`. Any other suite that pins the Recover 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala src/main/scala/oathdigital/gameplay/powers/recover/SilverCharm.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/recover/SilverCharmSuite.scala src/test/scala/oathdigital/application/gamelog/LogScripts.scala src/test/scala/oathdigital/application/gamelog/GameLogSilverCharmSuite.scala src/test/scala/oathdigital/gameplay/RecoverProcedureSuite.scala
+git add src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala src/main/scala/distantlands/gameplay/powers/recover/SilverCharm.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/recover/SilverCharmSuite.scala src/test/scala/distantlands/application/gamelog/LogScripts.scala src/test/scala/distantlands/application/gamelog/GameLogSilverCharmSuite.scala src/test/scala/distantlands/gameplay/RecoverProcedureSuite.scala
 git commit -m "feat(batch7): Silver Charm rerolls earlier Recover dice"
 ```
 
@@ -913,12 +913,12 @@ Stage any other suite Step 6 changed by its path.
 ### Task 4: Dice beside a reroll power's question
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala` (`followUpId`, `poolOf`, `isDecision`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/MasterAtArms.scala` (`decisionId`, `amount`, `steps`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala` (`decisionPrefix`, `rollFeedback`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/recover/SilverCharm.scala` (`decisionId`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerSelectionPanels.scala` (`render`, `renderMany`)
-- Test: `src/test/scala/oathdigital/gameplay/actions/dice/RerollChoiceSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/campaign/MasterAtArmsSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/recover/SilverCharmSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala` (`followUpId`, `poolOf`, `isDecision`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/MasterAtArms.scala` (`decisionId`, `amount`, `steps`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala` (`decisionPrefix`, `rollFeedback`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/recover/SilverCharm.scala` (`decisionId`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerSelectionPanels.scala` (`render`, `renderMany`)
+- Test: `src/test/scala/distantlands/gameplay/actions/dice/RerollChoiceSuite.scala`, `src/test/scala/distantlands/gameplay/powers/campaign/MasterAtArmsSuite.scala`, `src/test/scala/distantlands/gameplay/powers/recover/SilverCharmSuite.scala`, `frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -1130,7 +1130,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/dice/RerollChoice.scala src/main/scala/oathdigital/gameplay/powers/campaign/MasterAtArms.scala src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala src/main/scala/oathdigital/gameplay/powers/recover/SilverCharm.scala frontend/src/main/scala/oathdigital/frontend/WalkerSelectionPanels.scala src/test/scala/oathdigital/gameplay/actions/dice/RerollChoiceSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/MasterAtArmsSuite.scala src/test/scala/oathdigital/gameplay/powers/recover/SilverCharmSuite.scala frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/dice/RerollChoice.scala src/main/scala/distantlands/gameplay/powers/campaign/MasterAtArms.scala src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala src/main/scala/distantlands/gameplay/powers/recover/SilverCharm.scala frontend/src/main/scala/distantlands/frontend/WalkerSelectionPanels.scala src/test/scala/distantlands/gameplay/actions/dice/RerollChoiceSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/MasterAtArmsSuite.scala src/test/scala/distantlands/gameplay/powers/recover/SilverCharmSuite.scala frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala
 git commit -m "feat(dice): a reroll power's question shows its dice"
 ```
 

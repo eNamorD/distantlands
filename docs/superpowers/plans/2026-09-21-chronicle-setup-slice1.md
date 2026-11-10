@@ -26,8 +26,8 @@
 ## Task 1: The Chronicle model
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/Chronicle.scala`
-- Test: `src/test/scala/oathdigital/model/ChronicleSuite.scala`
+- Create: `src/main/scala/distantlands/model/Chronicle.scala`
+- Test: `src/test/scala/distantlands/model/ChronicleSuite.scala`
 
 **Interfaces:**
 - Produces: `final case class StoredSite(site: SiteId, items: Vector[CardId] = Vector.empty)` (requires `items.size <= 3`); `final case class Chronicle(atlasBox: Vector[StoredSite], world: Vector[StoredSite] = Vector.empty, worldDeck: Vector[DenizenId], relicDeck: Vector[RelicId], dispossessed: Vector[DenizenId] = Vector.empty, reliquary: Vector[RelicId] = Vector.empty, foundations: Map[FoundationNumber, FoundationState] = Map.empty, lineages: Vector[LineageState] = Vector.empty)`. Both live in `oathdigital.model` and use only types already defined there (`SiteId`, `CardId`, `DenizenId`, `RelicId`, `FoundationNumber`, `FoundationState`, `LineageState`).
@@ -205,8 +205,8 @@ Expected: PASS (3 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Chronicle.scala \
-  src/test/scala/oathdigital/model/ChronicleSuite.scala
+git add src/main/scala/distantlands/model/Chronicle.scala \
+  src/test/scala/distantlands/model/ChronicleSuite.scala
 git commit -m "feat: add the Chronicle between-game model
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -217,8 +217,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 2: The Chronicle random port and shuffle policy
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/ChronicleShuffle.scala`
-- Test: `src/test/scala/oathdigital/application/ChronicleShuffleSuite.scala`
+- Create: `src/main/scala/distantlands/application/ChronicleShuffle.scala`
+- Test: `src/test/scala/distantlands/application/ChronicleShuffleSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -315,8 +315,8 @@ Expected: PASS (3 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/ChronicleShuffle.scala \
-  src/test/scala/oathdigital/application/ChronicleShuffleSuite.scala
+git add src/main/scala/distantlands/application/ChronicleShuffle.scala \
+  src/test/scala/distantlands/application/ChronicleShuffleSuite.scala
 git commit -m "feat: add the Chronicle random port and implemented-first shuffle policy
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -327,8 +327,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 3: Implemented-card catalog
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/ImplementedCardCatalog.scala`
-- Test: `src/test/scala/oathdigital/application/ImplementedCardCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/application/ImplementedCardCatalog.scala`
+- Test: `src/test/scala/distantlands/application/ImplementedCardCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks (it reads `oathdigital.catalog.ExecutableCatalog` and `oathdigital.gameplay.powerresolver.PowerRegistry`, both existing).
@@ -481,8 +481,8 @@ Expected: PASS (3 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/ImplementedCardCatalog.scala \
-  src/test/scala/oathdigital/application/ImplementedCardCatalogSuite.scala
+git add src/main/scala/distantlands/application/ImplementedCardCatalog.scala \
+  src/test/scala/distantlands/application/ImplementedCardCatalogSuite.scala
 git commit -m "feat: add the implemented-card catalog reader
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -493,8 +493,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 4: The first-game Chronicle generator
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/FirstGameChronicleGenerator.scala`
-- Test: `src/test/scala/oathdigital/application/FirstGameChronicleGeneratorSuite.scala`
+- Create: `src/main/scala/distantlands/application/FirstGameChronicleGenerator.scala`
+- Test: `src/test/scala/distantlands/application/FirstGameChronicleGeneratorSuite.scala`
 
 **Interfaces:**
 - Consumes: `Chronicle`/`StoredSite` (Task 1); `ChronicleRandomPort`, `ShufflePolicy` (Task 2); `ImplementedCardCatalog.{denizens, ordinaryRelics, homelandEdifice}` (Task 3).
@@ -736,8 +736,8 @@ Expected: PASS (5 tests). If `TooFewSuitDenizens` fires, the alpha batch's per-s
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/FirstGameChronicleGenerator.scala \
-  src/test/scala/oathdigital/application/FirstGameChronicleGeneratorSuite.scala
+git add src/main/scala/distantlands/application/FirstGameChronicleGenerator.scala \
+  src/test/scala/distantlands/application/FirstGameChronicleGeneratorSuite.scala
 git commit -m "feat: add the first-game Chronicle generator
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -748,11 +748,11 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 5: Bridge a Chronicle into `FirstGameSetupPlan`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/ChronicleFirstGamePlan.scala`
-- Test: `src/test/scala/oathdigital/application/ChronicleFirstGamePlanSuite.scala`
+- Create: `src/main/scala/distantlands/application/ChronicleFirstGamePlan.scala`
+- Test: `src/test/scala/distantlands/application/ChronicleFirstGamePlanSuite.scala`
 
 **Interfaces:**
-- Consumes: `Chronicle`/`StoredSite` (Task 1); the existing `FirstGameBootstrapConfig`, `FirstGameSetupPlan` (`src/main/scala/oathdigital/model/Setup.scala`, unmodified) and `oathdigital.gameplay.setup.FirstGameRulesData.visions`.
+- Consumes: `Chronicle`/`StoredSite` (Task 1); the existing `FirstGameBootstrapConfig`, `FirstGameSetupPlan` (`src/main/scala/distantlands/model/Setup.scala`, unmodified) and `oathdigital.gameplay.setup.FirstGameRulesData.visions`.
 - Produces: `sealed trait ChronicleBridgeFailure` with cases `TooFewAtlasSites(actual: Int)`, `MissingHomelandEdifice(site: SiteId)`; `object ChronicleFirstGamePlan { def build(catalog: ExecutableCatalog, chronicle: Chronicle, config: FirstGameBootstrapConfig): Either[ChronicleBridgeFailure, FirstGameSetupPlan] }`. Tasks 6 and 7 both consume `build`.
 
 - [ ] **Step 1: Write the failing test**
@@ -897,8 +897,8 @@ Expected: PASS (4 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/ChronicleFirstGamePlan.scala \
-  src/test/scala/oathdigital/application/ChronicleFirstGamePlanSuite.scala
+git add src/main/scala/distantlands/application/ChronicleFirstGamePlan.scala \
+  src/test/scala/distantlands/application/ChronicleFirstGamePlanSuite.scala
 git commit -m "feat: bridge a Chronicle into FirstGameSetupPlan
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -909,8 +909,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 6: Rebuild `DevelopmentFirstGamePlanFactory` on a dev Chronicle
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/DevelopmentFirstGamePlanFactory.scala`
-- Regression test (no new file): `src/test/scala/oathdigital/application/DevelopmentFirstGamePlanFactorySuite.scala` -- its existing assertions are the behavior-preserving gate for this refactor, since `build`'s return type and values do not change.
+- Modify: `src/main/scala/distantlands/application/DevelopmentFirstGamePlanFactory.scala`
+- Regression test (no new file): `src/test/scala/distantlands/application/DevelopmentFirstGamePlanFactorySuite.scala` -- its existing assertions are the behavior-preserving gate for this refactor, since `build`'s return type and values do not change.
 
 **Interfaces:**
 - Consumes: `Chronicle`/`StoredSite` (Task 1); `ChronicleFirstGamePlan.build` (Task 5).
@@ -925,7 +925,7 @@ Expected: PASS (current behavior, before this task's edit).
 
 - [ ] **Step 2: Rewrite the factory to build a dev Chronicle and bridge it**
 
-Replace the full contents of `src/main/scala/oathdigital/application/DevelopmentFirstGamePlanFactory.scala` with:
+Replace the full contents of `src/main/scala/distantlands/application/DevelopmentFirstGamePlanFactory.scala` with:
 
 ```scala
 package oathdigital.application
@@ -1047,7 +1047,7 @@ Expected: PASS, unchanged.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/DevelopmentFirstGamePlanFactory.scala
+git add src/main/scala/distantlands/application/DevelopmentFirstGamePlanFactory.scala
 git commit -m "refactor: build DevelopmentFirstGamePlanFactory from a dev Chronicle
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -1058,8 +1058,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 7: `GeneratedFirstGamePlanFactory` for production plans
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala`
-- Test: `src/test/scala/oathdigital/application/GeneratedFirstGamePlanFactorySuite.scala`
+- Create: `src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala`
+- Test: `src/test/scala/distantlands/application/GeneratedFirstGamePlanFactorySuite.scala`
 
 **Interfaces:**
 - Consumes: `FirstGameChronicleGenerator.generate` (Task 4); `ChronicleFirstGamePlan.build` (Task 5); `ChronicleRandomPort.random`, `ShufflePolicy.implementedFirst` (Task 2); the existing `FirstGamePlanFactory` trait, `FirstGameBootstrapConfig`, `BootstrapPlanFailure` (Task 6, unchanged signatures); `oathdigital.gameplay.powers.ReviewedPowerCatalog.registry`.
@@ -1142,8 +1142,8 @@ Expected: PASS (2 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala \
-  src/test/scala/oathdigital/application/GeneratedFirstGamePlanFactorySuite.scala
+git add src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala \
+  src/test/scala/distantlands/application/GeneratedFirstGamePlanFactorySuite.scala
 git commit -m "feat: add GeneratedFirstGamePlanFactory for production plans
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -1154,8 +1154,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ## Task 8: Wire trusted and authenticated bootstrap to the generated factory
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/server/ServerRuntime.scala:59-84`
-- Test: `src/test/scala/oathdigital/server/ServerRuntimeSuite.scala` (new)
+- Modify: `src/main/scala/distantlands/server/ServerRuntime.scala:59-84`
+- Test: `src/test/scala/distantlands/server/ServerRuntimeSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `GeneratedFirstGamePlanFactory` (Task 7). `ServerRuntime`'s own public fields (`firstGame`, `authenticatedGame`, `trustedGameProvisioning`, `trustedGame`, ...) are unchanged.
@@ -1206,7 +1206,7 @@ Expected: FAIL -- all four site orders are identical (still wired to the determi
 
 - [ ] **Step 3: Wire the generated factory in**
 
-In `src/main/scala/oathdigital/server/ServerRuntime.scala`, replace:
+In `src/main/scala/distantlands/server/ServerRuntime.scala`, replace:
 
 ```scala
           val planFactory =
@@ -1288,8 +1288,8 @@ Expected: PASS, unchanged.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/ServerRuntime.scala \
-  src/test/scala/oathdigital/server/ServerRuntimeSuite.scala
+git add src/main/scala/distantlands/server/ServerRuntime.scala \
+  src/test/scala/distantlands/server/ServerRuntimeSuite.scala
 git commit -m "feat: wire trusted and authenticated bootstrap to the generated plan factory
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"

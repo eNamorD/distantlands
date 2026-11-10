@@ -126,15 +126,15 @@ lines" reading.
 ### Task 1: The discard-pile origin and Search Party
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/SearchParty.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartyFixture.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartySuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (the card moves out)
-- Modify (imports): `PledgeOfDefenseSuite`, `GreatCrusadeSuite`, `KindredWarriorsSuite`, `ImperialTacticsSuite`, `SaltTheEarthSuite`, `RivalKhanSuite`, all in `src/test/scala/oathdigital/gameplay/powers/campaign/`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/SearchParty.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartyFixture.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (the card moves out)
+- Modify (imports): `PledgeOfDefenseSuite`, `GreatCrusadeSuite`, `KindredWarriorsSuite`, `ImperialTacticsSuite`, `SaltTheEarthSuite`, `RivalKhanSuite`, all in `src/test/scala/distantlands/gameplay/powers/campaign/`
 - Modify: `src/test/resources/powers/unimplemented.txt` and `src/test/resources/notes/declared-keys.txt` (regenerated)
 
 **Interfaces:**
@@ -156,7 +156,7 @@ Follow the "Slice 11 first" constraint above.
 
 - [ ] **Step 2: Write the fixture**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartyFixture.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartyFixture.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -229,7 +229,7 @@ object SearchPartyFixture:
 
 - [ ] **Step 3: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -389,7 +389,7 @@ fixture's `SearchPartyCard` resolving to nothing in its package).
 
 - [ ] **Step 5: Add the discard-pile origin to `CardPlay`**
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace
 
 ```scala
   enum Origin { case FacedownAdviser, TemporaryHand }
@@ -437,7 +437,7 @@ and
 
 - [ ] **Step 6: Offer the pile's card the hand's slots**
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala`,
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala`,
 in `facedown`, change `case CardPlay.Origin.TemporaryHand =>` to
 
 ```scala
@@ -449,7 +449,7 @@ and in `adviserSlots` make the same change to its
 
 - [ ] **Step 7: Add the origin to `CardPlayProcedure`**
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`,
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`,
 replace
 
 ```scala
@@ -488,11 +488,11 @@ was missed; add the pile beside `TemporaryHand` there.
 
 - [ ] **Step 8: Move the card and implement the power**
 
-In `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`,
+In `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`,
 delete the `SearchPartyCard` object (its six lines and the blank line
 after them). The file's imports stay used.
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/SearchParty.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/SearchParty.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -632,7 +632,7 @@ case object SearchParty extends WhenPlayedPower:
       case _ => None
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`,
+In `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`,
 append `SearchParty` to the end of `all`. After slice 11 the last line
 reads `Pilgrimage, AutumnWind, FavoredSon)`; make it
 `Pilgrimage, AutumnWind, FavoredSon, SearchParty)`.
@@ -709,7 +709,7 @@ pipeline, stop and report (finding 7).
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/SearchParty.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartyFixture.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartySuite.scala src/main/scala/oathdigital/gameplay/actions/CardPlay.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala src/test/scala/oathdigital/gameplay/powers/campaign/PledgeOfDefenseSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/GreatCrusadeSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/KindredWarriorsSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/ImperialTacticsSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/SaltTheEarthSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/RivalKhanSuite.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/SearchParty.scala src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartyFixture.scala src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartySuite.scala src/main/scala/distantlands/gameplay/actions/CardPlay.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala src/test/scala/distantlands/gameplay/powers/campaign/PledgeOfDefenseSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/GreatCrusadeSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/KindredWarriorsSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/ImperialTacticsSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/SaltTheEarthSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/RivalKhanSuite.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt
 git commit -m "$(cat <<'EOF'
 feat(powers): implement Search Party
 
@@ -729,13 +729,13 @@ EOF
 ### Task 2: A power's play, docs and gates
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartyModifiersSuite.scala`
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (both hooks)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/TempleOfAncestors.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/Oracle.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/SearchParty.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartyModifiersSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (both hooks)
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/TempleOfAncestors.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/Oracle.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/SearchParty.scala`
 - Modify (hook patterns): `WhenPlayedPower.scala`, `ConspiracyWhenPlayed.scala` (both in `powers/whenplayed`), `WildCry.scala`, `SaddleMakers.scala`, `Gossip.scala`, `WelcomingParty.scala`, `VisionPlay.scala` (all in `powers/cardplay`)
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`
 - Modify: `docs/ROADMAP.md`
@@ -752,7 +752,7 @@ EOF
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartyModifiersSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartyModifiersSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -871,7 +871,7 @@ unavailable with "Temple of Ancestors: the card goes to your advisers".
 
 - [ ] **Step 3: Give both hooks `byPower`**
 
-In `src/main/scala/oathdigital/model/CoreOperations.scala`, replace the
+In `src/main/scala/distantlands/model/CoreOperations.scala`, replace the
 two hook definitions with:
 
 ```scala
@@ -900,7 +900,7 @@ final case class CardPlayedFacedown(card: WorldCardId, player: PlayerId,
 Widen the seven patterns on them:
 
 ```bash
-perl -pi -e 's/CardPlayedFaceup\((card(?:: \w+)?), _\)/CardPlayedFaceup($1, _, _)/; s/CardPlayedFacedown\(_, player\)/CardPlayedFacedown(_, player, _)/' src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala src/main/scala/oathdigital/gameplay/powers/cardplay/WildCry.scala src/main/scala/oathdigital/gameplay/powers/cardplay/SaddleMakers.scala src/main/scala/oathdigital/gameplay/powers/cardplay/Gossip.scala src/main/scala/oathdigital/gameplay/powers/cardplay/WelcomingParty.scala src/main/scala/oathdigital/gameplay/powers/cardplay/VisionPlay.scala
+perl -pi -e 's/CardPlayedFaceup\((card(?:: \w+)?), _\)/CardPlayedFaceup($1, _, _)/; s/CardPlayedFacedown\(_, player\)/CardPlayedFacedown(_, player, _)/' src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala src/main/scala/distantlands/gameplay/powers/cardplay/WildCry.scala src/main/scala/distantlands/gameplay/powers/cardplay/SaddleMakers.scala src/main/scala/distantlands/gameplay/powers/cardplay/Gossip.scala src/main/scala/distantlands/gameplay/powers/cardplay/WelcomingParty.scala src/main/scala/distantlands/gameplay/powers/cardplay/VisionPlay.scala
 ```
 
 ```bash
@@ -911,7 +911,7 @@ Expected: every match has three fields.
 
 - [ ] **Step 4: Mark a power's play in `CardPlayProcedure`**
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`:
 
 1. Give `PlacementTree` the field, after `card`:
 
@@ -976,7 +976,7 @@ In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala
 
 - [ ] **Step 5: Keep selected modifiers off a power's play**
 
-In `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`,
+In `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`,
 add `import oathdigital.gameplay.actions.cardplay.CardPlayProcedure`, and
 change the last case of `applicable` to:
 
@@ -996,13 +996,13 @@ In the trait's doc comment, after the "At every other window it asks
 
 - [ ] **Step 6: Mark each power's play**
 
-1. `src/main/scala/oathdigital/gameplay/powers/whenplayed/SearchParty.scala`:
+1. `src/main/scala/distantlands/gameplay/powers/whenplayed/SearchParty.scala`:
    in `play`, pass `byPower = Some(id)` after
    `ModifierPicks.cards(pending.answered)`. In the doc comment, after "The
    play's hook fires the card's own WHEN PLAYED and the card-play
    triggers.", add: "The play names Search Party as `byPower`, so no
    modifier picked for an enclosing Search applies to it (ruling 5)."
-2. `src/main/scala/oathdigital/gameplay/powers/action/TempleOfAncestors.scala`:
+2. `src/main/scala/distantlands/gameplay/powers/action/TempleOfAncestors.scala`:
    pass `byPower = Some(id)` to its `CardPlayProcedure.unchecked` call,
    and limit only its own tree:
 
@@ -1016,7 +1016,7 @@ In the trait's doc comment, after the "At every other window it asks
    the placements" to "The power's own `Transform` at `SearchPlayAdviser`
    limits the placements of its own play (`byPower`), so a Search Party
    it draws still plays its card as if searched,".
-3. `src/main/scala/oathdigital/gameplay/powers/action/Oracle.scala`: pass
+3. `src/main/scala/distantlands/gameplay/powers/action/Oracle.scala`: pass
    `byPower = Some(id)` to its `CardPlayProcedure.unchecked` call.
 
 Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.SearchParty*"`
@@ -1122,7 +1122,7 @@ Expected: every test passes, and statement coverage is at least 92%.
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartyModifiersSuite.scala src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala src/main/scala/oathdigital/gameplay/powers/action/TempleOfAncestors.scala src/main/scala/oathdigital/gameplay/powers/action/Oracle.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/SearchParty.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala src/main/scala/oathdigital/gameplay/powers/cardplay/WildCry.scala src/main/scala/oathdigital/gameplay/powers/cardplay/SaddleMakers.scala src/main/scala/oathdigital/gameplay/powers/cardplay/Gossip.scala src/main/scala/oathdigital/gameplay/powers/cardplay/WelcomingParty.scala src/main/scala/oathdigital/gameplay/powers/cardplay/VisionPlay.scala docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
+git add src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartyModifiersSuite.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala src/main/scala/distantlands/gameplay/powers/action/TempleOfAncestors.scala src/main/scala/distantlands/gameplay/powers/action/Oracle.scala src/main/scala/distantlands/gameplay/powers/whenplayed/SearchParty.scala src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala src/main/scala/distantlands/gameplay/powers/cardplay/WildCry.scala src/main/scala/distantlands/gameplay/powers/cardplay/SaddleMakers.scala src/main/scala/distantlands/gameplay/powers/cardplay/Gossip.scala src/main/scala/distantlands/gameplay/powers/cardplay/WelcomingParty.scala src/main/scala/distantlands/gameplay/powers/cardplay/VisionPlay.scala docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'
 fix(powers): no action's modifier reaches a power's card play
 

@@ -97,7 +97,7 @@ These facts are read from the code (or established by compiling and running the 
 - Task 12: modify `WalkerPowerGather.scala`, `ProcedureWalker.scala`, `OathRulesWalker.scala`. Test: `RestrictionAnswersSuite`.
 - Task 13: create `powers/economy/KnightsErrant.scala`; modify `WalkerPowerCatalog.scala`, `MusterProcedure.scala`, `WalkerProcedureRegistry.scala`. Test: `KnightsErrantSuite`.
 
-All paths are under `src/main/scala/oathdigital/gameplay/` (production) or `src/test/scala/oathdigital/gameplay/` (tests) except `PowerWindow.scala` and `CoreOperations.scala` (`.../model/`) and `WalkerOperationCodec.scala` (`.../serialization/`). The step blocks below give full paths.
+All paths are under `src/main/scala/distantlands/gameplay/` (production) or `src/test/scala/distantlands/gameplay/` (tests) except `PowerWindow.scala` and `CoreOperations.scala` (`.../model/`) and `WalkerOperationCodec.scala` (`.../serialization/`). The step blocks below give full paths.
 
 ---
 
@@ -107,7 +107,7 @@ All paths are under `src/main/scala/oathdigital/gameplay/` (production) or `src/
 
 **Files:**
 - Modify: the eleven files listed for Task 1 above.
-- Test: `src/test/scala/oathdigital/gameplay/CardPlayHooksSuite.scala`, and the three existing suites that name the hook.
+- Test: `src/test/scala/distantlands/gameplay/CardPlayHooksSuite.scala`, and the three existing suites that name the hook.
 
 **Interfaces:**
 - Produces: `CardPlayedFaceup(card: WorldCardId, resultingSource: RuleSourceRef)` and `CardPlayedFacedown(card: WorldCardId, player: PlayerId)` (both `CoreOperation`s with no children); `PowerWindow.ActionCardPlayedFaceup` (key `"action.card-played"`) and `PowerWindow.ActionCardPlayedFacedown` (key `"action.card-played-facedown"`).
@@ -117,7 +117,7 @@ A card played to a site or as a faceup adviser visits the faceup window (today's
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/CardPlayHooksSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/CardPlayHooksSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -265,7 +265,7 @@ class CardPlayHooksSuite extends munit.FunSuite {
 }
 ```
 
-In `src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala`, replace:
 
 ```scala
     val hook = CardPlayed(adviser.id,
@@ -277,7 +277,7 @@ with:
     val hook = CardPlayedFaceup(adviser.id,
 ```
 
-In `src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala`, replace (every occurrence, 2 in all):
+In `src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala`, replace (every occurrence, 2 in all):
 
 ```scala
 PowerWindow.ActionCardPlayed)
@@ -289,7 +289,7 @@ with:
 PowerWindow.ActionCardPlayedFaceup)
 ```
 
-In `src/test/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedHarness.scala`, replace:
+In `src/test/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedHarness.scala`, replace:
 
 ```scala
   def hook(card: DenizenId): CardPlayed =
@@ -303,7 +303,7 @@ with:
     CardPlayedFaceup(card, RuleSourceRef.Adviser(actor, card))
 ```
 
-In `src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala`, replace (every occurrence, 4 in all):
+In `src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala`, replace (every occurrence, 4 in all):
 
 ```scala
 CardPlayed(dazzle, RuleSourceRef.Adviser(actor, dazzle))
@@ -315,7 +315,7 @@ with:
 CardPlayedFaceup(dazzle, RuleSourceRef.Adviser(actor, dazzle))
 ```
 
-In `src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala`, replace:
 
 ```scala
 CardPlayed(dazzleId, RuleSourceRef.Adviser(actor, dazzleId))
@@ -334,7 +334,7 @@ Expected: FAIL to compile, for example `value ActionCardPlayedFaceup is not a me
 
 - [ ] **Step 3: Implement**
 
-In `src/main/scala/oathdigital/model/PowerWindow.scala`, replace:
+In `src/main/scala/distantlands/model/PowerWindow.scala`, replace:
 
 ```scala
   case object ActionCardPlayed extends OtherWindow { val key = "action.card-played" }
@@ -356,7 +356,7 @@ with:
   }
 ```
 
-In `src/main/scala/oathdigital/model/CoreOperations.scala`, replace:
+In `src/main/scala/distantlands/model/CoreOperations.scala`, replace:
 
 ```scala
 /** Semantic played-card window. Powers supply its children; no hook is a delta. */
@@ -390,7 +390,7 @@ final case class CardPlayedFacedown(card: WorldCardId, player: PlayerId)
 }
 ```
 
-In `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`, replace:
+In `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`, replace:
 
 ```scala
       case _: CardPlayed => throw UnencodableOperation(InvalidValue(
@@ -407,7 +407,7 @@ with:
             "never a recorded delta"))
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
             val hook = CardPlay.playedSource(ready, actor, card, placement)
@@ -425,7 +425,7 @@ with:
             }
 ```
 
-In `src/main/scala/oathdigital/gameplay/PowerRuntime.scala`, replace:
+In `src/main/scala/distantlands/gameplay/PowerRuntime.scala`, replace:
 
 ```scala
     case ActionKind.WhenPlayed => PowerWindow.ActionCardPlayed
@@ -437,7 +437,7 @@ with:
     case ActionKind.WhenPlayed => PowerWindow.ActionCardPlayedFaceup
 ```
 
-In `src/main/scala/oathdigital/gameplay/PowerRuntime.scala`, replace:
+In `src/main/scala/distantlands/gameplay/PowerRuntime.scala`, replace:
 
 ```scala
     case PowerWindow.RestStart | PowerWindow.ActionCardPlayed |
@@ -452,7 +452,7 @@ with:
         PowerWindow.WakeBoundary | PowerWindow.ActionAfterMajorAction =>
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/PowerSupport.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/PowerSupport.scala`, replace:
 
 ```scala
       window == PowerWindow.ActionCardPlayed)
@@ -464,7 +464,7 @@ with:
       window == PowerWindow.ActionCardPlayedFaceup)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionPowers.scala`, replace (every occurrence, 3 in all):
+In `src/main/scala/distantlands/gameplay/powers/ActionPowers.scala`, replace (every occurrence, 3 in all):
 
 ```scala
 PowerWindow.ActionCardPlayed
@@ -476,7 +476,7 @@ with:
 PowerWindow.ActionCardPlayedFaceup
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
   * play runs `ActionCardPlayed` for Conspiracy.
@@ -488,7 +488,7 @@ with:
   * play runs `ActionCardPlayedFaceup` for Conspiracy.
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala`, replace:
 
 ```scala
     case CardPlayed(card, _) => card == cardId
@@ -500,7 +500,7 @@ with:
     case CardPlayedFaceup(card, _) => card == cardId
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala`, replace:
 
 ```scala
 Map(PowerWindow.ActionCardPlayed ->
@@ -512,7 +512,7 @@ with:
 Map(PowerWindow.ActionCardPlayedFaceup ->
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala`, replace:
 
 ```scala
     case CardPlayed(card, _) => card == cardId
@@ -524,7 +524,7 @@ with:
     case CardPlayedFaceup(card, _) => card == cardId
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala`, replace:
 
 ```scala
 Map(PowerWindow.ActionCardPlayed ->
@@ -536,7 +536,7 @@ with:
 Map(PowerWindow.ActionCardPlayedFaceup ->
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`, replace:
 
 ```scala
     case CardPlayed(card, _) => card == VisionRules.Conspiracy
@@ -548,7 +548,7 @@ with:
     case CardPlayedFaceup(card, _) => card == VisionRules.Conspiracy
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`, replace:
 
 ```scala
 Map(PowerWindow.ActionCardPlayed ->
@@ -583,7 +583,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 2: `PlacementRules` replaces the adviser limits
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/PlacementRules.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/PlacementRules.scala`
 - Modify: `AdviserLimit.scala` (rewritten), `CardPlay.scala`, `CardPlayProcedure.scala`, `SilverTongue.scala`, `HornedMask.scala`
 - Test: `PlacementFixture.scala` (shared by Tasks 2 to 4), `PlacementRulesSuite.scala`, an edit to `CardPlayProcedureSuite.scala`
 
@@ -597,7 +597,7 @@ The new test file `PlacementFixture` is used again in Tasks 3 and 4. It builds a
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/PlacementFixture.scala`:
+Create `src/test/scala/distantlands/gameplay/PlacementFixture.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -704,7 +704,7 @@ object PlacementFixture {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/PlacementRulesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/PlacementRulesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -813,7 +813,7 @@ class PlacementRulesSuite extends munit.FunSuite {
 }
 ```
 
-In `src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala`, replace (every occurrence, 6 in all):
+In `src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala`, replace (every occurrence, 6 in all):
 
 ```scala
 CardPlay.Origin.TemporaryHand, 3, 3)
@@ -825,7 +825,7 @@ with:
 CardPlay.Origin.TemporaryHand)
 ```
 
-In `src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala`, replace:
 
 ```scala
 CardPlay.Origin.FacedownAdviser, 3, 3)
@@ -844,7 +844,7 @@ Expected: FAIL to compile, for example `not enough arguments for method legalCho
 
 - [ ] **Step 3: Implement**
 
-Create `src/main/scala/oathdigital/gameplay/actions/PlacementRules.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/PlacementRules.scala`:
 
 ```scala
 package oathdigital.gameplay.actions
@@ -895,7 +895,7 @@ object PlacementRules {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -923,7 +923,7 @@ object AdviserLimit {
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
       actor: PlayerId, card: WorldCardId, origin: Origin,
@@ -937,7 +937,7 @@ with:
       rules: PlacementRules = PlacementRules.default): Vector[Choice] = {
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
     placements.flatMap { placement =>
@@ -957,7 +957,7 @@ with:
         placement, origin, rules).exists(permitted)
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
         plannedOperations(catalog, ready, actor, card, selected,
@@ -971,7 +971,7 @@ with:
           origin, rules).exists(permitted)
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
       origin: Origin, adviserLimit: Int = 3)
@@ -985,7 +985,7 @@ with:
       : Either[OathViolation, Vector[CoreOperation]] = for {
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
     plan <- plan(catalog, ready, player, card, placement, origin, adviserLimit)
@@ -997,7 +997,7 @@ with:
     plan <- plan(catalog, ready, player, card, placement, origin, rules)
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
       origin: Origin, adviserLimit: Int)
@@ -1011,7 +1011,7 @@ with:
       : Either[OathViolation, PlacementPlan] = placement match {
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
         removed <- validateAdviserReplacement(catalog, remaining, replace,
@@ -1025,7 +1025,7 @@ with:
           rules.adviserLimit(orientation))
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
         else planVision(catalog, player, origin, id, orientation, replace,
@@ -1039,7 +1039,7 @@ with:
           rules.adviserLimit(orientation))
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
   private def nextRegion(region: Region): Region = region match {
@@ -1054,7 +1054,7 @@ with:
   def nextRegion(region: Region): Region = region match {
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.actions.CardPlay
@@ -1066,7 +1066,7 @@ with:
 import oathdigital.gameplay.actions.{CardPlay, PlacementRules}
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
   /** Generic limit-aware placement seam. A power can replace children using
@@ -1123,7 +1123,7 @@ with:
   }
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
     else Right(new PlacementTree(card, (faceup, facedown) =>
@@ -1137,7 +1137,7 @@ with:
       childrenFor(catalog, ready, actor, card, origin, rules)))
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
       actor: PlayerId, card: WorldCardId, origin: Origin, faceupLimit: Int,
@@ -1153,7 +1153,7 @@ with:
       : Vector[Operation] = {
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
       val candidates = CardPlay.legalChoices(catalog, ready, actor, card,
@@ -1167,7 +1167,7 @@ with:
         legacyOrigin, rules).map { choice =>
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
             val adviserLimit = placement match {
@@ -1178,7 +1178,7 @@ In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala
 
 with nothing: delete it.
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
                 card, _, legacyOrigin, adviserLimit))
@@ -1190,7 +1190,7 @@ with:
                 card, _, legacyOrigin, rules))
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala`, replace:
 
 ```scala
         case tree: CardPlayProcedure.PlacementTree
@@ -1222,7 +1222,7 @@ with:
     holder(ready).filter(_.player == player).map(_ => HolderLimit)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala`, replace:
 
 ```scala
     val holds = holder(state).exists(_.player == actor)
@@ -1235,7 +1235,7 @@ with:
     if (limitFor(state, actor).forall(count <= _)) Right(Vector.empty)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala`, replace:
 
 ```scala
 object SilverTongue {
@@ -1251,7 +1251,7 @@ object SilverTongue {
   val HolderLimit: Int = 2
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.PowerAccess
@@ -1264,7 +1264,7 @@ import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.CardPlay
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`, replace:
 
 ```scala
       .flatMap(ready.game.current.map.regionOf).map(next)
@@ -1276,7 +1276,7 @@ with:
       .flatMap(ready.game.current.map.regionOf).map(CardPlay.nextRegion)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`, replace:
 
 ```scala
 
@@ -1316,7 +1316,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 3: One rule for which cards can be discarded
 
 **Files:**
-- Rewrite: `src/main/scala/oathdigital/gameplay/operations/DiscardRestrictions.scala`
+- Rewrite: `src/main/scala/distantlands/gameplay/operations/DiscardRestrictions.scala`
 - Modify: `CardPlay.scala`, `powers/wake/HornedMask.scala`
 - Test: `powers/CardStaging.scala` (shared by later tasks), `DiscardRestrictionsSuite.scala`, `DiscardRestrictionsCoverageSuite.scala`
 
@@ -1334,7 +1334,7 @@ The product owner asked for locked cards to be handled generically. Where lockin
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/DiscardRestrictionsCoverageSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/DiscardRestrictionsCoverageSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1353,7 +1353,7 @@ import scala.jdk.CollectionConverters._
   * discarding file fails this suite until it is added on purpose.
   */
 class DiscardRestrictionsCoverageSuite extends munit.FunSuite {
-  private val root = Paths.get("src/main/scala/oathdigital")
+  private val root = Paths.get("src/main/scala/distantlands")
   private val discards =
     """Discard\.(Denizen|Vision|RuinedEdifice)\(""".r
 
@@ -1389,7 +1389,7 @@ class DiscardRestrictionsCoverageSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/DiscardRestrictionsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/DiscardRestrictionsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1553,7 +1553,7 @@ class DiscardRestrictionsSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/CardStaging.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/CardStaging.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -1596,7 +1596,7 @@ Expected: the new tests FAIL.
 
 - [ ] **Step 3: Implement**
 
-Create `src/main/scala/oathdigital/gameplay/operations/DiscardRestrictions.scala`:
+Create `src/main/scala/distantlands/gameplay/operations/DiscardRestrictions.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -1744,7 +1744,7 @@ final class DiscardRestrictions(catalog: ExecutableCatalog,
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
       case Some(value: EdificeState) if !value.tokens.isEmpty =>
@@ -1769,7 +1769,7 @@ with:
         }
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
     val edificeOps = plan.discardedEdifices.map { case (id, from) =>
@@ -1783,7 +1783,7 @@ with:
     val edificeOps = plan.tokenEdifice.toVector.flatMap {
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
       discardedEdifices: Vector[(EdificeId, PositionedLocation)],
@@ -1796,7 +1796,7 @@ with:
       discardedEdifices: Vector[(EdificeId, PositionedLocation)],
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`, replace:
 
 ```scala
     BuildOps((live, pending) => take(live, player, pending)))))
@@ -1810,7 +1810,7 @@ with:
         new DiscardRestrictions(catalog, player))))))
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.actions.CardPlay
@@ -1857,7 +1857,7 @@ Ruling for the (slice 4) Mob power: a play to a site may first discard one card 
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/SiteDiscardFirstSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/SiteDiscardFirstSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -2043,7 +2043,7 @@ Expected: FAIL to compile, for example `value noReplacement is not a member of o
 
 - [ ] **Step 3: Implement**
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
   final case class Choice(placement: SearchPlacement,
@@ -2062,7 +2062,7 @@ with:
       replacements: Vector[CardId], replacementOptional: Boolean = false)
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
       val replacements = if (direct) Vector.empty else candidateIds.filter { id =>
@@ -2078,7 +2078,7 @@ with:
       else candidateIds.filter { id =>
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
       Option.when(direct || replacements.nonEmpty)(Choice(placement, replacements))
@@ -2091,7 +2091,7 @@ with:
         replacements, replacementOptional = optional && replacements.nonEmpty))
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
   private def validateSiteReplacement(catalog: ExecutableCatalog, siteId: SiteId,
@@ -2126,7 +2126,7 @@ with:
     else if (!full && replace.isEmpty) Right(None)
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`, replace:
 
 ```scala
         replacement <- validateSiteReplacement(catalog, siteId, site,
@@ -2140,7 +2140,7 @@ with:
           definition.suit, replace, rules)
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
   private val adviserFaceDown = DecisionOptionRef.Button("adviser-facedown")
@@ -2159,7 +2159,7 @@ with:
     DecisionOptionRef.Button("replace:none"), "Discard nothing")
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
         (ref, choice.placement,
@@ -2178,7 +2178,7 @@ with:
       val options = candidates.map { case (ref, _, _, _) =>
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
           case (_, placement, replacements) =>
@@ -2190,7 +2190,7 @@ with:
           case (_, placement, replacements, optional) =>
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
               Decide(replacementId, actor, DecisionQuery.ChooseOne(
@@ -2207,7 +2207,7 @@ with:
                 heading = Some("Choose a card to discard"))))
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
               }.flatMap(value => replacements.find(_._1.ref == value)
@@ -2280,7 +2280,7 @@ Follow "Recording a sub-slice" below for 2a, then run `./sbtw test`, `python3 sc
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/EnclosingProcedureSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/EnclosingProcedureSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -2354,7 +2354,7 @@ Expected: FAIL to compile, for example `value procedure is not a member of oathd
 
 - [ ] **Step 3: Implement**
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
 
 ```scala
 import oathdigital.model.{DecisionOptionRef, OathViolation, Operation, PlayerId, PowerId, PowerResolution, PowerWindow, ReadyGame, RuleSourceRef}
@@ -2366,7 +2366,7 @@ with:
 import oathdigital.model.{DecisionOptionRef, OathViolation, Operation, PlayerId, PowerId, PowerResolution, PowerWindow, ProcedureRef, ReadyGame, RuleSourceRef}
 ```
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
 
 ```scala
     /** Exact windowed operation a contribution is being collected for. */
@@ -2388,7 +2388,7 @@ with:
 )
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, replace:
 
 ```scala
       dice: WalkerDice
@@ -2404,7 +2404,7 @@ with:
   )
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, replace:
 
 ```scala
     walk(action, WalkCtx(base, Vector.empty, activePlayer, answered, powers, dice),
@@ -2417,7 +2417,7 @@ with:
       state.game.current.walkerProcedure),
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace (every occurrence, 2 in all):
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, replace (every occurrence, 2 in all):
 
 ```scala
       state.game.current.turn.activePlayer, pending.answered, powers, dice),
@@ -2430,7 +2430,7 @@ with:
       state.game.current.walkerProcedure),
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, replace:
 
 ```scala
     val (folded, order) = WalkerPowerGather.applyWindow(window, operation, ctx.state,
@@ -2444,7 +2444,7 @@ with:
       ctx.activePlayer, ctx.powers, path, children, ctx.procedure)
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
       activePlayer: PlayerId, powers: WalkerPowers, path: Vector[String],
@@ -2459,7 +2459,7 @@ with:
       : (Vector[Operation], Vector[PowerId]) =
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
           PowerCtx(state, activePlayer, power.source, w, path, operation)
@@ -2472,7 +2472,7 @@ with:
             procedure)
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
       power => PowerCtx(state, activePlayer, power.source, window, path, operation)
@@ -2485,7 +2485,7 @@ with:
         operation, state.game.current.walkerProcedure)
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
         val (folded, _) = applyWindow(branch.window, branch, state,
@@ -2499,7 +2499,7 @@ with:
           activePlayer, powers, path, selected, state.game.current.walkerProcedure)
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
             val (folded, _) = applyWindow(Some(w), leaf, state,
@@ -2514,7 +2514,7 @@ with:
               state.game.current.walkerProcedure)
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
         val (folded, _) = applyWindow(composite.window, composite, state,
@@ -2529,7 +2529,7 @@ with:
           state.game.current.walkerProcedure)
 ```
 
-In `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, replace:
 
 ```scala
         power.applicable(PowerCtx(ready, actor, power.source, window,
@@ -2580,7 +2580,7 @@ The refusal happens in `validateModifiers`, which `startWalker` calls before any
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/SelectionPaymentsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/SelectionPaymentsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -2684,7 +2684,7 @@ Expected: FAIL to compile, for example `value selectionPayments is not a member 
 
 - [ ] **Step 3: Implement**
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
 
 ```scala
 import oathdigital.model.{DecisionOptionRef,
@@ -2696,7 +2696,7 @@ with:
 import oathdigital.model.{CoreOperation, DecisionOptionRef,
 ```
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
 
 ```scala
   def applicable(ctx: PowerCtx): Boolean = true
@@ -2715,7 +2715,7 @@ with:
       : Vector[CoreOperation] = Vector.empty
 ```
 
-In `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx, PhasePowers}
@@ -2728,7 +2728,7 @@ import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
 import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx, PhasePowers}
 ```
 
-In `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, replace:
 
 ```scala
           case (left, _) => left
@@ -2761,7 +2761,7 @@ with:
   }
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/recover/CatacombsContribution.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/recover/CatacombsContribution.scala`, replace:
 
 ```scala
   def contributions: Map[PowerWindow, Vector[Contribution]] =
@@ -2815,7 +2815,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/SearchFixture.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/SearchFixture.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -2943,7 +2943,7 @@ object SearchFixture {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/SelectedModifierSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/SelectedModifierSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -3071,7 +3071,7 @@ class SelectedModifierSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/GossipSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/GossipSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -3164,7 +3164,7 @@ class GossipSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/WelcomingPartySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/WelcomingPartySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -3279,7 +3279,7 @@ class WelcomingPartySuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/WildCrySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/WildCrySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -3432,7 +3432,7 @@ Expected: FAIL to compile, for example `not found: type SelectedModifier`.
 
 - [ ] **Step 3: Implement**
 
-Create `src/main/scala/oathdigital/gameplay/powers/CatalogCards.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/CatalogCards.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -3460,7 +3460,7 @@ object CatalogCards {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -3590,7 +3590,7 @@ object SelectedModifier {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -3609,7 +3609,7 @@ object CardPlayTriggers {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/Gossip.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/Gossip.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -3661,7 +3661,7 @@ object Gossip {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/WelcomingParty.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/WelcomingParty.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -3712,7 +3712,7 @@ object WelcomingParty {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/WildCry.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/WildCry.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -3762,7 +3762,7 @@ object WildCry {
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
@@ -3775,7 +3775,7 @@ import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
 import oathdigital.gameplay.powers.cardplay.CardPlayTriggers
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
       Dazzle.forCatalog(catalog) :+ TakeWealthLimit :+ ConspiracyWhenPlayed)
@@ -3839,7 +3839,7 @@ The two engine edits are `ignores` and the fix from "Beyond E6, E7 and E9" item 
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/ContributionIgnoresSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/ContributionIgnoresSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -3911,7 +3911,7 @@ class ContributionIgnoresSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/DragonskinDrumSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/DragonskinDrumSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -3968,7 +3968,7 @@ class DragonskinDrumSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/ForestPathsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/ForestPathsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4057,7 +4057,7 @@ class ForestPathsSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/GraspingVinesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/GraspingVinesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4137,7 +4137,7 @@ class GraspingVinesSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/TentsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/TentsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4241,7 +4241,7 @@ class TentsSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4329,7 +4329,7 @@ class TollRoadsSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4448,7 +4448,7 @@ object TravelFixture {
 }
 ```
 
-In `src/test/scala/oathdigital/gameplay/TravelProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/TravelProcedureSuite.scala`, replace:
 
 ```scala
   private val powers: WalkerPowers = WalkerPowerCatalog.default(catalog)
@@ -4468,7 +4468,7 @@ Expected: FAIL to compile, for example `not found: value DragonskinDrum`.
 
 - [ ] **Step 3: Implement**
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/DragonskinDrum.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/DragonskinDrum.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4509,7 +4509,7 @@ object DragonskinDrum {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/ForestPaths.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/ForestPaths.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4573,7 +4573,7 @@ object ForestPaths {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4624,7 +4624,7 @@ object GraspingVines {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/Tents.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/Tents.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4675,7 +4675,7 @@ object Tents {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4732,7 +4732,7 @@ object TollRoads {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4754,7 +4754,7 @@ object TravelModifiers {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/TravelPayments.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/TravelPayments.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -4829,7 +4829,7 @@ private[travel] object TravelRulers {
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
 
 ```scala
   def shouldIgnore(other: ContributingPower): Boolean = false
@@ -4847,7 +4847,7 @@ with:
     shouldIgnore(other)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`, replace:
 
 ```scala
       applicable.filter(power.shouldIgnore).map(_.id)
@@ -4860,7 +4860,7 @@ with:
         .map(_.id)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.powers.travel.TravelSitePowers
@@ -4872,7 +4872,7 @@ with:
 import oathdigital.gameplay.powers.travel.{TravelModifiers, TravelSitePowers}
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
       TravelSitePowers.forCatalog(catalog) ++
@@ -4885,7 +4885,7 @@ with:
       TravelModifiers.forCatalog(catalog) ++
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala`, replace:
 
 ```scala
           .flatMap(WalkerSimulation.run(_, state, powers))
@@ -4900,7 +4900,7 @@ with:
             destination -> supplySpent(operations, activePlayer))
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala`, replace:
 
 ```scala
   /** The Supply a completed Travel actually spent, read off the operations the
@@ -4973,7 +4973,7 @@ Follow "Recording a sub-slice" below for 2c and commit with `docs: record slice 
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/CupOfPlentySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/CupOfPlentySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -5064,7 +5064,7 @@ class CupOfPlentySuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/RowdyPubSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/RowdyPubSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -5158,7 +5158,7 @@ class RowdyPubSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/recover/RelicWorshipSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/recover/RelicWorshipSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.recover
@@ -5309,7 +5309,7 @@ class RelicWorshipSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/AugurySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/AugurySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -5404,7 +5404,7 @@ class AugurySuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/TruthfulHarpSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/TruthfulHarpSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -5501,7 +5501,7 @@ Expected: FAIL to compile, for example `not found: value CupOfPlenty`.
 
 - [ ] **Step 3: Implement**
 
-Create `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -5525,7 +5525,7 @@ object ActionModifiers {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/CupOfPlenty.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/CupOfPlenty.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -5588,7 +5588,7 @@ object CupOfPlenty {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/RowdyPub.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/RowdyPub.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -5632,7 +5632,7 @@ object RowdyPub {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/recover/RelicWorship.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/recover/RelicWorship.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.recover
@@ -5674,7 +5674,7 @@ object RelicWorship {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/Augury.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/Augury.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -5707,7 +5707,7 @@ object Augury {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/DrawExtension.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/DrawExtension.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -5767,7 +5767,7 @@ private[search] object DrawExtension {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/TruthfulHarp.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/TruthfulHarp.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -5814,7 +5814,7 @@ object TruthfulHarp {
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
       CardPlayTriggers.forCatalog(catalog) ++
@@ -5827,7 +5827,7 @@ with:
       CardPlayTriggers.forCatalog(catalog) ++
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/Search.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/Search.scala`, replace:
 
 ```scala
   /** World decks use head-as-top; discard piles use last-as-top. */
@@ -5863,7 +5863,7 @@ with:
     }}
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/RecoverPowers.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/RecoverPowers.scala`, replace:
 
 ```scala
   object RelicWorship extends ReviewedPower("denizen.relic-worship", modifier,
@@ -5920,7 +5920,7 @@ Conspiracy's effects insisted on an answer whenever a legal target existed. A po
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyTargetWindowSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyTargetWindowSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -6033,7 +6033,7 @@ Expected: FAIL to compile, for example `value ConspiracyTargetSelection is not a
 
 - [ ] **Step 3: Implement**
 
-In `src/main/scala/oathdigital/model/PowerWindow.scala`, replace:
+In `src/main/scala/distantlands/model/PowerWindow.scala`, replace:
 
 ```scala
   case object PlaceBannerResourceEligibility extends OtherWindow {
@@ -6051,7 +6051,7 @@ with:
   case object PlaceBannerResourceEligibility extends OtherWindow {
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`, replace:
 
 ```scala
     else Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(options,
@@ -6066,7 +6066,7 @@ with:
       window = Some(PowerWindow.ConspiracyTargetSelection)))
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`, replace:
 
 ```scala
       case None if legal.isEmpty => Right(Vector.empty)
@@ -6121,7 +6121,7 @@ All three are persistent rules.
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/targeting/CircletOfCommandSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/targeting/CircletOfCommandSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -6277,7 +6277,7 @@ class CircletOfCommandSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/targeting/FortressRulesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/targeting/FortressRulesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -6451,7 +6451,7 @@ class FortressRulesSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/targeting/TargetingFixture.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/targeting/TargetingFixture.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -6545,7 +6545,7 @@ Expected: FAIL to compile, for example `not found: value CircletOfCommand`.
 
 - [ ] **Step 3: Implement**
 
-Create `src/main/scala/oathdigital/gameplay/powers/targeting/CircletOfCommand.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/targeting/CircletOfCommand.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -6636,7 +6636,7 @@ object CircletOfCommand {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -6805,7 +6805,7 @@ object RottingFortress {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/targeting/TargetProtections.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/targeting/TargetProtections.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.targeting
@@ -6825,7 +6825,7 @@ object TargetProtections {
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.powers.rest.{LeagueTreatyContribution, SilverTongue}
@@ -6838,7 +6838,7 @@ import oathdigital.gameplay.powers.rest.{LeagueTreatyContribution, SilverTongue}
 import oathdigital.gameplay.powers.targeting.TargetProtections
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
       CardPlayTriggers.forCatalog(catalog) ++
@@ -6893,7 +6893,7 @@ This answers the product owner's question, "does the Restriction not catch the C
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/RestrictionAnswersSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/RestrictionAnswersSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -6983,7 +6983,7 @@ Expected: FAIL to compile, for example `too many arguments (found 5, expected 4)
 
 - [ ] **Step 3: Implement**
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
 import oathdigital.model.{Branch, Decide,
@@ -6995,7 +6995,7 @@ with:
 import oathdigital.model.{Answered, Branch, Decide,
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
   def restrictionViolations(tree: Operation, powers: WalkerPowers,
@@ -7010,7 +7010,7 @@ with:
       answered: Vector[Answered] = Vector.empty): Vector[OathViolation] = {
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
         case branch: Branch => descend(branch.select(state,
@@ -7024,7 +7024,7 @@ with:
           PendingTree(at = path, answered = answered)))
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
         case branch: Branch => descend(branch.select(state,
@@ -7044,7 +7044,7 @@ with:
           state.game.current.walkerProcedure)._1)
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, replace:
 
 ```scala
   def restrictionViolations(tree: Operation, powers: WalkerPowers,
@@ -7062,7 +7062,7 @@ with:
     powers, state, activePlayer, answered)
 ```
 
-In `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, replace:
 
 ```scala
   private def checkRestrictions(tree: Operation, powers: WalkerPowers,
@@ -7081,7 +7081,7 @@ with:
       .headOption.toLeft(())
 ```
 
-In `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, replace:
 
 ```scala
       powers = walkerPowers(ready, activePlayer, modifiers)
@@ -7098,7 +7098,7 @@ with:
     } yield (ready, procedure, tree, pending, powers, modifiers, startArgs)
 ```
 
-In `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, replace:
 
 ```scala
       case (ready, procedure, tree, pending, powers, modifiers, startArgs) =>
@@ -7158,7 +7158,7 @@ With Task 12, a restriction on the whole Campaign applies to the nested one: ans
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/KnightsErrantSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/KnightsErrantSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -7392,7 +7392,7 @@ Expected: FAIL to compile, for example `not found: value KnightsErrant`.
 
 - [ ] **Step 3: Implement**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/KnightsErrant.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/KnightsErrant.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -7474,7 +7474,7 @@ object KnightsErrant {
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
@@ -7487,7 +7487,7 @@ import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
 import oathdigital.gameplay.powers.economy.KnightsErrant
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
       CardPlayTriggers.forCatalog(catalog) ++
@@ -7500,7 +7500,7 @@ with:
       CardPlayTriggers.forCatalog(catalog) ++
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/economy/MusterProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/economy/MusterProcedure.scala`, replace:
 
 ```scala
   val decisionId: String = "muster.source"
@@ -7515,7 +7515,7 @@ with:
   val decisionPrefix: String = "muster."
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, replace:
 
 ```scala
       continuationFor = (decisionId, actor, decision) =>

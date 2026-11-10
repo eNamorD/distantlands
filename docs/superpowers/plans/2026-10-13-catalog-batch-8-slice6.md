@@ -100,23 +100,23 @@ These are written into the design and the rulings appendix in Task 1. Rulings 1,
 
 ## File map
 
-- Create `src/main/scala/oathdigital/gameplay/powerresolver/ExecutedTrigger.scala`.
-- Create `src/main/scala/oathdigital/gameplay/walker/ExecutedTriggers.scala`. Modify:
+- Create `src/main/scala/distantlands/gameplay/powerresolver/ExecutedTrigger.scala`.
+- Create `src/main/scala/distantlands/gameplay/walker/ExecutedTriggers.scala`. Modify:
   - `WalkState.scala`: `WalkCtx.following`;
   - `WalkerSteps.scala`: `recordBatch` holds a triggering batch;
   - `ProcedureWalker.scala`: walks the follow-ups, fresh and on resume.
-- Modify `src/main/scala/oathdigital/gameplay/powers/campaign/BrassArmy.scala`: ±4, both sides.
+- Modify `src/main/scala/distantlands/gameplay/powers/campaign/BrassArmy.scala`: ±4, both sides.
 - Modify `docs/catalog/reference/new-foundations-component-catalog.json`: Brass Army's rules text.
-- Create `src/main/scala/oathdigital/gameplay/powers/travel/BrassArmyMoves.scala`.
-- Create `src/main/scala/oathdigital/gameplay/powers/banner/SecretTestament.scala`. Modify:
-  - `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala`: `SecretTestamentCard` leaves;
-  - `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`: imports it.
-- Modify `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`: both powers.
+- Create `src/main/scala/distantlands/gameplay/powers/travel/BrassArmyMoves.scala`.
+- Create `src/main/scala/distantlands/gameplay/powers/banner/SecretTestament.scala`. Modify:
+  - `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala`: `SecretTestamentCard` leaves;
+  - `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`: imports it.
+- Modify `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`: both powers.
 - Tests:
-  - create `src/test/scala/oathdigital/gameplay/walker/ExecutedTriggersSuite.scala`;
-  - create `src/test/scala/oathdigital/gameplay/powers/travel/BrassArmyMovesSuite.scala`;
-  - create `src/test/scala/oathdigital/gameplay/powers/banner/SecretTestamentSuite.scala`;
-  - modify `src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala` and `PowerKindsCatalogSuite.scala`.
+  - create `src/test/scala/distantlands/gameplay/walker/ExecutedTriggersSuite.scala`;
+  - create `src/test/scala/distantlands/gameplay/powers/travel/BrassArmyMovesSuite.scala`;
+  - create `src/test/scala/distantlands/gameplay/powers/banner/SecretTestamentSuite.scala`;
+  - modify `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala` and `PowerKindsCatalogSuite.scala`.
 - Docs: the design, the rulings appendix and `docs/ROADMAP.md`.
 
 ---
@@ -215,12 +215,12 @@ git commit -m "docs(batch8): slice 6 rulings: Secret Testament is a Challenge mo
 ### Task 2: Triggers on executed operations
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/ExecutedTrigger.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/ExecutedTriggers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkState.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala` (`recordBatch`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Test: `src/test/scala/oathdigital/gameplay/walker/ExecutedTriggersSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/ExecutedTrigger.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/ExecutedTriggers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkState.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala` (`recordBatch`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Test: `src/test/scala/distantlands/gameplay/walker/ExecutedTriggersSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -535,7 +535,7 @@ Expected: PASS. No power is a trigger yet, so nothing else changes.
 - [ ] **Step 9: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/ExecutedTrigger.scala src/main/scala/oathdigital/gameplay/walker/ExecutedTriggers.scala src/main/scala/oathdigital/gameplay/walker/WalkState.scala src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/test/scala/oathdigital/gameplay/walker/ExecutedTriggersSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/ExecutedTrigger.scala src/main/scala/distantlands/gameplay/walker/ExecutedTriggers.scala src/main/scala/distantlands/gameplay/walker/WalkState.scala src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/test/scala/distantlands/gameplay/walker/ExecutedTriggersSuite.scala
 git commit -m "feat(batch8): a trigger may start a follow-up after a walker batch"
 ```
 
@@ -544,9 +544,9 @@ git commit -m "feat(batch8): a trigger may start a follow-up after a walker batc
 ### Task 3: Brass Army's battle plan is ±4
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BrassArmy.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BrassArmy.scala`
 - Modify: `docs/catalog/reference/new-foundations-component-catalog.json`
-- Test: `src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlanDice.effect(side, dice)` and `PlanDice.label(card, side, dice)` (existing, `private[campaign]`).
@@ -619,7 +619,7 @@ Expected: PASS. If a Campaign suite whose defender holds Brass Army now sees an 
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/BrassArmy.scala docs/catalog/reference/new-foundations-component-catalog.json src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/BrassArmy.scala docs/catalog/reference/new-foundations-component-catalog.json src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala
 git commit -m "fix(batch8): Brass Army's battle plan is ±4 for either side"
 ```
 
@@ -628,10 +628,10 @@ git commit -m "fix(batch8): Brass Army's battle plan is ±4 for either side"
 ### Task 4: Brass Army's restriction
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/BrassArmyMoves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/travel/BrassArmyMovesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/BrassArmyMoves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/travel/BrassArmyMovesSuite.scala`
 
 **Interfaces:**
 - Consumes: `ExecutedTrigger`, `ExecutedBatch` (Task 2); `BrassArmyCard.restriction` (existing).
@@ -887,7 +887,7 @@ Expected: PASS. A suite whose board gives a moving player a faceup Brass Army no
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/BrassArmyMoves.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala src/test/scala/oathdigital/gameplay/powers/travel/BrassArmyMovesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/travel/BrassArmyMoves.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala src/test/scala/distantlands/gameplay/powers/travel/BrassArmyMovesSuite.scala
 git commit -m "feat(batch8): Brass Army asks its holder after every pawn move"
 ```
 
@@ -896,12 +896,12 @@ git commit -m "feat(batch8): Brass Army asks its holder after every pawn move"
 ### Task 5: Secret Testament
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/banner/SecretTestament.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/banner/SecretTestamentSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/banner/SecretTestament.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/banner/SecretTestamentSuite.scala`
 
 **Interfaces:**
 - Consumes: `ChallengeProcedure.bannerDecisionId`, `BannerRules.holder` and `BannerRules.resources` (existing); `PowerWindow.ChallengeRibbon` (existing).
@@ -1137,7 +1137,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/banner/SecretTestament.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala src/test/scala/oathdigital/gameplay/powers/banner/SecretTestamentSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/banner/SecretTestament.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala src/test/scala/distantlands/gameplay/powers/banner/SecretTestamentSuite.scala
 git commit -m "feat(batch8): Secret Testament takes a challenged banner's tokens"
 ```
 

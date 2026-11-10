@@ -161,27 +161,27 @@ These are written into the design and the rulings appendix in Task 1.
 
 ## File map
 
-- `src/main/scala/oathdigital/model/CoreOperations.scala`: `PositionedLocation.side`, `Move`'s side checks, `Take.sourceSide`, `Burn.by`.
-- `src/main/scala/oathdigital/gameplay/operations/OperationSecretPlanner.scala`: a named side is moved exactly.
-- `src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala`: the counted rebuild keeps `by`.
-- Create `src/main/scala/oathdigital/serialization/PositionWire.scala`. Modify `WalkerOperationCodec.scala`: the side, `sourceSide` and `by`.
-- `src/main/scala/oathdigital/gameplay/powers/SecretBurns.scala`: facedown secrets burnt by name.
+- `src/main/scala/distantlands/model/CoreOperations.scala`: `PositionedLocation.side`, `Move`'s side checks, `Take.sourceSide`, `Burn.by`.
+- `src/main/scala/distantlands/gameplay/operations/OperationSecretPlanner.scala`: a named side is moved exactly.
+- `src/main/scala/distantlands/gameplay/operations/OperationResolution.scala`: the counted rebuild keeps `by`.
+- Create `src/main/scala/distantlands/serialization/PositionWire.scala`. Modify `WalkerOperationCodec.scala`: the side, `sourceSide` and `by`.
+- `src/main/scala/distantlands/gameplay/powers/SecretBurns.scala`: facedown secrets burnt by name.
 - Every `Burn` builder, as listed in Task 3:
   - `BookBurning`, `AncientBinding`, `Defame`, `Revelation`;
   - `ConspiracyWhenPlayed`, `Riots`, `Charlatan`, `GreatMarketRules`;
   - `Firebrand`, `AmberFlame`, `UnstableSummon`, `CampaignRaid`.
 - Every pattern on `PositionedLocation(_, _)` or `Take(...)`, which gains a `_` (the compiler lists them).
-- Create `src/main/scala/oathdigital/gameplay/powerresolver/BurnTake.scala`. Modify `ContributingPower.scala`: `takesBurn`.
-- Create `src/main/scala/oathdigital/gameplay/walker/BurnTakes.scala`. Modify:
+- Create `src/main/scala/distantlands/gameplay/powerresolver/BurnTake.scala`. Modify `ContributingPower.scala`: `takesBurn`.
+- Create `src/main/scala/distantlands/gameplay/walker/BurnTakes.scala`. Modify:
   - `WalkerSteps.scala`: `recordBatch` replaces the claimed burns;
   - `ProcedureWalker.scala`: `walkComposite` runs a claimed `Burn` or `PayCost` whole.
-- Create `src/main/scala/oathdigital/gameplay/powers/burn/BurnVows.scala`. Modify:
+- Create `src/main/scala/distantlands/gameplay/powers/burn/BurnVows.scala`. Modify:
   - the two holding files, which lose their cards;
   - `NewFoundations.scala`;
   - `WalkerPowerCatalog.scala`.
 - Tests:
-  - create `src/test/scala/oathdigital/gameplay/walker/BurnTakesSuite.scala`;
-  - create `src/test/scala/oathdigital/gameplay/powers/burn/VowOfSilenceSuite.scala` and `VowOfDivisionSuite.scala`;
+  - create `src/test/scala/distantlands/gameplay/walker/BurnTakesSuite.scala`;
+  - create `src/test/scala/distantlands/gameplay/powers/burn/VowOfSilenceSuite.scala` and `VowOfDivisionSuite.scala`;
   - modify `OperationExecutorSuite`, `WalkerOperationWireSuite`, `PowerKindsCatalogSuite`, and the suites Tasks 2 and 3 list.
 - Docs:
   - the design;
@@ -367,14 +367,14 @@ git commit -m "docs(batch8): slice 5 plan-time rulings for the burn vows"
 ### Task 2: A secret move names its side
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`PositionedLocation`, `Move`, `Take`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationSecretPlanner.scala` (`planSecretSource`)
-- Create: `src/main/scala/oathdigital/serialization/PositionWire.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SecretBurns.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`PositionedLocation`, `Move`, `Take`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationSecretPlanner.scala` (`planSecretSource`)
+- Create: `src/main/scala/distantlands/serialization/PositionWire.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/SecretBurns.scala`
 - Modify: every pattern the compiler flags (Step 6)
-- Test: `src/test/scala/oathdigital/gameplay/OperationExecutorSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/OperationExecutorSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -678,10 +678,10 @@ git commit -m "feat(batch8): a secret move may name the side it takes"
 ### Task 3: Every burn names its burner
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`Burn`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala` (`counted`, the `Burn` case)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (`"burn"`)
-- Modify, one call each (Step 5), all under `src/main/scala/oathdigital/`:
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`Burn`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationResolution.scala` (`counted`, the `Burn` case)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (`"burn"`)
+- Modify, one call each (Step 5), all under `src/main/scala/distantlands/`:
   - `gameplay/powers/SecretBurns.scala` and `gameplay/powers/campaign/BookBurning.scala`;
   - `gameplay/powers/action/AncientBinding.scala`, `Firebrand.scala` and `AmberFlame.scala`;
   - `gameplay/powers/economy/Defame.scala`;
@@ -689,7 +689,7 @@ git commit -m "feat(batch8): a secret move may name the side it takes"
   - `gameplay/powers/setup/GreatMarketRules.scala`;
   - `gameplay/powers/campaign/UnstableSummon.scala`;
   - `gameplay/actions/campaign/CampaignRaid.scala`.
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 - Modify (new argument only): the test suites in Step 6
 
 **Interfaces:**
@@ -977,14 +977,14 @@ The rest of `summon` stays as it is. Add `PlayerId` to `UnstableSummon`'s import
 
 - [ ] **Step 6: Give the test suites' burns their burner.** Each of these builds a `Burn`. Pass `None` unless the line says otherwise:
 
-  - `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`: the burns near lines 276 and 396.
-  - `src/test/scala/oathdigital/gameplay/OperationExecutorSuite.scala`: every burn, including the one Task 2 added.
-  - `src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala`: 2 calls.
-  - `src/test/scala/oathdigital/gameplay/OperationResolutionSuite.scala`: both burns in `Burn.favor(3, toArea) -> Burn.favor(1, toArea)`.
-  - `src/test/scala/oathdigital/gameplay/powers/campaign/UnstableSummonSuite.scala`: only `.move` is compared, so `None` is fine.
-  - `src/test/scala/oathdigital/application/gamelog/GameLogRareLinesSuite.scala`: 1 call.
-  - `src/test/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala`: the expected `leaving` burn is p1's, `Some(p1)`.
-  - `src/test/scala/oathdigital/gameplay/powers/campaign/BookBurningSuite.scala`: the expected facedown burn from Task 2 is the attacker's, `Some(b.actor)`.
+  - `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`: the burns near lines 276 and 396.
+  - `src/test/scala/distantlands/gameplay/OperationExecutorSuite.scala`: every burn, including the one Task 2 added.
+  - `src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala`: 2 calls.
+  - `src/test/scala/distantlands/gameplay/OperationResolutionSuite.scala`: both burns in `Burn.favor(3, toArea) -> Burn.favor(1, toArea)`.
+  - `src/test/scala/distantlands/gameplay/powers/campaign/UnstableSummonSuite.scala`: only `.move` is compared, so `None` is fine.
+  - `src/test/scala/distantlands/application/gamelog/GameLogRareLinesSuite.scala`: 1 call.
+  - `src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala`: the expected `leaving` burn is p1's, `Some(p1)`.
+  - `src/test/scala/distantlands/gameplay/powers/campaign/BookBurningSuite.scala`: the expected facedown burn from Task 2 is the attacker's, `Some(b.actor)`.
 
 - [ ] **Step 7: Run the affected suites.**
 
@@ -1002,12 +1002,12 @@ git commit -m "feat(batch8): every burn names its burner"
 ### Task 4: Burns taken
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/BurnTake.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` (after `onArrival`)
-- Create: `src/main/scala/oathdigital/gameplay/walker/BurnTakes.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala` (`recordBatch`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`walkComposite`)
-- Test: `src/test/scala/oathdigital/gameplay/walker/BurnTakesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/BurnTake.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` (after `onArrival`)
+- Create: `src/main/scala/distantlands/gameplay/walker/BurnTakes.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala` (`recordBatch`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`walkComposite`)
+- Test: `src/test/scala/distantlands/gameplay/walker/BurnTakesSuite.scala`
 
 **Interfaces:**
 - Consumes: `Burn.by` (Task 3), `PositionedLocation.side` and `Take.sourceSide` (Task 2).
@@ -1345,7 +1345,7 @@ Expected: PASS. No production power claims a burn yet, so every existing suite r
 - [ ] **Step 8: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/BurnTake.scala src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala src/main/scala/oathdigital/gameplay/walker/BurnTakes.scala src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/test/scala/oathdigital/gameplay/walker/BurnTakesSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/BurnTake.scala src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala src/main/scala/distantlands/gameplay/walker/BurnTakes.scala src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/test/scala/distantlands/gameplay/walker/BurnTakesSuite.scala
 git commit -m "feat(batch8): a burn a power claims becomes a Take to its taker"
 ```
 
@@ -1354,14 +1354,14 @@ git commit -m "feat(batch8): a burn a power claims becomes a Take to its taker"
 ### Task 5: Vow of Silence and Vow of Division
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/burn/BurnVows.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `VowOfSilenceCard`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala` (remove `VowOfDivisionCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import the cards)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` (register the Vows)
-- Test: `src/test/scala/oathdigital/gameplay/powers/burn/VowOfSilenceSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/burn/VowOfDivisionSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala` (`persistentRules`)
+- Create: `src/main/scala/distantlands/gameplay/powers/burn/BurnVows.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `VowOfSilenceCard`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala` (remove `VowOfDivisionCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import the cards)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` (register the Vows)
+- Test: `src/test/scala/distantlands/gameplay/powers/burn/VowOfSilenceSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/burn/VowOfDivisionSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala` (`persistentRules`)
 
 **Interfaces:**
 - Consumes: `Burnt`, `BurnTake` and `ContributingPower.takesBurn` (Task 4).
@@ -1752,7 +1752,7 @@ Stop and report, without changing the tests, in either of these cases:
 - [ ] **Step 7: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/burn/BurnVows.scala src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/burn/VowOfSilenceSuite.scala src/test/scala/oathdigital/gameplay/powers/burn/VowOfDivisionSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/burn/BurnVows.scala src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/powers/burn/VowOfSilenceSuite.scala src/test/scala/distantlands/gameplay/powers/burn/VowOfDivisionSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(batch8): Vow of Silence and Vow of Division take enemies' burns"
 ```
 

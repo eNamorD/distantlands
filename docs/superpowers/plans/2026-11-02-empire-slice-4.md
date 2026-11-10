@@ -60,15 +60,15 @@ Decided with the user on 2026-11-02. Task 8 records them in
 ### Task 1: The deal for a later game
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala`
-- Modify: `src/main/scala/oathdigital/application/ChronicleFirstGamePlan.scala`
-- Create: `src/main/scala/oathdigital/gameplay/setup/SetupDeal.scala`
-- Test: `src/test/scala/oathdigital/application/GeneratedFirstGamePlanFactorySuite.scala` (create if absent; else add to the existing factory suite)
-- Test: `src/test/scala/oathdigital/application/ChronicleFirstGamePlanSuite.scala` (same rule)
+- Modify: `src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala`
+- Modify: `src/main/scala/distantlands/application/ChronicleFirstGamePlan.scala`
+- Create: `src/main/scala/distantlands/gameplay/setup/SetupDeal.scala`
+- Test: `src/test/scala/distantlands/application/GeneratedFirstGamePlanFactorySuite.scala` (create if absent; else add to the existing factory suite)
+- Test: `src/test/scala/distantlands/application/ChronicleFirstGamePlanSuite.scala` (same rule)
 
 **Interfaces:**
 - Produces: `ChronicleFirstGamePlan.dealOrder(config: FirstGameBootstrapConfig, drawers: Int, denizenOrder: Vector[DenizenId], relicOrder: Vector[RelicId], mix: Vector[WorldCardId] => Vector[WorldCardId]): SetupOrders`. `drawers` is the number of seated players with no starting advisers. `mix` shuffles the Visions into a short deck.
-- Produces: `SetupDeal.drawers(chronicle: Chronicle, participants: Vector[FirstGameParticipant]): Int`, in a new `src/main/scala/oathdigital/gameplay/setup/SetupDeal.scala`, so `GameStartRules` (Task 2) and the application factory share it.
+- Produces: `SetupDeal.drawers(chronicle: Chronicle, participants: Vector[FirstGameParticipant]): Int`, in a new `src/main/scala/distantlands/gameplay/setup/SetupDeal.scala`, so `GameStartRules` (Task 2) and the application factory share it.
 - Produces: `firstPlayer` rule. With a Chancellor lineage in the Chronicle: the seated Chancellor's player, else a random seated Citizen's player, else the first seat (Task 2 refuses that Chronicle).
 
 - [ ] **Step 1: Write the failing tests**
@@ -173,7 +173,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/GeneratedFirstGamePlanFactory.scala src/main/scala/oathdigital/application/ChronicleFirstGamePlan.scala <test files>
+git add src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala src/main/scala/distantlands/application/ChronicleFirstGamePlan.scala <test files>
 git commit -m "feat(setup): a later game's deal seats the Chancellor first"
 ```
 
@@ -182,11 +182,11 @@ git commit -m "feat(setup): a later game's deal seats the Chancellor first"
 ### Task 2: Game-start validation for a later game
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/setup/EmpireSetup.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala`
-- Modify: `src/main/scala/oathdigital/model/Setup.scala` (`FirstGameSetupPlan`)
-- Test: `src/test/scala/oathdigital/gameplay/setup/GameStartRulesSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/setup/LaterGameFixture.scala` (create)
+- Create: `src/main/scala/distantlands/gameplay/setup/EmpireSetup.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala`
+- Modify: `src/main/scala/distantlands/model/Setup.scala` (`FirstGameSetupPlan`)
+- Test: `src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/setup/LaterGameFixture.scala` (create)
 
 **Interfaces:**
 - Produces, in `EmpireSetup.scala`:
@@ -342,9 +342,9 @@ git commit -m "feat(setup): game start accepts a later game with an Empire"
 ### Task 3: The later-game map
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/setup/FirstGameSetupMaterializer.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala` (edifice deck, atlas remainder)
-- Test: `src/test/scala/oathdigital/gameplay/setup/LaterGameSetupSuite.scala` (create)
+- Modify: `src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala` (edifice deck, atlas remainder)
+- Test: `src/test/scala/distantlands/gameplay/setup/LaterGameSetupSuite.scala` (create)
 
 **Interfaces:**
 - Consumes: `FirstGameSetupPlan.empire`, `.atlasSites` (Task 2).
@@ -454,11 +454,11 @@ git commit -m "feat(setup): a later game restores the Empire's sites"
 ### Task 4: Players, roles and the Imperial table
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/setup/LaterGameSetup.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/FirstGameSetupMaterializer.scala` (`handFor`, discards)
-- Modify: `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala` (extract `emptySites`)
-- Test: `src/test/scala/oathdigital/gameplay/setup/LaterGameSetupSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/setup/LaterGameSetup.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala` (`handFor`, discards)
+- Modify: `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala` (extract `emptySites`)
+- Test: `src/test/scala/distantlands/gameplay/setup/LaterGameSetupSuite.scala`
 
 **Interfaces:**
 - Consumes: `EmpireSetup`, `FirstGameSetupPlan.startingAdvisers`.
@@ -578,12 +578,12 @@ git commit -m "feat(setup): the Empire's players start with purple, the Scepter 
 ### Task 5: Setup choices for a later game
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/setup/SetupProcedure.scala`
-- Create: `src/main/scala/oathdigital/gameplay/setup/SetupPawnSites.scala`
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala` (`identifiesCard`, Reliquary case)
-- Modify: `src/main/scala/oathdigital/application/ProcedureLog.scala` (register the new line if Setup lines are registered there)
-- Test: `src/test/scala/oathdigital/gameplay/setup/SetupProcedureSuite.scala` (or the existing Setup walker suite; `grep -rln "pawnDecisionId" src/test`)
-- Test: `src/test/scala/oathdigital/application/GamePresentationProjectorSuite.scala` (or the suite that covers `identifiesCard`)
+- Modify: `src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala`
+- Create: `src/main/scala/distantlands/gameplay/setup/SetupPawnSites.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala` (`identifiesCard`, Reliquary case)
+- Modify: `src/main/scala/distantlands/application/ProcedureLog.scala` (register the new line if Setup lines are registered there)
+- Test: `src/test/scala/distantlands/gameplay/setup/SetupProcedureSuite.scala` (or the existing Setup walker suite; `grep -rln "pawnDecisionId" src/test`)
+- Test: `src/test/scala/distantlands/application/GamePresentationProjectorSuite.scala` (or the suite that covers `identifiesCard`)
 
 **Interfaces:**
 - Produces: `SetupProcedure.reliquaryDecisionId: String = "setup.reliquary-pick"`, `SetupProcedure.tookRelic: NoteKey` ("p1 took a relic from the Reliquary").
@@ -715,11 +715,11 @@ git commit -m "feat(setup): the Chancellor's Reliquary pick and role-legal pawn 
 ### Task 6: Roles on player selection
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/ChronicleProtocol.scala`
-- Modify: `src/main/scala/oathdigital/application/chronicle/ChronicleEntries.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TrustedHostUi.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/ChronicleProtocol.scala`
+- Modify: `src/main/scala/distantlands/application/chronicle/ChronicleEntries.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TrustedHostUi.scala`
 - Test: the `ChronicleEntryCodec` round-trip suite (`grep -rln "ChronicleEntryCodec" src/test shared frontend/src/test`)
-- Test: `frontend/src/test/scala/oathdigital/frontend/TrustedHostUiSuite.scala` (or the existing player-selection suite)
+- Test: `frontend/src/test/scala/distantlands/frontend/TrustedHostUiSuite.scala` (or the existing player-selection suite)
 
 **Interfaces:**
 - Produces: `ChronicleScore(lineage: String, score: Int, role: Option[String] = None)`. `role` is `"chancellor"` or `"citizen"`, absent for an Exile. The codec writes it only when present and accepts entries without it, so saved browser entries still decode.
@@ -758,7 +758,7 @@ Expected: FAIL to compile, `ChronicleScore` takes no `role`.
 - [ ] **Step 3: Implement**
 
 - `ChronicleEntryCodec`: `exact(row, Set("lineage", "score", "role"), child)` and `optionalAbsent(row, "role", child)(string)`; refuse a role other than `chancellor` or `citizen`.
-- `ChronicleEntries.summary`: `role = Option.when(lineage.role.isImperial)(lineage.role match { case Role.Chancellor => "chancellor"; case _ => "citizen" })`. Use the `Role` wire key if the model already has one (`grep -n "enum Role" -A6 src/main/scala/oathdigital/model`).
+- `ChronicleEntries.summary`: `role = Option.when(lineage.role.isImperial)(lineage.role match { case Role.Chancellor => "chancellor"; case _ => "citizen" })`. Use the `Role` wire key if the model already has one (`grep -n "enum Role" -A6 src/main/scala/distantlands/model`).
 - `TrustedHostUi.start`: read the roles from `chronicle` when it is `HostChronicle.Continue(saved)`, keyed by lineage id (`FirstGameBootstrapMapper.lineageOf(color)` spelling, `<color>-lineage`). Append ", Chancellor" or ", Citizen" to the color's label in the menu and the row, and to the row input's `aria-label`. Change the intro sentence as the test says. Purple stays out of `LineageColors`: purple is the Imperial warband color, not a lineage.
 
 - [ ] **Step 4: Run the tests to verify they pass**
@@ -778,7 +778,7 @@ git commit -m "feat(frontend): player selection shows each lineage's Imperial ro
 ### Task 7: Game 2 from game 1's Chronicle
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/chronicle/ChronicleEndToEndSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/chronicle/ChronicleEndToEndSuite.scala`
 - Create, if a golden log is added: `src/test/resources/gamelog/later-game-setup.*` (follow the existing golden layout; `grep -rln "GAMELOG_GOLDEN" src/test`)
 
 - [ ] **Step 1: Write the test**
@@ -854,4 +854,4 @@ git add docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs
 git commit -m "docs(empire): slice 4 rulings, traceability and roadmap"
 ```
 
-Also wrap the overlong doc-comment line in `src/main/scala/oathdigital/gameplay/chronicle/ChronicleCrown.scala` (line 41, left from slice 3b) in this commit or its own.
+Also wrap the overlong doc-comment line in `src/main/scala/distantlands/gameplay/chronicle/ChronicleCrown.scala` (line 41, left from slice 3b) in this commit or its own.

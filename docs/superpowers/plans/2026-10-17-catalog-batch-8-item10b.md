@@ -91,19 +91,19 @@ The design was written before slices 10 part 2 to 15 landed. These choices fit t
 ### Task 1: The power-use step in the walker
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/PowerUseStep.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/ParkedUses.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/PowerUseRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/AutomaticUses.scala` (rewrite)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:291-294` (one argument)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (`attributed`, `resolveAt`, `foldedChildrenAt`, new `nodeAt`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala:170` (`explained`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala`, `SpellBreaker.scala`, `ForestCouncil.scala` (borrow the note key)
-- Modify: `src/main/scala/oathdigital/model/Operation.scala:160-174` (the `AutomaticUse` Scaladoc)
-- Test: `src/test/scala/oathdigital/gameplay/walker/AutomaticUseSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/ForestCouncilSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/PowerUseStep.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/ParkedUses.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/PowerUseRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/AutomaticUses.scala` (rewrite)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:291-294` (one argument)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (`attributed`, `resolveAt`, `foldedChildrenAt`, new `nodeAt`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala:170` (`explained`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala`, `SpellBreaker.scala`, `ForestCouncil.scala` (borrow the note key)
+- Modify: `src/main/scala/distantlands/model/Operation.scala:160-174` (the `AutomaticUse` Scaladoc)
+- Test: `src/test/scala/distantlands/gameplay/walker/AutomaticUseSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/ForestCouncilSuite.scala`
 - Test: `src/test/resources/notes/declared-keys.txt` (regenerated)
 
 **Interfaces:**
@@ -292,7 +292,7 @@ Expected: it fails to compile: `PowerUseStep` and `ParkedUses` do not exist yet.
 
 - [ ] **Step 3: Add `PowerUseStep`**
 
-Create `src/main/scala/oathdigital/gameplay/powerresolver/PowerUseStep.scala`:
+Create `src/main/scala/distantlands/gameplay/powerresolver/PowerUseStep.scala`:
 
 ```scala
 package oathdigital.gameplay.powerresolver
@@ -513,7 +513,7 @@ Add to `WalkerPowerGather`, after `leafAt`:
 
 - [ ] **Step 8: Add `ParkedUses`**
 
-Create `src/main/scala/oathdigital/gameplay/walker/ParkedUses.scala`:
+Create `src/main/scala/distantlands/gameplay/walker/ParkedUses.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -582,21 +582,21 @@ Expected: PASS. If another suite fails because it stages a player-ruled refusal 
 - [ ] **Step 14: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/PowerUseStep.scala \
-  src/main/scala/oathdigital/gameplay/walker/ParkedUses.scala \
-  src/main/scala/oathdigital/gameplay/operations/PowerUseRules.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala \
-  src/main/scala/oathdigital/gameplay/walker/AutomaticUses.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala \
-  src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala \
-  src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala \
-  src/main/scala/oathdigital/gameplay/powers/poweruse/SpellBreaker.scala \
-  src/main/scala/oathdigital/gameplay/powers/poweruse/ForestCouncil.scala \
-  src/main/scala/oathdigital/model/Operation.scala \
-  src/test/scala/oathdigital/gameplay/walker/AutomaticUseSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/poweruse/ForestCouncilSuite.scala \
+git add src/main/scala/distantlands/gameplay/powerresolver/PowerUseStep.scala \
+  src/main/scala/distantlands/gameplay/walker/ParkedUses.scala \
+  src/main/scala/distantlands/gameplay/operations/PowerUseRules.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala \
+  src/main/scala/distantlands/gameplay/walker/AutomaticUses.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala \
+  src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala \
+  src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala \
+  src/main/scala/distantlands/gameplay/powers/poweruse/SpellBreaker.scala \
+  src/main/scala/distantlands/gameplay/powers/poweruse/ForestCouncil.scala \
+  src/main/scala/distantlands/model/Operation.scala \
+  src/test/scala/distantlands/gameplay/walker/AutomaticUseSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/poweruse/ForestCouncilSuite.scala \
   src/test/resources/notes/declared-keys.txt
 git commit -m "feat(batch8): a waivably refused automatic power waits at its step"
 ```
@@ -606,13 +606,13 @@ git commit -m "feat(batch8): a waivably refused automatic power waits at its ste
 ### Task 2: The walk opens the request, and the answer settles the step
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Consent.scala` (`ConsentUse`, `ConsentRequest.use`)
-- Modify: `src/main/scala/oathdigital/serialization/ConsentEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`powerUseStep`)
-- Modify: `src/main/scala/oathdigital/application/ConsentDesk.scala` (`opened`, `settled`, `answer`)
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala` (`handleAgainst`)
-- Create: `src/test/scala/oathdigital/application/AutomaticUseConsentServiceSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/ConsentEventWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Consent.scala` (`ConsentUse`, `ConsentRequest.use`)
+- Modify: `src/main/scala/distantlands/serialization/ConsentEventCodec.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`powerUseStep`)
+- Modify: `src/main/scala/distantlands/application/ConsentDesk.scala` (`opened`, `settled`, `answer`)
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala` (`handleAgainst`)
+- Create: `src/test/scala/distantlands/application/AutomaticUseConsentServiceSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/ConsentEventWireSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerUseStep.{use, skip}`, `ParkedUses.of` (Task 1); `OathRulesWalker.consentAsk`, `.resolveWalker`, `.grantAnswers`; `ConsentDesk.automatic`.
@@ -931,13 +931,13 @@ Expected: PASS.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Consent.scala \
-  src/main/scala/oathdigital/serialization/ConsentEventCodec.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/main/scala/oathdigital/application/ConsentDesk.scala \
-  src/main/scala/oathdigital/application/GameApplicationService.scala \
-  src/test/scala/oathdigital/application/AutomaticUseConsentServiceSuite.scala \
-  src/test/scala/oathdigital/serialization/ConsentEventWireSuite.scala
+git add src/main/scala/distantlands/model/Consent.scala \
+  src/main/scala/distantlands/serialization/ConsentEventCodec.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/main/scala/distantlands/application/ConsentDesk.scala \
+  src/main/scala/distantlands/application/GameApplicationService.scala \
+  src/test/scala/distantlands/application/AutomaticUseConsentServiceSuite.scala \
+  src/test/scala/distantlands/serialization/ConsentEventWireSuite.scala
 git commit -m "feat(batch8): the refusing card's ruler decides whether an automatic power works"
 ```
 
@@ -946,10 +946,10 @@ git commit -m "feat(batch8): the refusing card's ruler decides whether an automa
 ### Task 3: Undo coupling
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/UndoCoupling.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala` (`routed`, `takeBack`, `restore`, `appendBatch`, `loadedFrom`, a new `withdrawUse`)
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala:47-61` (the undo offer)
-- Create: `src/test/scala/oathdigital/application/AutomaticUseUndoSuite.scala`
+- Create: `src/main/scala/distantlands/application/UndoCoupling.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala` (`routed`, `takeBack`, `restore`, `appendBatch`, `loadedFrom`, a new `withdrawUse`)
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala:47-61` (the undo offer)
+- Create: `src/test/scala/distantlands/application/AutomaticUseUndoSuite.scala`
 
 **Interfaces:**
 - Consumes: `OathRulesWalker.powerUseStep`, `ConsentDesk.opened` (Task 2); `FoldedJournal.live` and `.redo`; `CommandBatch.before` and `.after`.
@@ -1113,7 +1113,7 @@ Expected: FAIL. The waiting Undo is answered by the plain withdrawal, which leav
 
 - [ ] **Step 3: Add `UndoCoupling`**
 
-Create `src/main/scala/oathdigital/application/UndoCoupling.scala`:
+Create `src/main/scala/distantlands/application/UndoCoupling.scala`:
 
 ```scala
 package oathdigital.application
@@ -1281,10 +1281,10 @@ Expected: PASS, the existing undo suites included.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/UndoCoupling.scala \
-  src/main/scala/oathdigital/application/GameApplicationService.scala \
-  src/main/scala/oathdigital/application/GameProjection.scala \
-  src/test/scala/oathdigital/application/AutomaticUseUndoSuite.scala
+git add src/main/scala/distantlands/application/UndoCoupling.scala \
+  src/main/scala/distantlands/application/GameApplicationService.scala \
+  src/main/scala/distantlands/application/GameProjection.scala \
+  src/test/scala/distantlands/application/AutomaticUseUndoSuite.scala
 git commit -m "feat(batch8): undo takes an automatic power's answer back with the step it settled"
 ```
 
@@ -1293,16 +1293,16 @@ git commit -m "feat(batch8): undo takes an automatic power's answer back with th
 ### Task 4: Wording: the prompt, the waiting line and the Game Log
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionDtos.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/ConsentProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ConsentLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala:209-210` (`crossCutting`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ConsentPanels.scala`
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogAutomaticUseSuite.scala`
-- Test: `src/test/scala/oathdigital/application/ConsentProjectionSuite.scala`
-- Test: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/ConsentPromptPanelSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionDtos.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionCodec.scala`
+- Modify: `src/main/scala/distantlands/application/ConsentProjector.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ConsentLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala:209-210` (`crossCutting`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ConsentPanels.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogAutomaticUseSuite.scala`
+- Test: `src/test/scala/distantlands/application/ConsentProjectionSuite.scala`
+- Test: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/ConsentPromptPanelSuite.scala`
 
 **Interfaces:**
 - Consumes: `ConsentRequest.use`, `ConsentUse.card` (Task 2); `PowerUseStep.isDecision` (Task 1).
@@ -1582,16 +1582,16 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionCodec.scala \
-  src/main/scala/oathdigital/application/ConsentProjector.scala \
-  src/main/scala/oathdigital/application/gamelog/ConsentLines.scala \
-  src/main/scala/oathdigital/application/gamelog/DetailLines.scala \
-  frontend/src/main/scala/oathdigital/frontend/ConsentPanels.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogAutomaticUseSuite.scala \
-  src/test/scala/oathdigital/application/ConsentProjectionSuite.scala \
-  shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ConsentPromptPanelSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionCodec.scala \
+  src/main/scala/distantlands/application/ConsentProjector.scala \
+  src/main/scala/distantlands/application/gamelog/ConsentLines.scala \
+  src/main/scala/distantlands/application/gamelog/DetailLines.scala \
+  frontend/src/main/scala/distantlands/frontend/ConsentPanels.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogAutomaticUseSuite.scala \
+  src/test/scala/distantlands/application/ConsentProjectionSuite.scala \
+  shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ConsentPromptPanelSuite.scala
 git commit -m "feat(batch8): word the ruler's decision on an automatic power"
 ```
 
@@ -1600,12 +1600,12 @@ git commit -m "feat(batch8): word the ruler's decision on an automatic power"
 ### Task 5: Hunger, and every wrapped power under a waivable refusal
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/phases/wake/ForcedWakeProcedure.scala`
-- Modify: `src/test/scala/oathdigital/testkit/AppendedAutomaticUses.scala` (`nodes`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/poweruse/AutomaticUseStepWiringSuite.scala`
-- Create: `src/test/scala/oathdigital/application/HungerConsentServiceSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/CityWallSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/ForestCouncilSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/wake/ForcedWakeProcedure.scala`
+- Modify: `src/test/scala/distantlands/testkit/AppendedAutomaticUses.scala` (`nodes`)
+- Create: `src/test/scala/distantlands/gameplay/powers/poweruse/AutomaticUseStepWiringSuite.scala`
+- Create: `src/test/scala/distantlands/application/HungerConsentServiceSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/CityWallSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/ForestCouncilSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1 to 4.
@@ -2019,12 +2019,12 @@ Expected: PASS. `HungerSuite` still passes: with no refusing card, Hunger's node
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/phases/wake/ForcedWakeProcedure.scala \
-  src/test/scala/oathdigital/testkit/AppendedAutomaticUses.scala \
-  src/test/scala/oathdigital/gameplay/powers/poweruse/AutomaticUseStepWiringSuite.scala \
-  src/test/scala/oathdigital/application/HungerConsentServiceSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/poweruse/CityWallSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/poweruse/ForestCouncilSuite.scala
+git add src/main/scala/distantlands/gameplay/phases/wake/ForcedWakeProcedure.scala \
+  src/test/scala/distantlands/testkit/AppendedAutomaticUses.scala \
+  src/test/scala/distantlands/gameplay/powers/poweruse/AutomaticUseStepWiringSuite.scala \
+  src/test/scala/distantlands/application/HungerConsentServiceSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/poweruse/CityWallSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/poweruse/ForestCouncilSuite.scala
 git commit -m "feat(batch8): Hunger and every wrapped power wait on their rulers"
 ```
 

@@ -48,7 +48,7 @@
 - `docs/superpowers/specs/2026-10-08-consent-system-design.md`, "Rulings" 1 to 8 and slice 3 (the operation path).
 - `docs/superpowers/plans/2026-10-14-catalog-batch-8-slice10-part1.md`, for the names this plan consumes.
 
-**Starts from:** `main` with slice 10 part 1 merged. Check that `src/main/scala/oathdigital/gameplay/powers/poweruse/SpellBreaker.scala` exists and that `PowerUse` has a `places` field. Where this plan quotes code, read the file as it is on `main` and apply the change to what is there.
+**Starts from:** `main` with slice 10 part 1 merged. Check that `src/main/scala/distantlands/gameplay/powers/poweruse/SpellBreaker.scala` exists and that `PowerUse` has a `places` field. Where this plan quotes code, read the file as it is on `main` and apply the change to what is there.
 
 ## Global Constraints
 
@@ -84,15 +84,15 @@
   - An askable reason ends " without ruler's consent." instead of ".".
 - **Names, exactly:**
   - `OathViolation.WaivableOperationRejected(code: String, detail: String, waiver: OperationWaiver)`.
-  - File `src/main/scala/oathdigital/gameplay/walker/OperationAsks.scala`: `private[walker] object OperationAsks` with `def of`.
+  - File `src/main/scala/distantlands/gameplay/walker/OperationAsks.scala`: `private[walker] object OperationAsks` with `def of`.
   - `ContributionCollector.gather(window, index, ctxFor, refused: ContributingPower => Boolean = _ => false)`.
   - `final case class AutomaticUse(user: PlayerId, power: PowerId, card: CardId, effect: (ReadyGame, PendingTree) => Vector[Operation])` in `model/Operation.scala`.
-  - File `src/main/scala/oathdigital/gameplay/walker/AutomaticUses.scala`: `private[walker] object AutomaticUses` with `def children`.
+  - File `src/main/scala/distantlands/gameplay/walker/AutomaticUses.scala`: `private[walker] object AutomaticUses` with `def children`.
   - `PowerUse.automatic(user: PlayerId, power: PowerId, card: CardId): PowerUse`.
   - `PowerUseRules.cardRef(card: CardId): DecisionOptionRef`.
-  - File `src/main/scala/oathdigital/gameplay/powers/poweruse/Placements.scala`: `private[powers] object Placements` with `onto` and `byUse`.
-  - File `src/main/scala/oathdigital/gameplay/powers/poweruse/ForestCouncil.scala`: `ForestCouncilCard` (moved unchanged from `HoldingBeastDenizens.scala`), `final case class ForestCouncil` and `object ForestCouncil` with `forCatalog`.
-  - File `src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala`: `CityWallCard` (moved unchanged from `HoldingOrderDenizens.scala`) and `case object CityWall`.
+  - File `src/main/scala/distantlands/gameplay/powers/poweruse/Placements.scala`: `private[powers] object Placements` with `onto` and `byUse`.
+  - File `src/main/scala/distantlands/gameplay/powers/poweruse/ForestCouncil.scala`: `ForestCouncilCard` (moved unchanged from `HoldingBeastDenizens.scala`), `final case class ForestCouncil` and `object ForestCouncil` with `forCatalog`.
+  - File `src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala`: `CityWallCard` (moved unchanged from `HoldingOrderDenizens.scala`) and `case object CityWall`.
 
 ---
 
@@ -165,12 +165,12 @@ git commit -m "docs(batch8): record slice 10 part 2's rulings"
 ### Task 2: Askable operation refusals
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameViolation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala` (`rejection`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala` (`active`)
-- Create: `src/main/scala/oathdigital/gameplay/walker/OperationAsks.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`narrowAt`, `reach`)
-- Test: `src/test/scala/oathdigital/gameplay/walker/OperationAsksSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameViolation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationResolution.scala` (`rejection`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala` (`active`)
+- Create: `src/main/scala/distantlands/gameplay/walker/OperationAsks.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`narrowAt`, `reach`)
+- Test: `src/test/scala/distantlands/gameplay/walker/OperationAsksSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -180,7 +180,7 @@ git commit -m "docs(batch8): record slice 10 part 2's rulings"
 
 - [ ] **Step 1: Write the failing engine tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/OperationAsksSuite.scala`. It musters with a test power that forbids placing favor on Alchemist. The board is `MusterProcedureSuite`'s.
+Create `src/test/scala/distantlands/gameplay/walker/OperationAsksSuite.scala`. It musters with a test power that forbids placing favor on Alchemist. The board is `MusterProcedureSuite`'s.
 
 ```scala
 package oathdigital.gameplay.walker
@@ -446,7 +446,7 @@ A test that matched the Hall of Ministers' rejection as `CoreOperationRejected("
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameViolation.scala src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala src/main/scala/oathdigital/gameplay/walker/OperationAsks.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/test/scala/oathdigital/gameplay/walker/OperationAsksSuite.scala
+git add src/main/scala/distantlands/model/GameViolation.scala src/main/scala/distantlands/gameplay/operations/OperationResolution.scala src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala src/main/scala/distantlands/gameplay/walker/OperationAsks.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/test/scala/distantlands/gameplay/walker/OperationAsksSuite.scala
 git commit -m "feat(batch8): an option only waivable operation refusals stop is askable"
 ```
 
@@ -467,24 +467,24 @@ replaces a Raid's consequences rather than appending, so it cannot be
 wrapped; the collector judges it at fold.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Operation.scala` (add `AutomaticUse`)
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/PowerUse.scala` (add `automatic`)
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/AutomaticUses.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/Tyrant.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/Hospitality.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/Keep.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/ExtraWarbands.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/VowOfBeastkin.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/VowOfWandering.scala` (`VowOfWanderingMuster`)
-- Test: `src/test/scala/oathdigital/gameplay/ContributionCollectorSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/walker/AutomaticUseSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/AutomaticPowerUseSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Operation.scala` (add `AutomaticUse`)
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/PowerUse.scala` (add `automatic`)
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/AutomaticUses.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/Tyrant.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/Hospitality.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/Keep.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/ExtraWarbands.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/VowOfBeastkin.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/VowOfWandering.scala` (`VowOfWanderingMuster`)
+- Test: `src/test/scala/distantlands/gameplay/ContributionCollectorSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/walker/AutomaticUseSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/AutomaticPowerUseSuite.scala`
 
 **Interfaces:**
 - Consumes: part 1's `ContributingPower.use`, `WalkerPowers.useRestrictions` and `PowerUseRules.refusals`.
@@ -524,7 +524,7 @@ Add to `ContributionCollectorSuite`:
 
 - [ ] **Step 2: Write the failing node tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/AutomaticUseSuite.scala`. Model it on `BurnTakesSuite`: walk a tree with `ProcedureWalker.advance(from, tree, None, powers)`. Its test power declares one `PowerUseRestriction` (part 1's trait) through `powerUseRestrictions`, refusing every use of `PowerId("test.automatic")` while p1 holds no favor, with no waiver. Name it for what it does, for example `RefusesTestPowerWithoutFavor`. Tests:
+Create `src/test/scala/distantlands/gameplay/walker/AutomaticUseSuite.scala`. Model it on `BurnTakesSuite`: walk a tree with `ProcedureWalker.advance(from, tree, None, powers)`. Its test power declares one `PowerUseRestriction` (part 1's trait) through `powerUseRestrictions`, refusing every use of `PowerId("test.automatic")` while p1 holds no favor, with no waiver. Name it for what it does, for example `RefusesTestPowerWithoutFavor`. Tests:
 
 - "an allowed automatic use runs its effect": `AutomaticUse(p1, PowerId("test.automatic"), <a denizen id>, (_, _) => Vector(<a 1-favor gain for p1>))` walked with p1 holding favor gains it.
 - "a refused automatic use runs nothing": the same tree with p1 at 0 favor finishes with nothing gained.
@@ -533,7 +533,7 @@ Create `src/test/scala/oathdigital/gameplay/walker/AutomaticUseSuite.scala`. Mod
 
 - [ ] **Step 3: Write the failing use tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/poweruse/AutomaticPowerUseSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/poweruse/AutomaticPowerUseSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.poweruse
@@ -712,7 +712,7 @@ Expected: all pass. Nothing in the catalog refuses these powers yet: Spell Break
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Operation.scala src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala src/main/scala/oathdigital/gameplay/powerresolver/PowerUse.scala src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala src/main/scala/oathdigital/gameplay/walker/AutomaticUses.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala src/main/scala/oathdigital/gameplay/powers/travel/Tyrant.scala src/main/scala/oathdigital/gameplay/powers/travel/Hospitality.scala src/main/scala/oathdigital/gameplay/powers/campaign/Keep.scala src/main/scala/oathdigital/gameplay/powers/economy/ExtraWarbands.scala src/main/scala/oathdigital/gameplay/powers/economy/VowOfBeastkin.scala src/main/scala/oathdigital/gameplay/powers/economy/VowOfWandering.scala src/test/scala/oathdigital/gameplay/ContributionCollectorSuite.scala src/test/scala/oathdigital/gameplay/walker/AutomaticUseSuite.scala src/test/scala/oathdigital/gameplay/powers/poweruse/AutomaticPowerUseSuite.scala
+git add src/main/scala/distantlands/model/Operation.scala src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala src/main/scala/distantlands/gameplay/powerresolver/PowerUse.scala src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala src/main/scala/distantlands/gameplay/walker/AutomaticUses.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala src/main/scala/distantlands/gameplay/powers/travel/Tyrant.scala src/main/scala/distantlands/gameplay/powers/travel/Hospitality.scala src/main/scala/distantlands/gameplay/powers/campaign/Keep.scala src/main/scala/distantlands/gameplay/powers/economy/ExtraWarbands.scala src/main/scala/distantlands/gameplay/powers/economy/VowOfBeastkin.scala src/main/scala/distantlands/gameplay/powers/economy/VowOfWandering.scala src/test/scala/distantlands/gameplay/ContributionCollectorSuite.scala src/test/scala/distantlands/gameplay/walker/AutomaticUseSuite.scala src/test/scala/distantlands/gameplay/powers/poweruse/AutomaticPowerUseSuite.scala
 ```
 
 Also stage each power suite Step 9 changed, by explicit path.
@@ -726,15 +726,15 @@ git commit -m "feat(batch8): a refused automatic power does not apply"
 ### Task 4: Forest Council
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/poweruse/Placements.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/poweruse/ForestCouncil.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/RulerBans.scala` (add `reason`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/PowerUseRules.scala` (add `cardRef`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `ForestCouncilCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/poweruse/Placements.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/poweruse/ForestCouncil.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/RulerBans.scala` (add `reason`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/PowerUseRules.scala` (add `cardRef`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `ForestCouncilCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/ForestCouncilSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/ForestCouncilSuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -750,7 +750,7 @@ git commit -m "feat(batch8): a refused automatic power does not apply"
 
 - [ ] **Step 1: Write the failing restriction and path tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/poweruse/ForestCouncilSuite.scala`.
+Create `src/test/scala/distantlands/gameplay/powers/poweruse/ForestCouncilSuite.scala`.
 
 The boards are:
 - Forest Council stands at Deep Woods.
@@ -1120,7 +1120,7 @@ A suite whose board puts Forest Council beside a Beast card it uses may now see 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/poweruse/Placements.scala src/main/scala/oathdigital/gameplay/powers/poweruse/ForestCouncil.scala src/main/scala/oathdigital/gameplay/powers/poweruse/RulerBans.scala src/main/scala/oathdigital/gameplay/operations/PowerUseRules.scala src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/poweruse/ForestCouncilSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/poweruse/Placements.scala src/main/scala/distantlands/gameplay/powers/poweruse/ForestCouncil.scala src/main/scala/distantlands/gameplay/powers/poweruse/RulerBans.scala src/main/scala/distantlands/gameplay/operations/PowerUseRules.scala src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/poweruse/ForestCouncilSuite.scala
 git commit -m "feat(batch8): Forest Council bans its ruler's enemies from Beast cards"
 ```
 
@@ -1129,12 +1129,12 @@ git commit -m "feat(batch8): Forest Council bans its ruler's enemies from Beast 
 ### Task 5: City Wall
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` (remove `CityWallCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` (remove `CityWallCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/CityWallSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/CityWallSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 4's `Placements`, `RulerBans.reason` and `PowerUseRules.cardRef`.
@@ -1142,7 +1142,7 @@ git commit -m "feat(batch8): Forest Council bans its ruler's enemies from Beast 
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/poweruse/CityWallSuite.scala`.
+Create `src/test/scala/distantlands/gameplay/powers/poweruse/CityWallSuite.scala`.
 - City Wall stands at Ancient City, p1's pawn site. p2 rules it by default.
 - The restriction tests mirror Forest Council's. The path tests use the boards named below.
 
@@ -1327,7 +1327,7 @@ Expected: all pass. CityWallSuite has 11 tests: three for the restriction and ei
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/poweruse/CityWall.scala src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/poweruse/CityWallSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/poweruse/CityWallSuite.scala
 git commit -m "feat(batch8): City Wall bans its ruler's enemies at its site"
 ```
 

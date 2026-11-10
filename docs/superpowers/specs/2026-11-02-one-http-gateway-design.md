@@ -46,7 +46,7 @@ player to `ScopedProjectionContext`.
 | route tests | 4 (`GameRoutesSuite`) + 1 (`GameTrustBoundaryRoutesSuite`) | 18 (`TrustedSeatRoutesSuite`) | 5 (`AuthenticatedGameRoutesSuite`) + 7 (`AuthenticatedGameBootstrapRoutesSuite`) |
 
 Counted from `ServerRoutes.route`, `GameClient.scala` and
-`grep -c 'test(' src/test/scala/oathdigital/server/*.scala`.
+`grep -c 'test(' src/test/scala/distantlands/server/*.scala`.
 
 ### The service calls each writes
 

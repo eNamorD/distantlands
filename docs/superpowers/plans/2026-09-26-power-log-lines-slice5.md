@@ -74,14 +74,14 @@ These were settled while planning (2026-09-26). Task 2 records each one in the s
 
 | File | Change |
 |---|---|
-| `src/test/scala/oathdigital/gameplay/setup/SetupWalkDriver.scala` | `driveWithEvents` also returns the walk's events |
-| `src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala` | `drewNote` for a card source |
-| `src/main/scala/oathdigital/gameplay/powers/setup/EdificeSetupSupport.scala` | the shared `discarded` sentence |
-| `src/main/scala/oathdigital/gameplay/powers/setup/GreatMarketRules.scala` | Great Market and Bandit Market notes |
-| `src/main/scala/oathdigital/gameplay/powers/setup/GreatForgeRules.scala` | Great Forge and Broken Forge notes |
-| `src/main/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRules.scala` | Proving Grounds and Empty Grounds notes |
-| `src/test/scala/oathdigital/gameplay/powers/setup/*RulesSuite.scala` | each line's exact sentence |
-| `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala` | a setup note posts among the setup lines |
+| `src/test/scala/distantlands/gameplay/setup/SetupWalkDriver.scala` | `driveWithEvents` also returns the walk's events |
+| `src/main/scala/distantlands/gameplay/powers/RelicDraws.scala` | `drewNote` for a card source |
+| `src/main/scala/distantlands/gameplay/powers/setup/EdificeSetupSupport.scala` | the shared `discarded` sentence |
+| `src/main/scala/distantlands/gameplay/powers/setup/GreatMarketRules.scala` | Great Market and Bandit Market notes |
+| `src/main/scala/distantlands/gameplay/powers/setup/GreatForgeRules.scala` | Great Forge and Broken Forge notes |
+| `src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala` | Proving Grounds and Empty Grounds notes |
+| `src/test/scala/distantlands/gameplay/powers/setup/*RulesSuite.scala` | each line's exact sentence |
+| `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala` | a setup note posts among the setup lines |
 | `docs/superpowers/specs/2026-09-26-power-log-lines-design.md`, `docs/ROADMAP.md` | record the slice |
 
 ---
@@ -89,13 +89,13 @@ These were settled while planning (2026-09-26). Task 2 records each one in the s
 ### Task 1: The Markets and the Forges say what they did
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/setup/SetupWalkDriver.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/EdificeSetupSupport.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/GreatMarketRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/GreatForgeRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/setup/GreatMarketRulesSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/setup/GreatForgeRulesSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/setup/SetupWalkDriver.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/RelicDraws.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/EdificeSetupSupport.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/GreatMarketRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/GreatForgeRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/setup/GreatMarketRulesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/setup/GreatForgeRulesSuite.scala`
 
 **Interfaces:**
 - Test setup: `SetupWalkDriver` answers every decision with its first option, so every player places a pawn at `FirstGameSetupFixture.sites.head`, where the suites stage the edifice. A pawn-placed rule (Great Forge, Proving Grounds) therefore fires once per player. Broken Forge also fires once per player, but only the first time finds relics to discard.
@@ -447,13 +447,13 @@ If "Broken Forge writes the relics it discarded" fails because the list order di
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/setup/SetupWalkDriver.scala \
-  src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala \
-  src/main/scala/oathdigital/gameplay/powers/setup/EdificeSetupSupport.scala \
-  src/main/scala/oathdigital/gameplay/powers/setup/GreatMarketRules.scala \
-  src/main/scala/oathdigital/gameplay/powers/setup/GreatForgeRules.scala \
-  src/test/scala/oathdigital/gameplay/powers/setup/GreatMarketRulesSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/setup/GreatForgeRulesSuite.scala
+git add src/test/scala/distantlands/gameplay/setup/SetupWalkDriver.scala \
+  src/main/scala/distantlands/gameplay/powers/RelicDraws.scala \
+  src/main/scala/distantlands/gameplay/powers/setup/EdificeSetupSupport.scala \
+  src/main/scala/distantlands/gameplay/powers/setup/GreatMarketRules.scala \
+  src/main/scala/distantlands/gameplay/powers/setup/GreatForgeRules.scala \
+  src/test/scala/distantlands/gameplay/powers/setup/GreatMarketRulesSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/setup/GreatForgeRulesSuite.scala
 git commit -m "feat(powers): the Markets and the Forges say what they did at setup"
 ```
 
@@ -464,9 +464,9 @@ Add the trailer line to the message.
 ### Task 2: The Grounds say what they did; setup lines post among setup; record the slice
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRulesSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/setup/ProvingGroundsRulesSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
 - Modify: `docs/superpowers/specs/2026-09-26-power-log-lines-design.md`
 - Modify: `docs/ROADMAP.md`
 
@@ -721,9 +721,9 @@ Expected: all pass. The server test count is the baseline plus 9.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRules.scala \
-  src/test/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRulesSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala \
+git add src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala \
+  src/test/scala/distantlands/gameplay/powers/setup/ProvingGroundsRulesSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala \
   docs/superpowers/specs/2026-09-26-power-log-lines-design.md docs/ROADMAP.md
 git commit -m "feat(powers): the Grounds say what they did at setup; record slice 5"
 ```

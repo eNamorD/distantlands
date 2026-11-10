@@ -46,7 +46,7 @@ Expected: branch clean at `66f1124` (`git status` shows only untracked `docs/sup
 
 - [ ] **Step 2: Remove the leftover experiment suite if present**
 
-Run: `rm -f src/test/scala/oathdigital/gameplay/GainCapSemanticsSuite.scala`
+Run: `rm -f src/test/scala/distantlands/gameplay/GainCapSemanticsSuite.scala`
 Expected: file gone (it never existed in history).
 
 - [ ] **Step 3: Compile check**
@@ -57,9 +57,9 @@ Expected: success.
 ### Task 1: Plan-time clamp helper
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/SupplyResource.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:167`
-- Test: `src/test/scala/oathdigital/gameplay/SupplyResourceSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/SupplyResource.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala:167`
+- Test: `src/test/scala/distantlands/gameplay/SupplyResourceSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing new.
@@ -112,7 +112,7 @@ object SupplyResource {
 
 - [ ] **Step 4: Wire CardPlay to the helper**
 
-`src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:167`: replace
+`src/main/scala/distantlands/gameplay/actions/CardPlay.scala:167`: replace
 `val gain = math.min(1, ready.banks.favor.getOrElse(suit, 0))`
 with
 `val gain = SupplyResource.favor(ready.banks.favor.getOrElse(suit, 0), 1)`
@@ -126,16 +126,16 @@ Expected: PASS (5 tests).
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/SupplyResource.scala src/main/scala/oathdigital/gameplay/actions/CardPlay.scala src/test/scala/oathdigital/gameplay/SupplyResourceSuite.scala
+git add src/main/scala/distantlands/gameplay/SupplyResource.scala src/main/scala/distantlands/gameplay/actions/CardPlay.scala src/test/scala/distantlands/gameplay/SupplyResourceSuite.scala
 git commit -m "feat(rules): plan-time supply clamp helper for favor grants"
 ```
 
 ### Task 2: Cost vocabulary + PayCost (zero-cost allowed)
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala` (add `Cost` + `PayCost` near `Give`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/PowerOperations.scala` (delete `ResourceKind`/`CostDisposition`/`ResourceCost`/`CostDescription`/`Payment` + `PayCosts`; add `Costs`; `PowerOperationPlanner.payment` deleted, `placement` kept)
-- Test: `src/test/scala/oathdigital/gameplay/PowerOperationsSuite.scala` (rewrite cost tests), plus PayCost behavior cases
+- Modify: `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala` (add `Cost` + `PayCost` near `Give`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/PowerOperations.scala` (delete `ResourceKind`/`CostDisposition`/`ResourceCost`/`CostDescription`/`Payment` + `PayCosts`; add `Costs`; `PowerOperationPlanner.payment` deleted, `placement` kept)
+- Test: `src/test/scala/distantlands/gameplay/PowerOperationsSuite.scala` (rewrite cost tests), plus PayCost behavior cases
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -296,7 +296,7 @@ Expected: PASS (rewritten tests + the two new ones). Fix any assertion drift fou
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/PowerOperations.scala src/test/scala/oathdigital/gameplay/PowerOperationsSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/PowerOperations.scala src/test/scala/distantlands/gameplay/PowerOperationsSuite.scala
 git commit -m "feat(operations): Cost/PayCost replace the disposition cost machinery"
 ```
 
@@ -305,11 +305,11 @@ git commit -m "feat(operations): Cost/PayCost replace the disposition cost machi
 ### Task 3: AdjustSupply op + executor + all spend sites
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala` (new `AdjustSupply`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationError.scala` (new `InsufficientSupply`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala` (new mutation branch)
+- Modify: `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala` (new `AdjustSupply`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationError.scala` (new `InsufficientSupply`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala` (new mutation branch)
 - Modify (spend sites): `actions/Travel.scala`, `actions/Economy.scala`, `actions/Challenge.scala`, `actions/Forge.scala`, `actions/Search.scala`, `actions/Recover.scala`, `actions/Campaign.scala`
-- Test: `src/test/scala/oathdigital/gameplay/SupplyAdjustSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/SupplyAdjustSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -346,7 +346,7 @@ In `OperationError.scala`, add after `InsufficientPieces` (line ~39):
 
 - [ ] **Step 3: Write the failing executor tests**
 
-Create `src/test/scala/oathdigital/gameplay/SupplyAdjustSuite.scala`, reusing the `OperationExecutorSuite` fixture pattern:
+Create `src/test/scala/distantlands/gameplay/SupplyAdjustSuite.scala`, reusing the `OperationExecutorSuite` fixture pattern:
 
 ```scala
 package oathdigital.gameplay
@@ -498,14 +498,14 @@ Expected: existing suites stay green — outcomes byte-identical because the op 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationError.scala src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala src/main/scala/oathdigital/gameplay/actions/Travel.scala src/main/scala/oathdigital/gameplay/actions/Economy.scala src/main/scala/oathdigital/gameplay/actions/Challenge.scala src/main/scala/oathdigital/gameplay/actions/Forge.scala src/main/scala/oathdigital/gameplay/actions/Search.scala src/main/scala/oathdigital/gameplay/actions/Recover.scala src/main/scala/oathdigital/gameplay/actions/Campaign.scala src/test/scala/oathdigital/gameplay/SupplyAdjustSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/OperationError.scala src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala src/main/scala/distantlands/gameplay/actions/Travel.scala src/main/scala/distantlands/gameplay/actions/Economy.scala src/main/scala/distantlands/gameplay/actions/Challenge.scala src/main/scala/distantlands/gameplay/actions/Forge.scala src/main/scala/distantlands/gameplay/actions/Search.scala src/main/scala/distantlands/gameplay/actions/Recover.scala src/main/scala/distantlands/gameplay/actions/Campaign.scala src/test/scala/distantlands/gameplay/SupplyAdjustSuite.scala
 git commit -m "feat(operations): AdjustSupply standardizes supply spending"
 ```
 
 ### Task 4: Economy onto PayCost/AdjustSupply
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/Economy.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/Economy.scala`
 - Test: existing Economy/action suites (behavior assertions unchanged)
 
 **Interfaces:**
@@ -560,14 +560,14 @@ Expected: green, end-state unchanged.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/Economy.scala
+git add src/main/scala/distantlands/gameplay/actions/Economy.scala
 git commit -m "refactor(economy): Muster/Trade pay through PayCost and AdjustSupply"
 ```
 
 ### Task 5: Catacombs/RecoverPowers + codec onto new vocabulary
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RecoverPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/RecoverPowers.scala`
 - Modify: the `OathEvent.CatacombsResolved` event + its serializer (find via grep `CatacombsResolved`)
 - Modify: replay/round-trip fixtures referencing `CatacombsResolved(...)` and `.payment`
 

@@ -26,7 +26,7 @@
 
 Read both sections before starting, and `docs/superpowers/specs/2026-10-08-consent-system-design.md`, rulings 1 to 8, for the asks.
 
-**Starts from:** `main` with slice 10 part 2 merged (commit `80226fde`). Check that `src/main/scala/oathdigital/gameplay/walker/OperationAsks.scala` exists. Slice 10 part 3 has not run yet; Task 3 amends its plan.
+**Starts from:** `main` with slice 10 part 2 merged (commit `80226fde`). Check that `src/main/scala/distantlands/gameplay/walker/OperationAsks.scala` exists. Slice 10 part 3 has not run yet; Task 3 amends its plan.
 
 ## Global Constraints
 
@@ -55,7 +55,7 @@ Read both sections before starting, and `docs/superpowers/specs/2026-10-08-conse
   - The generic reason: "Cannot be chosen now".
 - **Names, exactly:**
   - `Decide.Pass: DecisionOptionRef.Button`, the reference `DecisionOptionRef.Button("pass")`, in a new `object Decide` in `model/Operation.scala`.
-  - File `src/main/scala/oathdigital/gameplay/walker/EmptyChoices.scala`: `private[walker] object EmptyChoices` with `Heading`, `Reason`, `ContinueOption`, `nothingLeft` and `offered`.
+  - File `src/main/scala/distantlands/gameplay/walker/EmptyChoices.scala`: `private[walker] object EmptyChoices` with `Heading`, `Reason`, `ContinueOption`, `nothingLeft` and `offered`.
   - Test helper `PhasePowerHarness.continuedPast(from: OathTransition, decision: String): Either[OathViolation, OathTransition]`.
 - **Scope.** Only decisions marked `passWhenEmpty` change. A required decision, an optional choose-many and every other question are untouched.
 
@@ -64,14 +64,14 @@ Read both sections before starting, and `docs/superpowers/specs/2026-10-08-conse
 ### Task 1: The Continue screen
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Operation.scala` (add `object Decide`; update `Decide`'s doc)
-- Create: `src/main/scala/oathdigital/gameplay/walker/EmptyChoices.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`narrowAt`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala` (`one`, `last`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/NoteSupport.scala` (`answer`)
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala` (`decision`)
-- Modify: `src/test/scala/oathdigital/testkit/PhasePowerHarness.scala` (add `continuedPast`)
-- Test: `src/test/scala/oathdigital/gameplay/walker/EmptyChoicesSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Operation.scala` (add `object Decide`; update `Decide`'s doc)
+- Create: `src/main/scala/distantlands/gameplay/walker/EmptyChoices.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`narrowAt`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala` (`one`, `last`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/NoteSupport.scala` (`answer`)
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala` (`decision`)
+- Modify: `src/test/scala/distantlands/testkit/PhasePowerHarness.scala` (add `continuedPast`)
+- Test: `src/test/scala/distantlands/gameplay/walker/EmptyChoicesSuite.scala`
 - Test: the power suites listed in Step 7
 
 **Interfaces:**
@@ -86,7 +86,7 @@ Read both sections before starting, and `docs/superpowers/specs/2026-10-08-conse
 
 - [ ] **Step 1: Write the failing engine tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/EmptyChoicesSuite.scala`. Each tree asks one choose-one, `test.pick`, over two buttons, then runs a required batch that refuses any answer naming a button `refused` holds. With both refused the search empties the question.
+Create `src/test/scala/distantlands/gameplay/walker/EmptyChoicesSuite.scala`. Each tree asks one choose-one, `test.pick`, over two buttons, then runs a required batch that refuses any answer naming a button `refused` holds. With both refused the search empties the question.
 
 ```scala
 package oathdigital.gameplay.walker
@@ -298,7 +298,7 @@ In `ProcedureWalker.narrowAt`, replace the `case Right(narrowed) => Right(narrow
 
 The `++` order keeps the existing rule: a tree restriction's note wins over an operation ask for the same option. Update `narrowAt`'s doc comment: a choose-one passed when empty with nothing left parks on its Continue screen. Update `runLeaf`'s doc: "an optional one with nothing left is passed without asking" becomes "an optional choose-many with nothing left is passed without asking; a choose-one passed when empty parks on its Continue screen".
 
-Check `wc -l src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` stays at or under 800.
+Check `wc -l src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` stays at or under 800.
 
 - [ ] **Step 6: Read Continue as no answer**
 
@@ -382,7 +382,7 @@ Expected: all pass.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Operation.scala src/main/scala/oathdigital/gameplay/walker/EmptyChoices.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala src/main/scala/oathdigital/gameplay/powers/NoteSupport.scala src/main/scala/oathdigital/application/gamelog/DetailLines.scala src/test/scala/oathdigital/testkit/PhasePowerHarness.scala src/test/scala/oathdigital/gameplay/walker/EmptyChoicesSuite.scala
+git add src/main/scala/distantlands/model/Operation.scala src/main/scala/distantlands/gameplay/walker/EmptyChoices.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala src/main/scala/distantlands/gameplay/powers/NoteSupport.scala src/main/scala/distantlands/application/gamelog/DetailLines.scala src/test/scala/distantlands/testkit/PhasePowerHarness.scala src/test/scala/distantlands/gameplay/walker/EmptyChoicesSuite.scala
 git commit -m "feat(batch8): an empty choice shows why and offers Continue"
 ```
 
@@ -393,19 +393,19 @@ Also stage each power suite Step 7 changed, by explicit path.
 ### Task 2: Every pass-when-empty power asks
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/Assassin.scala` (`ask`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/Enchantress.scala` (`ask`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/Homesteaders.scala` (`ask`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/Resettle.scala` (`askAdviser`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/BedOfRoots.scala` (`ask`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/ArmedMob.scala` (`askAdviser`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/HeldRelicSpend.scala` (`ask`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/FaeMerchant.scala` (the relic `Branch`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SiteCards.scala` (`ask`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/RovingTerror.scala` (`ask`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/Assassin.scala` (`ask`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/Enchantress.scala` (`ask`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/Homesteaders.scala` (`ask`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/Resettle.scala` (`askAdviser`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/BedOfRoots.scala` (`ask`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/ArmedMob.scala` (`askAdviser`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/HeldRelicSpend.scala` (`ask`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/FaeMerchant.scala` (the relic `Branch`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SiteCards.scala` (`ask`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/RovingTerror.scala` (`ask`)
 - Test: the power suites listed in Step 3
-- Test: `src/test/scala/oathdigital/gameplay/operations/HallOfMinistersConsentSuite.scala`
-- Test: `src/test/scala/oathdigital/application/HallOfMinistersConsentServiceSuite.scala`, if it pins the skip
+- Test: `src/test/scala/distantlands/gameplay/operations/HallOfMinistersConsentSuite.scala`
+- Test: `src/test/scala/distantlands/application/HallOfMinistersConsentServiceSuite.scala`, if it pins the skip
 
 **Interfaces:**
 - Consumes: Task 1's Continue screen and `PhasePowerHarness.continuedPast`.
@@ -463,7 +463,7 @@ Rewrite each failing test as in Task 1, Step 7: assert the walk awaits the power
 - `TamingCharmSuite`, "with nothing to discard the cost stays paid, and the line names ...", and the same case in `GreatFeastSuite` if it has one;
 - `RovingTerrorSuite` and `FaeMerchantSuite`, any case with no card or relic to offer.
 
-Hall of Ministers: a Roving Terror whose only candidate the Hall protects was not asked before. This is the gap the plan closes. In `src/test/scala/oathdigital/gameplay/operations/HallOfMinistersConsentSuite.scala`, replace the test "when the Hall protects every candidate the question is not asked: a refusal would leave nothing to choose" with:
+Hall of Ministers: a Roving Terror whose only candidate the Hall protects was not asked before. This is the gap the plan closes. In `src/test/scala/distantlands/gameplay/operations/HallOfMinistersConsentSuite.scala`, replace the test "when the Hall protects every candidate the question is not asked: a refusal would leave nothing to choose" with:
 
 ```scala
   test("when the Hall protects every candidate the card is askable beside " +
@@ -492,7 +492,7 @@ Expected: all pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/Assassin.scala src/main/scala/oathdigital/gameplay/powers/action/Enchantress.scala src/main/scala/oathdigital/gameplay/powers/action/Homesteaders.scala src/main/scala/oathdigital/gameplay/powers/action/Resettle.scala src/main/scala/oathdigital/gameplay/powers/action/BedOfRoots.scala src/main/scala/oathdigital/gameplay/powers/action/ArmedMob.scala src/main/scala/oathdigital/gameplay/powers/action/HeldRelicSpend.scala src/main/scala/oathdigital/gameplay/powers/action/FaeMerchant.scala src/main/scala/oathdigital/gameplay/powers/action/SiteCards.scala src/main/scala/oathdigital/gameplay/powers/action/RovingTerror.scala
+git add src/main/scala/distantlands/gameplay/powers/action/Assassin.scala src/main/scala/distantlands/gameplay/powers/action/Enchantress.scala src/main/scala/distantlands/gameplay/powers/action/Homesteaders.scala src/main/scala/distantlands/gameplay/powers/action/Resettle.scala src/main/scala/distantlands/gameplay/powers/action/BedOfRoots.scala src/main/scala/distantlands/gameplay/powers/action/ArmedMob.scala src/main/scala/distantlands/gameplay/powers/action/HeldRelicSpend.scala src/main/scala/distantlands/gameplay/powers/action/FaeMerchant.scala src/main/scala/distantlands/gameplay/powers/action/SiteCards.scala src/main/scala/distantlands/gameplay/powers/action/RovingTerror.scala
 git commit -m "feat(batch8): a power with nothing to choose shows Continue"
 ```
 

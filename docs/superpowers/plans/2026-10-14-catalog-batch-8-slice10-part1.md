@@ -64,12 +64,12 @@ Task 1 amends the batch 8 documents with this slice's rulings. Read them again a
   - Plain: "Spell Breaker: Cannot use powers that cost secrets."
   - Askable: "Spell Breaker: Cannot use powers that cost secrets without ruler's consent."
 - **Names, exactly:**
-  - File `src/main/scala/oathdigital/gameplay/powerresolver/PowerUse.scala`: `final case class PowerUse`, `object PowerUse` with `def of`, `final case class PowerUseRefusal`, `trait PowerUseRestriction`.
-  - File `src/main/scala/oathdigital/gameplay/operations/PowerUseRules.scala`: `object PowerUseRules` with `useKey`, `target`, `refusals`, `shown`.
+  - File `src/main/scala/distantlands/gameplay/powerresolver/PowerUse.scala`: `final case class PowerUse`, `object PowerUse` with `def of`, `final case class PowerUseRefusal`, `trait PowerUseRestriction`.
+  - File `src/main/scala/distantlands/gameplay/operations/PowerUseRules.scala`: `object PowerUseRules` with `useKey`, `target`, `refusals`, `shown`.
   - `ContributingPower.use(ctx: PowerCtx): Option[PowerUse]` and `ContributingPower.powerUseRestrictions: Vector[PowerUseRestriction]`.
   - `WalkerPowers.useRestrictions`, `PhasePowers.useRestrictions`, `PhasePower.costsSecret`.
-  - File `src/main/scala/oathdigital/gameplay/powers/poweruse/RulerBans.scala`: `private[powers] object RulerBans`.
-  - File `src/main/scala/oathdigital/gameplay/powers/poweruse/SpellBreaker.scala`: `SpellBreakerCard` (moved unchanged from `HoldingNomadDenizens.scala`) and `case object SpellBreaker`.
+  - File `src/main/scala/distantlands/gameplay/powers/poweruse/RulerBans.scala`: `private[powers] object RulerBans`.
+  - File `src/main/scala/distantlands/gameplay/powers/poweruse/SpellBreaker.scala`: `SpellBreakerCard` (moved unchanged from `HoldingNomadDenizens.scala`) and `case object SpellBreaker`.
 
 ---
 
@@ -240,12 +240,12 @@ git commit -m "docs(batch8): record slice 10's plan-time rulings"
 ### Task 2: The power-use seam
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/PowerUse.scala`
-- Create: `src/main/scala/oathdigital/gameplay/operations/PowerUseRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` (trait `ContributingPower`)
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/operations/PowerUseRulesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/PowerUse.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/PowerUseRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` (trait `ContributingPower`)
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/operations/PowerUseRulesSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -265,7 +265,7 @@ git commit -m "docs(batch8): record slice 10's plan-time rulings"
 
 - [ ] **Step 1: Write the failing seam tests**
 
-Create `src/test/scala/oathdigital/gameplay/operations/PowerUseRulesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/operations/PowerUseRulesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -512,7 +512,7 @@ Expected: it compiles. A `PhasePowers(...)` built positionally still compiles, b
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/PowerUse.scala src/main/scala/oathdigital/gameplay/operations/PowerUseRules.scala src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala src/test/scala/oathdigital/gameplay/operations/PowerUseRulesSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/PowerUse.scala src/main/scala/distantlands/gameplay/operations/PowerUseRules.scala src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala src/test/scala/distantlands/gameplay/operations/PowerUseRulesSuite.scala
 git commit -m "feat(batch8): a power-use filter with consent"
 ```
 
@@ -521,15 +521,15 @@ git commit -m "feat(batch8): a power-use filter with consent"
 ### Task 3: Spell Breaker
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/poweruse/RulerBans.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/poweruse/SpellBreaker.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (remove `SpellBreakerCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import the new package)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/poweruse/RulerBans.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/poweruse/SpellBreaker.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (remove `SpellBreakerCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import the new package)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's `PowerUse`, `PowerUseRefusal`, `PowerUseRestriction`, `PowerUseRules`.
@@ -544,7 +544,7 @@ git commit -m "feat(batch8): a power-use filter with consent"
 
 - [ ] **Step 1: Write the failing restriction tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.poweruse
@@ -764,7 +764,7 @@ Expected: all pass. SpellBreakerSuite has 5 tests.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/poweruse/RulerBans.scala src/main/scala/oathdigital/gameplay/powers/poweruse/SpellBreaker.scala src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerSuite.scala src/test/resources/notes/declared-keys.txt
+git add src/main/scala/distantlands/gameplay/powers/poweruse/RulerBans.scala src/main/scala/distantlands/gameplay/powers/poweruse/SpellBreaker.scala src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerSuite.scala src/test/resources/notes/declared-keys.txt
 git commit -m "feat(batch8): Spell Breaker refuses its ruler's enemies secret powers"
 ```
 
@@ -773,11 +773,11 @@ git commit -m "feat(batch8): Spell Breaker refuses its ruler's enemies secret po
 ### Task 4: The phase path
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/wake/ForcedWakeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/WardOfSilence.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerPhaseSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/wake/ForcedWakeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/WardOfSilence.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerPhaseSuite.scala`
 
 **Interfaces:**
 - Consumes: `PhasePowers.useRestrictions`, `PhasePower.costsSecret`, `PowerUseRules.refusals`, `PowerUseRules.shown`.
@@ -787,7 +787,7 @@ git commit -m "feat(batch8): Spell Breaker refuses its ruler's enemies secret po
 
 - [ ] **Step 1: Write the failing phase tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerPhaseSuite.scala`. It uses Roving Terror, a site-only ACTION that costs one secret, with p1 at Ancient City beside it, and a card at Broken Peaks for it to replace, as `HallOfMinistersConsentSuite` sets it up.
+Create `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerPhaseSuite.scala`. It uses Roving Terror, a site-only ACTION that costs one secret, with p1 at Ancient City beside it, and a card at Broken Peaks for it to replace, as `HallOfMinistersConsentSuite` sets it up.
 
 ```scala
 package oathdigital.gameplay.powers.poweruse
@@ -967,7 +967,7 @@ Expected: all pass.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala src/main/scala/oathdigital/gameplay/phases/wake/ForcedWakeProcedure.scala src/main/scala/oathdigital/gameplay/powers/action/WardOfSilence.scala src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerPhaseSuite.scala
+git add src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala src/main/scala/distantlands/gameplay/phases/wake/ForcedWakeProcedure.scala src/main/scala/distantlands/gameplay/powers/action/WardOfSilence.scala src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerPhaseSuite.scala
 git commit -m "feat(batch8): the phase menu asks Spell Breaker's ruler"
 ```
 
@@ -976,10 +976,10 @@ git commit -m "feat(batch8): the phase menu asks Spell Breaker's ruler"
 ### Task 5: The modifier picker
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/recover/CatacombsContribution.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerModifierSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/recover/CatacombsContribution.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerModifierSuite.scala`
 
 **Interfaces:**
 - Consumes: `ContributingPower.use`, `WalkerPowers.useRestrictions`, `PowerUseRules`.
@@ -987,7 +987,7 @@ git commit -m "feat(batch8): the phase menu asks Spell Breaker's ruler"
 
 - [ ] **Step 1: Write the failing picker tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerModifierSuite.scala`. It uses Mushrooms, a Search modifier that costs one secret, from `MushroomsSuite`'s board, with Spell Breaker at Deep Woods.
+Create `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerModifierSuite.scala`. It uses Mushrooms, a Search modifier that costs one secret, from `MushroomsSuite`'s board, with Spell Breaker at Deep Woods.
 
 ```scala
 package oathdigital.gameplay.powers.poweruse
@@ -1124,7 +1124,7 @@ Expected: all pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala src/main/scala/oathdigital/gameplay/powers/recover/CatacombsContribution.scala src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerModifierSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala src/main/scala/distantlands/gameplay/powers/recover/CatacombsContribution.scala src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerModifierSuite.scala
 git commit -m "feat(batch8): the modifier picker asks Spell Breaker's ruler"
 ```
 
@@ -1133,11 +1133,11 @@ git commit -m "feat(batch8): the modifier picker asks Spell Breaker's ruler"
 ### Task 6: Battle plans and rerolls
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanSurcharge.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/dice/Jinx.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerOfferSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanSurcharge.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/dice/Jinx.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerOfferSuite.scala`
 
 **Interfaces:**
 - Consumes: `ContributingPower.use`, `WalkerPowers.useRestrictions`, `PowerUseRules`.
@@ -1148,7 +1148,7 @@ git commit -m "feat(batch8): the modifier picker asks Spell Breaker's ruler"
 
 - [ ] **Step 1: Write the failing offer tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerOfferSuite.scala`. The boards come from `CampaignFixture`, as `FireTalkersSuite`, `GleamingArmorSuite` and `JinxSuite` build them. Spell Breaker stands at Deep Woods, which is in play on every fixture map and is neither the origin nor a target.
+Create `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerOfferSuite.scala`. The boards come from `CampaignFixture`, as `FireTalkersSuite`, `GleamingArmorSuite` and `JinxSuite` build them. Spell Breaker stands at Deep Woods, which is in play on every fixture map and is neither the origin nor a target.
 
 ```scala
 package oathdigital.gameplay.powers.poweruse
@@ -1399,7 +1399,7 @@ Expected: all pass.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanSurcharge.scala src/main/scala/oathdigital/gameplay/powers/dice/Jinx.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala src/test/scala/oathdigital/gameplay/powers/poweruse/SpellBreakerOfferSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanSurcharge.scala src/main/scala/distantlands/gameplay/powers/dice/Jinx.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerOfferSuite.scala
 git commit -m "feat(batch8): Spell Breaker withholds secret battle plans and rerolls"
 ```
 

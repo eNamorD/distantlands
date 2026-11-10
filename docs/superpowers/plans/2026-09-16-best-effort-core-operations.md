@@ -24,21 +24,21 @@
 
 ## File map
 
-- `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala`: required defaults, per-instance overrides, positive `GainSupply` and `SpendSupply`; no attempt wrapper.
-- `src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala`: typed `OperationReason` classification, staged contextual restrictions, stable shape errors.
-- `src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala` (new): pure maximal-count resolution for optional executable operations, with linked-operation invariants.
-- `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala`: one staged fold returning `OperationRun`; post-update invariant and atomic rejection.
-- `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala`, `OperationStateAdapter.scala`, `OperationExecutor.scala`: Supply split and raw application of canonical operations; no best-effort logic in mutation/replay.
-- `src/main/scala/oathdigital/gameplay/operations/DiscardRestrictions.scala` (new): reusable catalog-backed discard-immunity restriction, with no Dazzle ID.
-- `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, `WalkerReplay.scala`: pass restrictions at command time and record only canonical executed operations; replay remains raw.
-- `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`: distinct Supply wire kinds and effect-only operation encoding.
+- `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala`: required defaults, per-instance overrides, positive `GainSupply` and `SpendSupply`; no attempt wrapper.
+- `src/main/scala/distantlands/gameplay/operations/OperationValidator.scala`: typed `OperationReason` classification, staged contextual restrictions, stable shape errors.
+- `src/main/scala/distantlands/gameplay/operations/OperationResolution.scala` (new): pure maximal-count resolution for optional executable operations, with linked-operation invariants.
+- `src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala`: one staged fold returning `OperationRun`; post-update invariant and atomic rejection.
+- `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala`, `OperationStateAdapter.scala`, `OperationExecutor.scala`: Supply split and raw application of canonical operations; no best-effort logic in mutation/replay.
+- `src/main/scala/distantlands/gameplay/operations/DiscardRestrictions.scala` (new): reusable catalog-backed discard-immunity restriction, with no Dazzle ID.
+- `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, `WalkerReplay.scala`: pass restrictions at command time and record only canonical executed operations; replay remains raw.
+- `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`: distinct Supply wire kinds and effect-only operation encoding.
 - Existing action/procedure and power callers: adapt all `OperationPipeline.run` results and all `AdjustSupply` construction/pattern matches in one prerequisite. Start with `rg -n 'OperationPipeline\.run\(|AdjustSupply' src/main/scala src/test/scala`; the current tree has 13 production pipeline call sites and Travel cost transforms depend on the signed amount. Supply references also occur in `actions/{Search,Economy}.scala`, `actions/{travel,recover,forge}/*Procedure.scala`, `phases/rest/FinishRestProcedure.scala`, `powers/travel/TravelSitePowers.scala`, and `gameplay/walker/ProcedureWalker.scala`.
 
 ---
 
 ### Task 1: Operation declarations and Supply split
 
-**Files:** Modify `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala`, `OperationValidator.scala`, `OperationStateMutation.scala`, `OperationStateAdapter.scala`, `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`, `src/main/scala/oathdigital/gameplay/actions/Search.scala`, `Economy.scala`, `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala`, `recover/RecoverProcedure.scala`, `forge/ForgeProcedure.scala`, `src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala`, `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala`, `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`. Test `src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala`, `OperationValidatorSuite.scala`, `SupplyAdjustSuite.scala`, `TravelProcedureSuite.scala`, `TravelSitePowersSuite.scala`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`; update remaining `AdjustSupply` test references found by the search above.
+**Files:** Modify `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala`, `OperationValidator.scala`, `OperationStateMutation.scala`, `OperationStateAdapter.scala`, `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`, `src/main/scala/distantlands/gameplay/actions/Search.scala`, `Economy.scala`, `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala`, `recover/RecoverProcedure.scala`, `forge/ForgeProcedure.scala`, `src/main/scala/distantlands/gameplay/phases/rest/FinishRestProcedure.scala`, `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala`, `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`. Test `src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala`, `OperationValidatorSuite.scala`, `SupplyAdjustSuite.scala`, `TravelProcedureSuite.scala`, `TravelSitePowersSuite.scala`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`; update remaining `AdjustSupply` test references found by the search above.
 
 **Interfaces:** `CoreOperation.required: Boolean = false`; `GainSupply(player: PlayerId, amount: Int)` (optional); `SpendSupply(player: PlayerId, amount: Int, required: Boolean = true)` (positive amount); `PayCost.required = true`; `Draw.required = true`; `Exchange.required = true`; `Replace.required = false`. Add `required` constructor parameters where a procedure must override the default, including `Discard.Denizen` and chosen placement operations. `required` is not encoded. At the end of this task the pipeline is still strict; behavior changes in Task 3.
 
@@ -63,7 +63,7 @@ case Vector(SpendSupply(player, amount, _)) =>
 
 ### Task 2: Typed impossibility and maximal-count resolver
 
-**Files:** Modify `src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala`, `OperationError.scala` if a typed error is needed. Create `src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala` and `DiscardRestrictions.scala`. Test `src/test/scala/oathdigital/gameplay/OperationValidatorSuite.scala`, new `src/test/scala/oathdigital/gameplay/OperationResolutionSuite.scala`, `src/test/scala/oathdigital/gameplay/OperationExecutorSuite.scala`.
+**Files:** Modify `src/main/scala/distantlands/gameplay/operations/OperationValidator.scala`, `OperationError.scala` if a typed error is needed. Create `src/main/scala/distantlands/gameplay/operations/OperationResolution.scala` and `DiscardRestrictions.scala`. Test `src/test/scala/distantlands/gameplay/OperationValidatorSuite.scala`, new `src/test/scala/distantlands/gameplay/OperationResolutionSuite.scala`, `src/test/scala/distantlands/gameplay/OperationExecutorSuite.scala`.
 
 **Interfaces:** `OperationReason(code: String, detail: String, kind: OperationReasonKind)` with `Impossible` and `Invalid`; retain existing `code`/`detail`. `OperationResolution.resolve(ready, requested, validator): Either[OathViolation, OperationResolution.Result]`, where `Result` is `Execute(actual: CoreOperation)` or `Skip(reasons: Vector[OperationReason])`. `DiscardRestrictions(catalog)` implements `OperationRestriction` without naming a power. Resolution is pure; it never mutates state or runs the raw executor.
 
@@ -92,7 +92,7 @@ else maximalLegal(requested).flatMap {
 
 ### Task 3: One breaking staged pipeline and caller cutover
 
-**Files:** Modify `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala`; update production callers in `src/main/scala/oathdigital/gameplay/actions/{Search,CardPlay,MinorActions,Visions,Campaign,Challenge,Economy,Negotiation}.scala`, `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala`, `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, and the exact call sites found by `rg`. Test new `src/test/scala/oathdigital/gameplay/OperationPipelineSuite.scala` plus existing action, operation, and walker suites. Update test helper `src/test/scala/oathdigital/gameplay/WalkerRecordedOpsReducer.scala`.
+**Files:** Modify `src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala`; update production callers in `src/main/scala/distantlands/gameplay/actions/{Search,CardPlay,MinorActions,Visions,Campaign,Challenge,Economy,Negotiation}.scala`, `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala`, `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, and the exact call sites found by `rg`. Test new `src/test/scala/distantlands/gameplay/OperationPipelineSuite.scala` plus existing action, operation, and walker suites. Update test helper `src/test/scala/distantlands/gameplay/WalkerRecordedOpsReducer.scala`.
 
 **Interfaces:** `OperationRun(state: ReadyGame, executed: Vector[CoreOperation], skipped: Vector[SkippedOperation])`; `SkippedOperation(requested: CoreOperation, reasons: Vector[OperationReason])`. `OperationPipeline.run(...) (update)` returns `Either[OathViolation, OperationRun]` and is the only pipeline path. It validates/resolves/executes each operation against staged state and runs `update` and post-state invariant once. The result's `executed` operations carry actual counts, with `required` reset to each concrete type's default for recording.
 
@@ -118,7 +118,7 @@ OperationPipeline.run(ready, operations, policy)(Right(_))
 
 ### Task 4: Walker restriction delivery and recording proof
 
-**Files:** Modify `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala`. Test `src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala`, `WalkerReplayDriftSuite.scala`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`.
+**Files:** Modify `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala`. Test `src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala`, `WalkerReplayDriftSuite.scala`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`.
 
 **Interfaces:** Extend `BuildOps` with `restrictions: (ReadyGame, PendingTree) => Vector[OperationRestriction] = (_, _) => Vector.empty`; the walker evaluates it at walk time and passes the result to `OperationPipeline.run`. `recordBatch` uses `OperationRun.executed` for `WalkerStepRecorded.ops` and `deltaMeaning`; when `executed` is empty, it writes no delta step. `WalkerReplay` remains a raw `OperationExecutor.executeAll` of recorded ops and receives no restrictions.
 

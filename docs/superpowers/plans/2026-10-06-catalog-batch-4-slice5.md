@@ -134,7 +134,7 @@ These settle what the spec and rulings leave open. Each one says what it costs i
 
 ## File Structure
 
-Production, under `src/main/scala/oathdigital/`:
+Production, under `src/main/scala/distantlands/`:
 
 | File | Change | Responsibility | Task |
 |---|---|---|---|
@@ -159,7 +159,7 @@ Production, under `src/main/scala/oathdigital/`:
 | `catalog/holding/Holding{Beast,Discord,Hearth,Nomad,Order}Denizens.scala` | modify | each card leaves; every import stays used | 1-7 |
 | `gameplay/cards/NewFoundations.scala` | modify | imports each moved card | 1-7 |
 
-Tests, under `src/test/scala/oathdigital/`:
+Tests, under `src/test/scala/distantlands/`:
 
 | File | Change | Tests | Task |
 |---|---|---|---|
@@ -186,16 +186,16 @@ Total: 37 new suite tests and 3 new pins, 40 server tests.
 ### Task 1: The ruler toll, Curfew and Forced Labor
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/RulerToll.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/Curfew.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/ForcedLabor.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala` (retire `Curfew`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` (remove `CurfewCard`, `ForcedLaborCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/RulerToll.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/Curfew.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/ForcedLabor.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala` (retire `Curfew`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` (remove `CurfewCard`, `ForcedLaborCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `SiteRulers.rulerOfCard`, `SiteRulers.rulerOf`, `PowerAccess.pawnSite`, `RuledCards.of`, `PowerAnswers.one`, `TradeProcedure.decisionId`, `NoteSupport.favor`.
@@ -206,7 +206,7 @@ Total: 37 new suite tests and 3 new pins, 40 server tests.
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -302,7 +302,7 @@ class CurfewSuite extends munit.FunSuite:
     }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -399,7 +399,7 @@ Expected: compile failure, `Curfew` and `ForcedLabor` are not found.
 
 - [ ] **Step 3: Write the shared toll**
 
-Create `src/main/scala/oathdigital/gameplay/powers/RulerToll.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/RulerToll.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -457,9 +457,9 @@ private[powers] object RulerToll:
 
 - [ ] **Step 4: Write Curfew**
 
-Remove `object CurfewCard` from `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`.
+Remove `object CurfewCard` from `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/Curfew.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/Curfew.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -538,9 +538,9 @@ object Curfew:
 
 - [ ] **Step 5: Write Forced Labor**
 
-Remove `object ForcedLaborCard` from `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`.
+Remove `object ForcedLaborCard` from `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/ForcedLabor.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/ForcedLabor.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -603,7 +603,7 @@ object ForcedLabor:
 
 - [ ] **Step 6: Register them and retire the stub**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`:
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 
 - Replace the doc comment with:
 
@@ -618,11 +618,11 @@ In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`:
 - Add `Curfew` to the `gameplay.powers.economy` import and `ForcedLabor` to the `gameplay.powers.search` import, alphabetically.
 - Add `Vector(Curfew.forCatalog(catalog)) ++` and `Vector(ForcedLabor.forCatalog(catalog)) ++` before `Vector(InitiationRite) ++`.
 
-In `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala`, delete the line `object Curfew extends ReviewedPower(...)` and drop `Curfew` from `powers`.
+In `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala`, delete the line `object Curfew extends ReviewedPower(...)` and drop `Curfew` from `powers`.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `CurfewCard` to the `gameplay.powers.economy` import and `ForcedLaborCard` to the `gameplay.powers.search` import.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `CurfewCard` to the `gameplay.powers.economy` import and `ForcedLaborCard` to the `gameplay.powers.search` import.
 
-In `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`, change the end of `persistentRules` from:
+In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, change the end of `persistentRules` from:
 
 ```scala
     "denizen.herald", "denizen.diplomat")
@@ -643,16 +643,16 @@ Expected: PASS, 4 tests in each new suite. `CardSlotsSuite` holds Curfew only to
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/RulerToll.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/Curfew.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/ForcedLabor.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/RulerToll.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/Curfew.scala \
+  src/main/scala/distantlands/gameplay/powers/search/ForcedLabor.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/main/scala/distantlands/gameplay/powers/MusterPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(economy): Curfew and Forced Labor charge their ruler's enemies a favor"
 ```
 
@@ -661,16 +661,16 @@ git commit -m "feat(economy): Curfew and Forced Labor charge their ruler's enemi
 ### Task 2: News from Afar and A Fast Steed
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/NewsFromAfar.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/AFastSteed.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala` (remove `NewsFromAfarCard`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (remove `AFastSteedCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/search/NewsFromAfarSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/travel/AFastSteedSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/NewsFromAfar.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/AFastSteed.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` (remove `NewsFromAfarCard`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (remove `AFastSteedCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/search/NewsFromAfarSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/travel/AFastSteedSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `SelectedModifier`, `TravelPayments.withoutSupply`, `TravelRoute.pawnMove`, `PlayerFacts.player`, `SearchFixture`, `TravelFixture`.
@@ -678,7 +678,7 @@ git commit -m "feat(economy): Curfew and Forced Labor charge their ruler's enemi
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/NewsFromAfarSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/NewsFromAfarSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -742,7 +742,7 @@ class NewsFromAfarSuite extends munit.FunSuite:
       .contains(NewsFromAfar.id))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/AFastSteedSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/AFastSteedSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -806,9 +806,9 @@ Expected: compile failure, `NewsFromAfar` and `AFastSteed` are not found.
 
 - [ ] **Step 3: Write News from Afar**
 
-Remove `object NewsFromAfarCard` from `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala`.
+Remove `object NewsFromAfarCard` from `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/NewsFromAfar.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/NewsFromAfar.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.search
@@ -860,9 +860,9 @@ object NewsFromAfar:
 
 - [ ] **Step 4: Write A Fast Steed**
 
-Remove `object AFastSteedCard` from `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`.
+Remove `object AFastSteedCard` from `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/AFastSteed.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/AFastSteed.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -921,9 +921,9 @@ object AFastSteed:
 
 - [ ] **Step 5: Register them**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`, add `NewsFromAfar` to the `gameplay.powers.search` import, and `Vector(NewsFromAfar.forCatalog(catalog)) ++` after `Vector(CropRotation.forCatalog(catalog)) ++`.
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`, add `NewsFromAfar` to the `gameplay.powers.search` import, and `Vector(NewsFromAfar.forCatalog(catalog)) ++` after `Vector(CropRotation.forCatalog(catalog)) ++`.
 
-In `src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala`, change the last line from:
+In `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala`, change the last line from:
 
 ```scala
       Vector(GraspingVines.forCatalog(catalog))
@@ -936,9 +936,9 @@ to:
       Vector(AFastSteed.forCatalog(catalog))
 ```
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `NewsFromAfarCard` to the `gameplay.powers.search` import and `AFastSteedCard` to the `gameplay.powers.travel` import.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `NewsFromAfarCard` to the `gameplay.powers.search` import and `AFastSteedCard` to the `gameplay.powers.travel` import.
 
-In `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`, change the end of `modifiers` from:
+In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, change the end of `modifiers` from:
 
 ```scala
     "denizen.royal-stables", "denizen.moving-market")
@@ -959,16 +959,16 @@ Expected: PASS, 3 tests in each new suite. The last seven suites hold News from 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/NewsFromAfar.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/AFastSteed.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/NewsFromAfarSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/AFastSteedSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/search/NewsFromAfar.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/AFastSteed.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/search/NewsFromAfarSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/AFastSteedSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(modifiers): News from Afar and A Fast Steed waive the Supply"
 ```
 
@@ -977,17 +977,17 @@ git commit -m "feat(modifiers): News from Afar and A Fast Steed waive the Supply
 ### Task 3: Awaited Return and Mounted Library
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SiteCards.scala` (R6)
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/MountedLibrary.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala` (retire `MountedLibrary`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala` (remove `AwaitedReturnCard`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (remove `MountedLibraryCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/AwaitedReturnSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/MountedLibrarySuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SiteCards.scala` (R6)
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/MountedLibrary.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala` (retire `MountedLibrary`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` (remove `AwaitedReturnCard`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (remove `MountedLibraryCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/AwaitedReturnSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/MountedLibrarySuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `SiteCards.discard`, `SiteRulers.siteOf`, `PowerAnswers.one`, `TradeProcedure.decisionId`, `NoteSupport.answer`, `NoteSupport.secrets`, `NoteSupport.warbands`, `PlayerFacts`.
@@ -995,7 +995,7 @@ git commit -m "feat(modifiers): News from Afar and A Fast Steed waive the Supply
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/AwaitedReturnSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/AwaitedReturnSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1064,7 +1064,7 @@ class AwaitedReturnSuite extends munit.FunSuite:
       .contains(AwaitedReturn.id))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/MountedLibrarySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/MountedLibrarySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1157,7 +1157,7 @@ Expected: compile failure, `AwaitedReturn` and `MountedLibrary` are not found.
 
 - [ ] **Step 3: Widen `SiteCards` (R6)**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/SiteCards.scala`, change:
+In `src/main/scala/distantlands/gameplay/powers/action/SiteCards.scala`, change:
 
 ```scala
 /** The cards of `suits` at a site that a power may discard, for Dark
@@ -1180,9 +1180,9 @@ and change `private[action] final class SiteCards` to `private[powers] final cla
 
 - [ ] **Step 4: Write Awaited Return**
 
-Remove `object AwaitedReturnCard` from `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala`.
+Remove `object AwaitedReturnCard` from `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1260,9 +1260,9 @@ object AwaitedReturn:
 
 - [ ] **Step 5: Write Mounted Library**
 
-Remove `object MountedLibraryCard` from `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`.
+Remove `object MountedLibraryCard` from `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/MountedLibrary.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/MountedLibrary.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1383,13 +1383,13 @@ object MountedLibrary:
 
 - [ ] **Step 6: Register them and retire the stub**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`, add `AwaitedReturn` and `MountedLibrary` to the `gameplay.powers.economy` import, and add `Vector(AwaitedReturn.forCatalog(catalog)) ++` and `Vector(MountedLibrary.forCatalog(catalog)) ++` after `Vector(MovingMarket.forCatalog(catalog)) ++`.
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`, add `AwaitedReturn` and `MountedLibrary` to the `gameplay.powers.economy` import, and add `Vector(AwaitedReturn.forCatalog(catalog)) ++` and `Vector(MountedLibrary.forCatalog(catalog)) ++` after `Vector(MovingMarket.forCatalog(catalog)) ++`.
 
-In `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala`, delete the line `object MountedLibrary extends ReviewedPower(...)` and drop `MountedLibrary` from `powers`.
+In `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala`, delete the line `object MountedLibrary extends ReviewedPower(...)` and drop `MountedLibrary` from `powers`.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `AwaitedReturnCard` and `MountedLibraryCard` to the `gameplay.powers.economy` import.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `AwaitedReturnCard` and `MountedLibraryCard` to the `gameplay.powers.economy` import.
 
-In `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`, change the end of `modifiers` from:
+In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, change the end of `modifiers` from:
 
 ```scala
     "denizen.news-from-alfar", "denizen.old-fast-steed")
@@ -1410,17 +1410,17 @@ Expected: PASS, 2 tests in `AwaitedReturnSuite` and 3 in `MountedLibrarySuite`.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/SiteCards.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/AwaitedReturn.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/MountedLibrary.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/AwaitedReturnSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/MountedLibrarySuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/SiteCards.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/AwaitedReturn.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/MountedLibrary.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/main/scala/distantlands/gameplay/powers/MusterPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/AwaitedReturnSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/MountedLibrarySuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(economy): Awaited Return trades for a warband, Mounted Library doubles secrets and leaves"
 ```
 
@@ -1429,13 +1429,13 @@ git commit -m "feat(economy): Awaited Return trades for a warband, Mounted Libra
 ### Task 4: Defame
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/Defame.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala` (retire `Defame`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala` (remove `DefameCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/DefameSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/Defame.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala` (retire `Defame`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala` (remove `DefameCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/DefameSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerAnswers.one`, `PowerAnswers.missing`, `TradeProcedure.decisionId`, `NoteSupport.answer`, `NoteSupport.favor`, `Burn.favor`.
@@ -1443,7 +1443,7 @@ git commit -m "feat(economy): Awaited Return trades for a warband, Mounted Libra
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/DefameSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/DefameSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1550,9 +1550,9 @@ Expected: compile failure, `Defame` is not found.
 
 - [ ] **Step 3: Write Defame**
 
-Remove `object DefameCard` from `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala`.
+Remove `object DefameCard` from `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/Defame.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/Defame.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1657,13 +1657,13 @@ object Defame:
 
 - [ ] **Step 4: Register it and retire the stub**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`, add `Defame` to the `gameplay.powers.economy` import, and `Vector(Defame.forCatalog(catalog)) ++` after `Vector(MountedLibrary.forCatalog(catalog)) ++`.
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`, add `Defame` to the `gameplay.powers.economy` import, and `Vector(Defame.forCatalog(catalog)) ++` after `Vector(MountedLibrary.forCatalog(catalog)) ++`.
 
-In `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala`, delete the line `object Defame extends ReviewedPower(...)` and drop `Defame` from `powers`.
+In `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala`, delete the line `object Defame extends ReviewedPower(...)` and drop `Defame` from `powers`.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `DefameCard` to the `gameplay.powers.economy` import.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `DefameCard` to the `gameplay.powers.economy` import.
 
-In `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`, change the end of `modifiers` from:
+In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, change the end of `modifiers` from:
 
 ```scala
     "denizen.awaited-return", "denizen.mounted-library")
@@ -1683,13 +1683,13 @@ Expected: PASS, 3 tests in `DefameSuite`. The last four hold Defame as an unsele
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/Defame.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/DefameSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/Defame.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/main/scala/distantlands/gameplay/powers/MusterPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/DefameSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(economy): Defame burns a favor from a chosen board after a Discord Trade"
 ```
 
@@ -1698,15 +1698,15 @@ git commit -m "feat(economy): Defame burns a favor from a chosen board after a D
 ### Task 5: Special Envoy and Tyrant
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/SpecialEnvoy.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/Tyrant.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala` (remove `SpecialEnvoyCard`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` (remove `TyrantCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/travel/SpecialEnvoySuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/travel/TyrantSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/SpecialEnvoy.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/Tyrant.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala` (remove `SpecialEnvoyCard`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` (remove `TyrantCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/travel/SpecialEnvoySuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/travel/TyrantSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `RoyalStables.Priority`, `TravelPayments.withoutSupply`, `TravelRoute.pawnMove`, `PlayerFacts.forceKind`, `TravelFixture`, `DragonskinDrum.id`.
@@ -1714,7 +1714,7 @@ git commit -m "feat(economy): Defame burns a favor from a chosen board after a D
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/SpecialEnvoySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/SpecialEnvoySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -1782,7 +1782,7 @@ class SpecialEnvoySuite extends munit.FunSuite:
     assertEquals(Look(result).supply(actor), 7 - 1)
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/TyrantSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/TyrantSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -1848,7 +1848,7 @@ class TyrantSuite extends munit.FunSuite:
     }
 ```
 
-In `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`, add this test after the Chaos Cult test:
+In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, add this test after the Chaos Cult test:
 
 ```scala
   test("Tyrant's rule is automatic whatever its flag: it is a must, not a " +
@@ -1865,9 +1865,9 @@ Expected: compile failure, `SpecialEnvoy` and `Tyrant` are not found.
 
 - [ ] **Step 3: Write Special Envoy**
 
-Remove `object SpecialEnvoyCard` from `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`.
+Remove `object SpecialEnvoyCard` from `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/SpecialEnvoy.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/SpecialEnvoy.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -1924,9 +1924,9 @@ object SpecialEnvoy:
 
 - [ ] **Step 4: Write Tyrant**
 
-Remove `object TyrantCard` from `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`.
+Remove `object TyrantCard` from `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/travel/Tyrant.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/travel/Tyrant.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -2033,7 +2033,7 @@ case object Tyrant extends ContributingPower:
 
 - [ ] **Step 5: Register them**
 
-In `src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala`, change the last line from:
+In `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala`, change the last line from:
 
 ```scala
       Vector(AFastSteed.forCatalog(catalog))
@@ -2047,9 +2047,9 @@ to:
       Vector(Tyrant)
 ```
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `SpecialEnvoyCard` and `TyrantCard` to the `gameplay.powers.travel` import.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `SpecialEnvoyCard` and `TyrantCard` to the `gameplay.powers.travel` import.
 
-In `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`, change the end of `modifiers` from:
+In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, change the end of `modifiers` from:
 
 ```scala
     "denizen.awaited-return", "denizen.mounted-library", "denizen.defame")
@@ -2070,15 +2070,15 @@ Expected: PASS, 3 tests in `SpecialEnvoySuite`, 4 in `TyrantSuite` and 1 more in
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/SpecialEnvoy.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/Tyrant.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/SpecialEnvoySuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/TyrantSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/travel/SpecialEnvoy.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/Tyrant.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/SpecialEnvoySuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/TyrantSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(travel): Special Envoy ends the Act Phase after a free Travel, Tyrant kills at the destination"
 ```
 
@@ -2087,13 +2087,13 @@ git commit -m "feat(travel): Special Envoy ends the Act Phase after a free Trave
 ### Task 6: Vow of Beastkin
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/VowOfBeastkin.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala` (retire `VowOfBeastkin`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `VowOfBeastkinCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/VowOfBeastkinSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/VowOfBeastkin.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala` (retire `VowOfBeastkin`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `VowOfBeastkinCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/VowOfBeastkinSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `MusterSource.matching`, `PowerAccess.pawnSite`, `NoteSupport.warbands`, `OptionRestriction`.
@@ -2101,7 +2101,7 @@ git commit -m "feat(travel): Special Envoy ends the Act Phase after a free Trave
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/VowOfBeastkinSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/VowOfBeastkinSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -2182,7 +2182,7 @@ class VowOfBeastkinSuite extends munit.FunSuite:
     }
 ```
 
-In `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`, add this test after Tyrant's:
+In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, add this test after Tyrant's:
 
 ```scala
   test("Vow of Beastkin's rule is automatic whatever its flag"):
@@ -2198,9 +2198,9 @@ Expected: compile failure, `VowOfBeastkin` is not found.
 
 - [ ] **Step 3: Write Vow of Beastkin**
 
-Remove `object VowOfBeastkinCard` from `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`.
+Remove `object VowOfBeastkinCard` from `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/VowOfBeastkin.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/VowOfBeastkin.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -2309,11 +2309,11 @@ object VowOfBeastkin:
 
 - [ ] **Step 4: Register it and retire the stub**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`, add `VowOfBeastkin` to the `gameplay.powers.economy` import, and `Vector(VowOfBeastkin.forCatalog(catalog)) ++` after `Vector(InitiationRite) ++`.
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`, add `VowOfBeastkin` to the `gameplay.powers.economy` import, and `Vector(VowOfBeastkin.forCatalog(catalog)) ++` after `Vector(InitiationRite) ++`.
 
-In `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala`, delete the line `object VowOfBeastkin extends ReviewedPower(...)` and drop `VowOfBeastkin` from `powers`.
+In `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala`, delete the line `object VowOfBeastkin extends ReviewedPower(...)` and drop `VowOfBeastkin` from `powers`.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `VowOfBeastkinCard` to the `gameplay.powers.economy` import.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `VowOfBeastkinCard` to the `gameplay.powers.economy` import.
 
 - [ ] **Step 5: Run the suite and the Muster suites**
 
@@ -2323,13 +2323,13 @@ Expected: PASS, 4 tests in `VowOfBeastkinSuite` and 1 more in `PowerKindsCatalog
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/VowOfBeastkin.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/VowOfBeastkinSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/VowOfBeastkin.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/main/scala/distantlands/gameplay/powers/MusterPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/VowOfBeastkinSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(economy): Vow of Beastkin limits Muster to matching cards and gains one more warband"
 ```
 
@@ -2338,15 +2338,15 @@ git commit -m "feat(economy): Vow of Beastkin limits Muster to matching cards an
 ### Task 7: Vow of Poverty
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/VowOfPoverty.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RestPowers.scala` (retire `VowOfPoverty`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `VowOfPovertyCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/VowOfPovertySuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/RestSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/VowOfPoverty.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/RestPowers.scala` (retire `VowOfPoverty`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `VowOfPovertyCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/VowOfPovertySuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/RestSuite.scala`
 
 **Interfaces:**
 - Consumes: `FavorBankChoice.stocked`, `FavorBankChoice.take`, `NoteSupport.favor`, `NoteSupport.bankPaid`, `PlayerFacts.player`, `Restriction`, `MovingMarket`.
@@ -2354,7 +2354,7 @@ git commit -m "feat(economy): Vow of Beastkin limits Muster to matching cards an
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/VowOfPovertySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/VowOfPovertySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -2475,7 +2475,7 @@ class VowOfPovertySuite extends munit.FunSuite:
     assert(!usable(Table.from(stocked).favor(p1, 1).unchecked))
 ```
 
-In `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`, add this test after Vow of Beastkin's:
+In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, add this test after Vow of Beastkin's:
 
 ```scala
   test("Vow of Poverty's rule is automatic whatever its flag: the flag is " +
@@ -2492,9 +2492,9 @@ Expected: compile failure, `VowOfPoverty` is not found.
 
 - [ ] **Step 3: Write Vow of Poverty**
 
-Remove `object VowOfPovertyCard` from `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`.
+Remove `object VowOfPovertyCard` from `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/VowOfPoverty.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/VowOfPoverty.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -2595,11 +2595,11 @@ case object VowOfPoverty extends PhasePower with ContributingPower:
 
 - [ ] **Step 4: Register it, retire the stub, and change the Rest filler**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`, add `VowOfPoverty` to the `gameplay.powers.economy` import, and `Vector(VowOfPoverty) ++` after `Vector(VowOfBeastkin.forCatalog(catalog)) ++`.
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`, add `VowOfPoverty` to the `gameplay.powers.economy` import, and `Vector(VowOfPoverty) ++` after `Vector(VowOfBeastkin.forCatalog(catalog)) ++`.
 
-In `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`, add `import oathdigital.gameplay.powers.economy.VowOfPoverty` after the `cardplay.VowOfObedience` import, and `Vector(VowOfPoverty) ++` after `Vector(VowOfObedience) ++`.
+In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`, add `import oathdigital.gameplay.powers.economy.VowOfPoverty` after the `cardplay.VowOfObedience` import, and `Vector(VowOfPoverty) ++` after `Vector(VowOfObedience) ++`.
 
-In `src/main/scala/oathdigital/gameplay/powers/RestPowers.scala`, delete the `object VowOfPoverty extends ReviewedPower(...)` definition (all four of its lines), and change `powers` to:
+In `src/main/scala/distantlands/gameplay/powers/RestPowers.scala`, delete the `object VowOfPoverty extends ReviewedPower(...)` definition (all four of its lines), and change `powers` to:
 
 ```scala
   val powers: Vector[Power] = Vector(Naysayers, SilverTongue, Insomnia)
@@ -2607,9 +2607,9 @@ In `src/main/scala/oathdigital/gameplay/powers/RestPowers.scala`, delete the `ob
 
 Then change the doc comment's "League Treaty and Vow of Obedience are audited" to "League Treaty, Vow of Obedience and Vow of Poverty are audited".
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `VowOfPovertyCard` to the `gameplay.powers.economy` import.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `VowOfPovertyCard` to the `gameplay.powers.economy` import.
 
-In `src/test/scala/oathdigital/gameplay/RestSuite.scala`, change:
+In `src/test/scala/distantlands/gameplay/RestSuite.scala`, change:
 
 ```scala
     val relevant = Map("denizen.vow-of-poverty" -> "Vow of Poverty",
@@ -2632,15 +2632,15 @@ Expected: PASS, 4 tests in `VowOfPovertySuite` and 1 more in `PowerKindsCatalogS
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/VowOfPoverty.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala \
-  src/main/scala/oathdigital/gameplay/powers/RestPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/VowOfPovertySuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala \
-  src/test/scala/oathdigital/gameplay/RestSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/VowOfPoverty.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala \
+  src/main/scala/distantlands/gameplay/powers/RestPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/VowOfPovertySuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala \
+  src/test/scala/distantlands/gameplay/RestSuite.scala
 git commit -m "feat(economy): Vow of Poverty forbids Trade for favor and takes 2 favor at Rest"
 ```
 

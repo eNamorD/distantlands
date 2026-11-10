@@ -52,7 +52,7 @@ Digital accounting choices made here, inside the rules:
 
 ## File Structure
 
-Paths below are relative to the repo root. `M/` is `src/main/scala/oathdigital/` and `T/` is `src/test/scala/oathdigital/`.
+Paths below are relative to the repo root. `M/` is `src/main/scala/distantlands/` and `T/` is `src/test/scala/distantlands/`.
 
 - Create `M/model/Location.scala`: `Location` and its companion, moved unchanged from `CoreOperations.scala`, then four new cases.
 - Modify `M/model/CoreOperations.scala`: lose `Location`; gain `SuitedReserveFromBox`.
@@ -116,7 +116,7 @@ Four new piles, each a `Location` a `Move` can reach, with the knowledge and ide
 Cut `sealed trait Location` and `object Location` (with `ownedBy`) from `CoreOperations.scala` into a new `M/model/Location.scala` in package `oathdigital.model`, unchanged. Compile: `./sbtw compile`. Expected: success. Commit:
 
 ```bash
-git add src/main/scala/oathdigital/model/Location.scala src/main/scala/oathdigital/model/CoreOperations.scala
+git add src/main/scala/distantlands/model/Location.scala src/main/scala/distantlands/model/CoreOperations.scala
 git commit -m "refactor(model): move Location into its own file
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -471,7 +471,7 @@ Expected: PASS. Fix every non-exhaustive match the compiler names.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Location.scala src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/model/CardIndex.scala src/main/scala/oathdigital/model/OperationError.scala src/main/scala/oathdigital/gameplay/operations/CardMovementOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationStateWrites.scala src/main/scala/oathdigital/gameplay/operations/OperationStateAdapter.scala src/main/scala/oathdigital/gameplay/operations/CardKnowledgeMoves.scala src/main/scala/oathdigital/application/GamePresentationProjector.scala src/main/scala/oathdigital/serialization/WalkerValueCodec.scala src/test/scala/oathdigital/gameplay/operations/ChroniclePilesSuite.scala src/test/scala/oathdigital/application/ChroniclePilesIdentitySuite.scala
+git add src/main/scala/distantlands/model/Location.scala src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/model/CardIndex.scala src/main/scala/distantlands/model/OperationError.scala src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala src/main/scala/distantlands/gameplay/operations/OperationStateWrites.scala src/main/scala/distantlands/gameplay/operations/OperationStateAdapter.scala src/main/scala/distantlands/gameplay/operations/CardKnowledgeMoves.scala src/main/scala/distantlands/application/GamePresentationProjector.scala src/main/scala/distantlands/serialization/WalkerValueCodec.scala src/test/scala/distantlands/gameplay/operations/ChroniclePilesSuite.scala src/test/scala/distantlands/application/ChroniclePilesIdentitySuite.scala
 # plus any helper and codec suite this task touched, by path
 git commit -m "feat(chronicle): add the gathering, newly Dispossessed, suited reserve and starting adviser piles
 
@@ -648,7 +648,7 @@ In `ChronicleStateOperations`:
         campaign.suitedReserves.getOrElse(suit, Vector.empty) ++ cards))))
 ```
 
-If `ready.game.catalog` does not exist, find how operations reach the catalog (`grep -n "catalog" src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`) and pass it in from `OperationApplication`.
+If `ready.game.catalog` does not exist, find how operations reach the catalog (`grep -n "catalog" src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`) and pass it in from `OperationApplication`.
 
 In `OperationApplication.mutate`, beside the `GrandScepterFromBox` case:
 
@@ -714,7 +714,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ActionValues.scala src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/PileOperations.scala src/main/scala/oathdigital/gameplay/operations/ChronicleStateOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala src/main/scala/oathdigital/gameplay/walker/WalkerShuffles.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/test/scala/oathdigital/gameplay/operations/ShuffleOperationSuite.scala src/test/scala/oathdigital/gameplay/operations/ChronicleStateOperationsSuite.scala
+git add src/main/scala/distantlands/model/ActionValues.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/PileOperations.scala src/main/scala/distantlands/gameplay/operations/ChronicleStateOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala src/main/scala/distantlands/gameplay/walker/WalkerShuffles.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/gameplay/operations/ShuffleOperationSuite.scala src/test/scala/distantlands/gameplay/operations/ChronicleStateOperationsSuite.scala
 # plus the codec suite, by path
 git commit -m "feat(chronicle): shuffle the gathered denizens and suited reserves, and bring reserves from the box
 
@@ -926,7 +926,7 @@ Expected: PASS. `ChronicleSunThroneEndToEndSuite` still passes: World and Beacon
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ProcedureRef.scala src/main/scala/oathdigital/model/PowerWindow.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleWindows.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleSequence.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleWorldProcedure.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleBeaconProcedure.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala
+git add src/main/scala/distantlands/model/ProcedureRef.scala src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleWindows.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleSequence.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleWorldProcedure.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleBeaconProcedure.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala src/main/scala/distantlands/application/gamelog/ProcedureLog.scala
 # plus each test file this task touched, by path
 git commit -m "feat(chronicle): chain World and Beacon after the Throne, each step in its own window
 
@@ -1105,7 +1105,7 @@ class WorldTaskSuite extends munit.FunSuite:
       !GamePresentationProjector.identifiesAt(ready, Some(p1), card)))
 ```
 
-Add one Game Log test in the shape `ChronicleSunSuite` uses for its lines (find its log assertion with `grep -n "lines\|LogLine" src/test/scala/oathdigital/gameplay/chronicle/ChronicleSunSuite.scala`): after the walk, p2's log reads "kept {card} as a starting adviser" with the card's name, and p1's log reads the same line with the card hidden. A second line closes the step: "{cards} were dispossessed". p1 sees the three faceup cards by name and the three facedown ones hidden.
+Add one Game Log test in the shape `ChronicleSunSuite` uses for its lines (find its log assertion with `grep -n "lines\|LogLine" src/test/scala/distantlands/gameplay/chronicle/ChronicleSunSuite.scala`): after the walk, p2's log reads "kept {card} as a starting adviser" with the card's name, and p1's log reads the same line with the card hidden. A second line closes the step: "{cards} were dispossessed". p1 sees the three faceup cards by name and the three facedown ones hidden.
 
 If `discarded` cannot take a Vision, put the Vision in the discard with `update(_.updateCurrent(...))` instead.
 
@@ -1408,7 +1408,7 @@ Expected: PASS. If `ChronicleSunThroneEndToEndSuite` now fails because p2 or p3 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/SeparateVisions.scala src/main/scala/oathdigital/gameplay/chronicle/GatherDenizens.scala src/main/scala/oathdigital/gameplay/chronicle/ProtectAndDispossess.scala src/main/scala/oathdigital/gameplay/chronicle/StartingAdviserChoice.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleWorldProcedure.scala src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleWalk.scala src/test/scala/oathdigital/gameplay/chronicle/WorldTaskSuite.scala src/test/resources/notes/declared-keys.txt
+git add src/main/scala/distantlands/gameplay/chronicle/SeparateVisions.scala src/main/scala/distantlands/gameplay/chronicle/GatherDenizens.scala src/main/scala/distantlands/gameplay/chronicle/ProtectAndDispossess.scala src/main/scala/distantlands/gameplay/chronicle/StartingAdviserChoice.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleWorldProcedure.scala src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleWalk.scala src/test/scala/distantlands/gameplay/chronicle/WorldTaskSuite.scala src/test/resources/notes/declared-keys.txt
 # plus GameLogPropertiesSuite, by path
 git commit -m "feat(chronicle): the World separates Visions, deals nine denizens and keeps a starting adviser
 
@@ -1751,7 +1751,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/IntroduceNewcomers.scala src/main/scala/oathdigital/gameplay/chronicle/WelcomeStranger.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleBeaconProcedure.scala src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala src/test/scala/oathdigital/gameplay/chronicle/BeaconTaskSuite.scala src/test/resources/notes/declared-keys.txt
+git add src/main/scala/distantlands/gameplay/chronicle/IntroduceNewcomers.scala src/main/scala/distantlands/gameplay/chronicle/WelcomeStranger.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleBeaconProcedure.scala src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/test/scala/distantlands/gameplay/chronicle/BeaconTaskSuite.scala src/test/resources/notes/declared-keys.txt
 # plus GameLogPropertiesSuite and any NoteArg/NoteLines change, by path
 git commit -m "feat(chronicle): the Beacon draws newcomers from three suits and welcomes a stranger
 
@@ -1846,7 +1846,7 @@ Run: `python3 scripts/check-markdown-links.py`. Expected: no broken links.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/chronicle/ChronicleEndToEndSuite.scala docs/rules/chronicle.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md CONTEXT.md docs/ROADMAP.md
+git add src/test/scala/distantlands/gameplay/chronicle/ChronicleEndToEndSuite.scala docs/rules/chronicle.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md CONTEXT.md docs/ROADMAP.md
 git commit -m "test(chronicle): run every task end to end; document World and Beacon
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"

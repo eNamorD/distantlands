@@ -124,17 +124,17 @@ spec, so the review at the end checks them.
 ### Task 1: The reach seam, School of Vines and the Sigils
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReachCards.scala`
-- Create: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/challenge/ChallengeReachSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/model/Imperials.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (the Challenge entry's comment)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/RuinedSiteSetupRules.scala` (School of Vines moves out)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (both Sigils move out)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
+- Create: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReachCards.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/challenge/ChallengeReachSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala`
+- Modify: `src/main/scala/distantlands/model/Imperials.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (the Challenge entry's comment)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala` (School of Vines moves out)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (both Sigils move out)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
 - Modify (imports): `AnimalPlaymatesSuite`, `AnimalHostSuite`, `ThreateningRoarSuite`, `DazzleSuite`, `ForestHornSuite`, `ShapeEmpireSuite`, `RuinedSetupRulesSuite`, `ChronicleTtsCodecSuite`
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
 
@@ -154,7 +154,7 @@ Follow the "Slice 10 first" constraint above.
 
 - [ ] **Step 2: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/challenge/ChallengeReachSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/challenge/ChallengeReachSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.challenge
@@ -320,7 +320,7 @@ Expected: compile errors: `SchoolOfVinesCard`, `ChallengeReach`,
 
 - [ ] **Step 4: Move the cards beside the Challenge**
 
-Create `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReachCards.scala`.
+Create `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReachCards.scala`.
 School of Vines' two faces are copied from `RuinedSiteSetupRules.scala`
 unchanged, except that the intact power gains its Challenge icon. The
 Sigils are copied from `HoldingRelics.scala` and gain theirs:
@@ -384,18 +384,18 @@ Then:
 4. Rewrite the test imports:
 
 ```bash
-perl -pi -e 's/^import oathdigital\.gameplay\.powers\.setup\.SchoolOfVinesCard$/import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard/' src/test/scala/oathdigital/gameplay/powers/economy/AnimalPlaymatesSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/AnimalHostSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/ThreateningRoarSuite.scala
+perl -pi -e 's/^import oathdigital\.gameplay\.powers\.setup\.SchoolOfVinesCard$/import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard/' src/test/scala/distantlands/gameplay/powers/economy/AnimalPlaymatesSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/AnimalHostSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/ThreateningRoarSuite.scala
 ```
 
 ```bash
-perl -pi -e 's/^import oathdigital\.gameplay\.powers\.setup\.\{(\w+), SchoolOfVinesCard\}$/import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard\nimport oathdigital.gameplay.powers.setup.$1/' src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala src/test/scala/oathdigital/gameplay/powers/action/ForestHornSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ShapeEmpireSuite.scala
+perl -pi -e 's/^import oathdigital\.gameplay\.powers\.setup\.\{(\w+), SchoolOfVinesCard\}$/import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard\nimport oathdigital.gameplay.powers.setup.$1/' src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala src/test/scala/distantlands/gameplay/powers/action/ForestHornSuite.scala src/test/scala/distantlands/gameplay/chronicle/ShapeEmpireSuite.scala
 ```
 
-5. In `src/test/scala/oathdigital/gameplay/powers/setup/RuinedSetupRulesSuite.scala`,
+5. In `src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala`,
    which shares the old package and so imported nothing, add
    `import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard` above
    `import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure,`.
-6. In `src/test/scala/oathdigital/application/chronicle/ChronicleTtsCodecSuite.scala`,
+6. In `src/test/scala/distantlands/application/chronicle/ChronicleTtsCodecSuite.scala`,
    replace
 
 ```scala
@@ -420,7 +420,7 @@ git grep -nE 'setup\.SchoolOfVinesCard|setup\.\{[^}]*SchoolOfVinesCard|holding\.
 
 - [ ] **Step 5: Add `Imperials.enemies`**
 
-In `src/main/scala/oathdigital/model/Imperials.scala`, after `isImperial`:
+In `src/main/scala/distantlands/model/Imperials.scala`, after `isImperial`:
 
 ```scala
   /** Whether `player` and `other` are enemies (rules glossary, "Enemy"):
@@ -433,7 +433,7 @@ In `src/main/scala/oathdigital/model/Imperials.scala`, after `isImperial`:
 
 - [ ] **Step 6: Add `ChallengeReach`**
 
-Create `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.challenge
@@ -571,7 +571,7 @@ with:
 
 - [ ] **Step 8: Add the reach modifiers**
 
-Create `src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.challenge
@@ -691,7 +691,7 @@ Exile and p2 away from p1.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReachCards.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/main/scala/oathdigital/model/Imperials.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/gameplay/powers/setup/RuinedSiteSetupRules.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/challenge/ChallengeReachSuite.scala src/test/scala/oathdigital/gameplay/powers/economy/AnimalPlaymatesSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/AnimalHostSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/ThreateningRoarSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala src/test/scala/oathdigital/gameplay/powers/action/ForestHornSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ShapeEmpireSuite.scala src/test/scala/oathdigital/gameplay/powers/setup/RuinedSetupRulesSuite.scala src/test/scala/oathdigital/application/chronicle/ChronicleTtsCodecSuite.scala src/test/resources/powers/unimplemented.txt
+git add src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReachCards.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/main/scala/distantlands/model/Imperials.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/challenge/ChallengeReachSuite.scala src/test/scala/distantlands/gameplay/powers/economy/AnimalPlaymatesSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/AnimalHostSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/ThreateningRoarSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala src/test/scala/distantlands/gameplay/powers/action/ForestHornSuite.scala src/test/scala/distantlands/gameplay/chronicle/ShapeEmpireSuite.scala src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala src/test/scala/distantlands/application/chronicle/ChronicleTtsCodecSuite.scala src/test/resources/powers/unimplemented.txt
 git commit -m "$(cat <<'EOF'
 feat(powers): School of Vines and the Sigils widen a Challenge's reach
 
@@ -712,13 +712,13 @@ to 4 and 10) before Task 2.
 ### Task 2: Magician's Code
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/powers/challenge/MagiciansCodeSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReachCards.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (the card moves out)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
+- Create: `src/test/scala/distantlands/gameplay/powers/challenge/MagiciansCodeSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReachCards.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (the card moves out)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
 - Modify (imports): every test file importing `oathdigital.catalog.holding.MagiciansCodeCard`, and `RivalKhanSuite`
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
 
@@ -734,7 +734,7 @@ to 4 and 10) before Task 2.
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/challenge/MagiciansCodeSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/challenge/MagiciansCodeSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.challenge
@@ -914,7 +914,7 @@ git grep -l '^import oathdigital.catalog.holding.MagiciansCodeCard$' -- src | xa
 ```
 
 ```bash
-perl -pi -e 's/^import oathdigital\.catalog\.holding\.\{MagiciansCodeCard, SearchPartyCard\}$/import oathdigital.catalog.holding.SearchPartyCard\nimport oathdigital.gameplay.actions.challenge.MagiciansCodeCard/' src/test/scala/oathdigital/gameplay/powers/campaign/RivalKhanSuite.scala
+perl -pi -e 's/^import oathdigital\.catalog\.holding\.\{MagiciansCodeCard, SearchPartyCard\}$/import oathdigital.catalog.holding.SearchPartyCard\nimport oathdigital.gameplay.actions.challenge.MagiciansCodeCard/' src/test/scala/distantlands/gameplay/powers/campaign/RivalKhanSuite.scala
 ```
 
 ```bash
@@ -1079,7 +1079,7 @@ stand-in card changes what those suites assert.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReachCards.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/challenge/MagiciansCodeSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/RivalKhanSuite.scala src/test/resources/powers/unimplemented.txt
+git add src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReachCards.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/challenge/MagiciansCodeSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/RivalKhanSuite.scala src/test/resources/powers/unimplemented.txt
 ```
 
 Then add, by name, each test file the import rewrite in Step 3 changed
@@ -1103,11 +1103,11 @@ EOF
 ### Task 3: Favored Son, docs and gates
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/FavoredSon.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/whenplayed/FavoredSonSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeRibbon.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala` (the card moves out)
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/FavoredSon.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/whenplayed/FavoredSonSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeRibbon.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` (the card moves out)
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/notes/declared-keys.txt` (regenerated)
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`
 - Modify: `docs/ROADMAP.md`
@@ -1123,7 +1123,7 @@ EOF
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/FavoredSonSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/FavoredSonSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.whenplayed
@@ -1229,7 +1229,7 @@ In `ChallengeRibbon.scala`:
 
 - [ ] **Step 4: Implement Favored Son**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/FavoredSon.scala`.
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/FavoredSon.scala`.
 The card is copied from `HoldingHearthDenizens.scala` unchanged:
 
 ```scala
@@ -1430,7 +1430,7 @@ Expected: every test passes, and statement coverage is at least 92%.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/FavoredSon.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/FavoredSonSuite.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeRibbon.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/FavoredSon.scala src/test/scala/distantlands/gameplay/powers/whenplayed/FavoredSonSuite.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeRibbon.scala src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'
 feat(powers): implement Favored Son
 

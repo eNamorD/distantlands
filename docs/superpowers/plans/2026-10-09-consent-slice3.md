@@ -89,11 +89,11 @@ The code forced these, or the spec left them open. Task 5 records each one in th
 
 Created:
 
-- `src/main/scala/oathdigital/gameplay/operations/ConsentedRestriction.scala`: the operation path's ledger check.
-- `src/main/scala/oathdigital/gameplay/operations/OperationConsent.scala`: refusals of a plan, and the ask they allow.
-- `src/test/scala/oathdigital/gameplay/powers/cardplay/SecretPoliceConsentSuite.scala`
-- `src/test/scala/oathdigital/gameplay/operations/HallOfMinistersConsentSuite.scala`
-- `src/test/scala/oathdigital/application/HallOfMinistersConsentServiceSuite.scala`
+- `src/main/scala/distantlands/gameplay/operations/ConsentedRestriction.scala`: the operation path's ledger check.
+- `src/main/scala/distantlands/gameplay/operations/OperationConsent.scala`: refusals of a plan, and the ask they allow.
+- `src/test/scala/distantlands/gameplay/powers/cardplay/SecretPoliceConsentSuite.scala`
+- `src/test/scala/distantlands/gameplay/operations/HallOfMinistersConsentSuite.scala`
+- `src/test/scala/distantlands/application/HallOfMinistersConsentServiceSuite.scala`
 
 Modified:
 
@@ -124,16 +124,16 @@ Modified:
   - frontend: `BoardDecisionPanelSuite`, `SitePowerGridSuite` and `PlayerBoardSuite`.
 - Docs: the spec, `CONTEXT.md`, `docs/ROADMAP.md` and `docs/rules/implementation-traceability.md`.
 
-All `src/main/scala/...` paths above are under `src/main/scala/oathdigital/`.
+All `src/main/scala/...` paths above are under `src/main/scala/distantlands/`.
 
 ---
 
 ### Task 1: Secret Police is waivable
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/powers/cardplay/SecretPoliceConsentSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/cardplay/SecretPoliceConsentSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala`
 
 **Interfaces:**
 - Consumes (slices 1 and 2): `Waiver(granter: ReadyGame => Option[PlayerId], source: PowerSourceRef, note: (PowerCtx, DecisionOptionRef) => PowerNote)`; `Restriction(fn, note, waiver)`; `OptionReason.Askable(power, note, asks)`; `OathRules.consentAsks(state, requester, decisionId, target)`; `VisionPlayFixture.searched(ready, vision)` and `fromAdvisers(ready, vision)`; `PhasePowerHarness.queryOf(transition, viewer)`.
@@ -141,7 +141,7 @@ All `src/main/scala/...` paths above are under `src/main/scala/oathdigital/`.
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/SecretPoliceConsentSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/SecretPoliceConsentSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -336,9 +336,9 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/SecretPoliceConsentSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala \
+  src/test/scala/distantlands/gameplay/powers/cardplay/SecretPoliceConsentSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala
 git commit -m "feat(consent): let Secret Police's ruler consent to a faceup Vision"
 ```
 
@@ -347,19 +347,19 @@ git commit -m "feat(consent): let Secret Police's ruler consent to a faceup Visi
 ### Task 2: The Hall's refusal names who may waive it, and grants reach it
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/ConsentedRestriction.scala`
-- Create: `src/main/scala/oathdigital/gameplay/operations/OperationConsent.scala`
-- Modify: `src/main/scala/oathdigital/model/OperationReason.scala`
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala:337-341`
-- Modify: `src/main/scala/oathdigital/model/Consent.scala:56-63`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala:24-27`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/RuleNotes.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala:302-320`
-- Modify: `src/main/scala/oathdigital/application/ConsentDesk.scala` (`request`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:354,576`
-- Modify: `src/main/scala/oathdigital/serialization/ConsentEventCodec.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/ConsentedRestriction.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/OperationConsent.scala`
+- Modify: `src/main/scala/distantlands/model/OperationReason.scala`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala:337-341`
+- Modify: `src/main/scala/distantlands/model/Consent.scala:56-63`
+- Modify: `src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala:24-27`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/RuleNotes.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala:302-320`
+- Modify: `src/main/scala/distantlands/application/ConsentDesk.scala` (`request`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:354,576`
+- Modify: `src/main/scala/distantlands/serialization/ConsentEventCodec.scala`
 - Test: `OperationRestrictionsSuite`, `ConsentEvolutionSuite`, `ConsentEventWireSuite`, `ConsentPowersSuite`, `NarrowPassConsentSuite`, `NarrowPassCampaignConsentSuite`, `SecretPoliceConsentSuite`
 
 **Interfaces:**
@@ -634,7 +634,7 @@ case object HallOfMinisters extends OperationRestriction:
 
 - [ ] **Step 5: Add the operation path's ledger check and asks**
 
-Create `src/main/scala/oathdigital/gameplay/operations/ConsentedRestriction.scala`:
+Create `src/main/scala/distantlands/gameplay/operations/ConsentedRestriction.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -656,7 +656,7 @@ final case class ConsentedRestriction(inner: OperationRestriction)
         .contains(ConsentAnswer.Granted)))
 ```
 
-Create `src/main/scala/oathdigital/gameplay/operations/OperationConsent.scala`:
+Create `src/main/scala/distantlands/gameplay/operations/OperationConsent.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -873,26 +873,26 @@ Expected: PASS.
 - [ ] **Step 12: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/OperationReason.scala \
-  src/main/scala/oathdigital/model/Decisions.scala \
-  src/main/scala/oathdigital/model/Consent.scala \
-  src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala \
-  src/main/scala/oathdigital/gameplay/operations/ConsentedRestriction.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationConsent.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala \
-  src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala \
-  src/main/scala/oathdigital/gameplay/actions/RuleNotes.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/main/scala/oathdigital/application/ConsentDesk.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/serialization/ConsentEventCodec.scala \
-  src/test/scala/oathdigital/gameplay/OperationRestrictionsSuite.scala \
-  src/test/scala/oathdigital/gameplay/consent/ConsentEvolutionSuite.scala \
-  src/test/scala/oathdigital/serialization/ConsentEventWireSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/NarrowPassConsentSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/SecretPoliceConsentSuite.scala
+git add src/main/scala/distantlands/model/OperationReason.scala \
+  src/main/scala/distantlands/model/Decisions.scala \
+  src/main/scala/distantlands/model/Consent.scala \
+  src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala \
+  src/main/scala/distantlands/gameplay/operations/ConsentedRestriction.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationConsent.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala \
+  src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala \
+  src/main/scala/distantlands/gameplay/actions/RuleNotes.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/main/scala/distantlands/application/ConsentDesk.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/serialization/ConsentEventCodec.scala \
+  src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala \
+  src/test/scala/distantlands/gameplay/consent/ConsentEvolutionSuite.scala \
+  src/test/scala/distantlands/serialization/ConsentEventWireSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/NarrowPassConsentSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/cardplay/SecretPoliceConsentSuite.scala
 git commit -m "feat(consent): name the Hall of Ministers' ruler on its refusal, and lift it on a grant"
 ```
 
@@ -901,11 +901,11 @@ git commit -m "feat(consent): name the Hall of Ministers' ruler on its refusal, 
 ### Task 3: The Hall is askable wherever an enemy chooses the discard
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/operations/HallOfMinistersConsentSuite.scala`
-- Create: `src/test/scala/oathdigital/application/HallOfMinistersConsentServiceSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala:60-136`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SiteCards.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/RovingTerror.scala:56-62`
+- Create: `src/test/scala/distantlands/gameplay/operations/HallOfMinistersConsentSuite.scala`
+- Create: `src/test/scala/distantlands/application/HallOfMinistersConsentServiceSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala:60-136`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SiteCards.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/RovingTerror.scala:56-62`
 - Test: `CardSlotsSuite`
 
 **Interfaces:**
@@ -980,7 +980,7 @@ In `CardSlotsSuite.scala`, replace the test "the Hall of Ministers protects its 
 
 If `guarded`'s board is refused by `.ready` (the bandits case on a site that already has bandits), use `.unchecked` there, as other suites do.
 
-Create `src/test/scala/oathdigital/gameplay/operations/HallOfMinistersConsentSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/operations/HallOfMinistersConsentSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.operations
@@ -1087,7 +1087,7 @@ Notes for this suite:
 - If an available row's `state` is not `"available"`, use the value `RovingTerrorSuite`'s projected rows carry.
 - If `Look.cardsAt` returns a type without `contains`, compare as `RovingTerrorSuite` does (`Vector[CardId](terror)`).
 
-Create `src/test/scala/oathdigital/application/HallOfMinistersConsentServiceSuite.scala`:
+Create `src/test/scala/distantlands/application/HallOfMinistersConsentServiceSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -1272,12 +1272,12 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/SiteCards.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/RovingTerror.scala \
-  src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala \
-  src/test/scala/oathdigital/gameplay/operations/HallOfMinistersConsentSuite.scala \
-  src/test/scala/oathdigital/application/HallOfMinistersConsentServiceSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala \
+  src/main/scala/distantlands/gameplay/powers/action/SiteCards.scala \
+  src/main/scala/distantlands/gameplay/powers/action/RovingTerror.scala \
+  src/test/scala/distantlands/gameplay/CardSlotsSuite.scala \
+  src/test/scala/distantlands/gameplay/operations/HallOfMinistersConsentSuite.scala \
+  src/test/scala/distantlands/application/HallOfMinistersConsentServiceSuite.scala
 git commit -m "feat(consent): ask the Hall of Ministers' ruler from card play and the site-card questions"
 ```
 
@@ -1286,16 +1286,16 @@ git commit -m "feat(consent): ask the Hall of Ministers' ruler from card play an
 ### Task 4: The board's Decide buttons ask, and a site card opens its ruler's grid
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionDtos.scala:21-22`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionCodec.scala:42-60`
-- Modify: `src/main/scala/oathdigital/application/ConsentProjector.scala:50-57`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardDecisionPanel.scala:120-130`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardInspection.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala:134-144`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/SitePowerLinks.scala:20-26`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardOptions.scala:60-63`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:55-61`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionDtos.scala:21-22`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionCodec.scala:42-60`
+- Modify: `src/main/scala/distantlands/application/ConsentProjector.scala:50-57`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardDecisionPanel.scala:120-130`
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardInspection.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala:134-144`
+- Modify: `frontend/src/main/scala/distantlands/frontend/SitePowerLinks.scala:20-26`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardOptions.scala:60-63`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:55-61`
 - Test: `shared/.../ProjectionProtocolSuite.scala`, `src/test/.../application/ConsentProjectionSuite.scala`, `frontend/.../BoardDecisionPanelSuite.scala`, `frontend/.../SitePowerGridSuite.scala`, `frontend/.../PlayerBoardSuite.scala`
 
 **Interfaces:**
@@ -1598,21 +1598,21 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionCodec.scala \
-  shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala \
-  src/main/scala/oathdigital/application/ConsentProjector.scala \
-  src/test/scala/oathdigital/application/ConsentProjectionSuite.scala \
-  frontend/src/main/scala/oathdigital/frontend/BoardDecisionPanel.scala \
-  frontend/src/main/scala/oathdigital/frontend/CardInspection.scala \
-  frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala \
-  frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala \
-  frontend/src/main/scala/oathdigital/frontend/SitePowerLinks.scala \
-  frontend/src/main/scala/oathdigital/frontend/BoardOptions.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala \
-  frontend/src/test/scala/oathdigital/frontend/BoardDecisionPanelSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/SitePowerGridSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionCodec.scala \
+  shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala \
+  src/main/scala/distantlands/application/ConsentProjector.scala \
+  src/test/scala/distantlands/application/ConsentProjectionSuite.scala \
+  frontend/src/main/scala/distantlands/frontend/BoardDecisionPanel.scala \
+  frontend/src/main/scala/distantlands/frontend/CardInspection.scala \
+  frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala \
+  frontend/src/main/scala/distantlands/frontend/GameTableShell.scala \
+  frontend/src/main/scala/distantlands/frontend/SitePowerLinks.scala \
+  frontend/src/main/scala/distantlands/frontend/BoardOptions.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala \
+  frontend/src/test/scala/distantlands/frontend/BoardDecisionPanelSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/SitePowerGridSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala
 git commit -m "feat(consent): ask from a board Decide button, and open a ruled site card with its grid"
 ```
 

@@ -73,7 +73,7 @@ These settle what the spec and rulings leave open. Each one names what it costs 
 
 ## File Structure
 
-All paths are under `src/main/scala/oathdigital/gameplay/powers/` or `src/test/scala/oathdigital/gameplay/powers/`.
+All paths are under `src/main/scala/distantlands/gameplay/powers/` or `src/test/scala/distantlands/gameplay/powers/`.
 
 | File | Responsibility | Task |
 |---|---|---|
@@ -98,10 +98,10 @@ Every new suite drives the power through `TargetsFixture` (`use`, `answer`, `aft
 ### Task 1: Quick Exit, and `OtherActionPowers.forCatalog`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/QuickExit.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala:26`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/QuickExitSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/QuickExit.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala:26`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/QuickExitSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerAccess.pawnSite(ready, player): Option[SiteId]`, `PawnMoves.sitesOtherThan(ready, site): Vector[SiteId]`, `PawnMoves.siteChoice(decisionId, owner, sites, heading): Decide`, `PawnMoves.chosenSite(pending, decisionId): Either[OathViolation, SiteId]`, `PawnMoves.relocate(ready, player, to): Either[OathViolation, Vector[CoreOperation]]`, `PowerAnswers.one`, `NoteSupport.answer`.
@@ -109,7 +109,7 @@ Every new suite drives the power through `TargetsFixture` (`use`, `answer`, `aft
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/QuickExitSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/QuickExitSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -190,7 +190,7 @@ Expected: compilation fails with "Not found: QuickExit".
 
 - [ ] **Step 3: Create Quick Exit**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/QuickExit.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/QuickExit.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -291,7 +291,7 @@ case object QuickExit extends PaidAction("denizen.quick-exit",
 
 - [ ] **Step 4: Register it, through a catalog-aware `OtherActionPowers`**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala` with:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -313,7 +313,7 @@ object OtherActionPowers:
 
 `catalog` is unused until Task 3. That compiles: this build's `-Wunused` checks imports, privates, locals and implicits, not method parameters.
 
-In `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`, replace:
 
 ```scala
       OtherActionPowers.powers ++
@@ -333,7 +333,7 @@ Expected: Quick Exit's 5 tests pass, and the two existing suites pass unchanged.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/QuickExit.scala src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/action/QuickExitSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/QuickExit.scala src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala src/test/scala/distantlands/gameplay/powers/action/QuickExitSuite.scala
 git commit -m "feat(powers): add Quick Exit"
 ```
 
@@ -342,9 +342,9 @@ git commit -m "feat(powers): add Quick Exit"
 ### Task 2: Dream Thief
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/DreamThief.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/DreamThiefSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/DreamThief.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/DreamThiefSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerAnswers.one`, `PowerAnswers.missing`, `NoteSupport.answer`, `Swap(firstCard, firstLocation, secondCard, secondLocation)`, `DecisionOptionRef.AdviserSlot(owner, slot)` (wire kind `adviser-slot`, id `owner:slot`), `SearchFixture.denizensOf(suit): Vector[DenizenId]` (test).
@@ -352,7 +352,7 @@ git commit -m "feat(powers): add Quick Exit"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/DreamThiefSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/DreamThiefSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -466,7 +466,7 @@ Expected: compilation fails with "Not found: DreamThief".
 
 - [ ] **Step 3: Create Dream Thief**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/DreamThief.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/DreamThief.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -583,7 +583,7 @@ case object DreamThief extends PaidAction("denizen.dream-thief",
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`, replace:
 
 ```scala
       BookOfRecords, BarbedNet, QuickExit)
@@ -603,7 +603,7 @@ Expected: 7 tests pass. If the knowledge assertion fails, `CardKnowledgeMoves.fo
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/DreamThief.scala src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala src/test/scala/oathdigital/gameplay/powers/action/DreamThiefSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/DreamThief.scala src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala src/test/scala/distantlands/gameplay/powers/action/DreamThiefSuite.scala
 git commit -m "feat(powers): add Dream Thief"
 ```
 
@@ -612,9 +612,9 @@ git commit -m "feat(powers): add Dream Thief"
 ### Task 3: Second Chance
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/SecondChance.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/SecondChanceSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/SecondChance.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/SecondChanceSuite.scala`
 
 **Interfaces:**
 - Consumes: `CatalogCards.denizen(catalog, power): Option[DenizenId]`, `catalog.suitOf(card): Option[Suit]`, `PlayerFacts.player`, `PlayerFacts.forceKind(ready, player): Either[OathViolation, ForceKind]`, `PowerAnswers.one`, `NoteSupport.warbands(step, player): Int`, `NoteSupport.killedKey(name): NoteKey` ("Killed {n} {player} warband."), `Kill(Piece.Warbands, PositionedLocation)`, `Gain.Warbands(player, kind, amount)`.
@@ -622,7 +622,7 @@ git commit -m "feat(powers): add Dream Thief"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/SecondChanceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/SecondChanceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -726,7 +726,7 @@ Expected: compilation fails with "Not found: SecondChance".
 
 - [ ] **Step 3: Create Second Chance**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/SecondChance.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/SecondChance.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -838,7 +838,7 @@ The class refers to its own power id as `this.id`, as `BedOfRoots` does, because
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`, replace the `forCatalog` method with:
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`, replace the `forCatalog` method with:
 
 ```scala
   def forCatalog(catalog: ExecutableCatalog): Vector[PhasePower] =
@@ -855,7 +855,7 @@ Expected: 8 tests pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/SecondChance.scala src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala src/test/scala/oathdigital/gameplay/powers/action/SecondChanceSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/SecondChance.scala src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala src/test/scala/distantlands/gameplay/powers/action/SecondChanceSuite.scala
 git commit -m "feat(powers): add Second Chance"
 ```
 
@@ -864,9 +864,9 @@ git commit -m "feat(powers): add Second Chance"
 ### Task 4: Whispering Leaves
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/WhisperingLeaves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/WhisperingLeavesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/WhisperingLeaves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/WhisperingLeavesSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerAccess.pawnSite`, `PlayerFacts.player`, `PowerAnswers.one`, `NoteSupport.answer`, `NoteSupport.favor(step, player): Int`, `Give(piece, giver, from, to)` (its `from` must belong to `giver`).
@@ -876,7 +876,7 @@ The `Give` here is the first one whose giver is not the active player (spec, "Se
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/WhisperingLeavesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/WhisperingLeavesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -961,7 +961,7 @@ Expected: compilation fails with "Not found: WhisperingLeaves".
 
 - [ ] **Step 3: Create Whispering Leaves**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/WhisperingLeaves.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/WhisperingLeaves.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1044,7 +1044,7 @@ case object WhisperingLeaves extends PaidAction("denizen.whispering-leaves",
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`, replace:
 
 ```scala
       BookOfRecords, BarbedNet, QuickExit, DreamThief) ++
@@ -1064,7 +1064,7 @@ Expected: 7 tests pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/WhisperingLeaves.scala src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala src/test/scala/oathdigital/gameplay/powers/action/WhisperingLeavesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/WhisperingLeaves.scala src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala src/test/scala/distantlands/gameplay/powers/action/WhisperingLeavesSuite.scala
 git commit -m "feat(powers): add Whispering Leaves"
 ```
 
@@ -1073,9 +1073,9 @@ git commit -m "feat(powers): add Whispering Leaves"
 ### Task 5: Enchantress
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Enchantress.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/EnchantressSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Enchantress.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/EnchantressSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerAnswers.one`, `NoteSupport.answer`, `Swap`, `Decide(..., passWhenEmpty = true)`, `BuildOps(..., required = true)`, `SearchFixture.denizensOf` (test). Insomnia (card 97) is a locked Discord denizen.
@@ -1083,7 +1083,7 @@ git commit -m "feat(powers): add Whispering Leaves"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/EnchantressSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/EnchantressSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1166,7 +1166,7 @@ Expected: compilation fails with "Not found: Enchantress".
 
 - [ ] **Step 3: Create Enchantress**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/Enchantress.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/Enchantress.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1252,7 +1252,7 @@ case object Enchantress extends PaidAction("denizen.enchantress",
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`, replace:
 
 ```scala
       BookOfRecords, BarbedNet, QuickExit, DreamThief, WhisperingLeaves) ++
@@ -1273,7 +1273,7 @@ Expected: 5 tests pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/Enchantress.scala src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala src/test/scala/oathdigital/gameplay/powers/action/EnchantressSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/Enchantress.scala src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala src/test/scala/distantlands/gameplay/powers/action/EnchantressSuite.scala
 git commit -m "feat(powers): add Enchantress"
 ```
 
@@ -1282,9 +1282,9 @@ git commit -m "feat(powers): add Enchantress"
 ### Task 6: Armed Mob
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/ArmedMob.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/ArmedMobSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/ArmedMob.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/ArmedMobSuite.scala`
 
 **Interfaces:**
 - Consumes: `BannerRules.holder(current, banner): Option[PlayerId]`, `CardPlay.nextRegion(region): Region`, `PowerAccess.pawnSite`, `CatalogCards.denizen`, `catalog.suitOf`, `PlayerFacts.player`, `PowerAnswers.one`, `NoteSupport.answer`, `Discard.Denizen(card, from, to, suit, favor, secrets, actingPlayer, required)`, `OathViolation.UnknownWorldCard(card)`, `OathViolation.PawnSiteMissing(player)`.
@@ -1292,7 +1292,7 @@ git commit -m "feat(powers): add Enchantress"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/ArmedMobSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/ArmedMobSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1399,7 +1399,7 @@ Expected: compilation fails with "Not found: ArmedMob".
 
 - [ ] **Step 3: Create Armed Mob**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/ArmedMob.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/ArmedMob.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1516,7 +1516,7 @@ object ArmedMob:
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`, replace:
 
 ```scala
       SecondChance.forCatalog(catalog).toVector
@@ -1537,7 +1537,7 @@ Expected: 7 tests pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/ArmedMob.scala src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala src/test/scala/oathdigital/gameplay/powers/action/ArmedMobSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/ArmedMob.scala src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala src/test/scala/distantlands/gameplay/powers/action/ArmedMobSuite.scala
 git commit -m "feat(powers): add Armed Mob"
 ```
 
@@ -1546,9 +1546,9 @@ git commit -m "feat(powers): add Armed Mob"
 ### Task 7: Honor Guard
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/HonorGuard.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/HonorGuardSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/HonorGuard.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/HonorGuardSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerAccess.pawnSite`, `CatalogCards.denizen`, `catalog.suitOf`, `PowerAnswers.one`, `NoteSupport.answer`, `Bury.standard(card, from, suit, favor, secrets, actingPlayer): Vector[CoreOperation]`.
@@ -1556,7 +1556,7 @@ git commit -m "feat(powers): add Armed Mob"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/HonorGuardSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/HonorGuardSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1651,7 +1651,7 @@ Expected: compilation fails with "Not found: HonorGuard".
 
 - [ ] **Step 3: Create Honor Guard**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/HonorGuard.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/HonorGuard.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1761,7 +1761,7 @@ object HonorGuard:
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`, replace:
 
 ```scala
       ArmedMob.forCatalog(catalog).toVector
@@ -1782,7 +1782,7 @@ Expected: 6 tests pass.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/HonorGuard.scala src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala src/test/scala/oathdigital/gameplay/powers/action/HonorGuardSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/HonorGuard.scala src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala src/test/scala/distantlands/gameplay/powers/action/HonorGuardSuite.scala
 git commit -m "feat(powers): add Honor Guard"
 ```
 
@@ -1791,10 +1791,10 @@ git commit -m "feat(powers): add Honor Guard"
 ### Task 8: Amber Flame
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/BookOfRecords.scala:42-43`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/AmberFlame.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/AmberFlameSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/BookOfRecords.scala:42-43`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/AmberFlame.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/AmberFlameSuite.scala`
 
 **Interfaces:**
 - Consumes: `BannerRules.holder`, `BannerRules.resources(current, banner): Int`, `PowerAnswers.one`, `NoteSupport.answer`, `Burn.favor(amount, from)`, `Burn.secrets(amount, from)`, `Banner.key` (test), `Table.peoplesFavor(holder, favor)`, `Table.darkestSecret(holder, secrets)` (test).
@@ -1804,7 +1804,7 @@ The burn from a held banner is the first `Burn` whose source is a banner (spec, 
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/AmberFlameSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/AmberFlameSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1901,7 +1901,7 @@ Expected: compilation fails with "Not found: AmberFlame".
 
 - [ ] **Step 3: Share Book of Records' banners read**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/BookOfRecords.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/action/BookOfRecords.scala`, replace:
 
 ```scala
   /** The banners held by a player whose pawn is at the actor's site. */
@@ -1918,7 +1918,7 @@ with:
 
 - [ ] **Step 4: Create Amber Flame**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/AmberFlame.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/AmberFlame.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -2015,7 +2015,7 @@ case object AmberFlame extends PaidAction("relic.amber-flame",
 
 - [ ] **Step 5: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`, replace:
 
 ```scala
       Enchantress) ++
@@ -2035,7 +2035,7 @@ Expected: Amber Flame's 6 tests pass, and Book of Records' suite passes unchange
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/AmberFlame.scala src/main/scala/oathdigital/gameplay/powers/action/BookOfRecords.scala src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala src/test/scala/oathdigital/gameplay/powers/action/AmberFlameSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/AmberFlame.scala src/main/scala/distantlands/gameplay/powers/action/BookOfRecords.scala src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala src/test/scala/distantlands/gameplay/powers/action/AmberFlameSuite.scala
 git commit -m "feat(powers): add Amber Flame"
 ```
 

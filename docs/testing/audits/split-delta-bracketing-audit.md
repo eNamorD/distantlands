@@ -53,7 +53,7 @@ after the operation it describes.
 ## The code under audit
 
 `DetailLines.deltas`
-(`src/main/scala/oathdigital/application/gamelog/DetailLines.scala:69-76`):
+(`src/main/scala/distantlands/application/gamelog/DetailLines.scala:69-76`):
 
 ```scala
 val found = journal.ops(at).flatMap(step =>
@@ -145,7 +145,7 @@ which the executor's shape guard may refuse.
 ## What the existing tests pin
 
 - `GameLogRareLinesSuite`, "gains, draws, buries, peeks and reveals each post
-  one line" (`src/test/scala/oathdigital/application/gamelog/GameLogRareLinesSuite.scala:63-87`)
+  one line" (`src/test/scala/distantlands/application/gamelog/GameLogRareLinesSuite.scala:63-87`)
   pins the per-operation bracket across *recorded operations*: the `Peek`
   names no card, the `Reveal` names it and the `Bury` after it names it,
   because `opSteps` gave each its own states. It exercises no split.
@@ -218,7 +218,7 @@ states.
   operations and states are the same values in every prefix. Not a
   correctness issue; it is the cost that scales with undo count.
 - **`formatAppended` takes `stateBefore` and `lastStateAfter` unchecked**
-  (`src/test/scala/oathdigital/application/gamelog/LogScripts.scala:220-233`).
+  (`src/test/scala/distantlands/application/gamelog/LogScripts.scala:220-233`).
   Strict `opSteps` throws on an operation that does not apply from
   `stateBefore(last)`; it does not notice a `lastStateAfter` that the
   operations never produce, so a test can still assert a line read from an

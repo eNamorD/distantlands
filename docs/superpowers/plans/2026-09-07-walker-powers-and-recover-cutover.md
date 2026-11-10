@@ -19,7 +19,7 @@
 - Recorded contribution order is an audit fact, not a replay input: `applyRecorded` must not consult it to decide what to apply.
 - A pending walker action blocks legacy actions and non-walker commands (`OathLifecycle`, `GameApplicationService`). Keep that gate working through the cutover.
 - `usedPowers` tracking stays state; no walker code reads or writes it.
-- All new leaf/composite `Operation` cases live in `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala`: `CoreOperation`/`PrimitiveOperation` are sealed and Scala 2.13 requires sealed subclasses in the same source file.
+- All new leaf/composite `Operation` cases live in `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala`: `CoreOperation`/`PrimitiveOperation` are sealed and Scala 2.13 requires sealed subclasses in the same source file.
 - `ReviewedPowerCatalog.AuditedCatalogFingerprint` is a fail-closed audit gate. Any change to the catalog's handler inventory requires recomputing it in the same commit, or every resolve call fails.
 - Old-journal compatibility is explicitly not a constraint (spec, Out of scope): the journal is forward-only pre-release. Deleting a legacy event case and its codec branch is permitted.
 - Per-task gate: root suite `./sbtw "test"` green, plus `python3 scripts/check-architecture.py`. Tasks 6-8 touch `frontend/` and additionally run `./sbtw "frontend/test" "frontend/fastLinkJS"`. Task 10 runs the full gate.
@@ -42,8 +42,8 @@ Both power vocabularies coexist until the batch migration retires the legacy one
 ### Task 1: Contribution vocabulary and the ContributingPower shape
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`
-- Test: `src/test/scala/oathdigital/gameplay/ContributingPowerSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`
+- Test: `src/test/scala/distantlands/gameplay/ContributingPowerSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerWindow`, `PowerId`, `RuleSourceRef` (`gameplay/powerresolver/PowerModel.scala`), `Operation` (`gameplay/operations/Operation.scala`), `OathViolation`, `ReadyGame`, `PlayerId`.
@@ -69,8 +69,8 @@ A `Transform` receives and returns the hooked node's **children vector**, never 
 ### Task 2: The gather protocol as a pure collector
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`
-- Test: `src/test/scala/oathdigital/gameplay/ContributionCollectorSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`
+- Test: `src/test/scala/distantlands/gameplay/ContributionCollectorSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's types.
@@ -104,11 +104,11 @@ A `Transform` receives and returns the hooked node's **children vector**, never 
 ### Task 3: Walker applies contributions and records their order
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1-2.
@@ -134,11 +134,11 @@ Wiring rules, in the order the walker must apply them:
 ### Task 4: Recover tree carries windows; StartWalker carries chosen modifiers
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala`
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/RecoverProcedureSuite.scala`, `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/RecoverProcedureSuite.scala`, `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1-3.
@@ -157,10 +157,10 @@ Wiring rules, in the order the walker must apply them:
 ### Task 5: Port Catacombs to a contribution, and assert the authoring bar
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/recover/CatacombsContribution.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RecoverPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ReviewedPowerCatalog.scala` (fingerprint only, if the handler inventory changes)
-- Test: `src/test/scala/oathdigital/gameplay/CatacombsContributionSuite.scala`, `src/test/scala/oathdigital/architecture/BackendArchitectureSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/recover/CatacombsContribution.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/RecoverPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ReviewedPowerCatalog.scala` (fingerprint only, if the handler inventory changes)
+- Test: `src/test/scala/distantlands/gameplay/CatacombsContributionSuite.scala`, `src/test/scala/distantlands/architecture/BackendArchitectureSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1-4.
@@ -182,10 +182,10 @@ The legacy `Catacombs` power object, `RecoverPowerHandler`, `operationBackedSele
 ### Task 6: Wire protocol for the walker commands
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntentCodec.scala` and `CommandIntentDecoders.scala`
-- Modify: `src/main/scala/oathdigital/application/GameIntentMapper.scala`
-- Test: `src/test/scala/oathdigital/protocol/CommandIntentCodecSuite.scala` (or the existing intent-codec suite, whichever the repository already has), `src/test/scala/oathdigital/application/GameIntentMapperSuite.scala` if one exists — otherwise extend `GameApplicationServiceSuite`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntentCodec.scala` and `CommandIntentDecoders.scala`
+- Modify: `src/main/scala/distantlands/application/GameIntentMapper.scala`
+- Test: `src/test/scala/distantlands/protocol/CommandIntentCodecSuite.scala` (or the existing intent-codec suite, whichever the repository already has), `src/test/scala/distantlands/application/GameIntentMapperSuite.scala` if one exists — otherwise extend `GameApplicationServiceSuite`
 
 **Interfaces:**
 - Consumes: Task 4's `StartWalker` shape.
@@ -207,10 +207,10 @@ The engine-side `ActionRef` wire key is already `"recover"` (`model/ActionRef.sc
 **Split from the original Task 7 after its implementer reported NEEDS_CONTEXT.** The task assumed the projection already carried what the UI needs; it does not. `WalkerDecisionProjection` is `private[application]` and never reaches the wire `GameProjection` DTO, and `PendingProcedureProjector`/`LegalActionProjector` collapse every parked decision into indistinguishable strings — `phase = "recover-walker-decision"` and control `"resolveWalkerDecision"` for both `recover.choice` and `recover.relic`. There is also no relic-candidate list on the walker path at all: the legacy `pendingCardDecision`/`recover` fields that carry relic identity are populated only from `PendingProcedure.Recover`, which the walker never sets. So a client can tell a walker decision is parked but not which one, and cannot offer relics to pick.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala`
 - Modify: its codec
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`, `ScopedProjectionContext.scala`, `GameProjection.scala`
-- Test: `src/test/scala/oathdigital/application/WalkerDecisionProjectionSuite.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`, `ScopedProjectionContext.scala`, `GameProjection.scala`
+- Test: `src/test/scala/distantlands/application/WalkerDecisionProjectionSuite.scala`
 
 **Interfaces:**
 - Produces: a wire projection of the parked walker decision carrying its `decisionId`, its kind, the pool and count for a roll park, and for the relic park the candidate relics the actor may take.
@@ -224,8 +224,8 @@ The engine-side `ActionRef` wire key is already `"recover"` (`model/ActionRef.sc
 ### Task 7b: Recover UI drives the walker
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierWorkflow.scala` (Catacombs is offered here today)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierWorkflow.scala` (Catacombs is offered here today)
 - Test: the frontend suite covering `ActionDecisionRenderer`
 
 **Interfaces:**
@@ -243,15 +243,15 @@ Delete the legacy Recover control wiring in the same task — the `beginRecover`
 ### Task 8: Generalize the walker's action dispatch and phase labels
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala` (`buildWalker`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/PendingProcedureProjector.scala`
-- Test: `src/test/scala/oathdigital/application/WalkerDecisionProjectionSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala` (`buildWalker`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Modify: `src/main/scala/distantlands/application/PendingProcedureProjector.scala`
+- Test: `src/test/scala/distantlands/application/WalkerDecisionProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing new.
 - Produces:
-  - `object WalkerActionRegistry { def build(action: ActionRef, catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId): Either[OathViolation, Operation]; def rebuild(action: ActionRef, catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId): Either[OathViolation, Operation] }` in `src/main/scala/oathdigital/gameplay/walker/WalkerActionRegistry.scala` — one keyed lookup replacing the two hardcoded `case ActionRef.Recover =>` matches (`OathRules.buildWalker`, `WalkerDecisionProjector`). Registering a second action becomes one entry here.
+  - `object WalkerActionRegistry { def build(action: ActionRef, catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId): Either[OathViolation, Operation]; def rebuild(action: ActionRef, catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId): Either[OathViolation, Operation] }` in `src/main/scala/distantlands/gameplay/walker/WalkerActionRegistry.scala` — one keyed lookup replacing the two hardcoded `case ActionRef.Recover =>` matches (`OathRules.buildWalker`, `WalkerDecisionProjector`). Registering a second action becomes one entry here.
   - Phase labels become action-keyed instead of the hardcoded `"recover-walker-roll"` / `"recover-walker-decision"` / `"recover-walker-waiting"` string literals: build them as `s"${action.wireKey}-walker-roll"` and so on, using `ActionRef`'s existing wire key.
 
 This is the debt the Recover slice's own status note flags as blocking reuse; it must land before the batch port starts, and it is cheapest here where only one action exists to break.
@@ -269,7 +269,7 @@ This is the debt the Recover slice's own status note flags as blocking reuse; it
 Note the coupling in `MajorActionPreviewCodec.encodeRequest` is separate and cosmetic — it names `GameIntent.BeginRecover` only to borrow `ActorlessCommandCodec`'s envelope encoder for `orderedModifiers`; the real action rides a `String` field. That line needs a different vehicle once the intent is deleted, but it carries no Recover semantics.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala` (`preview`)
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala` (`preview`)
 - Modify: whatever resolves preview options for a walker action
 - Test: the preview coverage in `GameApplicationServiceSuite`, plus a walker-specific case
 
@@ -285,16 +285,16 @@ Note the coupling in `MajorActionPreviewCodec.encodeRequest` is separate and cos
 ### Task 9b: Delete the legacy Recover path
 
 **Files:**
-- Delete: `src/main/scala/oathdigital/gameplay/actions/Recover.scala`, `src/main/scala/oathdigital/gameplay/powers/recover/RecoverPowerIntegration.scala`, `src/test/scala/oathdigital/gameplay/RecoverSuite.scala`
-- Modify: `src/main/scala/oathdigital/model/PendingProcedures.scala` (remove `PendingProcedure.Recover` and `RecoverPowerApplied`, lines 362-377)
-- Modify: `src/main/scala/oathdigital/gameplay/model/GameEventProtocol.scala` (remove `RecoverPowerEvent`, `RecoverRolled`, `RecoverStopped`, `RelicRecovered`, `CatacombsResolved`)
-- Modify: `src/main/scala/oathdigital/serialization/ActionEventCodec.scala`, `GameEventWire.scala` (remove those events' codec branches and type tags)
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala` (remove `BeginRecover`, `AddRecoverDice`, `StopRecover`, the `TakeFacedownRelic` Recover route, and the `WithModifiers(BeginRecover(...))` branch), `GameCommands.scala`, `GameIntentMapper.scala`, `shared/.../CommandIntents.scala` (remove the three legacy Recover intents)
-- Modify: `src/main/scala/oathdigital/application/PendingProcedureProjector.scala`, `LegalActionProjector.scala` (remove Recover-specific projections and controls)
-- Modify: `src/main/scala/oathdigital/gameplay/FirstGameSetup.scala:254-266` (remove the deleted event names from its match)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RecoverPowers.scala` (remove the legacy `Catacombs` power object and its `catacombsInspector`/`prepareCatacombs`/`canonicalCatacombs` helpers; the four reviewed-but-unimplemented powers stay as catalog entries)
-- Modify: `src/test/scala/oathdigital/architecture/BackendArchitectureSuite.scala` (the `"Catacombs mechanics remain owned by Recover powers"` guard reads `Recover.scala` by path and will fail with file-not-found — repoint it at `CatacombsContribution.scala` and the walker/operations packages)
-- Modify: `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala` (remove the legacy-only Recover tests — the Catacombs integration test and the legacy HSQL round-trip — keeping every walker test; the walker/legacy equivalence assertions lose their legacy side and must be rewritten as walker-only assertions of the same final state)
+- Delete: `src/main/scala/distantlands/gameplay/actions/Recover.scala`, `src/main/scala/distantlands/gameplay/powers/recover/RecoverPowerIntegration.scala`, `src/test/scala/distantlands/gameplay/RecoverSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PendingProcedures.scala` (remove `PendingProcedure.Recover` and `RecoverPowerApplied`, lines 362-377)
+- Modify: `src/main/scala/distantlands/gameplay/model/GameEventProtocol.scala` (remove `RecoverPowerEvent`, `RecoverRolled`, `RecoverStopped`, `RelicRecovered`, `CatacombsResolved`)
+- Modify: `src/main/scala/distantlands/serialization/ActionEventCodec.scala`, `GameEventWire.scala` (remove those events' codec branches and type tags)
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala` (remove `BeginRecover`, `AddRecoverDice`, `StopRecover`, the `TakeFacedownRelic` Recover route, and the `WithModifiers(BeginRecover(...))` branch), `GameCommands.scala`, `GameIntentMapper.scala`, `shared/.../CommandIntents.scala` (remove the three legacy Recover intents)
+- Modify: `src/main/scala/distantlands/application/PendingProcedureProjector.scala`, `LegalActionProjector.scala` (remove Recover-specific projections and controls)
+- Modify: `src/main/scala/distantlands/gameplay/FirstGameSetup.scala:254-266` (remove the deleted event names from its match)
+- Modify: `src/main/scala/distantlands/gameplay/powers/RecoverPowers.scala` (remove the legacy `Catacombs` power object and its `catacombsInspector`/`prepareCatacombs`/`canonicalCatacombs` helpers; the four reviewed-but-unimplemented powers stay as catalog entries)
+- Modify: `src/test/scala/distantlands/architecture/BackendArchitectureSuite.scala` (the `"Catacombs mechanics remain owned by Recover powers"` guard reads `Recover.scala` by path and will fail with file-not-found — repoint it at `CatacombsContribution.scala` and the walker/operations packages)
+- Modify: `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala` (remove the legacy-only Recover tests — the Catacombs integration test and the legacy HSQL round-trip — keeping every walker test; the walker/legacy equivalence assertions lose their legacy side and must be rewritten as walker-only assertions of the same final state)
 
 **Interfaces:**
 - Consumes: Tasks 5-8. Do not start this task until a player can complete a Recover, with and without Catacombs, entirely through the walker.

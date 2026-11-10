@@ -361,8 +361,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: One card index per game state
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`OathGame`, at the end of the file)
-- Modify: `src/main/scala/oathdigital/model/CardIndex.scala` (class doc, `object CardIndex`)
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`OathGame`, at the end of the file)
+- Modify: `src/main/scala/distantlands/model/CardIndex.scala` (class doc, `object CardIndex`)
 - Modify (callers, found by grep in Step 3):
   `gameplay/operations/OperationStateWrites.scala`,
   `gameplay/operations/OperationExecutor.scala` (`OperationStateInvariant.cardIds`),
@@ -374,7 +374,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   `application/GamePresentationProjector.scala` (two sites),
   `application/gamelog/ActionLines.scala`,
   `application/gamelog/DetailLines.scala`,
-  all under `src/main/scala/oathdigital/`.
+  all under `src/main/scala/distantlands/`.
 - Modify: this plan's Measurements section.
 
 **Interfaces:**
@@ -524,17 +524,17 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: Window index for a command's powers
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/PowerWindowIndex.scala`
-- Create: `src/test/scala/oathdigital/gameplay/PowerWindowIndexSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` (doc on `contributions`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (three `gather` calls)
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/PowerWindowIndex.scala`
+- Create: `src/test/scala/distantlands/gameplay/PowerWindowIndexSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` (doc on `contributions`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (three `gather` calls)
 - Modify (tests that call `gather` directly):
-  `src/test/scala/oathdigital/gameplay/ContributionCollectorSuite.scala` (four calls),
-  `src/test/scala/oathdigital/gameplay/ContributionIgnoresSuite.scala`,
-  `src/test/scala/oathdigital/gameplay/TakeWealthPowerSuite.scala`,
-  `src/test/scala/oathdigital/gameplay/TravelSitePowersSuite.scala`
+  `src/test/scala/distantlands/gameplay/ContributionCollectorSuite.scala` (four calls),
+  `src/test/scala/distantlands/gameplay/ContributionIgnoresSuite.scala`,
+  `src/test/scala/distantlands/gameplay/TakeWealthPowerSuite.scala`,
+  `src/test/scala/distantlands/gameplay/TravelSitePowersSuite.scala`
 - Modify: this plan's Measurements section.
 
 **Interfaces:**
@@ -548,7 +548,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing test**
 
-`src/test/scala/oathdigital/gameplay/PowerWindowIndexSuite.scala`:
+`src/test/scala/distantlands/gameplay/PowerWindowIndexSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -604,7 +604,7 @@ Expected: compile error, "Not found: type PowerWindowIndex".
 
 - [ ] **Step 3: Write the index**
 
-`src/main/scala/oathdigital/gameplay/powerresolver/PowerWindowIndex.scala`:
+`src/main/scala/distantlands/gameplay/powerresolver/PowerWindowIndex.scala`:
 
 ```scala
 package oathdigital.gameplay.powerresolver
@@ -751,7 +751,7 @@ In `WalkerPowerGather.scala`, replace `powers.powers` with
 calls (in `applyWindow`, and in the `rejected` and `emptied` values). Leave
 the other `powers.powers` uses (the `byId` maps) unchanged.
 
-Run: `grep -n "ContributionCollector.gather" src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
+Run: `grep -n "ContributionCollector.gather" src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
 Expected: three calls, each passing `powers.windowIndex` (one call wraps
 onto the next line, so check that line too).
 

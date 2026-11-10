@@ -56,16 +56,16 @@ This is the seventh of 14 slice plans, written against `0.2.0-alpha` at `73d7d09
 ### Task 1: `EffectiveSuit` reads the Troupe's pick
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/EffectiveSuit.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `ActingTroupeCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala:132`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/SuitSupplyWaiver.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/CupOfPlenty.scala`, `AnimalPlaymates.scala`, `Birdsong.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/VowOfBeastkin.scala:61`
-- Test: `src/test/scala/oathdigital/gameplay/EffectiveSuitSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/MusterProcedureSuite.scala:164-171` (the three `matching` calls)
+- Modify: `src/main/scala/distantlands/gameplay/EffectiveSuit.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `ActingTroupeCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala:132`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/SuitSupplyWaiver.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/CupOfPlenty.scala`, `AnimalPlaymates.scala`, `Birdsong.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/VowOfBeastkin.scala:61`
+- Test: `src/test/scala/distantlands/gameplay/EffectiveSuitSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/MusterProcedureSuite.scala:164-171` (the three `matching` calls)
 
 **Interfaces:**
 - Produces:
@@ -261,18 +261,18 @@ Expected: PASS. The economy suites pin that the threading changes nothing withou
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/EffectiveSuit.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/SuitSupplyWaiver.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/CupOfPlenty.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/AnimalPlaymates.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/Birdsong.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/VowOfBeastkin.scala \
-  src/test/scala/oathdigital/gameplay/EffectiveSuitSuite.scala \
-  src/test/scala/oathdigital/gameplay/MusterProcedureSuite.scala
+git add src/main/scala/distantlands/gameplay/EffectiveSuit.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/SuitSupplyWaiver.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/CupOfPlenty.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/AnimalPlaymates.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/Birdsong.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/VowOfBeastkin.scala \
+  src/test/scala/distantlands/gameplay/EffectiveSuitSuite.scala \
+  src/test/scala/distantlands/gameplay/MusterProcedureSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(gameplay): a Trade counts a picked Acting Troupe as its answered suit
 
@@ -286,10 +286,10 @@ EOF
 ### Task 2: Acting Troupe, docs and gates
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/ActingTroupe.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/ActingTroupe.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/ActingTroupeSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/ActingTroupeSuite.scala`
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`, `docs/ROADMAP.md`
 
 **Interfaces:**
@@ -610,11 +610,11 @@ Expected: both pass.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/ActingTroupe.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
+git add src/main/scala/distantlands/gameplay/powers/economy/ActingTroupe.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
   src/test/resources/powers/unimplemented.txt \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/powers/economy/ActingTroupeSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/ActingTroupeSuite.scala \
   docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md \
   docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'

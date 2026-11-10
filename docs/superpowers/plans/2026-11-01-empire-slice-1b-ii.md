@@ -88,48 +88,48 @@ rulings R10, R11, R12 and R16).
 
 | File | Responsibility |
 |---|---|
-| `src/main/scala/oathdigital/model/PlanAid.scala` (new) | `AidAmounts`, `AidOffer`, `AidWindow`, `PlanAidState`, `PlanNeed` |
-| `src/main/scala/oathdigital/model/GameEventProtocol.scala` | `PlanAidEvent`, `PlanAidSaved`, `PlanAidCleared` |
-| `src/main/scala/oathdigital/model/GameStateProtocol.scala` | `ReadyGame.planAid` |
-| `src/main/scala/oathdigital/model/CampaignTypes.scala` | `CampaignPlanOffer.requires`, `lender`, `awaitsAid` |
-| `src/main/scala/oathdigital/model/Decisions.scala` | `DecisionOption.Lent` |
-| `src/main/scala/oathdigital/model/GameViolation.scala` | `OathViolation.PlanAidUnavailable` |
-| `src/main/scala/oathdigital/gameplay/aid/PlanAidEvolution.scala` (new) | Evolves the aid events |
-| `src/main/scala/oathdigital/gameplay/actions/campaign/PlanAid.scala` (new) | Read model: allies, offers, used and remaining aid, payment split, markers |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala` | Lent plans and requirements, full-aid view |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala` | Offers awaiting aid; the lender |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/ImperialTactics.scala` (new) | Note keys for the aid hover reasons |
-| `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala` | The window's gate, the attacker-used reason |
-| `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala` | Split payments, aid markers |
-| `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` | `planAidWindow`, `planAidOfferable` |
-| `src/main/scala/oathdigital/application/PlanAidDesk.scala` (new) | The `SavePlanAid` command and stale clearing |
-| `src/main/scala/oathdigital/application/PlanAidProjector.scala` (new) | `planAidPrompt` for an ally |
-| `src/main/scala/oathdigital/application/gamelog/PlanAidLines.scala` (new) | "p2 offered …" and "p2 withdrew …" |
-| `src/main/scala/oathdigital/serialization/PlanAidEventCodec.scala` (new) | Wire for the aid events |
-| `shared/src/main/scala/oathdigital/protocol/...` | `GameIntent.SavePlanAid`, codecs, `PlanAidPromptProjection` |
-| `frontend/src/main/scala/oathdigital/frontend/PlanAidPanel.scala` (new) | The offer panel |
-| `frontend/src/main/scala/oathdigital/frontend/PlanAidDraft.scala` (new) | The ally's draft offer and its board views |
+| `src/main/scala/distantlands/model/PlanAid.scala` (new) | `AidAmounts`, `AidOffer`, `AidWindow`, `PlanAidState`, `PlanNeed` |
+| `src/main/scala/distantlands/model/GameEventProtocol.scala` | `PlanAidEvent`, `PlanAidSaved`, `PlanAidCleared` |
+| `src/main/scala/distantlands/model/GameStateProtocol.scala` | `ReadyGame.planAid` |
+| `src/main/scala/distantlands/model/CampaignTypes.scala` | `CampaignPlanOffer.requires`, `lender`, `awaitsAid` |
+| `src/main/scala/distantlands/model/Decisions.scala` | `DecisionOption.Lent` |
+| `src/main/scala/distantlands/model/GameViolation.scala` | `OathViolation.PlanAidUnavailable` |
+| `src/main/scala/distantlands/gameplay/aid/PlanAidEvolution.scala` (new) | Evolves the aid events |
+| `src/main/scala/distantlands/gameplay/actions/campaign/PlanAid.scala` (new) | Read model: allies, offers, used and remaining aid, payment split, markers |
+| `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala` | Lent plans and requirements, full-aid view |
+| `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala` | Offers awaiting aid; the lender |
+| `src/main/scala/distantlands/gameplay/powers/campaign/ImperialTactics.scala` (new) | Note keys for the aid hover reasons |
+| `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala` | The window's gate, the attacker-used reason |
+| `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala` | Split payments, aid markers |
+| `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` | `planAidWindow`, `planAidOfferable` |
+| `src/main/scala/distantlands/application/PlanAidDesk.scala` (new) | The `SavePlanAid` command and stale clearing |
+| `src/main/scala/distantlands/application/PlanAidProjector.scala` (new) | `planAidPrompt` for an ally |
+| `src/main/scala/distantlands/application/gamelog/PlanAidLines.scala` (new) | "p2 offered …" and "p2 withdrew …" |
+| `src/main/scala/distantlands/serialization/PlanAidEventCodec.scala` (new) | Wire for the aid events |
+| `shared/src/main/scala/distantlands/protocol/...` | `GameIntent.SavePlanAid`, codecs, `PlanAidPromptProjection` |
+| `frontend/src/main/scala/distantlands/frontend/PlanAidPanel.scala` (new) | The offer panel |
+| `frontend/src/main/scala/distantlands/frontend/PlanAidDraft.scala` (new) | The ally's draft offer and its board views |
 
 ---
 
 ### Task 1: The aid state, its events and their wire
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/PlanAid.scala`
-- Create: `src/main/scala/oathdigital/gameplay/aid/PlanAidEvolution.scala`
-- Create: `src/main/scala/oathdigital/serialization/PlanAidEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/model/GameEventProtocol.scala` (beside `ConsentEvent`, line 19, and the consent cases at 60-73)
-- Modify: `src/main/scala/oathdigital/model/GameStateProtocol.scala:35-41` (`ReadyGame`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala:71` (the `ConsentEvent` arm)
-- Modify: `src/main/scala/oathdigital/application/JournalFold.scala:99-119`
-- Modify: `src/main/scala/oathdigital/serialization/GameEventWire.scala`. Register the family in four places, the way `ConsentEventCodec` is registered:
+- Create: `src/main/scala/distantlands/model/PlanAid.scala`
+- Create: `src/main/scala/distantlands/gameplay/aid/PlanAidEvolution.scala`
+- Create: `src/main/scala/distantlands/serialization/PlanAidEventCodec.scala`
+- Modify: `src/main/scala/distantlands/model/GameEventProtocol.scala` (beside `ConsentEvent`, line 19, and the consent cases at 60-73)
+- Modify: `src/main/scala/distantlands/model/GameStateProtocol.scala:35-41` (`ReadyGame`)
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala:71` (the `ConsentEvent` arm)
+- Modify: `src/main/scala/distantlands/application/JournalFold.scala:99-119`
+- Modify: `src/main/scala/distantlands/serialization/GameEventWire.scala`. Register the family in four places, the way `ConsentEventCodec` is registered:
   - the mix-in at lines 18-21
   - the type constants at 47-51
   - the discriminator and encoder chains at 258-264
   - `decodePayload` at 297
-- Test: `src/test/scala/oathdigital/model/PlanAidStateSuite.scala` (new)
-- Test: `src/test/scala/oathdigital/serialization/PlanAidEventWireSuite.scala` (new)
-- Test: `src/test/scala/oathdigital/application/JournalFoldSuite.scala`, or the suite that covers `JournalFold.carried`. Find it with `grep -rln "carried" src/test`.
+- Test: `src/test/scala/distantlands/model/PlanAidStateSuite.scala` (new)
+- Test: `src/test/scala/distantlands/serialization/PlanAidEventWireSuite.scala` (new)
+- Test: `src/test/scala/distantlands/application/JournalFoldSuite.scala`, or the suite that covers `JournalFold.carried`. Find it with `grep -rln "carried" src/test`.
 
 **Interfaces:**
 - Produces:
@@ -183,7 +183,7 @@ Expected: compile errors, because `AidWindow`, `AidOffer` and `PlanAidState` are
 
 - [ ] **Step 3: Write the model**
 
-`src/main/scala/oathdigital/model/PlanAid.scala`:
+`src/main/scala/distantlands/model/PlanAid.scala`:
 
 ```scala
 package oathdigital.model
@@ -287,7 +287,7 @@ Inside `object OathEvent`, after the consent cases:
   case object PlanAidCleared extends PlanAidEvent
 ```
 
-`src/main/scala/oathdigital/gameplay/aid/PlanAidEvolution.scala`:
+`src/main/scala/distantlands/gameplay/aid/PlanAidEvolution.scala`:
 
 ```scala
 package oathdigital.gameplay.aid
@@ -359,7 +359,7 @@ Expected: FAIL, because an unknown event cannot be encoded.
 
 - [ ] **Step 7: Write the codec and the journal arms**
 
-`src/main/scala/oathdigital/serialization/PlanAidEventCodec.scala`. It follows `ConsentEventCodec.scala`: it is the same kind of trait over `GameEventJsonSupport`, and it uses `DecisionAnswerCodec.encodeRef` and the ref decoder that `consentDecode` uses for `target`.
+`src/main/scala/distantlands/serialization/PlanAidEventCodec.scala`. It follows `ConsentEventCodec.scala`: it is the same kind of trait over `GameEventJsonSupport`, and it uses `DecisionAnswerCodec.encodeRef` and the ref decoder that `consentDecode` uses for `target`.
 
 ```scala
 package oathdigital.serialization
@@ -436,16 +436,16 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PlanAid.scala \
-  src/main/scala/oathdigital/model/GameEventProtocol.scala \
-  src/main/scala/oathdigital/model/GameStateProtocol.scala \
-  src/main/scala/oathdigital/gameplay/aid/PlanAidEvolution.scala \
-  src/main/scala/oathdigital/gameplay/OathRules.scala \
-  src/main/scala/oathdigital/application/JournalFold.scala \
-  src/main/scala/oathdigital/serialization/PlanAidEventCodec.scala \
-  src/main/scala/oathdigital/serialization/GameEventWire.scala \
-  src/test/scala/oathdigital/model/PlanAidStateSuite.scala \
-  src/test/scala/oathdigital/serialization/PlanAidEventWireSuite.scala
+git add src/main/scala/distantlands/model/PlanAid.scala \
+  src/main/scala/distantlands/model/GameEventProtocol.scala \
+  src/main/scala/distantlands/model/GameStateProtocol.scala \
+  src/main/scala/distantlands/gameplay/aid/PlanAidEvolution.scala \
+  src/main/scala/distantlands/gameplay/OathRules.scala \
+  src/main/scala/distantlands/application/JournalFold.scala \
+  src/main/scala/distantlands/serialization/PlanAidEventCodec.scala \
+  src/main/scala/distantlands/serialization/GameEventWire.scala \
+  src/test/scala/distantlands/model/PlanAidStateSuite.scala \
+  src/test/scala/distantlands/serialization/PlanAidEventWireSuite.scala
 git add <the JournalFold suite you changed>
 git commit -m "feat(empire): record Imperial Tactics offers as standing facts
 
@@ -457,9 +457,9 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: The aid read model
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/campaign/PlanAid.scala`
-- Test: `src/test/scala/oathdigital/gameplay/actions/campaign/PlanAidSuite.scala` (new)
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala`. Add a step `aid(ally, window, offer)` that sets `planAid` directly, as every `Table` step edits state.
+- Create: `src/main/scala/distantlands/gameplay/actions/campaign/PlanAid.scala`
+- Test: `src/test/scala/distantlands/gameplay/actions/campaign/PlanAidSuite.scala` (new)
+- Modify: `src/test/scala/distantlands/testkit/Table.scala`. Add a step `aid(ally, window, offer)` that sets `planAid` directly, as every `Table` step edits state.
 
 **Interfaces:**
 - Consumes: Task 1's model.
@@ -747,9 +747,9 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/PlanAid.scala \
-  src/test/scala/oathdigital/gameplay/actions/campaign/PlanAidSuite.scala \
-  src/test/scala/oathdigital/testkit/Table.scala
+git add src/main/scala/distantlands/gameplay/actions/campaign/PlanAid.scala \
+  src/test/scala/distantlands/gameplay/actions/campaign/PlanAidSuite.scala \
+  src/test/scala/distantlands/testkit/Table.scala
 git commit -m "feat(empire): read what Imperial allies offer and have spent
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -760,22 +760,22 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: Lent plans and requirements in the plan window
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala:148-155` (`CampaignPlanOffer`)
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala:295` (beside `Badged`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala` (`contributions`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/TitleDefensePlan.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/ToweringRampart.scala`
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala:148-155` (`CampaignPlanOffer`)
+- Modify: `src/main/scala/distantlands/model/Decisions.scala:295` (beside `Badged`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala` (`contributions`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/TitleDefensePlan.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/ToweringRampart.scala`
 - Modify: these plans, so that each declares `requires`:
   - `FireTalkers.scala`, `FaeBattalion.scala`, `RustingRay.scala` and `UnstableSummon.scala` (the Darkest Secret)
   - `ToweringRampart.scala` (a pawn)
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/ImperialTactics.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala` (register `ImperialTactics`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlans.scala` (`optionOf`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala` (`userPass`)
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/ImperialTactics.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala` (register `ImperialTactics`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlans.scala` (`optionOf`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala` (`userPass`)
 - Modify: every exhaustive match on `DecisionOption` that has a `Badged` arm. Today these are `application/WalkerDecisionProjector.scala:354`, `application/gamelog/ChoiceWords.scala` and `gameplay/walker/PricedOptions.scala`; check with `grep -rn "Badged" src/main`.
 - Modify: `src/test/resources/notes/declared-keys.txt`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/ImperialTacticsSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/ImperialTacticsSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `PlanAid` (Task 2) and the `Table.aid` step.
@@ -1113,17 +1113,17 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 4: Allies pay first
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala`. It changes in five places:
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala`. It changes in five places:
   - `pay`
   - `payAmount`
   - the first and second `Branch`es
   - a new requirement-and-plan marker slot
   - its class comment
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanSurcharge.scala` (`surcharge`, the card case)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala:187` (the favor `Give`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/ArcaneArmor.scala` (`plan` and `bounds`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/HeartsAndMinds.scala` (`endDiscard`)
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/ImperialTacticsPaymentSuite.scala` (new)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanSurcharge.scala` (`surcharge`, the card case)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala:187` (the favor `Give`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/ArcaneArmor.scala` (`plan` and `bounds`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/HeartsAndMinds.scala` (`endDiscard`)
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/ImperialTacticsPaymentSuite.scala` (new)
 
 **Interfaces:**
 - Consumes:
@@ -1329,8 +1329,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 5: The window opens when aid could help
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala` (`userPass` and the class comment)
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/ImperialTacticsWindowSuite.scala` (new)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala` (`userPass` and the class comment)
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/ImperialTacticsWindowSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `CampaignPlanOffer.awaitsAid` (Task 3) and `PlanAid.couldCover` (Task 2).
@@ -1407,8 +1407,8 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/ImperialTacticsWindowSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/ImperialTacticsWindowSuite.scala
 git commit -m "feat(empire): open a Citizen's plan window when allies could help
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1419,23 +1419,23 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 6: The offer command
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (beside `grantAnswers`, line 209)
-- Modify: `src/main/scala/oathdigital/model/GameViolation.scala:108` (beside `ConsentUnavailable`)
-- Modify: `src/main/scala/oathdigital/server/GameRoutes.scala:38` (the violation's message)
-- Create: `src/main/scala/oathdigital/application/PlanAidDesk.scala`
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`:
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (beside `grantAnswers`, line 209)
+- Modify: `src/main/scala/distantlands/model/GameViolation.scala:108` (beside `ConsentUnavailable`)
+- Modify: `src/main/scala/distantlands/server/GameRoutes.scala:38` (the violation's message)
+- Create: `src/main/scala/distantlands/application/PlanAidDesk.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`:
   - add `SavePlanAid`
   - give it an `issuer` of `None`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala`, in three places:
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala`, in three places:
   - `routed`, at 196-224
   - `appendBatch`, at 388-421
   - the defensive arm of `applyUnblockedCommand`, at 508
-- Modify: `src/main/scala/oathdigital/application/Authorization.scala:51-66` (the `savePlanAid` builder)
-- Modify: `src/main/scala/oathdigital/application/GameIntentMapper.scala:20-33`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`, `CommandIntentCodec.scala:7-20` and `CommandIntentDecoders.scala:30-42`
-- Test: `src/test/scala/oathdigital/application/PlanAidServiceSuite.scala` (new)
-- Test: `src/test/scala/oathdigital/application/PlanAidIntentMapperSuite.scala` (new; model it on `ConsentIntentMapperSuite`)
-- Test: `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala` (a round trip for the new intent)
+- Modify: `src/main/scala/distantlands/application/Authorization.scala:51-66` (the `savePlanAid` builder)
+- Modify: `src/main/scala/distantlands/application/GameIntentMapper.scala:20-33`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`, `CommandIntentCodec.scala:7-20` and `CommandIntentDecoders.scala:30-42`
+- Test: `src/test/scala/distantlands/application/PlanAidServiceSuite.scala` (new)
+- Test: `src/test/scala/distantlands/application/PlanAidIntentMapperSuite.scala` (new; model it on `ConsentIntentMapperSuite`)
+- Test: `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala` (a round trip for the new intent)
 
 **Interfaces:**
 - Consumes:
@@ -1539,7 +1539,7 @@ If `CampaignPlanSide` is not an `enum` with `values`, list `Vector(CampaignPlanS
 
 - [ ] **Step 4: The desk, the command and the routes**
 
-`src/main/scala/oathdigital/application/PlanAidDesk.scala`:
+`src/main/scala/distantlands/application/PlanAidDesk.scala`:
 
 ```scala
 package oathdigital.application
@@ -1706,9 +1706,9 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 7: The log lines
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/gamelog/PlanAidLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala:49,182`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogPlanAidSuite.scala` (new; model it on `GameLogConsentSuite`)
+- Create: `src/main/scala/distantlands/application/gamelog/PlanAidLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala:49,182`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogPlanAidSuite.scala` (new; model it on `GameLogConsentSuite`)
 
 **Interfaces:**
 - Consumes: `PlanAidSaved` (Task 1).
@@ -1771,9 +1771,9 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/PlanAidLines.scala \
-  src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPlanAidSuite.scala
+git add src/main/scala/distantlands/application/gamelog/PlanAidLines.scala \
+  src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPlanAidSuite.scala
 git commit -m "feat(empire): log what Imperial allies offer and withdraw
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1784,13 +1784,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 8: The ally's projection
 
 **Files:**
-- Create: `shared/src/main/scala/oathdigital/protocol/projection/PlanAidProjectionDtos.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala:32-34` (the new field)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala:22,72-77,131`, plus a codec beside `ConsentProjectionCodec`
-- Create: `src/main/scala/oathdigital/application/PlanAidProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala:26,51-66`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`. Make `optionProjection` reachable as `private[application] def option(ready, viewer, option): Option[DecisionOptionProjection]`.
-- Test: `src/test/scala/oathdigital/application/PlanAidProjectionSuite.scala` (new; model it on `ConsentProjectionSuite`)
+- Create: `shared/src/main/scala/distantlands/protocol/projection/PlanAidProjectionDtos.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala:32-34` (the new field)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala:22,72-77,131`, plus a codec beside `ConsentProjectionCodec`
+- Create: `src/main/scala/distantlands/application/PlanAidProjector.scala`
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala:26,51-66`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`. Make `optionProjection` reachable as `private[application] def option(ready, viewer, option): Option[DecisionOptionProjection]`.
+- Test: `src/test/scala/distantlands/application/PlanAidProjectionSuite.scala` (new; model it on `ConsentProjectionSuite`)
 - Test: the projection codec round-trip suite (find it with `grep -rln "consentPrompt" shared/src/test src/test`)
 
 **Interfaces:**
@@ -1920,15 +1920,15 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 9: The offer panel and board toggles
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/PlanAidDraft.scala`
-- Create: `frontend/src/main/scala/oathdigital/frontend/PlanAidPanel.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/frontend.scala:41-46` (alias `PlanAidPromptState`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/SessionDrafts.scala` (the `aid` slot and `Draft.Aid`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala:103-106` (aid board options when there is no board decision)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala:137` (mount the panel beside `ConsentPanels.render`)
+- Create: `frontend/src/main/scala/distantlands/frontend/PlanAidDraft.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/PlanAidPanel.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/frontend.scala:41-46` (alias `PlanAidPromptState`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/SessionDrafts.scala` (the `aid` slot and `Draft.Aid`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala:103-106` (aid board options when there is no board decision)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala:137` (mount the panel beside `ConsentPanels.render`)
 - Modify: the frontend stylesheet the consent panel's classes live in (find `consent-prompt` with grep)
-- Test: `frontend/src/test/scala/oathdigital/frontend/PlanAidPanelSuite.scala` (new)
-- Test: `frontend/src/test/scala/oathdigital/frontend/PlanAidDraftSuite.scala` (new)
+- Test: `frontend/src/test/scala/distantlands/frontend/PlanAidPanelSuite.scala` (new)
+- Test: `frontend/src/test/scala/distantlands/frontend/PlanAidDraftSuite.scala` (new)
 
 **Interfaces:**
 - Consumes:
@@ -2125,7 +2125,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 10: Scenario, docs and gates
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/ImperialTacticsScenarioSuite.scala`
+- Create: `src/test/scala/distantlands/application/ImperialTacticsScenarioSuite.scala`
 - Modify: `docs/rules/ambiguities.md` (R16, and R12 as now worded)
 - Modify: `docs/rules/rules-reference.md`, "Imperial laws" (an "Imperial Tactics" line)
 - Modify: `docs/rules/implementation-traceability.md:104`
@@ -2208,7 +2208,7 @@ Expected: all pass. If a file passes 800 lines, split out a cohesive part: for e
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/ImperialTacticsScenarioSuite.scala \
+git add src/test/scala/distantlands/application/ImperialTacticsScenarioSuite.scala \
   docs/rules/ambiguities.md docs/rules/rules-reference.md \
   docs/rules/implementation-traceability.md \
   docs/superpowers/specs/2026-10-29-empire-phase-design.md \

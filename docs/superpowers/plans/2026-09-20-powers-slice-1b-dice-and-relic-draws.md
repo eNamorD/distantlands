@@ -50,13 +50,13 @@ Resolve these before executing. The plan takes the default named in each, and sa
 
 ## File Structure
 
-- Create `src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala`: the shared draw.
-- Create `src/main/scala/oathdigital/gameplay/powers/action/RollResults.scala`: reads a roll's score and skulls.
+- Create `src/main/scala/distantlands/gameplay/powers/RelicDraws.scala`: the shared draw.
+- Create `src/main/scala/distantlands/gameplay/powers/action/RollResults.scala`: reads a roll's score and skulls.
 - Create `.../action/GamblingHall.scala`, `BoneDice.scala`, `MurkyFountain.scala`, `DowsingSticks.scala`, `FaeMerchant.scala`.
 - Create `.../action/DiceAndRelicDrawPowers.scala`: the slice's registry group.
-- Modify `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`: one import and one line.
-- Create test support `src/test/scala/oathdigital/gameplay/powers/action/PaidActionHarness.scala`.
-- Create one suite per power under `src/test/scala/oathdigital/gameplay/powers/action/`, and `src/test/scala/oathdigital/application/DicePowerDecisionProjectionSuite.scala`.
+- Modify `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`: one import and one line.
+- Create test support `src/test/scala/distantlands/gameplay/powers/action/PaidActionHarness.scala`.
+- Create one suite per power under `src/test/scala/distantlands/gameplay/powers/action/`, and `src/test/scala/distantlands/application/DicePowerDecisionProjectionSuite.scala`.
 - Modify the design and rulings docs (Task 6).
 
 ---
@@ -64,13 +64,13 @@ Resolve these before executing. The plan takes the default named in each, and sa
 ### Task 1: The dice kit and Gambling Hall
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/RollResults.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/PaidActionHarness.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/GamblingHallSuite.scala`
-- Test: `src/test/scala/oathdigital/application/DicePowerDecisionProjectionSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/RollResults.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/PaidActionHarness.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/GamblingHallSuite.scala`
+- Test: `src/test/scala/distantlands/application/DicePowerDecisionProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes slice 1a's `PaidAction(idValue, cost)` and `PowerFixture` (`base`, `actor`, `player`, `home`, `withBoard`, `inPhase`, `atHome`, `atSite`), and `CampaignFixture.dice`.
@@ -83,7 +83,7 @@ Ruling: cost 2 favor placed. Roll 4 defense dice. When the total X is above zero
 
 - [ ] **Step 1: Write the test support**
 
-`src/test/scala/oathdigital/gameplay/powers/action/PaidActionHarness.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/PaidActionHarness.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -173,7 +173,7 @@ object PaidActionHarness {
 
 - [ ] **Step 2: Write the failing Gambling Hall suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/GamblingHallSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/GamblingHallSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -291,7 +291,7 @@ class GamblingHallSuite extends munit.FunSuite {
 
 - [ ] **Step 3: Write the failing projection suite**
 
-`src/test/scala/oathdigital/application/DicePowerDecisionProjectionSuite.scala`. Task 5 adds a second test to it.
+`src/test/scala/distantlands/application/DicePowerDecisionProjectionSuite.scala`. Task 5 adds a second test to it.
 
 ```scala
 package oathdigital.application
@@ -342,7 +342,7 @@ Expected: FAIL to compile, `not found: value GamblingHall`.
 
 - [ ] **Step 5: Write `RollResults` and Gambling Hall**
 
-`src/main/scala/oathdigital/gameplay/powers/action/RollResults.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/RollResults.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -367,7 +367,7 @@ private[action] object RollResults {
 }
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -421,7 +421,7 @@ case object GamblingHall extends PaidAction("denizen.gambling-hall",
 
 - [ ] **Step 6: Register the slice's group**
 
-`src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -439,7 +439,7 @@ object DiceAndRelicDrawPowers {
 }
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`: extend the import and the vector (the two changed lines only):
+`src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`: extend the import and the vector (the two changed lines only):
 
 ```scala
 import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, MagicWaterskin, WaysideInn}
@@ -471,9 +471,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 2: Bone Dice
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/BoneDice.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/BoneDiceSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/BoneDice.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/BoneDiceSuite.scala`
 
 **Interfaces:**
 - Consumes `RollResults.score`, `RollResults.skulls`, `PaidActionHarness.attackDice`, `PlayerFacts.player`.
@@ -483,7 +483,7 @@ Ruling: cost 1 secret placed. Roll 2 attack dice. Gain Supply equal to the sword
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/BoneDiceSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/BoneDiceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -572,7 +572,7 @@ Expected: FAIL to compile, `not found: value BoneDice`.
 
 - [ ] **Step 3: Write Bone Dice**
 
-`src/main/scala/oathdigital/gameplay/powers/action/BoneDice.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/BoneDice.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -651,9 +651,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 3: Murky Fountain
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/MurkyFountain.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/MurkyFountainSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/MurkyFountain.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/MurkyFountainSuite.scala`
 
 **Interfaces:**
 - Consumes `PowerAccess.siteOf`, `PowerAccess.pawnSite` (`private[gameplay]`, reachable from `gameplay.powers`), `RollResults.score`, `PaidActionHarness.defenseDice`, `PowerFixture.withEdifice`.
@@ -663,7 +663,7 @@ Ruling: cost 1 secret placed on the edifice card. If your pawn is at this site, 
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/MurkyFountainSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/MurkyFountainSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -781,7 +781,7 @@ Expected: FAIL to compile, `not found: value MurkyFountain`.
 
 - [ ] **Step 3: Write Murky Fountain**
 
-`src/main/scala/oathdigital/gameplay/powers/action/MurkyFountain.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/MurkyFountain.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -858,10 +858,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 4: The relic draw and Dowsing Sticks
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/DowsingSticks.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/DowsingSticksSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/RelicDraws.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/DowsingSticks.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/DowsingSticksSuite.scala`
 
 **Interfaces:**
 - Produces `RelicDraws.takeTop(ready, actor): Vector[CoreOperation]`, empty when the relic deck is empty. Task 5 uses it. Slice 1a's Family Heirloom keeps its own draw, because it must fail inside a guarded `Repeat`.
@@ -871,7 +871,7 @@ Ruling: cost 1 secret placed and 2 secrets burnt. Draw a relic from the relic de
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/DowsingSticksSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/DowsingSticksSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -949,7 +949,7 @@ Expected: FAIL to compile, `not found: value DowsingSticks`.
 
 - [ ] **Step 3: Write the draw and Dowsing Sticks**
 
-`src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala`:
+`src/main/scala/distantlands/gameplay/powers/RelicDraws.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -968,7 +968,7 @@ object RelicDraws {
 }
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/action/DowsingSticks.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/DowsingSticks.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1018,10 +1018,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 5: Fae Merchant
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/FaeMerchant.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/FaeMerchantSuite.scala`
-- Test: `src/test/scala/oathdigital/application/DicePowerDecisionProjectionSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/FaeMerchant.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/FaeMerchantSuite.scala`
+- Test: `src/test/scala/distantlands/application/DicePowerDecisionProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes `RelicDraws.takeTop`, `PlayerFacts.player`, `Bury.standard`, and `RelicRole.GrandScepter` from the catalog.
@@ -1031,7 +1031,7 @@ Ruling: cost 1 secret placed. Draw a relic and take it (facedown, see open quest
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/FaeMerchantSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/FaeMerchantSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1199,7 +1199,7 @@ Expected: FAIL to compile, `not found: value FaeMerchant`.
 
 - [ ] **Step 4: Write Fae Merchant**
 
-`src/main/scala/oathdigital/gameplay/powers/action/FaeMerchant.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/FaeMerchant.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action

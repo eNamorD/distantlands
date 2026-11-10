@@ -26,7 +26,7 @@ private[frontend] object ParkedDecision:
     * and `.relicDecisionId`, as plain strings: those objects live in the JVM-only application sources
     * the frontend cannot depend on, and a `decisionId` already rides the
     * wire as an uninterpreted string on every walker command (see
-    * `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala`).
+    * `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`).
     */
   private[frontend] val recoverChoiceDecisionId = "recover.choice"
   private[frontend] val recoverRelicDecisionId = "recover.relic"

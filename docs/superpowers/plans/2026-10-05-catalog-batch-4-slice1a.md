@@ -11,7 +11,7 @@
   - Every rescoring plan writes the same total, so their fold order no longer matters.
 - **R2, the defense scorer.** `DefenseScore` does the same for the defense: face filters, then doublers, then the defender's force.
   - Rain Boots, Bag of Siegeworks, Garrison Armory and War Tortoise write through it.
-- **The nine cards.** Each is a `BattlePlan` (`src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`), and each card's object moves out of `catalog/holding/` into its plan file.
+- **The nine cards.** Each is a `BattlePlan` (`src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`), and each card's object moves out of `catalog/holding/` into its plan file.
 - **Registration.** Scouts registers in `SimplePlans`. The other eight register in `PlanRules`.
 - **No engine change.** No new operation, window, query, option kind, `NoteArg` kind, protocol change or frontend change. Every change is inside `gameplay/powers/`, plus the card objects moving between `catalog/holding/` and `gameplay/cards/NewFoundations.scala`'s import.
 
@@ -78,7 +78,7 @@ These settle what the spec and rulings leave open. Each one names what it costs 
 
 ## File Structure
 
-Production, all under `src/main/scala/oathdigital/gameplay/powers/campaign/` unless stated:
+Production, all under `src/main/scala/distantlands/gameplay/powers/campaign/` unless stated:
 
 | File | Change | Responsibility | Task |
 |---|---|---|---|
@@ -97,10 +97,10 @@ Production, all under `src/main/scala/oathdigital/gameplay/powers/campaign/` unl
 | `MountedPatrol.scala`, `Scouts.scala` | Create | The halved pool; a Supply | 5 |
 | `PlanRules.scala` | Modify | Registers eight plans | 2, 3, 4, 5 |
 | `SimplePlans.scala` | Modify | Registers Scouts | 5 |
-| `src/main/scala/oathdigital/catalog/holding/Holding{Arcane,Beast,Nomad,Order}Denizens.scala` | Modify | Each card's object leaves | 2, 3, 4, 5 |
-| `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` | Modify | Imports each moved card object | 2, 3, 4, 5 |
+| `src/main/scala/distantlands/catalog/holding/Holding{Arcane,Beast,Nomad,Order}Denizens.scala` | Modify | Each card's object leaves | 2, 3, 4, 5 |
+| `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` | Modify | Imports each moved card object | 2, 3, 4, 5 |
 
-Tests, all under `src/test/scala/oathdigital/gameplay/powers/campaign/`:
+Tests, all under `src/test/scala/distantlands/gameplay/powers/campaign/`:
 
 | File | Task |
 |---|---|
@@ -114,7 +114,7 @@ Docs: `docs/ROADMAP.md` (Task 6).
 
 ### How the suites drive a Campaign
 
-Read `PlanDriver.scala` and `src/test/scala/oathdigital/gameplay/CampaignFixture.scala` before writing a suite. In short:
+Read `PlanDriver.scala` and `src/test/scala/distantlands/gameplay/CampaignFixture.scala` before writing a suite. In short:
 
 - `board(extras, warbands, supply)`: p1, the actor, stands at Ancient City (the origin, printed defense 2), which two bandits rule. `extras` further sites are bandit-ruled too, in map order: Broken Peaks (defense 2), then Buried Giant. p2 (`b.rival`) and p3 stand at the first site nobody rules. Every other site starts empty.
 - `rivalRulesOriginAndHoldsOathkeeper(b)`: p2 rules the origin with two warbands and holds the Oathkeeper title, so p2 is offered the title's defense plan. That keeps p2's plan window open, so a "not offered" check against a player defender is not vacuous.
@@ -145,23 +145,23 @@ p.write_text(s.rstrip("\n") + "\n")
 PY
 ```
 
-Replace `FILE` and `OBJECT` with the values the task gives. The plan file then defines the object exactly as the holding file did. In the same step, add the object's name to the `import oathdigital.gameplay.powers.campaign.{...}` list in `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, in alphabetical order, rewrapping lines at 80 columns. `NewFoundations` already lists each card by name, and its wildcard `catalog.holding._` import no longer finds it.
+Replace `FILE` and `OBJECT` with the values the task gives. The plan file then defines the object exactly as the holding file did. In the same step, add the object's name to the `import oathdigital.gameplay.powers.campaign.{...}` list in `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, in alphabetical order, rewrapping lines at 80 columns. `NewFoundations` already lists each card by name, and its wildcard `catalog.holding._` import no longer finds it.
 
 ---
 
 ### Task 1: The attack and defense scorers (R1, R2)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/AttackScore.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/DefenseScore.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/Outriders.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/GreatLevy.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SingleShields.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/RainBoots.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BagOfSiegeworks.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/GarrisonArmory.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/AttackScoreSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/DefenseScoreSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/AttackScore.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/DefenseScore.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/Outriders.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/GreatLevy.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SingleShields.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/RainBoots.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BagOfSiegeworks.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/GarrisonArmory.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/AttackScoreSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/DefenseScoreSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlanUse.chosen(ready, pending, actor, ref, sides, afterOutcome): Option[PlanUse]`, `CampaignSetup.setup(ready, actor, pending): Option[CampaignSetup]`, `CampaignBattle.attackFacesOf(ready): Vector[AttackDieFace]`, `CampaignBattle.defenderForce(ready, setup): Int`.
@@ -606,16 +606,16 @@ Expected: PASS. `OutridersSuite`, `GreatLevySuite`, `RainBootsSuite`, `BagOfSieg
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/AttackScore.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/DefenseScore.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/Outriders.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/GreatLevy.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SingleShields.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/RainBoots.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/BagOfSiegeworks.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/GarrisonArmory.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/AttackScoreSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/DefenseScoreSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/AttackScore.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/DefenseScore.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/Outriders.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/GreatLevy.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SingleShields.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/RainBoots.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/BagOfSiegeworks.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/GarrisonArmory.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/AttackScoreSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/DefenseScoreSuite.scala
 git commit -m "refactor(campaign): score the attack and the defense from every chosen plan"
 ```
 
@@ -624,16 +624,16 @@ git commit -m "refactor(campaign): score the attack and the defense from every c
 ### Task 2: Rusting Ray and Fae Battalion
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/FireTalkers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/AttackScore.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/RustingRay.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/FaeBattalion.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala`, `HoldingBeastDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/RustingRaySuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/FaeBattalionSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/FireTalkers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/AttackScore.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/RustingRay.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/FaeBattalion.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala`, `HoldingBeastDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/RustingRaySuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/FaeBattalionSuite.scala`
 
 **Interfaces:**
 - Consumes: `AttackScore.rescore`, `AttackScore.hollowRolled`, `AttackChange`, `HollowWorth` (Task 1).
@@ -772,8 +772,8 @@ In `FireTalkers.scala`, replace `.filter(_ => holdsDarkestSecret(context))` with
 - [ ] **Step 4: Move the card objects**
 
 Run the move script (see "How to move a card object") twice:
-- `FILE` = `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala`, `OBJECT` = `RustingRayCard`
-- `FILE` = `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`, `OBJECT` = `FaeBattalionCard`
+- `FILE` = `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala`, `OBJECT` = `RustingRayCard`
+- `FILE` = `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`, `OBJECT` = `FaeBattalionCard`
 
 Add `FaeBattalionCard` and `RustingRayCard` to the `powers.campaign` import in `NewFoundations.scala`.
 
@@ -899,17 +899,17 @@ Expected: PASS, including `FireTalkersSuite` unchanged and the 5 new tests.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/FireTalkers.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/AttackScore.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/RustingRay.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/FaeBattalion.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/RustingRaySuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/FaeBattalionSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/FireTalkers.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/AttackScore.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/RustingRay.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/FaeBattalion.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/RustingRaySuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/FaeBattalionSuite.scala
 git commit -m "feat(campaign): Rusting Ray and Fae Battalion rescore hollow swords"
 ```
 
@@ -918,18 +918,18 @@ git commit -m "feat(campaign): Rusting Ray and Fae Battalion rescore hollow swor
 ### Task 3: War Tortoise, Lancers and Fearsome General, and the fold order
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/WarTortoise.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/Lancers.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/FearsomeGeneral.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/AttackScore.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/DefenseScore.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`, `HoldingNomadDenizens.scala`, `HoldingOrderDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/WarTortoiseSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/LancersSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/FearsomeGeneralSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/ScoringFoldOrderSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/WarTortoise.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/Lancers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/FearsomeGeneral.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/AttackScore.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/DefenseScore.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`, `HoldingNomadDenizens.scala`, `HoldingOrderDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/WarTortoiseSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/LancersSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/FearsomeGeneralSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/ScoringFoldOrderSuite.scala`
 
 **Interfaces:**
 - Consumes: `AttackScore.rescore/addedBy/skullRolled`, `DefenseScore.rescore/faces`, `AttackChange`, `DefenseChange` (Task 1); `PlanDiscard.afterCampaign/discarded`.
@@ -1246,9 +1246,9 @@ Expected: compile failure, `Not found: WarTortoise`, `Lancers` and `FearsomeGene
 - [ ] **Step 3: Move the card objects**
 
 Run the move script three times:
-- `FILE` = `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`, `OBJECT` = `WarTortoiseCard`
-- `FILE` = `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`, `OBJECT` = `LancersCard`
-- `FILE` = `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`, `OBJECT` = `FearsomeGeneralCard`
+- `FILE` = `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`, `OBJECT` = `WarTortoiseCard`
+- `FILE` = `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`, `OBJECT` = `LancersCard`
+- `FILE` = `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`, `OBJECT` = `FearsomeGeneralCard`
 
 Add `FearsomeGeneralCard`, `LancersCard` and `WarTortoiseCard` to the `powers.campaign` import in `NewFoundations.scala`.
 
@@ -1469,20 +1469,20 @@ Expected: PASS, with the 11 new tests.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/WarTortoise.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/Lancers.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/FearsomeGeneral.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/AttackScore.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/DefenseScore.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/WarTortoiseSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/LancersSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/FearsomeGeneralSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/ScoringFoldOrderSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/WarTortoise.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/Lancers.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/FearsomeGeneral.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/AttackScore.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/DefenseScore.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/WarTortoiseSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/LancersSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/FearsomeGeneralSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/ScoringFoldOrderSuite.scala
 git commit -m "feat(campaign): War Tortoise, Lancers and Fearsome General rescore the battle"
 ```
 
@@ -1491,14 +1491,14 @@ git commit -m "feat(campaign): War Tortoise, Lancers and Fearsome General rescor
 ### Task 4: Kindred Warriors and Rangers
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/KindredWarriors.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/Rangers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/AttackScore.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala`, `HoldingBeastDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/KindredWarriorsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/RangersSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/KindredWarriors.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/Rangers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/AttackScore.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala`, `HoldingBeastDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/KindredWarriorsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/RangersSuite.scala`
 
 **Interfaces:**
 - Consumes: `Outriders.ignoreSkulls(use, power, source)`, `Outriders.ignored`, `AttackChange` (Task 1); `PlanContext.cardsRuled(catalog, who, suit)`, `PlanContext.ruler`; `PlanDice.label/effect`.
@@ -1639,8 +1639,8 @@ Expected: compile failure, `Not found: KindredWarriors` and `Not found: Rangers`
 - [ ] **Step 3: Move the card objects**
 
 Run the move script twice:
-- `FILE` = `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala`, `OBJECT` = `KindredWarriorsCard`
-- `FILE` = `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`, `OBJECT` = `RangersCard`
+- `FILE` = `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala`, `OBJECT` = `KindredWarriorsCard`
+- `FILE` = `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`, `OBJECT` = `RangersCard`
 
 Add `KindredWarriorsCard` and `RangersCard` to the `powers.campaign` import in `NewFoundations.scala`.
 
@@ -1796,15 +1796,15 @@ Expected: PASS, with the 5 new tests.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/KindredWarriors.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/Rangers.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/AttackScore.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/KindredWarriorsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/RangersSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/KindredWarriors.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/Rangers.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/AttackScore.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/KindredWarriorsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/RangersSuite.scala
 git commit -m "feat(campaign): Kindred Warriors and Rangers ignore skulls and add dice"
 ```
 
@@ -1813,14 +1813,14 @@ git commit -m "feat(campaign): Kindred Warriors and Rangers ignore skulls and ad
 ### Task 5: Mounted Patrol and Scouts
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/MountedPatrol.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/Scouts.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`, `HoldingOrderDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/MountedPatrolSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/ScoutsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/MountedPatrol.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/Scouts.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`, `HoldingOrderDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/MountedPatrolSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/ScoutsSuite.scala`
 
 **Interfaces:**
 - Consumes: `BattlePlan.wrapping`, `PlanDiscard.afterCampaign/discarded`, `NoteSupport.supply`.
@@ -1951,8 +1951,8 @@ Expected: compile failure, `Not found: MountedPatrol` and `Not found: Scouts`.
 - [ ] **Step 3: Move the card objects**
 
 Run the move script twice:
-- `FILE` = `src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala`, `OBJECT` = `MountedPatrolCard`
-- `FILE` = `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala`, `OBJECT` = `ScoutsCard`
+- `FILE` = `src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala`, `OBJECT` = `MountedPatrolCard`
+- `FILE` = `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala`, `OBJECT` = `ScoutsCard`
 
 Add `MountedPatrolCard` and `ScoutsCard` to the `powers.campaign` import in `NewFoundations.scala`.
 
@@ -2091,15 +2091,15 @@ Expected: PASS, with the 6 new tests.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/MountedPatrol.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/Scouts.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingNomadDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/MountedPatrolSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/ScoutsSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/MountedPatrol.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/Scouts.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingNomadDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/MountedPatrolSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/ScoutsSuite.scala
 git commit -m "feat(campaign): Mounted Patrol halves the attack pool and Scouts gains a Supply"
 ```
 

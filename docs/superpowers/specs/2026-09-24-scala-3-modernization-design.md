@@ -46,7 +46,7 @@ Measured on 2026-09-24, after the warning cleanup merge (`d832f08c`):
   `ActorSystem[Nothing]` or `ExecutionContext` values in `OathServer` and
   the server route suites; one `private implicit final class
   TakeThrough` in `gameplay/actions/Search.scala`.
-- One package object, `frontend/src/main/scala/oathdigital/frontend/package.scala`,
+- One package object, `frontend/src/main/scala/distantlands/frontend/package.scala`,
   holding `type`/`val` alias pairs for protocol projection types.
 - Sealed families: 148. 61 have only case objects as direct members, 26
   mix objects and case classes, 36 have only case classes, and 25 could

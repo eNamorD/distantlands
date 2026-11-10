@@ -180,10 +180,10 @@ Inventoried at `5e1bbd20`, which includes slice 2's code
 ### Task 1: The discard's cause
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (above `sealed trait Discard`; `Discard.Denizen`; `Discard.RuinedEdifice`)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (encode at `:91-109`, decode at `:370-393`)
-- Test: `src/test/scala/oathdigital/model/DiscardCauseSuite.scala` (create)
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (above `sealed trait Discard`; `Discard.Denizen`; `Discard.RuinedEdifice`)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (encode at `:91-109`, decode at `:370-393`)
+- Test: `src/test/scala/distantlands/model/DiscardCauseSuite.scala` (create)
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -194,7 +194,7 @@ Inventoried at `5e1bbd20`, which includes slice 2's code
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/model/DiscardCauseSuite.scala`:
+Create `src/test/scala/distantlands/model/DiscardCauseSuite.scala`:
 
 ```scala
 package oathdigital.model
@@ -391,7 +391,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/test/scala/oathdigital/model/DiscardCauseSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/model/DiscardCauseSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(model): a discard names the power whose use discards it
 
@@ -405,11 +405,11 @@ EOF
 ### Task 2: Batch questions in the walker
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/AsksBeforeBatch.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/BatchQuestions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`runNarrowed`, about lines 469-530)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (`resolveAt`, about lines 563-584)
-- Test: `src/test/scala/oathdigital/gameplay/walker/BatchQuestionsSuite.scala` (create)
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/AsksBeforeBatch.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/BatchQuestions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`runNarrowed`, about lines 469-530)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (`resolveAt`, about lines 563-584)
+- Test: `src/test/scala/distantlands/gameplay/walker/BatchQuestionsSuite.scala` (create)
 
 **Interfaces:**
 - Consumes: nothing from Task 1.
@@ -427,7 +427,7 @@ EOF
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/BatchQuestionsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/BatchQuestionsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -586,7 +586,7 @@ Expected: compile errors: `AsksBeforeBatch`, `BatchAsk`, `BatchContext`,
 
 - [ ] **Step 3: Write the power-side types**
 
-Create `src/main/scala/oathdigital/gameplay/powerresolver/AsksBeforeBatch.scala`:
+Create `src/main/scala/distantlands/gameplay/powerresolver/AsksBeforeBatch.scala`:
 
 ```scala
 package oathdigital.gameplay.powerresolver
@@ -630,7 +630,7 @@ trait AsksBeforeBatch extends ContributingPower:
 
 - [ ] **Step 4: Write the walker side**
 
-Create `src/main/scala/oathdigital/gameplay/walker/BatchQuestions.scala`:
+Create `src/main/scala/distantlands/gameplay/walker/BatchQuestions.scala`:
 
 ```scala
 package oathdigital.gameplay.walker
@@ -832,7 +832,7 @@ Expected: passes. `ProcedureWalker.scala` grows by about 35 lines from
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/AsksBeforeBatch.scala src/main/scala/oathdigital/gameplay/walker/BatchQuestions.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala src/test/scala/oathdigital/gameplay/walker/BatchQuestionsSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/AsksBeforeBatch.scala src/main/scala/distantlands/gameplay/walker/BatchQuestions.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala src/test/scala/distantlands/gameplay/walker/BatchQuestionsSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(walker): a power may ask about a batch's operations before it runs
 
@@ -852,17 +852,17 @@ are in. A reviewer checks:
 ### Task 3: Every power's discard names its power
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SiteCards.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SiteSlotMoves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/{DarkEnforcer,GreatFeast,TamingCharm,RovingTerror,GiantPython,ArmedMob,Assassin,SqualidDistrict}.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/MountedLibrary.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/{RegionDiscard,Dazzle,ThreateningRoar,Riots}.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/ForestHorn.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/{PlanDiscard,Mercenaries,WildMounts}.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/SpinningBee.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/PowerDiscardCausesSuite.scala` (create)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SiteCards.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SiteSlotMoves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/{DarkEnforcer,GreatFeast,TamingCharm,RovingTerror,GiantPython,ArmedMob,Assassin,SqualidDistrict}.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/MountedLibrary.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/{RegionDiscard,Dazzle,ThreateningRoar,Riots}.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/ForestHorn.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/{PlanDiscard,Mercenaries,WildMounts}.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/SpinningBee.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/PowerDiscardCausesSuite.scala` (create)
 
 **Interfaces:**
 - Consumes: `DiscardCause`, `DiscardCause.mark` and the `cause` field from
@@ -877,7 +877,7 @@ are in. A reviewer checks:
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/PowerDiscardCausesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/PowerDiscardCausesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -1050,12 +1050,12 @@ EOF
 ### Task 4: A card play's discards name their power
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala` (`DiscardPermission`, `homeland`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala` (`credits`, at `:198-218`)
-- Create: `src/main/scala/oathdigital/gameplay/actions/cardplay/PlayDiscardCauses.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala` (the `play` Branch, at `:444-461`)
-- Test: `src/test/scala/oathdigital/gameplay/PlayDiscardCausesSuite.scala` (create)
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala` (`DiscardPermission`, `homeland`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala` (`credits`, at `:198-218`)
+- Create: `src/main/scala/distantlands/gameplay/actions/cardplay/PlayDiscardCauses.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala` (the `play` Branch, at `:444-461`)
+- Test: `src/test/scala/distantlands/gameplay/PlayDiscardCausesSuite.scala` (create)
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartySuite.scala`
 
 **Interfaces:**
 - Consumes: `DiscardCause` and the `cause` field from Task 1.
@@ -1066,7 +1066,7 @@ EOF
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/PlayDiscardCausesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/PlayDiscardCausesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -1193,7 +1193,7 @@ the permissions, and `credits`, which maps them to their lines:
 
 - [ ] **Step 5: Write the marking**
 
-Create `src/main/scala/oathdigital/gameplay/actions/cardplay/PlayDiscardCauses.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/cardplay/PlayDiscardCauses.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.cardplay
@@ -1291,7 +1291,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala src/main/scala/oathdigital/gameplay/actions/cardplay/PlayDiscardCauses.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala src/test/scala/oathdigital/gameplay/PlayDiscardCausesSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/SearchPartySuite.scala
+git add src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala src/main/scala/distantlands/gameplay/actions/cardplay/PlayDiscardCauses.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala src/test/scala/distantlands/gameplay/PlayDiscardCausesSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartySuite.scala
 git commit -m "$(cat <<'EOF'
 feat(cardplay): a play's discards name the power that permits or makes them
 
@@ -1311,12 +1311,12 @@ reviewer checks:
 ### Task 5: Wild Pastures
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/WildPastures.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala` (delete lines 38-51)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:72-73`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/WildPastures.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala` (delete lines 38-51)
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:72-73`
 - Modify: `src/test/resources/powers/unimplemented.txt` (delete `edifice.e07.intact`)
 - Modify: `src/test/resources/notes/declared-keys.txt`
-- Test: `src/test/scala/oathdigital/gameplay/powers/economy/WildPasturesSuite.scala` (create)
+- Test: `src/test/scala/distantlands/gameplay/powers/economy/WildPasturesSuite.scala` (create)
 
 **Interfaces:**
 - Consumes:
@@ -1333,7 +1333,7 @@ reviewer checks:
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/WildPasturesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/WildPasturesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1614,7 +1614,7 @@ Expected: a compile error, because `WildPastures` is not found.
 
 Delete `WildPasturesCard` (lines 38-51) from
 `catalog/holding/HoldingEdifices.scala`. Create
-`src/main/scala/oathdigital/gameplay/powers/economy/WildPastures.scala`:
+`src/main/scala/distantlands/gameplay/powers/economy/WildPastures.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1802,7 +1802,7 @@ walk asks a new question.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/WildPastures.scala src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/economy/WildPasturesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/WildPastures.scala src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/economy/WildPasturesSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Wild Pastures pays instead of discarding a Nomad card
 

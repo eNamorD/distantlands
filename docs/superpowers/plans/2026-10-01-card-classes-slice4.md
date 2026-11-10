@@ -119,20 +119,20 @@ with the user on 2026-10-01.
 
 ## Files
 
-- Modify: `src/main/scala/oathdigital/catalog/Cards.scala` (`Site`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingSites.scala`
-- Modify: `src/main/scala/oathdigital/catalog/CatalogModel.scala`
-- Modify: `src/main/scala/oathdigital/catalog/CatalogHandlerInventory.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala`
-- Modify: `src/main/scala/oathdigital/application/FirstGameChronicleGenerator.scala`
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/wake/RiverSitePower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/catalog/Cards.scala` (`Site`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingSites.scala`
+- Modify: `src/main/scala/distantlands/catalog/CatalogModel.scala`
+- Modify: `src/main/scala/distantlands/catalog/CatalogHandlerInventory.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala`
+- Modify: `src/main/scala/distantlands/application/FirstGameChronicleGenerator.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala`
+- Modify: `src/main/scala/distantlands/gameplay/RuleSourceIndex.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/wake/RiverSitePower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
   (imports only)
 - Modify (tests): `testkit/TestCards.scala`, `gameplay/HomelandRuleSuite.scala`,
   `gameplay/cards/CardCatalogSuite.scala`,
@@ -147,7 +147,7 @@ with the user on 2026-10-01.
   `application/FirstGameChronicleGeneratorSuite.scala`,
   `gameplay/powers/wake/RiverFixture.scala`,
   `gameplay/powers/wake/RiverSitePowerSuite.scala` (all under
-  `src/test/scala/oathdigital/`)
+  `src/test/scala/distantlands/`)
 - Modify: `docs/ROADMAP.md` (tick slice 4)
 
 ## Scripts
@@ -254,7 +254,7 @@ listed under **Files** above except `ExecutableCatalogSuite`,
 
 - [ ] **Step 1: Write the failing test**
 
-In `src/test/scala/oathdigital/testkit/TestCards.scala`, give `siteLike` a
+In `src/test/scala/distantlands/testkit/TestCards.scala`, give `siteLike` a
 `homeland` parameter. Replace:
 
 ```scala
@@ -280,7 +280,7 @@ with:
       homeland, handlers) {}
 ```
 
-In `src/test/scala/oathdigital/gameplay/HomelandRuleSuite.scala`, change the
+In `src/test/scala/distantlands/gameplay/HomelandRuleSuite.scala`, change the
 import `oathdigital.testkit.{CatalogNames, Table}` to
 `oathdigital.testkit.{CatalogNames, Table, TestCards}`, change the class
 doc's "The site's handler names the suit, and the discard is" to "The site
@@ -338,8 +338,8 @@ import re
 import sys
 
 W = sys.argv[1].rstrip("/") + "/"
-M = W + "src/main/scala/oathdigital/"
-T = W + "src/test/scala/oathdigital/"
+M = W + "src/main/scala/distantlands/"
+T = W + "src/test/scala/distantlands/"
 
 
 def edit(path, *pairs):
@@ -517,7 +517,7 @@ print("site handlers are power ids; Homeland reads the printed suit")
 
 The handler and the `homeland` field now both declare a Homeland, so a
 check keeps them in step. In
-`src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`, insert
+`src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`, insert
 before `test("printed numbers are non-negative"):`:
 
 ```scala
@@ -600,7 +600,7 @@ Co-Authored-By: <the committing model's own line>"
 
 - [ ] **Step 1: Extend the placement and registration tests**
 
-In `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`, in
+In `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`, in
 the test "a card leaves the holding files once it is implemented", replace:
 
 ```scala
@@ -674,8 +674,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import s4_imports as imports
 
 W = sys.argv[1].rstrip("/") + "/"
-M = W + "src/main/scala/oathdigital/"
-T = W + "src/test/scala/oathdigital/"
+M = W + "src/main/scala/distantlands/"
+T = W + "src/test/scala/distantlands/"
 RIVER = "gameplay/powers/wake/RiverSitePower.scala"
 TRAVEL = "gameplay/powers/travel/TravelSitePowers.scala"
 # A site with a River power sits beside the River, even if it also has a

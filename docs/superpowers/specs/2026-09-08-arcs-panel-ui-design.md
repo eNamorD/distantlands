@@ -74,7 +74,7 @@ Player-facing game-log implementation; new game artwork; backend/protocol change
 
 ## Source references
 
-- Oath: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala`, `WorldBoardRenderer.scala`, `ActionDecisionRenderer.scala`, `DevelopmentRenderer.scala`, and `frontend/styles.css`.
+- Oath: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala`, `WorldBoardRenderer.scala`, `ActionDecisionRenderer.scala`, `DevelopmentRenderer.scala`, and `frontend/styles.css`.
 - Arcs: `/Users/roman/projects/haunt-roll-fail/haunt-roll-fail/arcs/ui.scala` for panel priorities, layout variants, and map bounds.
 - HRF: `haunt-roll-fail/grey.scala` for navigation and resize lifecycle; `haunt-roll-fail/panes-again.scala` for fitting concepts; repository `LICENSE` for MIT attribution.
 - Visual companion: workspace `.superpowers/brainstorm/26189-1788884218/content/panel-layout.html`.

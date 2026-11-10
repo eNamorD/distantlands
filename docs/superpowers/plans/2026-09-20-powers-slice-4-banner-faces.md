@@ -68,7 +68,7 @@ These facts are read from the code, or established by compiling and running the 
 
 ## File Structure
 
-All paths are under `src/main/scala/oathdigital/` (production) or `src/test/scala/oathdigital/` (tests) unless written in full. The step blocks below give full paths.
+All paths are under `src/main/scala/distantlands/` (production) or `src/test/scala/distantlands/` (tests) unless written in full. The step blocks below give full paths.
 
 - **Task 1 (4a):** create `gameplay/powers/banner/WanderingFlameMove.scala`, `WanderingFlamePlace.scala` and `BannerFacePowers.scala`; modify `gameplay/powers/PhasePowerCatalog.scala`, `gameplay/RuleSourceIndex.scala`, `gameplay/powers/ReviewedPowerCatalog.scala` and `application/PhasePowerProjector.scala`. Test: create `gameplay/powers/banner/BannerFixture`, `WanderingFlameMoveSuite`, `WanderingFlamePlaceSuite`, `BannerFaceSourcesSuite` and `application/BannerFaceProjectionSuite`. Docs: the design's status and slicing table, the rulings' Slice 4 table and implementation notes.
 - **Task 2 (4b):** create `gameplay/powers/banner/PeoplesFavorMob.scala`; modify `gameplay/powers/banner/BannerFacePowers.scala`, `gameplay/powers/WalkerPowerCatalog.scala`, `gameplay/RuleSourceIndex.scala` and `gameplay/powers/ReviewedPowerCatalog.scala`. Test: create `gameplay/powers/banner/PeoplesFavorMobSuite`. Docs: the same three places.
@@ -80,9 +80,9 @@ All paths are under `src/main/scala/oathdigital/` (production) or `src/test/scal
 ### Task 1: Wandering Flame
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/banner/WanderingFlameMove.scala`, `WanderingFlamePlace.scala`, `BannerFacePowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`, `src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala`, `src/main/scala/oathdigital/gameplay/powers/ReviewedPowerCatalog.scala`, `src/main/scala/oathdigital/application/PhasePowerProjector.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/banner/{BannerFixture, WanderingFlameMoveSuite, WanderingFlamePlaceSuite, BannerFaceSourcesSuite}.scala`, `src/test/scala/oathdigital/application/BannerFaceProjectionSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/banner/WanderingFlameMove.scala`, `WanderingFlamePlace.scala`, `BannerFacePowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`, `src/main/scala/distantlands/gameplay/RuleSourceIndex.scala`, `src/main/scala/distantlands/gameplay/powers/ReviewedPowerCatalog.scala`, `src/main/scala/distantlands/application/PhasePowerProjector.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/banner/{BannerFixture, WanderingFlameMoveSuite, WanderingFlamePlaceSuite, BannerFaceSourcesSuite}.scala`, `src/test/scala/distantlands/application/BannerFaceProjectionSuite.scala`
 - Docs: `docs/superpowers/specs/2026-09-20-powers-design.md`, `docs/superpowers/specs/2026-09-20-powers-rulings.md`
 
 **Interfaces:**
@@ -101,7 +101,7 @@ All paths are under `src/main/scala/oathdigital/` (production) or `src/test/scal
 
 `BannerFixture` stages the banner faces and the sites. The four suites cover the powers' rulings, the source index and audit, and what the client is shown.
 
-Create `src/test/scala/oathdigital/gameplay/powers/banner/BannerFixture.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/banner/BannerFixture.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.banner
@@ -185,7 +185,7 @@ object BannerFixture {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/banner/WanderingFlameMoveSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/banner/WanderingFlameMoveSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.banner
@@ -290,7 +290,7 @@ class WanderingFlameMoveSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/banner/WanderingFlamePlaceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/banner/WanderingFlamePlaceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.banner
@@ -388,7 +388,7 @@ class WanderingFlamePlaceSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/banner/BannerFaceSourcesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/banner/BannerFaceSourcesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.banner
@@ -435,7 +435,7 @@ class BannerFaceSourcesSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/application/BannerFaceProjectionSuite.scala`:
+Create `src/test/scala/distantlands/application/BannerFaceProjectionSuite.scala`:
 
 ```scala
 package oathdigital.application
@@ -525,7 +525,7 @@ Expected: FAIL at compile time with `not found: value WanderingFlameMove` (and `
 
 The move power reads the candidate sites once in `usable`, in the `Branch` that asks and in the effect. Nothing runs between the question and the answer, so all three agree. The place power guards on the board's faceup secrets and is otherwise one `Move`. Neither carries a face or holder check, because the source index lists them only on the Wandering Flame face and access keeps only the holder.
 
-Create `src/main/scala/oathdigital/gameplay/powers/banner/WanderingFlameMove.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/banner/WanderingFlameMove.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.banner
@@ -583,7 +583,7 @@ case object WanderingFlameMove extends PaidAction(
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/banner/WanderingFlamePlace.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/banner/WanderingFlamePlace.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.banner
@@ -626,7 +626,7 @@ case object WanderingFlamePlace extends PaidAction(
 
 `BannerFacePowers` is the one registration object. It also holds the names and texts the client is shown, because a banner face has no catalog entry.
 
-Create `src/main/scala/oathdigital/gameplay/powers/banner/BannerFacePowers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/banner/BannerFacePowers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.banner
@@ -657,7 +657,7 @@ object BannerFacePowers {
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.powers.rest.SilverTongue
@@ -670,7 +670,7 @@ import oathdigital.gameplay.powers.banner.BannerFacePowers
 import oathdigital.gameplay.powers.rest.SilverTongue
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`, replace:
 
 ```scala
       MovementPowers.forCatalog(catalog))
@@ -695,7 +695,7 @@ Expected: it compiles, and 13 of the 21 tests FAIL (8 pass already, the ones tha
 
 The index lists the two ids on the Wandering Flame face. The audit line is what keeps every reviewed-catalog resolution working while the face is up (`BannerFaceSourcesSuite` fails without it). The projector's new case turns the names and texts from `BannerFacePowers` into the `CatalogPower` the projection expects. The text is built here, in the application layer, because no `gameplay` source may name a catalog rules text.
 
-In `src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala`, replace:
+In `src/main/scala/distantlands/gameplay/RuleSourceIndex.scala`, replace:
 
 ```scala
           case DarkestSecretFace.WanderingFlame => Vector.empty
@@ -709,7 +709,7 @@ with:
             "banner.darkest-secret.wandering-flame.place"))
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/ReviewedPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/ReviewedPowerCatalog.scala`, replace:
 
 ```scala
     PowerId("banner.darkest-secret.festival"),
@@ -723,7 +723,7 @@ with:
     PowerId("banner.darkest-secret.wandering-flame.place"),
 ```
 
-In `src/main/scala/oathdigital/application/PhasePowerProjector.scala`, replace:
+In `src/main/scala/distantlands/application/PhasePowerProjector.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.powers.PhasePowerCatalog
@@ -736,7 +736,7 @@ import oathdigital.gameplay.powers.PhasePowerCatalog
 import oathdigital.gameplay.powers.banner.BannerFacePowers
 ```
 
-In `src/main/scala/oathdigital/application/PhasePowerProjector.scala`, replace:
+In `src/main/scala/distantlands/application/PhasePowerProjector.scala`, replace:
 
 ```scala
     case _ => None // Banner faces get their labels with the slice that uses them.
@@ -878,9 +878,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 2: Mob
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMob.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/banner/BannerFacePowers.scala`, `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, `src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala`, `src/main/scala/oathdigital/gameplay/powers/ReviewedPowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMobSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/banner/PeoplesFavorMob.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/banner/BannerFacePowers.scala`, `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, `src/main/scala/distantlands/gameplay/RuleSourceIndex.scala`, `src/main/scala/distantlands/gameplay/powers/ReviewedPowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/banner/PeoplesFavorMobSuite.scala`
 - Docs: `docs/superpowers/specs/2026-09-20-powers-design.md`, `docs/superpowers/specs/2026-09-20-powers-rulings.md`
 
 **Interfaces:**
@@ -896,7 +896,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 The suite drives real Searches and a facedown-adviser play through the production walker powers, so it also proves the registration. It covers the holder's question and declining, the standard discard, a full site, every player who is not asked, the intact edifice, the facedown-adviser origin, Silver Tongue and Welcoming Party.
 
-Create `src/test/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMobSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/banner/PeoplesFavorMobSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.banner
@@ -1142,7 +1142,7 @@ Expected: FAIL at compile time with `not found: value PeoplesFavorMob`.
 
 The `Transform` matches the `PlacementTree` it is handed and adjusts its rules, so it composes with any other contributor, as Silver Tongue's does. `applicable` reads the banner from state: the player whose procedure runs must hold the People's Favor banner with the Mob face up. It never builds a discard, so `DiscardRestrictionsCoverageSuite` has nothing to add.
 
-Create `src/main/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMob.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/banner/PeoplesFavorMob.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.banner
@@ -1181,7 +1181,7 @@ object PeoplesFavorMob extends ContributingPower {
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/banner/BannerFacePowers.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/banner/BannerFacePowers.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.powerresolver.PhasePower
@@ -1193,7 +1193,7 @@ with:
 import oathdigital.gameplay.powerresolver.{ContributingPower, PhasePower}
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/banner/BannerFacePowers.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/banner/BannerFacePowers.scala`, replace:
 
 ```scala
   private val texts: Vector[(PowerId, String, String)] = Vector(
@@ -1209,7 +1209,7 @@ with:
   private val texts: Vector[(PowerId, String, String)] = Vector(
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
 import oathdigital.gameplay.powers.campaign.{BattlePlans, PlanRules, SimplePlans, VowOfPeaceContribution}
@@ -1222,7 +1222,7 @@ import oathdigital.gameplay.powers.banner.BannerFacePowers
 import oathdigital.gameplay.powers.campaign.{BattlePlans, PlanRules, SimplePlans, VowOfPeaceContribution}
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
       CardPlayTriggers.forCatalog(catalog) ++
@@ -1245,7 +1245,7 @@ Expected: it compiles and the suite mostly PASSES, because the power is register
 
 - [ ] **Step 5: List Mob on its face and audit its id**
 
-In `src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala`, replace:
+In `src/main/scala/distantlands/gameplay/RuleSourceIndex.scala`, replace:
 
 ```scala
           case PeoplesFavorFace.Mob => Vector.empty
@@ -1257,7 +1257,7 @@ with:
           case PeoplesFavorFace.Mob => ids(Vector("banner.peoples-favor.mob"))
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/ReviewedPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/ReviewedPowerCatalog.scala`, replace:
 
 ```scala
     PowerId("banner.peoples-favor.grand-council"),

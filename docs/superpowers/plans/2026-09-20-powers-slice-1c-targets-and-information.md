@@ -37,11 +37,11 @@ These facts are read from the code and shape the tasks. They are not in the desi
 
 ## File Structure
 
-- Create `src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala`: reads of a power's recorded answers from a `PendingTree`.
-- Create `src/main/scala/oathdigital/gameplay/powers/action/Wolves.scala`, `Alchemist.scala`, `SleightOfHand.scala`, `CrystalVial.scala`, `IvoryEye.scala`.
-- Create `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`.
-- Modify `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala` (one added line per task).
-- Create test support `src/test/scala/oathdigital/gameplay/powers/TargetsFixture.scala`.
+- Create `src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala`: reads of a power's recorded answers from a `PendingTree`.
+- Create `src/main/scala/distantlands/gameplay/powers/action/Wolves.scala`, `Alchemist.scala`, `SleightOfHand.scala`, `CrystalVial.scala`, `IvoryEye.scala`.
+- Create `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`.
+- Modify `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala` (one added line per task).
+- Create test support `src/test/scala/distantlands/gameplay/powers/TargetsFixture.scala`.
 - Create one suite per power: `.../powers/action/{Wolves,Alchemist,SleightOfHand,CrystalVial,IvoryEye}Suite.scala` and `.../powers/wake/HornedMaskSuite.scala`.
 
 ---
@@ -49,11 +49,11 @@ These facts are read from the code and shape the tasks. They are not in the desi
 ### Task 1: The targets kit and Wolves
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Wolves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/TargetsFixture.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/WolvesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Wolves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/TargetsFixture.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/WolvesSuite.scala`
 
 **Interfaces:**
 - Consumes `PaidAction(idValue: String, cost: Cost)` and `PlayerFacts.player` / `PlayerFacts.forceKind` (slice 1a), `PowerFixture` (slice 1a).
@@ -65,7 +65,7 @@ Ruling: cost 1 secret placed. Choose one player board, yours included, and kill 
 
 - [ ] **Step 1: Write the test support**
 
-`src/test/scala/oathdigital/gameplay/powers/TargetsFixture.scala`:
+`src/test/scala/distantlands/gameplay/powers/TargetsFixture.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -180,7 +180,7 @@ object TargetsFixture {
 
 - [ ] **Step 2: Write the failing Wolves suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/WolvesSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/WolvesSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -275,7 +275,7 @@ Expected: FAIL to compile, `not found: value Wolves`. The fixture itself compile
 
 - [ ] **Step 4: Write `PowerAnswers` and Wolves**
 
-`src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala`:
+`src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala`:
 
 ```scala
 package oathdigital.gameplay.powers
@@ -302,7 +302,7 @@ object PowerAnswers {
 }
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/action/Wolves.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/Wolves.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -373,9 +373,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 2: Alchemist
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Alchemist.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/AlchemistSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Alchemist.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/AlchemistSuite.scala`
 
 **Interfaces:**
 - Consumes `PaidAction`, `PowerAnswers` (Task 1), `TargetsFixture` (Task 1).
@@ -387,7 +387,7 @@ The decision is asked exactly when at least two banks are non-empty and more tha
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/AlchemistSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/AlchemistSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -509,7 +509,7 @@ Expected: FAIL to compile, `not found: value Alchemist`.
 
 - [ ] **Step 3: Write Alchemist**
 
-`src/main/scala/oathdigital/gameplay/powers/action/Alchemist.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/Alchemist.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -590,9 +590,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 3: Sleight of Hand
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/SleightOfHand.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/SleightOfHandSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/SleightOfHand.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/SleightOfHandSuite.scala`
 
 **Interfaces:**
 - Consumes `PaidAction`, `PowerAnswers`, `PowerAccess.pawnSite` (`private[gameplay]`, reachable from `gameplay.powers`), `TargetsFixture`.
@@ -604,7 +604,7 @@ The mixed-orientation case needs the three-operation batch from "What planning f
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/SleightOfHandSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/SleightOfHandSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -735,7 +735,7 @@ Expected: FAIL to compile, `not found: value SleightOfHand`.
 
 - [ ] **Step 3: Write Sleight of Hand**
 
-`src/main/scala/oathdigital/gameplay/powers/action/SleightOfHand.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/SleightOfHand.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -834,9 +834,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 4: Crystal Vial
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/CrystalVial.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/CrystalVialSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/CrystalVial.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/CrystalVialSuite.scala`
 
 **Interfaces:**
 - Consumes `PaidAction`, `PowerAnswers`, `PowerAccess.pawnSite`, `Bury.standard` (slice 0), `TargetsFixture`.
@@ -848,7 +848,7 @@ The printed text says "a denizen at your site". The approved ruling adds the edi
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/CrystalVialSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/CrystalVialSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1022,7 +1022,7 @@ Expected: FAIL to compile, `not found: value CrystalVial`.
 
 - [ ] **Step 3: Write Crystal Vial**
 
-`src/main/scala/oathdigital/gameplay/powers/action/CrystalVial.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/CrystalVial.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1128,9 +1128,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 5: Ivory Eye
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/IvoryEye.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/IvoryEyeSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/IvoryEye.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/IvoryEyeSuite.scala`
 
 **Interfaces:**
 - Consumes `PaidAction`, `PowerAnswers`, `TargetsFixture` (including `boardOf` and `publicBoardOf`).
@@ -1142,7 +1142,7 @@ The log line is not implemented: no player-visible action log exists (ROADMAP, P
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/IvoryEyeSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/IvoryEyeSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1273,7 +1273,7 @@ Expected: FAIL to compile, `not found: value IvoryEye`.
 
 - [ ] **Step 3: Write Ivory Eye**
 
-`src/main/scala/oathdigital/gameplay/powers/action/IvoryEye.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/IvoryEye.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1369,9 +1369,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 6: Horned Mask
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/wake/HornedMaskSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/wake/HornedMaskSuite.scala`
 
 **Interfaces:**
 - Consumes `PhasePower`, `PowerAnswers`, `PlayerFacts.player`, `PowerAccess.pawnSite`, `Bury.standard`, `TargetsFixture`.
@@ -1383,7 +1383,7 @@ The take is `Take` (site to play area) followed by `Flip` to facedown. The disca
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/wake/HornedMaskSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/wake/HornedMaskSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.wake
@@ -1548,7 +1548,7 @@ Expected: FAIL to compile, `not found: value HornedMask`.
 
 - [ ] **Step 3: Write Horned Mask**
 
-`src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`:
+`src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.wake

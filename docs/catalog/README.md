@@ -1,13 +1,13 @@
 # Component catalog
 
 The component catalog is Scala. Card types live in
-`src/main/scala/oathdigital/catalog/Cards.scala`. Cards that are not yet
-implemented live in `src/main/scala/oathdigital/catalog/holding/`; an
+`src/main/scala/distantlands/catalog/Cards.scala`. Cards that are not yet
+implemented live in `src/main/scala/distantlands/catalog/holding/`; an
 implemented card sits beside its power, except the 24 sites, which all live in
-`src/main/scala/oathdigital/gameplay/cards/` (`HomelandsAndPlains.scala` and
+`src/main/scala/distantlands/gameplay/cards/` (`HomelandsAndPlains.scala` and
 `PoweredSites.scala`). The full list of components and the
 production `ExecutableCatalog` are in
-`src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`. That code is
+`src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`. That code is
 authoritative for inventory, printed identities, text, restrictions, and
 handler keys.
 
@@ -67,7 +67,7 @@ black braid. Changing or splitting a power ID means updating the registry and
 any handler that binds to it.
 
 List a new card in `NewFoundations`. `CardCatalogSuite`
-(`src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`) pins the
+(`src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`) pins the
 component counts, so a forgotten card fails a test. It also checks the printed
 ID ranges, globally unique card identities, power-ID and site-handler
 uniqueness, non-blank text, the symbol vocabulary, non-negative printed numbers,

@@ -117,18 +117,18 @@ The product owner settled these on 2026-10-16. They override the slice 14 entry 
 ### Task 1: A walk belongs to its entry's actor
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`CurrentGameState`, the `QueuedProcedure` doc)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`advance`, `roll`, `resolve`, `narrowParked`, `awaitedPlayer`, `awaitedPlayers`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (`followUpAt`, `foldedChildrenAt`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala` (four reads)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkState.scala` (doc)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala` (doc)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`startNow`, `startTriggered`, `resolveWalker`, `rollWalkerPrepared`, `walkerResumeContext`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (two rebuilds)
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` (`PowerCtx.activePlayer` doc)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/SpecialEnvoy.scala`
-- Modify: `src/main/scala/oathdigital/model/PendingTree.scala` (doc only, if it still says the procedure belongs to `turn.activePlayer`)
-- Create: `src/test/scala/oathdigital/gameplay/OffTurnWalkSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`CurrentGameState`, the `QueuedProcedure` doc)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`advance`, `roll`, `resolve`, `narrowParked`, `awaitedPlayer`, `awaitedPlayers`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (`followUpAt`, `foldedChildrenAt`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala` (four reads)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkState.scala` (doc)
+- Modify: `src/main/scala/distantlands/gameplay/walker/QueuedStart.scala` (doc)
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`startNow`, `startTriggered`, `resolveWalker`, `rollWalkerPrepared`, `walkerResumeContext`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (two rebuilds)
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` (`PowerCtx.activePlayer` doc)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/SpecialEnvoy.scala`
+- Modify: `src/main/scala/distantlands/model/PendingTree.scala` (doc only, if it still says the procedure belongs to `turn.activePlayer`)
+- Create: `src/test/scala/distantlands/gameplay/OffTurnWalkSuite.scala`
 
 **Interfaces:**
 - Produces: `CurrentGameState.walkActor: PlayerId`. Every later task relies on walks, simulations and projections using it.
@@ -251,7 +251,7 @@ class OffTurnWalkSuite extends munit.FunSuite:
 
 Notes for the implementer:
 - `PlanDriver` lives in `oathdigital.gameplay.powers.campaign` (test sources). Import it, and drop the unused `ProcedureWalker` import.
-- Check that `PhasePowerHarness.ops` and `ActPowerHarness.replayed` have the signatures used here (`src/test/scala/oathdigital/testkit/`). Adjust the call, not the assertion.
+- Check that `PhasePowerHarness.ops` and `ActPowerHarness.replayed` have the signatures used here (`src/test/scala/distantlands/testkit/`). Adjust the call, not the assertion.
 - Broken Peaks is unused unless the Campaign test needs it. Remove any unused `val` before building, since `-Wunused` fails the build.
 
 - [ ] **Step 2: Run the tests to see them fail**
@@ -348,17 +348,17 @@ Expected: all pass. Every existing walk's entry actor is the turn's player, so n
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkState.scala \
-  src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/SpecialEnvoy.scala \
-  src/test/scala/oathdigital/gameplay/OffTurnWalkSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkState.scala \
+  src/main/scala/distantlands/gameplay/walker/QueuedStart.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/SpecialEnvoy.scala \
+  src/test/scala/distantlands/gameplay/OffTurnWalkSuite.scala
 git commit -m "feat(walker): a queued walk belongs to its entry's actor"
 ```
 
@@ -369,8 +369,8 @@ Add `PendingTree.scala` to the list if Step 4 changed its doc.
 ### Task 2: Second Wind for a winning defender
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SecondWind.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/SecondWindSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SecondWind.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/SecondWindSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's off-turn walk.
@@ -489,8 +489,8 @@ Expected: all pass. If `BattlePlanSuite` (or a plan-catalog snapshot) lists each
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/SecondWind.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/SecondWindSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/SecondWind.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/SecondWindSuite.scala
 git commit -m "feat(batch8): Second Wind for a winning defender, walked off turn"
 ```
 
@@ -499,14 +499,14 @@ git commit -m "feat(batch8): Second Wind for a winning defender, walked off turn
 ### Task 3: A declared defender, and Sneak Attack
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala` (`startArgs`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/SneakAttack.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala` (remove `SneakAttackCard`, list it from its new home as the file lists moved cards)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala` (register)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala` (`startArgs`)
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/SneakAttack.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala` (remove `SneakAttackCard`, list it from its new home as the file lists moved cards)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala` (register)
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/SneakAttackSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CampaignSetupSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/SneakAttackSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CampaignSetupSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `walkActor`, and Task 2's back-queued Second Wind entries.
@@ -926,14 +926,14 @@ Expected: all pass.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SneakAttack.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala \
+git add src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SneakAttack.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/campaign/SneakAttackSuite.scala \
-  src/test/scala/oathdigital/gameplay/CampaignSetupSuite.scala
+  src/test/scala/distantlands/gameplay/powers/campaign/SneakAttackSuite.scala \
+  src/test/scala/distantlands/gameplay/CampaignSetupSuite.scala
 git commit -m "feat(batch8): Sneak Attack campaigns off turn against the last attacker"
 ```
 
@@ -942,11 +942,11 @@ git commit -m "feat(batch8): Sneak Attack campaigns off turn against the last at
 ### Task 4: The Game Log names an off-turn actor once
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` (`walker`'s `Run` actor, the `FollowUpSkipped` line)
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala` (the tag)
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogJournal.scala` (the `Run` doc)
-- Create: `src/test/scala/oathdigital/application/gamelog/OffTurnLogScripts.scala`
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogOffTurnSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` (`walker`'s `Run` actor, the `FollowUpSkipped` line)
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala` (the tag)
+- Modify: `src/main/scala/distantlands/application/gamelog/LogJournal.scala` (the `Run` doc)
+- Create: `src/test/scala/distantlands/application/gamelog/OffTurnLogScripts.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogOffTurnSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1 to 3.
@@ -1160,11 +1160,11 @@ Expected: all pass, the existing Game Log suites included. Every existing run's 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala \
-  src/main/scala/oathdigital/application/gamelog/StartLines.scala \
-  src/main/scala/oathdigital/application/gamelog/LogJournal.scala \
-  src/test/scala/oathdigital/application/gamelog/OffTurnLogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogOffTurnSuite.scala
+git add src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala \
+  src/main/scala/distantlands/application/gamelog/StartLines.scala \
+  src/main/scala/distantlands/application/gamelog/LogJournal.scala \
+  src/test/scala/distantlands/application/gamelog/OffTurnLogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogOffTurnSuite.scala
 git commit -m "feat(log): an off-turn walk's tag names its actor"
 ```
 

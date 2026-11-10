@@ -37,29 +37,29 @@
 
 ### File map
 
-- Create `src/main/scala/oathdigital/application/gamelog/LogSections.scala`: which runs are sections, and a run's section.
-- Modify `src/main/scala/oathdigital/application/gamelog/LogEntry.scala`: `LogSection`, `LogEntry.section`, `LogKind.Section`, `Posted.section`.
-- Modify `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`: stamp sections; minor actions; the tag's `Vector`.
-- Modify `src/main/scala/oathdigital/application/gamelog/StartLines.scala`: tag plus one line, in place of the start line.
-- Modify `src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala`: wire the section.
-- Modify `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala` and `LogPageCodec.scala`: `LogSectionWire`.
-- Modify `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`: band and edge classes; dice kind.
-- Modify `frontend/src/main/scala/oathdigital/frontend/DieFace.scala`, `WalkerPanelSupport.scala`, `TokenSprite.scala`.
+- Create `src/main/scala/distantlands/application/gamelog/LogSections.scala`: which runs are sections, and a run's section.
+- Modify `src/main/scala/distantlands/application/gamelog/LogEntry.scala`: `LogSection`, `LogEntry.section`, `LogKind.Section`, `Posted.section`.
+- Modify `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`: stamp sections; minor actions; the tag's `Vector`.
+- Modify `src/main/scala/distantlands/application/gamelog/StartLines.scala`: tag plus one line, in place of the start line.
+- Modify `src/main/scala/distantlands/application/gamelog/GameLogProjector.scala`: wire the section.
+- Modify `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala` and `LogPageCodec.scala`: `LogSectionWire`.
+- Modify `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`: band and edge classes; dice kind.
+- Modify `frontend/src/main/scala/distantlands/frontend/DieFace.scala`, `WalkerPanelSupport.scala`, `TokenSprite.scala`.
 - Modify `frontend/styles.css`: bands, tag row, filled dice.
 - Modify `DESIGN.md`, `docs/ROADMAP.md`.
-- Tests: create `src/test/scala/oathdigital/application/gamelog/GameLogSectionSuite.scala`; modify `GoldenLog.scala`, `GameLogPropertiesSuite.scala`, `GameLogStartLineSuite.scala`, `GameLogActionLineSuite.scala`, `GameLogCampaignSuite.scala`, `GameLogDetailSuite.scala`, `GameLogPowerLinesSuite.scala`, `GameLogRouteSuite.scala`, the goldens, `shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`, `DieFaceSuite.scala`, `WalkerDecisionDraftSuite.scala`, `WalkerChoicePanelRenderSuite.scala`.
+- Tests: create `src/test/scala/distantlands/application/gamelog/GameLogSectionSuite.scala`; modify `GoldenLog.scala`, `GameLogPropertiesSuite.scala`, `GameLogStartLineSuite.scala`, `GameLogActionLineSuite.scala`, `GameLogCampaignSuite.scala`, `GameLogDetailSuite.scala`, `GameLogPowerLinesSuite.scala`, `GameLogRouteSuite.scala`, the goldens, `shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`, `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`, `DieFaceSuite.scala`, `WalkerDecisionDraftSuite.scala`, `WalkerChoicePanelRenderSuite.scala`.
 
 ---
 
 ### Task 1: Sections on log entries
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/gamelog/LogSections.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogEntry.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala:38-48` (`format`), `:89-95` (minor actions), `:104-126` (`walker`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GoldenLog.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogSectionSuite.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/LogSections.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/LogEntry.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala:38-48` (`format`), `:89-95` (minor actions), `:104-126` (`walker`)
+- Modify: `src/test/scala/distantlands/application/gamelog/GoldenLog.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogSectionSuite.scala`
 - Modify: every `src/test/resources/gamelog/*.log` (rewritten)
 
 **Interfaces:**
@@ -68,7 +68,7 @@
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogSectionSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogSectionSuite.scala`:
 
 ```scala
 package oathdigital.application.gamelog
@@ -293,7 +293,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/LogSections.scala src/main/scala/oathdigital/application/gamelog/LogEntry.scala src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala src/test/scala/oathdigital/application/gamelog/GameLogSectionSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala src/test/scala/oathdigital/application/gamelog/GoldenLog.scala src/test/resources/gamelog
+git add src/main/scala/distantlands/application/gamelog/LogSections.scala src/main/scala/distantlands/application/gamelog/LogEntry.scala src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala src/test/scala/distantlands/application/gamelog/GameLogSectionSuite.scala src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala src/test/scala/distantlands/application/gamelog/GoldenLog.scala src/test/resources/gamelog
 git commit -m "feat(log): every line of a top-level action carries its section"
 ```
 
@@ -304,10 +304,10 @@ git commit -m "feat(log): every line of a top-level action carries its section"
 ### Task 2: The tag replaces the start line
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogEntry.scala` (`LogKind`)
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala` (whole file below)
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` (`walker`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala`, `GameLogPropertiesSuite.scala`, `GameLogActionLineSuite.scala`, `GameLogCampaignSuite.scala`, `GameLogDetailSuite.scala`, `GameLogPowerLinesSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/LogEntry.scala` (`LogKind`)
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala` (whole file below)
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` (`walker`)
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala`, `GameLogPropertiesSuite.scala`, `GameLogActionLineSuite.scala`, `GameLogCampaignSuite.scala`, `GameLogDetailSuite.scala`, `GameLogPowerLinesSuite.scala`
 - Modify: the goldens (rewritten)
 
 **Interfaces:**
@@ -573,7 +573,7 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/LogEntry.scala src/main/scala/oathdigital/application/gamelog/StartLines.scala src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogCampaignSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogDetailSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala src/test/resources/gamelog
+git add src/main/scala/distantlands/application/gamelog/LogEntry.scala src/main/scala/distantlands/application/gamelog/StartLines.scala src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala src/test/scala/distantlands/application/gamelog/GameLogCampaignSuite.scala src/test/scala/distantlands/application/gamelog/GameLogDetailSuite.scala src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala src/test/resources/gamelog
 git commit -m "feat(log): a tag with the action's name and cost replaces the start line"
 ```
 
@@ -584,11 +584,11 @@ git commit -m "feat(log): a tag with the action's name and cost replaces the sta
 ### Task 3: Sections on the wire
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/LogPageCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala:22-23`
-- Test: `shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogRouteSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/LogPageCodec.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogProjector.scala:22-23`
+- Test: `shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogRouteSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `LogEntry.section: Option[LogSection]`; Task 2's `section` kind.
@@ -723,7 +723,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/LogPageCodec.scala src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogRouteSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/LogPageCodec.scala src/main/scala/distantlands/application/gamelog/GameLogProjector.scala shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala src/test/scala/distantlands/application/gamelog/GameLogRouteSuite.scala
 git commit -m "feat(protocol): a log entry carries its section"
 ```
 
@@ -732,9 +732,9 @@ git commit -m "feat(protocol): a log entry carries its section"
 ### Task 4: Bands in the Game Log
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala` (`show`, `redraw`, `item`, object `item`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala` (`show`, `redraw`, `item`, object `item`)
 - Modify: `frontend/styles.css` (after the `.game-log .log-dice` rule, near line 1051)
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 3's `LogEntryWire.section: Option[LogSectionWire]` and the `section` entry kind.
@@ -950,7 +950,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala frontend/styles.css frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/GameLogPane.scala frontend/styles.css frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala
 git commit -m "feat(log): each action's lines sit on a band in the action's color"
 ```
 
@@ -959,12 +959,12 @@ git commit -m "feat(log): each action's lines sit on a band in the action's colo
 ### Task 5: Colored dice and the redrawn swords
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/DieFace.scala` (`face`, `roll`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala` (the `"dice"` case of `spanNode`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala` (`poolDie`, `rollFeedback`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala:65-69` (the two swords)
+- Modify: `frontend/src/main/scala/distantlands/frontend/DieFace.scala` (`face`, `roll`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala` (the `"dice"` case of `spanNode`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala` (`poolDie`, `rollFeedback`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/TokenSprite.scala:65-69` (the two swords)
 - Modify: `frontend/styles.css` (after `.die-face-blank`, near line 72)
-- Test: `frontend/src/test/scala/oathdigital/frontend/DieFaceSuite.scala`, `GameLogPaneSuite.scala`, `WalkerDecisionDraftSuite.scala`, `WalkerChoicePanelRenderSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/DieFaceSuite.scala`, `GameLogPaneSuite.scala`, `WalkerDecisionDraftSuite.scala`, `WalkerChoicePanelRenderSuite.scala`
 
 **Interfaces:**
 - Consumes: the dice span's `unit` (`attack` or `defense`), unchanged since before this plan.
@@ -1118,7 +1118,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/DieFace.scala frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala frontend/styles.css frontend/src/test/scala/oathdigital/frontend/DieFaceSuite.scala frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala frontend/src/test/scala/oathdigital/frontend/WalkerDecisionDraftSuite.scala frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/DieFace.scala frontend/src/main/scala/distantlands/frontend/GameLogPane.scala frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala frontend/src/main/scala/distantlands/frontend/TokenSprite.scala frontend/styles.css frontend/src/test/scala/distantlands/frontend/DieFaceSuite.scala frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala frontend/src/test/scala/distantlands/frontend/WalkerDecisionDraftSuite.scala frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala
 git commit -m "feat(dice): attack and defense chips in their dice colors, and an outlined hollow sword"
 ```
 
@@ -1129,7 +1129,7 @@ git commit -m "feat(dice): attack and defense chips in their dice colors, and an
 **Files:**
 - Modify: `DESIGN.md` (front matter `colors`; Colors; Named Rules; Dice; Panes)
 - Modify: `docs/ROADMAP.md` (`### Phase - Campaign UI`)
-- Modify (only if the browser check finds a defect): `frontend/styles.css`, `frontend/src/main/scala/oathdigital/frontend/TokenSprite.scala`
+- Modify (only if the browser check finds a defect): `frontend/styles.css`, `frontend/src/main/scala/distantlands/frontend/TokenSprite.scala`
 
 **Interfaces:**
 - Consumes: everything above.

@@ -17,7 +17,7 @@
 > [HTTP gateway](2026-11-02-one-http-gateway-design.md).
 
 Vocabulary: a **DTO** is a case class or case object in
-`shared/src/main/scala/oathdigital/protocol`, the wire form the server
+`shared/src/main/scala/distantlands/protocol`, the wire form the server
 writes and the frontend reads. A **codec** is the hand-written pair of
 `encode` and `decode` functions for one DTO. An **`exact` set** is the
 `Set("field", ...)` a decoder passes to `exact`, which refuses any key the
@@ -32,7 +32,7 @@ roadmap item names separately.
 | DTOs | 94 | 96 | `case class`/`case object` lines under `shared/src/main`, less the seven `ProtocolDecodeFailure` cases |
 | hand-written `exact` sets | 86 | 91 | lines matching `exact(` under `shared/src/main`, less the five `def exact` lines |
 | codec lines | 1,647 | 1,653 | `wc -l` of the eleven `*Codec*.scala` files plus `CommandJsonSupport.scala` and `CommandIntentDecoders.scala` |
-| codec-suite lines | 1,026 | 1,028 | `wc -l shared/src/test/scala/oathdigital/protocol/*.scala` |
+| codec-suite lines | 1,026 | 1,028 | `wc -l shared/src/test/scala/distantlands/protocol/*.scala` |
 | DTO lines | not given | 843 | the five `*Dto(s).scala`, `CommandIntents.scala`, `CommandProtocol.scala`, `TrustedGameProtocol.scala` |
 | encode/decode functions | not given | 117 | `def (encode\|decode)[A-Za-z]*(` under `shared/src/main` |
 | DTO fields with a default | not given | 79 | field lines with `= ` in the DTO files; 58 are `None`, 22 `Vector.empty`, the rest `0`, `1`, `3`, `false` and one `true` |

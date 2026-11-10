@@ -16,7 +16,7 @@
 - **Preservation.** `FirstGameSetupFixture.initialReady` is byte-identical before and after (Task 3 pins it). Migrated tests keep their exact assertions, including event counts such as `nextSequence == 21L`. A migrated test that fails is a discovered defect or a driver bug, never a reason to weaken the assertion.
 - **Dependencies are accepted, not created.** `Situation` takes catalog, rules or service, dice, repository and game id as parameters; `default` companions cover the common case. No situation builds a port it was not given.
 - **No new decision-id strings.** Overrides key on ids the procedures export (`SetupProcedure.pawnDecisionId`, `RecoverProcedure.choiceDecisionId`, `CampaignIds.*`).
-- **Keep power names out of `src/test/scala/oathdigital/testkit/`.** The module is engine-adjacent; suites may name a power, the module may not.
+- **Keep power names out of `src/test/scala/distantlands/testkit/`.** The module is engine-adjacent; suites may name a power, the module may not.
 - Commit messages: Conventional Commits, `test(testkit): ...` unless noted. End every commit message with the `Co-Authored-By:` trailer of the model that made the commit.
 - Run the full JVM suite (`./sbtw test`) at the end of every task, not only the touched suites: the fixture's blast radius is the whole gameplay tree.
 - Line numbers are as of commit `c286cfd2` and drift as tasks run. Locate members by signature and assertions by text.
@@ -48,10 +48,10 @@ Expected: the suite passes; the greps print `4` and `9` (the fixtures `FirstGame
 
 Created:
 
-- `src/test/scala/oathdigital/testkit/ParkedNode.scala` — the parked node rebuild.
-- `src/test/scala/oathdigital/testkit/Situation.scala` — `Situation`, `Step`, `Park`, `Answers`, named situations, `seedInto`.
-- `src/test/scala/oathdigital/testkit/SituationDriver.scala` — the shared loop and the two adapters.
-- `src/test/scala/oathdigital/testkit/SituationSuite.scala` — the module's own tests.
+- `src/test/scala/distantlands/testkit/ParkedNode.scala` — the parked node rebuild.
+- `src/test/scala/distantlands/testkit/Situation.scala` — `Situation`, `Step`, `Park`, `Answers`, named situations, `seedInto`.
+- `src/test/scala/distantlands/testkit/SituationDriver.scala` — the shared loop and the two adapters.
+- `src/test/scala/distantlands/testkit/SituationSuite.scala` — the module's own tests.
 
 Modified (all test tree):
 
@@ -68,7 +68,7 @@ Modified (all test tree):
 
 ### Task 1: Extract `ParkedNode` from `ParkedDecisionAssertions`
 
-**Files:** Create `src/test/scala/oathdigital/testkit/ParkedNode.scala`; modify `src/test/scala/oathdigital/gameplay/walker/ParkedDecisionAssertions.scala:45-88`.
+**Files:** Create `src/test/scala/distantlands/testkit/ParkedNode.scala`; modify `src/test/scala/distantlands/gameplay/walker/ParkedDecisionAssertions.scala:45-88`.
 
 **Interfaces:**
 
@@ -106,7 +106,7 @@ object ParkedNode:
 
 ### Task 2: The `Situation` module and its suite
 
-**Files:** Create `Situation.scala`, `SituationDriver.scala`, `SituationSuite.scala` under `src/test/scala/oathdigital/testkit/`; modify `src/test/scala/oathdigital/gameplay/setup/SetupWalkDriver.scala:34-47`.
+**Files:** Create `Situation.scala`, `SituationDriver.scala`, `SituationSuite.scala` under `src/test/scala/distantlands/testkit/`; modify `src/test/scala/distantlands/gameplay/setup/SetupWalkDriver.scala:34-47`.
 
 **Interfaces:**
 
@@ -212,7 +212,7 @@ trait SituationDriver:
 
 ### Task 3: `FirstGameSetupFixture` delegates; `GameStartToWakeSuite` over the driver
 
-**Files:** Modify `src/test/scala/oathdigital/gameplay/setup/FirstGameSetupFixture.scala:93-138`, `src/test/scala/oathdigital/gameplay/setup/GameStartToWakeSuite.scala:22-56`.
+**Files:** Modify `src/test/scala/distantlands/gameplay/setup/FirstGameSetupFixture.scala:93-138`, `src/test/scala/distantlands/gameplay/setup/GameStartToWakeSuite.scala:22-56`.
 
 - [x] **Step 1: Pin.** Before editing, in `SituationSuite` test 1 already compares `Situation.wake` against the old `execute()`. Run it; it must pass, or the driver does not reproduce today's walk (check `placementSites(index)` — the default policy picks the first *offered* site, the old fixture picks `sites(index)`; if they differ, `wake` takes an `answers` override that maps `pawnDecisionId(p)` to `sites(turnIndex)` and the test pins that override, not the default).
 
@@ -226,7 +226,7 @@ trait SituationDriver:
 
 ### Task 4: `ParkedServiceFixture` over the journaled adapter
 
-**Files:** Modify `src/test/scala/oathdigital/application/ParkedServiceFixture.scala` (whole file), `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala:998-1007` (`private def execute`), `src/test/scala/oathdigital/application/WalkerDecisionProjectionSuite.scala` (one `setUp` call).
+**Files:** Modify `src/test/scala/distantlands/application/ParkedServiceFixture.scala` (whole file), `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala:998-1007` (`private def execute`), `src/test/scala/distantlands/application/WalkerDecisionProjectionSuite.scala` (one `setUp` call).
 
 - [x] **Step 1: Baseline.** `./sbtw "testOnly oathdigital.application.GameApplicationServiceSuite oathdigital.application.PendingWalkerInvariantSuite oathdigital.application.PhasePowerProjectorSuite oathdigital.application.WalkerDecisionProjectionSuite"`; require pass. Record `GameApplicationServiceSuite`'s `nextSequence == 21L` and `records.size == 21` assertions; they must still hold at the end.
 
@@ -249,7 +249,7 @@ trait SituationDriver:
 
 ### Task 5: `ForgeWalkerFixture` over the journaled adapter
 
-**Files:** Modify `src/test/scala/oathdigital/application/ForgeWalkerFixture.scala:56-178`.
+**Files:** Modify `src/test/scala/distantlands/application/ForgeWalkerFixture.scala:56-178`.
 
 - [x] **Step 1: Baseline.** `./sbtw "testOnly oathdigital.application.GameApplicationServiceSuite oathdigital.application.WalkerDecisionProjectionSuite"`; require pass.
 
@@ -265,7 +265,7 @@ trait SituationDriver:
 
 ### Task 6: `seedInto` for the route suites
 
-**Files:** Modify `src/test/scala/oathdigital/server/AuthenticatedGameRoutesSuite.scala:36-51`, `src/test/scala/oathdigital/server/TrustedSeatRoutesSuite.scala:57-67`.
+**Files:** Modify `src/test/scala/distantlands/server/AuthenticatedGameRoutesSuite.scala:36-51`, `src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala:57-67`.
 
 - [x] **Step 1: Baseline.** `./sbtw "testOnly oathdigital.server.AuthenticatedGameRoutesSuite oathdigital.server.TrustedSeatRoutesSuite"`; require pass.
 

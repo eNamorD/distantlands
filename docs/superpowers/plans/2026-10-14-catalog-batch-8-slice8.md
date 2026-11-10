@@ -54,14 +54,14 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
 - **Never touch the live database `var/oathdigital`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
-  - Stage explicit paths only; never `git add -A`. An untracked `src/test/scala/oathdigital/gameplay/HiddenScopeProbeSuite.scala` belongs to another session; leave it alone.
+  - Stage explicit paths only; never `git add -A`. An untracked `src/test/scala/distantlands/gameplay/HiddenScopeProbeSuite.scala` belongs to another session; leave it alone.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
   - Then symlink the main checkout's `.tooling` and `node_modules` into the worktree before the first `./sbtw`.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Names, exactly:**
-  - File `src/main/scala/oathdigital/gameplay/EffectiveSuit.scala`, package `oathdigital.gameplay`:
+  - File `src/main/scala/distantlands/gameplay/EffectiveSuit.scala`, package `oathdigital.gameplay`:
     - `object MarriageCard`, moved from `gameplay/actions/economy/AdviserSuits.scala`;
     - `object PledgeToDiscordCard`, moved from `catalog/holding/HoldingDiscordDenizens.scala`;
     - `object SpitefulMirrorCard`, moved from `catalog/holding/HoldingRelics.scala`;
@@ -120,14 +120,14 @@ The product owner settled these on 2026-10-14. Task 1 writes them into the desig
 ## File map
 
 - Create:
-  - `src/main/scala/oathdigital/gameplay/EffectiveSuit.scala`: the three cards and `EffectiveSuit`.
-  - `src/main/scala/oathdigital/gameplay/powers/economy/PledgeToDiscord.scala`.
-  - `src/main/scala/oathdigital/gameplay/powers/economy/SpitefulMirror.scala`.
-  - `src/test/scala/oathdigital/gameplay/powers/economy/PledgeToDiscordSuite.scala`: 3 tests.
-  - `src/test/scala/oathdigital/gameplay/powers/cardplay/FamilyWagonPledgeSuite.scala`: 3 tests.
-  - `src/test/scala/oathdigital/gameplay/powers/economy/SpitefulMirrorSuite.scala`: 6 tests.
-- Rename: `src/test/scala/oathdigital/gameplay/AdviserSuitsSuite.scala` to `EffectiveSuitSuite.scala`, plus 6 tests.
-- Delete: `src/main/scala/oathdigital/gameplay/actions/economy/AdviserSuits.scala`.
+  - `src/main/scala/distantlands/gameplay/EffectiveSuit.scala`: the three cards and `EffectiveSuit`.
+  - `src/main/scala/distantlands/gameplay/powers/economy/PledgeToDiscord.scala`.
+  - `src/main/scala/distantlands/gameplay/powers/economy/SpitefulMirror.scala`.
+  - `src/test/scala/distantlands/gameplay/powers/economy/PledgeToDiscordSuite.scala`: 3 tests.
+  - `src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonPledgeSuite.scala`: 3 tests.
+  - `src/test/scala/distantlands/gameplay/powers/economy/SpitefulMirrorSuite.scala`: 6 tests.
+- Rename: `src/test/scala/distantlands/gameplay/AdviserSuitsSuite.scala` to `EffectiveSuitSuite.scala`, plus 6 tests.
+- Delete: `src/main/scala/distantlands/gameplay/actions/economy/AdviserSuits.scala`.
 - Modify, engine (Task 2):
   - `gameplay/actions/economy/MusterSource.scala`, `EconomyTree.scala`;
   - `gameplay/powers/RuledCards.scala`;
@@ -144,7 +144,7 @@ The product owner settled these on 2026-10-14. Task 1 writes them into the desig
   - `targeting/FortressRules`, `whenplayed/TwinBrother`, `travel/Hospitality`;
   - `cardplay/`: `WildCry`, `SaddleMakers`;
   - `WalkerPowerCatalog`.
-  - Test: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`.
+  - Test: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`.
 - Modify, Family Wagon (Task 4): `gameplay/powers/cardplay/SuitOnlyAdvisers.scala`, `FamilyWagon.scala`, `VowOfUnionAdvisers.scala`.
 - Modify, Spiteful Mirror (Task 5): `gameplay/powers/SelectedModifier.scala`, `gameplay/powers/ActionModifiers.scala`, `PowerKindsCatalogSuite`.
 
@@ -270,19 +270,19 @@ git commit -m "docs(batch8): slice 8 plan-time rulings"
 ### Task 2: The effective suit
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/EffectiveSuit.scala`
-- Delete: `src/main/scala/oathdigital/gameplay/actions/economy/AdviserSuits.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RuledCards.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/PayCostSettlement.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/RestCleanup.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/Marriage.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala`
-- Rename and modify: `src/test/scala/oathdigital/gameplay/AdviserSuitsSuite.scala` to `EffectiveSuitSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/EffectiveSuit.scala`
+- Delete: `src/main/scala/distantlands/gameplay/actions/economy/AdviserSuits.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/RuledCards.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/PayCostSettlement.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/RestCleanup.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/Marriage.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala`
+- Rename and modify: `src/test/scala/distantlands/gameplay/AdviserSuitsSuite.scala` to `EffectiveSuitSuite.scala`
 
 **Interfaces:**
 - Produces: everything under "Names, exactly" for `EffectiveSuit.scala`, and `MusterSource.resolve`'s `answered`.
@@ -290,8 +290,8 @@ git commit -m "docs(batch8): slice 8 plan-time rulings"
 - [ ] **Step 1: Rename the suite and write the failing tests**
 
 ```bash
-git mv src/test/scala/oathdigital/gameplay/AdviserSuitsSuite.scala \
-  src/test/scala/oathdigital/gameplay/EffectiveSuitSuite.scala
+git mv src/test/scala/distantlands/gameplay/AdviserSuitsSuite.scala \
+  src/test/scala/distantlands/gameplay/EffectiveSuitSuite.scala
 ```
 
 Replace the file's content with:
@@ -569,20 +569,20 @@ Expected: PASS, the baseline plus 6.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/EffectiveSuit.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/AdviserSuits.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala \
-  src/main/scala/oathdigital/gameplay/powers/RuledCards.scala \
-  src/main/scala/oathdigital/gameplay/operations/PayCostSettlement.scala \
-  src/main/scala/oathdigital/gameplay/phases/RestCleanup.scala \
-  src/main/scala/oathdigital/gameplay/actions/CardPlay.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/Marriage.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala \
-  src/test/scala/oathdigital/gameplay/AdviserSuitsSuite.scala \
-  src/test/scala/oathdigital/gameplay/EffectiveSuitSuite.scala
+git add src/main/scala/distantlands/gameplay/EffectiveSuit.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/AdviserSuits.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala \
+  src/main/scala/distantlands/gameplay/powers/RuledCards.scala \
+  src/main/scala/distantlands/gameplay/operations/PayCostSettlement.scala \
+  src/main/scala/distantlands/gameplay/phases/RestCleanup.scala \
+  src/main/scala/distantlands/gameplay/actions/CardPlay.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/Marriage.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingRelics.scala \
+  src/test/scala/distantlands/gameplay/AdviserSuitsSuite.scala \
+  src/test/scala/distantlands/gameplay/EffectiveSuitSuite.scala
 git commit -m "feat(batch8): one effective suit for advisers and traded cards"
 ```
 
@@ -591,11 +591,11 @@ git commit -m "feat(batch8): one effective suit for advisers and traded cards"
 ### Task 3: Every reader of an adviser's suit, and Pledge to Discord
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/PledgeToDiscord.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/PledgeToDiscordSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/PledgeToDiscord.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/PledgeToDiscordSuite.scala`
 - Modify: the reader files under "File map, readers"
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes from Task 2: `EffectiveSuit.of`, `count`, `weight`, `traded`; `PledgeToDiscordCard`.
@@ -603,7 +603,7 @@ git commit -m "feat(batch8): one effective suit for advisers and traded cards"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/PledgeToDiscordSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/PledgeToDiscordSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -768,7 +768,7 @@ Update each doc that names `AdviserSuits` or says "printed suit" of an adviser t
 
 - [ ] **Step 4: Check that only printed readers remain**
 
-Run: `grep -rn "suitOf\|AdviserSuits\|definition.suit" src/main/scala/oathdigital/gameplay | grep -v "EffectiveSuit"`
+Run: `grep -rn "suitOf\|AdviserSuits\|definition.suit" src/main/scala/distantlands/gameplay | grep -v "EffectiveSuit"`
 
 Expected: only these, which read cards that are not advisers, or that are being played to a site:
 - `actions/economy/MusterSource.scala` (`atSite`);
@@ -790,7 +790,7 @@ Any other line reads an adviser: route it through `EffectiveSuit` and say so in 
 
 - [ ] **Step 5: Register Pledge to Discord**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/PledgeToDiscord.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/PledgeToDiscord.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -830,10 +830,10 @@ Expected: PASS, the baseline plus 9.
 Stage every file Step 3 changed by its path, then:
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/PledgeToDiscord.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/PledgeToDiscordSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/PledgeToDiscord.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/PledgeToDiscordSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(batch8): Pledge to Discord makes its holder's advisers Discord"
 ```
 
@@ -842,10 +842,10 @@ git commit -m "feat(batch8): Pledge to Discord makes its holder's advisers Disco
 ### Task 4: Family Wagon and Vow of Union ask when Pledge is buried
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/SuitOnlyAdvisers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/FamilyWagon.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfUnionAdvisers.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/cardplay/FamilyWagonPledgeSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/SuitOnlyAdvisers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/FamilyWagon.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/VowOfUnionAdvisers.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonPledgeSuite.scala`
 
 **Interfaces:**
 - Consumes from Task 2: `EffectiveSuit.of`, `PledgeToDiscordCard`. From slice 6: `ExecutedTrigger`, `ExecutedBatch`.
@@ -853,7 +853,7 @@ git commit -m "feat(batch8): Pledge to Discord makes its holder's advisers Disco
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/FamilyWagonPledgeSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonPledgeSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -1128,10 +1128,10 @@ Expected: PASS, the baseline plus 12.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/SuitOnlyAdvisers.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/FamilyWagon.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfUnionAdvisers.scala \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/FamilyWagonPledgeSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/SuitOnlyAdvisers.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/FamilyWagon.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/VowOfUnionAdvisers.scala \
+  src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonPledgeSuite.scala
 git commit -m "feat(batch8): Family Wagon asks when Pledge to Discord is buried"
 ```
 
@@ -1140,11 +1140,11 @@ git commit -m "feat(batch8): Family Wagon asks when Pledge to Discord is buried"
 ### Task 5: Spiteful Mirror
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/SpitefulMirror.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/SpitefulMirrorSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/SpitefulMirror.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/SpitefulMirrorSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes from Task 2: `SpitefulMirrorCard`, `EffectiveSuit.traded` (already read by `MusterSource.resolve` and the source readers).
@@ -1152,7 +1152,7 @@ git commit -m "feat(batch8): Family Wagon asks when Pledge to Discord is buried"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/SpitefulMirrorSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/SpitefulMirrorSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1319,7 +1319,7 @@ Add to its doc, or above it: "A modifier whose price depends on the state, such 
 
 - [ ] **Step 4: Write the power**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/SpitefulMirror.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/SpitefulMirror.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -1423,11 +1423,11 @@ Expected: PASS, the baseline plus 18.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/SpitefulMirror.scala \
-  src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/SpitefulMirrorSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/SpitefulMirror.scala \
+  src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/SpitefulMirrorSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(batch8): Spiteful Mirror turns a Trade or Muster card Discord"
 ```
 

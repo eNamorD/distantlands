@@ -71,13 +71,13 @@ This is the eighth of 14 slice plans, written against `0.2.0-alpha` at `0b419ab6
 ### Task 1: Recover reads Drowned Library's pick
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/recover/UndergroundLibraryCard.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/UndergroundLibrary.scala` (the card moves out)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/action/UndergroundLibrarySuite.scala` (import)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala`
-- Test: `src/test/scala/oathdigital/gameplay/RecoverProcedureSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/RecoverEligibilitySuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/recover/UndergroundLibraryCard.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/UndergroundLibrary.scala` (the card moves out)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Modify: `src/test/scala/distantlands/gameplay/powers/action/UndergroundLibrarySuite.scala` (import)
+- Modify: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala`
+- Test: `src/test/scala/distantlands/gameplay/RecoverProcedureSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/RecoverEligibilitySuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -222,7 +222,7 @@ Expected: compile failure, "value UndergroundLibraryCard is not a member of oath
 
 - [ ] **Step 3: Move the card**
 
-Create `src/main/scala/oathdigital/gameplay/actions/recover/UndergroundLibraryCard.scala` holding `object UndergroundLibraryCard` exactly as it stands in `UndergroundLibrary.scala`, with two changes:
+Create `src/main/scala/distantlands/gameplay/actions/recover/UndergroundLibraryCard.scala` holding `object UndergroundLibraryCard` exactly as it stands in `UndergroundLibrary.scala`, with two changes:
 - The ruined face's `PrintedPower` gains `modifier = Some(ModifierMark.Action(MajorActionType.Recover)),` after its `cost`.
 - A doc comment on the object: "Underground Library (E13). The card lives beside the Recover, which reads Drowned Library's pick (`RecoverProcedure.fromRelicDeck`); its powers are `UndergroundLibrary` (intact) and `DrownedLibrary` (ruined)."
 
@@ -429,13 +429,13 @@ Then run `python3 scripts/check-architecture.py`. `cards.NewFoundations` already
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/recover/UndergroundLibraryCard.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/UndergroundLibrary.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/UndergroundLibrarySuite.scala \
-  src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala \
-  src/test/scala/oathdigital/gameplay/RecoverProcedureSuite.scala \
-  src/test/scala/oathdigital/gameplay/RecoverEligibilitySuite.scala
+git add src/main/scala/distantlands/gameplay/actions/recover/UndergroundLibraryCard.scala \
+  src/main/scala/distantlands/gameplay/powers/action/UndergroundLibrary.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/action/UndergroundLibrarySuite.scala \
+  src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala \
+  src/test/scala/distantlands/gameplay/RecoverProcedureSuite.scala \
+  src/test/scala/distantlands/gameplay/RecoverEligibilitySuite.scala
 git commit -m "$(cat <<'EOF'
 feat(gameplay): read Drowned Library's pick in the Recover
 
@@ -455,11 +455,11 @@ EOF
 ### Task 2: Drowned Library, docs and gates
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` (after `AsksOnSelection`, line 272)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala:53-59` (`candidates`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/recover/DrownedLibrary.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:65`
-- Create: `src/test/scala/oathdigital/gameplay/powers/recover/DrownedLibrarySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` (after `AsksOnSelection`, line 272)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala:53-59` (`candidates`)
+- Create: `src/main/scala/distantlands/gameplay/powers/recover/DrownedLibrary.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:65`
+- Create: `src/test/scala/distantlands/gameplay/powers/recover/DrownedLibrarySuite.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`
 - Modify: `docs/ROADMAP.md:84`
@@ -472,7 +472,7 @@ EOF
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/recover/DrownedLibrarySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/recover/DrownedLibrarySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.recover
@@ -675,7 +675,7 @@ Add `OnEdificeFace` to the `powerresolver` import. In the class doc, after "then
 
 - [ ] **Step 4: Write the power**
 
-Create `src/main/scala/oathdigital/gameplay/powers/recover/DrownedLibrary.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/recover/DrownedLibrary.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.recover
@@ -852,11 +852,11 @@ Expected: no broken link.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala \
-  src/main/scala/oathdigital/gameplay/walker/ModifierChoice.scala \
-  src/main/scala/oathdigital/gameplay/powers/recover/DrownedLibrary.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/recover/DrownedLibrarySuite.scala \
+git add src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala \
+  src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala \
+  src/main/scala/distantlands/gameplay/powers/recover/DrownedLibrary.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/recover/DrownedLibrarySuite.scala \
   src/test/resources/powers/unimplemented.txt \
   docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md \
   docs/ROADMAP.md

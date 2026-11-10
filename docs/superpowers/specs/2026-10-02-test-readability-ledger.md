@@ -177,7 +177,7 @@ Measured on 2026-10-02 at commit f9abb76d with `.superpowers/readability/metrics
 - tuple destructures with _: 69
 - Table.update escapes: 14
 - test files over 800 lines: 4
-- largest test file: 1829 src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala
+- largest test file: 1829 src/test/scala/distantlands/application/GameApplicationServiceSuite.scala
 
 `metrics.sh` counts `frontend/src/test` as well as `src/test`, which is why
 @unchecked (158), tuple destructures (69) and test files over 800 lines (4)
@@ -445,9 +445,9 @@ implementation both pass (spec, "Test doubles"). One line per double. A stub
 (fixed answers) or a spy (records calls) holds no behavior that can drift from
 the real class, so it needs no contract.
 
-- `InMemoryEventStreamRepository` (src/main/scala/oathdigital/application/EventStreamRepository.scala:48)
+- `InMemoryEventStreamRepository` (src/main/scala/distantlands/application/EventStreamRepository.scala:48)
   is a fake of `EventStreamRepository`; the real implementation is
-  `HsqldbEventStreamRepository` (src/main/scala/oathdigital/persistence/HsqldbEventStreamRepository.scala:40).
+  `HsqldbEventStreamRepository` (src/main/scala/distantlands/persistence/HsqldbEventStreamRepository.scala:40).
   Needs an abstract `EventStreamRepositoryContract` with a `make()` factory run
   against both, the shared behavior tests moved out of
   `HsqldbEventStreamRepositorySuite`; this closes the ROADMAP item "Contract
@@ -456,18 +456,18 @@ the real class, so it needs no contract.
   canned load), 09-028 (`CountingEventStreamRepository`, a spy over this fake),
   09-055 and 09-080 (stubs that fail every call).
   Done in 35503c9e: both run `EventStreamRepositoryContract`.
-- `InMemoryEventJournal` (src/main/scala/oathdigital/engine/Engine.scala:28)
+- `InMemoryEventJournal` (src/main/scala/distantlands/engine/Engine.scala:28)
   implements `EventJournal`; `git grep` finds no other `EventJournal`
   implementation (the Hsqldb store implements `EventStreamRepository`, and
   `EventJournalSchema` is only the table) and no caller in `src`, `frontend` or
   `shared`. No real implementation, so no contract; no row classifies it.
 - `Totals` in EventReplayEngineSuite (01-127) is a fake of `EventEvolution`;
-  the real implementation is `OathRules` (src/main/scala/oathdigital/gameplay/OathRules.scala:40).
+  the real implementation is `OathRules` (src/main/scala/distantlands/gameplay/OathRules.scala:40).
   Needs an `EventEvolutionContract` (the initial state is stable; `evolve` is
   pure and returns a Left, not a state, for a corrupt event) run against both.
 - `FakeStore` in GameLogOverlaySuite and LogMarkerSuite (11-031, 11-041) is a
   fake of `LogStore`; the real implementation is `LogStore.browser`
-  (frontend/src/main/scala/oathdigital/frontend/LogMarker.scala:19, over
+  (frontend/src/main/scala/distantlands/frontend/LogMarker.scala:19, over
   `localStorage`). Needs a `LogStoreContract` (a written key reads back; an
   unknown key reads None) in the frontend tests, run against the one shared
   `FakeLogStore`; the trait's doc says the jsdom harness makes the real store
@@ -476,7 +476,7 @@ the real class, so it needs no contract.
   `LogStoreContract`.
 - `FakePollClock` and `ManualClock` (12-042, 12-044) are fakes of `PollClock`;
   the real implementation is `BrowserPollClock`
-  (frontend/src/main/scala/oathdigital/frontend/SnapshotPollingCoordinator.scala:11).
+  (frontend/src/main/scala/distantlands/frontend/SnapshotPollingCoordinator.scala:11).
   Needs a `PollClockContract` (a scheduled callback fires once, a cancelled one
   never fires) in the frontend tests, run against the one shared fake and
   against `BrowserPollClock`.
@@ -486,7 +486,7 @@ the real class, so it needs no contract.
   061ad95a) is a spy that records calls and a
   controllable stub (the test completes each promise); the real
   implementations are `HttpGameClient` and `TrustedHttpGameClient`
-  (frontend/src/main/scala/oathdigital/frontend/GameClient.scala:123 and 192).
+  (frontend/src/main/scala/distantlands/frontend/GameClient.scala:123 and 192).
   It computes no answer of its own, so no contract; Plan 2 documents it as a
   spy, not a fake. `RecordingNavigation` in the same row is a spy.
 - `IdentityRepositoryStub`, `failing` and the anonymous resolveSession subclass
@@ -585,171 +585,171 @@ guard, one at a time, and records the result here.
 
 | Task | Rule broken (file:line: change) | Test that failed | Result |
 |---|---|---|---|
-| 04-fixtures | src/main/scala/oathdigital/gameplay/powers/action/BarbedNet.scala:9: `secretBurnt = 3` to 2 | BarbedNetSuite: it burns three secrets (and 2 more) | caught |
-| 04-fixtures | src/main/scala/oathdigital/gameplay/powers/action/BrassHorse.scala:59: the region is always the Cradle | BrassHorseSuite: the region is the one the pawn's site is in | caught |
-| 04-fixtures | src/main/scala/oathdigital/gameplay/powers/action/Wolves.scala:61: kills 2 warbands, not 1 | WolvesSuite: the chosen board loses one warband (and 2 more) | caught |
-| 04-fixtures | src/main/scala/oathdigital/gameplay/powers/travel/Tents.scala:49: `Favor` 1 to 0 | TentsSuite: Travel in the region places the favor (and 4 more) | caught |
-| 04-1 | src/main/scala/oathdigital/gameplay/powers/action/Alchemist.scala:21: `Favor` 4 to 3 | AlchemistSuite: one bank holding all the favor gives four (and 4 more) | caught |
-| 04-1 | src/main/scala/oathdigital/gameplay/powers/action/BedOfRoots.scala:86: `Gained` 2 to 1 | BedOfRootsSuite: the adviser is buried with its returns (and 1 more) | caught |
-| 04-1 | src/main/scala/oathdigital/gameplay/powers/action/BookOfRecords.scala:29: `Most` 2 to 1 | BookOfRecordsSuite: the People's Favor gives two favor (and 2 more) | caught |
-| 04-1 | src/main/scala/oathdigital/gameplay/powers/action/ClayRattle.scala:8: cost 2 secrets to 1 | ClayRattleSuite: it places two secrets (and 1 more) | caught |
-| 04-2 | src/main/scala/oathdigital/gameplay/powers/action/DemonTail.scala:18: `Supply` 2 to 3 | DemonTailSuite: it burns three secrets and gains 2 Supply (and 1 more) | caught |
-| 04-2 | src/main/scala/oathdigital/gameplay/powers/action/GreatFeast.scala:71: `Gained` 3 to 2 | GreatFeastSuite: the card is discarded and the player gains 3 Supply | caught |
-| 04-2 | src/main/scala/oathdigital/gameplay/powers/action/DarkEnforcer.scala:29: discards Order cards only, not Hearth | DarkEnforcerSuite: it burns a favor and discards every Order and Hearth card | caught |
-| 04-2 | src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala: cost 2 favor to 1 | GamblingHallSuite: it places 2 favor (and 4 more) | caught |
-| 04-3 | src/main/scala/oathdigital/gameplay/powers/action/SiegeEngines.scala:29: `Kills` 2 to 1 | SiegeEnginesSuite: it kills two of the chosen site's warbands (and 2 more) | caught |
-| 04-3 | src/main/scala/oathdigital/gameplay/powers/action/MurkyFountain.scala:65: a zero total does not end the Act | MurkyFountainSuite: a total of zero ends the Act phase (and 1 more) | caught |
-| 04-3 | src/main/scala/oathdigital/gameplay/powers/action/SleightOfHand.scala:30: `MinimumSecrets` 2 to 3 | SleightOfHandSuite: it places a favor on its card and offers players at the actor's site holding two or more secrets (and 4 more) | caught |
-| 04-3 | src/main/scala/oathdigital/gameplay/powers/action/Scryer.scala:8: cost 1 secret to 2 | ScryerSuite: it places a secret and asks which discard pile (and 3 more) | caught |
-| 04-4 | src/main/scala/oathdigital/gameplay/powers/action/WaysideInn.scala:17: `Supply` 2 to 3 | WaysideInnSuite: it places 1 favor on its card and gains 2 Supply (and 1 more) | caught |
-| 04-4 | src/main/scala/oathdigital/gameplay/powers/action/TamingCharm.scala:88: `Gained` 2 to 1 | TamingCharmSuite: a Beast card is discarded, then 2 favor come from the Beast bank (and 2 more) | caught |
-| 04-4 | src/main/scala/oathdigital/gameplay/powers/action/TavernSongs.scala:30: `Depth` 3 to 2 | TavernSongsSuite: it peeks at the top three cards (and 1 more) | caught |
-| 04-4 | src/main/scala/oathdigital/gameplay/powers/action/SpoiledSupplies.scala:24: `Loss` 1 to 2 | SpoiledSuppliesSuite: each other player at the actor's site loses 1 Supply (and 2 more) | caught |
-| 06-fixtures | src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala:86: `HolderLimit` 2 to 3 | SilverTongueSuite: Silver Tongue requires replacement when a third adviser is played (and 1 more) | caught |
-| 06-fixtures | src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala:79: `Favor` 1 to 2 | TollRoadsSuite: an enemy pays the ruler 1 favor (and 4 more) | caught |
-| 06-fixtures | src/main/scala/oathdigital/gameplay/powers/travel/RoyalStables.scala:40: `Reduction` 1 to 0 | RoyalStablesSuite: a Travel costs one less Supply (and 2 more) | caught |
-| 06-1 | src/main/scala/oathdigital/gameplay/powers/recover/RelicWorship.scala:39: `Supply` 2 to 1 | RelicWorshipSuite: after recovering a relic the player pays a secret onto the card and gains 2 Supply | caught |
-| 06-1 | src/main/scala/oathdigital/gameplay/powers/rest/Insomnia.scala:30: `HolderLimit` 2 to 3 | InsomniaSuite: its holder may have only two advisers (and 1 more) | caught |
-| 06-1 | src/main/scala/oathdigital/gameplay/powers/banner/WanderingFlamePlace.scala:48: places 2 secrets, not 1 | WanderingFlamePlaceSuite: it moves one secret from the actor's board onto the pawn's site (and 1 more) | caught |
-| 06-2 | src/main/scala/oathdigital/gameplay/powers/setup/ProvingGroundsRules.scala:47: 2 warbands, not 3 | ProvingGroundsRulesSuite: Proving Grounds gives the placing player three warbands (and 1 more) | caught |
-| 06-2 | src/main/scala/oathdigital/gameplay/powers/title/ChaosCult.scala:34: takes 2 favor, not 1 | ChaosCultSuite: when another player takes the title, the holder takes 1 favor from them (and 1 more) | caught |
-| 06-2 | src/main/scala/oathdigital/gameplay/powers/setup/GreatMarketRules.scala:128: places 2 favor on a bandit site | GreatMarketRulesSuite: Bandit Market favors every bandit-ruled site and burns every bank (and 1 more) | caught |
-| 06-2 | src/main/scala/oathdigital/gameplay/powers/setup/GreatForgeRules.scala:69: Great Forge draws nothing | GreatForgeRulesSuite: Great Forge gives the placing player the top relic facedown (and 1 more) | caught |
-| 06-3 | src/main/scala/oathdigital/gameplay/powers/wake/Quartermaster.scala:28: gains 2 Supply, not 1 | QuartermasterSuite: its site's ruler gains 1 Supply, wherever their pawn is (and 1 more) | caught |
-| 06-3 | src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala:143: discards two regions on | HornedMaskSuite: a full adviser area asks which adviser to discard, and it goes to the next region's discard pile | caught |
-| 06-3 | src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala:49: the destination's ruler, not the source's | GraspingVinesSuite: an enemy traveling from a site the ruler rules kills a warband of their own (and 2 more) | caught |
-| 06-3 | src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala:61: burns no favor under bandits | TollRoadsSuite: when bandits rule, the favor is burnt (and 1 more) | caught |
-| 10-fixtures | src/main/scala/oathdigital/gameplay/actions/PlacementRules.scala:37: a limit no longer lowers the faceup limit | PlacementRulesSuite: a limit only lowers, and a faceup limit leaves the facedown one (and 2 more) | caught |
-| 10-fixtures | src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:84: the site-discard permission is ignored | SiteDiscardFirstSuite: a site with room offers a discard only under the permission (and 6 more) | caught |
-| 10-fixtures | src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:38: global restrictions never refuse a placement | CardPlayProcedureSuite: Hall of Ministers hides site-card replacement from the ruler's enemy (and 1 more) | caught |
-| 10-1 | src/main/scala/oathdigital/gameplay/actions/forge/ForgeProcedure.scala:71: Forge costs 2 Supply | ForgeProcedureSuite: a successful build roots at ForgeActionEligibility and pays one supply at a ForgeCost-windowed first leaf (and 2 more) | caught |
-| 10-1 | src/main/scala/oathdigital/gameplay/phases/wake/EndWakeProcedure.scala:48: End Wake enters Rest | EndWakeProcedureSuite: ending Wake journals a phase change and enters Act action selection (and 1 more) | caught |
-| 10-1 | src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala:97: the amount may equal the banner | ChallengeProcedureSuite: the amount must exceed the banner and fit the actor's resources (and 1 more) | caught |
-| 10-1 | src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:84: the Homeland grants no discard | HomelandRuleSuite: a matching Homeland with room offers an optional discard (and 1 more) | caught |
-| 10-2 | src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala:90: Muster counts no matching adviser | MusterProcedureSuite: Muster costs one Supply and one favor and gains one warband per matching adviser plus one | caught |
-| 10-2 | src/main/scala/oathdigital/gameplay/actions/Search.scala:33: a regional Search draws from the front | SearchProcedureSuite: regional Search draws from the end of its pile | caught |
-| 10-2 | src/main/scala/oathdigital/gameplay/actions/Search.scala:15: a world Search tops out at 3 | SearchSuite: world Search cost follows Visions Drawn track bands | caught |
-| 10-2 | src/main/scala/oathdigital/gameplay/actions/MinorActions.scala:84: a peek replays against any relics | MinorActionsSuite: site relic peek uses core operations and preserves knowledge (survived until 10-062's new assertion) | caught |
-| 10-3 | src/main/scala/oathdigital/gameplay/VisionVictoryEligibility.scala:9: a Vision wins with two drawn | StateBasedEvaluationSuite: all four true Visions win only with three Visions drawn (and 1 more) | caught |
-| 10-3 | src/main/scala/oathdigital/gameplay/phases/wake/TakeWealthProcedure.scala:117: an enemy pawn never blocks the take | TakeWealthProcedureSuite: an enemy pawn at the site blocks the take | caught |
-| 10-3 | src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala:141: a coast route keeps the Island's add | TravelSitePowersSuite: terrain transforms give the printed Travel cost on each route (and 1 more) | caught |
-| 05-1 | src/main/scala/oathdigital/gameplay/powers/cardplay/SaddleMakers.scala:69: the holder gains 1 favor, not 2 | SaddleMakersSuite: another player's nomad card played as a faceup adviser gains the holder 2 favor from the Nomad bank (and 3 more) | caught |
-| 05-1 | src/main/scala/oathdigital/gameplay/powers/cardplay/WildCry.scala:47: 3 warbands, not 2 | WildCrySuite: a beast denizen played to a site gains 1 Supply and 2 warbands (and 1 more) | caught |
-| 05-1 | src/main/scala/oathdigital/gameplay/powers/economy/AnimalPlaymates.scala:29: Order cards, not Beast, muster free | AnimalPlaymatesSuite: mustering on a beast denizen spends no Supply and otherwise costs the same (and 2 more) | caught |
-| 05-2 | src/main/scala/oathdigital/gameplay/powers/whenplayed/ASmallFavor.scala:20: gains 3 warbands, not 4 | ASmallFavorSuite: playing it gains four warbands | caught |
-| 05-2 | src/main/scala/oathdigital/gameplay/powers/whenplayed/AnimalHost.scala:53: every faceup denizen counts, not only Beast ones | AnimalHostSuite: as an adviser it counts the Beast cards at every site, whoever rules them | caught |
-| 05-2 | src/main/scala/oathdigital/gameplay/actions/BannerRules.scala:29: favor returns to the bank holding the most | ConspiracyWhenPlayedSuite: Conspiracy taking the Peoples Favor returns its favor in the least-bank order and takes the banner | caught |
-| 05-2 | src/main/scala/oathdigital/gameplay/powers/economy/KnightsErrant.scala:53: the Campaign's Supply payment is never removed | KnightsErrantSuite: after the gain it asks whether to campaign, as a Muster decision (and 4 more) | caught |
-| 05-2 | src/main/scala/oathdigital/gameplay/powers/whenplayed/BanditPrince.scala:59: a site with one bandit more than the bank holds is offered | none | survived: the assertion that would catch it (bank of 1, only the 1-bandit site offered) fails on main, because `ChooseMany`'s max is every bandit site, not the affordable ones, so the question is skipped. A production fix, outside this plan; spawned as its own task |
-| 05-3 | src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala:38: Order cards are not discarded | DazzleSuite: Dazzle discards Hearth and Order site cards from the actor region (and 1 more) | caught |
-| 05-3 | src/main/scala/oathdigital/gameplay/powers/whenplayed/RoyalTax.scala:29: each player gives 1 favor, not 2 | RoyalTaxSuite: each player at a site p1 rules in p1's region gives 2 favor, or what they hold (and 1 more) | caught |
-| 05-3 | src/main/scala/oathdigital/gameplay/powers/whenplayed/TwinBrother.scala:63: any suit but Hearth is offered, not only Nomad | TwinBrotherSuite: it offers other players' faceup unlocked nomad advisers, then keeping | caught, after the test gained p2's Wrestlers (Order); before, it survived |
-| 05-3 | src/main/scala/oathdigital/gameplay/powers/whenplayed/Garrison.scala:38: gains one warband fewer than the ruled sites | GarrisonSuite: it gains one warband per ruled site and puts one on each | caught |
-| 07-fixtures | src/main/scala/oathdigital/gameplay/powers/campaign/BattleAxes.scala:39: 1 die, not 2 | BattleAxesSuite: an attacker adds two attack dice, for nothing, when the defender rules a beast card (and 2 more) | caught |
-| 07-fixtures | src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala:211: a Hearth adviser lifts the Rotting Fortress, not a Beast one | FortressRulesSuite: a faceup beast adviser lifts the Rotting Fortress's protection; a facedown one, or one of another suit, does not | caught |
-| 07-fixtures | src/main/scala/oathdigital/gameplay/powers/campaign/GreatCrusade.scala:52: Great Crusade does not count itself | GreatCrusadeSuite: an attacker adds one attack die per nomad card they rule, counting itself, for nothing (and 5 more) | caught |
-| 07-1 | src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala:43: every skull is paid, whatever the force | CampaignBattleSuite: a skull costs a warband and its swords only when the warband can be paid | caught |
-| 07-1 | src/main/scala/oathdigital/gameplay/actions/campaign/CampaignRaid.scala:100: the defender burns one favor more than half | CampaignRaidSuite: a Raid victory transfers in the printed order and then asks where the pawn goes | caught |
-| 07-1 | src/main/scala/oathdigital/gameplay/powers/recover/CatacombsContribution.scala:37: Catacombs costs 2 secrets, not 1 | CatacombsContributionSuite: the Catacombs fold survives its own effect (and more) | caught |
-| 07-2 | src/main/scala/oathdigital/gameplay/powers/campaign/BattleHonors.scala:26: gains 1 favor, not 2 | BattleHonorsSuite: an attacker that wins gains two favor from the Order bank (and 2 more) | caught |
-| 07-2 | src/main/scala/oathdigital/gameplay/powers/campaign/Encirclement.scala:47: an equal force is enough | EncirclementSuite: it is not offered when the forces are equal (and 1 more) | caught |
-| 07-2 | src/main/scala/oathdigital/gameplay/powers/campaign/BookBurning.scala:47: burns every secret, keeping none | BookBurningSuite: a won Raid burns every secret but one, the facedown ones first, and says so (and 2 more) | caught |
-| 07-3 | src/main/scala/oathdigital/gameplay/powers/campaign/Mercenaries.scala:68: 2 dice, not 3 | MercenariesSuite: an attacker pays a favor onto the card and adds three attack dice (and 2 more) | caught |
-| 07-3 | src/main/scala/oathdigital/gameplay/powers/targeting/CircletOfCommand.scala:73: the Circlet protects itself too | CircletOfCommandSuite: a Raid may not target the holder's other relics or banners, but may target the Circlet (and 1 more) | caught |
-| 07-3 | src/main/scala/oathdigital/gameplay/powers/campaign/ToweringRampart.scala:38: 1 defense die, not 2 | RampartSuite: Towering Rampart at a targeted site adds two defense dice (and 1 more) | caught |
-| 07-4 | src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala:64: no relic held by the ruler is shielded | ForgottenVaultSuite: a Raid may not target the ruler's relics, but may target their banners | caught |
-| 07-4 | src/main/scala/oathdigital/gameplay/powers/targeting/LostTongue.scala:106: a facedown Lost Tongue protects too | LostTongueSuite: a facedown Lost Tongue protects nothing (and 1 more) | caught |
-| 07-4 | src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala:211: any suited adviser lifts the Rotting Fortress | FortressRulesSuite: a faceup beast adviser lifts the Rotting Fortress's protection; a facedown one, or one of another suit, does not | caught |
-| 07-4 | src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala:178: the Oaken Fortress acts on the ruined side | FortressRulesSuite: the Oaken Fortress removes its ruler from a Raid: only the Conquest is left (and 4 more) | caught |
-| 07-4 | src/main/scala/oathdigital/gameplay/powers/campaign/MilitaryParade.scala:63: facedown advisers count | MilitaryParadeSuite: an attacker that wins gains a favor per faceup adviser of the enemy, from each adviser's bank (and 1 more) | caught |
-| 03-1 | src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala:45: every player counts as an enemy | OperationResolutionSuite: Hall of Ministers blocks enemy site-card discard | caught |
-| 03-1 | src/main/scala/oathdigital/gameplay/walker/WalkerRolls.scala:60: a recorded roll of any size is accepted | AutomaticRollSuite: an automatic roll replays from its recorded payload and rejects a tampered one | caught |
-| 03-1 | src/main/scala/oathdigital/gameplay/operations/OperationResolution.scala:89: a counted effect grows to its cap | OperationResolutionSuite: Supply gain shrinks at the track maximum (survived until the assertion that a gain below the maximum stays as asked was added) | caught |
-| 03-1 | src/main/scala/oathdigital/gameplay/operations/CardMovementOperations.scala:311: a discarded relic is not set aside | OperationExecutorSuite: relic discard preserves composite secret orientation semantics | caught |
-| 03-2 | src/main/scala/oathdigital/gameplay/PowerAccess.scala:35: only the pawn's site is usable, not a ruled one | PowerAccessSuite: a site card is usable at the pawn's site and at a ruled site only (and 3 more) | caught |
-| 03-2 | src/main/scala/oathdigital/gameplay/operations/PayCostSettlement.scala:18: an off-turn payment settles like the active player's | PayCostSettlementSuite: an off-turn favor payment goes straight to the matching bank (and 3 more) | caught |
-| 03-2 | src/main/scala/oathdigital/gameplay/operations/PayCostSettlement.scala:19: off-turn favor with no matching bank is not refused | PayCostSettlementSuite: an off-turn placed favor with no matching bank is rejected | caught |
-| 03-2 | src/main/scala/oathdigital/gameplay/operations/LockedCards.scala:40: a ruined edifice is locked too | OperationRestrictionsSuite: an intact edifice is locked, and a ruined one is not | caught |
-| 03-2 | src/main/scala/oathdigital/gameplay/operations/PayCostRules.scala:25: a placed cost may land on an occupied card | PayCostSuite: a placed cost onto an occupied card is rejected | caught |
-| 03-2 | src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala:26: a site relic is never accessible | PowerResolverSuite: resolver treats a faceup relic at the actor pawn site as accessible | caught |
-| 03-3 | src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala:123: SetOathkeeper keeps the title's side | OperationMutationSuite: SetOathkeeper moves the title and always resets it to the Oathkeeper side | caught |
-| 03-3 | src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala:154: an altered Foundation declares no handler | RuleSourceIndexSuite: all six Foundations expose ordered identities, faces, and state | caught |
-| 03-3 | src/main/scala/oathdigital/gameplay/operations/PayCostSettlement.scala:18: an off-turn payment replays like the active player's | WalkerReplaySettlementSuite: an off-turn payment replays settled: favor to the matching bank, a secret facedown | caught |
-| 03-3 | src/main/scala/oathdigital/gameplay/operations/PileOperations.scala:27: a shuffle keeps what players knew of the pile | ShuffleOperationSuite: a shuffle forgets its pile's cards, since no one knows which is where | caught |
-| 01-1 | src/main/scala/oathdigital/gameplay/operations/CardKnowledgeMoves.scala:24: a card entering a hidden pile is still known | CardKnowledgeSuite: a face-down adviser shuffled into the world deck is forgotten (and 3 more) | caught |
-| 01-1 | src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala:27: Trade for secrets burns no favor | EconomyProjectionSuite: a control is offered only while a source survives the preview | caught |
-| 01-1 | src/main/scala/oathdigital/gameplay/powers/banner/WanderingFlameMove.scala:37: Move counts a site without secrets | BannerFaceProjectionSuite: a power with nothing to do is not projected: Move needs a secret-bearing site, and the place power needs a faceup secret | caught |
-| 01-2 | src/main/scala/oathdigital/application/GameApplicationService.scala:165: a stale preview position is accepted | GameApplicationServiceActionsSuite: major-action preview is stateless stale-safe and rejects unavailable modifiers | caught |
-| 01-2 | src/main/scala/oathdigital/gameplay/actions/forge/ForgeProcedure.scala:276: the forged relic lands faceup | GameApplicationServiceForgeSuite: walker Forge completes ... same final state (and 2 more) | caught |
-| 01-2 | src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationDeal.scala:136: a disclosed adviser is shown to its own owner | GameApplicationServiceReopenSuite: HSQL reopen preserves completed Negotiation disclosure knowledge | caught |
-| 01-3 | src/main/scala/oathdigital/application/NegotiationDealProjector.scala:27: a faceup relic in a transfer is hidden | NegotiationDealProjectionSuite: a faceup relic in a transfer is shown to every viewer, public included | caught |
-| 01-3 | src/main/scala/oathdigital/application/NegotiationDealProjector.scala:24: a transfer's relic count is 0 | NegotiationDealProjectionSuite: terms show amounts to everyone but hide identities from everyone but their author | caught |
-| 01-3 | src/main/scala/oathdigital/application/Authorization.scala:109: a spectator membership may hold a player seat | none | survived: no test seeds a spectator with a seat; the frozen assertions cover only valid memberships |
-| 01-3 | src/main/scala/oathdigital/application/PhasePowerProjector.scala:25: a non-active viewer is projected the active player's powers | PhasePowerProjectorSuite: a usable REST power is projected and legal for its active player only | caught |
-| 01-3 | src/main/scala/oathdigital/application/PhasePowerProjector.scala:53: an edifice power is read from the ruined face only | PhasePowerProjectorSuite: a phase power used from an edifice at the pawn's site is projected and legal with the edifice face's printed name | caught |
-| 09-1 | src/main/scala/oathdigital/gameplay/setup/SetupProcedure.scala:69: a site-only adviser is offered to Reveal Cards | SetupProcedureSuite: Reveal Cards offers facedown advisers except site-only ones, then facedown relics | caught |
-| 09-1 | src/main/scala/oathdigital/server/GameRoutes.scala:147: an events limit of 101 is accepted | GameRoutesSuite: the events history pages from the newest event and refuses a limit above 100 | caught |
-| 09-1 | src/main/scala/oathdigital/persistence/HsqldbDatabaseOwner.scala:157: reopen retry skips the deadline recheck after backoff | HsqldbDatabaseOwnerSuite: reopen retry returns the first success and rechecks the deadline after backoff | caught |
-| 09-1 | src/main/scala/oathdigital/persistence/HsqldbIdentityRepository.scala:301: a touch may move last seen backwards | HsqldbIdentityRepositorySuite: touchSession slides the idle expiry and refuses a time before last seen | caught |
-| 09-1 | src/main/scala/oathdigital/persistence/HsqldbIdentityRepository.scala:522: spectators list before owners | HsqldbIdentityRepositorySuite: memberships enforce game existence, seat occupancy, roles and listing order | caught |
-| 09-2 | src/main/scala/oathdigital/server/HealthRoutes.scala:29: health responses are cacheable | HealthRoutesSuite: liveness stays live while readiness follows lifecycle state | caught |
-| 09-2 | src/main/scala/oathdigital/server/TrustedGameProvisioning.scala:74: a seat retries its code only 7 times | TrustedGameProvisioningSuite: duplicate generated codes retry per seat with an eight-attempt terminal limit | caught |
-| 09-2 | src/main/scala/oathdigital/server/SeatCode.scala:19: a seat code's toString shows the raw code | SeatCodeSuite: a seat code's toString hides the raw code | caught |
-| 09-2 | src/main/scala/oathdigital/server/SessionSecurity.scala:92: a public origin may carry a path | ServerConfigSuite: authenticated public origin accepts https://play.example.com and refuses a path | caught |
-| 09-2 | src/main/scala/oathdigital/server/TrustedSeatRoutes.scala:51: the seat cookie lives one second past a year | TrustedSeatRoutesSuite: a seat link exchanges for an HttpOnly cookie scoped to its game and redirects without the code (and the HTTPS Secure test) | caught |
-| 02-f | src/main/scala/oathdigital/application/gamelog/EventLines.scala:37: the Usurper line drops "the" | GameLogEventSuite: warbands moved, bandits returned and a new Usurper each post one line | caught |
-| 02-f | src/main/scala/oathdigital/application/gamelog/NegotiationLines.scala:67: a disclosure reads "revealed to" | GameLogExchangeSuite: a disclosed adviser is named to its owner and recipient, by slot to others | caught |
-| 02-f | src/main/scala/oathdigital/application/gamelog/CampaignLines.scala:32: the target line reads "Target:" | GameLogCampaignSuite: a Raid tells its targets, pools, dice, totals, winner and losses in order | caught |
-| 02-f | src/main/scala/oathdigital/application/gamelog/NegotiationLines.scala:24: an agreed negotiation reads "Negotiated:" | GameLogExchangeSuite: an agreed negotiation names the other negotiators once (and the favor transfer test) | caught |
-| 02 | src/main/scala/oathdigital/application/gamelog/LogWords.scala:171: Legacy pluralizes as "Legacys" | LogWordsSuite: a kind's plural follows its spelling | caught |
-| 02 | src/main/scala/oathdigital/application/gamelog/CampaignLines.scala:103: the bandits' win reads "Bandits win!" | GameLogRareLinesSuite: a defeated attacker's loss line has no subject and the bandits win | caught |
-| 02 | src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala:73: an idle Wake reads "Nothing happened" | GameLogHeadlineSuite: a journal that starts at a table opens with its round, turn and phase | caught |
-| 02 | src/main/scala/oathdigital/application/gamelog/NegotiationLines.scala:35: a declined deal reads "Negotiation declined by" | GameLogExchangeSuite: a declined negotiation names who ended it, and nothing else | caught |
-| 34 | frontend/src/main/scala/oathdigital/frontend/MapViewState.scala:44: `Step = 1.25` to 1.3 | MapViewStateSuite: one wheel notch is one button step in either delta mode (and the flick and pinch tests) | caught |
-| 34 | frontend/src/main/scala/oathdigital/frontend/DistributeDecisionState.scala:43: a raise ignores the slot maximum | DistributeDecisionStateSuite: fill is limited by the slot maximum (and increment stops at the slot maximum) | caught |
-| 34 | frontend/src/main/scala/oathdigital/frontend/BoardTargetSelectionState.scala:72: reconcile keeps the state when the actions changed | BoardTargetSelectionStateSuite: state clears on sequence, player, game, action kind or candidates | caught |
-| 34 | frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala:140: an entry's title drops its ordinal | GameLogPaneSuite: a line carries its cost and sequence | caught |
-| 34 | frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala:36: Trade is not a registered walker action | ModifierSelectionStateSuite: a walker start names a preview action only when the engine registers it | caught |
-| 35 | frontend/src/main/scala/oathdigital/frontend/NegotiationDealPanel.scala:125: Accept ignores the engine's `canAccept` | NegotiationDealPanelSuite: accept is disabled until the engine says this player may accept | caught |
-| 35 | frontend/src/main/scala/oathdigital/frontend/AmountCombobox.scala:109: the active option is not clamped at the maximum | WalkerSelectionPanelsSuite: choose-amount opens its list from the keyboard and picks from it | caught |
-| 35 | frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:242: the limiter marker sits at radius 60, inside the label | ServerUiSupportSuite: round tracker geometry is eight circular ring wedges | caught |
-| 35 | frontend/src/main/scala/oathdigital/frontend/TrustedHostUi.scala:95: the host form is full at more than six players | ServerModeHostFormSuite: the sixth player disables the add-player toggle | caught |
-| 35 | frontend/src/main/scala/oathdigital/frontend/ServerSessionCoordinator.scala:57: an equal position counts as an advance | ServerSessionCoordinatorSuite: snapshotAdvances distinguishes unchanged, older, and changed snapshots | caught |
-| 35 | frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala:429: the kept card in a keep-one zone gets a mover button | PartitionPanelRenderSuite: the kept card has no mover; the discard cards keep theirs | caught |
-| 35 | frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:36: an undefended site draws no "0" | SiteFaceSuite: an undefended site says zero instead of drawing no die | caught |
-| 35 | frontend/src/main/scala/oathdigital/frontend/SnapshotPollingCoordinator.scala:25: the visible poll interval default is 4000 | TableSessionSuite: a development session opens the queried game, displays it and polls | caught |
-| 36 | src/main/scala/oathdigital/model/PlayerForceKind.scala:11: an Exile's warbands get the Imperial kind | PlayerForceKindSuite: an Exile's warbands are their lineage's Exile kind | caught |
-| 36 | src/main/scala/oathdigital/serialization/WalkerEventCodec.scala:83: `automatic` is never written (`if automatic && false`) | WalkerOperationWireSuite: a walker roll payload round-trips attack and defense faces | caught |
-| 36 | shared/src/main/scala/oathdigital/protocol/TrustedGameProtocolCodec.scala:28: the id length limit 128 becomes 129 | TrustedGameProtocolSuite: invalid player ids are refused | caught |
-| 36 | src/main/scala/oathdigital/model/Identity.scala:44: `PowerId.fromValue` accepts any non-empty string | OpaqueIdSuite: blank ids and a malformed power id are rejected; PowerId.fromValue answers None instead of throwing | caught |
-| 36 | src/main/scala/oathdigital/serialization/GameEventWire.scala:117: the expected stream position ignores the start sequence | GameEventWireEnvelopeSuite: single-event and batch writers preserve nonzero absolute sequences | caught |
-| contract-repository | src/main/scala/oathdigital/application/EventStreamRepository.scala:77: the SequenceConflict branch also appends the stale batch | InMemoryEventStreamRepositorySuite: a sequence conflict writes no part of the batch | caught |
-| contract-repository | src/main/scala/oathdigital/application/EventStreamRepository.scala:66: MustNotExist on an existing stream returns Appended | InMemoryEventStreamRepositorySuite: a duplicate creation or an append to a missing stream is refused | caught |
-| contract-repository | src/main/scala/oathdigital/application/EventStreamRepository.scala:54: load returns the records reversed | InMemoryEventStreamRepositorySuite: creates a stream and loads its records in order | caught |
-| 38a | src/test/scala/oathdigital/testkit/RunningTotalEvolution.scala:11: accept a negative event (`event < 0 && false`) | RunningTotalEvolutionSuite: the initial state refuses a corrupt event | caught |
-| 38a | src/main/scala/oathdigital/gameplay/OathRules.scala:89: `WalkerCompleted` on `NoGame` returns `Right(state)` | OathRulesEvolutionSuite: the initial state refuses a corrupt event | caught |
-| 38a | src/test/scala/oathdigital/testkit/Dice.scala:31: `raid` attack rolls HollowSword, not OneSword | GameLogGoldenSuite: raid reads exactly as its golden log for the actor and another seat | caught |
-| 38a | src/test/scala/oathdigital/testkit/Dice.scala:25: `steady` defense rolls OneShield, not TwoShields | GameLogPowerLinesSuite: Gambling Hall writes its roll and its gain in place of the generic lines | caught |
-| 38a | src/test/scala/oathdigital/testkit/Dice.scala:17: `blank` defense rolls TwoShields, not Blank | GameLogDetailSuite: each Recover roll posts a Rolled line whose dice travel as a dice span | caught |
-| 38b | src/test/scala/oathdigital/testkit/WalkerStubs.scala:37: `TestTransformPower` contributes a `Transform` that returns its operations unchanged | RestrictionAnswersSuite: a subtree a Transform inserts is checked too, not only the declared tree | caught |
-| 38b | src/test/scala/oathdigital/testkit/WalkerStubs.scala:47: `TestRestrictionPower` contributes a `Restriction` that never refuses | RestrictionAnswersSuite: once the answer opens the subtree its Restriction is checked | caught |
-| 38b | src/test/scala/oathdigital/testkit/ChronicleShuffles.scala:14: `reversing` returns its input unchanged | ChronicleShuffleSuite: implemented-first puts every implemented card ahead of every other | caught |
-| 38b | src/test/scala/oathdigital/testkit/ChronicleShuffles.scala:19: `unshuffled` reverses its input | GameServerGatewaySubmitBeginSuite: beginning a game persists history and reloads it | caught |
-| 38b | src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala:32: `winningDice` attack dice come up HollowSword, not OneSword | BattleHonorsSuite: an attacker that wins gains two favor from the Order bank | caught |
-| 38c | src/test/scala/oathdigital/gameplay/WalkerDiceFixture.scala:59: `skullThenSwords` gives the skull to attack die 1, not die 0 | GreatLevySuite: a defender removes three attack dice, and the attack's skulls still count | caught |
-| 38c | src/test/scala/oathdigital/gameplay/WalkerDiceFixture.scala:52: `swordsSingleThenDoubleShields` rolls OneShield, not TwoShields, after the first defense die | RainBootsSuite: the defense is scored without its single shields, the card is discarded, and both are said | caught |
-| 38c | src/test/scala/oathdigital/gameplay/WalkerDiceFixture.scala:40: `swordsCyclingDefense` always rolls its first face | GarrisonArmorySuite: single shields are ignored before the warbands are added | caught |
-| 38c | src/test/scala/oathdigital/testkit/TestUserHeaderAuthenticator.scala:18: reads the X-Other-User header, not X-Test-User | AuthenticatedGameBootstrapRoutesSuite: an unauthenticated bootstrap and a non-owner's are refused | caught |
-| 38c | src/test/scala/oathdigital/gameplay/powers/action/ClayRattleSuite.scala:26: `reversing` shuffles in order, not reversed | ClayRattleSuite: the world deck takes the source's order, and replay applies it | caught |
-| 39 | frontend/src/test/scala/oathdigital/frontend/FakeLogStore.scala:12: `write` drops the value | FakeLogStoreSuite: a key that was written reads back its value (and a second write replaces the first) | caught |
-| 39 | frontend/src/test/scala/oathdigital/frontend/FakePollClock.scala:40: `fireNext` takes the oldest task, cancelled or not | FakePollClockSuite: a cancelled task never runs, while a task beside it does | caught |
-| 39 | frontend/src/main/scala/oathdigital/frontend/SnapshotPollingCoordinator.scala:15: `BrowserPollClock.cancel` clears no timer | BrowserPollClockSuite: a cancelled task never runs, while a task beside it does | caught |
-| 39 | frontend/src/test/scala/oathdigital/frontend/ScriptedTransport.scala:22: `request` stops recording | ServerModeSessionSuite: trusted player renders its fixed seat and never bootstraps switches or loads raw events (17 tests fail across ServerModeSessionSuite, ServerModeHostFormSuite and HttpGameClientSuite, e.g. HttpGameClientSuite: a 409 is a stale position, and the client does not retry the command) | caught |
-| 40 | src/test/scala/oathdigital/mutant/OversizedMutantSuite.scala: a new 900-line test file | BackendArchitectureSuite: all test Scala files stay bounded | caught |
-| 40 | src/test/scala/oathdigital/gameplay/powers/rest/InsomniaSuite.scala: an appended `DenizenId("93")` | BackendArchitectureSuite: tests name cards, not numeric ids, outside the wire and catalog suites | caught |
-| final | src/test/scala/oathdigital/gameplay/DummyNineHundred.scala: a new 900-line test file | BackendArchitectureSuite: every test Scala file stays at or below 800 lines | caught |
-| final | src/test/scala/oathdigital/serialization/WalkerDecisionWireSuite.scala:126: `CatalogNames.relic("Sticky Fire")` replaced by `RelicId("R08")` | BackendArchitectureSuite: tests name catalog cards, not their ids, outside the catalog suite | caught |
-| final | src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala:103: `CatalogNames.denizen("Errand Boy")` replaced by `DenizenId("93")` | BackendArchitectureSuite: tests name catalog cards, not their ids, outside the catalog suite | caught |
+| 04-fixtures | src/main/scala/distantlands/gameplay/powers/action/BarbedNet.scala:9: `secretBurnt = 3` to 2 | BarbedNetSuite: it burns three secrets (and 2 more) | caught |
+| 04-fixtures | src/main/scala/distantlands/gameplay/powers/action/BrassHorse.scala:59: the region is always the Cradle | BrassHorseSuite: the region is the one the pawn's site is in | caught |
+| 04-fixtures | src/main/scala/distantlands/gameplay/powers/action/Wolves.scala:61: kills 2 warbands, not 1 | WolvesSuite: the chosen board loses one warband (and 2 more) | caught |
+| 04-fixtures | src/main/scala/distantlands/gameplay/powers/travel/Tents.scala:49: `Favor` 1 to 0 | TentsSuite: Travel in the region places the favor (and 4 more) | caught |
+| 04-1 | src/main/scala/distantlands/gameplay/powers/action/Alchemist.scala:21: `Favor` 4 to 3 | AlchemistSuite: one bank holding all the favor gives four (and 4 more) | caught |
+| 04-1 | src/main/scala/distantlands/gameplay/powers/action/BedOfRoots.scala:86: `Gained` 2 to 1 | BedOfRootsSuite: the adviser is buried with its returns (and 1 more) | caught |
+| 04-1 | src/main/scala/distantlands/gameplay/powers/action/BookOfRecords.scala:29: `Most` 2 to 1 | BookOfRecordsSuite: the People's Favor gives two favor (and 2 more) | caught |
+| 04-1 | src/main/scala/distantlands/gameplay/powers/action/ClayRattle.scala:8: cost 2 secrets to 1 | ClayRattleSuite: it places two secrets (and 1 more) | caught |
+| 04-2 | src/main/scala/distantlands/gameplay/powers/action/DemonTail.scala:18: `Supply` 2 to 3 | DemonTailSuite: it burns three secrets and gains 2 Supply (and 1 more) | caught |
+| 04-2 | src/main/scala/distantlands/gameplay/powers/action/GreatFeast.scala:71: `Gained` 3 to 2 | GreatFeastSuite: the card is discarded and the player gains 3 Supply | caught |
+| 04-2 | src/main/scala/distantlands/gameplay/powers/action/DarkEnforcer.scala:29: discards Order cards only, not Hearth | DarkEnforcerSuite: it burns a favor and discards every Order and Hearth card | caught |
+| 04-2 | src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala: cost 2 favor to 1 | GamblingHallSuite: it places 2 favor (and 4 more) | caught |
+| 04-3 | src/main/scala/distantlands/gameplay/powers/action/SiegeEngines.scala:29: `Kills` 2 to 1 | SiegeEnginesSuite: it kills two of the chosen site's warbands (and 2 more) | caught |
+| 04-3 | src/main/scala/distantlands/gameplay/powers/action/MurkyFountain.scala:65: a zero total does not end the Act | MurkyFountainSuite: a total of zero ends the Act phase (and 1 more) | caught |
+| 04-3 | src/main/scala/distantlands/gameplay/powers/action/SleightOfHand.scala:30: `MinimumSecrets` 2 to 3 | SleightOfHandSuite: it places a favor on its card and offers players at the actor's site holding two or more secrets (and 4 more) | caught |
+| 04-3 | src/main/scala/distantlands/gameplay/powers/action/Scryer.scala:8: cost 1 secret to 2 | ScryerSuite: it places a secret and asks which discard pile (and 3 more) | caught |
+| 04-4 | src/main/scala/distantlands/gameplay/powers/action/WaysideInn.scala:17: `Supply` 2 to 3 | WaysideInnSuite: it places 1 favor on its card and gains 2 Supply (and 1 more) | caught |
+| 04-4 | src/main/scala/distantlands/gameplay/powers/action/TamingCharm.scala:88: `Gained` 2 to 1 | TamingCharmSuite: a Beast card is discarded, then 2 favor come from the Beast bank (and 2 more) | caught |
+| 04-4 | src/main/scala/distantlands/gameplay/powers/action/TavernSongs.scala:30: `Depth` 3 to 2 | TavernSongsSuite: it peeks at the top three cards (and 1 more) | caught |
+| 04-4 | src/main/scala/distantlands/gameplay/powers/action/SpoiledSupplies.scala:24: `Loss` 1 to 2 | SpoiledSuppliesSuite: each other player at the actor's site loses 1 Supply (and 2 more) | caught |
+| 06-fixtures | src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala:86: `HolderLimit` 2 to 3 | SilverTongueSuite: Silver Tongue requires replacement when a third adviser is played (and 1 more) | caught |
+| 06-fixtures | src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala:79: `Favor` 1 to 2 | TollRoadsSuite: an enemy pays the ruler 1 favor (and 4 more) | caught |
+| 06-fixtures | src/main/scala/distantlands/gameplay/powers/travel/RoyalStables.scala:40: `Reduction` 1 to 0 | RoyalStablesSuite: a Travel costs one less Supply (and 2 more) | caught |
+| 06-1 | src/main/scala/distantlands/gameplay/powers/recover/RelicWorship.scala:39: `Supply` 2 to 1 | RelicWorshipSuite: after recovering a relic the player pays a secret onto the card and gains 2 Supply | caught |
+| 06-1 | src/main/scala/distantlands/gameplay/powers/rest/Insomnia.scala:30: `HolderLimit` 2 to 3 | InsomniaSuite: its holder may have only two advisers (and 1 more) | caught |
+| 06-1 | src/main/scala/distantlands/gameplay/powers/banner/WanderingFlamePlace.scala:48: places 2 secrets, not 1 | WanderingFlamePlaceSuite: it moves one secret from the actor's board onto the pawn's site (and 1 more) | caught |
+| 06-2 | src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala:47: 2 warbands, not 3 | ProvingGroundsRulesSuite: Proving Grounds gives the placing player three warbands (and 1 more) | caught |
+| 06-2 | src/main/scala/distantlands/gameplay/powers/title/ChaosCult.scala:34: takes 2 favor, not 1 | ChaosCultSuite: when another player takes the title, the holder takes 1 favor from them (and 1 more) | caught |
+| 06-2 | src/main/scala/distantlands/gameplay/powers/setup/GreatMarketRules.scala:128: places 2 favor on a bandit site | GreatMarketRulesSuite: Bandit Market favors every bandit-ruled site and burns every bank (and 1 more) | caught |
+| 06-2 | src/main/scala/distantlands/gameplay/powers/setup/GreatForgeRules.scala:69: Great Forge draws nothing | GreatForgeRulesSuite: Great Forge gives the placing player the top relic facedown (and 1 more) | caught |
+| 06-3 | src/main/scala/distantlands/gameplay/powers/wake/Quartermaster.scala:28: gains 2 Supply, not 1 | QuartermasterSuite: its site's ruler gains 1 Supply, wherever their pawn is (and 1 more) | caught |
+| 06-3 | src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala:143: discards two regions on | HornedMaskSuite: a full adviser area asks which adviser to discard, and it goes to the next region's discard pile | caught |
+| 06-3 | src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala:49: the destination's ruler, not the source's | GraspingVinesSuite: an enemy traveling from a site the ruler rules kills a warband of their own (and 2 more) | caught |
+| 06-3 | src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala:61: burns no favor under bandits | TollRoadsSuite: when bandits rule, the favor is burnt (and 1 more) | caught |
+| 10-fixtures | src/main/scala/distantlands/gameplay/actions/PlacementRules.scala:37: a limit no longer lowers the faceup limit | PlacementRulesSuite: a limit only lowers, and a faceup limit leaves the facedown one (and 2 more) | caught |
+| 10-fixtures | src/main/scala/distantlands/gameplay/actions/CardPlay.scala:84: the site-discard permission is ignored | SiteDiscardFirstSuite: a site with room offers a discard only under the permission (and 6 more) | caught |
+| 10-fixtures | src/main/scala/distantlands/gameplay/actions/CardPlay.scala:38: global restrictions never refuse a placement | CardPlayProcedureSuite: Hall of Ministers hides site-card replacement from the ruler's enemy (and 1 more) | caught |
+| 10-1 | src/main/scala/distantlands/gameplay/actions/forge/ForgeProcedure.scala:71: Forge costs 2 Supply | ForgeProcedureSuite: a successful build roots at ForgeActionEligibility and pays one supply at a ForgeCost-windowed first leaf (and 2 more) | caught |
+| 10-1 | src/main/scala/distantlands/gameplay/phases/wake/EndWakeProcedure.scala:48: End Wake enters Rest | EndWakeProcedureSuite: ending Wake journals a phase change and enters Act action selection (and 1 more) | caught |
+| 10-1 | src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala:97: the amount may equal the banner | ChallengeProcedureSuite: the amount must exceed the banner and fit the actor's resources (and 1 more) | caught |
+| 10-1 | src/main/scala/distantlands/gameplay/actions/CardPlay.scala:84: the Homeland grants no discard | HomelandRuleSuite: a matching Homeland with room offers an optional discard (and 1 more) | caught |
+| 10-2 | src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala:90: Muster counts no matching adviser | MusterProcedureSuite: Muster costs one Supply and one favor and gains one warband per matching adviser plus one | caught |
+| 10-2 | src/main/scala/distantlands/gameplay/actions/Search.scala:33: a regional Search draws from the front | SearchProcedureSuite: regional Search draws from the end of its pile | caught |
+| 10-2 | src/main/scala/distantlands/gameplay/actions/Search.scala:15: a world Search tops out at 3 | SearchSuite: world Search cost follows Visions Drawn track bands | caught |
+| 10-2 | src/main/scala/distantlands/gameplay/actions/MinorActions.scala:84: a peek replays against any relics | MinorActionsSuite: site relic peek uses core operations and preserves knowledge (survived until 10-062's new assertion) | caught |
+| 10-3 | src/main/scala/distantlands/gameplay/VisionVictoryEligibility.scala:9: a Vision wins with two drawn | StateBasedEvaluationSuite: all four true Visions win only with three Visions drawn (and 1 more) | caught |
+| 10-3 | src/main/scala/distantlands/gameplay/phases/wake/TakeWealthProcedure.scala:117: an enemy pawn never blocks the take | TakeWealthProcedureSuite: an enemy pawn at the site blocks the take | caught |
+| 10-3 | src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala:141: a coast route keeps the Island's add | TravelSitePowersSuite: terrain transforms give the printed Travel cost on each route (and 1 more) | caught |
+| 05-1 | src/main/scala/distantlands/gameplay/powers/cardplay/SaddleMakers.scala:69: the holder gains 1 favor, not 2 | SaddleMakersSuite: another player's nomad card played as a faceup adviser gains the holder 2 favor from the Nomad bank (and 3 more) | caught |
+| 05-1 | src/main/scala/distantlands/gameplay/powers/cardplay/WildCry.scala:47: 3 warbands, not 2 | WildCrySuite: a beast denizen played to a site gains 1 Supply and 2 warbands (and 1 more) | caught |
+| 05-1 | src/main/scala/distantlands/gameplay/powers/economy/AnimalPlaymates.scala:29: Order cards, not Beast, muster free | AnimalPlaymatesSuite: mustering on a beast denizen spends no Supply and otherwise costs the same (and 2 more) | caught |
+| 05-2 | src/main/scala/distantlands/gameplay/powers/whenplayed/ASmallFavor.scala:20: gains 3 warbands, not 4 | ASmallFavorSuite: playing it gains four warbands | caught |
+| 05-2 | src/main/scala/distantlands/gameplay/powers/whenplayed/AnimalHost.scala:53: every faceup denizen counts, not only Beast ones | AnimalHostSuite: as an adviser it counts the Beast cards at every site, whoever rules them | caught |
+| 05-2 | src/main/scala/distantlands/gameplay/actions/BannerRules.scala:29: favor returns to the bank holding the most | ConspiracyWhenPlayedSuite: Conspiracy taking the Peoples Favor returns its favor in the least-bank order and takes the banner | caught |
+| 05-2 | src/main/scala/distantlands/gameplay/powers/economy/KnightsErrant.scala:53: the Campaign's Supply payment is never removed | KnightsErrantSuite: after the gain it asks whether to campaign, as a Muster decision (and 4 more) | caught |
+| 05-2 | src/main/scala/distantlands/gameplay/powers/whenplayed/BanditPrince.scala:59: a site with one bandit more than the bank holds is offered | none | survived: the assertion that would catch it (bank of 1, only the 1-bandit site offered) fails on main, because `ChooseMany`'s max is every bandit site, not the affordable ones, so the question is skipped. A production fix, outside this plan; spawned as its own task |
+| 05-3 | src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala:38: Order cards are not discarded | DazzleSuite: Dazzle discards Hearth and Order site cards from the actor region (and 1 more) | caught |
+| 05-3 | src/main/scala/distantlands/gameplay/powers/whenplayed/RoyalTax.scala:29: each player gives 1 favor, not 2 | RoyalTaxSuite: each player at a site p1 rules in p1's region gives 2 favor, or what they hold (and 1 more) | caught |
+| 05-3 | src/main/scala/distantlands/gameplay/powers/whenplayed/TwinBrother.scala:63: any suit but Hearth is offered, not only Nomad | TwinBrotherSuite: it offers other players' faceup unlocked nomad advisers, then keeping | caught, after the test gained p2's Wrestlers (Order); before, it survived |
+| 05-3 | src/main/scala/distantlands/gameplay/powers/whenplayed/Garrison.scala:38: gains one warband fewer than the ruled sites | GarrisonSuite: it gains one warband per ruled site and puts one on each | caught |
+| 07-fixtures | src/main/scala/distantlands/gameplay/powers/campaign/BattleAxes.scala:39: 1 die, not 2 | BattleAxesSuite: an attacker adds two attack dice, for nothing, when the defender rules a beast card (and 2 more) | caught |
+| 07-fixtures | src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala:211: a Hearth adviser lifts the Rotting Fortress, not a Beast one | FortressRulesSuite: a faceup beast adviser lifts the Rotting Fortress's protection; a facedown one, or one of another suit, does not | caught |
+| 07-fixtures | src/main/scala/distantlands/gameplay/powers/campaign/GreatCrusade.scala:52: Great Crusade does not count itself | GreatCrusadeSuite: an attacker adds one attack die per nomad card they rule, counting itself, for nothing (and 5 more) | caught |
+| 07-1 | src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala:43: every skull is paid, whatever the force | CampaignBattleSuite: a skull costs a warband and its swords only when the warband can be paid | caught |
+| 07-1 | src/main/scala/distantlands/gameplay/actions/campaign/CampaignRaid.scala:100: the defender burns one favor more than half | CampaignRaidSuite: a Raid victory transfers in the printed order and then asks where the pawn goes | caught |
+| 07-1 | src/main/scala/distantlands/gameplay/powers/recover/CatacombsContribution.scala:37: Catacombs costs 2 secrets, not 1 | CatacombsContributionSuite: the Catacombs fold survives its own effect (and more) | caught |
+| 07-2 | src/main/scala/distantlands/gameplay/powers/campaign/BattleHonors.scala:26: gains 1 favor, not 2 | BattleHonorsSuite: an attacker that wins gains two favor from the Order bank (and 2 more) | caught |
+| 07-2 | src/main/scala/distantlands/gameplay/powers/campaign/Encirclement.scala:47: an equal force is enough | EncirclementSuite: it is not offered when the forces are equal (and 1 more) | caught |
+| 07-2 | src/main/scala/distantlands/gameplay/powers/campaign/BookBurning.scala:47: burns every secret, keeping none | BookBurningSuite: a won Raid burns every secret but one, the facedown ones first, and says so (and 2 more) | caught |
+| 07-3 | src/main/scala/distantlands/gameplay/powers/campaign/Mercenaries.scala:68: 2 dice, not 3 | MercenariesSuite: an attacker pays a favor onto the card and adds three attack dice (and 2 more) | caught |
+| 07-3 | src/main/scala/distantlands/gameplay/powers/targeting/CircletOfCommand.scala:73: the Circlet protects itself too | CircletOfCommandSuite: a Raid may not target the holder's other relics or banners, but may target the Circlet (and 1 more) | caught |
+| 07-3 | src/main/scala/distantlands/gameplay/powers/campaign/ToweringRampart.scala:38: 1 defense die, not 2 | RampartSuite: Towering Rampart at a targeted site adds two defense dice (and 1 more) | caught |
+| 07-4 | src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala:64: no relic held by the ruler is shielded | ForgottenVaultSuite: a Raid may not target the ruler's relics, but may target their banners | caught |
+| 07-4 | src/main/scala/distantlands/gameplay/powers/targeting/LostTongue.scala:106: a facedown Lost Tongue protects too | LostTongueSuite: a facedown Lost Tongue protects nothing (and 1 more) | caught |
+| 07-4 | src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala:211: any suited adviser lifts the Rotting Fortress | FortressRulesSuite: a faceup beast adviser lifts the Rotting Fortress's protection; a facedown one, or one of another suit, does not | caught |
+| 07-4 | src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala:178: the Oaken Fortress acts on the ruined side | FortressRulesSuite: the Oaken Fortress removes its ruler from a Raid: only the Conquest is left (and 4 more) | caught |
+| 07-4 | src/main/scala/distantlands/gameplay/powers/campaign/MilitaryParade.scala:63: facedown advisers count | MilitaryParadeSuite: an attacker that wins gains a favor per faceup adviser of the enemy, from each adviser's bank (and 1 more) | caught |
+| 03-1 | src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala:45: every player counts as an enemy | OperationResolutionSuite: Hall of Ministers blocks enemy site-card discard | caught |
+| 03-1 | src/main/scala/distantlands/gameplay/walker/WalkerRolls.scala:60: a recorded roll of any size is accepted | AutomaticRollSuite: an automatic roll replays from its recorded payload and rejects a tampered one | caught |
+| 03-1 | src/main/scala/distantlands/gameplay/operations/OperationResolution.scala:89: a counted effect grows to its cap | OperationResolutionSuite: Supply gain shrinks at the track maximum (survived until the assertion that a gain below the maximum stays as asked was added) | caught |
+| 03-1 | src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala:311: a discarded relic is not set aside | OperationExecutorSuite: relic discard preserves composite secret orientation semantics | caught |
+| 03-2 | src/main/scala/distantlands/gameplay/PowerAccess.scala:35: only the pawn's site is usable, not a ruled one | PowerAccessSuite: a site card is usable at the pawn's site and at a ruled site only (and 3 more) | caught |
+| 03-2 | src/main/scala/distantlands/gameplay/operations/PayCostSettlement.scala:18: an off-turn payment settles like the active player's | PayCostSettlementSuite: an off-turn favor payment goes straight to the matching bank (and 3 more) | caught |
+| 03-2 | src/main/scala/distantlands/gameplay/operations/PayCostSettlement.scala:19: off-turn favor with no matching bank is not refused | PayCostSettlementSuite: an off-turn placed favor with no matching bank is rejected | caught |
+| 03-2 | src/main/scala/distantlands/gameplay/operations/LockedCards.scala:40: a ruined edifice is locked too | OperationRestrictionsSuite: an intact edifice is locked, and a ruined one is not | caught |
+| 03-2 | src/main/scala/distantlands/gameplay/operations/PayCostRules.scala:25: a placed cost may land on an occupied card | PayCostSuite: a placed cost onto an occupied card is rejected | caught |
+| 03-2 | src/main/scala/distantlands/gameplay/RuleSourceIndex.scala:26: a site relic is never accessible | PowerResolverSuite: resolver treats a faceup relic at the actor pawn site as accessible | caught |
+| 03-3 | src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala:123: SetOathkeeper keeps the title's side | OperationMutationSuite: SetOathkeeper moves the title and always resets it to the Oathkeeper side | caught |
+| 03-3 | src/main/scala/distantlands/gameplay/RuleSourceIndex.scala:154: an altered Foundation declares no handler | RuleSourceIndexSuite: all six Foundations expose ordered identities, faces, and state | caught |
+| 03-3 | src/main/scala/distantlands/gameplay/operations/PayCostSettlement.scala:18: an off-turn payment replays like the active player's | WalkerReplaySettlementSuite: an off-turn payment replays settled: favor to the matching bank, a secret facedown | caught |
+| 03-3 | src/main/scala/distantlands/gameplay/operations/PileOperations.scala:27: a shuffle keeps what players knew of the pile | ShuffleOperationSuite: a shuffle forgets its pile's cards, since no one knows which is where | caught |
+| 01-1 | src/main/scala/distantlands/gameplay/operations/CardKnowledgeMoves.scala:24: a card entering a hidden pile is still known | CardKnowledgeSuite: a face-down adviser shuffled into the world deck is forgotten (and 3 more) | caught |
+| 01-1 | src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala:27: Trade for secrets burns no favor | EconomyProjectionSuite: a control is offered only while a source survives the preview | caught |
+| 01-1 | src/main/scala/distantlands/gameplay/powers/banner/WanderingFlameMove.scala:37: Move counts a site without secrets | BannerFaceProjectionSuite: a power with nothing to do is not projected: Move needs a secret-bearing site, and the place power needs a faceup secret | caught |
+| 01-2 | src/main/scala/distantlands/application/GameApplicationService.scala:165: a stale preview position is accepted | GameApplicationServiceActionsSuite: major-action preview is stateless stale-safe and rejects unavailable modifiers | caught |
+| 01-2 | src/main/scala/distantlands/gameplay/actions/forge/ForgeProcedure.scala:276: the forged relic lands faceup | GameApplicationServiceForgeSuite: walker Forge completes ... same final state (and 2 more) | caught |
+| 01-2 | src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationDeal.scala:136: a disclosed adviser is shown to its own owner | GameApplicationServiceReopenSuite: HSQL reopen preserves completed Negotiation disclosure knowledge | caught |
+| 01-3 | src/main/scala/distantlands/application/NegotiationDealProjector.scala:27: a faceup relic in a transfer is hidden | NegotiationDealProjectionSuite: a faceup relic in a transfer is shown to every viewer, public included | caught |
+| 01-3 | src/main/scala/distantlands/application/NegotiationDealProjector.scala:24: a transfer's relic count is 0 | NegotiationDealProjectionSuite: terms show amounts to everyone but hide identities from everyone but their author | caught |
+| 01-3 | src/main/scala/distantlands/application/Authorization.scala:109: a spectator membership may hold a player seat | none | survived: no test seeds a spectator with a seat; the frozen assertions cover only valid memberships |
+| 01-3 | src/main/scala/distantlands/application/PhasePowerProjector.scala:25: a non-active viewer is projected the active player's powers | PhasePowerProjectorSuite: a usable REST power is projected and legal for its active player only | caught |
+| 01-3 | src/main/scala/distantlands/application/PhasePowerProjector.scala:53: an edifice power is read from the ruined face only | PhasePowerProjectorSuite: a phase power used from an edifice at the pawn's site is projected and legal with the edifice face's printed name | caught |
+| 09-1 | src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala:69: a site-only adviser is offered to Reveal Cards | SetupProcedureSuite: Reveal Cards offers facedown advisers except site-only ones, then facedown relics | caught |
+| 09-1 | src/main/scala/distantlands/server/GameRoutes.scala:147: an events limit of 101 is accepted | GameRoutesSuite: the events history pages from the newest event and refuses a limit above 100 | caught |
+| 09-1 | src/main/scala/distantlands/persistence/HsqldbDatabaseOwner.scala:157: reopen retry skips the deadline recheck after backoff | HsqldbDatabaseOwnerSuite: reopen retry returns the first success and rechecks the deadline after backoff | caught |
+| 09-1 | src/main/scala/distantlands/persistence/HsqldbIdentityRepository.scala:301: a touch may move last seen backwards | HsqldbIdentityRepositorySuite: touchSession slides the idle expiry and refuses a time before last seen | caught |
+| 09-1 | src/main/scala/distantlands/persistence/HsqldbIdentityRepository.scala:522: spectators list before owners | HsqldbIdentityRepositorySuite: memberships enforce game existence, seat occupancy, roles and listing order | caught |
+| 09-2 | src/main/scala/distantlands/server/HealthRoutes.scala:29: health responses are cacheable | HealthRoutesSuite: liveness stays live while readiness follows lifecycle state | caught |
+| 09-2 | src/main/scala/distantlands/server/TrustedGameProvisioning.scala:74: a seat retries its code only 7 times | TrustedGameProvisioningSuite: duplicate generated codes retry per seat with an eight-attempt terminal limit | caught |
+| 09-2 | src/main/scala/distantlands/server/SeatCode.scala:19: a seat code's toString shows the raw code | SeatCodeSuite: a seat code's toString hides the raw code | caught |
+| 09-2 | src/main/scala/distantlands/server/SessionSecurity.scala:92: a public origin may carry a path | ServerConfigSuite: authenticated public origin accepts https://play.example.com and refuses a path | caught |
+| 09-2 | src/main/scala/distantlands/server/TrustedSeatRoutes.scala:51: the seat cookie lives one second past a year | TrustedSeatRoutesSuite: a seat link exchanges for an HttpOnly cookie scoped to its game and redirects without the code (and the HTTPS Secure test) | caught |
+| 02-f | src/main/scala/distantlands/application/gamelog/EventLines.scala:37: the Usurper line drops "the" | GameLogEventSuite: warbands moved, bandits returned and a new Usurper each post one line | caught |
+| 02-f | src/main/scala/distantlands/application/gamelog/NegotiationLines.scala:67: a disclosure reads "revealed to" | GameLogExchangeSuite: a disclosed adviser is named to its owner and recipient, by slot to others | caught |
+| 02-f | src/main/scala/distantlands/application/gamelog/CampaignLines.scala:32: the target line reads "Target:" | GameLogCampaignSuite: a Raid tells its targets, pools, dice, totals, winner and losses in order | caught |
+| 02-f | src/main/scala/distantlands/application/gamelog/NegotiationLines.scala:24: an agreed negotiation reads "Negotiated:" | GameLogExchangeSuite: an agreed negotiation names the other negotiators once (and the favor transfer test) | caught |
+| 02 | src/main/scala/distantlands/application/gamelog/LogWords.scala:171: Legacy pluralizes as "Legacys" | LogWordsSuite: a kind's plural follows its spelling | caught |
+| 02 | src/main/scala/distantlands/application/gamelog/CampaignLines.scala:103: the bandits' win reads "Bandits win!" | GameLogRareLinesSuite: a defeated attacker's loss line has no subject and the bandits win | caught |
+| 02 | src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala:73: an idle Wake reads "Nothing happened" | GameLogHeadlineSuite: a journal that starts at a table opens with its round, turn and phase | caught |
+| 02 | src/main/scala/distantlands/application/gamelog/NegotiationLines.scala:35: a declined deal reads "Negotiation declined by" | GameLogExchangeSuite: a declined negotiation names who ended it, and nothing else | caught |
+| 34 | frontend/src/main/scala/distantlands/frontend/MapViewState.scala:44: `Step = 1.25` to 1.3 | MapViewStateSuite: one wheel notch is one button step in either delta mode (and the flick and pinch tests) | caught |
+| 34 | frontend/src/main/scala/distantlands/frontend/DistributeDecisionState.scala:43: a raise ignores the slot maximum | DistributeDecisionStateSuite: fill is limited by the slot maximum (and increment stops at the slot maximum) | caught |
+| 34 | frontend/src/main/scala/distantlands/frontend/BoardTargetSelectionState.scala:72: reconcile keeps the state when the actions changed | BoardTargetSelectionStateSuite: state clears on sequence, player, game, action kind or candidates | caught |
+| 34 | frontend/src/main/scala/distantlands/frontend/GameLogPane.scala:140: an entry's title drops its ordinal | GameLogPaneSuite: a line carries its cost and sequence | caught |
+| 34 | frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala:36: Trade is not a registered walker action | ModifierSelectionStateSuite: a walker start names a preview action only when the engine registers it | caught |
+| 35 | frontend/src/main/scala/distantlands/frontend/NegotiationDealPanel.scala:125: Accept ignores the engine's `canAccept` | NegotiationDealPanelSuite: accept is disabled until the engine says this player may accept | caught |
+| 35 | frontend/src/main/scala/distantlands/frontend/AmountCombobox.scala:109: the active option is not clamped at the maximum | WalkerSelectionPanelsSuite: choose-amount opens its list from the keyboard and picks from it | caught |
+| 35 | frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:242: the limiter marker sits at radius 60, inside the label | ServerUiSupportSuite: round tracker geometry is eight circular ring wedges | caught |
+| 35 | frontend/src/main/scala/distantlands/frontend/TrustedHostUi.scala:95: the host form is full at more than six players | ServerModeHostFormSuite: the sixth player disables the add-player toggle | caught |
+| 35 | frontend/src/main/scala/distantlands/frontend/ServerSessionCoordinator.scala:57: an equal position counts as an advance | ServerSessionCoordinatorSuite: snapshotAdvances distinguishes unchanged, older, and changed snapshots | caught |
+| 35 | frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala:429: the kept card in a keep-one zone gets a mover button | PartitionPanelRenderSuite: the kept card has no mover; the discard cards keep theirs | caught |
+| 35 | frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:36: an undefended site draws no "0" | SiteFaceSuite: an undefended site says zero instead of drawing no die | caught |
+| 35 | frontend/src/main/scala/distantlands/frontend/SnapshotPollingCoordinator.scala:25: the visible poll interval default is 4000 | TableSessionSuite: a development session opens the queried game, displays it and polls | caught |
+| 36 | src/main/scala/distantlands/model/PlayerForceKind.scala:11: an Exile's warbands get the Imperial kind | PlayerForceKindSuite: an Exile's warbands are their lineage's Exile kind | caught |
+| 36 | src/main/scala/distantlands/serialization/WalkerEventCodec.scala:83: `automatic` is never written (`if automatic && false`) | WalkerOperationWireSuite: a walker roll payload round-trips attack and defense faces | caught |
+| 36 | shared/src/main/scala/distantlands/protocol/TrustedGameProtocolCodec.scala:28: the id length limit 128 becomes 129 | TrustedGameProtocolSuite: invalid player ids are refused | caught |
+| 36 | src/main/scala/distantlands/model/Identity.scala:44: `PowerId.fromValue` accepts any non-empty string | OpaqueIdSuite: blank ids and a malformed power id are rejected; PowerId.fromValue answers None instead of throwing | caught |
+| 36 | src/main/scala/distantlands/serialization/GameEventWire.scala:117: the expected stream position ignores the start sequence | GameEventWireEnvelopeSuite: single-event and batch writers preserve nonzero absolute sequences | caught |
+| contract-repository | src/main/scala/distantlands/application/EventStreamRepository.scala:77: the SequenceConflict branch also appends the stale batch | InMemoryEventStreamRepositorySuite: a sequence conflict writes no part of the batch | caught |
+| contract-repository | src/main/scala/distantlands/application/EventStreamRepository.scala:66: MustNotExist on an existing stream returns Appended | InMemoryEventStreamRepositorySuite: a duplicate creation or an append to a missing stream is refused | caught |
+| contract-repository | src/main/scala/distantlands/application/EventStreamRepository.scala:54: load returns the records reversed | InMemoryEventStreamRepositorySuite: creates a stream and loads its records in order | caught |
+| 38a | src/test/scala/distantlands/testkit/RunningTotalEvolution.scala:11: accept a negative event (`event < 0 && false`) | RunningTotalEvolutionSuite: the initial state refuses a corrupt event | caught |
+| 38a | src/main/scala/distantlands/gameplay/OathRules.scala:89: `WalkerCompleted` on `NoGame` returns `Right(state)` | OathRulesEvolutionSuite: the initial state refuses a corrupt event | caught |
+| 38a | src/test/scala/distantlands/testkit/Dice.scala:31: `raid` attack rolls HollowSword, not OneSword | GameLogGoldenSuite: raid reads exactly as its golden log for the actor and another seat | caught |
+| 38a | src/test/scala/distantlands/testkit/Dice.scala:25: `steady` defense rolls OneShield, not TwoShields | GameLogPowerLinesSuite: Gambling Hall writes its roll and its gain in place of the generic lines | caught |
+| 38a | src/test/scala/distantlands/testkit/Dice.scala:17: `blank` defense rolls TwoShields, not Blank | GameLogDetailSuite: each Recover roll posts a Rolled line whose dice travel as a dice span | caught |
+| 38b | src/test/scala/distantlands/testkit/WalkerStubs.scala:37: `TestTransformPower` contributes a `Transform` that returns its operations unchanged | RestrictionAnswersSuite: a subtree a Transform inserts is checked too, not only the declared tree | caught |
+| 38b | src/test/scala/distantlands/testkit/WalkerStubs.scala:47: `TestRestrictionPower` contributes a `Restriction` that never refuses | RestrictionAnswersSuite: once the answer opens the subtree its Restriction is checked | caught |
+| 38b | src/test/scala/distantlands/testkit/ChronicleShuffles.scala:14: `reversing` returns its input unchanged | ChronicleShuffleSuite: implemented-first puts every implemented card ahead of every other | caught |
+| 38b | src/test/scala/distantlands/testkit/ChronicleShuffles.scala:19: `unshuffled` reverses its input | GameServerGatewaySubmitBeginSuite: beginning a game persists history and reloads it | caught |
+| 38b | src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala:32: `winningDice` attack dice come up HollowSword, not OneSword | BattleHonorsSuite: an attacker that wins gains two favor from the Order bank | caught |
+| 38c | src/test/scala/distantlands/gameplay/WalkerDiceFixture.scala:59: `skullThenSwords` gives the skull to attack die 1, not die 0 | GreatLevySuite: a defender removes three attack dice, and the attack's skulls still count | caught |
+| 38c | src/test/scala/distantlands/gameplay/WalkerDiceFixture.scala:52: `swordsSingleThenDoubleShields` rolls OneShield, not TwoShields, after the first defense die | RainBootsSuite: the defense is scored without its single shields, the card is discarded, and both are said | caught |
+| 38c | src/test/scala/distantlands/gameplay/WalkerDiceFixture.scala:40: `swordsCyclingDefense` always rolls its first face | GarrisonArmorySuite: single shields are ignored before the warbands are added | caught |
+| 38c | src/test/scala/distantlands/testkit/TestUserHeaderAuthenticator.scala:18: reads the X-Other-User header, not X-Test-User | AuthenticatedGameBootstrapRoutesSuite: an unauthenticated bootstrap and a non-owner's are refused | caught |
+| 38c | src/test/scala/distantlands/gameplay/powers/action/ClayRattleSuite.scala:26: `reversing` shuffles in order, not reversed | ClayRattleSuite: the world deck takes the source's order, and replay applies it | caught |
+| 39 | frontend/src/test/scala/distantlands/frontend/FakeLogStore.scala:12: `write` drops the value | FakeLogStoreSuite: a key that was written reads back its value (and a second write replaces the first) | caught |
+| 39 | frontend/src/test/scala/distantlands/frontend/FakePollClock.scala:40: `fireNext` takes the oldest task, cancelled or not | FakePollClockSuite: a cancelled task never runs, while a task beside it does | caught |
+| 39 | frontend/src/main/scala/distantlands/frontend/SnapshotPollingCoordinator.scala:15: `BrowserPollClock.cancel` clears no timer | BrowserPollClockSuite: a cancelled task never runs, while a task beside it does | caught |
+| 39 | frontend/src/test/scala/distantlands/frontend/ScriptedTransport.scala:22: `request` stops recording | ServerModeSessionSuite: trusted player renders its fixed seat and never bootstraps switches or loads raw events (17 tests fail across ServerModeSessionSuite, ServerModeHostFormSuite and HttpGameClientSuite, e.g. HttpGameClientSuite: a 409 is a stale position, and the client does not retry the command) | caught |
+| 40 | src/test/scala/distantlands/mutant/OversizedMutantSuite.scala: a new 900-line test file | BackendArchitectureSuite: all test Scala files stay bounded | caught |
+| 40 | src/test/scala/distantlands/gameplay/powers/rest/InsomniaSuite.scala: an appended `DenizenId("93")` | BackendArchitectureSuite: tests name cards, not numeric ids, outside the wire and catalog suites | caught |
+| final | src/test/scala/distantlands/gameplay/DummyNineHundred.scala: a new 900-line test file | BackendArchitectureSuite: every test Scala file stays at or below 800 lines | caught |
+| final | src/test/scala/distantlands/serialization/WalkerDecisionWireSuite.scala:126: `CatalogNames.relic("Sticky Fire")` replaced by `RelicId("R08")` | BackendArchitectureSuite: tests name catalog cards, not their ids, outside the catalog suite | caught |
+| final | src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala:103: `CatalogNames.denizen("Errand Boy")` replaced by `DenizenId("93")` | BackendArchitectureSuite: tests name catalog cards, not their ids, outside the catalog suite | caught |
 
 ## Shared fixtures
 

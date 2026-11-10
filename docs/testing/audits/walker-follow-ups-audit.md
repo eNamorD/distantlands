@@ -75,7 +75,7 @@ could meet:
 ### What `procedure` means
 
 `PowerCtx.procedure`
-(`src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala:23-28`)
+(`src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala:23-28`)
 is documented as "the procedure the window is walked for, when it is
 known ... `None` for the command that starts a procedure, which has not
 recorded one yet." The doc describes the defect as intended behaviour.
@@ -83,19 +83,19 @@ recorded one yet." The doc describes the defect as intended behaviour.
 ### The two paths
 
 **Start.** `OathRulesWalker.startNow`
-(`src/main/scala/oathdigital/gameplay/OathRulesWalker.scala:56-73`) refuses
+(`src/main/scala/distantlands/gameplay/OathRulesWalker.scala:56-73`) refuses
 when `walkerProcedure.nonEmpty` (46-48), builds the tree, then:
 
 - `checkRestrictions(tree, powers, ready, actor)` (153-157) calls
   `ProcedureWalker.restrictionViolations`, which is
   `WalkerPowerGather.restrictionViolations` → `attributed`
-  (`src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala:295-313`).
+  (`src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala:295-313`).
   Its `ctxFor` builds `PowerCtx(state, actor, power.source, window, path,
   operation, state.game.current.walkerProcedure, answered)` (312-313), and
   the `Branch` and `AutomaticUse` descent (326-334) passes
   `state.game.current.walkerProcedure` again. At a start that is `None`.
 - `ProcedureWalker.advance(ready, tree, None, powers, walkerDice)`
-  (`src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:78-93`)
+  (`src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:78-93`)
   builds `WalkCtx(..., state.game.current.walkerProcedure, action)` (91-93),
   again `None`. Every window fold then passes `ctx.procedure`:
   `walkFolded` → `applyWindow` (325-330, `WalkerPowerGather.scala:54-67`),
@@ -495,7 +495,7 @@ active legacy, until each lands. The leftover `StateBasedEvaluation
 ## 6. `WalkerDecisionProjector.waiting`'s second `parkedDecide`
 
 `waiting`
-(`src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:117-137`)
+(`src/main/scala/distantlands/application/WalkerDecisionProjector.scala:117-137`)
 first calls `this.parked(..., previewed = false)` as a gate, which runs
 `ProcedureWalker.parkedDecide(ready, tree, pending, powers)` with the
 look-ahead on (171) and `queryProjection` on the narrowed query; then it

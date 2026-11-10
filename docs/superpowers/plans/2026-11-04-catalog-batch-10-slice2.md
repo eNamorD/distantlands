@@ -31,7 +31,7 @@ This is the second of 14 slice plans, written against `0.2.0-alpha` at `f28e3f48
   - `python3 scripts/check-architecture.py`, which caps files at 800 lines and enforces the layer import rules. `model/CoreOperations.scala` is at 779 lines; Task 1 adds about 8.
   - `python3 scripts/check-markdown-links.py`
 - **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write` (`src/test/resources/notes/declared-keys.txt`) and `UNIMPLEMENTED_SNAPSHOT=write` (`src/test/resources/powers/unimplemented.txt`), then read the diff. Commit only the lines the task explains.
-- **Moving a card out of holding:** delete its object from `src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala` and define it, unchanged, beside its power. `gameplay/cards/NewFoundations.scala` imports every `gameplay.powers.*` package by wildcard, so it needs no edit.
+- **Moving a card out of holding:** delete its object from `src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala` and define it, unchanged, beside its power. `gameplay/cards/NewFoundations.scala` imports every `gameplay.powers.*` package by wildcard, so it needs no edit.
 - **Log lines:** a power's line names only non-actors (memory: "Log lines omit actor").
 - **Hover reasons:** show an unavailable option disabled with a reason.
 - **Wire:** one new operation kind, `advance-round`. Old journals need not decode.
@@ -42,13 +42,13 @@ This is the second of 14 slice plans, written against `0.2.0-alpha` at `f28e3f48
 ### Task 1: `AdvanceRound`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala:651-653` (add after `AdvanceVisionsDrawn`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala:190` (add before `usurperLimiterRemoved`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala:194-195`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala:41, 236, 590`
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala:318` (add after `visionsDrawn`)
-- Test: `src/test/scala/oathdigital/gameplay/OperationExecutorSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala:651-653` (add after `AdvanceVisionsDrawn`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala:190` (add before `usurperLimiterRemoved`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala:194-195`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala:41, 236, 590`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala:318` (add after `visionsDrawn`)
+- Test: `src/test/scala/distantlands/gameplay/OperationExecutorSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces: `case object AdvanceRound extends PrimitiveOperation` in `oathdigital.model`, with `required = true`.
@@ -177,13 +177,13 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala \
-  src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala \
-  src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala \
-  src/test/scala/oathdigital/testkit/Table.scala \
-  src/test/scala/oathdigital/gameplay/OperationExecutorSuite.scala \
-  src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala \
+  src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationApplication.scala \
+  src/main/scala/distantlands/serialization/WalkerOperationCodec.scala \
+  src/test/scala/distantlands/testkit/Table.scala \
+  src/test/scala/distantlands/gameplay/OperationExecutorSuite.scala \
+  src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(operations): AdvanceRound moves the round marker one space
 
@@ -200,14 +200,14 @@ EOF
 ### Task 2: Great Clock and Broken Clock
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala:86-99` (delete `GreatClockCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/RuinedSiteSetupRules.scala` (add `GreatClockCard`, `RoundMarker`, `BrokenClock`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/GreatClock.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala:19`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala:116`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/SaltTheEarthSuite.scala:3` (import)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/GreatClockSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/setup/RuinedSetupRulesSuite.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala:86-99` (delete `GreatClockCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala` (add `GreatClockCard`, `RoundMarker`, `BrokenClock`)
+- Create: `src/main/scala/distantlands/gameplay/powers/action/GreatClock.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala:19`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala:116`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/SaltTheEarthSuite.scala:3` (import)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/GreatClockSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt`, `src/test/resources/powers/unimplemented.txt`
 - Modify: `docs/ROADMAP.md:69-70`, `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md:3`
 
@@ -252,7 +252,7 @@ In `RuinedSetupRulesSuite.scala`, add a section at the end of the class:
 
 - [ ] **Step 3: Write the failing Great Clock suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/GreatClockSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/GreatClockSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -403,7 +403,7 @@ In `WalkerPowerCatalog.scala:116`, register it beside the others: `RuinedSchool,
 
 - [ ] **Step 6: Add Great Clock**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/GreatClock.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/GreatClock.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -483,14 +483,14 @@ Expected: all pass.
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/catalog/holding/HoldingEdifices.scala \
-  src/main/scala/oathdigital/gameplay/powers/setup/RuinedSiteSetupRules.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/GreatClock.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/SaltTheEarthSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/GreatClockSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/setup/RuinedSetupRulesSuite.scala \
+git add src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala \
+  src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala \
+  src/main/scala/distantlands/gameplay/powers/action/GreatClock.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/SaltTheEarthSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/GreatClockSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala \
   src/test/resources/notes/declared-keys.txt \
   src/test/resources/powers/unimplemented.txt \
   docs/ROADMAP.md docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md

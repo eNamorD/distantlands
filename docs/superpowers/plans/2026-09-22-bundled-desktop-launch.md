@@ -33,13 +33,13 @@
 
 | File | Responsibility |
 | --- | --- |
-| `src/main/scala/oathdigital/server/DesktopPaths.scala` | Per-OS app-data folder, settings file path, default database path |
-| `src/main/scala/oathdigital/server/DesktopSettings.scala` | Settings keys, template text, load and write-if-missing |
-| `src/main/scala/oathdigital/server/LanAddress.scala` | Private-IPv4 test, pure chooser, system probe and interface listing |
-| `src/main/scala/oathdigital/server/DesktopLaunchProfile.scala` | `OATH_LAUNCH` switch, precedence merge, `prepare` entry point |
-| `src/main/scala/oathdigital/server/DesktopConsole.scala` | Banner text, browser URL and command, bind-failure message |
-| `src/main/scala/oathdigital/server/OathServer.scala` | Wiring only |
-| `src/test/scala/oathdigital/server/Desktop*Suite.scala`, `LanAddressSuite.scala` | Unit tests per unit above |
+| `src/main/scala/distantlands/server/DesktopPaths.scala` | Per-OS app-data folder, settings file path, default database path |
+| `src/main/scala/distantlands/server/DesktopSettings.scala` | Settings keys, template text, load and write-if-missing |
+| `src/main/scala/distantlands/server/LanAddress.scala` | Private-IPv4 test, pure chooser, system probe and interface listing |
+| `src/main/scala/distantlands/server/DesktopLaunchProfile.scala` | `OATH_LAUNCH` switch, precedence merge, `prepare` entry point |
+| `src/main/scala/distantlands/server/DesktopConsole.scala` | Banner text, browser URL and command, bind-failure message |
+| `src/main/scala/distantlands/server/OathServer.scala` | Wiring only |
+| `src/test/scala/distantlands/server/Desktop*Suite.scala`, `LanAddressSuite.scala` | Unit tests per unit above |
 | `packaging/desktop/Start Oath Digital.command`, `start-oathdigital.sh`, `Start Oath Digital.bat` | Double-click Start files |
 | `packaging/jlink-modules.txt` | The bundled runtime's module list |
 | `build.sbt` | Launcher define, Start file mappings, `verifyPackageMappings` assertions |
@@ -62,8 +62,8 @@
 ### Task 1: Desktop paths
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/DesktopPaths.scala`
-- Test: `src/test/scala/oathdigital/server/DesktopPathsSuite.scala`
+- Create: `src/main/scala/distantlands/server/DesktopPaths.scala`
+- Test: `src/test/scala/distantlands/server/DesktopPathsSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -184,7 +184,7 @@ Expected: PASS, 7 tests.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/DesktopPaths.scala src/test/scala/oathdigital/server/DesktopPathsSuite.scala
+git add src/main/scala/distantlands/server/DesktopPaths.scala src/test/scala/distantlands/server/DesktopPathsSuite.scala
 git commit -m "feat: resolve per-user desktop app-data paths"
 ```
 
@@ -193,8 +193,8 @@ git commit -m "feat: resolve per-user desktop app-data paths"
 ### Task 2: Desktop settings file
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/DesktopSettings.scala`
-- Test: `src/test/scala/oathdigital/server/DesktopSettingsSuite.scala`
+- Create: `src/main/scala/distantlands/server/DesktopSettings.scala`
+- Test: `src/test/scala/distantlands/server/DesktopSettingsSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -370,7 +370,7 @@ Expected: PASS, 7 tests.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/DesktopSettings.scala src/test/scala/oathdigital/server/DesktopSettingsSuite.scala
+git add src/main/scala/distantlands/server/DesktopSettings.scala src/test/scala/distantlands/server/DesktopSettingsSuite.scala
 git commit -m "feat: load and template the desktop settings file"
 ```
 
@@ -379,8 +379,8 @@ git commit -m "feat: load and template the desktop settings file"
 ### Task 3: LAN address detection
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/LanAddress.scala`
-- Test: `src/test/scala/oathdigital/server/LanAddressSuite.scala`
+- Create: `src/main/scala/distantlands/server/LanAddress.scala`
+- Test: `src/test/scala/distantlands/server/LanAddressSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -530,7 +530,7 @@ Expected: PASS, 5 tests.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/LanAddress.scala src/test/scala/oathdigital/server/LanAddressSuite.scala
+git add src/main/scala/distantlands/server/LanAddress.scala src/test/scala/distantlands/server/LanAddressSuite.scala
 git commit -m "feat: detect the host's private LAN address"
 ```
 
@@ -539,8 +539,8 @@ git commit -m "feat: detect the host's private LAN address"
 ### Task 4: Desktop launch profile
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/DesktopLaunchProfile.scala`
-- Test: `src/test/scala/oathdigital/server/DesktopLaunchProfileSuite.scala`
+- Create: `src/main/scala/distantlands/server/DesktopLaunchProfile.scala`
+- Test: `src/test/scala/distantlands/server/DesktopLaunchProfileSuite.scala`
 
 **Interfaces:**
 - Consumes: `DesktopPaths` (Task 1), `DesktopSettings` (Task 2), `ServerConfig.parse(arguments, environment, version)` (existing).
@@ -840,7 +840,7 @@ Expected: PASS, 15 tests.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/DesktopLaunchProfile.scala src/test/scala/oathdigital/server/DesktopLaunchProfileSuite.scala
+git add src/main/scala/distantlands/server/DesktopLaunchProfile.scala src/test/scala/distantlands/server/DesktopLaunchProfileSuite.scala
 git commit -m "feat: merge desktop launch settings with defined precedence"
 ```
 
@@ -849,8 +849,8 @@ git commit -m "feat: merge desktop launch settings with defined precedence"
 ### Task 5: Banner, browser, and bind-failure message
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/DesktopConsole.scala`
-- Test: `src/test/scala/oathdigital/server/DesktopConsoleSuite.scala`
+- Create: `src/main/scala/distantlands/server/DesktopConsole.scala`
+- Test: `src/test/scala/distantlands/server/DesktopConsoleSuite.scala`
 
 **Interfaces:**
 - Consumes: `DesktopLaunch` (Task 4), `ServerConfig` (existing).
@@ -1045,7 +1045,7 @@ Expected: PASS, 7 tests.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/DesktopConsole.scala src/test/scala/oathdigital/server/DesktopConsoleSuite.scala
+git add src/main/scala/distantlands/server/DesktopConsole.scala src/test/scala/distantlands/server/DesktopConsoleSuite.scala
 git commit -m "feat: render the desktop banner and open the browser"
 ```
 
@@ -1054,7 +1054,7 @@ git commit -m "feat: render the desktop banner and open the browser"
 ### Task 6: Wire the desktop profile into server startup
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/server/OathServer.scala:14-22` (configuration), `:81-100` (bind and after-bind)
+- Modify: `src/main/scala/distantlands/server/OathServer.scala:14-22` (configuration), `:81-100` (bind and after-bind)
 
 **Interfaces:**
 - Consumes: `DesktopLaunchProfile.prepare`, `LanAddress.detect`, `DesktopConsole.*`.
@@ -1166,7 +1166,7 @@ If the second run prints a stack trace instead, Akka's exception chain differs f
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/OathServer.scala
+git add src/main/scala/distantlands/server/OathServer.scala
 git commit -m "feat: start the server under the desktop launch profile"
 ```
 

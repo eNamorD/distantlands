@@ -253,20 +253,20 @@ git commit -m "docs(spec): settle how slice 3 counts advisers after a play"
 ### Task 2: Marriage and the weighted suit count
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/economy/AdviserSuits.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/Marriage.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala` (`matching`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RuledCards.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/TownMeeting.scala`, `FabledFeast.scala`, `WizardsConclave.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/GreatCrusade.scala`, `NatureWorship.scala`, `MilitaryParade.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala` (remove `MarriageCard`)
-- Create: `src/test/scala/oathdigital/gameplay/AdviserSuitsSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/MusterProcedureSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/whenplayed/TownMeetingSuite.scala`, `FabledFeastSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/MilitaryParadeSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/economy/AdviserSuits.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/Marriage.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala` (`matching`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/RuledCards.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/TownMeeting.scala`, `FabledFeast.scala`, `WizardsConclave.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/GreatCrusade.scala`, `NatureWorship.scala`, `MilitaryParade.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` (remove `MarriageCard`)
+- Create: `src/test/scala/distantlands/gameplay/AdviserSuitsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/MusterProcedureSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/whenplayed/TownMeetingSuite.scala`, `FabledFeastSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/MilitaryParadeSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -278,7 +278,7 @@ git commit -m "docs(spec): settle how slice 3 counts advisers after a play"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/AdviserSuitsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/AdviserSuitsSuite.scala`:
 
 ```scala
 package oathdigital.gameplay
@@ -376,7 +376,7 @@ Expected: compile failure: `AdviserSuits` and `RuledCards.count` are not found.
 
 - [ ] **Step 3: Create the count and move the card**
 
-Delete `object MarriageCard ...` (its six lines) from `HoldingHearthDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/actions/economy/AdviserSuits.scala`:
+Delete `object MarriageCard ...` (its six lines) from `HoldingHearthDenizens.scala`. Create `src/main/scala/distantlands/gameplay/actions/economy/AdviserSuits.scala`:
 
 ```scala
 package oathdigital.gameplay.actions.economy
@@ -490,7 +490,7 @@ In `RuledCards.scala`, add the import `import oathdigital.gameplay.actions.econo
 
 - [ ] **Step 5: Create and register the Marriage power**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/Marriage.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/Marriage.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.economy
@@ -525,7 +525,7 @@ Expected: PASS. `CardCatalogSuite` now finds Marriage implemented outside the ho
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/economy/AdviserSuits.scala src/main/scala/oathdigital/gameplay/powers/economy/Marriage.scala src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala src/main/scala/oathdigital/gameplay/powers/RuledCards.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/TownMeeting.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/FabledFeast.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/WizardsConclave.scala src/main/scala/oathdigital/gameplay/powers/campaign/GreatCrusade.scala src/main/scala/oathdigital/gameplay/powers/campaign/NatureWorship.scala src/main/scala/oathdigital/gameplay/powers/campaign/MilitaryParade.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala src/test/scala/oathdigital/gameplay/AdviserSuitsSuite.scala src/test/scala/oathdigital/gameplay/MusterProcedureSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/TownMeetingSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/FabledFeastSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/MilitaryParadeSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/economy/AdviserSuits.scala src/main/scala/distantlands/gameplay/powers/economy/Marriage.scala src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala src/main/scala/distantlands/gameplay/powers/RuledCards.scala src/main/scala/distantlands/gameplay/powers/whenplayed/TownMeeting.scala src/main/scala/distantlands/gameplay/powers/whenplayed/FabledFeast.scala src/main/scala/distantlands/gameplay/powers/whenplayed/WizardsConclave.scala src/main/scala/distantlands/gameplay/powers/campaign/GreatCrusade.scala src/main/scala/distantlands/gameplay/powers/campaign/NatureWorship.scala src/main/scala/distantlands/gameplay/powers/campaign/MilitaryParade.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala src/test/scala/distantlands/gameplay/AdviserSuitsSuite.scala src/test/scala/distantlands/gameplay/MusterProcedureSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/TownMeetingSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/FabledFeastSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/MilitaryParadeSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(economy): Marriage counts as two advisers of its suit"
 ```
 
@@ -534,11 +534,11 @@ git commit -m "feat(economy): Marriage counts as two advisers of its suit"
 ### Task 3: Card play checks the area after the play
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/rest/HolderAdviserLimit.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CardPlayRulesSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/rest/HolderAdviserLimit.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CardPlayRulesSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CardSlotsSuite.scala`
 
 **Interfaces:**
 - Produces, in `oathdigital.gameplay.actions`:
@@ -847,7 +847,7 @@ If a suite name above does not exist, drop it from the command. Then run `./sbtw
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala src/main/scala/oathdigital/gameplay/powers/rest/HolderAdviserLimit.scala src/test/scala/oathdigital/gameplay/CardPlayRulesSuite.scala src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala src/main/scala/distantlands/gameplay/powers/rest/HolderAdviserLimit.scala src/test/scala/distantlands/gameplay/CardPlayRulesSuite.scala src/test/scala/distantlands/gameplay/CardSlotsSuite.scala
 git commit -m "feat(cardplay): check a play against the advisers after it"
 ```
 
@@ -856,14 +856,14 @@ git commit -m "feat(cardplay): check a play against the advisers after it"
 ### Task 4: Lost Tapestry
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/LostTapestry.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `LostTapestryCard`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/cardplay/LostTapestrySuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/AdviserLimitSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/LostTapestry.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `LostTapestryCard`)
+- Create: `src/test/scala/distantlands/gameplay/powers/cardplay/LostTapestrySuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/AdviserLimitSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `AdviserFace`, `CardPlayRules.ignoreLimit`, `CardPlayRules.notCounted` (Task 3).
@@ -874,7 +874,7 @@ git commit -m "feat(cardplay): check a play against the advisers after it"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/LostTapestrySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/LostTapestrySuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -974,7 +974,7 @@ Expected: compile failure: `LostTapestry`, `AdviserLimit.ignored` and `AdviserLi
 
 - [ ] **Step 3: Create the card and its power**
 
-Delete `object LostTapestryCard ...` (its six lines) from `HoldingRelics.scala`. Create `src/main/scala/oathdigital/gameplay/powers/cardplay/LostTapestry.scala`:
+Delete `object LostTapestryCard ...` (its six lines) from `HoldingRelics.scala`. Create `src/main/scala/distantlands/gameplay/powers/cardplay/LostTapestry.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.cardplay
@@ -1076,7 +1076,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/LostTapestry.scala src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/test/scala/oathdigital/gameplay/powers/cardplay/LostTapestrySuite.scala src/test/scala/oathdigital/gameplay/powers/AdviserLimitSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/LostTapestry.scala src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/test/scala/distantlands/gameplay/powers/cardplay/LostTapestrySuite.scala src/test/scala/distantlands/gameplay/powers/AdviserLimitSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(cardplay): Lost Tapestry keeps facedown Visions off the limit"
 ```
 
@@ -1085,15 +1085,15 @@ git commit -m "feat(cardplay): Lost Tapestry keeps facedown Visions off the limi
 ### Task 5: Pied Piper
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/PiedPiper.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `PiedPiperCard`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/PiedPiperSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/AdviserLimitSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/PiedPiper.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `PiedPiperCard`)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/PiedPiperSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/AdviserLimitSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `AdviserFace`, `CardPlayRules.ignoreLimit`, `CardPlayRules.notCounted` (Task 3); `AdviserLimit.ignored` (Task 4).
@@ -1103,7 +1103,7 @@ git commit -m "feat(cardplay): Lost Tapestry keeps facedown Visions off the limi
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/PiedPiperSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/PiedPiperSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1283,7 +1283,7 @@ Expected: compile failure: `PiedPiper` is not found.
 
 - [ ] **Step 3: Create the card and its power**
 
-Delete `object PiedPiperCard ...` (its seven lines) from `HoldingBeastDenizens.scala`. Create `src/main/scala/oathdigital/gameplay/powers/action/PiedPiper.scala`:
+Delete `object PiedPiperCard ...` (its seven lines) from `HoldingBeastDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/action/PiedPiper.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -1434,7 +1434,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/PiedPiper.scala src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala src/test/scala/oathdigital/gameplay/powers/action/PiedPiperSuite.scala src/test/scala/oathdigital/gameplay/powers/AdviserLimitSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/PiedPiper.scala src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala src/test/scala/distantlands/gameplay/powers/action/PiedPiperSuite.scala src/test/scala/distantlands/gameplay/powers/AdviserLimitSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(powers): Pied Piper ignores the adviser limit and leads itself away"
 ```
 
@@ -1443,10 +1443,10 @@ git commit -m "feat(powers): Pied Piper ignores the adviser limit and leads itse
 ### Task 6: Horned Mask and the board read the count
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala`
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala` (line ~206)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/wake/HornedMaskSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/AdviserLimitProjectionSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala` (line ~206)
+- Modify: `src/test/scala/distantlands/gameplay/powers/wake/HornedMaskSuite.scala`
+- Modify: `src/test/scala/distantlands/application/AdviserLimitProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes: `AdviserLimit.ignored`, `AdviserLimit.towardLimit`, `AdviserFace.of`, `CardPlayRules.notCounted`.
@@ -1544,7 +1544,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/wake/HornedMask.scala src/main/scala/oathdigital/application/GamePresentationProjector.scala src/test/scala/oathdigital/gameplay/powers/wake/HornedMaskSuite.scala src/test/scala/oathdigital/application/AdviserLimitProjectionSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala src/main/scala/distantlands/application/GamePresentationProjector.scala src/test/scala/distantlands/gameplay/powers/wake/HornedMaskSuite.scala src/test/scala/distantlands/application/AdviserLimitProjectionSuite.scala
 git commit -m "feat(powers): Horned Mask and the board count advisers toward the limit"
 ```
 

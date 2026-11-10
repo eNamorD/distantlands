@@ -65,10 +65,10 @@ This is the ninth of 14 slice plans, written against `0.2.0-alpha` at `0b419ab6`
 ### Task 1: A discard's pile position
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`Discard.Denizen`, `Discard.Vision`, `discardWorld`; about lines 124 to 190)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (encode at about line 90, decode at about line 342)
-- Test: `src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`Discard.Denizen`, `Discard.Vision`, `discardWorld`; about lines 124 to 190)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (encode at about line 90, decode at about line 342)
+- Test: `src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -270,10 +270,10 @@ Expected: PASS. Every builder relies on the default, so no behaviour changes. Th
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala \
-  src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala \
-  src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala \
-  src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala \
+  src/main/scala/distantlands/serialization/WalkerOperationCodec.scala \
+  src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala \
+  src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(model): a denizen or Vision discard names the end of its pile
 
@@ -287,13 +287,13 @@ EOF
 ### Task 2: The shared rewrite and Ring of Devotion
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/RingOfDevotion.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `RingOfDevotionCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/RingOfDevotion.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `RingOfDevotionCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
-- Create: `src/test/scala/oathdigital/gameplay/powers/search/SearchDiscardFixture.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/RingOfDevotionSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/search/SearchDiscardFixture.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/RingOfDevotionSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `position` on `Discard.Denizen` and `Discard.Vision`.
@@ -624,13 +624,13 @@ Then `git diff src/test/resources`. Expected: `unimplemented.txt` loses `relic.k
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/RingOfDevotion.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
+git add src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala \
+  src/main/scala/distantlands/gameplay/powers/search/RingOfDevotion.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingRelics.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/search/SearchDiscardFixture.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/RingOfDevotionSuite.scala
+  src/test/scala/distantlands/gameplay/powers/search/SearchDiscardFixture.scala \
+  src/test/scala/distantlands/gameplay/powers/search/RingOfDevotionSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Ring of Devotion keeps a Search's discards in the pawn's region
 
@@ -646,12 +646,12 @@ EOF
 ### Task 3: Cracked Horn
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/CrackedHorn.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala` (`cards`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `CrackedHornCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/CrackedHorn.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala` (`cards`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `CrackedHornCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/CrackedHornSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/CrackedHornSuite.scala`
 
 **Interfaces:**
 - Consumes: `SearchDiscards`, `SearchDiscardFixture` (Task 2).
@@ -812,12 +812,12 @@ Then `git diff src/test/resources`. Expected: `unimplemented.txt` loses `relic.c
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/CrackedHorn.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
+git add src/main/scala/distantlands/gameplay/powers/search/CrackedHorn.scala \
+  src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingRelics.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/search/CrackedHornSuite.scala
+  src/test/scala/distantlands/gameplay/powers/search/CrackedHornSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Cracked Horn buries a Search's discards under the world deck
 
@@ -831,13 +831,13 @@ EOF
 ### Task 4: Bracken, exclusivity, docs and gates
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/Bracken.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala` (`cards`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `BrackenCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/Bracken.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala` (`cards`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `BrackenCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/BrackenSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/SearchDiscardsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/BrackenSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/SearchDiscardsSuite.scala`
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`
 - Modify: `docs/ROADMAP.md`
 
@@ -1246,14 +1246,14 @@ Expected: both pass.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/Bracken.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
+git add src/main/scala/distantlands/gameplay/powers/search/Bracken.scala \
+  src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
   src/test/resources/powers/unimplemented.txt \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/powers/search/BrackenSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/SearchDiscardsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/search/BrackenSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/search/SearchDiscardsSuite.scala \
   docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md \
   docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'

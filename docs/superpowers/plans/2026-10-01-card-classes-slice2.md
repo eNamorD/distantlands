@@ -85,18 +85,18 @@ The spec fixes the target; these are the choices for getting there.
 
 | Path | Change |
 |------|--------|
-| `src/main/scala/oathdigital/catalog/holding/Holding*Denizens.scala` | Lose the 126 implemented denizens; imports trimmed |
-| 126 power files under `src/main/scala/oathdigital/gameplay/powers/` | Gain their card object |
-| `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` | Imports the moved objects |
-| `src/main/scala/oathdigital/gameplay/powers/action/PaidAction.scala` | Takes a `PrintedPower` |
+| `src/main/scala/distantlands/catalog/holding/Holding*Denizens.scala` | Lose the 126 implemented denizens; imports trimmed |
+| 126 power files under `src/main/scala/distantlands/gameplay/powers/` | Gain their card object |
+| `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` | Imports the moved objects |
+| `src/main/scala/distantlands/gameplay/powers/action/PaidAction.scala` | Takes a `PrintedPower` |
 | 58 card paid actions, 2 banner paid actions | Pass the printed power, or an id and cost |
 | 94 denizen power files with `forCatalog` | Static card reference; 32 become `case object`s |
-| `src/main/scala/oathdigital/gameplay/powers/CatalogCards.scala` | Loses `denizen` |
-| `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala` | Loses `cardOf` |
-| `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala` | Reads Silver Tongue and Insomnia directly |
+| `src/main/scala/distantlands/gameplay/powers/CatalogCards.scala` | Loses `denizen` |
+| `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala` | Loses `cardOf` |
+| `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala` | Reads Silver Tongue and Insomnia directly |
 | Aggregator scaladocs (list in Task 3) | Say which powers can still be omitted |
-| `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala` | Two new tests |
-| `src/test/scala/oathdigital/gameplay/powers/action/PaidActionSuite.scala` (new) | Paid action reads its printed power |
+| `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala` | Two new tests |
+| `src/test/scala/distantlands/gameplay/powers/action/PaidActionSuite.scala` (new) | Paid action reads its printed power |
 | Test callers of `forCatalog(...).get` | Drop `.get`, or name the object |
 | `docs/ROADMAP.md` | Slice 2 ticked |
 
@@ -180,10 +180,10 @@ def remove(src, pkg, names):
 ### Task 1: Implemented denizens move beside their powers
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/catalog/holding/Holding{Arcane,Beast,Discord,Hearth,Nomad,Order}Denizens.scala`
-- Modify: the 126 power files the script names (all under `src/main/scala/oathdigital/gameplay/powers/`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Test: `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/Holding{Arcane,Beast,Discord,Hearth,Nomad,Order}Denizens.scala`
+- Modify: the 126 power files the script names (all under `src/main/scala/distantlands/gameplay/powers/`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Test: `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: slice 1's card objects (`object AlchemistCard extends Denizen(...)`
@@ -250,7 +250,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import s2_imports as imports
 
 W = sys.argv[1].rstrip("/") + "/"
-M = W + "src/main/scala/oathdigital/"
+M = W + "src/main/scala/distantlands/"
 REVIEWED = {M + "gameplay/powers/" + f for f in (
     "ActionPowers.scala", "MusterPowers.scala", "RestPowers.scala",
     "NegotiationPowers.scala", "CampaignPowers.scala", "RecoverPowers.scala")}
@@ -346,7 +346,7 @@ declares `text = "..."` but never reads `.text`.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/catalog/holding src/main/scala/oathdigital/gameplay src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala
+git add src/main/scala/distantlands/catalog/holding src/main/scala/distantlands/gameplay src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala
 git commit -m "refactor(cards): move implemented denizens beside their powers"
 ```
 
@@ -358,9 +358,9 @@ changed in them.)
 ### Task 2: Paid actions take their printed power
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/PaidAction.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/PaidAction.scala`
 - Modify: the 60 files with `extends PaidAction(` (58 cards, 2 banners)
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/PaidActionSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/powers/action/PaidActionSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: Task 1's `StorytellerCard` and the other moved objects; the
@@ -372,7 +372,7 @@ changed in them.)
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/PaidActionSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/PaidActionSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.action
@@ -414,7 +414,7 @@ Expected: FAIL to compile: `Found: PrintedPower, Required: String` at
 
 - [ ] **Step 3: Give `PaidAction` the printed power**
 
-Replace `src/main/scala/oathdigital/gameplay/powers/action/PaidAction.scala`
+Replace `src/main/scala/distantlands/gameplay/powers/action/PaidAction.scala`
 with:
 
 ```scala
@@ -477,7 +477,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import s2_imports as imports
 
 W = sys.argv[1].rstrip("/") + "/"
-M = W + "src/main/scala/oathdigital/"
+M = W + "src/main/scala/distantlands/"
 files = glob.glob(M + "**/*.scala", recursive=True)
 texts = {f: open(f).read() for f in files}
 
@@ -540,7 +540,7 @@ Expected: all green.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers src/test/scala/oathdigital/gameplay/powers/action/PaidActionSuite.scala
+git add src/main/scala/distantlands/gameplay/powers src/test/scala/distantlands/gameplay/powers/action/PaidActionSuite.scala
 git commit -m "refactor(powers): paid actions charge their printed cost"
 ```
 
@@ -552,15 +552,15 @@ git commit -m "refactor(powers): paid actions charge their printed cost"
 - Modify: the 94 denizen power files with a `forCatalog` that looks up the
   card (the script lists none by name; it finds the three lookup forms)
 - Modify: the companion `id` of all 126 moved denizens' powers
-- Modify: `src/main/scala/oathdigital/gameplay/powers/CatalogCards.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/AdviserLimit.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/CatalogCards.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala`
 - Modify: callers of `forCatalog(...).toVector`, `forCatalog(...) ++` and
   `forCatalog(...).get` in main and test code
 - Modify: the aggregator scaladocs listed in Step 6
-- Modify: `src/test/scala/oathdigital/gameplay/powers/SelectedModifierSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/SelectedModifierSuite.scala`
 - Modify: `docs/ROADMAP.md`
-- Test: `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's card objects in the power files.
@@ -655,8 +655,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import s2_imports as imports
 
 W = sys.argv[1].rstrip("/") + "/"
-M = W + "src/main/scala/oathdigital/"
-T = W + "src/test/scala/oathdigital/"
+M = W + "src/main/scala/distantlands/"
+T = W + "src/test/scala/distantlands/"
 LOOKUP = (r"(?:CatalogCards\.denizen\(catalog, id\)"
           r"|WhenPlayedPower\.cardOf\(catalog, id\)"
           r"|catalog\.denizenWithPower\(id\))")
@@ -868,24 +868,24 @@ is absent; a denizen power names its card and is always present. Where an
 aggregator holds only denizen powers, drop the sentence instead. Check what
 each aggregator lists before choosing.
 
-- `src/main/scala/oathdigital/gameplay/powers/CatalogCards.scala` (now:
+- `src/main/scala/distantlands/gameplay/powers/CatalogCards.scala` (now:
   "Which relic or edifice prints a power, ...")
-- `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- `src/main/scala/oathdigital/gameplay/powers/targeting/TargetProtections.scala`
-- `src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala`
-- `src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala`
-- `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala`
-- `src/main/scala/oathdigital/gameplay/powers/action/WorldActionPowers.scala`
-- `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlans.scala`
-- `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`
-- `src/main/scala/oathdigital/gameplay/powers/travel/TravelModifiers.scala`
+- `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- `src/main/scala/distantlands/gameplay/powers/targeting/TargetProtections.scala`
+- `src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala`
+- `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala`
+- `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`
+- `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`
+- `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlans.scala`
+- `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`
+- `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala`
 
 Then run
-`grep -rn -i "card is absent\|catalog without\|is omitted\|left out" src/main/scala/oathdigital/gameplay`
+`grep -rn -i "card is absent\|catalog without\|is omitted\|left out" src/main/scala/distantlands/gameplay`
 and fix any other sentence that still claims a denizen power can be omitted.
 
 - [ ] **Step 7: Tick the ROADMAP**
@@ -917,7 +917,7 @@ tasks applied: 2539 tests (2534 before, plus 5 new).
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay src/test/scala/oathdigital docs/ROADMAP.md
+git add src/main/scala/distantlands/gameplay src/test/scala/distantlands docs/ROADMAP.md
 git commit -m "refactor(powers): denizen powers name their cards"
 ```
 

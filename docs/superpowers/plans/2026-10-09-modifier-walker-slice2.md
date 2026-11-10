@@ -19,7 +19,7 @@
 **Spec:** `docs/superpowers/specs/2026-10-09-modifier-walker-design.md`. Read it whole, including its "Plan-time rulings". The slice 1 plan, `docs/superpowers/plans/2026-10-09-modifier-walker-slice1.md`, shows how Search moved. This plan copies that move for Travel. The files to copy from are:
 
 - `SearchProcedure` (`gameplay/actions/search/`).
-- `SearchPlay` and `SearchModifierChoiceSuite` (`src/test/scala/oathdigital/gameplay/`).
+- `SearchPlay` and `SearchModifierChoiceSuite` (`src/test/scala/distantlands/gameplay/`).
 
 **Starts from:** `main` at `8b2f8ac0` or later. That includes the slice 1 merge (`5b74fec0`) and catalog batch 6 slice 2, which touches none of the files below except `docs/ROADMAP.md`.
 
@@ -63,17 +63,17 @@
 
 | File | Change | Responsibility |
 |---|---|---|
-| `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala` | Modify | The tree starts with the modifier decision; `afterModifiers`; `startable` previews what follows the decision |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` | Modify | Travel `choosesModifiers` |
-| `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala` | Modify | Travel joins `paidAtPick` |
-| `src/main/scala/oathdigital/gameplay/powers/travel/Tents.scala`, `ForestPaths.scala` | Modify | Doc comments: the favor is placed at the pick |
-| `src/test/scala/oathdigital/gameplay/TravelPlay.scala` | Modify | Picks modifiers through the decision |
-| `src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala` | Modify | `candidates` previews `afterModifiers`; `parkedDecision`, `startParksOn`, `modifierDecisionId` |
-| `src/test/scala/oathdigital/gameplay/powers/travel/TravelModifierChoiceSuite.scala` | Create | The Travel modifier decision |
+| `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala` | Modify | The tree starts with the modifier decision; `afterModifiers`; `startable` previews what follows the decision |
+| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` | Modify | Travel `choosesModifiers` |
+| `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala` | Modify | Travel joins `paidAtPick` |
+| `src/main/scala/distantlands/gameplay/powers/travel/Tents.scala`, `ForestPaths.scala` | Modify | Doc comments: the favor is placed at the pick |
+| `src/test/scala/distantlands/gameplay/TravelPlay.scala` | Modify | Picks modifiers through the decision |
+| `src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala` | Modify | `candidates` previews `afterModifiers`; `parkedDecision`, `startParksOn`, `modifierDecisionId` |
+| `src/test/scala/distantlands/gameplay/powers/travel/TravelModifierChoiceSuite.scala` | Create | The Travel modifier decision |
 | Travel and follow-up suites | Modify | Listed in Task 1 |
-| `src/test/scala/oathdigital/application/UndoServiceSuite.scala` | Modify | Undo of a Travel pick, then of the start |
-| `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, `GameLogStartLineSuite.scala` | Modify | A Travel that picks Tents |
-| `frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala` | Modify | Travel starts directly |
+| `src/test/scala/distantlands/application/UndoServiceSuite.scala` | Modify | Undo of a Travel pick, then of the start |
+| `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, `GameLogStartLineSuite.scala` | Modify | A Travel that picks Tents |
+| `frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala` | Modify | Travel starts directly |
 | Frontend suites | Modify | Listed in Task 3 |
 | `docs/ROADMAP.md`, `CONTEXT.md`, `docs/superpowers/specs/2026-10-07-travel-destination-walker-design.md` | Modify | Slice 2 checked; flow note; ruling 1 note |
 
@@ -84,19 +84,19 @@
 This task turns the switch and fixes every suite the switch breaks, so that its commit is green.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (the `ActionRef.Travel` entry)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/Tents.scala`, `ForestPaths.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/TravelPlay.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/travel/TravelModifierChoiceSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/TravelProcedureSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/SelectedModifierSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/travel/TentsSuite.scala`, `ForestPathsSuite.scala`, `RoyalStablesSuite.scala`, `DragonskinDrumSuite.scala`, `NarrowPassConsentSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/FollowUpSupplyWaiverSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/ModifierStartControlsSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (the `ActionRef.Travel` entry)
+- Modify: `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/Tents.scala`, `ForestPaths.scala`
+- Modify: `src/test/scala/distantlands/gameplay/TravelPlay.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/travel/TravelModifierChoiceSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/TravelProcedureSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/SelectedModifierSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/travel/TentsSuite.scala`, `ForestPathsSuite.scala`, `RoyalStablesSuite.scala`, `DragonskinDrumSuite.scala`, `NarrowPassConsentSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/FollowUpSupplyWaiverSuite.scala`
+- Modify: `src/test/scala/distantlands/application/ModifierStartControlsSuite.scala`
+- Modify: `src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala`
 
 **Interfaces:**
 - Consumes, from slice 1:
@@ -112,7 +112,7 @@ This task turns the switch and fixes every suite the switch breaks, so that its 
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/TravelModifierChoiceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/TravelModifierChoiceSuite.scala`:
 
 ```scala
 package oathdigital.gameplay.powers.travel
@@ -188,7 +188,7 @@ class TravelModifierChoiceSuite extends munit.FunSuite:
     assertEquals(Look(done).tokensOn(tents), Tokens(1, 0))
 ```
 
-Add these members to `TravelFixture` (`src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala`). Its new imports are:
+Add these members to `TravelFixture` (`src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala`). Its new imports are:
 
 - `oathdigital.gameplay.powerresolver.ModifierPicks`.
 - `ParkedNode`, added to the existing `oathdigital.testkit.{...}` import.
@@ -356,7 +356,7 @@ Expected: PASS, 5 tests.
 
 - [ ] **Step 5: Move the shared helpers onto the decision**
 
-`src/test/scala/oathdigital/gameplay/TravelPlay.scala`:
+`src/test/scala/distantlands/gameplay/TravelPlay.scala`:
 
 ```scala
   /** `actor` starts a Travel, picks `modifiers` in its modifier decision,
@@ -577,24 +577,24 @@ Some other test may start a Travel directly while its actor holds a Travel modif
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/powers/SelectedModifier.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/Tents.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/ForestPaths.scala \
-  src/test/scala/oathdigital/gameplay/TravelPlay.scala \
-  src/test/scala/oathdigital/gameplay/TravelProcedureSuite.scala \
-  src/test/scala/oathdigital/gameplay/FollowUpSupplyWaiverSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/SelectedModifierSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/TravelModifierChoiceSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/TentsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/ForestPathsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/RoyalStablesSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/DragonskinDrumSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/NarrowPassConsentSuite.scala \
-  src/test/scala/oathdigital/application/ModifierStartControlsSuite.scala \
-  src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/Tents.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/ForestPaths.scala \
+  src/test/scala/distantlands/gameplay/TravelPlay.scala \
+  src/test/scala/distantlands/gameplay/TravelProcedureSuite.scala \
+  src/test/scala/distantlands/gameplay/FollowUpSupplyWaiverSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/SelectedModifierSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/TravelModifierChoiceSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/TentsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/ForestPathsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/RoyalStablesSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/DragonskinDrumSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/NarrowPassConsentSuite.scala \
+  src/test/scala/distantlands/application/ModifierStartControlsSuite.scala \
+  src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala
 git commit -m "feat(travel): choose Travel modifiers inside the walk"
 ```
 
@@ -607,9 +607,9 @@ Add any other suite that Step 9 fixed to the `git add` list. End the message wit
 ### Task 2: Undo and the Game Log for a Travel pick
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/application/UndoServiceSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala`
+- Modify: `src/test/scala/distantlands/application/UndoServiceSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -701,9 +701,9 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/UndoServiceSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala
+git add src/test/scala/distantlands/application/UndoServiceSuite.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala
 git commit -m "test(travel): undo a Travel pick, and log the Travel's picks"
 ```
 
@@ -714,10 +714,10 @@ End the message with your trailer.
 ### Task 3: The client starts Travel directly; record the slice and run the gates
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierFlowSuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierFlowDrafts.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierFlowSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierFlowDrafts.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala`
 - Modify: `docs/ROADMAP.md`, `CONTEXT.md`, `docs/superpowers/specs/2026-10-07-travel-destination-walker-design.md`
 
 **Interfaces:** none new.
@@ -808,10 +808,10 @@ Follow the memory recipe (`preview-start-hits-live-db`). Never use `preview_star
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ModifierFlowDraft.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierFlowSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierFlowDrafts.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala \
+git add frontend/src/main/scala/distantlands/frontend/ModifierFlowDraft.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierFlowSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierFlowDrafts.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala \
   docs/ROADMAP.md CONTEXT.md \
   docs/superpowers/specs/2026-10-07-travel-destination-walker-design.md
 git commit -m "feat(frontend): start Travel without the modifier flow"
