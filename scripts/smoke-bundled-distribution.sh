@@ -28,21 +28,21 @@ trap cleanup EXIT
 
 case "$port" in ''|*[!0-9]*) fail "port must be an integer: $port" ;; esac
 [ -x "$app_directory/jre/bin/java" ] || fail "missing bundled jre/ in $app_directory"
-[ -x "$app_directory/Start Oath Digital.command" ] && [ -x "$app_directory/start-oathdigital.sh" ] ||
+[ -x "$app_directory/Start Distant Lands.command" ] && [ -x "$app_directory/start-distantlands.sh" ] ||
   fail "Start files must be present and executable"
 app=$(cd "$app_directory" && pwd -P)
-temporary=$(mktemp -d "${TMPDIR:-/tmp}/oathdigital-bundled.XXXXXX")
+temporary=$(mktemp -d "${TMPDIR:-/tmp}/distantlands-bundled.XXXXXX")
 temporary=$(cd "$temporary" && pwd -P)
 log_file="$temporary/server.log"
 mkdir -p "$temporary/home"
 case "$(uname -s)" in
   Darwin) app_data="$temporary/home/Library/Application Support/DistantLands" ;;
-  *) app_data="$temporary/xdg/oathdigital" ;;
+  *) app_data="$temporary/xdg/distantlands" ;;
 esac
 
 env -i PATH=/usr/bin:/bin HOME="$temporary/home" XDG_DATA_HOME="$temporary/xdg" \
   DLQ_LAUNCH=desktop DLQ_OPEN_BROWSER=false DLQ_PORT="$port" \
-  "$app/bin/oathdigital" >"$log_file" 2>&1 &
+  "$app/bin/distantlands" >"$log_file" 2>&1 &
 child_pid=$!
 
 url=
@@ -71,5 +71,5 @@ ls "$app_data/data" 2>/dev/null | grep -q '^database\.' ||
 kill -TERM "$child_pid"
 wait "$child_pid" 2>/dev/null || true
 child_pid=
-grep -q 'Oath Digital database closed' "$log_file" || fail "database did not close cleanly"
+grep -q 'Distant Lands database closed' "$log_file" || fail "database did not close cleanly"
 echo "bundled distribution smoke passed: $app"

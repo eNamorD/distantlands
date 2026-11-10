@@ -79,14 +79,14 @@ trap 'exit 143' TERM
 
 stage_directory=$(cd "$stage_directory" && pwd -P)
 temporary_root=${TMPDIR:-/tmp}
-temporary_directory=$(mktemp -d "$temporary_root/oathdigital-packaged-smoke.XXXXXX")
+temporary_directory=$(mktemp -d "$temporary_root/distantlands-packaged-smoke.XXXXXX")
 package_directory=$temporary_directory/package
 database_directory=$temporary_directory/database
 mkdir "$package_directory" "$database_directory"
 cp -R "$stage_directory"/. "$package_directory"/
 
 base_url=http://127.0.0.1:$port
-database_path=$database_directory/oathdigital
+database_path=$database_directory/distantlands
 index_file=$temporary_directory/index.html
 game_path=
 creation_response=$temporary_directory/creation.json
@@ -113,7 +113,7 @@ start_server() {
     DLQ_PORT="$port" \
     DLQ_PUBLIC_BASE_URL="$base_url" \
     DLQ_DATABASE_PATH="$database_path" \
-    ./bin/oathdigital >"$log_file" 2>&1 &
+    ./bin/distantlands >"$log_file" 2>&1 &
   child_pid=$!
 }
 
@@ -331,7 +331,7 @@ stop_server() {
       ;;
   esac
 
-  grep -F 'Oath Digital database closed' "$log_file" >/dev/null ||
+  grep -F 'Distant Lands database closed' "$log_file" >/dev/null ||
     fail "server did not log database close evidence on run $run_label"
 }
 

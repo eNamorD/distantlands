@@ -21,7 +21,7 @@ class HsqldbEventStreamRepositorySuite
     repository.close()
 
   private def databasePath(label: String): Path =
-    Files.createTempDirectory(s"oathdigital-$label-").resolve("journal")
+    Files.createTempDirectory(s"distantlands-$label-").resolve("journal")
 
   /** The schema version every journal is migrated to. */
   private val targetVersion = new EventJournalSchema(() => 0L).TargetVersion

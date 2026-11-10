@@ -38,7 +38,7 @@ class GameGatewaySuite extends munit.FunSuite:
     val plan = accepted(new GeneratedFirstGamePlanFactory(catalog, unshuffled)
       .build(config, ChronicleChoice.New("Gateway Chronicle")))
     val dealt = plan.orders
-    val path = Files.createTempDirectory("oathdigital-bootstrap-")
+    val path = Files.createTempDirectory("distantlands-bootstrap-")
       .resolve("journal")
     val repository = accepted(OwnedHsqldbEventStreamRepository.open(path))
     val service = new GameApplicationService(catalog, repository)

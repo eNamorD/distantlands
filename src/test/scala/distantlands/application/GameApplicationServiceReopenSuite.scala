@@ -27,7 +27,7 @@ import distantlands.testkit.Commands
 class GameApplicationServiceReopenSuite extends munit.FunSuite:
   test("HSQL reopen preserves completed Rest cleanup and secret summary"):
     val path = Files.createTempDirectory(
-      "oathdigital-rest-reopen-").resolve("journal")
+      "distantlands-rest-reopen-").resolve("journal")
     val gameId = "game-hsql-rest-cleanup"
     // Broken Peaks' secrets give p2's coming Wake an option, so it waits. p2
     // is alone there: p1 rests at Ancient City, p3 stands at Buried Giant.
@@ -57,7 +57,7 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
 
   test("HSQL reopen preserves private minor-action relic knowledge"):
     val path = Files.createTempDirectory(
-      "oathdigital-minor-reopen-").resolve("journal")
+      "distantlands-minor-reopen-").resolve("journal")
     val gameId = "game-hsql-minor-relics"
     // p2 acts at Broken Peaks, where a relic lies.
     val table = Table.start.turn(p2, Phase.Act).pawn(p2, BrokenPeaksSite)
@@ -129,7 +129,7 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
       TreeDecision(NegotiationDeal.dealDecisionId, answer)))
 
   test("HSQL reopen preserves a parked Negotiation deal"):
-    val path = Files.createTempDirectory("oathdigital-negotiation-parked-")
+    val path = Files.createTempDirectory("distantlands-negotiation-parked-")
       .resolve("journal")
     val gameId = "game-hsql-negotiation-parked"
     val first = accepted(OwnedHsqldbEventStreamRepository.open(path))
@@ -155,7 +155,7 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
     finally reopened.close()
 
   test("HSQL reopen preserves completed Negotiation disclosure knowledge"):
-    val path = Files.createTempDirectory("oathdigital-negotiation-reopen-")
+    val path = Files.createTempDirectory("distantlands-negotiation-reopen-")
       .resolve("journal")
     val gameId = "game-hsql-negotiation"
     val first = accepted(OwnedHsqldbEventStreamRepository.open(path))

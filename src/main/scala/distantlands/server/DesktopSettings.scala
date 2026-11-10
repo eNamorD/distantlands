@@ -21,7 +21,7 @@ object DesktopSettings:
     "# Distant Lands settings, used when the server is started with Start Distant Lands.",
     "# Remove the leading # from a line to use it. Environment variables and",
     "# command-line options override this file. Restart the server after editing.",
-    "# On Windows, write paths with forward slashes, for example C:/OathData/database.",
+    "# On Windows, write paths with forward slashes, for example C:/DistantLandsData/database.",
     "",
     "# Address to listen on. 0.0.0.0 accepts other computers on your network;",
     "# 127.0.0.1 accepts only this computer.",

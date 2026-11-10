@@ -5,7 +5,7 @@ import java.nio.file.{Files, Path}
 
 class DesktopSettingsSuite extends munit.FunSuite:
   private val directory = FunFixture[Path](
-    setup = _ => Files.createTempDirectory("oathdigital-settings"),
+    setup = _ => Files.createTempDirectory("distantlands-settings"),
     teardown = path => deleteRecursively(path)
   )
 
@@ -14,10 +14,10 @@ class DesktopSettingsSuite extends munit.FunSuite:
   }
 
   directory.test("known keys load trimmed and blank values are dropped") { dir =>
-    val file = write(dir, "DLQ_PORT = 9000 \nDLQ_HOST=\n# DLQ_OPEN_BROWSER=false\nDLQ_DATABASE_PATH=C:/OathData/database\n")
+    val file = write(dir, "DLQ_PORT = 9000 \nDLQ_HOST=\n# DLQ_OPEN_BROWSER=false\nDLQ_DATABASE_PATH=C:/DistantLandsData/database\n")
     assertEquals(
       DesktopSettings.load(file),
-      Right(Map("DLQ_PORT" -> "9000", "DLQ_DATABASE_PATH" -> "C:/OathData/database"))
+      Right(Map("DLQ_PORT" -> "9000", "DLQ_DATABASE_PATH" -> "C:/DistantLandsData/database"))
     )
   }
 

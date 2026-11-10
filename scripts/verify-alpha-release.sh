@@ -39,7 +39,7 @@ case "${1:-}" in
       if (validate_tag "$tag") >/dev/null 2>&1; then fail "accepted invalid tag"; fi
     done
     script=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)/$(basename -- "$0")
-    fixture=$(mktemp -d "${TMPDIR:-/tmp}/oathdigital-tag-test.XXXXXX")
+    fixture=$(mktemp -d "${TMPDIR:-/tmp}/distantlands-tag-test.XXXXXX")
     trap 'rm -rf -- "$fixture"' EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM
@@ -83,11 +83,11 @@ case "${1:-}" in
     ./sbtw verifyReleaseVersion test frontend/test verifyPackageMappings Universal/packageBin Universal/packageZipTarball Docker/stage
     mkdir -p "$3"
     output=$(cd "$3" && pwd -P)
-    temporary=$(mktemp -d "${TMPDIR:-/tmp}/oathdigital-release.XXXXXX")
+    temporary=$(mktemp -d "${TMPDIR:-/tmp}/distantlands-release.XXXXXX")
     trap 'rm -rf -- "$temporary"' EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM
-    root=oathdigital-$release_version
+    root=distantlands-$release_version
     for extension in zip tgz; do
       archive=target/universal/$root.$extension
       [ -f "$archive" ] || fail "missing archive: $archive"
@@ -122,7 +122,7 @@ case "${1:-}" in
     esac
     [ -f "$2" ] || fail "missing all-platform archive: $2"
     [ ! -e "$4" ] || fail "output directory already exists"
-    temporary=$(mktemp -d "${TMPDIR:-/tmp}/oathdigital-bundled-release.XXXXXX")
+    temporary=$(mktemp -d "${TMPDIR:-/tmp}/distantlands-bundled-release.XXXXXX")
     trap 'rm -rf -- "$temporary"' EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM

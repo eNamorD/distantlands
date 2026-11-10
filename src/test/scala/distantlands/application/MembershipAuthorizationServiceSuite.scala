@@ -113,7 +113,7 @@ class MembershipAuthorizationServiceSuite extends munit.FunSuite:
   private def withGameOneMembers(
       test: MembershipAuthorizationService => Unit
   ): Unit =
-    val path = Files.createTempDirectory("oathdigital-authorization-")
+    val path = Files.createTempDirectory("distantlands-authorization-")
       .resolve("database")
     val database = accepted(HsqldbDatabaseOwner.open(path))
     try

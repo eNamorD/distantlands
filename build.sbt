@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "3.9.0"
-ThisBuild / organization := "dev.oathdigital"
+ThisBuild / organization := "quest.distantlands"
 ThisBuild / version := ReleaseVersion.resolve(sys.env.get("DLQ_RELEASE_VERSION"))
 
 lazy val verifyReleaseVersion = taskKey[Unit]("Check release version validation")
@@ -11,8 +11,8 @@ lazy val verifyPackageMappings = taskKey[Unit](
 lazy val root = (project in file("."))
   .enablePlugins(JavaServerAppPackaging, DockerPlugin)
   .settings(
-    name := "oathdigital-engine",
-    maintainer := "Oath Digital",
+    name := "distantlands-engine",
+    maintainer := "Distant Lands",
     Compile / mainClass := Some("distantlands.server.DistantLandsServer"),
     Compile / run := (Compile / run)
       .dependsOn(frontend / Compile / fastLinkJS).evaluated,
@@ -90,7 +90,7 @@ lazy val root = (project in file("."))
     coverageMinimumStmtTotal := 92.0,
     coverageMinimumBranchTotal := 84.4,
     coverageFailOnMinimum := true,
-    Universal / packageName := s"oathdigital-${version.value}",
+    Universal / packageName := s"distantlands-${version.value}",
     verifyReleaseVersion := {
       assert(ReleaseVersion.resolve(None) == "0.1.0-SNAPSHOT")
       Seq("0.1.0-alpha.1", "1.2.3-beta.0", "10.20.30-rc.12").foreach { value =>
@@ -103,14 +103,14 @@ lazy val root = (project in file("."))
           s"accepted invalid release version: $value")
       }
     },
-    executableScriptName := "oathdigital",
+    executableScriptName := "distantlands",
     Universal / mappings ++= ((baseDirectory.value / "docs/operations") ** "*.md")
       .get
-      .map(file => file -> s"share/oathdigital/${file.getName}"),
+      .map(file => file -> s"share/distantlands/${file.getName}"),
     Universal / mappings ++= Seq(
-      "Start Oath Digital.command",
-      "start-oathdigital.sh",
-      "Start Oath Digital.bat"
+      "Start Distant Lands.command",
+      "start-distantlands.sh",
+      "Start Distant Lands.bat"
     ).map(name => baseDirectory.value / "packaging/desktop" / name -> name),
     Universal / javaOptions += "-Dfile.encoding=UTF-8",
     bashScriptExtraDefines ++= Seq(
@@ -124,10 +124,10 @@ lazy val root = (project in file("."))
       "if not defined DLQ_MODE set \"DLQ_MODE=trusted-alpha\"",
       """if exist "%APP_HOME%\jre\bin\java.exe" set "BUNDLED_JVM=%APP_HOME%\jre""""
     ),
-    Docker / packageName := "oathdigital",
+    Docker / packageName := "distantlands",
     Docker / dockerExposedPorts := Seq(8080),
     dockerExposedPorts := (Docker / dockerExposedPorts).value,
-    Docker / daemonUser := "oathdigital",
+    Docker / daemonUser := "distantlands",
     Docker / daemonUserUid := Some("10001"),
     Docker / dockerBaseImage := "eclipse-temurin:21-jre",
     dockerBaseImage := (Docker / dockerBaseImage).value,
@@ -143,19 +143,19 @@ lazy val root = (project in file("."))
       val destinations = packageMappings.map(_._2)
       val serverJar = (Compile / packageBin).value.getCanonicalFile
       val requiredFiles = Seq(
-        "bin/oathdigital",
-        "bin/oathdigital.bat",
-        "share/oathdigital/configuration.md",
-        "share/oathdigital/packaged-smoke-test.md",
-        "share/oathdigital/phase-5-follow-ups.md",
-        "share/oathdigital/quick-start.md",
-        "share/oathdigital/data-policy.md",
-        "share/oathdigital/network-and-browser.md",
-        "share/oathdigital/alpha-acceptance.md",
-        "share/oathdigital/releases.md",
-        "Start Oath Digital.command",
-        "start-oathdigital.sh",
-        "Start Oath Digital.bat",
+        "bin/distantlands",
+        "bin/distantlands.bat",
+        "share/distantlands/configuration.md",
+        "share/distantlands/packaged-smoke-test.md",
+        "share/distantlands/phase-5-follow-ups.md",
+        "share/distantlands/quick-start.md",
+        "share/distantlands/data-policy.md",
+        "share/distantlands/network-and-browser.md",
+        "share/distantlands/alpha-acceptance.md",
+        "share/distantlands/releases.md",
+        "Start Distant Lands.command",
+        "start-distantlands.sh",
+        "Start Distant Lands.bat",
       )
       val missingFiles = requiredFiles.filterNot(destinations.contains)
       val serverJarMapped = packageMappings.exists { case (source, path) =>
@@ -180,7 +180,7 @@ lazy val root = (project in file("."))
       val createDataDirectory =
         """RUN ["mkdir", "-p", "/var/lib/distantlands"]"""
       val ownDataDirectory =
-        """RUN ["chown", "-R", "oathdigital:root", "/var/lib/distantlands"]"""
+        """RUN ["chown", "-R", "distantlands:root", "/var/lib/distantlands"]"""
       val declareDataVolume = """VOLUME ["/var/lib/distantlands"]"""
       val finalUser = "USER 10001:0"
       val createIndex = dockerCommandLines.indexOf(createDataDirectory)
@@ -228,11 +228,11 @@ lazy val root = (project in file("."))
         .collectFirst { case (source, `destination`) => IO.read(source) }
         .getOrElse("")
       val bundledRuntimeFailures = Seq(
-        if (launcherSource("bin/oathdigital").contains(
+        if (launcherSource("bin/distantlands").contains(
               """then bundled_jvm="$(realpath "${app_home}/../jre")"; fi"""
             )) None
         else Some("bash launcher must prefer a bundled jre/"),
-        if (launcherSource("bin/oathdigital.bat").contains(
+        if (launcherSource("bin/distantlands.bat").contains(
               """if exist "%APP_HOME%\jre\bin\java.exe" set "BUNDLED_JVM=%APP_HOME%\jre""""
             )) None
         else Some("batch launcher must prefer a bundled jre\\")
@@ -253,7 +253,7 @@ lazy val root = (project in file("."))
 lazy val frontend = (project in file("frontend"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "oathdigital-frontend",
+    name := "distantlands-frontend",
     // scoverage instruments JVM code only; `coverage` would otherwise switch
     // it on for this Scala.js project too.
     coverageEnabled := false,

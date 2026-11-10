@@ -78,10 +78,10 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 unique_suffix=$(date +%s)-$$
-container_name=oathdigital-smoke-container-$unique_suffix
-volume_name=oathdigital-smoke-volume-$unique_suffix
+container_name=distantlands-smoke-container-$unique_suffix
+volume_name=distantlands-smoke-volume-$unique_suffix
 temporary_root=${TMPDIR:-/tmp}
-temporary_directory=$(mktemp -d "$temporary_root/oathdigital-container-smoke.XXXXXX")
+temporary_directory=$(mktemp -d "$temporary_root/distantlands-container-smoke.XXXXXX")
 game_id=
 creation_response=$temporary_directory/creation.json
 command_response=$temporary_directory/command.json
@@ -351,7 +351,7 @@ case "$container_exit" in
   *) fail "container exited with unexpected status $container_exit after stop" ;;
 esac
 docker logs --since "$stop_started" "$container_name" 2>&1 | \
-  grep -F 'Oath Digital database closed' >/dev/null ||
+  grep -F 'Distant Lands database closed' >/dev/null ||
   fail "container did not log database close evidence for the final stop"
 
 smoke_succeeded=1

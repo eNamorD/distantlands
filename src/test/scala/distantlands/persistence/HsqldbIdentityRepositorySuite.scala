@@ -10,7 +10,7 @@ import distantlands.testkit.Unwrap.{accepted, as, rejected}
 
 class HsqldbIdentityRepositorySuite extends munit.FunSuite:
   private def databasePath(label: String): Path =
-    Files.createTempDirectory(s"oathdigital-identity-$label-")
+    Files.createTempDirectory(s"distantlands-identity-$label-")
       .resolve("database")
 
   private def open(path: Path): OwnedHsqldbIdentityRepository =

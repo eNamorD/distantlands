@@ -93,7 +93,7 @@ class DesktopLaunchProfileSuite extends munit.FunSuite:
     assertEquals(launch.environment.get("PATH"), Some("/usr/bin"))
 
   test("prepare leaves the environment untouched and writes nothing without DLQ_LAUNCH"):
-    val home = Files.createTempDirectory("oathdigital-home")
+    val home = Files.createTempDirectory("distantlands-home")
     val environment = Map("HOME" -> home.toString, "DLQ_PORT" -> "9300")
     assertEquals(
       DesktopLaunchProfile.prepare(Array.empty, environment, "Linux", home.toString, noDetection),
@@ -109,7 +109,7 @@ class DesktopLaunchProfileSuite extends munit.FunSuite:
     )
 
   test("prepare reads settings and creates the data folder"):
-    val home = Files.createTempDirectory("oathdigital-home")
+    val home = Files.createTempDirectory("distantlands-home")
     val environment = Map("HOME" -> home.toString, "DLQ_LAUNCH" -> "desktop")
     val appData = home.resolve(".local/share/distantlands")
     Files.createDirectories(appData)
@@ -121,7 +121,7 @@ class DesktopLaunchProfileSuite extends munit.FunSuite:
     assertEquals(launch.warnings, Vector.empty)
 
   test("prepare reports an unknown settings key"):
-    val home = Files.createTempDirectory("oathdigital-home")
+    val home = Files.createTempDirectory("distantlands-home")
     val appData = home.resolve(".local/share/distantlands")
     Files.createDirectories(appData)
     val file = Files.write(appData.resolve("distantlands.properties"), "DLQ_PROT=1\n".getBytes("UTF-8"))

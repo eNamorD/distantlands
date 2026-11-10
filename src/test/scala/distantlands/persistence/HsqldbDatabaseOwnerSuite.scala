@@ -19,7 +19,7 @@ class HsqldbDatabaseOwnerSuite extends munit.FunSuite:
   private val targetVersion = new EventJournalSchema(() => 0L).TargetVersion
 
   private def path(label: String): Path =
-    Files.createTempDirectory(s"oathdigital-owner-$label-")
+    Files.createTempDirectory(s"distantlands-owner-$label-")
       .resolve("database")
 
   private def open(databasePath: Path): HsqldbDatabaseOwner =
