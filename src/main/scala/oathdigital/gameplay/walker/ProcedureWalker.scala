@@ -290,8 +290,8 @@ object ProcedureWalker extends DecideNarrowing:
         WalkerSteps.runBuildOps(BuildOps((_, _) =>
           Right(Vector[CoreOperation](core)),
           required = core.required || hooks.strict),
-          ctx.copy(following = true), path, hooks.inherited).map:
-            case Done(next) => Done(next.copy(following = ctx.following))
+          ctx.copy(triggersOff = true), path, hooks.inherited).map:
+            case Done(next) => Done(next.copy(triggersOff = ctx.triggersOff))
             case other => other
       case _ =>
         // The composite is walked as its children, and a bare child is
@@ -462,14 +462,15 @@ object ProcedureWalker extends DecideNarrowing:
   /** `decide`, parked at `pending`, narrowed as the walk narrowed it before
     * parking. A position whose search empties a required decision is
     * returned as declared, and the answer-time check refuses it.
-    * `followUp` is the follow-up tree the park lies in, if any. */
+    * `followUps` are the follow-up trees the park lies inside, outermost
+    * first. */
   private[walker] def narrowParked(state: ReadyGame, action: Operation,
       pending: PendingTree, powers: WalkerPowers, decide: Decide,
-      followUp: Option[Operation]): Decide =
+      followUps: Vector[Operation]): Decide =
     val ctx = WalkCtx(strip(state), Vector.empty,
       state.game.current.walkActor, pending.answered,
       powers.withAnswers(pending.answered), WalkerDice.placeholder,
-      state.game.current.walkerProcedure, action, followUp = followUp)
+      state.game.current.walkerProcedure, action, followUps = followUps)
     narrowAt(decide, ctx, pending.at).toOption.flatten.getOrElse(decide)
 
   /** Whether the leaf is where a decision is asked: reached fresh, or at the
@@ -495,7 +496,7 @@ object ProcedureWalker extends DecideNarrowing:
             strict)
         else if remaining.nonEmpty then
           // The leaf ran in an earlier command, and its follow-ups parked.
-          if ExecutedTriggers.holds(ctx.state) then
+          if ExecutedTriggers.holds(ctx.state, ctx.depth) then
             walkTriggered(ctx, path, cursor, resume, ctx.state)
           else contractViolation(
             s"resume path $remaining overruns leaf ${WalkerSteps.leafLabel(leaf)}")
@@ -605,10 +606,11 @@ object ProcedureWalker extends DecideNarrowing:
         s"leaf ${WalkerSteps.leafLabel(leaf)}, which asks none")
 
   /** After a batch, the follow-ups its triggers started, when it held its
-    * operations for them. */
+    * operations for them at the walk's level. */
   private def triggered(path: Vector[String], resume: Resume)(step: Step)
       : Either[OathViolation, Step] = step match
-    case Done(ctx) if !ctx.following && ExecutedTriggers.holds(ctx.state) =>
+    case Done(ctx) if !ctx.triggersOff &&
+        ExecutedTriggers.holds(ctx.state, ctx.depth) =>
       walkTriggered(ctx, path, None, resume,
         ctx.previous.fold(ctx.state)(_._1))
     case other => Right(other)
@@ -619,18 +621,22 @@ object ProcedureWalker extends DecideNarrowing:
     * when the walk reaches it, with the held operations and the state the
     * follow-ups before it left. A resumed walk enters at the trigger the
     * cursor's head names. `before` is the state before the batch, so a note
-    * after it reads the batch and its follow-ups whole.
+    * after it reads the batch and its follow-ups whole. A follow-up's own
+    * batches may start follow-ups one level down (catalog batch 11, slice
+    * 8).
     */
   private def walkTriggered(ctx: WalkCtx, path: Vector[String],
       cursor: Option[Vector[String]], resume: Resume, before: ReadyGame)
       : Either[OathViolation, Step] =
-    val triggers = ExecutedTriggers.of(ctx.powers)
+    val triggers = ExecutedTriggers.of(ctx.powers, ctx.depth)
     def from(index: Int, at: WalkCtx, rest: Option[Vector[String]])
         : Either[OathViolation, Step] =
       if index == triggers.size then
-        WalkerSteps.record(TakeDeferred(ExecutedTriggers.key), at,
-          path :+ index.toString, Vector.empty, strict = true).map(done =>
-          Done(done.copy(following = false, followUp = None,
+        // The take ends this level, so it starts no follow-up.
+        WalkerSteps.record(TakeDeferred(ExecutedTriggers.keyAt(ctx.depth)),
+          at.copy(triggersOff = true), path :+ index.toString, Vector.empty,
+          strict = true).map(done =>
+          Done(done.copy(triggersOff = ctx.triggersOff,
             previous = Some((before, done.state)))))
       else
         val trigger = triggers(index)
@@ -638,19 +644,19 @@ object ProcedureWalker extends DecideNarrowing:
           case (None, None) => from(index + 1, at, None)
           case (None, Some(_)) => contractViolation(
             s"resume path enters follow-up $index, which did not start")
-          case (Some(tree), _) => walk(tree, at.copy(followUp = Some(tree)),
-              path :+ index.toString,
-              rest, resume, WalkerHooks(Vector(trigger.id), Set.empty))
+          case (Some(tree), _) => walk(tree,
+              at.copy(followUps = at.followUps :+ tree),
+              path :+ index.toString, rest, resume,
+              WalkerHooks(Vector(trigger.id), Set.empty))
             .flatMap:
               case Done(next) =>
-                from(index + 1, next.copy(followUp = None), None)
+                from(index + 1, next.copy(followUps = ctx.followUps), None)
               case stop => Right(stop)
     cursor.flatMap(_.headOption) match
-      case None => from(0, ctx.copy(following = true), None)
+      case None => from(0, ctx, None)
       case Some(segment) =>
         segment.toIntOption.filter(i => i >= 0 && i < triggers.size) match
-          case Some(index) =>
-            from(index, ctx.copy(following = true), cursor.map(_.tail))
+          case Some(index) => from(index, ctx, cursor.map(_.tail))
           case None => contractViolation(
             s"invalid follow-up segment '$segment' at ${path.mkString(".")}")
 

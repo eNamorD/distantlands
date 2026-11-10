@@ -137,8 +137,11 @@ private[walker] trait DecideNarrowing:
       : DecisionAnswer => Either[OathViolation, Unit] =
     lazy val baseline = WalkerPowerGather.breaches(ctx.restrictionRoot,
       ctx.state, ctx.actor, ctx.powers, ctx.answered, ctx.procedure).toSet
+    // The search walks again from the root, which no follow-up encloses:
+    // it re-enters each level by the path, as a resume does.
     val searching = ctx.copy(events = Vector.empty, searching = true,
-      visited = ctx.visited + ((path, WalkCtx.searchKey(ctx.state))))
+      visited = ctx.visited + ((path, WalkCtx.searchKey(ctx.state))),
+      followUps = Vector.empty, triggersOff = false)
     def reached(answer: DecisionAnswer): Either[OathViolation, Unit] =
       val hypothetical = Answered(decide.decisionId, answer, decide.owner)
       WalkerPowerGather.breaches(ctx.restrictionRoot, ctx.state, ctx.actor,

@@ -30,19 +30,25 @@ private[walker] final case class WalkCtx(
     /** The decisions this search stands at, with the state at each, as
       * `WalkCtx.searchKey` reads it. */
     visited: Set[(Vector[String], ReadyGame)] = Set.empty,
-    /** Set while the walk runs a trigger's follow-up, whose batches start
-      * no follow-up of their own (`ExecutedTriggers`). */
-    following: Boolean = false,
-    /** The follow-up tree this walk runs, if any. It is not part of
-      * `root`, so the restriction look-ahead reads it beside `root`: a
+    /** Set while a claimed burn or cost runs whole, and while a level's
+      * held batch is taken: those batches start no follow-up, since a
+      * resume could not reach one there (`ExecutedTriggers`). */
+    triggersOff: Boolean = false,
+    /** The follow-up trees this walk is inside, outermost first. Their
+      * count is the walk's follow-up depth, whose key a batch holds its
+      * operations under (catalog batch 11, slice 8). None is part of
+      * `root`, so the restriction look-ahead reads them beside it: a
       * follow-up may nest a card play whose hook a restriction judges
-      * (False Prophet's claim, catalog batch 11, slice 7). */
-    followUp: Option[Operation] = None
+      * (False Prophet's claim, slice 7). */
+    followUps: Vector[Operation] = Vector.empty
 ):
-  /** The tree the restriction look-ahead folds: `root`, and the follow-up
-    * this walk runs. */
+  /** How many follow-ups this walk is inside. */
+  def depth: Int = followUps.size
+
+  /** The tree the restriction look-ahead folds: `root`, and every
+    * follow-up this walk is inside. */
   def restrictionRoot: Operation =
-    followUp.fold(root)(tree => Sequence(Vector(root, tree)))
+    if followUps.isEmpty then root else Sequence(root +: followUps)
 
   /** The operation restrictions this walk's batches run with: its powers'
     * restrictions for the procedure it walks, which lift a power's own lock
