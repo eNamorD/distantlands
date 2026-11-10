@@ -2,7 +2,7 @@
 
 Design: [negotiation walker design](../superpowers/specs/2026-09-19-negotiation-walker-design.md)
 
-Negotiation implements the Combined Rulebook page 27 and New Foundations page 15 procedure. It is a persistent 0-Supply minor action started by the active player with one or more co-located players, and it takes no start selection.
+Negotiation implements the Combined Rulebook page 27 and New Foundations page 15 procedure. It is a persistent 0-Supply minor action started by the active player with one or more players at their site or within reach, and it takes no start selection.
 
 ## Procedure
 
@@ -27,7 +27,7 @@ Nothing about the deal is stored. `PendingTree.answered` is the only record, and
 - `ProposeTerms(terms)` replaces that author's whole terms and clears every acceptance.
 - `AcceptDeal` adds the answerer to the accepted set.
 - `DeclineDeal` closes the deal.
-- The deal is agreed when every participant has accepted and at least one term has substance (favor, a relic, or a disclosure). An empty deal cannot be accepted.
+- The deal is agreed when every participant has accepted and at least one term has substance (favor, a relic, a disclosure, a Citizenship offer, a promise or a binding promise). An empty deal cannot be accepted.
 
 The `Negotiate` decision query is a snapshot rebuilt from live state and the fold on every command. It carries the participants, everyone's terms, who has accepted, each author's own bounds (recipients, favor held, relics held, information that may be promised) and who may accept now. `DecisionQueries.accepts` judges a proposal against the answerer's own bounds, which is why it receives the answerer.
 
@@ -51,4 +51,4 @@ Each answer is a `WalkerStepRecorded` carrying a `ChoicePayload`. Negotiation ha
 
 ## Deferred
 
-Citizenship and the Grand Scepter, secrets/adviser/site/banner transfers, Whispering Stone's remote, private Negotiation, future-action promises, and all component-specific Negotiation powers remain deferred. The `NegotiationEligibility` and `NegotiationSettlement` windows and the explicit `participants` of the `Negotiate` query are the hooks those powers will use.
+Citizenship and the Grand Scepter, secrets/adviser/site/banner transfers, Whispering Stone's remote, private Negotiation, future-action promises, and the other component-specific Negotiation powers remain deferred. The `NegotiationEligibility` and `NegotiationSettlement` windows and the explicit `participants` of the `Negotiate` query are the hooks those powers will use. The reach cards (Traveling Negotiator, The Tribunal, Bandit Tribunal) hook no window: the start reads `NegotiationReach` directly.

@@ -291,6 +291,8 @@ class NegotiationProcedureSuite extends munit.FunSuite:
               if denizen.id == TravelingNegotiatorCard.id =>
             denizen.copy(orientation = Orientation.FaceDown)
           case other => other }))))
+    assertEquals(NegotiationDeal.eligible(catalog, hidden, p1),
+      Vector.empty[PlayerId])
     val gave = say(Ready(hidden), p1, gift(p2, 1))
       .getOrElse(fail("the deal must still stand"))
     parked.assertParked(gave.state, ActionRef.Negotiation, dealId, p1)
