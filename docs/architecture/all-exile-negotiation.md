@@ -33,6 +33,8 @@ The `Negotiate` decision query is a snapshot rebuilt from live state and the fol
 
 A transfer row may hold advisers where `DealRules` allows them: Council Arbiter's faceup holder trades advisers with anyone, and a participant with access to Festival District opens them between every pair. The start stores who may use each card, under the power-use restrictions (`NegotiationStartFacts`). The bounds offer only the advisers no printed restriction refuses to give. Nobody may accept while the terms would leave a participant over their adviser limit (`DecisionQuery.Negotiate.overAdviserLimit`), read through `AdviserLimits`, which the registry fills with the powers' `AdviserLimit`. Settlement gives each adviser after the favor and relics, keeping its face.
 
+A transfer row may hold sites where `DealRules` allows them: Deed Writer's faceup holder trades sites with anyone, under the power-use restrictions, and the start stores who may (`NegotiationStartFacts`). An author may give the sites their own-colour warbands hold, so every Imperial player may give every Imperial site, but never to another Imperial player or to a Vow of Wandering holder (`NegotiationSites`). Nobody may accept while a recipient would have fewer warbands on their board than sites they receive, counted after their own sites' warbands come back (`DecisionQuery.Negotiate.shortOfWarbands`). Settlement returns each given site's warbands to its old ruler, then asks each new ruler, site by site, how many to place (`deed-writer.warbands.<site>`). The placement line covers the generic warband line.
+
 ## Settlement and disclosure
 
 Settlement is one recorded step. It validates that every author can still afford their terms and still holds their offered relics, then emits disclosure `Peek`s first, while the cards are still where they were disclosed, and the favor and relic `Give`s second, in participant order. If the state changed so that a term is no longer affordable, the final accept is rejected with `InsufficientFavor` or `NegotiationUnavailable` and the deal stays open. A decline applies nothing. Either close runs the action boundary.
@@ -45,7 +47,7 @@ Owners get the full deal with editing inputs, computed from their own bounds. Ev
 
 ## Unsupported Negotiation rules
 
-`When Negotiating` handlers the engine does not support (Deed Writer, the Grand Scepter, and High Priest) are ignored, not blocking, and the start records nothing about them. Separate action powers such as Whispering Stone do not modify a base Negotiation merely by being held. The engine does not infer mechanics from rules text.
+`When Negotiating` handlers the engine does not support (the Grand Scepter and High Priest) are ignored, not blocking, and the start records nothing about them. Separate action powers such as Whispering Stone do not modify a base Negotiation merely by being held. The engine does not infer mechanics from rules text.
 
 ## Journal
 
@@ -53,4 +55,4 @@ Each answer is a `WalkerStepRecorded` carrying a `ChoicePayload`. Negotiation ha
 
 ## Deferred
 
-Citizenship and the Grand Scepter, secrets/adviser/site/banner transfers, Whispering Stone's remote, private Negotiation, future-action promises, and the other component-specific Negotiation powers remain deferred. The `NegotiationEligibility` and `NegotiationSettlement` windows and the explicit `participants` of the `Negotiate` query are the hooks those powers will use. The reach cards (Traveling Negotiator, The Tribunal, Bandit Tribunal) hook no window: the start reads `NegotiationReach` directly.
+Citizenship and the Grand Scepter, secrets and banner transfers, Whispering Stone's remote, private Negotiation, future-action promises, and the other component-specific Negotiation powers remain deferred. The `NegotiationEligibility` and `NegotiationSettlement` windows and the explicit `participants` of the `Negotiate` query are the hooks those powers will use. The reach cards (Traveling Negotiator, The Tribunal, Bandit Tribunal) hook no window: the start reads `NegotiationReach` directly.

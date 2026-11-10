@@ -16,7 +16,7 @@ final case class DealState(participants: Vector[PlayerId],
     declined: Boolean):
   def hasSubstance: Boolean = terms.values.exists(t =>
     t.transfers.exists(x => x.favor > 0 || x.relics.nonEmpty ||
-      x.advisers.nonEmpty) ||
+      x.advisers.nonEmpty || x.sites.nonEmpty) ||
       t.disclosures.nonEmpty || t.citizenship.nonEmpty ||
       t.promises.nonEmpty || t.bindingPromises.nonEmpty)
   def unanimous: Boolean =
@@ -88,25 +88,31 @@ object NegotiationDeal:
   /** The question the deal asks now: everyone's terms, who accepted, what
     * each author may still offer under `rules`, and who may accept (anyone
     * who has not, once the deal has substance and leaves nobody over their
-    * adviser limit). */
+    * adviser limit or short of warbands for a site). */
   def snapshot(catalog: ExecutableCatalog, state: ReadyGame, deal: DealState,
       rules: DealRules, limits: AdviserLimits): DecisionQuery.Negotiate =
     val over = overAdviserLimit(catalog, state, deal, limits)
+    val short = NegotiationSites.shortOfWarbands(state, deal)
     DecisionQuery.Negotiate(deal.participants, deal.terms, deal.accepted,
       deal.participants.map(author => author ->
-        bounds(catalog, state, author, deal.participants, rules)).toMap,
-      if deal.hasSubstance && !deal.declined && over.isEmpty then
+        bounds(catalog, state, author, deal, rules)).toMap,
+      if deal.hasSubstance && !deal.declined && over.isEmpty &&
+          short.isEmpty then
         deal.participants.filterNot(deal.accepted).toSet
       else Set.empty[PlayerId],
-      heading = Some("Negotiation"), overAdviserLimit = over)
+      heading = Some("Negotiation"), overAdviserLimit = over,
+      shortOfWarbands = short)
 
   private def bounds(catalog: ExecutableCatalog, state: ReadyGame,
-      author: PlayerId, participants: Vector[PlayerId],
+      author: PlayerId, deal: DealState,
       rules: DealRules): NegotiationBounds =
+    val participants = deal.participants
     val player = state.game.current.player(author).get
     val exiles = offerable(state, author, participants)
     val ignored = Citizenship.ignored(state)
     val adviserRecipients = rules.adviserRecipients(author, participants)
+    val siteRecipients = rules.siteRecipients(author, participants)
+      .filter(NegotiationSites.mayReceive(state, author, _))
     NegotiationBounds(participants.filter(_ != author),
       SpendableFavor.of(state, author),
       player.relics.map(_.id), disclosable(state, player),
@@ -116,7 +122,11 @@ object NegotiationDeal:
       bindingPromises = rules.bindingPromises,
       advisers = adviserRecipients.headOption.fold(Vector.empty)(
         movable(catalog, state, player, _)),
-      adviserRecipients = adviserRecipients)
+      adviserRecipients = adviserRecipients,
+      sites = if siteRecipients.isEmpty then Vector.empty
+        else NegotiationSites.giftable(state, author).filterNot(
+          NegotiationSites.offeredByOthers(deal, author)),
+      siteRecipients = siteRecipients)
 
   /** `player`'s advisers that may change hands: those no printed
     * restriction refuses to give, which keeps a faceup locked adviser and
@@ -203,14 +213,20 @@ object NegotiationDeal:
     * the cards are still where they were disclosed, then every transfer moves:
     * favor, relics, then advisers, each keeping its face.
     * Refused (nothing recorded, the deal stays open) when an author can no
-    * longer afford their terms.
+    * longer afford their terms, or a recipient would be short of warbands
+    * for the sites they receive. A site's warbands and placements are the
+    * procedure's next steps (`NegotiationSites.returns`, the placement
+    * questions).
     */
   def settle(state: ReadyGame,
       deal: DealState): Either[OathViolation, Vector[CoreOperation]] =
-    deal.participants.foldLeft[Either[OathViolation, Unit]](Right(())) {
-      (result, author) => result.flatMap(_ => affordable(state, author,
-        deal.terms(author)))
-    }.map(_ => knowledge(deal) ++ transfers(deal))
+    Either.cond(NegotiationSites.shortOfWarbands(state, deal).isEmpty, (),
+      OathViolation.NegotiationUnavailable(
+        "a recipient has too few warbands for the sites they receive"))
+      .flatMap(_ => deal.participants.foldLeft[Either[OathViolation, Unit]](
+        Right(())) { (result, author) => result.flatMap(_ =>
+          affordable(state, author, deal.terms(author))) })
+      .map(_ => knowledge(deal) ++ transfers(deal))
 
   private def affordable(state: ReadyGame, author: PlayerId,
       terms: NegotiationTerms): Either[OathViolation, Unit] =
@@ -226,6 +242,10 @@ object NegotiationDeal:
         player.advisers.exists(_.id == id)), (),
         OathViolation.NegotiationUnavailable(
           "an offered adviser is no longer held by its author"))
+      _ <- Either.cond(terms.transfers.flatMap(_.sites).forall(
+        NegotiationSites.giftable(state, author).contains), (),
+        OathViolation.NegotiationUnavailable(
+          "an offered site is no longer held by its author's warbands"))
       _ <- Either.cond(terms.citizenship.isEmpty || (!Citizenship.ignored(state) &&
         terms.citizenship.forall(offerable(state, author,
           state.game.current.players.map(_.player)).contains)), (),

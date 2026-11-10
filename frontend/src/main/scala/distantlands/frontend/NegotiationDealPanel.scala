@@ -39,8 +39,8 @@ private[frontend] object NegotiationDealPanel:
         s": “${promise.text}”")))
 
   /** What the author gives, named where the viewer can see it: favor, each
-    * relic and adviser the projection carries, and a count of the facedown
-    * rest of each.
+    * relic and adviser the projection carries, a count of the facedown rest
+    * of each, and the sites given.
     */
   private def transferLine(t: NegotiationTransferState): dom.Element =
     val hidden = t.relicCount - t.relics.size
@@ -52,7 +52,8 @@ private[frontend] object NegotiationDealPanel:
           s"$hidden facedown ${if hidden == 1 then "relic" else "relics"}")) ++
         t.advisers.map(cardLink) ++
         Option.when(hiddenAdvisers > 0)(textNode(s"$hiddenAdvisers facedown " +
-          s"${if hiddenAdvisers == 1 then "adviser" else "advisers"}"))
+          s"${if hiddenAdvisers == 1 then "adviser" else "advisers"}")) ++
+        t.sites.map(site => textNode(site.name))
     val line = text("p", "negotiation-transfer",
       s"${t.authorPlayerId} gives ${t.recipientPlayerId}: ")
     if parts.isEmpty then line.appendChild(textNode("nothing"))
@@ -115,6 +116,17 @@ private[frontend] object NegotiationDealPanel:
     row.appendChild(cardLink(card))
     row
 
+  /** A one-site row: the box and the words that name the site, in one
+    * `label`, like the favor row. A site has no card to inspect. */
+  private def siteItem(control: dom.html.Input,
+      site: NegotiationSiteState): dom.Element =
+    val row = dom.document.createElement("label").asInstanceOf[dom.html.Label]
+    row.className = "negotiation-item"
+    row.appendChild(control)
+    row.appendChild(text("span", "negotiation-item-label",
+      s"Give ${site.name}"))
+    row
+
   /** The Grand Scepter's offer of Citizenship to `recipient`, an Exile: a
     * checkbox, withheld with its reason under the first-game option. A
     * withheld box is not `disabled`: a disabled input takes no pointer
@@ -151,6 +163,8 @@ private[frontend] object NegotiationDealPanel:
       (String, String, dom.html.Input)]
     val advisers = scala.collection.mutable.ArrayBuffer.empty[
       (String, CardDetails, dom.html.Input)]
+    val sites = scala.collection.mutable.ArrayBuffer.empty[
+      (String, String, dom.html.Input)]
     val disclosures = scala.collection.mutable.ArrayBuffer.empty[
       (String, DisclosureOffer, dom.html.Input)]
     val citizenship = scala.collection.mutable.ArrayBuffer.empty[
@@ -194,6 +208,22 @@ private[frontend] object NegotiationDealPanel:
           panel.appendChild(cardItem(check, "Give ", adviser))
           advisers += ((recipient, adviser, check))
         }
+      if editing.siteRecipients.contains(recipient) then
+        editing.giftableSites.foreach { site =>
+          val check = input("checkbox")
+          check.setAttribute("aria-label", s"Give ${site.name} to $recipient")
+          check.checked = deal.transfers.exists(t => t.authorPlayerId == me &&
+            t.recipientPlayerId == recipient &&
+            t.sites.exists(_.siteId == site.siteId))
+          // A site goes to one recipient at most.
+          check.onchange = _ => if check.checked then sites.foreach:
+            case (other, otherSite, otherCheck)
+                if other != recipient && otherSite == site.siteId =>
+              otherCheck.checked = false
+            case _ => ()
+          panel.appendChild(siteItem(check, site))
+          sites += ((recipient, site.siteId, check))
+        }
       offers(editing).foreach { offer =>
         val check = input("checkbox")
         check.setAttribute("aria-label",
@@ -226,7 +256,9 @@ private[frontend] object NegotiationDealPanel:
             relic }.toVector,
           advisers.collect { case (`recipient`, adviser, check)
               if check.checked => distantlands.protocol.WorldCard(
-                adviser.cardKind, adviser.cardId) }.toVector)
+                adviser.cardKind, adviser.cardId) }.toVector,
+          sites.collect { case (`recipient`, site, check) if check.checked =>
+            site }.toVector)
       }.toVector, disclosures.collect { case (recipient, offer, check)
           if check.checked => NegotiationDisclosureInput(recipient, offer.kind,
         Option.when(offer.kind != "site-relic")(me), offer.siteId,
@@ -242,13 +274,18 @@ private[frontend] object NegotiationDealPanel:
     accept.disabled = !canControl || !editing.canAccept
     accept.onclick = _ => controls.submitCommand(GameCommand.ResolveWalker(
       decisionId, DecisionAnswerWire.AcceptDealWire))
-    // Withheld with its reason, not `disabled`: a disabled button takes no
-    // pointer event, so a tap could not show the reason (HoverTip).
-    if editing.overAdviserLimit.nonEmpty then
+    // Withheld with its reasons, not `disabled`: a disabled button takes no
+    // pointer event, so a tap could not show them (HoverTip).
+    val withheld = Vector(
+      Option.when(editing.overAdviserLimit.nonEmpty)("These terms would " +
+        s"leave ${editing.overAdviserLimit.mkString(" and ")} over their " +
+        "adviser limit."),
+      Option.when(editing.shortOfWarbands.nonEmpty)("These terms would " +
+        s"leave ${editing.shortOfWarbands.mkString(" and ")} too few " +
+        "warbands to rule every site they receive.")).flatten
+    if withheld.nonEmpty then
       accept.disabled = false
-      HoverTip.withhold(accept, "These terms would leave " +
-        s"${editing.overAdviserLimit.mkString(" and ")} over their " +
-        "adviser limit.")
+      HoverTip.withhold(accept, withheld.mkString(" "))
     panel.appendChild(accept)
     val decline = button("End/Decline", "negotiation-decline")
     decline.disabled = !canControl

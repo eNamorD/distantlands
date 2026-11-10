@@ -44,7 +44,7 @@ object LogScripts:
     queuedRaidThenSkip, raidAnswers}
   export NegotiationLogScripts.{negotiationDeclined, negotiationAgreed,
     negotiationPromised, negotiationBindingPromised, negotiationDisclosed,
-    negotiationAdviserGiven}
+    negotiationAdviserGiven, negotiationSiteGiven}
   export PowerLogScripts.{silverTongue, augury, twoPicks, facedownWithCry,
     travelWithTents, gamblingHall, wolves, oracle, barbedNet, hunger,
     familyHeirloom, heirloomKept, heirloomReturned}
@@ -66,6 +66,7 @@ object LogScripts:
     "negotiation-agreed" -> (() => negotiationAgreed),
     "negotiation-disclosed" -> (() => negotiationDisclosed),
     "negotiation-adviser-given" -> (() => negotiationAdviserGiven),
+    "negotiation-site-given" -> (() => negotiationSiteGiven),
     "negotiation-promised" -> (() => negotiationPromised),
     "negotiation-binding-promised" -> (() => negotiationBindingPromised),
     "use-power" -> (() => silverTongue),

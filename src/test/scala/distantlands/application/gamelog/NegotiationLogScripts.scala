@@ -2,11 +2,12 @@ package distantlands.application.gamelog
 
 import distantlands.application._
 import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard,
-  NegotiationDeal, TheTribunalCard}
+  DeedWriterCard, NegotiationDeal, NegotiationSites, TheTribunalCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.powers.economy.BirdsongCard
 import distantlands.model._
-import distantlands.model.DecisionAnswer.{AcceptDeal, DeclineDeal, ProposeTerms}
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseAmountAnswer,
+  DeclineDeal, ProposeTerms}
 import distantlands.testkit.{MenuPlay, Situation, Table}
 import distantlands.testkit.Table.{p1, p2}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
@@ -14,7 +15,8 @@ import distantlands.testkit.Commands
 
 /** The Negotiation scripts: a deal declined, a deal agreed, a deal of one
   * promise, a binding promise through The Tribunal, a facedown adviser
-  * disclosed, and a facedown adviser given. Reached through `LogScripts`.
+  * disclosed, a facedown adviser given, and a site given. Reached through
+  * `LogScripts`.
   */
 object NegotiationLogScripts:
   /** p1 and p2 share Ancient City, so p1 can negotiate with exactly one
@@ -100,3 +102,22 @@ object NegotiationLogScripts:
       .parkedAfter(deal(actor, AcceptDeal))
       .after(deal(partner, AcceptDeal))
     Script("negotiation-adviser-given", service, actor)
+
+  /** The partner gives the actor, who holds Deed Writer, Broken Peaks; the
+    * actor places 2 warbands there (catalog batch 12, rulings 18 and 20).
+    * The actor holds the Oathkeeper title already, so ruling Broken Peaks
+    * writes no title line. */
+  def negotiationSiteGiven(using munit.Location): Script =
+    val peaks = BrokenPeaksSite.id
+    val (service, parked, actor, partner) = negotiating(
+      "negotiation-site-given", _.adviser(p1, DeedWriterCard.id)
+        .warbandsAt(BrokenPeaksSite, p2, 2).oathkeeper(Some(p1)))
+    parked
+      .parkedAfter(deal(partner, ProposeTerms(NegotiationTerms(Vector(
+        NegotiationTransfer(actor, 0, Vector.empty, Vector.empty,
+          Vector(peaks)))))))
+      .parkedAfter(deal(actor, AcceptDeal))
+      .parkedAfter(deal(partner, AcceptDeal))
+      .after(Commands.resolveWalker(actor, TreeDecision(
+        NegotiationSites.warbandsDecisionId(peaks), ChooseAmountAnswer(2))))
+    Script("negotiation-site-given", service, actor)

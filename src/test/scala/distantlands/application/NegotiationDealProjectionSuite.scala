@@ -2,6 +2,7 @@ package distantlands.application
 
 import distantlands.gameplay.{GrandMaskCard, OathRules}
 import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard,
+  DeedWriterCard,
   NegotiationDeal, TheTribunalCard}
 import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import distantlands.gameplay.operations.TheGrandScepterCard
@@ -15,7 +16,8 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, ProposeTerms}
 import distantlands.protocol.projection.{DecisionQueryProjection,
   NegotiationCitizenshipProjection,
-  GameProjection, NegotiationDealProjection, NegotiationPromiseProjection}
+  GameProjection, NegotiationDealProjection, NegotiationPromiseProjection,
+  NegotiationSiteProjection}
 import distantlands.testkit.{MenuPlay, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 
@@ -223,5 +225,42 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
     Vector(p1, p2).foreach { viewer =>
       val editing = deal(view(state, viewer)).editing.getOrElse(fail("editing"))
       assertEquals(editing.overAdviserLimit, Vector(p2.value), viewer.value)
+      assert(!editing.canAccept, viewer.value)
+    }
+
+  private val dunesOffer = NegotiationSiteProjection(DunesSite.id.value,
+    "Dunes")
+
+  test("every viewer sees a site on offer by name"):
+    val table = gathered.adviser(p1, DeedWriterCard.id)
+      .warbandsAt(DunesSite, p1, 2)
+    val state = parkedDeal(table, who = Vector(p2, p3), terms = Some(
+      NegotiationTerms(Vector(NegotiationTransfer(p2, 0, Vector.empty,
+        Vector.empty, Vector(DunesSite.id))))))
+    Vector(p1, p2, p3).foreach(viewer => assertEquals(
+      deal(view(state, viewer)).transfers.head.sites, Vector(dunesOffer),
+      viewer.value))
+
+  test("the editor offers each author's sites to the recipients the " +
+      "rules allow"):
+    val table = gathered.adviser(p1, DeedWriterCard.id)
+      .warbandsAt(DunesSite, p1, 2)
+    val state = parkedDeal(table, who = Vector(p2, p3))
+    val p1Editing = deal(view(state, p1)).editing.getOrElse(fail("editing"))
+    assertEquals(p1Editing.giftableSites, Vector(dunesOffer))
+    assertEquals(p1Editing.siteRecipients, Vector(p2.value, p3.value))
+    val p2Editing = deal(view(state, p2)).editing.getOrElse(fail("editing"))
+    assertEquals(p2Editing.siteRecipients, Vector(p1.value))
+
+  test("terms that leave a recipient short of warbands are projected " +
+      "with who"):
+    val table = gathered.adviser(p1, DeedWriterCard.id)
+      .warbandsAt(DunesSite, p1, 2).boardWarbands(p2, 0)
+    val state = parkedDeal(table, who = Vector(p2), terms = Some(
+      NegotiationTerms(Vector(NegotiationTransfer(p2, 0, Vector.empty,
+        Vector.empty, Vector(DunesSite.id))))))
+    Vector(p1, p2).foreach { viewer =>
+      val editing = deal(view(state, viewer)).editing.getOrElse(fail("editing"))
+      assertEquals(editing.shortOfWarbands, Vector(p2.value), viewer.value)
       assert(!editing.canAccept, viewer.value)
     }

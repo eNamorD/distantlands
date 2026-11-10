@@ -36,7 +36,7 @@ class WalkerDecisionWireSuite extends munit.FunSuite:
     val red = PlayerId("red"); val blue = PlayerId("blue")
     val terms = NegotiationTerms(
       Vector(NegotiationTransfer(blue, 2, Vector(RelicId("r1")),
-        Vector(DenizenId("d1"), VisionId("v2")))),
+        Vector(DenizenId("d1"), VisionId("v2")), Vector(SiteId("site:dunes")))),
       Vector(
         NegotiationDisclosure(blue,
           NegotiationDisclosureRef.Adviser(red, VisionId("v1"))),

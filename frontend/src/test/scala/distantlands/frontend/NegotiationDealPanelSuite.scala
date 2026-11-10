@@ -425,3 +425,43 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
     assertEquals(accept.getAttribute("aria-disabled"), "true")
     assertEquals(accept.getAttribute("data-tip"),
       "These terms would leave blue over their adviser limit.")
+
+  private val dunes = distantlands.protocol.projection
+    .NegotiationSiteProjection("site:dunes", "Dunes")
+
+  test("a site is offered only to the recipients the rules allow, and " +
+      "Save sends its id"):
+    val deal = threeWay(NegotiationEditingState(3, Vector.empty, Vector.empty,
+      Vector.empty, canAccept = false, giftableSites = Vector(dunes),
+      siteRecipients = Vector("blue")))
+    val ui = new RecordingControls()
+    val panel = render(owner(deal), ui)
+    assert(Dom.all(panel, "[aria-label='Give Dunes to yellow']").isEmpty)
+    box(panel, "Give Dunes to blue").checked = true
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(
+          terms)) => terms }
+    assertEquals(sent.flatMap(_.transfers).flatMap(_.siteIds),
+      Vector("site:dunes"))
+
+  test("a transfer names the sites it gives"):
+    val base = dealWhereBlueHasAccepted()
+    val panel = render(spectator(base.copy(transfers = Vector(
+      NegotiationTransferState(authorPlayerId = "blue",
+        recipientPlayerId = "red", favor = 0, relicCount = 0,
+        relics = Vector.empty, sites = Vector(dunes))))),
+      new RecordingControls())
+    assertEquals(Dom.one(panel, ".negotiation-transfer").textContent,
+      "blue gives red: Dunes")
+
+  test("terms that leave a recipient short of warbands withhold Accept " +
+      "with the reason"):
+    val base = dealWhereBlueHasAccepted(canAccept = false)
+    val panel = render(owner(base.copy(editing = base.editing.map(_.copy(
+      shortOfWarbands = Vector("blue"))))), new RecordingControls())
+    val accept = button(panel, ".negotiation-accept")
+    assertEquals(accept.getAttribute("aria-disabled"), "true")
+    assertEquals(accept.getAttribute("data-tip"),
+      "These terms would leave blue too few warbands to rule every site " +
+        "they receive.")

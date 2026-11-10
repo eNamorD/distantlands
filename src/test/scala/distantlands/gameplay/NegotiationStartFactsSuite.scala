@@ -37,3 +37,13 @@ class NegotiationStartFactsSuite extends munit.FunSuite:
     assertEquals(facts.rules(Vector(p1, p3)).advisersOpen, false)
     assert(NegotiationStartFacts.read(Vector(DecisionOptionRef.Player(p2),
       DecisionOptionRef.Button(NegotiationStartFacts.Marker))).isLeft)
+
+  test("Deed Writer's users round trip, and open site terms"):
+    val facts = NegotiationStartFacts(Vector(p2, p3), Vector.empty,
+      Vector.empty, Vector.empty, Vector(p3))
+    assertEquals(NegotiationStartFacts.read(facts.refs), Right(facts))
+    assertEquals(facts.rules(Vector(p1, p3)).siteTraders, Vector(p3))
+    assertEquals(facts.rules(Vector(p1, p3)).siteRecipients(p1,
+      Vector(p1, p3)), Vector(p3))
+    assertEquals(facts.rules(Vector(p1, p2)).siteTraders,
+      Vector.empty[PlayerId])

@@ -344,12 +344,16 @@ final case class PlayerBoardProjection(
 final case class NegotiationTransferProjection(authorPlayerId: String,
     recipientPlayerId: String, favor: Int, relicCount: Int,
     relics: Vector[CardDetailsProjection], adviserCount: Int = 0,
-    advisers: Vector[CardDetailsProjection] = Vector.empty)
+    advisers: Vector[CardDetailsProjection] = Vector.empty,
+    sites: Vector[NegotiationSiteProjection] = Vector.empty)
 final case class NegotiationDisclosureProjection(authorPlayerId: String,
     recipientPlayerId: String, kind: String,
     card: Option[CardDetailsProjection])
 final case class NegotiationSiteRelicProjection(siteId: String,
     card: CardDetailsProjection)
+/** A site on offer in a deal, by id and name. Sites are public, so every
+  * viewer sees them (Deed Writer). */
+final case class NegotiationSiteProjection(siteId: String, name: String)
 /** An author's offer of Citizenship to a recipient (the Grand Scepter). */
 final case class NegotiationCitizenshipProjection(authorPlayerId: String,
     recipientPlayerId: String)
@@ -376,11 +380,17 @@ final case class NegotiationEditingProjection(editableFavor: Int,
     adviserRecipients: Vector[String] = Vector.empty,
     /** The participants the current terms would leave over their adviser
       * limit; while any is, nobody may accept. */
-    overAdviserLimit: Vector[String] = Vector.empty)
+    overAdviserLimit: Vector[String] = Vector.empty,
+    /** The sites the viewer may give, and to whom (Deed Writer). */
+    giftableSites: Vector[NegotiationSiteProjection] = Vector.empty,
+    siteRecipients: Vector[String] = Vector.empty,
+    /** The recipients the current terms would leave with too few warbands
+      * to rule every site they receive; while any is, nobody may accept. */
+    shortOfWarbands: Vector[String] = Vector.empty)
 
 /** A parked negotiation as one viewer sees it. Everyone sees the participants,
   * who has accepted, favor amounts, relic and adviser counts and the details of
-  * faceup relics and advisers, and
+  * faceup relics and advisers, the sites on offer, and
   * each disclosure's kind and recipient, and every promise. Only an author sees the identity of
   * their own facedown relics and of information they promise. `editing` is
   * present only for a participant.
