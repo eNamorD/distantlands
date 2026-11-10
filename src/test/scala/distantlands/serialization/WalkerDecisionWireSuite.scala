@@ -35,7 +35,8 @@ class WalkerDecisionWireSuite extends munit.FunSuite:
   test("walker choice steps round trip the negotiation answers"):
     val red = PlayerId("red"); val blue = PlayerId("blue")
     val terms = NegotiationTerms(
-      Vector(NegotiationTransfer(blue, 2, Vector(RelicId("r1")))),
+      Vector(NegotiationTransfer(blue, 2, Vector(RelicId("r1")),
+        Vector(DenizenId("d1"), VisionId("v2")))),
       Vector(
         NegotiationDisclosure(blue,
           NegotiationDisclosureRef.Adviser(red, VisionId("v1"))),

@@ -3,11 +3,14 @@ package distantlands.model
 final case class NegotiationTransfer(
     recipient: PlayerId,
     favor: Int,
-    relics: Vector[RelicId]
+    relics: Vector[RelicId],
+    advisers: Vector[WorldCardId] = Vector.empty
 ):
   require(favor >= 0, "Negotiation favor must be non-negative")
   require(relics.distinct.size == relics.size,
     "Negotiation relic transfers must be distinct")
+  require(advisers.distinct.size == advisers.size,
+    "a transfer row names one adviser twice")
 
 sealed trait NegotiationDisclosureRef extends Product with Serializable
 object NegotiationDisclosureRef:

@@ -13,7 +13,8 @@ final case class DealState(participants: Vector[PlayerId],
     terms: Map[PlayerId, NegotiationTerms], accepted: Set[PlayerId],
     declined: Boolean):
   def hasSubstance: Boolean = terms.values.exists(t =>
-    t.transfers.exists(x => x.favor > 0 || x.relics.nonEmpty) ||
+    t.transfers.exists(x => x.favor > 0 || x.relics.nonEmpty ||
+      x.advisers.nonEmpty) ||
       t.disclosures.nonEmpty || t.citizenship.nonEmpty ||
       t.promises.nonEmpty || t.bindingPromises.nonEmpty)
   def unanimous: Boolean =

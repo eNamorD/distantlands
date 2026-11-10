@@ -52,7 +52,8 @@ final case class NegotiationTerms(
     bindingPromises: Vector[String] = Vector.empty
 )
 final case class NegotiationTransfer(
-    recipientPlayerId: String, favor: Int, relicIds: Vector[String])
+    recipientPlayerId: String, favor: Int, relicIds: Vector[String],
+    advisers: Vector[WorldCard] = Vector.empty)
 final case class NegotiationDisclosure(
     recipientPlayerId: String, information: NegotiationInformation)
 

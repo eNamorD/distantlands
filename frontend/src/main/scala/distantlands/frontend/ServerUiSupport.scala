@@ -350,7 +350,7 @@ private[frontend] object ServerUiSupport:
   private[frontend] def protocolNegotiationTerms(value: NegotiationTermsInput): NegotiationTerms =
     NegotiationTerms(
       value.transfers.map(v => NegotiationTransfer(
-        v.recipientPlayerId, v.favor, v.relicIds)),
+        v.recipientPlayerId, v.favor, v.relicIds, v.advisers)),
       value.disclosures.map { disclosure =>
         val information: NegotiationInformation = disclosure.kind match {
           case "adviser" => NegotiationInformation.Adviser(
