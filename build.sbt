@@ -13,7 +13,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "oathdigital-engine",
     maintainer := "Oath Digital",
-    Compile / mainClass := Some("distantlands.server.OathServer"),
+    Compile / mainClass := Some("distantlands.server.DistantLandsServer"),
     Compile / run := (Compile / run)
       .dependsOn(frontend / Compile / fastLinkJS).evaluated,
     Compile / runMain := (Compile / runMain)

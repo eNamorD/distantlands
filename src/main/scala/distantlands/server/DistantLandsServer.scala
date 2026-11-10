@@ -16,7 +16,7 @@ import akka.http.scaladsl.Http
 // DesktopConsole, which their own suites cover. The marker must stand alone
 // on its line for the Scala 3 instrumenter to honour it.
 // $COVERAGE-OFF$
-object OathServer:
+object DistantLandsServer:
   def main(arguments: Array[String]): Unit =
     val version = Option(getClass.getPackage.getImplementationVersion)
       .getOrElse("development")
