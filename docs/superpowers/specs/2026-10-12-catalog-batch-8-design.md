@@ -105,7 +105,8 @@ The approved changes outside `gameplay/powers/`:
   walked right after the batch under the batch's own node, so Brass Army
   can ask its holder. The batch holds its operations with `Defer`, in its
   own step, so a command that resumes inside a follow-up asks again with
-  the same operations. A follow-up's own batches start no follow-up. A
+  the same operations. A follow-up's own batches start no follow-up
+  (catalog batch 11, slice 8, lets a trigger that opts in answer them). A
   parked position inside a follow-up resolves to its node through
   `WalkerPowerGather.leafAt`, which asks the triggers the same way.
   Secret Testament needs no trigger: it is a Challenge modifier.

@@ -233,7 +233,20 @@ one.
   front needs it journaled inside that batch, and a `Note` is not a
   `CoreOperation`. See the wording ledger, "A card play's line now follows
   the lines its own batch caused". Recorded in the procedures journal their
-  own notes design of 2026-10-16.
+  own notes design of 2026-10-16. False Prophet shows it most: a claimed
+  Vision's owner's reveal line reads after the claimant's play and the
+  kill, and a nested claim's lines read before the outer claimant's reveal
+  ([catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-8-nested-follow-ups),
+  slices 7 and 8).
+- [ ] **Name whose Vision a claimant discards.** When False Prophet's
+  claimant reveals the claimed Vision off turn, their own discarded Vision
+  posts the generic "Discarded Vision of Sanctuary to the Provinces
+  discard", which names no player. Give the discard line the off-turn
+  variant the reveal and kept lines have. Left by catalog batch 11, slice 8.
+- [ ] **Say which Vision a winner picks when it changes nothing.** Swear
+  an Oath with several revealed Visions asks which goal to set (ruling 30);
+  when the pick is the goal already set, nothing is set and no line says
+  which Vision was picked. Left by catalog batch 11, slice 6.
 
 ### Powers-related deferred items
 
@@ -264,6 +277,21 @@ one.
   the modifier sends it. The card-moved line is right. The option should
   name the real destination, which needs the modifier to reach the
   placement's options and not only its operations.
+- [ ] **Vow of Kinship's favor source in the cases it skips.** A ruler
+  holding the Vow is asked whether a spend comes from their board or the
+  Nomad bank, but not in four cases, where the board pays first: Wild
+  Pastures' payment (a batch under a question asks nothing again); a cost
+  Vow of Division claims, which runs whole outside the batch-question
+  seam; a cost walked as separate moves, which asks once per move; and a
+  second holder's spend in the same batch, which asks only the first. A
+  draw is also not tied to its spend, so a non-required spend a
+  restriction skips leaves the drawn favor on the board. Left by
+  [catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-5-favor-redirection),
+  slice 5.
+- [ ] **Show a False Prophet claim on the claimant's board.** The claimed
+  Vision's owner's board shows the claimant's warband on it, but the
+  claimant's own board shows nothing, so they cannot see which Visions
+  they claim. Left by catalog batch 11, slice 7.
 
 ### Engine deferred items
 

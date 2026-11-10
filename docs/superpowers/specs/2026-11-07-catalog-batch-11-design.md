@@ -30,10 +30,12 @@ and function names below come from that inventory.
 | 5 | Favor redirection | Vow of Kinship (152) |
 | 6 | Several revealed Visions | Desecrated Ground (E08r) |
 | 7 | A claimed Vision and an off-turn reveal | False Prophet (85) |
+| 8 | Nested follow-ups | False Prophet (85) |
 
 Slices are ordered so that each seam exists before the slice that reuses
 it: slice 5 asks its favor-source question through slice 4's seam, and
-slice 7 reads slice 6's revealed-Visions set. Slices 4 to 7 touch the
+slice 7 reads slice 6's revealed-Visions set. Slice 8 was added after
+slice 7 landed, to close its one limit. Slices 4 to 8 touch the
 procedure walker or the card-play path and run those suites in full before
 landing.
 
