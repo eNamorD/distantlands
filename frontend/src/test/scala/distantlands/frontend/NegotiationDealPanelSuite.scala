@@ -300,3 +300,90 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
     assert(box.checked)
     box.click()
     assert(box.checked)
+
+  /** Red's deal with one promise from each player: red's plain one and
+    * blue's binding one. */
+  private def dealWithPromises(bindingOpen: Boolean) =
+    val base = dealWhereBlueHasAccepted()
+    base.copy(promises = Vector(
+        NegotiationPromiseState("red", "I will not attack you.", binding = false),
+        NegotiationPromiseState("blue", "I will give you 1 favor.", binding = true)),
+      editing = base.editing.map(_.copy(bindingPromisesOpen = bindingOpen)))
+
+  test("every viewer reads each promise as written"):
+    val panel = render(spectator(dealWithPromises(bindingOpen = false)),
+      new RecordingControls())
+    assertEquals(Dom.all(panel, ".negotiation-promise").map(_.textContent),
+      Vector("red promises: “I will not attack you.”",
+        "blue makes a binding promise: “I will give you 1 favor.”"))
+
+  test("the owner edits their promises, and Save sends them trimmed"):
+    val ui = new RecordingControls()
+    val panel = render(owner(dealWithPromises(bindingOpen = false)), ui)
+    // Red's own promise is restored into its field; blue's is not.
+    val restored = input(panel, ".negotiation-promise-item input[type=text]")
+    assertEquals(restored.value, "I will not attack you.")
+    assertEquals(restored.maxLength, 160)
+    button(panel, ".negotiation-add-promise").click()
+    val fields = Dom.all(panel, ".negotiation-promise-item input[type=text]")
+    assertEquals(fields.length, 2)
+    as[dom.html.Input](fields(1)).value = "  Also this.  "
+    // No binding section while the bounds close it.
+    assertEquals(Dom.all(panel, ".negotiation-binding-promises").length, 0)
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
+        terms }
+    assertEquals(sent.map(_.promises),
+      Vector(Vector("I will not attack you.", "Also this.")))
+    assertEquals(sent.map(_.bindingPromises), Vector(Vector.empty[String]))
+
+  test("a removed or blank promise is not sent, and Add stops at five"):
+    val ui = new RecordingControls()
+    val panel = render(owner(dealWithPromises(bindingOpen = false)), ui)
+    button(panel, ".negotiation-remove-promise").click()
+    val add = button(panel, ".negotiation-add-promise")
+    (1 to 5).foreach(_ => add.click())
+    assert(add.disabled)
+    assertEquals(Dom.all(panel,
+      ".negotiation-promise-item input[type=text]").length, 5)
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
+        terms.promises }
+    assertEquals(sent, Vector(Vector.empty[String]))
+
+  test("binding promises get their own section when the bounds open it"):
+    val ui = new RecordingControls()
+    val panel = render(owner(dealWithPromises(bindingOpen = true)), ui)
+    val binding = Dom.one(panel, ".negotiation-binding-promises")
+    as[dom.html.Button](Dom.one(binding, ".negotiation-add-promise")).click()
+    as[dom.html.Input](Dom.one(binding, "input[type=text]")).value =
+      "I will not attack you next round."
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
+        terms.bindingPromises }
+    assertEquals(sent, Vector(Vector("I will not attack you next round.")))
+
+  test("each Remove names its promise, removes its own row, and a repeat is sent once"):
+    val ui = new RecordingControls()
+    val panel = render(owner(dealWithPromises(bindingOpen = false)), ui)
+    val add = button(panel, ".negotiation-add-promise")
+    add.click(); add.click()
+    val fields = Dom.all(panel, ".negotiation-promise-item input[type=text]")
+      .map(as[dom.html.Input](_))
+    fields(1).value = "Second."
+    fields(2).value = " I will not attack you. "
+    assertEquals(Dom.all(panel, ".negotiation-remove-promise")
+      .map(_.getAttribute("aria-label")),
+      Vector("Remove Promise 1", "Remove Promise 2", "Remove Promise 3"))
+    as[dom.html.Button](Dom.all(panel, ".negotiation-remove-promise")(1)).click()
+    assertEquals(Dom.all(panel, ".negotiation-remove-promise")
+      .map(_.getAttribute("aria-label")),
+      Vector("Remove Promise 1", "Remove Promise 2"))
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
+        terms.promises }
+    assertEquals(sent, Vector(Vector("I will not attack you.")))

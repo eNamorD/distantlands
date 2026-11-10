@@ -10,6 +10,7 @@ import distantlands.protocol.projection._
   * and the kind and recipient of each disclosure. Only an author sees the
   * identity of a facedown relic they offer or of information they promise.
   * Only a participant gets the editing inputs, and never another player's.
+  * Everyone reads every promise.
   */
 private[application] final class NegotiationDealProjector(
     presentation: GamePresentationProjector):
@@ -43,13 +44,19 @@ private[application] final class NegotiationDealProjector(
           disclosure.recipient.value, kind, card)
       }
     }
+    val promises = query.participants.flatMap { author =>
+      val terms = query.terms(author)
+      terms.promises.map(NegotiationPromiseProjection(author.value, _,
+        binding = false)) ++ terms.bindingPromises.map(
+        NegotiationPromiseProjection(author.value, _, binding = true))
+    }
     NegotiationDealProjection(query.participants.map(_.value),
       query.participants.filter(query.accepted).map(_.value), transfers,
       disclosures, viewer.filter(query.participants.contains)
         .map(editing(ready, query, _)),
       query.participants.flatMap(author => query.terms(author).citizenship
         .map(recipient => NegotiationCitizenshipProjection(author.value,
-          recipient.value))))
+          recipient.value))), promises)
 
   private def editing(ready: ReadyGame, query: DecisionQuery.Negotiate,
       viewer: PlayerId): NegotiationEditingProjection =
@@ -74,4 +81,4 @@ private[application] final class NegotiationDealProjector(
               hidden = false)))
       },
       query.acceptors.contains(viewer), own.citizenship.map(_.value),
-      own.citizenshipRefused)
+      own.citizenshipRefused, bindingPromisesOpen = own.bindingPromises)

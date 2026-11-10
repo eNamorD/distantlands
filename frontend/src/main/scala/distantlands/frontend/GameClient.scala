@@ -65,7 +65,9 @@ final case class NegotiationDisclosureInput(recipientPlayerId: String,
     cardId: String)
 final case class NegotiationTermsInput(transfers: Vector[NegotiationTransferInput],
     disclosures: Vector[NegotiationDisclosureInput],
-    citizenshipPlayerIds: Vector[String] = Vector.empty)
+    citizenshipPlayerIds: Vector[String] = Vector.empty,
+    promises: Vector[String] = Vector.empty,
+    bindingPromises: Vector[String] = Vector.empty)
 sealed trait GameClientFailure:
   def message: String
 object GameClientFailure:

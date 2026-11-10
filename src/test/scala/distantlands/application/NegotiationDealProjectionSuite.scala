@@ -12,7 +12,7 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, ProposeTerms}
 import distantlands.protocol.projection.{DecisionQueryProjection,
   NegotiationCitizenshipProjection,
-  GameProjection, NegotiationDealProjection}
+  GameProjection, NegotiationDealProjection, NegotiationPromiseProjection}
 import distantlands.testkit.{MenuPlay, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 
@@ -155,3 +155,17 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
     Vector(p1, p2, p3).foreach(viewer => assertEquals(
       deal(view(state, viewer)).citizenship,
       Vector(NegotiationCitizenshipProjection("p1", "p2")), viewer.value))
+
+  test("every viewer reads every promise; the binding box stays closed"):
+    val terms = NegotiationTerms(promises = Vector("I will not attack you."))
+    val state = parkedDeal(gathered, Vector(p2), Some(terms))
+    Vector(p1, p2, p3).foreach { viewer =>
+      assertEquals(deal(view(state, viewer)).promises, Vector(
+        NegotiationPromiseProjection(p1.value, "I will not attack you.",
+          binding = false)), viewer.value)
+    }
+    val public = projector.projectPublic("negotiation", LoadedGame(state, 30))
+    assertEquals(deal(public).promises.map(_.text),
+      Vector("I will not attack you."))
+    val editing = deal(view(state, p2)).editing.getOrElse(fail("editing"))
+    assert(!editing.bindingPromisesOpen)

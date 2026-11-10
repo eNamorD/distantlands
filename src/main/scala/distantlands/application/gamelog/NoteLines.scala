@@ -147,6 +147,7 @@ private[gamelog] final class NoteLines(words: LogWords,
     case NoteArg.Goal(goal) => Vector(Text(OathkeeperGoalChoice.named(goal)))
     case NoteArg.Players(ids) =>
       LogWords.join(ids.map(id => Vector(words.player(id))))
+    case NoteArg.Promise(text) => Vector(Text(s"“$text”"))
     case NoteArg.Clauses(parts) =>
       LogWords.join(parts.map(clause(_, seen, viewer)))
     case NoteArg.Placements(entries) => LogWords.join(entries.map(

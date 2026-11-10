@@ -352,6 +352,11 @@ final case class NegotiationSiteRelicProjection(siteId: String,
 /** An author's offer of Citizenship to a recipient (the Grand Scepter). */
 final case class NegotiationCitizenshipProjection(authorPlayerId: String,
     recipientPlayerId: String)
+/** One promise an author wrote into the deal, as they wrote it. `binding`
+  * is whether it is a binding promise (catalog batch 12, rulings 10 and
+  * 11). */
+final case class NegotiationPromiseProjection(authorPlayerId: String,
+    text: String, binding: Boolean)
 /** What the viewer may put into the deal: present only for a participant. */
 final case class NegotiationEditingProjection(editableFavor: Int,
     editableRelics: Vector[CardDetailsProjection],
@@ -361,11 +366,13 @@ final case class NegotiationEditingProjection(editableFavor: Int,
     /** The participants the viewer may offer Citizenship, and why they may
       * offer none while holding the Scepter. */
     editableCitizenship: Vector[String] = Vector.empty,
-    citizenshipRefused: Option[String] = None)
+    citizenshipRefused: Option[String] = None,
+    /** Whether the viewer may add binding promises (The Tribunal). */
+    bindingPromisesOpen: Boolean = false)
 
 /** A parked negotiation as one viewer sees it. Everyone sees the participants,
   * who has accepted, favor amounts, relic counts and faceup relic details, and
-  * each disclosure's kind and recipient. Only an author sees the identity of
+  * each disclosure's kind and recipient, and every promise. Only an author sees the identity of
   * their own facedown relics and of information they promise. `editing` is
   * present only for a participant.
   */
@@ -374,4 +381,5 @@ final case class NegotiationDealProjection(participantPlayerIds: Vector[String],
     transfers: Vector[NegotiationTransferProjection],
     disclosures: Vector[NegotiationDisclosureProjection],
     editing: Option[NegotiationEditingProjection] = None,
-    citizenship: Vector[NegotiationCitizenshipProjection] = Vector.empty)
+    citizenship: Vector[NegotiationCitizenshipProjection] = Vector.empty,
+    promises: Vector[NegotiationPromiseProjection] = Vector.empty)

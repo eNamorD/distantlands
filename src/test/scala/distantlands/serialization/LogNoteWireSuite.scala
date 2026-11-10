@@ -145,3 +145,9 @@ class LogNoteWireSuite extends munit.FunSuite:
     refused(NoteArg.Placements(Vector(2 -> SiteId("s1"))),
       arg => arg("placements")(0)("count") = -1,
       "$.payload.note.args[0].placements[0].count")
+
+  test("a log note's promise argument round trips its text"):
+    val event = noteEvent(PowerSourceRef.Card(DenizenId("denizen")),
+      NoteArg.Promise("I will not attack you, “ever”."))
+    val encoded = accepted(GameEventWire.encodeEvent("notes", 0, event))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))

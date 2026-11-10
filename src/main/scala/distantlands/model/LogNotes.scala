@@ -38,6 +38,11 @@ object NoteArg:
   final case class Goal(goal: OathkeeperGoal) extends NoteArg
   /** Several players as one phrase, "Blue and Red". */
   final case class Players(ids: Vector[PlayerId]) extends NoteArg
+  /** What a Negotiation author wrote they will do, as they wrote it
+    * (catalog batch 12, ruling 12). The one argument that is text rather
+    * than a reference: it names no card, so the log's knowledge rule has
+    * nothing to judge. The Game Log quotes it as plain text. */
+  final case class Promise(text: String) extends NoteArg
   /** Several clauses as one phrase, "lost 2 warbands, burned 1 favor and
     * was sent to the Mine". The joining is the Game Log's. */
   final case class Clauses(parts: Vector[NoteClause]) extends NoteArg

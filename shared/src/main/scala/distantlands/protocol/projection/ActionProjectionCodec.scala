@@ -413,15 +413,19 @@ private[projection] object ActionProjectionCodec:
       "editableSiteRelics" -> encoded(editing.editableSiteRelics)(encodeSiteRelic),
       "canAccept" -> editing.canAccept,
       "editableCitizenship" -> encoded(editing.editableCitizenship)(ujson.Str(_)),
-      "citizenshipRefused" -> option(editing.citizenshipRefused)(ujson.Str(_)))),
+      "citizenshipRefused" -> option(editing.citizenshipRefused)(ujson.Str(_)),
+      "bindingPromisesOpen" -> editing.bindingPromisesOpen)),
     "citizenship" -> encoded(value.citizenship)(offer => ujson.Obj(
       "authorPlayerId" -> offer.authorPlayerId,
-      "recipientPlayerId" -> offer.recipientPlayerId)))
+      "recipientPlayerId" -> offer.recipientPlayerId)),
+    "promises" -> encoded(value.promises)(promise => ujson.Obj(
+      "authorPlayerId" -> promise.authorPlayerId, "text" -> promise.text,
+      "binding" -> promise.binding)))
 
   def decodeDeal(raw: ujson.Value, path: String): Result[NegotiationDealProjection] = for
     value <- obj(raw, path)
     _ <- exact(value, Set("participantPlayerIds", "acceptedPlayerIds", "transfers",
-      "disclosures", "editing", "citizenship"), path)
+      "disclosures", "editing", "citizenship", "promises"), path)
     participants <- strings(value, "participantPlayerIds", path)
     accepted <- strings(value, "acceptedPlayerIds", path)
     transferRaws <- array(value, "transfers", path)
@@ -432,7 +436,7 @@ private[projection] object ActionProjectionCodec:
       row <- obj(rawEditing, child)
       _ <- exact(row, Set("editableFavor", "editableRelics", "editableAdvisers",
         "editableSiteRelics", "canAccept", "editableCitizenship",
-        "citizenshipRefused"), child)
+        "citizenshipRefused", "bindingPromisesOpen"), child)
       favor <- int(row, "editableFavor", child)
       relicRaws <- array(row, "editableRelics", child)
       relics <- traverse(relicRaws, s"$child.editableRelics")(decodeCard)
@@ -443,8 +447,9 @@ private[projection] object ActionProjectionCodec:
       canAccept <- bool(row, "canAccept", child)
       offerable <- strings(row, "editableCitizenship", child)
       refused <- optionalString(row, "citizenshipRefused", child)
+      open <- bool(row, "bindingPromisesOpen", child)
     yield NegotiationEditingProjection(favor, relics, advisers, sites, canAccept,
-      offerable, refused) }
+      offerable, refused, open) }
     offerRaws <- array(value, "citizenship", path)
     offers <- traverse(offerRaws, s"$path.citizenship") { (raw, child) => for
       row <- obj(raw, child)
@@ -452,5 +457,13 @@ private[projection] object ActionProjectionCodec:
       author <- string(row, "authorPlayerId", child)
       recipient <- string(row, "recipientPlayerId", child)
     yield NegotiationCitizenshipProjection(author, recipient) }
+    promiseRaws <- array(value, "promises", path)
+    promises <- traverse(promiseRaws, s"$path.promises") { (raw, child) => for
+      row <- obj(raw, child)
+      _ <- exact(row, Set("authorPlayerId", "text", "binding"), child)
+      author <- string(row, "authorPlayerId", child)
+      text <- string(row, "text", child)
+      binding <- bool(row, "binding", child)
+    yield NegotiationPromiseProjection(author, text, binding) }
   yield NegotiationDealProjection(participants, accepted, transfers, disclosures,
-    editing, offers)
+    editing, offers, promises)

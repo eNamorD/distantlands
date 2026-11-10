@@ -15,7 +15,7 @@ import distantlands.model.DecisionAnswer.DeclineDeal
   * Sequence(
   *   Decide(negotiators)                  -- omitted when there is one candidate
   *   Repeat(!closed) { Branch -> Decide(deal, co-owned) }
-  *   Branch(agreed -> BuildOps(settle)))
+  *   Branch(agreed -> BuildOps(settle), notes, Citizenship, promise notes))
   * }}}
   *
   * Nothing about the deal is stored: the guard, the query and the settlement
@@ -53,6 +53,14 @@ object NegotiationProcedure:
   /** "p2 became the Chancellor.", in a game that had no Empire. */
   val becameChancellor: NoteKey = notes.key("became-chancellor", Vector(
     NotePart.Arg(0), NotePart.Text(" became the Chancellor.")))
+  /** "p1 promised p2 and p3: “…”" (catalog batch 12, ruling 12). */
+  val promised: NoteKey = notes.key("promised", Vector(
+    NotePart.Arg(0), NotePart.Text(" promised "), NotePart.Arg(1),
+    NotePart.Text(": "), NotePart.Arg(2)))
+  /** "p1 made a binding promise to p2: “…”" (ruling 11). */
+  val promisedBinding: NoteKey = notes.key("promised-binding", Vector(
+    NotePart.Arg(0), NotePart.Text(" made a binding promise to "),
+    NotePart.Arg(1), NotePart.Text(": "), NotePart.Arg(2)))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   def build(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
@@ -127,7 +135,13 @@ object NegotiationProcedure:
             Citizenship.become(citizen),
             Note(ProcedureNotes.id(ActionRef.Negotiation),
               becameNote(_, citizen))))
-        opening ++ settlement ++ citizenship
+        // Each promise's line, last: the deal's pieces have all moved and
+        // its roles changed by now. The engine enforces none of them.
+        val promises: Vector[Operation] =
+          if !deal.agreed then Vector.empty
+          else promisedLines(deal).map(note =>
+            Note(ProcedureNotes.id(ActionRef.Negotiation), _ => Some(note)))
+        opening ++ settlement ++ citizenship ++ promises
       })))
 
   private def endedNote(states: NoteStates): Option[LogNote] =
@@ -177,3 +191,15 @@ object NegotiationProcedure:
       Option.when(deal.terms(author).citizenship.nonEmpty)(
         offeredCitizenship.sourceless(NoteArg.Player(author),
           NoteArg.Players(deal.terms(author).citizenship))).toVector)
+
+  /** One line per promise, by author in participant order, the plain
+    * promises before the binding ones. Each names the other participants. */
+  private def promisedLines(deal: DealState): Vector[LogNote] =
+    deal.participants.flatMap { author =>
+      val others = NoteArg.Players(deal.participants.filter(_ != author))
+      val terms = deal.terms(author)
+      terms.promises.map(text => promised.sourceless(NoteArg.Player(author),
+        others, NoteArg.Promise(text))) ++
+        terms.bindingPromises.map(text => promisedBinding.sourceless(
+          NoteArg.Player(author), others, NoteArg.Promise(text)))
+    }

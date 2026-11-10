@@ -6,7 +6,8 @@ import org.scalajs.dom
 /** The deal panel for a parked negotiation. Every viewer sees who is in the
   * deal, who has accepted, and the terms as their redaction level allows; the
   * viewer the route gave an editor answers the deal decision through it
-  * (`ResolveWalker`: propose terms, accept, decline).
+  * (`ResolveWalker`: propose terms, accept, decline). An owner also writes
+  * their promises, and binding promises when the bounds open them.
   */
 private[frontend] object NegotiationDealPanel:
   import ServerUiSupport.{button, cardLink, protocolNegotiationTerms, text}
@@ -32,6 +33,10 @@ private[frontend] object NegotiationDealPanel:
     deal.citizenship.foreach(offer => panel.appendChild(text("p",
       "negotiation-citizenship", s"${offer.authorPlayerId} offers " +
         s"${offer.recipientPlayerId} Citizenship")))
+    deal.promises.foreach(promise => panel.appendChild(text("p",
+      "negotiation-promise", s"${promise.authorPlayerId} " +
+        s"${if promise.binding then "makes a binding promise" else "promises"}" +
+        s": “${promise.text}”")))
 
   /** What the author gives, named where the viewer can see it: favor, each
     * relic the projection carries, and a count of the facedown rest.
@@ -180,6 +185,15 @@ private[frontend] object NegotiationDealPanel:
         citizenship += recipient -> citizenshipItem(deal, editing, me,
           recipient, panel)
     }
+    def own(binding: Boolean): Vector[String] = deal.promises.collect {
+      case promise if promise.authorPlayerId == me &&
+          promise.binding == binding => promise.text }
+    val promises = new NegotiationPromiseEditor("Your promises", "Promise",
+      own(binding = false), panel, "negotiation-promises")
+    val binding = Option.when(editing.bindingPromisesOpen)(
+      new NegotiationPromiseEditor("Your binding promises",
+        "Binding promise", own(binding = true), panel,
+        "negotiation-binding-promises"))
     val save = button("Save Deal Changes", "negotiation-save")
     save.disabled = !canControl
     save.onclick = _ => {
@@ -192,7 +206,8 @@ private[frontend] object NegotiationDealPanel:
         Option.when(offer.kind != "site-relic")(me), offer.siteId,
         Option.when(offer.kind == "adviser")(offer.card.cardKind),
         offer.card.cardId) }.toVector, citizenship.collect {
-          case (recipient, check) if check.checked => recipient }.toVector)
+          case (recipient, check) if check.checked => recipient }.toVector,
+        promises.values, binding.fold(Vector.empty[String])(_.values))
       controls.submitCommand(GameCommand.ResolveWalker(decisionId,
         DecisionAnswerWire.ProposeTermsWire(protocolNegotiationTerms(terms))))
     }

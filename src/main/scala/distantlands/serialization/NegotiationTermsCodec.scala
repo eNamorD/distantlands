@@ -30,7 +30,9 @@ private[serialization] object NegotiationTermsCodec:
         "information" -> information)
     }),
     "citizenship" -> ujson.Arr.from(terms.citizenship.map(p =>
-      ujson.Str(p.value))))
+      ujson.Str(p.value))),
+    "promises" -> ujson.Arr.from(terms.promises.map(ujson.Str(_))),
+    "bindingPromises" -> ujson.Arr.from(terms.bindingPromises.map(ujson.Str(_))))
 
   def decode(value: ujson.Value, path: String)
       : Either[WireError, NegotiationTerms] = try
@@ -60,6 +62,8 @@ private[serialization] object NegotiationTermsCodec:
           PlayerId(row("recipientPlayerId").str), _))
       }
     yield NegotiationTerms(transfers, disclosures,
-      value("citizenship").arr.toVector.map(v => PlayerId(v.str)))
+      value("citizenship").arr.toVector.map(v => PlayerId(v.str)),
+      value("promises").arr.toVector.map(_.str),
+      value("bindingPromises").arr.toVector.map(_.str))
   catch { case NonFatal(error) => Left(InvalidValue(path,
     Option(error.getMessage).getOrElse("invalid Negotiation terms"))) }

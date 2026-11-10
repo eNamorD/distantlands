@@ -146,6 +146,7 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
       "faces" -> ujson.Arr.from(faces.map(encodeDieFace)))
     case NoteArg.Players(ids) => ujson.Obj("kind" -> "players",
       "playerIds" -> ujson.Arr.from(ids.map(_.value)))
+    case NoteArg.Promise(text) => ujson.Obj("kind" -> "promise", "text" -> text)
     case NoteArg.Clauses(parts) => ujson.Obj("kind" -> "clauses",
       "clauses" -> ujson.Arr.from(parts.map(encodeNoteClause)))
     case NoteArg.Placements(entries) => ujson.Obj("kind" -> "placements",
@@ -224,6 +225,7 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
       .map(NoteArg.Goal.apply)
     case "players" => Right(NoteArg.Players(
       value("playerIds").arr.toVector.map(id => PlayerId(id.str))))
+    case "promise" => Right(NoteArg.Promise(value("text").str))
     case "clauses" => traverse(value("clauses").arr.zipWithIndex.toVector)({
       case (clause, index) =>
         decodeNoteClause(clause, s"$path.clauses[$index]") })

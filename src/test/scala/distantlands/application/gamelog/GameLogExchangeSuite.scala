@@ -39,6 +39,17 @@ class GameLogExchangeSuite extends munit.FunSuite:
       s"${playerLabel(script.actor)} gave 1 favor to ${playerLabel(partner)}"),
       lines(script))
 
+  test("an agreed promise is written once, quoted, naming its author and the others"):
+    val script = negotiationPromised
+    val expected = s"${playerLabel(script.actor)} promised " +
+      s"${playerLabel(partner)}: “I will not attack you this round.”"
+    Vector(None, Some(script.actor), Some(partner), Some(bystander))
+      .foreach { viewer =>
+        val all = texts(format(script, viewer).filter(_.depth == 1))
+        assertEquals(all.count(_ == expected), 1, s"$viewer: $all")
+      }
+    assertEquals(lines(script).last, expected, lines(script))
+
   /** A bystander reads the disclosed card as its back, not by its slot.
     * The rule this line replaced read it through `LogWords.slotted` and
     * wrote "facedown adviser (slot 1)"; a note's card word has no slot

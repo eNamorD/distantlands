@@ -19,3 +19,25 @@ class GameIntentMapperNegotiationSuite extends munit.FunSuite:
         NegotiationTerms(Vector(NegotiationTransfer(PlayerId("blue"), 2,
           Vector(RelicId("r1")))), Vector(NegotiationDisclosure(PlayerId("blue"),
           NegotiationDisclosureRef.HeldRelic(red, RelicId("r2"))))))))))
+
+  test("promises are trimmed, and a promise over a limit is refused"):
+    def terms(promises: Vector[String], binding: Vector[String] = Vector.empty) =
+      Wire.ProposeTermsWire(distantlands.protocol.NegotiationTerms(
+        Vector.empty, Vector.empty, Vector.empty, promises, binding))
+    assertEquals(bound(terms(Vector("  I will not attack you.  "),
+      Vector(" Binding. "))), Right(PlayerIntent.ResolveWalker(TreeDecision(
+      "negotiation.deal", DecisionAnswer.ProposeTerms(NegotiationTerms(
+        promises = Vector("I will not attack you."),
+        bindingPromises = Vector("Binding.")))))))
+    assertEquals(bound(terms(Vector("x" * 161))), Left(
+      GameIntentMappingFailure("$.intent.terms.promises",
+        "a promise over 160 characters")))
+    assertEquals(bound(terms(Vector.empty, Vector("   "))), Left(
+      GameIntentMappingFailure("$.intent.terms.bindingPromises",
+        "a blank promise")))
+    // Trimming can make two promises one.
+    assertEquals(bound(terms(Vector("Peace.", " Peace."))), Left(
+      GameIntentMappingFailure("$.intent.terms.promises",
+        "the same promise twice")))
+    assertEquals(bound(terms(Vector.tabulate(6)(i => s"Promise $i")))
+      .left.map(_.message), Left("more than 5 promises"))

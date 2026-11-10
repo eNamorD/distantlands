@@ -12,12 +12,15 @@ private[protocol] object CommandNestedCodecs:
       "recipientPlayerId" -> row.recipientPlayerId,
       "information" -> encodeInformation(row.information)) }),
     "citizenshipPlayerIds" -> ujson.Arr.from(
-      value.citizenshipPlayerIds.map(ujson.Str(_))))
+      value.citizenshipPlayerIds.map(ujson.Str(_))),
+    "promises" -> ujson.Arr.from(value.promises.map(ujson.Str(_))),
+    "bindingPromises" -> ujson.Arr.from(
+      value.bindingPromises.map(ujson.Str(_))))
 
   def decodeNegotiation(value: ujson.Value, path: String)
       : Either[ProtocolDecodeFailure, NegotiationTerms] = obj(value, path).flatMap { root => for
-    _ <- exact(root, Set("transfers", "disclosures", "citizenshipPlayerIds"),
-      path)
+    _ <- exact(root, Set("transfers", "disclosures", "citizenshipPlayerIds",
+      "promises", "bindingPromises"), path)
     transferValues <- field(root, "transfers", path).flatMap(array(_, s"$path.transfers"))
     transfers <- traverse(transferValues.zipWithIndex) { case (v, i) => decodeTransfer(v, s"$path.transfers[$i]") }
     disclosureValues <- field(root, "disclosures", path).flatMap(array(_, s"$path.disclosures"))
@@ -28,7 +31,12 @@ private[protocol] object CommandNestedCodecs:
     citizenshipValue <- field(root, "citizenshipPlayerIds", path)
     citizenship <- strings(citizenshipValue, s"$path.citizenshipPlayerIds")
     _ <- noDuplicates(citizenship, s"$path.citizenshipPlayerIds")
-  yield NegotiationTerms(transfers, disclosures, citizenship) }
+    promiseValue <- field(root, "promises", path)
+    promises <- strings(promiseValue, s"$path.promises")
+    bindingValue <- field(root, "bindingPromises", path)
+    bindingPromises <- strings(bindingValue, s"$path.bindingPromises")
+  yield NegotiationTerms(transfers, disclosures, citizenship, promises,
+    bindingPromises) }
 
   /** Mirrors the journal's generic decision-answer tags (`"choose-one"` /
     * `"partition"`) and its kind/id option spelling, so a client's answer and
