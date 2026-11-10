@@ -15,9 +15,10 @@ Sequence(
   Branch(agreed -> BuildOps(settle)))
 ```
 
-- The negotiator choice is a `ChooseMany(1, n, ...)` over the other players at the actor's site. Its window is `NegotiationEligibility`.
+- The negotiator choice is a `ChooseMany(1, n, ...)` over the candidates: the other players at the actor's site, and those Traveling Negotiator, The Tribunal or Bandit Tribunal lets the actor reach (`NegotiationReach`). Its window is `NegotiationEligibility`.
 - The deal is one `Decide` whose owner is the actor and whose co-owners are the other participants. Any owner may answer, in any order, and the `Repeat` re-asks it after each answer until the deal closes.
-- A start is refused when no other player has a pawn at the actor's site (`NegotiationUnavailable`). There is no first-game gate: the action is available to any role and any Foundation face.
+- A start is refused when there is no candidate (`NegotiationUnavailable`). The start reads the reach once, under the walk's power-use restrictions (City Wall, Giant Python, Bandit Forest), and stores the candidates and The Tribunal's users as walker start facts (`NegotiationStartFacts`). Every rebuild reads them back. There is no first-game gate: the action is available to any role and any Foundation face.
+- A deal opens binding promises to every author when one participant may use The Tribunal (intact).
 
 ## The deal is a fold over the answers
 
@@ -42,7 +43,7 @@ Owners get the full deal with editing inputs, computed from their own bounds. Ev
 
 ## Unsupported Negotiation rules
 
-`When Negotiating` handlers the engine does not support (Council Arbiter, Deed Writer, Traveling Negotiator, Tribunal faces, Festival District, the Grand Scepter, and High Priest) are ignored, not blocking, and the start records nothing about them. Separate action powers such as Whispering Stone do not modify a base Negotiation merely by being held. The engine does not infer mechanics from rules text.
+`When Negotiating` handlers the engine does not support (Council Arbiter, Deed Writer, Festival District, the Grand Scepter, and High Priest) are ignored, not blocking, and the start records nothing about them. Separate action powers such as Whispering Stone do not modify a base Negotiation merely by being held. The engine does not infer mechanics from rules text.
 
 ## Journal
 
@@ -50,4 +51,4 @@ Each answer is a `WalkerStepRecorded` carrying a `ChoicePayload`. Negotiation ha
 
 ## Deferred
 
-Citizenship and the Grand Scepter, secrets/adviser/site/banner transfers, remote and private Negotiation, future-action promises, and all component-specific Negotiation powers remain deferred. The `NegotiationEligibility` and `NegotiationSettlement` windows and the explicit `participants` of the `Negotiate` query are the hooks those powers will use.
+Citizenship and the Grand Scepter, secrets/adviser/site/banner transfers, Whispering Stone's remote, private Negotiation, future-action promises, and all component-specific Negotiation powers remain deferred. The `NegotiationEligibility` and `NegotiationSettlement` windows and the explicit `participants` of the `Negotiate` query are the hooks those powers will use.
