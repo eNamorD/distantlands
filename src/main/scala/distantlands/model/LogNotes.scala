@@ -6,9 +6,17 @@ package distantlands.model
   * starts with, and is absent for a procedure's own line, which starts with
   * its sentence. `key` picks the writer's template. `args` are typed
   * references, never text, so a card still passes the log's knowledge rule.
+  * `readers`, when set, are the only players whose Game Log shows it
+  * (catalog batch 12, ruling 23: a private deal's promises); `None` shows it
+  * to every viewer, spectators too.
   */
 final case class LogNote(source: Option[PowerSourceRef], key: String,
-    args: Vector[NoteArg])
+    args: Vector[NoteArg], readers: Option[Set[PlayerId]] = None):
+  require(readers.forall(_.nonEmpty), "a note's readers name a player")
+
+  /** This note, shown only to `players`. */
+  def readBy(players: Iterable[PlayerId]): LogNote =
+    copy(readers = Some(players.toSet))
 
 sealed trait NoteArg extends Product with Serializable
 object NoteArg:

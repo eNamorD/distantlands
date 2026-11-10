@@ -45,7 +45,7 @@ private[gamelog] final class NoteLines(words: LogWords,
       for
         after <- journal.readyAfter(at)
         spans <- spoken(power, note, states(journal, run, at) :+ after, viewer)
-      yield Posted(kind(run, power, note), spans)
+      yield Posted(kind(run, power, note), spans, readers = note.readers)
     case _ => None
 
   /** "{source}: {sentence}" for `note`, its cards judged at `seen`, or the

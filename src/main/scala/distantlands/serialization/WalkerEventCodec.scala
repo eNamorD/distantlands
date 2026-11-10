@@ -121,6 +121,8 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
       "args" -> ujson.Arr.from(note.args.map(encodeNoteArg)))
     note.source.foreach(source =>
       fields("source") = encodePowerSource(source))
+    note.readers.foreach(readers => fields("readers") =
+      ujson.Arr.from(readers.toVector.map(_.value).sorted.map(ujson.Str(_))))
     fields
 
   private def encodeNoteArg(arg: NoteArg): ujson.Value = arg match
@@ -189,7 +191,19 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
         decodePowerSource(field, s"$path.source").map(Some.apply)
     args <- traverse(value("args").arr.zipWithIndex.toVector):
       case (arg, index) => decodeNoteArg(arg, s"$path.args[$index]")
-  yield LogNote(source, value("key").str, args)
+    readers <- value.obj.get("readers") match
+      case None => Right(None)
+      case Some(field) =>
+        decodeReaders(field, s"$path.readers").map(Some.apply)
+  yield LogNote(source, value("key").str, args, readers)
+
+  /** A note's readers: each player once, and at least one. */
+  private def decodeReaders(value: ujson.Value,
+      path: String): Either[WireError, Set[PlayerId]] =
+    val ids = value.arr.toVector.map(_.str)
+    Either.cond(ids.nonEmpty && ids.distinct == ids,
+      ids.map(PlayerId(_)).toSet,
+      InvalidValue(path, "readers must name each player once"))
 
   private def decodeNoteArg(value: ujson.Value,
       path: String): Either[WireError, NoteArg] = value("kind").str match
