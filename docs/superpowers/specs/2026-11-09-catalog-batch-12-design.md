@@ -28,7 +28,7 @@ written as text, to every Negotiation.
 
 Slices are ordered so that each seam exists before the slice that reuses
 it. Slice 2's binding-promise box is slice 1's promise field with
-`DealRules.bindingPromises` set. Slice 5 reuses slice 2's Tribunal check
+`NegotiationBounds.bindingPromises` set. Slice 5 reuses slice 2's Tribunal check
 for its binding promises. Slice 6 reuses slice 3's adviser terms and the
 deal subtree that slices 1 to 5 generalize. Slices 5 and 6 touch the
 procedure walker's Negotiation subtree and run the walker suites in full
@@ -143,12 +143,16 @@ Taken with the owner on 2026-11-09.
   `favor` and `relics`. A swap is two rows going opposite ways, agreed
   together; there is no swap term.
 - **Promises.** `NegotiationTerms` gains `promises: Vector[String]` and
-  `bindingPromises: Vector[String]`. The model and the codec reject an
-  empty or blank promise, more than 160 characters, or more than 5 of a
-  kind. The text is trimmed. The client and the log render it as plain text,
-  never as markup.
+  `bindingPromises: Vector[String]`. The model refuses a blank promise,
+  one with surrounding spaces or a control character, one over 160
+  characters, the same promise twice, or more than 5 of a kind. The intent
+  mapper trims what the client sends first. The client and the log render
+  a promise as plain text, never as markup.
 - **`DealRules`**, built when a deal opens, is the one place that says who
-  may put what into it:
+  may put what into it. It opens in slice 3, its first per-pair reader.
+  Until then the author's bounds carry the binding-promise flag
+  (`NegotiationBounds.bindingPromises`), which `DealRules` sets from slice 3
+  on. The `prefix` opens in slice 5. It holds:
   - `participants`;
   - `kinds(author, recipient): Set[TermKind]`, with `TermKind` one of
     `Favor`, `Relic`, `Secret`, `Adviser` and `Site`;
@@ -185,19 +189,17 @@ Rulings 10, 12 and 13.
 - **Panel.** `NegotiationDealPanel` shows each author's promises under their
   terms, with an "Add promise" button that opens a one-line text field
   (160-character counter) and a remove button per promise. The binding
-  section is hidden while `DealRules.bindingPromises` is off.
+  section is hidden while the viewer's `NegotiationBounds.bindingPromises`
+  is off, which it always is in this slice.
 - **Log.** A new `NoteArg.Promise(text)` renders as one quoted plain-text
-  span. `LogNote` gains `readers: Option[Set[PlayerId]]`: the Game Log
-  projector leaves out a line whose readers exclude the viewer, and every
-  existing line has `None`. Lines, after the transfer lines: "Blue promised
-  Red: “…”" and "Blue made a binding promise to Red and Green: “…”", naming
-  the other participants.
+  span. Lines, last in the settlement: "Blue promised Red: “…”" and "Blue
+  made a binding promise to Red and Green: “…”", naming the other
+  participants.
 
 Tests: a promise round-trips through the codec; a blank, over-long or sixth
-promise is refused; a promise-only deal settles and writes its line;
-editing a promise clears acceptances; a line with readers is absent from a
-non-reader's log and present in a reader's; the panel adds and removes a
-promise.
+promise is refused; a binding promise is refused while the bounds close
+them; a promise-only deal settles and writes its line; editing a promise
+clears acceptances; the panel adds and removes a promise.
 
 ## Slice 2: Wider eligibility, binding promises
 
@@ -212,8 +214,8 @@ promise.
   `BanditTribunal.reaches` (both pawns at bandit-ruled sites, while the
   card is on the map). The Negotiate action's gate and its negotiator
   choice read `eligible`, so nothing else changes.
-- **Binding promises.** `DealRules.bindingPromises` holds when any
-  participant has access to The Tribunal (intact).
+- **Binding promises.** `NegotiationBounds.bindingPromises` holds when
+  any participant has access to The Tribunal (intact).
 - **Catalog.** The three faces leave holding. The Tribunal's text keeps its
   "even into later games", which the engine does not track.
 
@@ -281,8 +283,13 @@ passing to the new ruler.
   disclosures, Citizenship and promises empty, with `privateDeal = true`.
   The panel then shows "Blue and Red are negotiating in private."
 - **Log.** The opening line is "Negotiated with Red, in private." Transfer
-  and disclosure lines are public. Promise lines carry
-  `readers = participants`.
+  and disclosure lines are public. `LogNote` gains
+  `readers: Option[Set[PlayerId]]`, `None` on every other line, and the
+  promise lines carry `readers = participants`. The formatter numbers every
+  entry first and then drops each entry whose readers exclude the viewer,
+  so the other entries keep their `(sequence, ordinal)`. The Game Log
+  property "every viewer receives the same entries" narrows to entries
+  without readers.
 - **Catalog.** Whispering Stone leaves holding.
 
 Tests: any player chosen regardless of pawn; the cost paid; an outsider's
@@ -326,8 +333,9 @@ disclosure or Citizenship input; a lone player skipping the loop.
 
 | Seam | Slice | Reused by |
 |---|---|---|
-| Promise terms, `NoteArg.Promise`, `LogNote.readers` | 1 | every Negotiation, Whispering Stone |
-| `DealRules`, per-deal decision prefix | 1 | slices 2 to 6 |
+| Promise terms, `NoteArg.Promise`, `NegotiationBounds.bindingPromises` | 1 | every Negotiation, The Tribunal |
+| `DealRules` | 3 | slices 4 to 6 |
+| Per-deal decision prefix, `LogNote.readers` | 5 | Whispering Stone, The Gathering |
 | `NegotiationReach` | 2 | Traveling Negotiator, The Tribunal, Bandit Tribunal |
 | Adviser terms and the limit check | 3 | Council Arbiter, Festival District, The Gathering |
 | Site terms and the warband question | 4 | Deed Writer |
