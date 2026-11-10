@@ -465,3 +465,22 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
     assertEquals(accept.getAttribute("data-tip"),
       "These terms would leave blue too few warbands to rule every site " +
         "they receive.")
+
+  test("a player outside a private deal reads who negotiates, not the " +
+      "terms"):
+    val hidden = NegotiationDealState(
+      participantPlayerIds = Vector("red", "blue"),
+      acceptedPlayerIds = Vector("blue"), transfers = Vector.empty,
+      disclosures = Vector.empty, privateDeal = true)
+    val panel = render(spectator(hidden), new RecordingControls(),
+      canControl = false, playerId = "white")
+    assertEquals(Dom.one(panel, ".negotiation-private").textContent,
+      "red and blue are negotiating in private.")
+    assertEquals(Dom.one(panel, ".negotiation-status").textContent,
+      "red: reviewing · blue: accepted")
+    assertEquals(Dom.all(panel, ".negotiation-transfer").length, 0)
+
+  test("a participant in a private deal is not told it is outside"):
+    val panel = render(owner(dealWhereBlueHasAccepted().copy(
+      privateDeal = true)), new RecordingControls())
+    assertEquals(Dom.all(panel, ".negotiation-private").length, 0)

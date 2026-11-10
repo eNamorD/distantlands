@@ -6,7 +6,8 @@ import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard,
   NegotiationDeal, TheTribunalCard}
 import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import distantlands.gameplay.operations.TheGrandScepterCard
-import distantlands.gameplay.powers.action.BrassHorseCard
+import distantlands.gameplay.powers.action.{BrassHorseCard, WhisperingStone,
+  WhisperingStoneCard}
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.gameplay.powers.economy.BirdsongCard
 import distantlands.gameplay.powers.rest.SilverTongueCard
@@ -18,7 +19,7 @@ import distantlands.protocol.projection.{DecisionQueryProjection,
   NegotiationCitizenshipProjection,
   GameProjection, NegotiationDealProjection, NegotiationPromiseProjection,
   NegotiationSiteProjection}
-import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.{ActPowerHarness, MenuPlay, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What each viewer of a parked deal is shown. */
@@ -264,3 +265,44 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
       assertEquals(editing.shortOfWarbands, Vector(p2.value), viewer.value)
       assert(!editing.canAccept, viewer.value)
     }
+
+  /** p1's private Negotiation with p3 through Whispering Stone, with p1's
+    * offer of 2 favor and a promise proposed. p2 stands outside it. */
+  private def whisperedDeal: OathState =
+    val stoneRules = ActPowerHarness.rules()
+    val table = gathered.relic(p1, WhisperingStoneCard.id)
+      .secrets(p1, faceUp = 1)
+    val used = ActPowerHarness.use(stoneRules, table.ready,
+      WhisperingStone.id, DecisionOptionRef.Relic(WhisperingStoneCard.id))
+      .getOrElse(fail("the Stone must start"))
+    val chosen = stoneRules.resolveWalker(used.state, p1,
+      NegotiationDeal.negotiatorsDecisionId, ChooseManyAnswer(Vector(
+        DecisionOptionRef.Player(p3)))).getOrElse(fail("negotiators"))
+    stoneRules.resolveWalker(chosen.state, p1, dealId, ProposeTerms(
+      NegotiationTerms(Vector(NegotiationTransfer(p3, 2, Vector.empty)),
+        promises = Vector("I will not attack you this round."))))
+      .getOrElse(fail("terms")).state
+
+  test("a player outside a private deal sees who negotiates and who has " +
+      "accepted, never the terms"):
+    val state = whisperedDeal
+    Vector(deal(view(state, p2)),
+        deal(projector.projectPublic("negotiation", LoadedGame(state, 30))))
+      .foreach { seen =>
+        assertEquals(seen.participantPlayerIds, Vector(p1.value, p3.value))
+        assertEquals(seen.acceptedPlayerIds, Vector.empty)
+        assertEquals(seen.transfers, Vector.empty)
+        assertEquals(seen.disclosures, Vector.empty)
+        assertEquals(seen.citizenship, Vector.empty)
+        assertEquals(seen.promises, Vector.empty)
+        assertEquals(seen.editing, None)
+        assert(seen.privateDeal)
+      }
+
+  test("a participant in a private deal sees its terms"):
+    val seen = deal(view(whisperedDeal, p3))
+    assertEquals(seen.transfers.map(_.favor), Vector(2))
+    assertEquals(seen.promises.map(_.text),
+      Vector("I will not attack you this round."))
+    assert(seen.privateDeal)
+    assert(seen.editing.nonEmpty)
