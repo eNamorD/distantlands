@@ -32,6 +32,11 @@ class NegotiationPromiseSuite extends munit.FunSuite:
       assertEquals(NegotiationPromise.problem(Vector(text)),
         Some("a promise with a control character"), text))
 
+  test("a joined emoji passes: its zero-width joiner is not a control"):
+    // Two people joined by U+200D, as a couple emoji is written.
+    val couple = "\uD83D\uDC69\u200D\uD83D\uDC68"
+    assertEquals(NegotiationPromise.problem(Vector(s"We are $couple.")), None)
+
   test("a promise's own fault is named before the count or a repeat"):
     assertEquals(NegotiationPromise.problem(Vector("", "")),
       Some("a blank promise"))

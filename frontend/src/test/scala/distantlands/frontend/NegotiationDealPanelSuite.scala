@@ -365,3 +365,25 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
       case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
         terms.bindingPromises }
     assertEquals(sent, Vector(Vector("I will not attack you next round.")))
+
+  test("each Remove names its promise, removes its own row, and a repeat is sent once"):
+    val ui = new RecordingControls()
+    val panel = render(owner(dealWithPromises(bindingOpen = false)), ui)
+    val add = button(panel, ".negotiation-add-promise")
+    add.click(); add.click()
+    val fields = Dom.all(panel, ".negotiation-promise-item input[type=text]")
+      .map(as[dom.html.Input](_))
+    fields(1).value = "Second."
+    fields(2).value = " I will not attack you. "
+    assertEquals(Dom.all(panel, ".negotiation-remove-promise")
+      .map(_.getAttribute("aria-label")),
+      Vector("Remove Promise 1", "Remove Promise 2", "Remove Promise 3"))
+    as[dom.html.Button](Dom.all(panel, ".negotiation-remove-promise")(1)).click()
+    assertEquals(Dom.all(panel, ".negotiation-remove-promise")
+      .map(_.getAttribute("aria-label")),
+      Vector("Remove Promise 1", "Remove Promise 2"))
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
+        terms.promises }
+    assertEquals(sent, Vector(Vector("I will not attack you.")))

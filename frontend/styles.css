@@ -608,6 +608,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .card-link:hover { color: var(--cream-bright); text-decoration-color: var(--brass); }
 .card-link:focus-visible { outline: 2px solid var(--cream-focus); outline-offset: 1px; }
 .negotiation-item input[type=number] { width: 5em; }
+/* A promise field takes the row's width; its count and Remove wrap below it
+   on a narrow screen rather than pushing the row off the page. */
+.negotiation-promise-item { flex-wrap: wrap; }
+.negotiation-promise-item input[type=text] { flex: 1 1 16em; min-width: 0; }
+.negotiation-promise-count { color: var(--ink-dim); white-space: nowrap;
+  font-variant-numeric: tabular-nums; }
 /* A withheld checkbox (aria-disabled, its reason in the hover note) looks
    disabled but still takes the tap that shows the reason. */
 .negotiation-item input[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }

@@ -32,7 +32,8 @@ object NegotiationPromise:
   /** Why `promises` breaks a limit, or `None`: a promise's own fault
     * first, then the count, then a repeat. Length counts code points, so an
     * emoji is one character. A line or paragraph separator, or an invisible
-    * format character, counts as a control character. */
+    * format character other than the zero-width joiner that joined emoji
+    * use, counts as a control character. */
   def problem(promises: Vector[String]): Option[String] =
     promises.collectFirst {
       case text if text.isBlank => "a blank promise"
@@ -48,10 +49,11 @@ object NegotiationPromise:
     }
 
   private def controlLike(codePoint: Int): Boolean =
-    Character.getType(codePoint) match
+    codePoint != ZeroWidthJoiner && (Character.getType(codePoint) match
       case Character.CONTROL | Character.LINE_SEPARATOR |
           Character.PARAGRAPH_SEPARATOR | Character.FORMAT => true
-      case _ => false
+      case _ => false)
+  private val ZeroWidthJoiner = 0x200D
 
 /** One author's terms. `citizenship` names the Exiles the author, the Grand
   * Scepter's holder, offers Citizenship (CR p. 34). `promises` and
