@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Card movement: `Move` of a card, `Bury`, and the composites that flatten
   * to them. The guard checks stack-position conventions, that each card is

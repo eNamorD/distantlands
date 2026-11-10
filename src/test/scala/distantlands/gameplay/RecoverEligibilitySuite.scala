@@ -1,12 +1,12 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.RecoverRules
-import oathdigital.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite}
-import oathdigital.gameplay.powers.recover.RelicWorshipCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.actions.RecoverRules
+import distantlands.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite}
+import distantlands.gameplay.powers.recover.RelicWorshipCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.p1
 
 /** Covers Recover's availability in the Act menu: the menu delegates to the
   * same Recover procedure builder as command execution, and relic

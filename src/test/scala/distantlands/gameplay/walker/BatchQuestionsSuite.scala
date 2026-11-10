@@ -1,14 +1,14 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
+import distantlands.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
   BatchContext, Contribution, ExecutedBatch, ExecutedTrigger, Replacement}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.TestGameFixtures.sites
-import oathdigital.testkit.Outcomes.{finished, parked}
-import oathdigital.testkit.ProcedureWalkerFixture._
-import oathdigital.testkit.RecordedOps
-import oathdigital.testkit.WalkerStubs.{continueOption, stopOption}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.TestGameFixtures.sites
+import distantlands.testkit.Outcomes.{finished, parked}
+import distantlands.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.RecordedOps
+import distantlands.testkit.WalkerStubs.{continueOption, stopOption}
 
 /** The walker's batch questions (catalog batch 11, slice 4): a power asks
   * about an operation of a `BuildOps` batch before it runs, and an answer

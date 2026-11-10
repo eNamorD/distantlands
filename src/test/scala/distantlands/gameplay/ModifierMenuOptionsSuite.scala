@@ -1,21 +1,21 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.economy.{AnimalPlaymates,
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.economy.{AnimalPlaymates,
   AnimalPlaymatesCard, Birdsong, BirdsongCard}
-import oathdigital.gameplay.powers.search.{ErrandBoyCard, NewsFromAfar,
+import distantlands.gameplay.powers.search.{ErrandBoyCard, NewsFromAfar,
   NewsFromAfarCard}
-import oathdigital.gameplay.powers.travel.{Tents, TentsCard, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, ParkedNode, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.powers.travel.{Tents, TentsCard, TravelFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, ParkedNode, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** A menu option counts the modifiers its player could select: an action
   * that only a modifier makes affordable is still available, and a modifier
@@ -38,7 +38,7 @@ class ModifierMenuOptionsSuite extends munit.FunSuite:
   // ---- Travel ----
 
   import TravelFixture.board
-  import oathdigital.gameplay.powers.PowerFixture.actor
+  import distantlands.gameplay.powers.PowerFixture.actor
 
   /** The actor at the Cradle's plains with no Supply, holding `favor`. */
   private def broke(favor: Int, tents: Boolean)(

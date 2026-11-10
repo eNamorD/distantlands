@@ -1,6 +1,6 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Keeping one card of a temporary hand as a facedown starting adviser,
   * the rest going to the world deck bottom: the World's Protect and

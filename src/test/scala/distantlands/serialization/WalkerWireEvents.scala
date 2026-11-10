@@ -1,9 +1,9 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.engine.RecordedEvent
-import oathdigital.gameplay.walker.{DeltaPayload, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.engine.RecordedEvent
+import distantlands.gameplay.walker.{DeltaPayload, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.testkit.Unwrap.accepted
 
 /** The recorded walker events and event streams the wire suites write and
   * read back. */

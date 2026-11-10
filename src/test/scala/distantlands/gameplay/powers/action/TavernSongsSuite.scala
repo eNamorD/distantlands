@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.{ArcaneArmorCard, GlamorCard}
-import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
-import oathdigital.model._
-import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.{PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.{ArcaneArmorCard, GlamorCard}
+import distantlands.gameplay.powers.whenplayed.WizardsConclaveCard
+import distantlands.model._
+import distantlands.protocol.projection.DecisionQueryProjection
+import distantlands.testkit.{PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class TavernSongsSuite extends munit.FunSuite:
   import PhasePowerHarness._

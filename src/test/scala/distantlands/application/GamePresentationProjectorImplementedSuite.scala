@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.TestCards
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.TestCards
 
-/** `implemented` on a projected [[oathdigital.protocol.projection.CardDetailsProjection]]
+/** `implemented` on a projected [[distantlands.protocol.projection.CardDetailsProjection]]
   * reads the walker and phase catalogs: a power carries no flag, being wired
   * in for this catalog is what implemented means. Each case below picks a
   * real production card by what those catalogs say of its powers, so the

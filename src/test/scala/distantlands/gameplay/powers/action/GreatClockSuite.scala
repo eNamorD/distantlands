@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.StateBasedEvaluation
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.powers.setup.GreatClockCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathEvent.{EndDieRolled, RoundEnded}
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, RoundEndChoices,
+import distantlands.gameplay.StateBasedEvaluation
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.powers.setup.GreatClockCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathEvent.{EndDieRolled, RoundEnded}
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, MenuPlay, PhasePowerHarness, RoundEndChoices,
   Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 /** Great Clock (catalog batch 10, slice 2): advance the round marker once,
   * if possible, without the end die. */

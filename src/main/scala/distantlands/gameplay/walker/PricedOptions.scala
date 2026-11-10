@@ -1,9 +1,9 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.SpendableFavor
-import oathdigital.gameplay.walker.WalkerSimulation.{PreviewOutcome,
+import distantlands.gameplay.SpendableFavor
+import distantlands.gameplay.walker.WalkerSimulation.{PreviewOutcome,
   PreviewedOption}
-import oathdigital.model._
+import distantlands.model._
 
 /** A parked choose-one as its player is shown it, for a procedure whose
   * options each cost something different (travel destination design and

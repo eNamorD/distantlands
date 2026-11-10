@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.model._
 
 object CrackedHornCard extends Relic(RelicId("R10"), "Cracked Horn", value = 21, defense = 1):
   val power = PrintedPower(PowerId("relic.cracked-horn"),

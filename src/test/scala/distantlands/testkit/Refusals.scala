@@ -1,6 +1,6 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The violations the rules refuse a power use or a decision answer with,
   * spelled once so a suite names the refusal instead of copying its wording.

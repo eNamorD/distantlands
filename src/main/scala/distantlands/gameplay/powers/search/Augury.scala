@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object AuguryCard extends Denizen(DenizenId("56"), "Augury", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.augury"),

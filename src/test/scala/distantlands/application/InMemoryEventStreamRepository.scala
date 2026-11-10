@@ -1,4 +1,4 @@
-package oathdigital.application
+package distantlands.application
 
 /** Fake of `EventStreamRepository` for tests: deterministic and synchronized.
   * `EventStreamRepositoryContract` holds it to the real repository's behavior

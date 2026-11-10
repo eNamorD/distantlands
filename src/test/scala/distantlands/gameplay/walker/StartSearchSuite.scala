@@ -1,13 +1,13 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, Transform}
-import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** The dry run that walks a start past its modifier decision (walker-driven
   * game loop design, ruling 8; slice 4, plan-time ruling 1), over a

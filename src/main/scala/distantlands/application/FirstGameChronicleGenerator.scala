@@ -1,8 +1,8 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
 
 sealed trait ChronicleGeneratorFailure extends Product with Serializable
 object ChronicleGeneratorFailure:

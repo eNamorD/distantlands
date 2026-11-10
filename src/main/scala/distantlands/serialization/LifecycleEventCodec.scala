@@ -1,7 +1,7 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
-import oathdigital.model.OathEvent._
+import distantlands.model._
+import distantlands.model.OathEvent._
 
 private[serialization] trait LifecycleEventCodec { this: GameEventJsonSupport =>
   import GameEventWire._

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.{CardPlay, ProcedureNotes}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.{CardPlay, ProcedureNotes}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Shape Empire, the Throne's second step (CR p. 37, Chronicle rulings 6, 9,
   * 11 and 14). The Throne holder may remove any of their warbands from

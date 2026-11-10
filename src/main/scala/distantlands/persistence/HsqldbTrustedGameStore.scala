@@ -1,4 +1,4 @@
-package oathdigital.persistence
+package distantlands.persistence
 
 import java.sql.{Connection, SQLException}
 import scala.concurrent.Await
@@ -6,7 +6,7 @@ import scala.concurrent.duration.Duration
 import scala.util.control.NonFatal
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.HsqldbProfile.api._
-import oathdigital.application.{SeatCodeDigest, TrustedGameStore, TrustedGameStoreFailure}
+import distantlands.application.{SeatCodeDigest, TrustedGameStore, TrustedGameStoreFailure}
 
 private object HsqldbTrustedGameStore:
   final case class ExpectedFailure(failure: TrustedGameStoreFailure)

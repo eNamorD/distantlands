@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.{MushroomsCard, NewsFromAfarCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{MenuPlay, ParkedNode, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.{MushroomsCard, NewsFromAfarCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{MenuPlay, ParkedNode, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Spell Breaker in the modifier picker (catalog batch 8, slice 10). */
 class SpellBreakerModifierSuite extends munit.FunSuite:

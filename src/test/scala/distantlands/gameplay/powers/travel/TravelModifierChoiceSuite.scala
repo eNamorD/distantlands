@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes}
+import distantlands.testkit.Unwrap.accepted
 
 /** Travel asks for its modifiers inside the walk (modifier walker design,
   * slice 2). */

@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.AppendedAutomaticUses
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.AppendedAutomaticUses
 
 class VowOfWanderingSuite extends munit.FunSuite:
   private val vow = VowOfWanderingCard.id

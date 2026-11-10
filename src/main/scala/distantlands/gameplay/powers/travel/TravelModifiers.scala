@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The Travel modifiers and rules that are not terrain, registered together.
   * Each names its card, so all are always present. Terrain is

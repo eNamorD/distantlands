@@ -1,9 +1,9 @@
-package oathdigital.server
+package distantlands.server
 
 import java.net.http.HttpResponse
 
-import oathdigital.testkit.HttpTestServer
-import oathdigital.testkit.HttpTestServer.cacheControl
+import distantlands.testkit.HttpTestServer
+import distantlands.testkit.HttpTestServer.cacheControl
 
 class HealthRoutesSuite extends munit.FunSuite:
   test("liveness stays live while readiness follows lifecycle state"):

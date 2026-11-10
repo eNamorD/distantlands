@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PlacementPicks,
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, PlacementPicks,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class GraspingVinesSuite extends munit.FunSuite:
   import PowerFixture._

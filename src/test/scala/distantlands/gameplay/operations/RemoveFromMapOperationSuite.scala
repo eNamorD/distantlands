@@ -1,11 +1,11 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.gameplay.powers.setup.GreatClockCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.setup.GreatClockCard
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** `RemoveFromMap` (catalog batch 10, slice 6): a card leaves the map for a
   * pile that holds no tokens. Its favor goes to its suit's bank and its

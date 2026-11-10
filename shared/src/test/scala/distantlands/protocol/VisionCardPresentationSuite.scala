@@ -1,6 +1,6 @@
-package oathdigital.protocol
+package distantlands.protocol
 
-import oathdigital.protocol.projection.VisionCardPresentation
+import distantlands.protocol.projection.VisionCardPresentation
 
 /** The five Visions as they are printed. The text is card text: it is asserted
   * verbatim here so a reword has to be a deliberate edit to this suite.

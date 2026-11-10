@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.Denizen
-import oathdigital.catalog.holding.DeedWriterCard
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.{MountainGiantCard, SecondWindCard,
+import distantlands.catalog.Denizen
+import distantlands.catalog.holding.DeedWriterCard
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.{MountainGiantCard, SecondWindCard,
   UnstableSummonCard, WildMountsCard, ZealotsCard}
-import oathdigital.gameplay.powers.economy.{DefameCard, OldSongsCard}
-import oathdigital.gameplay.powers.search.{LandWardenCard, SpinningBeeCard}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.economy.{DefameCard, OldSongsCard}
+import distantlands.gameplay.powers.search.{LandWardenCard, SpinningBeeCard}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class CallForHelpSuite extends munit.FunSuite:
   import WhenPlayedHarness._

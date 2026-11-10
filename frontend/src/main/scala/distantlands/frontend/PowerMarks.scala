@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.projection.ModifierMarkProjection
+import distantlands.protocol.projection.ModifierMarkProjection
 
 /** The marks a card prints around its powers and over its whole face, drawn
   * as original glyphs after the physical layout rather than its art.

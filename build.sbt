@@ -13,7 +13,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "oathdigital-engine",
     maintainer := "Oath Digital",
-    Compile / mainClass := Some("oathdigital.server.OathServer"),
+    Compile / mainClass := Some("distantlands.server.OathServer"),
     Compile / run := (Compile / run)
       .dependsOn(frontend / Compile / fastLinkJS).evaluated,
     Compile / runMain := (Compile / runMain)
@@ -23,7 +23,7 @@ lazy val root = (project in file("."))
       val linkerOutput = (frontend / Compile / fullLinkJS /
         scalaJSLinkerOutputDirectory).value
       val output = (Compile / resourceManaged).value /
-        "oathdigital" / "frontend"
+        "distantlands" / "frontend"
       val linked = linkerOutput /
         report.data.publicModules.find(_.moduleID == "main").get.jsFileName
       val files = Seq(
@@ -53,7 +53,7 @@ lazy val root = (project in file("."))
     // Log pane down. Tests do not fork, so the property is set in this JVM
     // before the test task runs rather than through `Test / javaOptions`.
     Test / testOptions += Tests.Setup(() =>
-      sys.props("oathdigital.notes.strict") = "true"),
+      sys.props("distantlands.notes.strict") = "true"),
     libraryDependencies ++= Seq(
       "com.lihaoyi" %% "ujson" % "4.4.3",
       "com.typesafe.slick" %% "slick" % "3.5.2",
@@ -262,7 +262,7 @@ lazy val frontend = (project in file("frontend"))
     // path must not carry the Scala version the default crossTarget does.
     Compile / fastLinkJS / scalaJSLinkerOutputDirectory :=
       target.value / "fastopt",
-    Compile / mainClass := Some("oathdigital.frontend.Main"),
+    Compile / mainClass := Some("distantlands.frontend.Main"),
     Compile / unmanagedSources ++= {
       val shared = (LocalRootProject / baseDirectory).value / "src" / "main" / "scala"
       Seq(

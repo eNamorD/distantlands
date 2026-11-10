@@ -1,29 +1,29 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.actions.campaign.CampaignNotes
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.campaign.CampaignNotes
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.actions.negotiation.NegotiationProcedure
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.phases.wake.TakeWealthProcedure
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, PiedPiperCard,
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.forge.ForgeProcedure
+import distantlands.gameplay.actions.negotiation.NegotiationProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.phases.wake.TakeWealthProcedure
+import distantlands.gameplay.powers.action.{FaeMerchantCard, PiedPiperCard,
   SecondChanceCard}
-import oathdigital.gameplay.powers.campaign.{MercenariesCard, StickyFireCard}
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.search.{MushroomsCard, WineOfWelcomeCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.setup.SetupProcedure
-import oathdigital.gameplay.chronicle.OfferCitizenship
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogKind, LogSpan}
+import distantlands.gameplay.powers.campaign.{MercenariesCard, StickyFireCard}
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.search.{MushroomsCard, WineOfWelcomeCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.chronicle.OfferCitizenship
+import distantlands.model._
+import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
 
 /** What a migrated procedure's line reads, on the branches no golden script

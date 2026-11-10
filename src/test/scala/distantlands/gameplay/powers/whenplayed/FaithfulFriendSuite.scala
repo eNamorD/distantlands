@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
 
 class FaithfulFriendSuite extends munit.FunSuite:
   import WhenPlayedHarness._

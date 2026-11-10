@@ -1,15 +1,15 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.cards.DeepWoodsSite
-import oathdigital.gameplay.powers.{ConsentPowers, PowerImplementationStatus}
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.cards.DeepWoodsSite
+import distantlands.gameplay.powers.{ConsentPowers, PowerImplementationStatus}
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** Ancient Bloodline's lock (card 165, catalog batch 8, slice 11): an
   * enemy of its faceup holder may not move a card at a site the holder

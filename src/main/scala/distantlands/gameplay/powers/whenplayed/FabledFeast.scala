@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PowerAnswers, RuledCards}
-import oathdigital.gameplay.powers.cardplay.FavorBankChoice
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PowerAnswers, RuledCards}
+import distantlands.gameplay.powers.cardplay.FavorBankChoice
+import distantlands.model._
 
 object FabledFeastCard extends Denizen(DenizenId("136"), "Fabled Feast", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.fabled-feast"),

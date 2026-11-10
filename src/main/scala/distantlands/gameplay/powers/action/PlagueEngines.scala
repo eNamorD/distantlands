@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.model._
 
 object PlagueEnginesCard extends Denizen(DenizenId("65"), "Plague Engines", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.plague-engines"),

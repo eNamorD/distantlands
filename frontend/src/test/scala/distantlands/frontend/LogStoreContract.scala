@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** What every `LogStore` promises: a key that was written reads back its
   * value, a second write to a key replaces the first, and a key that was

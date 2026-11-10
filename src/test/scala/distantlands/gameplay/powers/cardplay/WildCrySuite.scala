@@ -1,18 +1,18 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PlayerFacts, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.{HomesteadersCard, WardOfSilenceCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerStepRecorded
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Refusals, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PlayerFacts, PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.{HomesteadersCard, WardOfSilenceCard}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerStepRecorded
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Refusals, Table}
+import distantlands.testkit.Unwrap.accepted
 
 class WildCrySuite extends munit.FunSuite:
   import PowerFixture._

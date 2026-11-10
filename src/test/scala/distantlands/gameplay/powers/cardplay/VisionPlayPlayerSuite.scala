@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.SacredGroundCard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powerresolver.{PowerCtx, Restriction}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.SacredGroundCard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powerresolver.{PowerCtx, Restriction}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** A faceup Vision play is judged for the player the hook names, not for
   * the walk's actor (catalog batch 11, slice 7): False Prophet's claimant

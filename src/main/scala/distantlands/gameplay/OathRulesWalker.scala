@@ -1,17 +1,17 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.engine.EventEvolution
-import oathdigital.model._
-import oathdigital.gameplay.actions.campaign.{CampaignIds,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.engine.EventEvolution
+import distantlands.model._
+import distantlands.gameplay.actions.campaign.{CampaignIds,
   CampaignPlanChoice, PlanAid}
-import oathdigital.gameplay.powerresolver.{ContributingPower, PhasePowers}
-import oathdigital.gameplay.walker.{DeltaPayload, FollowUpOffer,
+import distantlands.gameplay.powerresolver.{ContributingPower, PhasePowers}
+import distantlands.gameplay.walker.{DeltaPayload, FollowUpOffer,
   FollowUpSkipped, ModifierOffers, ParkedUses, ProcedureWalker,
   WalkerCompleted, WalkerDice, WalkerOutcome, WalkerParked, WalkerPowers,
   WalkerProcedureRegistry, WalkerSimulation, WalkerStepRecorded}
-import oathdigital.model.OathState._
-import oathdigital.model.OathViolation._
+import distantlands.model.OathState._
+import distantlands.model.OathViolation._
 
 /** The walker command surface of [[OathRules]], mixed into it.
   *

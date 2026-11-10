@@ -1,12 +1,12 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p2
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.operations._
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
+import distantlands.gameplay.actions.VisionRules
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p2
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 class OperationStateAdapterSuite extends munit.FunSuite:
   private val exile = ForceKind.Exile(lineageId)

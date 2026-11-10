@@ -1,4 +1,4 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 /** The two dice a roll is made on. */
 enum Die(val key: String):

@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol._
+import distantlands.model.PlayerColor
+import distantlands.protocol._
 import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue

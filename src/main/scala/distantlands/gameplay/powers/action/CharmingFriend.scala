@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object CharmingFriendCard extends Denizen(DenizenId("131"), "Charming Friend", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.charming-friend"),

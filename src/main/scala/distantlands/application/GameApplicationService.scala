@@ -1,14 +1,14 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.engine.{RecordedEvent, ReplayStep}
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.powerresolver.PowerUseStep
-import oathdigital.gameplay.powers.{ConsentPowers, PhasePowerCatalog,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.engine.{RecordedEvent, ReplayStep}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.powerresolver.PowerUseStep
+import distantlands.gameplay.powers.{ConsentPowers, PhasePowerCatalog,
   WalkerPowerCatalog}
-import oathdigital.gameplay.phases.rest.RoundEndRandomPort
-import oathdigital.model._
-import oathdigital.protocol.projection.LogKind
+import distantlands.gameplay.phases.rest.RoundEndRandomPort
+import distantlands.model._
+import distantlands.protocol.projection.LogKind
 
 
 /** `events` are the events the command produced: the batch's opening

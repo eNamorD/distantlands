@@ -1,15 +1,15 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.Denizen
-import oathdigital.gameplay.powers.action.{AlchemistCard, EldersCard,
+import distantlands.catalog.Denizen
+import distantlands.gameplay.powers.action.{AlchemistCard, EldersCard,
   MessengerCard, WolvesCard}
-import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseManyAnswer,
+import distantlands.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseManyAnswer,
   ChooseOneAnswer}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.DecisionOptions.button
+import distantlands.testkit.Table.p1
+import distantlands.testkit.DecisionOptions.button
 
 /** The search's answers and narrowing, apart from the walk (global operation
   * restrictions design, "Lazy pruning"). A verdict here is a plain function,

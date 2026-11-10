@@ -1,11 +1,11 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.gameplay.WalkerRecordedOpsReducer
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerDice, WalkerOutcome,
+import distantlands.gameplay.WalkerRecordedOpsReducer
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerDice, WalkerOutcome,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Park, Situation}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.testkit.{Park, Situation}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Walks `tree` from scratch, answering every park with
   * `Situation.defaultAnswer`, until the tree finishes -- shared by

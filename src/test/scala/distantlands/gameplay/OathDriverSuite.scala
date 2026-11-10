@@ -1,22 +1,22 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DunesSite, FairIsleSite}
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.BrassHorseCard
-import oathdigital.gameplay.powers.economy.KnightsErrantCard
-import oathdigital.gameplay.powers.rest.InsomniaCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ActionBoundaryRan, ProcedureDequeued,
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.BrassHorseCard
+import distantlands.gameplay.powers.economy.KnightsErrantCard
+import distantlands.gameplay.powers.rest.InsomniaCard
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ActionBoundaryRan, ProcedureDequeued,
   WalkerCompleted}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{MenuPlay, Outcomes, Table, TakeWealthFixture}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{MenuPlay, Outcomes, Table, TakeWealthFixture}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** What runs between walks (walker-driven game loop design, "The
   * driver"). */

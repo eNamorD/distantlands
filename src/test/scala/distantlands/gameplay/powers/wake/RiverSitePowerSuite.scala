@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Refusals, Table}
+import distantlands.testkit.Unwrap.accepted
 
 class RiverSitePowerSuite extends munit.FunSuite:
   import PowerFixture._

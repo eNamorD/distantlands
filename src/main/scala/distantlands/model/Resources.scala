@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 final case class Tokens(favor: Int, secrets: Int):
   require(favor >= 0, "favor must be non-negative")

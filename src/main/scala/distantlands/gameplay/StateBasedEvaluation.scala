@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
-import oathdigital.gameplay._
-import oathdigital.model.OathEvent._
-import oathdigital.model.OathState._
-import oathdigital.model.OathViolation._
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.phases.rest.RoundEndRandomPort
-import oathdigital.model.{Move => CoreMove}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
+import distantlands.gameplay._
+import distantlands.model.OathEvent._
+import distantlands.model.OathState._
+import distantlands.model.OathViolation._
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.phases.rest.RoundEndRandomPort
+import distantlands.model.{Move => CoreMove}
 
 /**
  * State-based checks: bandit refill, the Wake victories, the end of a round

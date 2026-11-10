@@ -1,8 +1,8 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.KinshipDraws
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy, OperationRun}
-import oathdigital.model.{Answered, BuildOps, CoreOperation, Decide, DieFace, OathViolation, Operation, PendingTree, PowerId, Roll}
+import distantlands.gameplay.KinshipDraws
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy, OperationRun}
+import distantlands.model.{Answered, BuildOps, CoreOperation, Decide, DieFace, OathViolation, Operation, PendingTree, PowerId, Roll}
 
 /** The leaf steps [[ProcedureWalker]] runs rather than parks, and the
   * answers and rolls that resume a park. Each executes one leaf against a
@@ -21,7 +21,7 @@ private[walker] object WalkerSteps:
     recordBatch(Vector(delta), contributions, ctx, path, leafLabel(delta),
       requireAll = strict)
 
-  /** Executes a [[oathdigital.model.BuildOps]] leaf: `build(state, pending)` returns the delta
+  /** Executes a [[distantlands.model.BuildOps]] leaf: `build(state, pending)` returns the delta
     * batch to run through the pipeline, recorded in the node's step as a
     * [[DeltaPayload]]. An
     * empty batch runs nothing and records nothing, and a note after it reads
@@ -42,13 +42,13 @@ private[walker] object WalkerSteps:
 
   /** Executes `ops` through the pipeline as one atomic batch and records ONE
     * [[WalkerStepRecorded]] carrying the whole batch and `contributions` --
-    * the shared mechanic behind a plain delta leaf and a [[oathdigital.model.BuildOps]] leaf,
+    * the shared mechanic behind a plain delta leaf and a [[distantlands.model.BuildOps]] leaf,
     * the two leaf kinds that run rather than park (spec decision 5: one
     * hookable node, one event, its final operation batch). `ops` must already
     * be non-empty; callers short-circuit an empty batch themselves (an empty
-    * [[oathdigital.model.BuildOps]] batch records nothing). A Vow of Kinship
+    * [[distantlands.model.BuildOps]] batch records nothing). A Vow of Kinship
     * holder's spends first draw on the Nomad bank
-    * ([[oathdigital.gameplay.KinshipDraws]]). Each burn a
+    * ([[distantlands.gameplay.KinshipDraws]]). Each burn a
     * power claims is first replaced by a `Take` ([[BurnTakes]]), and the
     * claims' lines follow the step. A batch whose operations start a
     * trigger's follow-up also holds them, in the same step

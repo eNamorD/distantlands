@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.model._
 
 object OracleCard extends Denizen(DenizenId("160"), "Oracle", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.oracle"),

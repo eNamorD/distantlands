@@ -1,9 +1,9 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
   PowerUseStep}
-import oathdigital.model._
+import distantlands.model._
 
 /** How the walker resolves an [[AutomaticUse]] (catalog batch 8, slice
   * 10; automatic power consent design). Every walker path that resolves

@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.RuledCards
-import oathdigital.gameplay.powers.action.FavorSplit
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.RuledCards
+import distantlands.gameplay.powers.action.FavorSplit
+import distantlands.model._
 
 object TownMeetingCard extends Denizen(DenizenId("236"), "Town Meeting", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.town-meeting"),

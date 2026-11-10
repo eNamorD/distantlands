@@ -1,14 +1,14 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, one}
-import oathdigital.frontend.TestBoardOptions.adviserPlayAtRedSlot3
-import oathdigital.frontend.TestBoards.quietBoard
-import oathdigital.frontend.TestSites.quietSite
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent => Intent,
+import distantlands.frontend.Dom.{all, one}
+import distantlands.frontend.TestBoardOptions.adviserPlayAtRedSlot3
+import distantlands.frontend.TestBoards.quietBoard
+import distantlands.frontend.TestSites.quietSite
+import distantlands.model.PlayerColor
+import distantlands.protocol.{DecisionAnswerWire, GameIntent => Intent,
   WalkerStartArgWire}
-import oathdigital.protocol.projection.WalkerStatusProjection
-import oathdigital.testkit.Unwrap.as
+import distantlands.protocol.projection.WalkerStatusProjection
+import distantlands.testkit.Unwrap.as
 import ParkedDecision.{Routed, Surface}
 import org.scalajs.dom
 
@@ -75,7 +75,7 @@ class BoardDecisionPanelSuite extends munit.FunSuite:
       ".board-decision-confirm")).click()
     assertEquals(ui.submitted, Vector(
       Intent.ResolveWalker("campaign.targets", DecisionAnswerWire
-        .ChooseManyWire(Vector(oathdigital.protocol.DecisionOptionWire(
+        .ChooseManyWire(Vector(distantlands.protocol.DecisionOptionWire(
           "site", "hills")))),
       Intent.ResolveWalker("campaign.targets",
         DecisionAnswerWire.ChooseManyWire(Vector.empty))))

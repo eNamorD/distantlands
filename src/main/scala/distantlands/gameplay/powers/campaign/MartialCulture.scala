@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.roles.{Citizenship, RoleNotes}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.roles.{Citizenship, RoleNotes}
+import distantlands.model._
 
 object MartialCultureCard extends Denizen(DenizenId("10"), "Martial Culture", Suit.Order) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.martial-culture"),

@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport, PowerAccess}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.{EffectiveSuit, NoteSupport, PowerAccess}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.model._
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.model._
 
 object SaddleMakersCard extends Denizen(DenizenId("142"), "Saddle Makers", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.saddle-makers"),

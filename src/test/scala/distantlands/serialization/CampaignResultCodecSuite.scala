@@ -1,9 +1,9 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
-import oathdigital.serialization.WalkerWireEvents.{encodedStreamThatRoundTrips,
+import distantlands.model._
+import distantlands.serialization.WalkerWireEvents.{encodedStreamThatRoundTrips,
   recordedOperation}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Unwrap.accepted
 
 class CampaignResultCodecSuite extends munit.FunSuite:
   private val conquest = CampaignResult(PlayerId("red"), CampaignKind.Conquest,

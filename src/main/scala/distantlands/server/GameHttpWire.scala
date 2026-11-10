@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import java.util.UUID
 
@@ -7,16 +7,16 @@ import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse,
 import akka.http.scaladsl.model.headers.RawHeader
 import org.slf4j.Logger
 
-import oathdigital.application.GameApplicationError
-import oathdigital.model.OathViolation
-import oathdigital.protocol.{
+import distantlands.application.GameApplicationError
+import distantlands.model.OathViolation
+import distantlands.protocol.{
   ActorlessCommandCodec,
   ActorlessCommandRequest,
   FirstGameBootstrapCodec,
   FirstGameBootstrapRequest,
   ProtocolDecodeFailure
 }
-import oathdigital.protocol.projection.{GameProjection, GameProjectionCodec}
+import distantlands.protocol.projection.{GameProjection, GameProjectionCodec}
 
 final case class HttpInputError(path: String, message: String)
 

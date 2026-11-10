@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Pure command-time resolution. It never applies an operation to game state. */
 object OperationResolution:

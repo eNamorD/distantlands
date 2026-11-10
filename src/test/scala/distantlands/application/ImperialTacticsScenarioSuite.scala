@@ -1,17 +1,17 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.campaign.{ExtraProvisionsCard, ShieldWall}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Commands, Dice, Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.campaign.{ExtraProvisionsCard, ShieldWall}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{Commands, Dice, Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** A Citizen defender uses the Chancellor's battle plan, paid by the
   * Chancellor, beside their own (Imperial Tactics, CR p. 35; Empire phase

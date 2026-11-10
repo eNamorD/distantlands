@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.model.{CoreOperation, Defer, DeferralKey, Gain, ReadyGame}
+import distantlands.model.{CoreOperation, Defer, DeferralKey, Gain, ReadyGame}
 
 /** The favor a Trade's trader gains, held under one key as it runs, for a
   * power that counts it (Secret Signal). The counting power records the

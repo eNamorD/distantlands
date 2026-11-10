@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.model._
 
 object WaysideInnCard extends Denizen(DenizenId("47"), "Wayside Inn", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.wayside-inn"),

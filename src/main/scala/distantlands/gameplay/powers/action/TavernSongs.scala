@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.model._
 
 object TavernSongsCard extends Denizen(DenizenId("54"), "Tavern Songs", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.tavern-songs"),

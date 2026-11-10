@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness,
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.AppendedAutomaticUses
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.AppendedAutomaticUses
 
 class TyrantSuite extends munit.FunSuite:
   import PowerFixture._

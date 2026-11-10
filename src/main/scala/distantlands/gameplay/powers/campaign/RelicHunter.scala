@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+import distantlands.catalog.{Denizen, ExecutableCatalog, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.actions.cardplay.CardSlots
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.actions.cardplay.CardSlots
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object RelicHunterCard extends Denizen(DenizenId("126"), "Relic Hunter", Suit.Order):
   val power = PrintedPower(PowerId("denizen.relic-hunter"),

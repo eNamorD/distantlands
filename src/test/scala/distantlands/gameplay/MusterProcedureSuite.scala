@@ -1,21 +1,21 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
-import oathdigital.gameplay.actions.economy.{MusterProcedure, MusterSource}
-import oathdigital.gameplay.powers.action.AlchemistCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.StartPreview
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.actions.economy.{MusterProcedure, MusterSource}
+import distantlands.gameplay.powers.action.AlchemistCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.StartPreview
 
 class MusterProcedureSuite extends munit.FunSuite:
   import EconomyFixture.{AddSource, AskAtGain, FreePayment}

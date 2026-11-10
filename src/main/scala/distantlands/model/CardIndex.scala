@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 enum SiteCardArea { case Denizens, Relics }
 

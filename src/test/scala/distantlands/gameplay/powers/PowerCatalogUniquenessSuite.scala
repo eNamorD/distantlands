@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.PowerId
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.PowerId
 
 /** Every production power is registered once per catalog, so a card's power
   * cannot fire twice. The per-power suites prove presence by running each

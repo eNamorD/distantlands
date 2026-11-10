@@ -1,8 +1,8 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
+import distantlands.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
   BatchContext, ContributingPower, Replacement}
-import oathdigital.model.{Answered, Branch, BuildOps, CoreOperation,
+import distantlands.model.{Answered, Branch, BuildOps, CoreOperation,
   LeafOperation, Note, OathViolation, Operation, PendingTree, PlayerId,
   PowerId, ReadyGame, Sequence, Take}
 

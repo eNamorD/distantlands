@@ -1,21 +1,21 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.actions.RecoverRules
-import oathdigital.gameplay.actions.recover.{RecoverProcedure,
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.actions.RecoverRules
+import distantlands.gameplay.actions.recover.{RecoverProcedure,
   UndergroundLibraryCard}
-import oathdigital.gameplay.cards.{DeepWoodsSite, FairIsleSite}
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
+import distantlands.gameplay.cards.{DeepWoodsSite, FairIsleSite}
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
   ProcedureWalker, RollPayload, WalkerOutcome, WalkerPowers,
   WalkerStepRecorded}
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, RecordedOps, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, as, present, rejected}
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, RecordedOps, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, as, present, rejected}
 
 /** The declared Recover tree on `ProcedureWalker.advance`/`roll`/`resolve`:
   * success (single- and multi-roll), stop-without-success,

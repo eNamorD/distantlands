@@ -1,7 +1,7 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powers.travel.NarrowPassSitePower
-import oathdigital.model.{ConsentAsk, CountedConfirm, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionPlacement, DecisionQuery, DecisionSection, DecisionTally, DenizenId, DistributeAmount, DistributeSlot, NegotiationBounds, NegotiationDisclosure, NegotiationDisclosureRef, NegotiationTerms, NegotiationTransfer, OathViolation, OptionReason, PlayerId, PowerId, PowerSourceRef, RelicId, SiteId, Suit}
+import distantlands.gameplay.powers.travel.NarrowPassSitePower
+import distantlands.model.{ConsentAsk, CountedConfirm, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionPlacement, DecisionQuery, DecisionSection, DecisionTally, DenizenId, DistributeAmount, DistributeSlot, NegotiationBounds, NegotiationDisclosure, NegotiationDisclosureRef, NegotiationTerms, NegotiationTransfer, OathViolation, OptionReason, PlayerId, PowerId, PowerSourceRef, RelicId, SiteId, Suit}
 
 /** Task 2: the generic decision contract, exercised with hand-built queries
   * and no game state at all.

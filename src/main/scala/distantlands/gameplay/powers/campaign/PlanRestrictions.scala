@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The battle plans and rules that restrict which plans a side of a
   * Campaign may choose (catalog batch 6, slice 1), registered together:

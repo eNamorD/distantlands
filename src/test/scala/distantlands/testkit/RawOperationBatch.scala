@@ -1,14 +1,14 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.operations.OperationExecutor
-import oathdigital.model.{CoreOperation, OperationError, ReadyGame}
+import distantlands.gameplay.operations.OperationExecutor
+import distantlands.model.{CoreOperation, OperationError, ReadyGame}
 
 /** Folds a batch of operations through the raw [[OperationExecutor]], one
   * after another, stopping at the first rejection.
   *
   * This bypasses resolution, consent and the post-state invariant on
   * purpose: a mutation suite asserts what one family mutation does to the
-  * state, not what [[oathdigital.gameplay.operations.OperationPipeline]]
+  * state, not what [[distantlands.gameplay.operations.OperationPipeline]]
   * would make of the batch. Production code never folds this way; the
   * pipeline is the sole orchestrator.
   */

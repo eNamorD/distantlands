@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PhasePower, PowerUse, PowerUseRefusal, PowerUseRestriction, Waiver}
-import oathdigital.gameplay.powers.action.PawnMoves
-import oathdigital.model._
+import distantlands.gameplay.powers.action.PawnMoves
+import distantlands.model._
 
 object HiddenPassagesCard extends Edifice(EdificeId("E25"), Suit.Hearth):
   object intact extends EdificeFace("Hidden Passages") with Locked:

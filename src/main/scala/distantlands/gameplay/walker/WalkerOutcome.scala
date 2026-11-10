@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{OathEvent, PendingTree, ReadyGame}
+import distantlands.model.{OathEvent, PendingTree, ReadyGame}
 
 /** Outcome of one walker `advance`/`roll`/`resolve` command.
   *

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, Relic}
-import oathdigital.model.{CampaignPlanSide, DecisionOptionRef, DefenseDieFace}
-import oathdigital.model.DefenseDieFace.{Blank, Doubler, OneShield, TwoShields}
+import distantlands.catalog.{Denizen, Relic}
+import distantlands.model.{CampaignPlanSide, DecisionOptionRef, DefenseDieFace}
+import distantlands.model.DefenseDieFace.{Blank, Doubler, OneShield, TwoShields}
 
 /** The defense scorer: face filters, then doublers on what is left, then the
   * defender's force (catalog batch 4 rulings, "The defense score"). Each

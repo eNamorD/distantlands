@@ -1,8 +1,8 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
-import oathdigital.application.FirstGameBootstrapMapper.lineageOf
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.application.FirstGameBootstrapMapper.lineageOf
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 import TtsWire.sequence
 

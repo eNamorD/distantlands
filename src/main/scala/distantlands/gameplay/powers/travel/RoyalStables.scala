@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object RoyalStablesCard extends Denizen(DenizenId("245"), "Royal Stables", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.royal-stables"),

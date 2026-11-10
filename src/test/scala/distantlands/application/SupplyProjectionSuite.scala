@@ -1,12 +1,12 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.{GameProjection, SupplyBandProjection}
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.{GameProjection, SupplyBandProjection}
+import distantlands.testkit.{Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What the Supply track promises the client.
   *

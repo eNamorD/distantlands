@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.projection.DieFace
+import distantlands.protocol.projection.DieFace
 
-import oathdigital.frontend.Dom.all
-import oathdigital.testkit.Unwrap.as
+import distantlands.frontend.Dom.all
+import distantlands.testkit.Unwrap.as
 import ParkedDecision.Surface
 import org.scalajs.dom
 
@@ -72,9 +72,9 @@ class WalkerChoicePanelRenderSuite extends munit.FunSuite:
     val ui = new RecordingControls()
     val panel = draw(parked, ui)
     as[dom.html.Button](all(panel, ".walker-choice").head).click()
-    assertEquals(ui.submitted, Vector(oathdigital.protocol.GameIntent.ResolveWalker(
+    assertEquals(ui.submitted, Vector(distantlands.protocol.GameIntent.ResolveWalker(
       "muster.source",
-      oathdigital.protocol.DecisionAnswerWire.ChooseOneWire("denizen", "d1"))))
+      distantlands.protocol.DecisionAnswerWire.ChooseOneWire("denizen", "d1"))))
 
   test("a battle-plan offer draws its card and its side as a chip"):
     val card = CardDetails("relic:sticky-fire", "relic", "Sticky Fire",
@@ -104,7 +104,7 @@ class WalkerChoicePanelRenderSuite extends munit.FunSuite:
       .map(_.getAttribute("aria-label")), Vector("Attack plan"))
     val tents = CardDetails("29", "denizen", "Tents", powers = Vector(
       PowerFace("Travel costs 1 less.", cost = Vector("favor"),
-        modifier = Some(oathdigital.protocol.projection.ModifierMarkProjection
+        modifier = Some(distantlands.protocol.projection.ModifierMarkProjection
           .Action(Vector("travel"))))))
     val pick = DecisionOptionState("denizen", "29", "Tents", Some(tents),
       Vector("Cost: 1 [favor]"))

@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 class ForestPathsSuite extends munit.FunSuite:
   import PowerFixture._

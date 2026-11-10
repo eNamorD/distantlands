@@ -1,17 +1,17 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.campaign.CarefulPlansCard
-import oathdigital.gameplay.powers.economy.{BirdsongCard, KnightsErrantCard}
-import oathdigital.gameplay.walker.FollowUpOffer
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Answers, Dice, Look, MenuPlay, Park, Situation}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.application._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.campaign.CarefulPlansCard
+import distantlands.gameplay.powers.economy.{BirdsongCard, KnightsErrantCard}
+import distantlands.gameplay.walker.FollowUpOffer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{Answers, Dice, Look, MenuPlay, Park, Situation}
+import distantlands.testkit.Table.{p1, p2}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** The Raid scripts: the plain Raid the goldens read, the same under
   * Careful Plans, and the Raid run as a Campaign Knights Errant offered, and

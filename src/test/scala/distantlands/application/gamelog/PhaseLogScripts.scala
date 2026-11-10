@@ -1,21 +1,21 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.application._
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.application._
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.wake.TakeWealthProcedure
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.rest.InsomniaCard
-import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Answers, Dice, Look, MenuPlay, Situation, Table}
-import oathdigital.testkit.Unwrap.as
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.phases.wake.TakeWealthProcedure
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.rest.InsomniaCard
+import distantlands.gameplay.powers.whenplayed.WizardsConclaveCard
+import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Answers, Dice, Look, MenuPlay, Situation, Table}
+import distantlands.testkit.Unwrap.as
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScriptSupport.{atTable, start, tableWithOnePawnPerSite}
 
 /** The scripts that play Setup and the phases around a turn: Setup to the

@@ -1,7 +1,7 @@
-package oathdigital.gameplay.aid
+package distantlands.gameplay.aid
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.{PlanAidCleared, PlanAidSaved}
+import distantlands.model._
+import distantlands.model.OathEvent.{PlanAidCleared, PlanAidSaved}
 
 /** Evolves the Imperial Tactics facts into `ReadyGame.planAid`. The desk
   * validated each offer when it was saved, so replay only records it. */

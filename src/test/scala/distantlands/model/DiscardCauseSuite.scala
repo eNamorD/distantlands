@@ -1,6 +1,6 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.testkit.Table.p1
+import distantlands.testkit.Table.p1
 
 /** A discard's cause (catalog batch 11, slice 4): the power whose use
   * discards a card, and whether the discard makes room that power fills. */

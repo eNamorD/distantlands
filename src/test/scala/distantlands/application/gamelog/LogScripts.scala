@@ -1,7 +1,7 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application._
-import oathdigital.model._
+import distantlands.application._
+import distantlands.model._
 
 /** A journal built by real play through `GameApplicationService` on every
   * run (spec, "Test journals"). No stored game is a fixture: a script a new

@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.AdviserOnly
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog,
+import distantlands.catalog.AdviserOnly
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog,
   PowerFixture, SiteRoom, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay,
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay,
   PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 /** Giant's Path (catalog batch 10, slice 4): move the locked Path to
   * another site with room, tokens and all, then place the user's pawn

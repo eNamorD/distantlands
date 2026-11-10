@@ -1,14 +1,14 @@
-package oathdigital.gameplay.consent
+package distantlands.gameplay.consent
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** The rules fold consent facts into the ledger and nothing else. */
 class ConsentEvolutionSuite extends munit.FunSuite:

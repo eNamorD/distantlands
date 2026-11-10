@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.VowOfKinshipCard
-import oathdigital.gameplay.powers.whenplayed.SearchPartyCard
-import oathdigital.gameplay.CampaignFixture.{Board, board, on, rules}
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlanChoice,
+import distantlands.gameplay.VowOfKinshipCard
+import distantlands.gameplay.powers.whenplayed.SearchPartyCard
+import distantlands.gameplay.CampaignFixture.{Board, board, on, rules}
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlanChoice,
   PlanAid}
-import oathdigital.gameplay.powers.banner.YewStaffCard
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.banner.YewStaffCard
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Imperial Tactics in the plan window (Empire phase design, "1b-ii"): an
   * Imperial user may use a plan an Imperial ally lends, and meet a plan's

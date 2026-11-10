@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.SearchPlay
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.action.{HomesteadersCard, MessengerCard}
-import oathdigital.gameplay.powers.banner.YewStaffCard
-import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, ShieldWallCard}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.SearchPlay
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.action.{HomesteadersCard, MessengerCard}
+import distantlands.gameplay.powers.banner.YewStaffCard
+import distantlands.gameplay.powers.campaign.{CodeOfHonorCard, ShieldWallCard}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class DisciplesSuite extends munit.FunSuite:
   import SearchFixture.rules

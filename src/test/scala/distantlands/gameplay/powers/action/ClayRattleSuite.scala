@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.walker.WalkerDice
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.walker.WalkerDice
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 class ClayRattleSuite extends munit.FunSuite:
   import ActPowerHarness._

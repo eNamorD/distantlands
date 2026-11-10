@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.model._
 
 object MilitaryParadeCard extends Denizen(DenizenId("109"), "Military Parade", Suit.Order):
   val power = PrintedPower(PowerId("denizen.military-parade"),

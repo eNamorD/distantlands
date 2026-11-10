@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.WalkerDiceFixture.skullThenSwords
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.WalkerDiceFixture.skullThenSwords
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Rangers: an attacker's plan, a favor placed, that ignores every skull and
   * adds two attack dice when the defense pool holds four or more dice. */

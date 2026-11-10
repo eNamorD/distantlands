@@ -1,11 +1,11 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers,
   WalkerProcedureRegistry}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** The node a Ready game's walker is parked on, rebuilt from durable state
   * the way the projector rebuilds it: the procedure and the start selection

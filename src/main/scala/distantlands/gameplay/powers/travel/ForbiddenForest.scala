@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import oathdigital.gameplay.{CardRule, EffectiveSuit, SiteRulers}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import distantlands.gameplay.{CardRule, EffectiveSuit, SiteRulers}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Restriction, Waiver}
-import oathdigital.model._
+import distantlands.model._
 
 object ForbiddenForestCard extends Edifice(EdificeId("E29"), Suit.Beast):
   object intact extends EdificeFace("Forbidden Forest") with Locked:

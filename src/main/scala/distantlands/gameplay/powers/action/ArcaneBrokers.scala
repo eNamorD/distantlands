@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.model._
 
 object ArcaneBrokersCard extends Denizen(DenizenId("204"), "Arcane Brokers", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.arcane-brokers"),

@@ -1,8 +1,8 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogEntry, LogSpan}
-import oathdigital.testkit.Outcomes
+import distantlands.model._
+import distantlands.protocol.projection.{LogEntry, LogSpan}
+import distantlands.testkit.Outcomes
 import LogScripts._
 import LaterGameLogScripts.laterGameWoken
 

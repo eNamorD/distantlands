@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 sealed trait AvailableQuantity extends Product with Serializable
 object AvailableQuantity:

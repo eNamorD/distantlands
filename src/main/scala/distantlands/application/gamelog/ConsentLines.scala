@@ -1,12 +1,12 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.ImperialLaws
-import oathdigital.gameplay.actions.minor.WarbandTransfers
-import oathdigital.gameplay.powers.ConsentPowers
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.gameplay.actions.ImperialLaws
+import distantlands.gameplay.actions.minor.WarbandTransfers
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequested}
-import oathdigital.protocol.projection.{LogKind, LogSpan}
+import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
 
 /** The consent lines (consent design, "Game Log"). The request leaves out

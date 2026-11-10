@@ -1,12 +1,12 @@
-package oathdigital.persistence
+package distantlands.persistence
 
 import java.nio.file.{Files, Path}
 import java.sql.DriverManager
 
-import oathdigital.application._
-import oathdigital.application.IdentityFailure._
-import oathdigital.application.MembershipRole._
-import oathdigital.testkit.Unwrap.{accepted, as, rejected}
+import distantlands.application._
+import distantlands.application.IdentityFailure._
+import distantlands.application.MembershipRole._
+import distantlands.testkit.Unwrap.{accepted, as, rejected}
 
 class HsqldbIdentityRepositorySuite extends munit.FunSuite:
   private def databasePath(label: String): Path =

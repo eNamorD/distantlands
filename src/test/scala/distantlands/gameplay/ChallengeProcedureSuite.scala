@@ -1,24 +1,24 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{ExecutableCatalog, Site}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.catalog.{ExecutableCatalog, Site}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DunesSite, FairIsleSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.travel.TentsCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.actions.challenge.ChallengeProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.travel.TentsCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.actions.challenge.ChallengeProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, Transform}
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation.NoPlayableOption
-import oathdigital.testkit.{EmptyWindowModifier, Journal, Look, MenuPlay,
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation.NoPlayableOption
+import distantlands.testkit.{EmptyWindowModifier, Journal, Look, MenuPlay,
   Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** Challenge through the rules, as a client drives it: start, answer the
   * banner, answer the amount, and (Wandering Flame) the tied sites.

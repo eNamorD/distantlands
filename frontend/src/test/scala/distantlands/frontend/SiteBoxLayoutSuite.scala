@@ -1,8 +1,8 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.TestBoardOptions.recording
-import oathdigital.frontend.TestSites.quietSite
-import oathdigital.model.PlayerColor
+import distantlands.frontend.TestBoardOptions.recording
+import distantlands.frontend.TestSites.quietSite
+import distantlands.model.PlayerColor
 
 import org.scalajs.dom
 

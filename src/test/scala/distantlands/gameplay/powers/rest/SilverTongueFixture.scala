@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.Denizen
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.catalog.Denizen
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** Silver Tongue staged in the Rest phase, shared by its own suite, the
   * projection suite and the pending-walker invariant (Task 13).

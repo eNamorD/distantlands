@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 class BookOfRecordsSuite extends munit.FunSuite:
   import PowerFixture._

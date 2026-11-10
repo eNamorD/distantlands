@@ -1,14 +1,14 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.Outcomes
-import oathdigital.testkit.Table.p2
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.Outcomes
+import distantlands.testkit.Table.p2
+import distantlands.testkit.Unwrap.accepted
 
 /** Every Chronicle task step runs inside its own power window, so a later
   * legacy power can add to it (Chronicle steps design, "Windows, not

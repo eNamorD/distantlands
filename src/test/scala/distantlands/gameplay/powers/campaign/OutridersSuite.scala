@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** Outriders' line (power log lines design, "Altered procedures"): "Skulls
   * ignored.", written only when the attack rolled a skull to ignore.

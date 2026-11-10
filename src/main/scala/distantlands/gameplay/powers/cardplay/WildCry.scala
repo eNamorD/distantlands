@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{PlayerFacts, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{PlayerFacts, SelectedModifier}
+import distantlands.model._
 
 object WildCryCard extends Denizen(DenizenId("189"), "Wild Cry", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.wild-cry"),

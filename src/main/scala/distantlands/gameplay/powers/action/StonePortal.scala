@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.model._
+import distantlands.model._
 
 object StonePortalCard extends Edifice(EdificeId("E14"), Suit.Arcane):
   object intact extends EdificeFace("Stone Portal") with Locked:

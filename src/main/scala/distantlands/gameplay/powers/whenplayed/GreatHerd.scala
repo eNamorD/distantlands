@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object GreatHerdCard extends Denizen(DenizenId("30"), "Great Herd", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.great-herd"),

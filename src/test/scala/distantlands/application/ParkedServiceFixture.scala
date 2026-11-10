@@ -1,28 +1,28 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.{SearchPlay, TravelPlay}
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.{SearchPlay, TravelPlay}
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard,
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard,
   WrestlersCard}
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.rest.{LeagueTreatyCard,
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.rest.{LeagueTreatyCard,
   LeagueTreatyContribution, SilverTongue, SilverTongueCard}
-import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerParked}
-import oathdigital.model._
-import oathdigital.testkit.{Dice, Look, MenuPlay, Outcomes, PlacementPicks,
+import distantlands.gameplay.powers.whenplayed.BanditChiefCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerParked}
+import distantlands.model._
+import distantlands.testkit.{Dice, Look, MenuPlay, Outcomes, PlacementPicks,
   Situation, SituationDriver, Table, Unwrap}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Commands
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Commands
 
 /** Real games parked on a walker through the application service.
   *

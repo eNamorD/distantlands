@@ -1,18 +1,18 @@
-package oathdigital.gameplay.powers.setup
+package distantlands.gameplay.powers.setup
 
-import oathdigital.gameplay.WalkerDiceFixture
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{EldersCard, MessengerCard,
+import distantlands.gameplay.WalkerDiceFixture
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.{EldersCard, MessengerCard,
   ScryerCard}
-import oathdigital.gameplay.powers.whenplayed.{BewitchCard, DazzleCard,
+import distantlands.gameplay.powers.whenplayed.{BewitchCard, DazzleCard,
   ThreateningRoarCard}
-import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure,
+import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
+import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure,
   SetupWalkDriver}
-import oathdigital.gameplay.walker.{WalkerDice, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.walker.{WalkerDice, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** The SETUP (END) rules of catalog batch 9, slice 1 (Hall of Mockery, Lost
   * Guardians, Ruined School and Broken Horn) and of batch 10 (Broken Clock
@@ -134,7 +134,7 @@ class RuinedSetupRulesSuite extends munit.FunSuite:
 
   // ---- Broken Horn ----
 
-  private val conspiracy = oathdigital.gameplay.actions.VisionRules.Conspiracy
+  private val conspiracy = distantlands.gameplay.actions.VisionRules.Conspiracy
   private val staged = Vector[WorldCardId](EldersCard.id, MessengerCard.id,
     conspiracy)
 

@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
+import distantlands.model.PlayerColor
 
 /** The CSS class a player colour is drawn with. A class exists in
   * `styles.css` for every `PlayerColor`, plus the neutral one for text that

@@ -1,12 +1,12 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.operations._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.Outcomes.recorded
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.WalkerStubs.{continueOption, stopOption}
+import distantlands.gameplay.operations._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
+import distantlands.testkit.Outcomes.recorded
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.WalkerStubs.{continueOption, stopOption}
 
 /** The synthetic trees, leaves and state the ProcedureWalker suites walk.
   * The state is TestGameFixtures' game with S3 cleared of its Bandit, so

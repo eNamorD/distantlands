@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.dice
+package distantlands.gameplay.powers.dice
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.CardRule
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.dice.{DiceThrow, RerollChoice}
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.CardRule
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.dice.{DiceThrow, RerollChoice}
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   OfferReroll, PowerCtx, PowerUse}
-import oathdigital.model._
+import distantlands.model._
 
 object JinxCard extends Denizen(DenizenId("68"), "Jinx", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.jinx"),

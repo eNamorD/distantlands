@@ -1,20 +1,20 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote,
+import distantlands.gameplay.actions.{AdviserFace, AdviserPlayNote,
   CardPlayRules}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.PiedPiperCard
-import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
-import oathdigital.gameplay.powers.cardplay.FamilyWagonCard
-import oathdigital.gameplay.powers.rest.SilverTongueCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.as
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.PiedPiperCard
+import distantlands.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
+import distantlands.gameplay.powers.cardplay.FamilyWagonCard
+import distantlands.gameplay.powers.rest.SilverTongueCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.as
 
 /** `CardPlayRules`: the adviser limits and site discard permissions a card
   * play is planned under, and how two contributors to them compose.

@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture.{Board, on, rules,
+import distantlands.gameplay.CampaignFixture.{Board, on, rules,
   withAdviserFor}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   losingDice, winningDice}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.Look
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.Look
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Whole Campaigns with Imperial players (Empire slice 1b-i): every
   * warband a Campaign places, kills or sacrifices is of its owner's kind,

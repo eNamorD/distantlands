@@ -1,31 +1,31 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.chronicle.{ChronicleBeginProcedure,
+import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   ChronicleBeaconProcedure, ChronicleFinishProcedure, ChronicleStarsProcedure,
   ChronicleSunProcedure, ChronicleThroneProcedure, ChronicleWorldProcedure}
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.challenge.{ChallengeProcedure, PlaceBannerResourceProcedure}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.actions.minor.{MinorActionProcedures,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.challenge.{ChallengeProcedure, PlaceBannerResourceProcedure}
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.forge.ForgeProcedure
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.actions.minor.{MinorActionProcedures,
   SelfExile, WarbandTransfers}
-import oathdigital.gameplay.actions.negotiation.NegotiationProcedure
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.actions.search.{SearchOptions, SearchProcedure}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.actions.travel.{TravelOptions, TravelProcedure}
-import oathdigital.gameplay.phases.wake.{EndWakeProcedure, ForcedWakeProcedure,
+import distantlands.gameplay.actions.negotiation.NegotiationProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.actions.search.{SearchOptions, SearchProcedure}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.actions.travel.{TravelOptions, TravelProcedure}
+import distantlands.gameplay.phases.wake.{EndWakeProcedure, ForcedWakeProcedure,
   TakeWealthProcedure}
-import oathdigital.gameplay.phases.rest.{BeginRestProcedure, FinishRestProcedure}
-import oathdigital.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.model.{ActionRef, Answered, Decide, DecisionOption, DecisionOptionRef, OathViolation, Operation, PendingTree, PhaseTransitionRef, PlayerId, PowerId, PowerWindow, ProcedureRef, ReadyGame, TriggeredProcedureRef}
+import distantlands.gameplay.phases.rest.{BeginRestProcedure, FinishRestProcedure}
+import distantlands.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.model.{ActionRef, Answered, Decide, DecisionOption, DecisionOptionRef, OathViolation, Operation, PendingTree, PhaseTransitionRef, PlayerId, PowerId, PowerWindow, ProcedureRef, ReadyGame, TriggeredProcedureRef}
 
 /** The one place a procedure registers its walker tree-building functions,
-  * keyed by [[oathdigital.model.ProcedureRef]]. `OathRules` and
+  * keyed by [[distantlands.model.ProcedureRef]]. `OathRules` and
   * `WalkerDecisionProjector` both dispatch through `entries`: registering a
   * procedure is one entry, and a procedure absent from it produces
   * `Left(OathViolation.InvalidEventOrder(...))` rather than a `MatchError`.
@@ -59,13 +59,13 @@ object WalkerProcedureRegistry:
     * therefore a rule, and the `rollDecisionId` accessor below turns it into
     * a typed rejection rather than handing a sentinel onward.
     *
-    * `modifierWindow` is the [[oathdigital.model.PowerWindow]] at which the
+    * `modifierWindow` is the [[distantlands.model.PowerWindow]] at which the
     * procedure's modifier decision (`ModifierChoice`) offers player-selected
     * `ContributingPower`s, and at which `ModifierOffers.offerable` looks.
     *
     * It is `Option` because not every procedure has such a window:
     * `PowerWindow` carries a `*ModifierSelection` case for each of the eight
-    * [[oathdigital.model.MajorActionType]]s and Take Wealth
+    * [[distantlands.model.MajorActionType]]s and Take Wealth
     * is not one of them -- its only window is `WakeTakeWealth`, an
     * `OtherWindow` whose `associatedMajorAction` is `None`. `None` here means
     * the procedure offers no player-selected powers at all: `offerableWalkerPowers`
@@ -140,7 +140,7 @@ object WalkerProcedureRegistry:
     * asserts this map's keys cover `ProcedureRef.all` (catching a registered
     * procedure missing its entry) and its type is referenced when the suite
     * calls `build`/`rebuild` with a `registrations` map that omits a real,
-    * registered-in-production procedure. `OathRules` (`oathdigital.gameplay`)
+    * registered-in-production procedure. `OathRules` (`distantlands.gameplay`)
     * takes the same `registrations` parameter on `offerableWalkerPowers`, so
     * the `Entry` type has to be nameable one package up. It stays out of
     * reach of every other package.
@@ -303,7 +303,7 @@ object WalkerProcedureRegistry:
       */
     TriggeredProcedureRef.Oathkeeper -> Entry.withoutStartGates(OathkeeperProcedure.build),
     TriggeredProcedureRef.Setup ->
-      Entry.withoutStartGates(oathdigital.gameplay.setup.SetupProcedure.build),
+      Entry.withoutStartGates(distantlands.gameplay.setup.SetupProcedure.build),
     TriggeredProcedureRef.ChronicleBegin -> Entry.withoutStartGates(ChronicleBeginProcedure.build),
     TriggeredProcedureRef.ChronicleSun -> Entry.withoutStartGates(ChronicleSunProcedure.build),
     TriggeredProcedureRef.ChronicleThrone ->
@@ -460,7 +460,7 @@ object WalkerProcedureRegistry:
     registrations.get(procedure).fold(Vector.empty)(_.status(catalog, ready,
       actor, decisionId))
 
-  /** `procedure`'s modifier-selection [[oathdigital.model.PowerWindow]], or `None` when it
+  /** `procedure`'s modifier-selection [[distantlands.model.PowerWindow]], or `None` when it
     * offers no player-selected powers at all -- see `Entry`'s doc.
     * `ModifierOffers.offerable` reads this.
     *

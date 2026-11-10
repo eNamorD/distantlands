@@ -1,8 +1,8 @@
-package oathdigital.gameplay.phases.rest
+package distantlands.gameplay.phases.rest
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.StateBasedEvaluation
-import oathdigital.model.{OathTransition, OathViolation, OperationRestriction}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.StateBasedEvaluation
+import distantlands.model.{OathTransition, OathViolation, OperationRestriction}
 
 /** Round end after the last player's Rest: the end die, the next round or
   * War Exhaustion, with their randomness from `RoundEndRandomPort`.

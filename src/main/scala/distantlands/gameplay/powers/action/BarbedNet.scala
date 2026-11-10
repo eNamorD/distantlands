@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.model._
 
 object BarbedNetCard extends Relic(RelicId("R36"), "Barbed Net", value = 33, defense = 1):
   val power = PrintedPower(PowerId("relic.barbed-net"),

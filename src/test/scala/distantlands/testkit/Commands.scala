@@ -1,7 +1,7 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.{GameCommand, PlayerIntent, TreeDecision}
-import oathdigital.model._
+import distantlands.application.{GameCommand, PlayerIntent, TreeDecision}
+import distantlands.model._
 
 /** One `GameCommand.Issued` per `PlayerIntent`, with the actor first, so a
   * test reads `Commands.undo(p1)` where production code reads

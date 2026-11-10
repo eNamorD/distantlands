@@ -1,24 +1,24 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.gameplay.{FacedownAdviserPlay, PlacementFixture}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture,
+import distantlands.gameplay.{FacedownAdviserPlay, PlacementFixture}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, HomesteadersCard,
+import distantlands.gameplay.powers.action.{ArcaneBrokersCard, HomesteadersCard,
   WardOfSilenceCard}
-import oathdigital.gameplay.powers.cardplay.WelcomingPartyCard
-import oathdigital.gameplay.powers.rest.{SilverTongue, SilverTongueCard}
-import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard,
+import distantlands.gameplay.powers.cardplay.WelcomingPartyCard
+import distantlands.gameplay.powers.rest.{SilverTongue, SilverTongueCard}
+import distantlands.gameplay.powers.search.{ErrandBoyCard, LandWardenCard,
   NewsFromAfarCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Refusals,
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PlacementPicks, Refusals,
   Table}
-import oathdigital.testkit.Table.p3
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.p3
+import distantlands.testkit.Unwrap.accepted
 
 class PeoplesFavorMobSuite extends munit.FunSuite:
   import PowerFixture._
@@ -69,7 +69,7 @@ class PeoplesFavorMobSuite extends munit.FunSuite:
 
   test("the source index lists Mob on the Mob face and the Grand Council's " +
       "own power on the other"):
-    def favor(ready: ReadyGame) = oathdigital.gameplay.RuleSourceIndex
+    def favor(ready: ReadyGame) = distantlands.gameplay.RuleSourceIndex
       .enumerate(catalog, ready).find(_.source ==
         RuleSourceRef.Banner(Banner.PeoplesFavor.key))
           .getOrElse(fail("no People's Favor source"))
@@ -189,7 +189,7 @@ class PeoplesFavorMobSuite extends munit.FunSuite:
     val party = WelcomingPartyCard.id
     val kept = homesteaders
     val ready = atActorsSite(searchAtAncientCityHolding(Vector(kept)), party)
-    val selected = Vector(oathdigital.gameplay.powers.cardplay.WelcomingParty.id)
+    val selected = Vector(distantlands.gameplay.powers.cardplay.WelcomingParty.id)
     val asked = toPlacement(ready, selected)
     assertEquals(
       placeReplacing(asked, played, PlayedAs.AtSite, party).left.toOption,

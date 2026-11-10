@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Cracked Rampart (edifice E20, ruined), a defender's battle plan: "+1 defense
   * die if this site is targeted."

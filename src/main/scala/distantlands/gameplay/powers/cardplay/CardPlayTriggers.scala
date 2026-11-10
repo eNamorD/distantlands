@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The powers that act when a card is played, registered together: the
   * triggers that reward a play and the rules that change or forbid one. Each

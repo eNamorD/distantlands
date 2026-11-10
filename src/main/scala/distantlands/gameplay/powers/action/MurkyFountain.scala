@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.gameplay.actions.dice.RollStep
-import oathdigital.gameplay.powers.wake.MarbleFountainsCard
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.gameplay.actions.dice.RollStep
+import distantlands.gameplay.powers.wake.MarbleFountainsCard
+import distantlands.model._
 
 /** Murky Fountain (edifice E15, ruined), ACTION: place 1 secret on this card.
   * If your pawn is at this site, roll 2 defense dice and gain Supply equal to

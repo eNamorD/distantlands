@@ -1,26 +1,26 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote, CardPlay,
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.actions.{AdviserFace, AdviserPlayNote, CardPlay,
   CardPlayRules, PlacementLimit, RuleNotes, VisionRules}
-import oathdigital.gameplay.actions.cardplay.{CardSlot, CardSlots,
+import distantlands.gameplay.actions.cardplay.{CardSlot, CardSlots,
   MoreDiscards}
-import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite,
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite,
   DeepWoodsSite}
-import oathdigital.gameplay.operations.{AncientBloodline, AncientBloodlineCard,
+import distantlands.gameplay.operations.{AncientBloodline, AncientBloodlineCard,
   HallOfMinisters, HallOfMinistersCard}
-import oathdigital.gameplay.powers.action.{AncientBindingCard, FaeMerchantCard,
+import distantlands.gameplay.powers.action.{AncientBindingCard, FaeMerchantCard,
   PiedPiperCard, SecondChanceCard, WolvesCard}
-import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, RainBootsCard,
+import distantlands.gameplay.powers.campaign.{CodeOfHonorCard, RainBootsCard,
   SealingWardCard, WrestlersCard}
-import oathdigital.gameplay.powers.economy.CurfewCard
-import oathdigital.gameplay.powers.search.{CropRotationCard, ErrandBoyCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.{PlacementPicks, Table, TestCards}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.economy.CurfewCard
+import distantlands.gameplay.powers.search.{CropRotationCard, ErrandBoyCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.{PlacementPicks, Table, TestCards}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** `CardSlots`: where a card may be played, as the options of its placement
   * decision (card play slots design, "Slot builder"). `atAncientCity` stands

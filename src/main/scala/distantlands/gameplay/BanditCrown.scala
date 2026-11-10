@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.model._
 
 object BanditCrownCard extends Relic(RelicId("R11"), "Bandit Crown", value = 56, defense = 3):
   val power = PrintedPower(PowerId("relic.bandit-crown"),

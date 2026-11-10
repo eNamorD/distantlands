@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.{ConsentEvent, OathState}
+import distantlands.model.{ConsentEvent, OathState}
 
 /** The batches one Undo or one Redo moves (automatic power consent
   * design, "Undo coupling"). Neither stops at a position parked at an

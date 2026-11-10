@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ModifierOffers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ModifierOffers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look,
   PhasePowerHarness, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class MapLibrarySuite extends munit.FunSuite:
   private val library = MapLibraryCard.id

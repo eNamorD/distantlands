@@ -1,8 +1,8 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.gameplay.{SpendableFavor, TurnOrder}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.gameplay.{SpendableFavor, TurnOrder}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** What Imperial Tactics lends a plan's user (CR p. 35; Empire phase
   * design, "1b-ii"; rulings R10 to R12 and R16).

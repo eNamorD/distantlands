@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.powers.action.{BloodPactCard, EldersCard,
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.powers.action.{BloodPactCard, EldersCard,
   FaeMerchantCard, MessengerCard, SiegeEnginesCard, WolvesCard}
-import oathdigital.gameplay.powers.setup.GreatForgeCard
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.{AppendedAutomaticUses, Table}
+import distantlands.gameplay.powers.setup.GreatForgeCard
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.{AppendedAutomaticUses, Table}
 
 /** Hospitality: after its holder travels, 1 favor from a bank matching both
   * a card at the destination and one of the holder's faceup advisers. */

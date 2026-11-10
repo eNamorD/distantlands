@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.{DecisionOptionProjection,
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.{DecisionOptionProjection,
   DecisionQueryProjection}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** A parked Search decision's options as p1 is shown them: each option's
   * state, badge and reason, after the procedure's pricing and the powers'

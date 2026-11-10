@@ -1,7 +1,7 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
 
 /** The consent facts (consent design, "Events"). */

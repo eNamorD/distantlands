@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 object StorytellerCard extends Denizen(DenizenId("52"), "Storyteller", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.storyteller"),

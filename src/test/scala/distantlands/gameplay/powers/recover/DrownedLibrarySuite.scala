@@ -1,23 +1,23 @@
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.catalog.ModifierMark
-import oathdigital.gameplay.{ModifierPlay, OathRules}
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.recover.{RecoverProcedure,
+import distantlands.catalog.ModifierMark
+import distantlands.gameplay.{ModifierPlay, OathRules}
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.recover.{RecoverProcedure,
   UndergroundLibraryCard}
-import oathdigital.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite,
+import distantlands.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite,
   FairIsleSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{DeltaPayload, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{DeltaPayload, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   ParkedNode, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Drowned Library (E13, ruined), a Recover modifier for 1 secret: with
   * the user's pawn at its site, the Recover takes the relic deck's top card

@@ -1,8 +1,8 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
-import oathdigital.model.OathEvent.WarExhaustionResolved
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
+import distantlands.model.OathEvent.WarExhaustionResolved
 
 /** The Empire's round-end endings (CR p. 19; Empire phase design, "Slice
   * 2"): Stable Regime on the end die at the end of rounds 5 to 7, War

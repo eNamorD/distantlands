@@ -1,14 +1,14 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.protocol.projection.{DecisionQueryProjection,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.whenplayed.WizardsConclaveCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.protocol.projection.{DecisionQueryProjection,
   WalkerWaitingProjection}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** The facedown-adviser pick through the service: a board decision only its
   * player sees (undo design, "The facedown-adviser pick"). Undo of the pick

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.model._
 
 object BookBindersCard extends Denizen(DenizenId("140"), "Book Binders", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.book-binders"),

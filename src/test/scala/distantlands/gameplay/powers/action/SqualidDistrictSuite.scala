@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 /** Squalid District (catalog batch 9, slice 9): discard facedown advisers,
   * draw as many cards from the world deck's bottom as facedown advisers,

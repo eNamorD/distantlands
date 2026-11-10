@@ -1,21 +1,21 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.holding.CouncilArbiterCard
-import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite}
-import oathdigital.gameplay.powers.action.BrassHorseCard
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.search.{ErrandBoyCard, TruthfulHarpCard}
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Journal, Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.StartPreview
+import distantlands.catalog.holding.CouncilArbiterCard
+import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
+import distantlands.gameplay.powers.action.BrassHorseCard
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.search.{ErrandBoyCard, TruthfulHarpCard}
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Journal, Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.StartPreview
 
 /** Negotiation through the rules, as a client drives it: start, choose the
   * negotiators, then answer the deal in any order until it closes.

@@ -1,14 +1,14 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.ParkedServiceFixture
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powers.recover.{SilverCharm, SilverCharmCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
-import oathdigital.protocol.projection.{LogKind}
-import oathdigital.testkit.{Answers, Dice, MenuPlay}
-import oathdigital.testkit.Table.p1
+import distantlands.application.ParkedServiceFixture
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powers.recover.{SilverCharm, SilverCharmCard}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
+import distantlands.protocol.projection.{LogKind}
+import distantlands.testkit.{Answers, Dice, MenuPlay}
+import distantlands.testkit.Table.p1
 import LogScripts._
 
 /** Silver Charm's lines: its own line in place of the roll's, then the

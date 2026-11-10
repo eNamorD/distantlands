@@ -1,6 +1,6 @@
-package oathdigital.catalog
+package distantlands.catalog
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 
 class CatalogHandlerInventorySuite extends munit.FunSuite:
   test("the handler inventory lists every printed power and site handler once"):

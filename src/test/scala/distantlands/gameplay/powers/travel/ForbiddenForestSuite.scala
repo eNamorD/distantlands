@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.powers.action.WolvesCard
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
-import oathdigital.testkit.Table.p2
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.powers.action.WolvesCard
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, PlacementPicks, Table}
+import distantlands.testkit.Table.p2
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Forbidden Forest (catalog batch 9, slice 4): enemies of the Forest's
   * ruler cannot travel to its site without a Beast adviser, unless the

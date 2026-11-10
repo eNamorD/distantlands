@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, _}
-import oathdigital.protocol.projection.LogEntry
+import distantlands.protocol.{GameIntent => GameCommand, _}
+import distantlands.protocol.projection.LogEntry
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 

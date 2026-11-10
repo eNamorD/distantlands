@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** The game, seat and position a draft was staged at; a draft is dropped when
   * a snapshot arrives for any other. */

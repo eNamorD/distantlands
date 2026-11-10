@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.economy.MusterSource
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.economy.MusterSource
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** What the Muster and Trade source powers share (catalog batch 5 design,
   * "Slice 1: Muster and Trade sources"). Each rewrites the source decision,

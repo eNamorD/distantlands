@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Decide, DecisionAnswer, DecisionOption,
+import distantlands.model.{Decide, DecisionAnswer, DecisionOption,
   DecisionOptionRef, DecisionPlacement, DecisionQuery, DecisionSection,
   OathViolation, OptionReason}
 

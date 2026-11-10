@@ -1,6 +1,6 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.protocol.projection.{LogEntry, LogSpan}
+import distantlands.protocol.projection.{LogEntry, LogSpan}
 
 /** An exact, readable rendering of log entries for golden files: one line
   * per entry, `sequence.ordinal kind depth` then every span, a typed span in

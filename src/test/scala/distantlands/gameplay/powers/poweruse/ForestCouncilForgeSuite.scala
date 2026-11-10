@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.{MartialCultureCard, WrestlersCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.{MartialCultureCard, WrestlersCard}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** A Forge whose every split places on a Beast card, under an enemy's
   * Forest Council (catalog batch 8, slice 10, part 2): the walker tries the

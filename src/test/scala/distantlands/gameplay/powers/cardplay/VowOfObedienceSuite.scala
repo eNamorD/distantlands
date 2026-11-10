@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   SearchFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, PowerRules, Refusals, Table}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.PhasePowerHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, PowerRules, Refusals, Table}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.PhasePowerHarness
 
 class VowOfObedienceSuite extends munit.FunSuite:
   import PowerFixture._

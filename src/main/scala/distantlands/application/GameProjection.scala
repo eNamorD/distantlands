@@ -1,15 +1,15 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.chronicle.ChronicleEntries
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.OathState.{NoGame, Ready}
-import oathdigital.gameplay.{OathRules, PlayerSecretSummary}
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.powers.{ConsentPowers, PhasePowerCatalog,
+import distantlands.application.chronicle.ChronicleEntries
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.OathState.{NoGame, Ready}
+import distantlands.gameplay.{OathRules, PlayerSecretSummary}
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.powers.{ConsentPowers, PhasePowerCatalog,
   WalkerPowerCatalog}
-import oathdigital.model._
-import oathdigital.protocol.projection._
+import distantlands.model._
+import distantlands.protocol.projection._
 
 /** Assembles a player-scoped projection from authoritative state. */
 final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,

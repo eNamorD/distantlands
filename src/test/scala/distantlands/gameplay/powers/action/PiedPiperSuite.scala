@@ -1,21 +1,21 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class PiedPiperSuite extends munit.FunSuite:
   import PowerFixture._

@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
-import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders,
+import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
+import distantlands.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders,
   GrandScepterAction, ImperialSeal, MagicWaterskin, MovementPowers,
   OtherActionPowers, SelfActionPowers, StonePortal, TargetPowers, WaysideInn,
   WorldActionPowers}
-import oathdigital.gameplay.powers.banner.BannerFacePowers
-import oathdigital.gameplay.powers.cardplay.VowOfObedience
-import oathdigital.gameplay.powers.economy.VowOfPoverty
-import oathdigital.gameplay.powers.rest.{Insomnia, Naysayers, SilverTongue}
-import oathdigital.gameplay.powers.wake.{HiddenPassages, Hunger,
+import distantlands.gameplay.powers.banner.BannerFacePowers
+import distantlands.gameplay.powers.cardplay.VowOfObedience
+import distantlands.gameplay.powers.economy.VowOfPoverty
+import distantlands.gameplay.powers.rest.{Insomnia, Naysayers, SilverTongue}
+import distantlands.gameplay.powers.wake.{HiddenPassages, Hunger,
   MarbleFountains, Quartermaster, RiverSitePower, SinkingPassages,
   TrackerAction, TrackerWake}
 

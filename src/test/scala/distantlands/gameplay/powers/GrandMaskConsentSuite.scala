@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.{GrandMaskCard, SiteRulers}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.operations.{HallOfMinisters,
+import distantlands.gameplay.{GrandMaskCard, SiteRulers}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.gameplay.operations.{HallOfMinisters,
   HallOfMinistersCard}
-import oathdigital.gameplay.powers.economy.CurfewCard
-import oathdigital.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
-import oathdigital.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
-import oathdigital.gameplay.powers.travel.{ForbiddenForest,
+import distantlands.gameplay.powers.economy.CurfewCard
+import distantlands.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
+import distantlands.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
+import distantlands.gameplay.powers.travel.{ForbiddenForest,
   ForbiddenForestCard}
-import oathdigital.gameplay.powers.wake.{HiddenPassages, HiddenPassagesCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.wake.{HiddenPassages, HiddenPassagesCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Who consents for a masked card (catalog batch 11, rulings 7 and 15):
   * the wearer, during their turn, for every card at an Imperial site but a

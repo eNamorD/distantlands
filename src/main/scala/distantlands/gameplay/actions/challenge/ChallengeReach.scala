@@ -1,8 +1,8 @@
-package oathdigital.gameplay.actions.challenge
+package distantlands.gameplay.actions.challenge
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.model._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.model._
 
 /** What the Challenge modifiers change about a Challenge (catalog batch
   * 10, slice 11), read from the walk's picks, which a park keeps and

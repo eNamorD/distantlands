@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{ConsentKey, Cost, DecisionOptionRef, OathViolation,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.{ConsentKey, Cost, DecisionOptionRef, OathViolation,
   Operation, PlayerId, PowerId, LogNote, PowerTiming, QueuedProcedure,
   ReadyGame}
 

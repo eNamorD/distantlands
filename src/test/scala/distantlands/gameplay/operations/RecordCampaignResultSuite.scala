@@ -1,8 +1,8 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
-import oathdigital.testkit.RawOperationBatch
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.testkit.RawOperationBatch
+import distantlands.testkit.Unwrap.accepted
 
 class RecordCampaignResultSuite extends munit.FunSuite:
   private val conquest = CampaignResult(PlayerId("red"), CampaignKind.Conquest,

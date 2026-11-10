@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.banner.YewStaffCard
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.banner.YewStaffCard
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Fire Talkers: a secret placed for three attack dice, added or removed,
   * offered only while its user holds the Darkest Secret. */

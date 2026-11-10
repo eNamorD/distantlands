@@ -1,9 +1,9 @@
-package oathdigital.gameplay.actions.dice
+package distantlands.gameplay.actions.dice
 
-import oathdigital.gameplay.powers.search.BrackenCard
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.powers.search.BrackenCard
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   OfferReroll}
-import oathdigital.model._
+import distantlands.model._
 
 /** A power of the tests' own: a free reroll of every die of a throw, for a
   * roller who holds Bracken faceup. Bracken's own power is not

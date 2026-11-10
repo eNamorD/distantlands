@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.testkit.Unwrap.present
+import distantlands.model.PlayerColor
+import distantlands.testkit.Unwrap.present
 
 /** The draft set as a value: what `reconcile` keeps and drops, and what
   * `staged` touches.

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{BurnTake, Burnt,
+import distantlands.gameplay.powerresolver.{BurnTake, Burnt,
   ContributingPower, TakesBurns}
-import oathdigital.gameplay.powers.DeclaredNotes
-import oathdigital.model.{Burn, CoreOperation, Location, PayCost, Piece,
+import distantlands.gameplay.powers.DeclaredNotes
+import distantlands.model.{Burn, CoreOperation, Location, PayCost, Piece,
   PlayerId, PositionedLocation, PowerId, ReadyGame, SecretSide, Take}
 
 /** The burns that powers take (catalog batch 8, "A burn's actor"). Before a

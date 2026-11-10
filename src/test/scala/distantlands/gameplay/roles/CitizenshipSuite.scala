@@ -1,9 +1,9 @@
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p3}
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p3}
 
 /** The question a short purple bank asks (ruling R18) and the first-game
   * option (ambiguity F8). */

@@ -1,17 +1,17 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.model.OathState.Ready
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.PhasePowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{WalkerCompleted, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.PhasePowerHarness
+import distantlands.model.OathState.Ready
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.PhasePowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{WalkerCompleted, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.PhasePowerHarness
 
 /** A Wake with nothing left to decide ends by itself, in the command that
   * left it so: at the turn boundary, and after the last Wake option. */

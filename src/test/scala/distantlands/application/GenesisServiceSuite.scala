@@ -1,12 +1,12 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.{OathViolation, PhaseTransitionRef}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.{OathViolation, PhaseTransitionRef}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** A service seeded with a start state: its streams begin there instead of
   * at `GameStarted`. Tests only; see the service and log start-states

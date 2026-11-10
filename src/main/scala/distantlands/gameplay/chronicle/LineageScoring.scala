@@ -1,8 +1,8 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Score Lineage Points, the Throne's sixth step (CR p. 37, Chronicle ruling
   * 13). The winner scores 3 lineage points. Any number of times, they may

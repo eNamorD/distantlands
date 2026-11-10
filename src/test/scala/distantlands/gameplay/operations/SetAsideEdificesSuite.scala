@@ -1,11 +1,11 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.setup.GreatMarketCard
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.setup.GreatMarketCard
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Chronicle ruling 9: a discarded ruined edifice joins the set-aside list,
   * in discard order, and not the edifice deck. */

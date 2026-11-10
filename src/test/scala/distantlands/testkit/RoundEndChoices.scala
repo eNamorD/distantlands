@@ -1,7 +1,7 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.phases.rest.RoundEndRandomPort
-import oathdigital.model.PlayerId
+import distantlands.gameplay.phases.rest.RoundEndRandomPort
+import distantlands.model.PlayerId
 
 /** Stubs of RoundEndRandomPort (canned answers, no record of calls). A stub
   * fails the test when asked for what it does not fix, so a test that

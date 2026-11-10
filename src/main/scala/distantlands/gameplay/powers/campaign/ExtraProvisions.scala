@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
 
 object ExtraProvisionsCard extends Denizen(DenizenId("48"), "Extra Provisions", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.extra-provisions"),

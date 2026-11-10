@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.{CardPlayRules, DiscardPermission}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object CropRotationCard extends Denizen(DenizenId("128"), "Crop Rotation", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.crop-rotation"),

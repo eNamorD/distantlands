@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.roles.{Citizenship, RoleNotes}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.roles.{Citizenship, RoleNotes}
+import distantlands.model._
 
 /** The Grand Scepter's ACTION: "You may become a Citizen if an Exile"
   * (CR p. 34). In a game with no Empire the holder becomes the Chancellor

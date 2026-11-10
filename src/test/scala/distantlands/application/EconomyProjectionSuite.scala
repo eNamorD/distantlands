@@ -1,18 +1,18 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
-import oathdigital.gameplay.{EconomyFixture, OathRules}
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.AlchemistCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.DecisionOptionProjection
-import oathdigital.testkit.{MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.{EconomyFixture, OathRules}
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.AlchemistCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.DecisionOptionProjection
+import distantlands.testkit.{MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.p1
 
 class EconomyProjectionSuite extends munit.FunSuite:
   import EconomyFixture.AddSource

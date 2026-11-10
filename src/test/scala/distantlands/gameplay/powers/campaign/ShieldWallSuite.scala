@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Shield Wall: a defender's plan that adds two defense dice, and kills its
   * user's whole force when they are defeated. */

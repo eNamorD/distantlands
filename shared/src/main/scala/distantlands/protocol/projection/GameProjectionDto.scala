@@ -1,4 +1,4 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 final case class GameProjection(
     gameId: String,
@@ -40,7 +40,7 @@ final case class GameProjection(
   * "Projection"): its name and the starting Chronicle's digest from the
   * start, and the evolved Chronicle once the Chronicle Phase journals it. */
 final case class ChronicleProjection(name: String, startingDigest: String,
-    evolved: Option[oathdigital.protocol.ChronicleEntry])
+    evolved: Option[distantlands.protocol.ChronicleEntry])
 
 /** A step the viewer may take back or restore, with the hover note that
   * says what it is (undo design, "Controls"). Present only for the step's

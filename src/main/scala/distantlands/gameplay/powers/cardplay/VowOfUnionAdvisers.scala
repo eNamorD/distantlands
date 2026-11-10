@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.powers.campaign.VowOfUnionCard
-import oathdigital.model.{DenizenId, PowerId, Suit}
+import distantlands.gameplay.powers.campaign.VowOfUnionCard
+import distantlands.model.{DenizenId, PowerId, Suit}
 
 /** Vow of Union's restriction (card 185, adviser-only, locked): "You may
   * only have [Beast] advisers--bury other advisers you have or would gain."
   *
   * It is a [[SuitOnlyAdvisers]] rule for Beasts, as Family Wagon is for
   * Nomads. It lifts no limit. Its Campaign half is
-  * [[oathdigital.gameplay.powers.campaign.VowOfUnion]].
+  * [[distantlands.gameplay.powers.campaign.VowOfUnion]].
   */
 case object VowOfUnionAdvisers extends SuitOnlyAdvisers:
   val id: PowerId = VowOfUnionCard.restriction.id

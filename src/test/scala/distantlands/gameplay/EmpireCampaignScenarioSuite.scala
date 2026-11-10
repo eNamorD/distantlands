@@ -1,14 +1,14 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.application._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{Commands, Dice, Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.application._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{Commands, Dice, Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** A Citizen conquers an Imperial site and leaves it to the bandits
   * (Imperial Infighting, CR p. 35), played through the service. */

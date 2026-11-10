@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.challenge.ChallengeRibbon
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.challenge.ChallengeRibbon
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 object FavoredSonCard extends Denizen(DenizenId("235"), "Favored Son", Suit.Hearth) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.favored-son"),

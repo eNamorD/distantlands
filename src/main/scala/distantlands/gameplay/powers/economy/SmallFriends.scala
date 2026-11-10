@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   ModifierMark, PrintedPower}
-import oathdigital.model._
+import distantlands.model._
 
 object SmallFriendsCard extends Denizen(DenizenId("177"), "Small Friends", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.small-friends"),

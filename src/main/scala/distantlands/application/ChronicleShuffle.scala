@@ -1,4 +1,4 @@
-package oathdigital.application
+package distantlands.application
 
 /**
  * The application-layer source of randomness for Chronicle setup: every

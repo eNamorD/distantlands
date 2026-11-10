@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.gameplay.powers.campaign.WildMountsCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Unwrap.as
+import distantlands.gameplay.powers.campaign.WildMountsCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Unwrap.as
 
 /** A composite that is not the walker's own and carries no window, as a
   * custom composite inside its window's subtree does. */

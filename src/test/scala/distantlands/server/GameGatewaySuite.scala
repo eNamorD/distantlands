@@ -1,20 +1,20 @@
-package oathdigital.server
+package distantlands.server
 
 import java.nio.file.{Files, Path}
 
-import oathdigital.application._
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.setup.SetupProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.OathState
-import oathdigital.persistence.OwnedHsqldbEventStreamRepository
-import oathdigital.protocol.{ActorlessCommandRequest, DecisionAnswerWire,
+import distantlands.application._
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.OathState
+import distantlands.persistence.OwnedHsqldbEventStreamRepository
+import distantlands.protocol.{ActorlessCommandRequest, DecisionAnswerWire,
   GameIntent}
-import oathdigital.protocol.projection.{DecisionQueryProjection, GameProjection,
+import distantlands.protocol.projection.{DecisionQueryProjection, GameProjection,
   SiteForcesProjection}
-import oathdigital.testkit.ChronicleShuffles.unshuffled
-import oathdigital.testkit.Table.{p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.testkit.ChronicleShuffles.unshuffled
+import distantlands.testkit.Table.{p2, p3}
+import distantlands.testkit.Unwrap.{accepted, as, present}
 import ParkedServiceFixture.loaded
 
 /** The gateway every transport reaches once it has resolved an access: a
@@ -129,7 +129,7 @@ class GameGatewaySuite extends munit.FunSuite:
     // Setup seeds 2 discards in each region.
     assertEquals(projection.world.map(_.discardCount), Vector(2, 2, 2))
     assertEquals(projection.favorBanks.map(_.suit).toSet,
-      oathdigital.model.Suit.all.map(_.key).toSet)
+      distantlands.model.Suit.all.map(_.key).toSet)
     // The first round, no Visions drawn, the Usurper limiter at round 4, and
     // p2 first.
     assertEquals(projection.tracks.map(track =>

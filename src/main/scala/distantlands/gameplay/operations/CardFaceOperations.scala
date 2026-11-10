@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** `Flip`, `Reveal` and `Peek`: what a card shows and who knows it. */
 private[operations] object CardFaceOperations:

@@ -1,18 +1,18 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.{ModifierPlay, SearchPlay}
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.action.{HomesteadersCard, ScryerCard}
-import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
-import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.whenplayed.{BlackmailCard,
+import distantlands.gameplay.{ModifierPlay, SearchPlay}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.action.{HomesteadersCard, ScryerCard}
+import distantlands.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.powers.whenplayed.{BlackmailCard,
   ThreateningRoarCard}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Errand Boy (card 11): for 1 favor, the other regions' discard piles are
   * offered, each at 2 Supply. The actor's own pile and the world deck stay

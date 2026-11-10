@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** What every `ChronicleStorage` promises: a written key reads back, a
   * second write replaces the first, a removed or never-written key reads

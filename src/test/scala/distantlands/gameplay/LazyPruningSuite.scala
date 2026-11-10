@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.SealingWardCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.SealingWardCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerSimulation}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Outcomes.parked
-import oathdigital.testkit.DecisionOptions.button
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Outcomes.parked
+import distantlands.testkit.DecisionOptions.button
 
 /** The walker hides an option from which no path reaches a legal end, and
   * stops looking at hidden information (global operation restrictions

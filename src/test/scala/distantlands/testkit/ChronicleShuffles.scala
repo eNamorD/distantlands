@@ -1,6 +1,6 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.ChronicleRandomPort
+import distantlands.application.ChronicleRandomPort
 
 /** Stubs of ChronicleRandomPort (canned answers, no record of calls) that keep
   * a generated game's seating and card order the same every run: `reversing`

@@ -1,7 +1,7 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
 

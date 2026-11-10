@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, firstMatch}
-import oathdigital.model.PlayerColor
+import distantlands.frontend.Dom.{all, firstMatch}
+import distantlands.model.PlayerColor
 
 /** The Supply track as the physical board prints it: the most Supply on
   * the left, each band on the space Rest sets the marker to, and the

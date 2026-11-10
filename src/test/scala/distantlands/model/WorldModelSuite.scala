@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 class WorldModelSuite extends munit.FunSuite:
   private def player(id: String, lineage: String): PlayerState = PlayerState(

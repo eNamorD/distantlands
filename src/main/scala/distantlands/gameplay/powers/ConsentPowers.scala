@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.operations.{OperationRestrictions, WaivableRule}
-import oathdigital.gameplay.powerresolver.{ContributingPower,
+import distantlands.gameplay.operations.{OperationRestrictions, WaivableRule}
+import distantlands.gameplay.powerresolver.{ContributingPower,
   OptionRestriction, Restriction, Waiver}
-import oathdigital.gameplay.powers.travel.TollRoads
-import oathdigital.model.{PlayerId, PowerId, PowerSourceRef, ReadyGame}
+import distantlands.gameplay.powers.travel.TollRoads
+import distantlands.model.{PlayerId, PowerId, PowerSourceRef, ReadyGame}
 
 /** The waivable powers (consent design, "Powers declare waivability"): every
   * power with a contribution, of either restriction kind, that declares a

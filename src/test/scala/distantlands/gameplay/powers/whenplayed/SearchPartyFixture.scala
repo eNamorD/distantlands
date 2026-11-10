@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{PlacementPicks, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{PlacementPicks, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Drives Search Party's WHEN PLAYED through the rules with the production
   * walker powers (catalog batch 10, slice 12). p1 stands at Ancient City,

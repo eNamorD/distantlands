@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.model._
 
 object BlackSwordCard extends Relic(RelicId("R35"), "Black Sword", value = 73, defense = 2):
   val power = PrintedPower(PowerId("relic.black-sword"),

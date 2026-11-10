@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Family of a rolled die: the two Campaign dice, and the round die, a d6
   * numbered 1 to 6 (Shattered Portal rolls it). */

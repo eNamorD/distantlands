@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.setup
+package distantlands.gameplay.powers.setup
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog,
+import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog,
   Locked, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 object ProvingGroundsCard extends Edifice(EdificeId("E22"), Suit.Hearth):
   object intact extends EdificeFace("Proving Grounds") with Locked:

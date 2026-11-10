@@ -1,21 +1,21 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.PlacementFixture
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.EldersCard
-import oathdigital.gameplay.powers.campaign.{LancersCard, RainBootsCard,
+import distantlands.gameplay.PlacementFixture
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.EldersCard
+import distantlands.gameplay.powers.campaign.{LancersCard, RainBootsCard,
   WrestlersCard}
-import oathdigital.gameplay.powers.whenplayed.{ASmallFavor, ASmallFavorCard,
+import distantlands.gameplay.powers.whenplayed.{ASmallFavor, ASmallFavorCard,
   FaithfulFriend, FaithfulFriendCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap
 
 /** Family Wagon (card 168) through card play: under a faceup Family Wagon
   * the arrival pass buries every adviser that is not a faceup Nomad, and

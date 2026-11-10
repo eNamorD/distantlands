@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.PowerId
-import oathdigital.model.PowerWindow
+import distantlands.model.PowerId
+import distantlands.model.PowerWindow
 
 /** The result of one gather at a hooked node: transforms, restrictions, option
   * restrictions and offers declared by the surviving powers, tagged with the

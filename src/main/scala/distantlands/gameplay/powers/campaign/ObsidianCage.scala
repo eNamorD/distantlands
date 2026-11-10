@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.model._
 
 object ObsidianCageCard extends Relic(RelicId("R18"), "Obsidian Cage", value = 72, defense = 3):
   val campaign = PrintedPower(PowerId("relic.obsidian-cage.campaign"),

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
   CampaignSetup}
-import oathdigital.model._
+import distantlands.model._
 
 /** What a hollow sword is worth: half a sword, counted in pairs and rounded
   * down; a whole sword with Fae Battalion; nothing with Rusting Ray. */

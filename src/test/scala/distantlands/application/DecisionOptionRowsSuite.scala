@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** How one option reads as a row, through [[DecisionOptionRows]]'s own
   * interface and no walker park: the wrappers an option carries (price,

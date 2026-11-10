@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model.{PowerId, PowerWindow, RuleSourceRef}
+import distantlands.gameplay.powerresolver._
+import distantlands.model.{PowerId, PowerWindow, RuleSourceRef}
 
 /** The window index `gather` reads instead of asking every power for its
   * contributions on every call (test speed design, decision 5).

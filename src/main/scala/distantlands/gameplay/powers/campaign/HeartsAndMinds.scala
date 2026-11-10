@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.PlanAid
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.PlanAid
+import distantlands.model._
 
 object HeartsAndMindsCard extends Denizen(DenizenId("138"),
     "Hearts and Minds", Suit.Hearth) with SiteOnly:

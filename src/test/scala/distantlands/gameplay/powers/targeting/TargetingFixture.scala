@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers,
   WalkerProcedureRegistry}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{MenuPlay, Outcomes, PowerRules, Table}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{MenuPlay, Outcomes, PowerRules, Table}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Shared reading for the suites of the rules that keep a player from being
   * targeted.

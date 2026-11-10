@@ -1,7 +1,7 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.model._
+import distantlands.gameplay.EffectiveSuit
+import distantlands.model._
 
 /** Outside its own turn a player pays at once: favor goes straight to the
   * matching suit bank and secrets flip facedown, so nothing rests on the card.

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Encirclement: a favor placed for two attack dice, added or removed, offered
   * only while its user's force is strictly larger than the enemy's. */

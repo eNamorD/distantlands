@@ -1,4 +1,4 @@
-package oathdigital.testkit
+package distantlands.testkit
 
 import scala.reflect.ClassTag
 

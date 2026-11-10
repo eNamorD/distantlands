@@ -1,9 +1,9 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.engine.{EventReplayEngine, RecordedEvent}
-import oathdigital.gameplay.OathRules
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.engine.{EventReplayEngine, RecordedEvent}
+import distantlands.gameplay.OathRules
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** A game's journal replayed: from no game, the way the server replays it,
   * or from a ready game, the way the power harnesses check a walk's events

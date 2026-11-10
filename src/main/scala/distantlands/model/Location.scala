@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 sealed trait Location extends Product with Serializable
 object Location:

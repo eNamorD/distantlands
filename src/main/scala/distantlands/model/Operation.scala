@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Root of the reusable operation algebra: the vocabulary the walker itself
   * speaks, apart from the operations of Oath.

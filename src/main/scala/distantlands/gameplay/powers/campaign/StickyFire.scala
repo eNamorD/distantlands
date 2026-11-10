@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object StickyFireCard extends Relic(RelicId("R01"), "Sticky Fire", value = 3, defense = 3):
   val power = PrintedPower(PowerId("relic.sticky-fire"),

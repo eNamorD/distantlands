@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.model._
 
 object RingOfDevotionCard extends Relic(RelicId("R12"), "Ring of Devotion", value = 90, defense = 1):
   val power = PrintedPower(PowerId("relic.ring-of-devotion"),

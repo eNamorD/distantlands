@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** The battle arithmetic and its operations. */
 object CampaignBattle:

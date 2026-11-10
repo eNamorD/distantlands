@@ -1,6 +1,6 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The Imperial laws that need another player's consent (CR p. 35). A law
   * is not a card, so it is named here for the consent panels, and its

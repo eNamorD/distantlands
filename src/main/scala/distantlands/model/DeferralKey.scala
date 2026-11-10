@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** The name [[Defer]] holds ops under, until a later step of the same
   * action takes them (operation rewrite design, "Deferral"). Named after

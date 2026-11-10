@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Builds the `ReadyGame` around a hand-assembled `OathGame`.
   *

@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import java.net.{URI, URLEncoder}
 import java.nio.charset.StandardCharsets
@@ -9,9 +9,9 @@ import akka.http.scaladsl.model.headers.{HttpCookie, RawHeader, SameSite, `Set-C
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import org.slf4j.LoggerFactory
-import oathdigital.application._
-import oathdigital.application.chronicle.ChronicleConversion
-import oathdigital.protocol._
+import distantlands.application._
+import distantlands.application.chronicle.ChronicleConversion
+import distantlands.protocol._
 
 final class TrustedSeatRoutes(
     identities: IdentityRepository,

@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** The rulebook's access rule for using a card's power: cards at your site,
   * cards at sites you rule, and, for the Bandit Crown's holder, cards at

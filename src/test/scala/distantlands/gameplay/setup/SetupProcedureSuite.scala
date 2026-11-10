@@ -1,14 +1,14 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.catalog.SiteOnly
-import oathdigital.gameplay.powers.campaign.{MartialCultureCard, StickyFireCard,
+import distantlands.catalog.SiteOnly
+import distantlands.gameplay.powers.campaign.{MartialCultureCard, StickyFireCard,
   WrestlersCard}
-import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Answers, Outcomes, Situation}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Answers, Outcomes, Situation}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, as, present}
 
 class SetupProcedureSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog

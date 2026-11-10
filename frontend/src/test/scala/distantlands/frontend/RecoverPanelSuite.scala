@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.projection.DieFace
+import distantlands.protocol.projection.DieFace
 
-import oathdigital.frontend.Dom.all
-import oathdigital.testkit.Unwrap.as
+import distantlands.frontend.Dom.all
+import distantlands.testkit.Unwrap.as
 import ParkedDecision.{RecoverStep, Surface}
 import org.scalajs.dom
 

@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.gameplay.powers.economy.VowOfWandering
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.model._
 
 object KeyToTheCityCard extends Denizen(DenizenId("18"), "Key to the City", Suit.Discord) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.key-to-the-city"),

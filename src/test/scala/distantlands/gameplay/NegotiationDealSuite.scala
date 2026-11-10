@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite}
-import oathdigital.gameplay.powers.action.BrassHorseCard
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.search.TruthfulHarpCard
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
-import oathdigital.model.OathViolation.InsufficientFavor
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
+import distantlands.gameplay.powers.action.BrassHorseCard
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.search.TruthfulHarpCard
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
+import distantlands.model.OathViolation.InsufficientFavor
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The deal as a pure function of the answers recorded so far. */
 class NegotiationDealSuite extends munit.FunSuite:

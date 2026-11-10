@@ -1,8 +1,8 @@
-package oathdigital.serialization
+package distantlands.serialization
 
 import scala.util.control.NonFatal
-import oathdigital.model._
-import oathdigital.serialization.WireError.InvalidValue
+import distantlands.model._
+import distantlands.serialization.WireError.InvalidValue
 
 /** Journal wire form of negotiation terms, the one spelling the walker's
   * answer codec writes and reads.

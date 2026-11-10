@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.VowOfKinshipCard
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.action.ConvoysCard
-import oathdigital.gameplay.powers.campaign.MartialCultureCard
-import oathdigital.gameplay.powers.setup.GreatForgeCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.VowOfKinshipCard
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.action.ConvoysCard
+import distantlands.gameplay.powers.campaign.MartialCultureCard
+import distantlands.gameplay.powers.setup.GreatForgeCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** The cards a ruler rules (catalog batch 3 rulings, "Cards a player
   * rules"). */

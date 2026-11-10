@@ -1,26 +1,26 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture.board
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.CampaignFixture.board
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite, DesolateShoreSite}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{SecondChanceCard, WildAlliesCard,
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.{SecondChanceCard, WildAlliesCard,
   WolvesCard}
-import oathdigital.gameplay.powers.cardplay.WildCryCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.whenplayed.AnimalHostCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.powers.cardplay.WildCryCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.whenplayed.AnimalHostCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers, WalkerProcedureRegistry}
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** The Act menu's budget (walker-driven game loop design, ruling 8): on a
   * full board, building and walking the menu to its park, and reading the
   * park back, each take under 50 ms. A benchmark run by hand, never by
   * `sbt test`:
   *
-  * {{{./sbtw "Test/runMain oathdigital.gameplay.ActMenuBudget"}}}
+  * {{{./sbtw "Test/runMain distantlands.gameplay.ActMenuBudget"}}}
   *
   * Each measure is the best of five runs after three warm-up runs. It exits
   * with status 1 when a measure is over budget.

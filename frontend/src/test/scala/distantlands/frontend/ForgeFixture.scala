@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** The Forge pay partition the walker-decision suites draw: Forge parks on
   * decision "forge-9" asking the player to place three denizens into "pay

@@ -1,6 +1,6 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Unwrap.accepted
 
 /** The consent ledger's transitions (consent design, "State" and rulings
   * 9, 12, 14, 15 and 17). */

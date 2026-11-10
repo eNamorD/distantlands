@@ -1,9 +1,9 @@
-package oathdigital.server
+package distantlands.server
 
 import java.net.URI
 import java.nio.file.Paths
 
-import oathdigital.testkit.Unwrap.rejected
+import distantlands.testkit.Unwrap.rejected
 
 class ServerConfigSuite extends munit.FunSuite:
   private val version = "0.1.0-alpha.1"

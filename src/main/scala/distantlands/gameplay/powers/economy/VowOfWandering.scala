@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.actions.VowOfWanderingRule
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.VowOfWanderingRule
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OperationRewrite, PowerCtx, Transform}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 object VowOfWanderingCard extends Denizen(VowOfWanderingRule.cardId, "Vow of Wandering", Suit.Nomad) with Locked with AdviserOnly:
   val muster = PrintedPower(PowerId("denizen.vow-of-wandering.muster"),

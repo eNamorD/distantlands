@@ -1,8 +1,8 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
 
 class DecisionOptionRefSuite extends munit.FunSuite:
   private val hall = DecisionOptionRef.Edifice(
@@ -20,7 +20,7 @@ class DecisionOptionRefSuite extends munit.FunSuite:
 
   private val slot = DecisionOptionRef.RelicSlot(PlayerId("blue"), 2)
   private val banner =
-    DecisionOptionRef.Banner(oathdigital.model.Banner.DarkestSecret)
+    DecisionOptionRef.Banner(distantlands.model.Banner.DarkestSecret)
 
   test("a relic slot spells itself as a kind and owner-and-index id and parses back"):
     assertEquals((slot.kind, slot.wireId), ("relic-slot", "blue:2"))

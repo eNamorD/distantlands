@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.testkit.Unwrap.present
+import distantlands.testkit.Unwrap.present
 import org.scalajs.dom
 import scala.scalajs.js
 

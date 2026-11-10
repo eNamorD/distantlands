@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.model._
 
 object SpoiledSuppliesCard extends Denizen(DenizenId("228"), "Spoiled Supplies", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.spoiled-supplies"),

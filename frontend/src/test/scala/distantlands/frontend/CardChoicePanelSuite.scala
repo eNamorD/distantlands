@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import ParkedDecision.{RecoverStep, Surface}
 import org.scalajs.dom
@@ -50,6 +50,6 @@ class CardChoicePanelSuite extends munit.FunSuite:
     val panel = recoverRelics(ui)
     Dom.all(panel, ".recover-relic-choice").last
       .asInstanceOf[dom.html.Element].click()
-    assertEquals(ui.submitted, Vector(oathdigital.protocol.GameIntent.ResolveWalker(
+    assertEquals(ui.submitted, Vector(distantlands.protocol.GameIntent.ResolveWalker(
       ParkedDecision.recoverRelicDecisionId,
-      oathdigital.protocol.DecisionAnswerWire.ChooseOneWire("relic", "relic:horn"))))
+      distantlands.protocol.DecisionAnswerWire.ChooseOneWire("relic", "relic:horn"))))

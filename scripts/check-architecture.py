@@ -59,11 +59,11 @@ forbidden_imports = {
 # plan cards know (ROADMAP "Campaign notes read the attack rules").
 allowed_imports = {
     "src/main/scala/distantlands/gameplay/actions/campaign/CampaignNotes.scala":
-        "import oathdigital.gameplay.powers.campaign.AttackScore\n",
+        "import distantlands.gameplay.powers.campaign.AttackScore\n",
 }
 for prefix, packages in forbidden_imports.items():
     root = ROOT / prefix
-    needles = tuple(f"import oathdigital.{package}" for package in packages)
+    needles = tuple(f"import distantlands.{package}" for package in packages)
     for path in scala_sources(root):
         text = path.read_text(encoding="utf-8")
         text = text.replace(allowed_imports.get(relative(path), "\0"), "")
@@ -75,9 +75,9 @@ for prefix, packages in forbidden_imports.items():
 # imports gameplay, application or server rules; the shared protocol
 # imports nothing but itself (docs/architecture/codebase-structure.md).
 # One exception: build.sbt grafts three `model` files into the Scala.js
-# build, and `oathdigital.model.PlayerColor` from them is the one model
+# build, and `distantlands.model.PlayerColor` from them is the one model
 # name the frontend and the shared protocol reference, by import or fully
-# qualified. Any other `oathdigital.<package>` reference, in an import or
+# qualified. Any other `distantlands.<package>` reference, in an import or
 # written out in full, is a violation.
 GRAFTED_MODEL_FILES = ("Identity.scala", "PlayerColor.scala", "Resources.scala")
 SHARED_MODEL_NAMES = {"PlayerColor"}
@@ -88,10 +88,10 @@ for grafted in GRAFTED_MODEL_FILES:
                       "frontend; revisit the frontend gate's model exception")
 
 qualified_reference = re.compile(
-    r"\boathdigital\.([A-Za-z0-9_]+)(?:\.([A-Za-z0-9_]+))?")
-# `import oathdigital.{application, model => m}` names packages inside the
+    r"\bdistantlands\.([A-Za-z0-9_]+)(?:\.([A-Za-z0-9_]+))?")
+# `import distantlands.{application, model => m}` names packages inside the
 # braces, where the pattern above cannot see them.
-brace_group_import = re.compile(r"\bimport\s+oathdigital\.\{([^}]*)\}")
+brace_group_import = re.compile(r"\bimport\s+distantlands\.\{([^}]*)\}")
 
 
 def outward_references(path: Path, allowed_packages: tuple[str, ...]):
@@ -131,7 +131,7 @@ for path in scala_sources(ROOT / "src/main/scala/distantlands/gameplay"):
         errors.append(f"{relative(path)}: gameplay must not read printed power text")
 
 legacy_patterns = {
-    r"\boathdigital\.setup\b": "legacy setup package",
+    r"\bdistantlands\.setup\b": "legacy setup package",
     r"\bSetupEventWire\b": "deleted setup wire",
     r"\bSetupState\b": "deleted bounded setup aggregate",
     r"\bBeginSetup\b": "deleted bounded setup command",

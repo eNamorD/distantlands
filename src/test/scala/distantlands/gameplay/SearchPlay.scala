@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.model._
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.model._
 
 /** A Search driven past its source pick, for the suites that test what a
   * Search does rather than the pick. */

@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powerresolver.{ContributingPower,
+import distantlands.gameplay.powerresolver.{ContributingPower,
   ContributionCollector, PowerCtx, PowerWindowIndex}
-import oathdigital.gameplay.cards.DesolateShoreSite
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.DesolateShoreSite
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 /** Grand Canal and Lost Lagoon (E03, catalog batch 10, slice 5): the site
   * of the face in play also has the Coast power (the Canal) or the Island

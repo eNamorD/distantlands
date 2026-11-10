@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.SearchPlay
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture,
+import distantlands.gameplay.SearchPlay
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.cardplay.{GossipCard, VowOfObedienceCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, MenuPlay,
+import distantlands.gameplay.powers.cardplay.{GossipCard, VowOfObedienceCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look, MenuPlay,
   PlacementPicks, RecordedOps, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p2
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p2
+import distantlands.testkit.Unwrap.accepted
 
 /** Search Party (card 240, catalog batch 10, slice 12), WHEN PLAYED: "peek
   * at the bottom 3 cards of a discard pile and play one as if you

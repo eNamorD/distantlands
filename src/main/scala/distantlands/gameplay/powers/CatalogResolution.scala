@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.PrintedPower
-import oathdigital.model.PowerResolution
+import distantlands.catalog.PrintedPower
+import distantlands.model.PowerResolution
 
 /** How a modifier or a persistent rule activates, read from its printed
   * power: a persistent power is automatic, a non-persistent one is selected

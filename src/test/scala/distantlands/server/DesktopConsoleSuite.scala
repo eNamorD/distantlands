@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import java.net.{InetAddress, ServerSocket}
 import java.nio.file.Paths

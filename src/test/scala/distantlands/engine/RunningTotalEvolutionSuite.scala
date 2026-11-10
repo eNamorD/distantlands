@@ -1,6 +1,6 @@
-package oathdigital.engine
+package distantlands.engine
 
-import oathdigital.testkit.RunningTotalEvolution
+import distantlands.testkit.RunningTotalEvolution
 
 /** The running-total fake keeps the `EventEvolution` contract, which the
   * replay engine's tests rely on. */

@@ -1,25 +1,25 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.gameplay.actions.campaign.CampaignNotes
-import oathdigital.gameplay.chronicle.{ChronicleSunProcedure,
+import distantlands.gameplay.actions.campaign.CampaignNotes
+import distantlands.gameplay.chronicle.{ChronicleSunProcedure,
   ChronicleThroneProcedure, ChronicleWorldProcedure,
   ChronicleBeaconProcedure, ChronicleStarsProcedure}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.actions.minor.{MinorActionProcedures,
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.forge.ForgeProcedure
+import distantlands.gameplay.actions.minor.{MinorActionProcedures,
   SelfExile, WarbandTransfers}
-import oathdigital.gameplay.actions.negotiation.NegotiationProcedure
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.setup.SetupProcedure
-import oathdigital.gameplay.phases.wake.TakeWealthProcedure
-import oathdigital.model.{ActionRef, NoteKey, PhaseTransitionRef, PowerId,
+import distantlands.gameplay.actions.negotiation.NegotiationProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.phases.wake.TakeWealthProcedure
+import distantlands.model.{ActionRef, NoteKey, PhaseTransitionRef, PowerId,
   ProcedureRef, TriggeredProcedureRef}
 
 /** The procedures that write their own Game Log lines (procedures journal

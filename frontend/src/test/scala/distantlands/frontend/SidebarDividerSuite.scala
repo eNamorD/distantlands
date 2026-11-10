@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import Dom.{one, press}
 import org.scalajs.dom

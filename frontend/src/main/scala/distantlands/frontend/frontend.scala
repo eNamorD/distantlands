@@ -1,4 +1,4 @@
-package oathdigital
+package distantlands
 package frontend
 
 type GameProjection = protocol.projection.GameProjection

@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions.dice
+package distantlands.gameplay.actions.dice
 
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** A throw: the faces its roll added, and every earlier face rerolled since,
   * numbered by the rolls of its pool (catalog batch 7, slice 2). */

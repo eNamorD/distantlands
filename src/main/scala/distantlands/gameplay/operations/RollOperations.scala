@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The `Reroll` and `SetDieFaces` writes: rerolled faces replace recorded
   * ones in place, and set faces join them. */

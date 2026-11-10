@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 object CharlatanCard extends Denizen(DenizenId("79"), "Charlatan", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.charlatan"),

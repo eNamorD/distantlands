@@ -1,20 +1,20 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.AncientBindingCard
-import oathdigital.gameplay.powers.campaign.{RainBootsCard, SealingWardCard}
-import oathdigital.gameplay.SacredGroundCard
-import oathdigital.gameplay.powers.cardplay.{SacredGround, VisionPlayFixture,
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.AncientBindingCard
+import distantlands.gameplay.powers.campaign.{RainBootsCard, SealingWardCard}
+import distantlands.gameplay.SacredGroundCard
+import distantlands.gameplay.powers.cardplay.{SacredGround, VisionPlayFixture,
   VowOfObedience, VowOfObedienceCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.DecisionOptionProjection
-import oathdigital.testkit.{Outcomes, PlacementPicks, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.DecisionOptionProjection
+import distantlands.testkit.{Outcomes, PlacementPicks, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Why a card play option is not on offer, from the engine to the projected
   * row (card play slots design, "Rulings"): a power's note for the faceup

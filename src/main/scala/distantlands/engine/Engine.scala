@@ -1,4 +1,4 @@
-package oathdigital.engine
+package distantlands.engine
 
 /** One durable domain event paired with its zero-based stream position. */
 final case class RecordedEvent[E](index: Long, event: E)

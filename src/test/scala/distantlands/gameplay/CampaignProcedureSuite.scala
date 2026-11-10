@@ -1,30 +1,30 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.campaign.{BagOfSiegeworksCard, BrassArmyCard,
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.campaign.{BagOfSiegeworksCard, BrassArmyCard,
   CursedCauldronCard, OutridersCard, VowOfPeaceCard, WatchdogCard}
-import oathdigital.gameplay.powers.travel.TentsCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.CampaignFixture.{Board, actorRules, board, on,
+import distantlands.gameplay.powers.travel.TentsCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.CampaignFixture.{Board, actorRules, board, on,
   rivalRulesOriginAndHoldsOathkeeper, rules, withAdviser, withEnemyAtOrigin,
   withRelic, withRelicFor, withSecrets, withSiteCard}
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
   CampaignSetup}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.PlanDriver.{
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.PlanDriver.{
   killedBeforeTheDefenseRoll}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   RollPayload, WalkerPowers, WalkerProcedureRegistry, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, EmptyWindowModifier, Look,
+import distantlands.model._
+import distantlands.model.DecisionAnswer._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, EmptyWindowModifier, Look,
   RecordedOps, Table}
-import oathdigital.testkit.Outcomes.ready
-import oathdigital.testkit.Unwrap.{accepted, as, present}
-import oathdigital.testkit.StartPreview
+import distantlands.testkit.Outcomes.ready
+import distantlands.testkit.Unwrap.{accepted, as, present}
+import distantlands.testkit.StartPreview
 
 /** Campaign through the rules, as a client drives it. */
 class CampaignProcedureSuite extends munit.FunSuite:

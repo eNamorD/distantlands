@@ -1,12 +1,12 @@
-package oathdigital.gameplay.phases.rest
+package distantlands.gameplay.phases.rest
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{NoteSupport, TurnOrder}
-import oathdigital.model.OathViolation._
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.phases.RestCleanup
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{NoteSupport, TurnOrder}
+import distantlands.model.OathViolation._
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.phases.RestCleanup
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 /** Finish Rest (rest-walker spec, `FinishRest`).
   *

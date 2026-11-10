@@ -1,7 +1,7 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked, SiteOnly}
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked, SiteOnly}
+import distantlands.model._
 
 /** The operation restrictions that hold for a command, wherever its
   * operations run (global operation restrictions design, "The restriction
@@ -16,7 +16,7 @@ import oathdigital.model._
   * the running action, and the restrictions the offered powers register.
   * `unlocked` are the cards whose lock does not bind for this walk: the
   * own card of a power whose use ignores its lock
-  * ([[oathdigital.gameplay.powerresolver.IgnoresOwnLock]]).
+  * ([[distantlands.gameplay.powerresolver.IgnoresOwnLock]]).
   * Every one refuses as `Impossible`: an optional operation is skipped, a
   * required one rejects.
   * `active` reads each printed restriction and each power's through

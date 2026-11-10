@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Decide, Operation, PendingTree, PlayerId, PoolKey, ReadyGame, Roll, RollMode}
+import distantlands.model.{Decide, Operation, PendingTree, PlayerId, PoolKey, ReadyGame, Roll, RollMode}
 
 /** What a parked walk waits on, read off the rebuilt tree: the open
   * decisions, a parked roll, and who may answer. Split out of

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The "±" of a battle plan (catalog batch 2 rulings, "Sign"): the side fixes
   * the sign. An attacker adds attack dice; a defender removes them from the

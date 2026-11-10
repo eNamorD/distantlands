@@ -1,19 +1,19 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite}
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.actions.negotiation.{NegotiationDeal,
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.actions.negotiation.{NegotiationDeal,
   NegotiationProcedure}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer,
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.roles.Citizenship
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer,
   DistributeAnswer, ProposeTerms}
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The Grand Scepter's term in a deal: its holder offers Citizenship to
   * Exiles among the negotiators (CR p. 34; Empire slice 3b). */

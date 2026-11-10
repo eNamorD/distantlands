@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
 /** The plan window runs its option restrictions over the plans it is
   * offered (catalog batch 6, "Option restrictions over offers"): a forbidden

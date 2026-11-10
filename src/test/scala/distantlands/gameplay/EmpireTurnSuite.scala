@@ -1,11 +1,11 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.phases.rest.BeginRestProcedure
-import oathdigital.model._
-import oathdigital.model.OathEvent._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.phases.rest.BeginRestProcedure
+import distantlands.model._
+import distantlands.model.OathEvent._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class EmpireTurnSuite extends munit.FunSuite:
   /** p2 is the Chancellor and p3 a Citizen; p1, the first player, is an
@@ -61,5 +61,5 @@ class EmpireTurnSuite extends munit.FunSuite:
   test("Rest accepts an Imperial player"):
     val ready = chancellorSecondInSeat.turn(p2, Phase.Act).ready
     assertEquals(BeginRestProcedure.validateSupportedState(
-      oathdigital.gameplay.setup.FirstGameSetupFixture.catalog, ready),
+      distantlands.gameplay.setup.FirstGameSetupFixture.catalog, ready),
       Right(()))

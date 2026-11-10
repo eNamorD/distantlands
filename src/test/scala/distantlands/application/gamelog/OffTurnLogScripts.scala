@@ -1,15 +1,15 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
-import oathdigital.gameplay.powers.campaign.{SecondWindCard, SneakAttackCard}
-import oathdigital.gameplay.walker.FollowUpOffer
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powers.campaign.{SecondWindCard, SneakAttackCard}
+import distantlands.gameplay.walker.FollowUpOffer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer,
   ChooseOneAnswer}
-import oathdigital.testkit.{Answers, Dice, MenuPlay, Park, Step, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.{Answers, Dice, MenuPlay, Park, Step, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, raidAnswers}
 
 /** Journaled walks by a player who is not the active player, for the Game

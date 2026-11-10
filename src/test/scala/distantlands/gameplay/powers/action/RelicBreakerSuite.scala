@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.NoteText
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Refusals, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class RelicBreakerSuite extends munit.FunSuite:
   import PhasePowerHarness._

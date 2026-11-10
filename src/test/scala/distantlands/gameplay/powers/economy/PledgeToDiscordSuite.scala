@@ -1,22 +1,22 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.{MarriageCard, PledgeToDiscordCard}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.{HomesteadersCard, HonorGuard,
+import distantlands.gameplay.{MarriageCard, PledgeToDiscordCard}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.{HomesteadersCard, HonorGuard,
   HonorGuardCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.cardplay.{WildCry, WildCryCard}
-import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, PowerRules,
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.cardplay.{WildCry, WildCryCard}
+import distantlands.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, MenuPlay, PhasePowerHarness, PowerRules,
   Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Pledge to Discord (catalog batch 8, slice 8): every reader of its
   * holder's faceup adviser suits sees Discord. One test per kind of

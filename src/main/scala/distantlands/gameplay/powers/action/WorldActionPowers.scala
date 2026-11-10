@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powerresolver.PhasePower
 
 /** The phase powers of catalog batch 3's slice 3c and catalog batch 4's
   * slices 2 and 3, actions on sites, banks and banners, registered by
-  * [[oathdigital.gameplay.powers.PhasePowerCatalog]] through this one object,
+  * [[distantlands.gameplay.powers.PhasePowerCatalog]] through this one object,
   * like [[OtherActionPowers]]. Each names its denizen card, so all are
   * always present.
   */

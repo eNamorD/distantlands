@@ -1,14 +1,14 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{ConsentFixture, GameAccepted,
+import distantlands.application.{ConsentFixture, GameAccepted,
   GameApplicationService, ParkedServiceFixture}
-import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
-import oathdigital.gameplay.powers.travel.{TravelFixture, TyrantCard}
-import oathdigital.model._
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.poweruse.{CityWall, CityWallCard}
+import distantlands.gameplay.powers.travel.{TravelFixture, TyrantCard}
+import distantlands.model._
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.{formatter, texts}
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** The Game Log of City Wall's ruler deciding on an enemy's Tyrant
   * (automatic power consent design, "Game Log"), as p1 reads it. */

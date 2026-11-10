@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, PowerUse, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object KeepCard extends Denizen(DenizenId("5"), "Keep", Suit.Order) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.keep"),

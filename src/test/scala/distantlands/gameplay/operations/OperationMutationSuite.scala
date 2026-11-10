@@ -1,12 +1,12 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.rest.SilverTongueCard
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.{Look, RawOperationBatch, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.rest.SilverTongueCard
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
+import distantlands.testkit.{Look, RawOperationBatch, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class OperationMutationSuite extends munit.FunSuite:
   /** TestGameFixtures' red with 1 faceup and 1 facedown secret. No Table step

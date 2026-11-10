@@ -1,16 +1,16 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.CampaignFixture
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.{OutridersCard, StickyFireCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.model.OathState.Ready
-import oathdigital.model._
-import oathdigital.protocol.projection.{DieFace => RolledFace,
+import distantlands.gameplay.CampaignFixture
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.{OutridersCard, StickyFireCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.model.OathState.Ready
+import distantlands.model._
+import distantlands.protocol.projection.{DieFace => RolledFace,
   WalkerDecisionProjection, WalkerStatusProjection}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.present
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.present
 
 /** What a parked Campaign projects: the status lines of each question (the
   * forces, the dice, the totals and the winner), the attack roll's faces,

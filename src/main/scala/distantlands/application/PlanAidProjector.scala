@@ -1,9 +1,9 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.{OathRules, SpendableFavor}
-import oathdigital.gameplay.actions.campaign.PlanAid
-import oathdigital.model._
-import oathdigital.protocol.projection.{PlanAidOfferProjection,
+import distantlands.gameplay.{OathRules, SpendableFavor}
+import distantlands.gameplay.actions.campaign.PlanAid
+import distantlands.model._
+import distantlands.protocol.projection.{PlanAidOfferProjection,
   PlanAidPromptProjection}
 
 /** The offer panel's projection for an Imperial ally while another

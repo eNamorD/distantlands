@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, WardOfSilenceCard}
-import oathdigital.gameplay.powers.campaign.ArcaneArmorCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Table}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.{ArcaneBrokersCard, WardOfSilenceCard}
+import distantlands.gameplay.powers.campaign.ArcaneArmorCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Table}
 
 class WelcomingPartySuite extends munit.FunSuite:
   import PowerFixture._

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.PoolKey
+import distantlands.model.PoolKey
 
 /** One fact a procedure shows beside a parked decision, as a label and its
   * value: "Attack dice" and "9" beside a battle-plan window. The procedure

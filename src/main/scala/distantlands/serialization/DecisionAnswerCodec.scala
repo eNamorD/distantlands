@@ -1,8 +1,8 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model.{DecisionAnswer, DecisionOptionRef, DecisionPlacement,
+import distantlands.model.{DecisionAnswer, DecisionOptionRef, DecisionPlacement,
   DistributeAmount}
-import oathdigital.serialization.WireError.InvalidValue
+import distantlands.serialization.WireError.InvalidValue
 
 /** Journal wire form of a walker [[DecisionAnswer]].
   *

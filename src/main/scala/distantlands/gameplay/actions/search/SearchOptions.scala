@@ -1,8 +1,8 @@
-package oathdigital.gameplay.actions.search
+package distantlands.gameplay.actions.search
 
-import oathdigital.gameplay.actions.SearchRules
-import oathdigital.gameplay.walker.{PricedOptions, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.actions.SearchRules
+import distantlands.gameplay.walker.{PricedOptions, WalkerPowers}
+import distantlands.model._
 
 /** The source decision as its player is shown it (search source design,
   * rulings 3 and 4), priced by [[PricedOptions]]. An empty pile says so

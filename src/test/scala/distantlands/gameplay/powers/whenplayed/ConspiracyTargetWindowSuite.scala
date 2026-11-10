@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   Transform}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, as, present}
 
 /** The window on Conspiracy's target decision: a power can remove targets, and
   * when it removes every one the decision is not asked and nothing is taken.

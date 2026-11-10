@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.WildAlliesCard
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.WildAlliesCard
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer,
   DistributeAnswer}
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, MenuPlay}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, MenuPlay}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
 
 /** Vow of Union's Campaign half: at the start of any Campaign its holder
   * may move warbands, in one direction, between their board and the sites

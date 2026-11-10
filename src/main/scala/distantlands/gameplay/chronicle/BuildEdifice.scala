@@ -1,9 +1,9 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Build Edifice, the Throne's third step (CR p. 37, Chronicle rulings 9 and
   * 12). Each suit offers one edifice: the first of its suit in the edifice

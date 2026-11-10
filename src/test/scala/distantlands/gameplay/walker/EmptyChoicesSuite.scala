@@ -1,10 +1,10 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** A choose-one passed when empty parks on a Continue button when the
   * search leaves it nothing, its options shown with their reasons; a

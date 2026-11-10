@@ -1,8 +1,8 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.scalajs.js
-import oathdigital.protocol.projection.{DieFace, LogKind, LogSection,
+import distantlands.protocol.projection.{DieFace, LogKind, LogSection,
   LogSpan}
 
 class GameLogPaneSuite extends munit.FunSuite:

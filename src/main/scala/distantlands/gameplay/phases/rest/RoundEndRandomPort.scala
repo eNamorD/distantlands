@@ -1,6 +1,6 @@
-package oathdigital.gameplay.phases.rest
+package distantlands.gameplay.phases.rest
 
-import oathdigital.model.PlayerId
+import distantlands.model.PlayerId
 
 /** The randomness of a round's end: the purple end die of a Stable Regime
   * check (CR p. 19), and the winner War Exhaustion picks in a game with no

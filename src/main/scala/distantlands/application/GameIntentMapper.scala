@@ -1,8 +1,8 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseManyAnswer, ChooseOneAnswer, DistributeAnswer, PartitionAnswer}
-import oathdigital.protocol.{GameIntent => Intent, _}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseManyAnswer, ChooseOneAnswer, DistributeAnswer, PartitionAnswer}
+import distantlands.protocol.{GameIntent => Intent, _}
 
 final case class GameIntentMappingFailure(path: String, message: String)
 
@@ -49,11 +49,11 @@ object GameIntentMapper:
 
   private def invalid(path: String, value: String, kind: String) = Left(GameIntentMappingFailure(path, s"unknown $kind '$value'"))
   private def world(value: WorldCard, path: String): Result[WorldCardId] = value.kind match { case "denizen" => Right(DenizenId(value.id)); case "vision" => Right(VisionId(value.id)); case v => invalid(s"$path.kind", v, "world card kind") }
-  private def negotiation(value: oathdigital.protocol.NegotiationTerms): Result[oathdigital.model.NegotiationTerms] = traverse(value.disclosures)(disclosure).map(ds => oathdigital.model.NegotiationTerms(value.transfers.map(v => oathdigital.model.NegotiationTransfer(PlayerId(v.recipientPlayerId), v.favor, v.relicIds.map(RelicId.apply))), ds, value.citizenshipPlayerIds.map(PlayerId.apply)))
-  private def disclosure(value: oathdigital.protocol.NegotiationDisclosure): Result[oathdigital.model.NegotiationDisclosure] = value.information match
-    case NegotiationInformation.Adviser(owner, c) => world(c, "$.intent.terms.disclosures.information.card").map(v => oathdigital.model.NegotiationDisclosure(PlayerId(value.recipientPlayerId), NegotiationDisclosureRef.Adviser(PlayerId(owner), v)))
-    case NegotiationInformation.HeldRelic(owner, relic) => Right(oathdigital.model.NegotiationDisclosure(PlayerId(value.recipientPlayerId), NegotiationDisclosureRef.HeldRelic(PlayerId(owner), RelicId(relic))))
-    case NegotiationInformation.SiteRelic(site, relic) => Right(oathdigital.model.NegotiationDisclosure(PlayerId(value.recipientPlayerId), NegotiationDisclosureRef.SiteRelic(SiteId(site), RelicId(relic))))
+  private def negotiation(value: distantlands.protocol.NegotiationTerms): Result[distantlands.model.NegotiationTerms] = traverse(value.disclosures)(disclosure).map(ds => distantlands.model.NegotiationTerms(value.transfers.map(v => distantlands.model.NegotiationTransfer(PlayerId(v.recipientPlayerId), v.favor, v.relicIds.map(RelicId.apply))), ds, value.citizenshipPlayerIds.map(PlayerId.apply)))
+  private def disclosure(value: distantlands.protocol.NegotiationDisclosure): Result[distantlands.model.NegotiationDisclosure] = value.information match
+    case NegotiationInformation.Adviser(owner, c) => world(c, "$.intent.terms.disclosures.information.card").map(v => distantlands.model.NegotiationDisclosure(PlayerId(value.recipientPlayerId), NegotiationDisclosureRef.Adviser(PlayerId(owner), v)))
+    case NegotiationInformation.HeldRelic(owner, relic) => Right(distantlands.model.NegotiationDisclosure(PlayerId(value.recipientPlayerId), NegotiationDisclosureRef.HeldRelic(PlayerId(owner), RelicId(relic))))
+    case NegotiationInformation.SiteRelic(site, relic) => Right(distantlands.model.NegotiationDisclosure(PlayerId(value.recipientPlayerId), NegotiationDisclosureRef.SiteRelic(SiteId(site), RelicId(relic))))
   /** The kind/id pair back to the engine's option reference. Total over the
     * seven declared variants, and deliberately not a table written here:
     * `DecisionOptionRef.fromWire` is the same function the journal codec

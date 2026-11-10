@@ -1,10 +1,10 @@
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.operations.GrandScepterSource
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
-import oathdigital.model.OathViolation.InvalidEventOrder
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.operations.GrandScepterSource
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
+import distantlands.model.OathViolation.InvalidEventOrder
 
 /** A role change in play as operations (CR p. 34; Empire phase design,
   * "Slice 3"): becoming a Citizen, becoming the Chancellor in a game with

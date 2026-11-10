@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, one}
-import oathdigital.protocol.{DecisionAnswerWire, DecisionPlacementWire,
+import distantlands.frontend.Dom.{all, one}
+import distantlands.protocol.{DecisionAnswerWire, DecisionPlacementWire,
   GameIntent => Intent}
-import oathdigital.testkit.Unwrap.as
+import distantlands.testkit.Unwrap.as
 import ParkedDecision.Surface
 import org.scalajs.dom
 import scala.scalajs.js

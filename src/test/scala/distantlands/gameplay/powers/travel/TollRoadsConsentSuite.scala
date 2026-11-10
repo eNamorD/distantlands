@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, PlacementPicks, Table}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Toll Roads' pay-or-ask step (consent design, "Toll and penalty steps",
   * rulings 7, 8 and 12). */

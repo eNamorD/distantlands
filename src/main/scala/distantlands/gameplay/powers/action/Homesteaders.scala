@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers, SiteRoom}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers, SiteRoom}
+import distantlands.model._
 
 object HomesteadersCard extends Denizen(DenizenId("127"), "Homesteaders", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.homesteaders"),

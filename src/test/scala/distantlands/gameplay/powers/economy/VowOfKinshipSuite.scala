@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.VowOfKinshipCard
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Outcomes.{finished, parked}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.VowOfKinshipCard
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.{finished, parked}
+import distantlands.testkit.Table.{p1, p2}
 
 /** Vow of Kinship's source question (catalog batch 11, ruling 10): with
   * favor on the holder's board and in the Nomad bank, a spend asks how

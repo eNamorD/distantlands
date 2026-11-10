@@ -1,6 +1,6 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.engine.EventEvolution
+import distantlands.engine.EventEvolution
 
 /** Fake of EventEvolution: the state is the running total of the events
   * applied, and a negative event is corrupt, so a replay test needs no game

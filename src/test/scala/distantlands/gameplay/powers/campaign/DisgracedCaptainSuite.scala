@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.roles.CouncilSeatCard
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.roles.CouncilSeatCard
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Disgraced Captain: a favor placed and a favor burnt for four attack dice,
   * added or removed, offered only while the Campaign's defender rules an

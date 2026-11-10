@@ -1,19 +1,19 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   Restriction}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.recover.{CatacombsContribution,
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.recover.{CatacombsContribution,
   RelicWorshipCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ChoicePayload, RollPayload,
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ChoicePayload, RollPayload,
   WalkerPowers, WalkerStepRecorded}
-import oathdigital.model.OathState.Ready
-import oathdigital.model._
-import oathdigital.testkit.{CatacombsGame, Look, Outcomes, RecordedOps, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model.OathState.Ready
+import distantlands.model._
+import distantlands.testkit.{CatacombsGame, Look, Outcomes, RecordedOps, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Catacombs as the first real walker contribution, exercised through
   * the real rules entry points (`OathRules.startWalker` /

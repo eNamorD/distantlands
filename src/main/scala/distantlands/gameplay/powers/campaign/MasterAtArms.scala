@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.dice.{DiceThrow, RerollChoice}
-import oathdigital.gameplay.powerresolver.{Contribution, OfferReroll,
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.dice.{DiceThrow, RerollChoice}
+import distantlands.gameplay.powerresolver.{Contribution, OfferReroll,
   PowerCtx}
-import oathdigital.model._
+import distantlands.model._
 
 object MasterAtArmsCard extends Denizen(DenizenId("249"), "Master at Arms",
     Suit.Order):

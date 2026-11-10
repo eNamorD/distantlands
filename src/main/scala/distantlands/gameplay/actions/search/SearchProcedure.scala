@@ -1,12 +1,12 @@
-package oathdigital.gameplay.actions.search
+package distantlands.gameplay.actions.search
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.{CardPlay, ProcedureNotes, SearchRules}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.walker.{ModifierChoice, ProcedureStart,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.{CardPlay, ProcedureNotes, SearchRules}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.walker.{ModifierChoice, ProcedureStart,
   WalkerPowers}
-import oathdigital.model._
+import distantlands.model._
 
 /** Search on the walker (search source design; modifier walker design).
   *

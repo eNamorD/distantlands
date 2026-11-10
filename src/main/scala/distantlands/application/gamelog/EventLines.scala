@@ -1,7 +1,7 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogKind, LogSpan}
+import distantlands.model._
+import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
 
 /** The events that happen outside any walker run (spec, "Detail lines"):

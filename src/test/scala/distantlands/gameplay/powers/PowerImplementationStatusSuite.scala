@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.cards.HomelandsAndPlains
-import oathdigital.gameplay.operations.{AncientBloodline, GrandScepter,
+import distantlands.gameplay.cards.HomelandsAndPlains
+import distantlands.gameplay.operations.{AncientBloodline, GrandScepter,
   GrandScepterNegotiation, HallOfMinisters, OperationRestrictions,
   StillBoilingLake}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.PowerId
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.PowerId
 
 /** The single predicate the presentation layer's unimplemented-card marker
   * reads. Each case reads the registries the predicate reads, so a card

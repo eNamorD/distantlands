@@ -1,7 +1,7 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.model.{Answered, ConsentKey, ConsentTurn, CoreOperation,
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.model.{Answered, ConsentKey, ConsentTurn, CoreOperation,
   Decide, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery,
   OathEvent, OathState, OathViolation, Operation, OptionReason, PendingTree,
   PowerWindow, ProcedureRef, ReadyGame}
@@ -70,7 +70,7 @@ object WalkerSimulation:
             OathViolation.InvalidEventOrder("a simulated walker tree parked; " +
               "only a tree that runs to the end has an outcome to simulate"))
 
-  /** Whether `tree` could run now, as an [[oathdigital.gameplay.powerresolver.OfferHost]]
+  /** Whether `tree` could run now, as an [[distantlands.gameplay.powerresolver.OfferHost]]
     * asks it of a plan, and the operations it would record: the same windows and
     * powers fold it and the same pipeline validates it. A tree that parks on a
     * decision is accepted when everything before the decision ran, because a

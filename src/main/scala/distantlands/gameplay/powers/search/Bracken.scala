@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+import distantlands.catalog.{Denizen, ExecutableCatalog, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.AsksOnSelection
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.AsksOnSelection
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object BrackenCard extends Denizen(DenizenId("197"), "Bracken", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.bracken"),

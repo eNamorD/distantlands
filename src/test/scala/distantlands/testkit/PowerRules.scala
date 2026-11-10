@@ -1,10 +1,10 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.powers.{DeclaredNotes, PhasePowerCatalog,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.powers.{DeclaredNotes, PhasePowerCatalog,
   WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ParkedDecisionAssertions
 
 /** The rules a power suite drives, built on the production power catalogs,
   * and the parked-decision reads that match them: the tree a park sits in is

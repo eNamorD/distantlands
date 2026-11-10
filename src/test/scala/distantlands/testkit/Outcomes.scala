@@ -1,9 +1,9 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.serialization.GameEventWire
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.serialization.GameEventWire
 
 /** Reads of rules results that [[Unwrap]] cannot name generically. Each
   * fails the test with the value it got. */

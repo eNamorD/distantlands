@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.{CatalogResolution, SelectedModifier}
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powers.{CatalogResolution, SelectedModifier}
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 object CatacombsCard extends Denizen(DenizenId("201"), "Catacombs", Suit.Arcane) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.catacombs"),

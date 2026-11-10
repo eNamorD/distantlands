@@ -1,14 +1,14 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.NarrowPassSite
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.PhasePowerCatalog
-import oathdigital.gameplay.powers.action.PalanquinCard
-import oathdigital.gameplay.powers.travel.TravelFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.NarrowPassSite
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.PhasePowerCatalog
+import distantlands.gameplay.powers.action.PalanquinCard
+import distantlands.gameplay.powers.travel.TravelFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What a queued start waits on when only waivable restrictions refuse it
   * (catalog batch 8, slice 15, ruling 7). */

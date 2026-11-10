@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{NoteText, SearchFixture,
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{NoteText, SearchFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerDice
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerDice
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Autumn Wind (card 213, catalog batch 10, slice 10), WHEN PLAYED: every
   * discard pile is shuffled together and dealt back out as evenly as

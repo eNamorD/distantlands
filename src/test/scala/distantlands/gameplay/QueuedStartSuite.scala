@@ -1,18 +1,18 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, FairIsleSite}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{AlchemistCard, DowsingSticksCard,
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.{AlchemistCard, DowsingSticksCard,
   FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{PricedOptions, QueuedStart, WalkerPowers}
-import oathdigital.gameplay.walker.QueuedStart.StartCost
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{PricedOptions, QueuedStart, WalkerPowers}
+import distantlands.gameplay.walker.QueuedStart.StartCost
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What a start costs, or why it would be refused, through the production
   * registry (walker-driven game loop design, slice 4, plan-time rulings 2

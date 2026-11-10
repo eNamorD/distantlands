@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.ModifierMark
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.campaign.SealingWardCard
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.catalog.ModifierMark
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.campaign.SealingWardCard
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 /** Cracked Horn (relic R10), a free selected Search modifier: "You may put
   * all of the cards you discard on the bottom of the world deck." (catalog

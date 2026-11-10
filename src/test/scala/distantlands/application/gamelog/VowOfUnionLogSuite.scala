@@ -1,13 +1,13 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.campaign.{VowOfUnion, VowOfUnionCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer}
-import oathdigital.testkit.{Answers, Dice, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.campaign.{VowOfUnion, VowOfUnionCard}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer}
+import distantlands.testkit.{Answers, Dice, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, raidAnswers, texts}
 
 /** How Vow of Union reads in the Game Log: an off-turn holder is named,

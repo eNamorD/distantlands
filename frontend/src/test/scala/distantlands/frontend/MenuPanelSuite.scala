@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.all
-import oathdigital.testkit.Unwrap.as
+import distantlands.frontend.Dom.all
+import distantlands.testkit.Unwrap.as
 import ParkedDecision.Surface
 import org.scalajs.dom
 
@@ -114,6 +114,6 @@ class MenuPanelSuite extends munit.FunSuite:
     as[dom.html.Button](all(draw(Vector(search, ending), ui),
       ".menu-option").head).click()
     assertEquals(ui.submitted, Vector(
-      oathdigital.protocol.GameIntent.ResolveWalker("phase.menu",
-        oathdigital.protocol.DecisionAnswerWire.ChooseOneWire("button",
+      distantlands.protocol.GameIntent.ResolveWalker("phase.menu",
+        distantlands.protocol.DecisionAnswerWire.ChooseOneWire("button",
           "search"))))

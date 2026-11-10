@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Favor and secrets an Imperial ally offers towards another Imperial
   * player's battle plans (Imperial Tactics, CR p. 35; Empire phase design,

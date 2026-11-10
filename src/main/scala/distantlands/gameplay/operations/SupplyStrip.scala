@@ -1,7 +1,7 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
-import oathdigital.model.{Operation, PlayerId, SpendSupply}
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.model.{Operation, PlayerId, SpendSupply}
 
 /** Removes `actor`'s Supply payments from a cost window's children, wherever
   * the window holds them (operation rewrite design): listed (a Campaign's, a

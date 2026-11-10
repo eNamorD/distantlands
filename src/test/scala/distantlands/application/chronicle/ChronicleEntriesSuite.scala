@@ -1,8 +1,8 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
-import oathdigital.gameplay.chronicle.EvolvedChronicleFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
-import oathdigital.model._
+import distantlands.gameplay.chronicle.EvolvedChronicleFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.chronicle
+import distantlands.model._
 
 /** Digest and summary (Chronicle browsing design, "Digest" and "Summary"). */
 class ChronicleEntriesSuite extends munit.FunSuite:

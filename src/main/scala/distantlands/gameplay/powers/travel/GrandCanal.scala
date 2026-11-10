@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object GrandCanalCard extends Edifice(EdificeId("E03"), Suit.Discord):
   object intact extends EdificeFace("Grand Canal") with Locked:

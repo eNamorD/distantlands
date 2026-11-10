@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Reads about the acting player that several powers need. */
 object PlayerFacts:

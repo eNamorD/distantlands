@@ -1,19 +1,19 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.engine.{EventReplayEngine, RecordedEvent}
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.model.OathEvent._
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation._
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.setup._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted,
+import distantlands.engine.{EventReplayEngine, RecordedEvent}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.model.OathEvent._
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation._
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.setup._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted,
   WalkerParked}
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, RecordedOps, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes, RecordedOps, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** Ending the Wake phase, on the generic walker (batch-1 Task 7).
   *
@@ -45,7 +45,7 @@ class EndWakeProcedureSuite extends munit.FunSuite:
     // The Act menu is parked once End Wake is done.
     assertEquals(ended.events.map(_.productPrefix),
       Vector("WalkerStepRecorded", "WalkerCompleted", "WalkerParked"))
-    assertEquals(RecordedOps.all(ended.events), Vector[oathdigital.model.CoreOperation](
+    assertEquals(RecordedOps.all(ended.events), Vector[distantlands.model.CoreOperation](
       EnterPhase(Phase.Act)))
     assert(ended.events.contains(WalkerCompleted(PhaseTransitionRef.EndWake)),
       ended.events)

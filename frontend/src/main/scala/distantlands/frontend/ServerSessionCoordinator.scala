@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 final case class ServerRequestIdentity(
     generation: Long,

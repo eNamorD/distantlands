@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import scala.collection.mutable
 import scala.concurrent.Future

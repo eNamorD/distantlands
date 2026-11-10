@@ -1,18 +1,18 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
-import oathdigital.gameplay.cards.{AncientCitySite, DunesSite}
-import oathdigital.gameplay.powers.action.AlchemistCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.cards.{AncientCitySite, DunesSite}
+import distantlands.gameplay.powers.action.AlchemistCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Muster and Trade through the rules, as a client drives them: start, park on
   * the source decision, answer.

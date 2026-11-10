@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** Whether an option has a place on the table (board decisions design,
   * "Board home"): a site's box, a card or an empty slot in a site's row or

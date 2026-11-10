@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.gameplay.powers.cardplay.FavorBankChoice
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.model._
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.gameplay.powers.cardplay.FavorBankChoice
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.model._
 
 object HeraldCard extends Denizen(DenizenId("143"), "Herald", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.herald"),

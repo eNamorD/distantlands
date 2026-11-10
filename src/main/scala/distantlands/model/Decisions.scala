@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 // The complete walker decision contract: what a parked `Decide` may ask
 // (`DecisionQuery` and the option vocabulary it is built from) and what a
@@ -97,7 +97,7 @@ object DecisionOptionRef:
   /** A banner. It names no holder: who holds it is read from live state, so
     * an answer cannot name a holder that has since changed.
     */
-  final case class Banner(banner: oathdigital.model.Banner)
+  final case class Banner(banner: distantlands.model.Banner)
       extends DecisionOptionRef:
     val kind: String = "banner"
     def wireId: String = banner.key
@@ -196,7 +196,7 @@ object DecisionOptionRef:
         RelicSlot(owner, slot))
       case "adviser-slot" => slotOf(wireId).map((owner, slot) =>
         AdviserSlot(owner, slot))
-      case "banner" => oathdigital.model.Banner.fromKey(wireId).map(Banner(_))
+      case "banner" => distantlands.model.Banner.fromKey(wireId).map(Banner(_))
       case "deck" => CardDeck.fromKey(wireId).map(Deck(_))
       case "favor-bank" => Suit.fromKey(wireId).map(FavorBank(_))
       case "site-slot" => indexOf(wireId).map((site, index) =>

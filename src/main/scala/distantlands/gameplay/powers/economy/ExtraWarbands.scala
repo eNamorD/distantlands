@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** A vow's warbands gained after a Muster's own gain (Vow of Beastkin, Vow
   * of Wandering), with the vow's line: "Gained {n} more warband."

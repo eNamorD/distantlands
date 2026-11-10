@@ -1,9 +1,9 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameHistory, GamePresentationProjector}
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.PlayerId
-import oathdigital.protocol.projection.LogPage
+import distantlands.application.{GameHistory, GamePresentationProjector}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.PlayerId
+import distantlands.protocol.projection.LogPage
 
 /** The log page one seat reads: the whole prefix formatted for that seat,
   * then every entry at or after `after` (game log design, "Routes" and

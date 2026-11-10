@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 object VowOfPeaceCard extends Denizen(DenizenId("145"), "Vow of Peace", Suit.Hearth) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-peace"),

@@ -1,6 +1,6 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 object PlayerResourceSources:
   def player(ready: ReadyGame, playerId: PlayerId): Either[String, PlayerState] =

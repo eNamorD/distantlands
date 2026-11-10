@@ -1,8 +1,8 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload,
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload,
   HiddenOutcomes, RollPayload, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.model._
 
 /** Whether a closed command batch is a barrier that undo never takes back
   * (undo design, "Barrier detection"). It reads only the batch's events and

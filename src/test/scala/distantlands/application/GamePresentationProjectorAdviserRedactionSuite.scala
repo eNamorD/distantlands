@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.protocol.projection.{CardDetailsProjection,
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.protocol.projection.{CardDetailsProjection,
   PlayerBoardProjection}
 
 /** A face-down adviser's card back is public: any player can tell a denizen

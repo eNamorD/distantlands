@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 object BearTrapsCard extends Denizen(DenizenId("3"), "Bear Traps", Suit.Order):
   val power = PrintedPower(PowerId("denizen.bear-traps"),

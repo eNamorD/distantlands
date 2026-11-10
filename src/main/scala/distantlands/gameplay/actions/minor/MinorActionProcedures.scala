@@ -1,11 +1,11 @@
-package oathdigital.gameplay.actions.minor
+package distantlands.gameplay.actions.minor
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.{ImperialLaws, ProcedureNotes,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.{ImperialLaws, ProcedureNotes,
   VowOfWanderingRule}
-import oathdigital.model._
-import oathdigital.model.OathViolation.{InvalidEventOrder,
+import distantlands.model._
+import distantlands.model.OathViolation.{InvalidEventOrder,
   MinorActionUnavailable, PawnSiteMissing}
 
 /** The three minor actions that were legacy commands (walker-driven game

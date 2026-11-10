@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseManyAnswer
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseManyAnswer
 
 object SilverCharmCard extends Relic(RelicId("R31"), "Silver Charm", value = 37, defense = 1):
   val power = PrintedPower(PowerId("relic.silver-charm"),

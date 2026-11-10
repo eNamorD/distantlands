@@ -1,11 +1,11 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, SiteOnly}
-import oathdigital.gameplay.{DesecratedGroundRule, EffectiveSuit,
+import distantlands.catalog.{AdviserOnly, ExecutableCatalog, SiteOnly}
+import distantlands.gameplay.{DesecratedGroundRule, EffectiveSuit,
   LimitedResource}
-import oathdigital.gameplay.setup.FirstGameRulesData
-import oathdigital.model.OathViolation._
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameRulesData
+import distantlands.model.OathViolation._
+import distantlands.model._
 
 /** The operations of one card play, planned from where the card goes.
   *

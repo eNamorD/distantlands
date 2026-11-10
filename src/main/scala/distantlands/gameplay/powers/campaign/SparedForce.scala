@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx}
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx}
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 /** Billowing Fog's and Traveling Doctor's shared rule: "If you're defeated,
   * kill no warbands in your force. Ignore powers that kill all of your

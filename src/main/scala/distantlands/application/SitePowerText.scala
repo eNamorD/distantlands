@@ -1,4 +1,4 @@
-package oathdigital.application
+package distantlands.application
 
 /** Each site power's name and printed text (CR p. 31, NF p. 11), by the kind
   * its handler ends in: `site.riverbank.river` is a River. The six Homelands,

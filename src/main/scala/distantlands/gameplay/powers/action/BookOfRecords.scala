@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object BookOfRecordsCard extends Relic(RelicId("R19"), "Book of Records", value = 50, defense = 1):
   val power = PrintedPower(PowerId("relic.book-of-records"),

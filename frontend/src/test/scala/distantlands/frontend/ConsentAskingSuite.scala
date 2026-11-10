@@ -1,8 +1,8 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.click
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => Intent, WalkerStartArgWire}
+import distantlands.frontend.Dom.click
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent, WalkerStartArgWire}
 import ParkedDecision.Surface
 import org.scalajs.dom
 

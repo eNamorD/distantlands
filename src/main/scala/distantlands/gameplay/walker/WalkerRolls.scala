@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
+import distantlands.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
   OathViolation, PoolKey, ReadyGame, Roll, RollOutcome, RoundDieFace}
 
 /** Roll outcome mechanics, split out of [[ProcedureWalker]] (which is close to

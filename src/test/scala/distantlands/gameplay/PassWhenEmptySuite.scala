@@ -1,14 +1,14 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.SealingWardCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ChoicePayload, ProcedureWalker,
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.SealingWardCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ChoicePayload, ProcedureWalker,
   WalkerOutcome, WalkerSimulation, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.DecisionOptions.button
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.DecisionOptions.button
 
 /** A choose-one marked `passWhenEmpty` is passed by a search when it is
   * left no option, and the live walk parks it on its Continue screen; it

@@ -1,7 +1,7 @@
-package oathdigital.serialization
+package distantlands.serialization
 
 import scala.util.control.NonFatal
-import oathdigital.model._
+import distantlands.model._
 
 /** Shared primitive and nested-model JSON vocabulary for v1 event families. */
 private[serialization] trait GameEventJsonSupport:

@@ -1,23 +1,23 @@
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.FaeMerchantCard
-import oathdigital.gameplay.powers.campaign.RainBootsCard
-import oathdigital.gameplay.powers.economy.GolemLegionsCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.model.OathState.Ready
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.FaeMerchantCard
+import distantlands.gameplay.powers.campaign.RainBootsCard
+import distantlands.gameplay.powers.economy.GolemLegionsCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.model.OathState.Ready
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks, PowerRules,
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, PlacementPicks, PowerRules,
   RecordedOps, Refusals, Table}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
-import oathdigital.testkit.PhasePowerHarness
+import distantlands.testkit.Unwrap.{accepted, as, present}
+import distantlands.testkit.PhasePowerHarness
 
 class SilverTongueSuite extends munit.FunSuite:
   import SilverTongueFixture._

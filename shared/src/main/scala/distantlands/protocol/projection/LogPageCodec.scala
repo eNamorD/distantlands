@@ -1,9 +1,9 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 import scala.util.control.NonFatal
 
-import oathdigital.protocol.ProtocolDecodeFailure
-import oathdigital.protocol.ProtocolDecodeFailure.{InvalidValue, MalformedJson,
+import distantlands.protocol.ProtocolDecodeFailure
+import distantlands.protocol.ProtocolDecodeFailure.{InvalidValue, MalformedJson,
   UnknownVariant}
 import ProjectionCodecSupport._
 

@@ -1,10 +1,10 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 final case class SetupPlayerProjection(
     playerId: String,
     displayName: String,
     role: String,
-    color: oathdigital.model.PlayerColor
+    color: distantlands.model.PlayerColor
 )
 final case class CardDetailsProjection(
     cardId: String,
@@ -31,7 +31,7 @@ final case class CardDetailsProjection(
 /** A Tracker's record, as its card shows it: the player whose pawn was
   * chosen, their colour, and the card's words ("Tracking Red"). */
 final case class TrackedPawnProjection(playerId: String,
-    color: oathdigital.model.PlayerColor, label: String)
+    color: distantlands.model.PlayerColor, label: String)
 /** One printed power as its card lays it out: a braid above it, black when
   * `persistent`, with the `cost` tokens on it in printed order ("favor",
   * "secret-burnt") and the modifier icon at its left, then `text`, the
@@ -71,7 +71,7 @@ sealed trait SiteForcesProjection extends Product with Serializable:
   def label: String
 object SiteForcesProjection:
   final case class Exile(count: Int, rulerPlayerId: String,
-      color: oathdigital.model.PlayerColor,
+      color: distantlands.model.PlayerColor,
       label: String) extends SiteForcesProjection
   final case class Imperial(count: Int, label: String)
       extends SiteForcesProjection

@@ -1,16 +1,16 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{WalkerParked, WalkerPowers}
-import oathdigital.model.OathState.Ready
-import oathdigital.gameplay.OathRules
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.{PowerStubs, WalkerStubs}
-import oathdigital.testkit.Outcomes
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{WalkerParked, WalkerPowers}
+import distantlands.model.OathState.Ready
+import distantlands.gameplay.OathRules
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.{PowerStubs, WalkerStubs}
+import distantlands.testkit.Outcomes
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** The point of Task 4, in one suite: a power that transforms a parked
   * decision moves what the projector OFFERS and what the walker ACCEPTS in
@@ -96,7 +96,7 @@ class WalkerDecisionQueryPowerSuite extends munit.FunSuite:
 
   /** Starts the walker under `powers` and returns the parked state. */
   private def parked(ready: ReadyGame, actor: PlayerId,
-      powers: WalkerPowers): oathdigital.model.OathState =
+      powers: WalkerPowers): distantlands.model.OathState =
     val started = rules(actor, powers).startWalker(Ready(ready),
       ActionRef.Recover, actor) match
       case Right(transition) => transition
@@ -105,7 +105,7 @@ class WalkerDecisionQueryPowerSuite extends munit.FunSuite:
     started.state
 
   /** The option keys the projector offers at the park. */
-  private def offered(state: oathdigital.model.OathState, actor: PlayerId,
+  private def offered(state: distantlands.model.OathState, actor: PlayerId,
       powers: WalkerPowers): Vector[String] =
     val ready = Outcomes.ready(state)
     projector(actor, powers)
@@ -114,7 +114,7 @@ class WalkerDecisionQueryPowerSuite extends munit.FunSuite:
         fail("the parked actor must be offered the decision"))
 
   /** The heading the projector offers at the park, if any. */
-  private def titled(state: oathdigital.model.OathState, actor: PlayerId,
+  private def titled(state: distantlands.model.OathState, actor: PlayerId,
       powers: WalkerPowers): Option[String] =
     val ready = Outcomes.ready(state)
     projector(actor, powers)
@@ -122,7 +122,7 @@ class WalkerDecisionQueryPowerSuite extends munit.FunSuite:
       .flatMap(_.query).map(_.heading).getOrElse(
         fail("the parked actor must be offered the decision"))
 
-  private def answering(state: oathdigital.model.OathState,
+  private def answering(state: distantlands.model.OathState,
       actor: PlayerId, powers: WalkerPowers,
       selected: DecisionOptionRef) =
     rules(actor, powers).resolveWalker(state, actor,
@@ -207,7 +207,7 @@ class WalkerDecisionQueryPowerSuite extends munit.FunSuite:
     assertEquals(rules(p1, powers).resolveWalker(state, p1,
       RecoverProcedure.choiceDecisionId,
       DecisionAnswer.ChooseOneAnswer(continueOption)),
-      Left(oathdigital.model.OathViolation.WrongPlayer(p2, p1)))
+      Left(distantlands.model.OathViolation.WrongPlayer(p2, p1)))
 
     val readyState = Outcomes.ready(state)
     assert(projector(p1, powers).project(

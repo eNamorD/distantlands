@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The placement rule for costs: a cost is placed onto a card only when the
   * card is empty. Battle plans opt out with `PayCost.intoOccupied`. Burnt

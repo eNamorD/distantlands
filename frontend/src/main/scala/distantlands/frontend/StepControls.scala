@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand}
-import oathdigital.protocol.projection.StepOfferProjection
+import distantlands.protocol.{GameIntent => GameCommand}
+import distantlands.protocol.projection.StepOfferProjection
 import org.scalajs.dom
 import ServerUiSupport._
 

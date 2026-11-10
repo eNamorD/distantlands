@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.economy.VowOfWanderingCard
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 class KeyToTheCitySuite extends munit.FunSuite:
   private val vow = VowOfWanderingCard.id

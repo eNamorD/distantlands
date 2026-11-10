@@ -1,7 +1,7 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.{FirstGameParticipant, LineageId, PlayerColor, PlayerId}
-import oathdigital.protocol.FirstGameBootstrapRequest
+import distantlands.model.{FirstGameParticipant, LineageId, PlayerColor, PlayerId}
+import distantlands.protocol.FirstGameBootstrapRequest
 
 object FirstGameBootstrapMapper:
   /** The lineage a color plays: every color has exactly one. */

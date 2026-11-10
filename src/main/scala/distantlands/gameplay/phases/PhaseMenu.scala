@@ -1,13 +1,13 @@
-package oathdigital.gameplay.phases
+package distantlands.gameplay.phases
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.phases.wake.TakeWealthProcedure
-import oathdigital.gameplay.powerresolver.{PhasePowers, QueuedStarts}
-import oathdigital.gameplay.walker.{ProcedureStart, QueuedStart,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.phases.wake.TakeWealthProcedure
+import distantlands.gameplay.powerresolver.{PhasePowers, QueuedStarts}
+import distantlands.gameplay.walker.{ProcedureStart, QueuedStart,
   WalkerPowers}
-import oathdigital.model._
+import distantlands.model._
 
 /** A phase's menu (walker-driven game loop design, "The menus"): one
   * decision over everything the active player may do now in its phase.

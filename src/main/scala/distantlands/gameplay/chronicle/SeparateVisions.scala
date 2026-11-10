@@ -1,6 +1,6 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Separate Visions, the World's first step (CR p. 38): every Vision in
   * play leaves it. The Chronicle does not store Visions, and setup adds all

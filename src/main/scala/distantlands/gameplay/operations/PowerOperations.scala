@@ -1,9 +1,9 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.SpendableFavor
-import oathdigital.model.OathViolation._
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.SpendableFavor
+import distantlands.model.OathViolation._
+import distantlands.model._
 
 object Costs:
   def affordable(ready: ReadyGame, actor: PlayerId, placedAt: Location,

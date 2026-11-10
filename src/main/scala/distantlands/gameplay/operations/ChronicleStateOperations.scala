@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Writes of the Chronicle's own primitives (Chronicle steps design, "Live
   * state extended"). */

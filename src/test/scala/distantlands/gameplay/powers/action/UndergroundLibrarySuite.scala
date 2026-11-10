@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.actions.recover.UndergroundLibraryCard
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.actions.recover.UndergroundLibraryCard
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 /** Underground Library (catalog batch 9, slice 10): peek at the region's
   * relics, then swap one with a relic you hold, facedown. */

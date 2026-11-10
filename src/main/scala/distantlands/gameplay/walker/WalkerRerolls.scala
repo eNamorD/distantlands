@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{AttackDieFace, DiceKind, OathViolation, ReadyGame,
+import distantlands.model.{AttackDieFace, DiceKind, OathViolation, ReadyGame,
   Reroll, RoundDieFace}
 
 /** Fills a declared `Reroll`'s faces from the walker's dice source. Split out

@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** [[DefenseDieFace.score]] is the only oracle every Recover-scoring caller
   * defers to now that the legacy `RecoverSuite` (Task 9b) is gone -- these

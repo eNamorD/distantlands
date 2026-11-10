@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
 
 /** Staging shared by the power suites, built on the quiet `Table`:
   * `quietTable` is p1's Act with p1's pawn at Ancient City, nothing at any

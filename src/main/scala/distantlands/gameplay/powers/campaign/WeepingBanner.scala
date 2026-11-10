@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.model._
 
 object WeepingBannerCard extends Relic(RelicId("R42"), "Weeping Banner",
     value = 63, defense = 2):

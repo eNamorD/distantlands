@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.ChronicleFixtures.{convertingTransport, entry}
-import oathdigital.protocol.{ChronicleConvertRequest,
+import distantlands.frontend.ChronicleFixtures.{convertingTransport, entry}
+import distantlands.protocol.{ChronicleConvertRequest,
   ChronicleConvertRequestCodec}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.testkit.Unwrap.{accepted, as, present}
 import org.scalajs.dom
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Future
@@ -22,7 +22,7 @@ class ChronicleTransferSuite extends munit.FunSuite:
     imported
 
   private def mountExportControls(browser: TestBrowser,
-      chronicle: Option[oathdigital.protocol.ChronicleEntry],
+      chronicle: Option[distantlands.protocol.ChronicleEntry],
       transport: JsonTransport, files: FakeChronicleFiles): Unit =
     browser.mount.appendChild(ChronicleTransfer.exportControls(chronicle,
       ChronicleClient(transport), files))

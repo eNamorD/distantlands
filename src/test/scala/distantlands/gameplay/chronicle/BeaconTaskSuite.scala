@@ -1,14 +1,14 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.p3
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.p3
+import distantlands.testkit.Unwrap.accepted
 
 /** The Beacon task (CR p. 39). p3 holds the Beacon. */
 class BeaconTaskSuite extends munit.FunSuite:

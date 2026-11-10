@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.Denizen
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerDice
-import oathdigital.model._
-import oathdigital.model.AttackDieFace.{OneSword, TwoSwordsSkull}
-import oathdigital.model.DefenseDieFace.{OneShield, TwoShields}
+import distantlands.catalog.Denizen
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerDice
+import distantlands.model._
+import distantlands.model.AttackDieFace.{OneSword, TwoSwordsSkull}
+import distantlands.model.DefenseDieFace.{OneShield, TwoShields}
 
 /** `inner` with its priority replaced, so its transforms fold elsewhere. */
 private final class Reprioritised(inner: ContributingPower,

@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 private[model] object IdentityValidation:
   def nonBlank(label: String, value: String): Unit =

@@ -1,20 +1,20 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers, WalkerProcedureRegistry}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, PlacementPicks, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class VisionPlaySuite extends munit.FunSuite:
   private val rules = new OathRules(catalog,

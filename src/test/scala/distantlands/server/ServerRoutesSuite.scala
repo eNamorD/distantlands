@@ -1,10 +1,10 @@
-package oathdigital.server
+package distantlands.server
 
 import java.net.URI
 import java.nio.file.{Files, Paths}
 
-import oathdigital.testkit.HttpTestServer
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.HttpTestServer
+import distantlands.testkit.Unwrap.accepted
 
 class ServerRoutesSuite extends munit.FunSuite:
   /** The port every configuration here says the server listens on. The test

@@ -1,13 +1,13 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
-import oathdigital.gameplay.powers.OathkeeperGoalChoice
-import oathdigital.gameplay.powers.action.{TheRedSeer, TheRedSeerCard}
-import oathdigital.gameplay.powers.cardplay.LostTapestryCard
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powers.OathkeeperGoalChoice
+import distantlands.gameplay.powers.action.{TheRedSeer, TheRedSeerCard}
+import distantlands.gameplay.powers.cardplay.LostTapestryCard
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, texts}
 
 /** How The Red Seer reads in the Game Log: its line names the new goal, its

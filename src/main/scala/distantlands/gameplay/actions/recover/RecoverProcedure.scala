@@ -1,15 +1,15 @@
-package oathdigital.gameplay.actions.recover
+package distantlands.gameplay.actions.recover
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.{ProcedureNotes, RecoverRules}
-import oathdigital.gameplay.actions.cardplay.CardSlots
-import oathdigital.gameplay.actions.dice.RollStep
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.walker.{ModifierChoice, WalkerRollFeedback}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.{ProcedureNotes, RecoverRules}
+import distantlands.gameplay.actions.cardplay.CardSlots
+import distantlands.gameplay.actions.dice.RollStep
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.walker.{ModifierChoice, WalkerRollFeedback}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
-/** Declared Recover procedure tree for the [[oathdigital.gameplay.walker.ProcedureWalker]]}.
+/** Declared Recover procedure tree for the [[distantlands.gameplay.walker.ProcedureWalker]]}.
   *
   * {{{
   * Sequence(

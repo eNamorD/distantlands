@@ -1,17 +1,17 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.PayCostSettlement
-import oathdigital.gameplay.phases.RestCleanupPlan
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.RuledCards
-import oathdigital.gameplay.powers.action.{AlchemistCard, HomesteadersCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.PayCostSettlement
+import distantlands.gameplay.phases.RestCleanupPlan
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.RuledCards
+import distantlands.gameplay.powers.action.{AlchemistCard, HomesteadersCard}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** `EffectiveSuit`: a card's suit as the rules see it. A faceup Marriage
   * counts as two advisers of its suit (catalog batch 5 rulings, "Counts as

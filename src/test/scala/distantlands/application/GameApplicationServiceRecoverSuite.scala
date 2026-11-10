@@ -1,26 +1,26 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite, SaltFlatsSite}
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.recover.CatacombsCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.model._
-import oathdigital.gameplay.actions.RecoverRules
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.walker.{DeltaPayload, WalkerCompleted,
+import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite, SaltFlatsSite}
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.recover.CatacombsCard
+import distantlands.testkit.MenuPlay
+import distantlands.model._
+import distantlands.gameplay.actions.RecoverRules
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.walker.{DeltaPayload, WalkerCompleted,
   WalkerParked, WalkerStepRecorded}
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.OathState.Ready
-import oathdigital.gameplay.OathRules
-import oathdigital.testkit.{Dice, Look, Outcomes, RecordedOps, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.ModifierPlay
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.OathState.Ready
+import distantlands.gameplay.OathRules
+import distantlands.testkit.{Dice, Look, Outcomes, RecordedOps, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, present}
 import ParkedServiceFixture.{firstPlayer, loaded, parkedAssertions,
   replayingSecond, setupViaService}
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** The application service drives a walker Recover, its dice and Catacombs
   * through persisted parks and reloads.
@@ -89,7 +89,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
     walkerService.handle("walker-recover", started.nextSequence,
       MenuPlay.starting(actor, PhaseTransitionRef.BeginRest)) match
       case Left(GameApplicationError.CommandRejected(
-          _: oathdigital.model.OathViolation.InvalidEventOrder)) => ()
+          _: distantlands.model.OathViolation.InvalidEventOrder)) => ()
       case other => fail(s"a start command should be blocked by walker park: $other")
     assertEquals(loaded(walkerService.load("walker-recover"))
       .nextSequence, started.nextSequence)
@@ -201,7 +201,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
           RecoverProcedure.recoverPool)(_ => Right(
             Vector(DefenseDieFace.Blank, DefenseDieFace.Blank)))
         assert(rejected.left.toOption.exists(
-          _.isInstanceOf[oathdigital.model.OathViolation.InvalidEventOrder]))
+          _.isInstanceOf[distantlands.model.OathViolation.InvalidEventOrder]))
 
   test("walker Recover accumulates and reloads when a later Doubler " +
       "multiplies shields from an earlier roll"):

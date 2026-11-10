@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
-import oathdigital.gameplay.powers.wake.MarbleFountainsCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
+import distantlands.gameplay.powers.wake.MarbleFountainsCard
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Refusals, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class CrystalVialSuite extends munit.FunSuite:
   import PowerFixture._

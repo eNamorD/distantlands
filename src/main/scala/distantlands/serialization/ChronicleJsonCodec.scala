@@ -1,9 +1,9 @@
-package oathdigital.serialization
+package distantlands.serialization
 
 import scala.util.control.NonFatal
 
-import oathdigital.application.chronicle.ChronicleJson
-import oathdigital.model.Chronicle
+import distantlands.application.chronicle.ChronicleJson
+import distantlands.model.Chronicle
 
 /** A Chronicle as a file a player keeps (Chronicle browsing design,
   * "ChronicleJsonCodec"): the event wire's Chronicle object behind a

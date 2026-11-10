@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.roles.{CouncilSeat, CouncilSeatCard}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.roles.{CouncilSeat, CouncilSeatCard}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look}
 
 /** The Grand Scepter's battle plan: an Imperial player victorious against a
   * Citizen may exile them (ruling R23). */

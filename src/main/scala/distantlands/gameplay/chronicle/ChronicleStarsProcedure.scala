@@ -1,9 +1,9 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.walker.ProcedureStart
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.walker.ProcedureStart
+import distantlands.model._
 
 /** The Stars task (CR pp. 40-41, `docs/rules/chronicle.md` task 5). No step
   * has an actor, and none changes the table (Chronicle ruling 18): the

@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers.dice
+package distantlands.gameplay.powers.dice
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.{BrokenPeaksSite, FairIsleSite}
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.cards.{BrokenPeaksSite, FairIsleSite}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Jinx (card 68): after its ruler rolls, they may pay a secret to reroll
   * every die of that throw, once (catalog batch 7, slice 1). The Campaign

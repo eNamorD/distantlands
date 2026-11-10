@@ -1,13 +1,13 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation.NoPlayableOption
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation.NoPlayableOption
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class PlaceBannerResourceProcedureSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)
@@ -62,10 +62,10 @@ class PlaceBannerResourceProcedureSuite extends munit.FunSuite:
   test("the amount question names the banner and the resource it takes"):
     // A banner is named as it is printed, and each takes one resource, so
     // the question says which rather than "resources on darkest-secret".
-    assertEquals(oathdigital.gameplay.actions.challenge
+    assertEquals(distantlands.gameplay.actions.challenge
       .PlaceBannerResourceProcedure.amountHeading(Banner.DarkestSecret),
       "Place secrets on Darkest Secret")
-    assertEquals(oathdigital.gameplay.actions.challenge
+    assertEquals(distantlands.gameplay.actions.challenge
       .PlaceBannerResourceProcedure.amountHeading(Banner.PeoplesFavor),
       "Place favor on People's Favor")
 

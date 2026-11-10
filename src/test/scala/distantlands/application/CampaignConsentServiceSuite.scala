@@ -1,20 +1,20 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.NarrowPassSite
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.CampaignConsentFixture
-import oathdigital.gameplay.CampaignConsentFixture.{deepWoodsRef,
+import distantlands.gameplay.cards.NarrowPassSite
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.CampaignConsentFixture
+import distantlands.gameplay.CampaignConsentFixture.{deepWoodsRef,
   onlyWoodsExtra, passRuledByP2}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentRequested}
-import oathdigital.protocol.projection.ConsentAskProjection
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.Commands
+import distantlands.protocol.projection.ConsentAskProjection
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Commands
 
 /** Asking for consent at a Campaign's targets through the service (consent
   * design, slice 2): a grant opens the target, and the campaigner goes on

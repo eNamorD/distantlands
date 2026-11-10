@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Unwrap.accepted
 
 class SpiritSnareSuite extends munit.FunSuite:
   import PowerFixture._

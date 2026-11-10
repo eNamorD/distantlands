@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.setup
+package distantlands.gameplay.powers.setup
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
-import oathdigital.gameplay.powers.DispossessedDraws
-import oathdigital.model._
+import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
+import distantlands.gameplay.powers.DispossessedDraws
+import distantlands.model._
 
 object ForestHornCard extends Edifice(EdificeId("E30"), Suit.Beast):
   object intact extends EdificeFace("Forest Horn") with Locked:

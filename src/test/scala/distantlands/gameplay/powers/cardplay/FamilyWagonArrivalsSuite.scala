@@ -1,18 +1,18 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.{EldersCard, Enchantress,
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.{EldersCard, Enchantress,
   EnchantressCard, PiedPiper, PiedPiperCard, WaysideInnCard}
-import oathdigital.gameplay.powers.campaign.{LancersCard, RainBootsCard}
-import oathdigital.gameplay.powers.wake.{HornedMask, HornedMaskCard}
-import oathdigital.gameplay.walker.LogNoted
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes, PowerRules, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.campaign.{LancersCard, RainBootsCard}
+import distantlands.gameplay.powers.wake.{HornedMask, HornedMaskCard}
+import distantlands.gameplay.walker.LogNoted
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, PowerRules, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Family Wagon's bury after the arrival routes other than card play:
   * Horned Mask, a swap (Enchantress) and Pied Piper's move. They run under

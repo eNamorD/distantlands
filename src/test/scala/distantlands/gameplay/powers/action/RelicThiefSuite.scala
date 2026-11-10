@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.powers.search.TruthfulHarpCard
-import oathdigital.gameplay.powers.targeting.LostTongueCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerDice
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.PhasePowerHarness.{offered, UsedAndAnswered}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.dice.JinxCard
+import distantlands.gameplay.powers.search.TruthfulHarpCard
+import distantlands.gameplay.powers.targeting.LostTongueCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerDice
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.PhasePowerHarness.{offered, UsedAndAnswered}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 class RelicThiefSuite extends munit.FunSuite:
   import ActPowerHarness._

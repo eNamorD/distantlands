@@ -1,17 +1,17 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.setup.GreatMarketCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.setup.GreatMarketCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Build Edifice (CR p. 37, Chronicle rulings 9 and 12). p1 is the
   * Chancellor holding the Throne, and the Empire rules Ancient City. The

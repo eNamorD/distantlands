@@ -1,4 +1,4 @@
-package oathdigital.persistence
+package distantlands.persistence
 
 import java.sql.{Connection, SQLException}
 
@@ -9,7 +9,7 @@ import scala.util.control.NonFatal
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.HsqldbProfile.api._
 
-import oathdigital.application.{
+import distantlands.application.{
   EventStreamRepository,
   ExpectedStream,
   RepositoryAppendResult,

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.actions.challenge
+package distantlands.gameplay.actions.challenge
 
-import oathdigital.catalog.{Denizen, Edifice, EdificeFace, Locked,
+import distantlands.catalog.{Denizen, Edifice, EdificeFace, Locked,
   ModifierMark, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.model._
 
 /** The cards whose picks widen a Challenge (catalog batch 10, slice 11).
   * They live beside the Challenge, which reads their picks

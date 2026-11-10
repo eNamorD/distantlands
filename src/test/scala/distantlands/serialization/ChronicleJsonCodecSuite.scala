@@ -1,10 +1,10 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.application.chronicle.ChronicleJson
-import oathdigital.catalog.holding.{ArbiterCard, LightFingersCard}
-import oathdigital.gameplay.chronicle.EvolvedChronicleFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
-import oathdigital.model._
+import distantlands.application.chronicle.ChronicleJson
+import distantlands.catalog.holding.{ArbiterCard, LightFingersCard}
+import distantlands.gameplay.chronicle.EvolvedChronicleFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.chronicle
+import distantlands.model._
 
 /** Canonical Chronicle JSON (Chronicle browsing design, "ChronicleJsonCodec"). */
 class ChronicleJsonCodecSuite extends munit.FunSuite:

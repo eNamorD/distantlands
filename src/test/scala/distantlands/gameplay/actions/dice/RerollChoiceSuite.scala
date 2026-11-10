@@ -1,12 +1,12 @@
-package oathdigital.gameplay.actions.dice
+package distantlands.gameplay.actions.dice
 
-import oathdigital.gameplay.powers.search.BrackenCard
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
+import distantlands.gameplay.powers.search.BrackenCard
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
 
 /** The roll step: after a roll its roller picks a reroll a power offers, or
   * keeps the roll (catalog batch 7, slice 1, "The roll step"). The tests'

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.MarriageCard
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.gameplay.MarriageCard
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 /** Marriage (card 148, adviser-only, locked): "Marriage counts as two Hearth
   * advisers, but only counts as one toward your adviser limit."

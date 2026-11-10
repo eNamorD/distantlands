@@ -1,9 +1,9 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.OathEvent.CommandAccepted
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model.OathEvent.CommandAccepted
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Command batches and the live stack, as the service folds its journal
   * (undo design, "Replay: one forward fold"). */
@@ -48,7 +48,7 @@ class JournalFoldSuite extends munit.FunSuite:
       (loaded.state, loaded.undo))), Right(Some((picked.state, None))))
 
   test("standing aid offers outlive a rewind"):
-    import oathdigital.model.*
+    import distantlands.model.*
     val offered = PlanAidState().saved(p2,
       AidWindow(p1, CampaignPlanSide.Defender, p3),
       AidOffer(amounts = AidAmounts(favor = 1)))

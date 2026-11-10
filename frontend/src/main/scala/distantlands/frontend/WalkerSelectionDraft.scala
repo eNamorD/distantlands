@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DecisionOptionWire,
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
   GameIntent => GameCommand}
 
 /** A draft answer to a parked choose-many or choose-amount decision. Like

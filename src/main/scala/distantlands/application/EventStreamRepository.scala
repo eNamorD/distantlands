@@ -1,4 +1,4 @@
-package oathdigital.application
+package distantlands.application
 
 final case class StoredEventStream(
     gameId: String,

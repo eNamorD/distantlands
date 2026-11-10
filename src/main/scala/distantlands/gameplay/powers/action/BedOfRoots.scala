@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.{EffectiveSuit, NoteSupport}
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 object BedOfRootsCard extends Denizen(DenizenId("212"), "Bed of Roots", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.bed-of-roots"),

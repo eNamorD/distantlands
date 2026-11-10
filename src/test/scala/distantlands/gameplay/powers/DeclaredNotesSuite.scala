@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.actions.RuleNotes
-import oathdigital.model.PowerId
+import distantlands.gameplay.actions.RuleNotes
+import distantlands.model.PowerId
 
 class DeclaredNotesSuite extends munit.FunSuite:
   private val declared = DeclaredNotes.default

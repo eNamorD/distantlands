@@ -1,13 +1,13 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.setup.{ChronicleAccounting, FirstGameSetupFixture,
+import distantlands.gameplay.setup.{ChronicleAccounting, FirstGameSetupFixture,
   GameStartRules, LaterGameFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerCompleted
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Situation}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerCompleted
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Situation}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** A game won for real, through Start Chronicle, the Sun, Throne, World,
   * Beacon and Stars, to the journaled Chronicle. p1 is the Usurper as their Wake begins. */

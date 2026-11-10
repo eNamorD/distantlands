@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Answered, Decide, Operation, Sequence, Simultaneous}
+import distantlands.model.{Answered, Decide, Operation, Sequence, Simultaneous}
 
 /** The children of a [[Simultaneous]] node: each is a `Decide`, or a
   * `Sequence` that starts with one, and a child is open until the walk's

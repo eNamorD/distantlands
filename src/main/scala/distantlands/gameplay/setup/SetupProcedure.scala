@@ -1,9 +1,9 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.catalog.{ExecutableCatalog, SiteOnly}
-import oathdigital.gameplay.actions.{CardPlay, ProcedureNotes}
-import oathdigital.model._
-import oathdigital.model.OathViolation._
+import distantlands.catalog.{ExecutableCatalog, SiteOnly}
+import distantlands.gameplay.actions.{CardPlay, ProcedureNotes}
+import distantlands.model._
+import distantlands.model.OathViolation._
 
 /**
  * Declared Setup procedure tree for the walker (2026-09-21 Chronicle

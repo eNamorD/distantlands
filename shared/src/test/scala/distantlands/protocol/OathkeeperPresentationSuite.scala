@@ -1,6 +1,6 @@
-package oathdigital.protocol
+package distantlands.protocol
 
-import oathdigital.protocol.projection.OathkeeperPresentation
+import distantlands.protocol.projection.OathkeeperPresentation
 
 /** The Oath as the four goal cards print it: the title, the goal the
   * Oathkeeper holds it by, and the successor clause on the purple band.

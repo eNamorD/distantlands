@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.setup
+package distantlands.gameplay.powers.setup
 
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** Shared reads for the SETUP/WHEN-EXPLORED edifice powers (E02, E06,
   * E22). Where an edifice stands is `CurrentGameState.edificeSite`.

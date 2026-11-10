@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.{HomesteadersCard, MessengerCard}
-import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, LancersCard,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.{HomesteadersCard, MessengerCard}
+import distantlands.gameplay.powers.campaign.{CodeOfHonorCard, LancersCard,
   MountainGiantCard, ShieldWallCard, WildMountsCard}
-import oathdigital.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Table}
+import distantlands.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Table}
 
 class SaddleMakersSuite extends munit.FunSuite:
   import PowerFixture._

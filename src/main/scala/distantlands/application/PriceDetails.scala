@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.OptionPrice
+import distantlands.model.OptionPrice
 
 /** The cost of an option, worded for display: what a player weighs when they
   * choose a battle plan or a modifier. It is one line in the table's cost

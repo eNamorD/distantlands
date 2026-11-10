@@ -1,4 +1,4 @@
-package oathdigital.protocol
+package distantlands.protocol
 
 /** What the game starts from (Chronicle browsing design, "Create
   * request"): a new first-game Chronicle under a name, or a saved

@@ -1,8 +1,8 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.serialization.GameEventWire
-import oathdigital.testkit.Unwrap
+import distantlands.model._
+import distantlands.serialization.GameEventWire
+import distantlands.testkit.Unwrap
 
 /** Journal surgery for undo tests: reading a stream's events, and writing
   * streams the service itself would never write. */

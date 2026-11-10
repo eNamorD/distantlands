@@ -1,9 +1,9 @@
-package oathdigital.gameplay.phases
+package distantlands.gameplay.phases
 
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.roles.CouncilSeat
-import oathdigital.model._
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.roles.CouncilSeat
+import distantlands.model._
 
 /** The Act menu's own options (walker-driven game loop design, slice 4,
   * plan-time ruling 4): the major actions, then the minor actions, each a

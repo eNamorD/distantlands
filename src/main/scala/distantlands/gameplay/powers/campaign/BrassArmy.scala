@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.model._
 
 object BrassArmyCard extends Relic(RelicId("R25"), "Brass Army", value = 77, defense = 3):
   val campaign = PrintedPower(PowerId("relic.brass-army.campaign"),

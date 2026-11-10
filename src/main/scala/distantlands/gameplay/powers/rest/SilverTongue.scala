@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 object SilverTongueCard extends Denizen(DenizenId("92"), "Silver Tongue", Suit.Discord) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.silver-tongue"),
@@ -16,7 +16,7 @@ object SilverTongueCard extends Denizen(DenizenId("92"), "Silver Tongue", Suit.D
 /** Silver Tongue (card 92): "You can only have two advisers. REST: Take a
   * favor from a favor bank matching a card at your site."
   *
-  * The REST power is a [[oathdigital.gameplay.powerresolver.PhasePower]]. The
+  * The REST power is a [[distantlands.gameplay.powerresolver.PhasePower]]. The
   * adviser limit is a [[HolderAdviserLimit]], a registered transform at
   * `SearchPlayAdviser`, which Insomnia shares.
   */

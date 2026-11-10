@@ -1,4 +1,4 @@
-package oathdigital.persistence
+package distantlands.persistence
 
 import java.sql.{Connection, SQLException}
 
@@ -10,7 +10,7 @@ import scala.util.control.NoStackTrace
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.HsqldbProfile.api._
 
-import oathdigital.application._
+import distantlands.application._
 
 object HsqldbIdentityRepository:
   private final case class ExpectedFailureControl(failure: IdentityFailure)

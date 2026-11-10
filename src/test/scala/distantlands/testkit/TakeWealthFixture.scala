@@ -1,8 +1,8 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.OathRules
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.OathRules
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Take Wealth's Wake board and command, shared by `TakeWealthProcedureSuite`
   * and `OathkeeperProcedureSuite`, so "a Wake board with a takeable

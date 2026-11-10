@@ -1,10 +1,10 @@
-package oathdigital.server
+package distantlands.server
 
 import java.nio.charset.StandardCharsets
 import java.security.{MessageDigest, SecureRandom}
 import java.util.Base64
 
-import oathdigital.application.SeatCodeDigest
+import distantlands.application.SeatCodeDigest
 
 final class SeatCode private (val raw: String):
   def digest: SeatCodeDigest =

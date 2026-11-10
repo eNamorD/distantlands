@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.{BanditCrownCard, OathRules}
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.{NoteText, PayOrAsk, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Outcomes,
+import distantlands.gameplay.{BanditCrownCard, OathRules}
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.{NoteText, PayOrAsk, WalkerPowerCatalog}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look, Outcomes,
   PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.StartPreview
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.StartPreview
 
 /** Curfew's ruler toll on a Trade. The toll is shared with Forced Labor
   * (`RulerToll`); its bandit case is pinned here only. Under bandits the

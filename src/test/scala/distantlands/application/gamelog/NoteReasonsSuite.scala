@@ -1,9 +1,9 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.application.GamePresentationProjector
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** A power's note as the reason an option is not on offer: worded by the
   * Game Log's own template, after the power's source.

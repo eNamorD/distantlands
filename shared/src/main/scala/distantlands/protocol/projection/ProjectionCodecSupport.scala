@@ -1,7 +1,7 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
-import oathdigital.protocol.ProtocolDecodeFailure
-import oathdigital.protocol.ProtocolDecodeFailure._
+import distantlands.protocol.ProtocolDecodeFailure
+import distantlands.protocol.ProtocolDecodeFailure._
 
 private[protocol] object ProjectionCodecSupport:
   type Result[A] = Either[ProtocolDecodeFailure, A]
@@ -25,9 +25,9 @@ private[protocol] object ProjectionCodecSupport:
   def string(value: ujson.Obj, name: String, path: String): Result[String] =
     field(value, name, path).flatMap(string(_, s"$path.$name"))
   def playerColor(value: ujson.Obj, name: String, path: String)
-      : Result[oathdigital.model.PlayerColor] =
+      : Result[distantlands.model.PlayerColor] =
     string(value, name, path).flatMap(key =>
-      oathdigital.model.PlayerColor.fromKey(key).toRight(
+      distantlands.model.PlayerColor.fromKey(key).toRight(
         InvalidValue(s"$path.$name", s"unknown player color '$key'")))
   def int(value: ujson.Value, path: String): Result[Int] = value match
     case ujson.Num(number) if number.isWhole && number >= Int.MinValue &&

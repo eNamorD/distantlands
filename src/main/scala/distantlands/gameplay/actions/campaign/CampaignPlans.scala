@@ -1,6 +1,6 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The battle-plan vocabulary the plan window and the powers that offer plans
   * share: who uses a plan, how a plan's source is named in a decision, and the

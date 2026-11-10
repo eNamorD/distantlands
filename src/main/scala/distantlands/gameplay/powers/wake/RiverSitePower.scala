@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.cards.{AncientCitySite, HeadwatersSite,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.cards.{AncientCitySite, HeadwatersSite,
   RiverbankSite, TidalMarshesSite}
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.powers.action.PawnMoves
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powers.action.PawnMoves
+import distantlands.model._
 
 /** The River site power (CR p. 31, NF p. 11), WAKE: "You may place your pawn
   * at another River. This is not a Travel action."

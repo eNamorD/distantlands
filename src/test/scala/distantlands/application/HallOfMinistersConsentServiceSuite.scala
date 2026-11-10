@@ -1,19 +1,19 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.operations.{HallOfMinisters, HallOfMinistersCard}
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
-import oathdigital.model._
-import oathdigital.model.OathEvent.{CommandAccepted, ConsentAnswered,
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.operations.{HallOfMinisters, HallOfMinistersCard}
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
+import distantlands.model._
+import distantlands.model.OathEvent.{CommandAccepted, ConsentAnswered,
   ConsentRequested}
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.Commands
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Commands
 
 /** Asking the Hall of Ministers' ruler through the service (consent design,
   * slice 3): a grant covers the card, and Roving Terror takes it as p1's

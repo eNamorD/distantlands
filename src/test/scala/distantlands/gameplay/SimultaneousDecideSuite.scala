@@ -1,10 +1,10 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.model.TestGameFixtures._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.model.TestGameFixtures._
 
 /** Two decisions open at once, answered in any order: the `Simultaneous`
   * node (simultaneous decisions design), exercised with a synthetic tree.

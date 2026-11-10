@@ -1,11 +1,11 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{Answers, MenuPlay, ParkedNode}
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{Answers, MenuPlay, ParkedNode}
 
 /** A start that picks its modifiers through the walk's modifier decision,
   * as a player does (modifier walker design). */

@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.gameplay.powers.campaign.WildMountsCard
-import oathdigital.gameplay.powers.recover.RelicPatrolsCard
-import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.campaign.WildMountsCard
+import distantlands.gameplay.powers.recover.RelicPatrolsCard
+import distantlands.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 class RiotsSuite extends munit.FunSuite:
   import WhenPlayedHarness._

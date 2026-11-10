@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.targeting.CircletOfCommandCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayed
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, PowerRules, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.targeting.CircletOfCommandCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayed
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, PowerRules, Table}
+import distantlands.testkit.Unwrap.accepted
 
 class BookBindersSuite extends munit.FunSuite:
   import PowerFixture._

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Table}
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 class DemonTailSuite extends munit.FunSuite:
   import ActPowerHarness._

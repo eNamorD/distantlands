@@ -1,8 +1,8 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.chronicle
+import distantlands.model._
 
 /** The convert route's work (Chronicle browsing design, "POST
   * /chronicles/convert"). */

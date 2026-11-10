@@ -1,20 +1,20 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.DeepWoodsSite
-import oathdigital.gameplay.powers.action.FaeMerchantCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.economy.KnightsErrantCard
-import oathdigital.gameplay.powers.setup.GreatMarketCard
-import oathdigital.model._
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.walker.{DeltaPayload, RollPayload,
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.DeepWoodsSite
+import distantlands.gameplay.powers.action.FaeMerchantCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.economy.KnightsErrantCard
+import distantlands.gameplay.powers.setup.GreatMarketCard
+import distantlands.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
-import oathdigital.serialization.WalkerWireEvents.{encodedStream,
+import distantlands.serialization.WalkerWireEvents.{encodedStream,
   encodedStreamThatRoundTrips, recordedOperation}
-import oathdigital.testkit.{RecordedOps, Table}
-import oathdigital.testkit.Unwrap.{accepted, as}
+import distantlands.testkit.{RecordedOps, Table}
+import distantlands.testkit.Unwrap.{accepted, as}
 
 /** Walker step events on the wire: the operations, locations, pieces and
   * payloads a recorded step carries, and the typed errors for ones the codec

@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 class ProcedureRefSuite extends munit.FunSuite:
   private val use = ActionRef.UsePower(PowerId("denizen.silver-tongue"))

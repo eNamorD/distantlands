@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite, MinesSite,
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite, MinesSite,
   NarrowPassSite}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, Waiver}
-import oathdigital.gameplay.operations.{GrandScepter, HallOfMinisters,
+import distantlands.gameplay.operations.{GrandScepter, HallOfMinisters,
   HallOfMinistersCard}
-import oathdigital.gameplay.powers.cardplay.{SecretPolice, SecretPoliceCard}
-import oathdigital.gameplay.powers.economy.Curfew
-import oathdigital.gameplay.powers.search.ForcedLabor
-import oathdigital.gameplay.powers.travel.{GraspingVines, NarrowPassSitePower,
+import distantlands.gameplay.powers.cardplay.{SecretPolice, SecretPoliceCard}
+import distantlands.gameplay.powers.economy.Curfew
+import distantlands.gameplay.powers.search.ForcedLabor
+import distantlands.gameplay.powers.travel.{GraspingVines, NarrowPassSitePower,
   TollRoads, TollRoadsCard, TravelFixture}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** Which powers can be waived, and who may waive them (consent design,
   * rulings 1, 4 and 16). */

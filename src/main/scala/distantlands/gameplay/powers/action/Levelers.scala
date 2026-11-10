@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object LevelersCard extends Denizen(DenizenId("135"), "Levelers", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.levelers"),

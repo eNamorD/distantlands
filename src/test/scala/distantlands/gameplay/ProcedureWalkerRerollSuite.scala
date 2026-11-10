@@ -1,9 +1,9 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome}
-import oathdigital.testkit.RecordedOps
-import oathdigital.model._
-import oathdigital.testkit.ProcedureWalkerFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome}
+import distantlands.testkit.RecordedOps
+import distantlands.model._
+import distantlands.testkit.ProcedureWalkerFixture._
 
 /** A declared `Reroll` on the walker: its faces come from the dice source
   * and ride the recorded operation, so replay applies them without rolling

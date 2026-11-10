@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.Suit
+import distantlands.model.Suit
 
 class SitePowerTextSuite extends munit.FunSuite:
   test("each Homeland is named for its suit and shares the Homeland text"):

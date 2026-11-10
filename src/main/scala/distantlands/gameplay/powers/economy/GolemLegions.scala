@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object GolemLegionsCard extends Denizen(DenizenId("199"), "Golem Legions", Suit.Arcane) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.golem-legions"),

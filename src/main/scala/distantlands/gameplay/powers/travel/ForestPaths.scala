@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.operations.SupplyStrip
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.operations.SupplyStrip
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object ForestPathsCard extends Denizen(DenizenId("43"), "Forest Paths", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.forest-paths"),

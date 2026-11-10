@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{CardRule, SiteRulers}
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
+import distantlands.gameplay.{CardRule, SiteRulers}
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 object SecretPoliceCard extends Denizen(DenizenId("113"), "Secret Police", Suit.Order) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.secret-police"),

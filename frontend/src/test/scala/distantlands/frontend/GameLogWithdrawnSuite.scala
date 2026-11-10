@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.projection.{LogKind, LogSection, LogTakenBack}
+import distantlands.protocol.projection.{LogKind, LogSection, LogTakenBack}
 
 /** A withdrawn consent request in the log: struck through in place, with
   * no group header (consent design, "Game Log"). */

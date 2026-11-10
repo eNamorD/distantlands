@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
+import distantlands.model.PlayerColor
 
 /** What a board's Supply figure says: on hover, the bank and the Supply the
   * next Rest gains; opened, the bank, the Supply track with the board's

@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The order of a round (CR p. 17) and a Chancellor who appears mid-round
   * (ruling R4). */

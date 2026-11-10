@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
-import oathdigital.testkit.Unwrap.rejected
+import distantlands.model._
+import distantlands.testkit.Unwrap.rejected
 
 class CoreOperationsSuite extends munit.FunSuite:
   private val red = PlayerId("red")

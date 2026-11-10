@@ -1,16 +1,16 @@
-package oathdigital.persistence
+package distantlands.persistence
 
 import java.nio.file.{Files, Path}
 import java.sql.DriverManager
 
-import oathdigital.application.{
+import distantlands.application.{
   EventStreamRepositoryContract,
   ExpectedStream,
   RepositoryAppendResult,
   RepositoryFailure,
   StoredEventStream
 }
-import oathdigital.testkit.Unwrap.{accepted, as, present, rejected}
+import distantlands.testkit.Unwrap.{accepted, as, present, rejected}
 
 class HsqldbEventStreamRepositorySuite
     extends EventStreamRepositoryContract[OwnedHsqldbEventStreamRepository]:
@@ -88,7 +88,7 @@ class HsqldbEventStreamRepositorySuite
       seedSchemaVersions(path, versions)
       val result = HsqldbDatabaseOwner.open(path)
       assertEquals(result.left.toOption, Some(
-        oathdigital.application.RepositoryFailure.StorageFailure(
+        distantlands.application.RepositoryFailure.StorageFailure(
           s"initialize schema failed: $reason")), label)
 
       val reopened = DriverManager.getConnection(
@@ -109,7 +109,7 @@ class HsqldbEventStreamRepositorySuite
     )
     assertEquals(
       HsqldbDatabaseOwner.open(unsafe),
-      Left(oathdigital.application.RepositoryFailure.InvalidConfiguration(
+      Left(distantlands.application.RepositoryFailure.InvalidConfiguration(
         "database path contains an unsafe HSQLDB URL delimiter"
       ))
     )

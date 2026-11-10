@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The title's defense, a defender's battle plan that no card prints: the holder
   * of the Oathkeeper title, when defending, adds one defense die, and a Usurper

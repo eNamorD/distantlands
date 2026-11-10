@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.{DesecratedGroundRule, SacredGroundCard}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.{NoteText, PowerFixture,
+import distantlands.gameplay.{DesecratedGroundRule, SacredGroundCard}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.{NoteText, PowerFixture,
   PowerImplementationStatus, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, PlacementPicks, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, PlacementPicks, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Desecrated Ground (E08 ruined) keeps an Exile's revealed Visions when
   * they reveal another at its site (catalog batch 11, rulings 13 and 31).

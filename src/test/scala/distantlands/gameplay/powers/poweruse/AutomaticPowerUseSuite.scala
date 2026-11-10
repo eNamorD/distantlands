@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx,
+import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx,
   PowerUse}
-import oathdigital.gameplay.powers.campaign.KeepRule
-import oathdigital.gameplay.powers.economy.InitiationRite
-import oathdigital.gameplay.powers.travel.Tyrant
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.campaign.KeepRule
+import distantlands.gameplay.powers.economy.InitiationRite
+import distantlands.gameplay.powers.travel.Tyrant
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** Keep states its use at its windows; the wrapped automatic powers state
   * theirs on their `AutomaticUse` node instead; a cost change and a

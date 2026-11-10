@@ -1,11 +1,11 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.OathkeeperGoalChoice
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.OathkeeperGoalChoice
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
   WalkerCompleted, WalkerParked, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogKind, LogSpan}
+import distantlands.model._
+import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
 
 /** The lines a power, a printed rule or a procedure writes about its own

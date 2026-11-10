@@ -1,15 +1,15 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.gameplay.powers.action.{Palanquin, PalanquinCard}
-import oathdigital.gameplay.powers.travel.{TollRoadsCard, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.Commands
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.gameplay.powers.action.{Palanquin, PalanquinCard}
+import distantlands.gameplay.powers.travel.{TollRoadsCard, TravelFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection._
+import distantlands.testkit.{Look, MenuPlay, Outcomes}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Commands
 
 /** Palanquin's toll asked of the target or the ruler, through the service
   * (catalog batch 8, slice 15, rulings 8, 13, 14 and 17). */

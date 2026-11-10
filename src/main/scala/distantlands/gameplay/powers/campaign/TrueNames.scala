@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   ModifierMark, PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx}
-import oathdigital.model._
+import distantlands.model._
 
 object TrueNamesCard extends Denizen(DenizenId("41"), "True Names", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.true-names"),

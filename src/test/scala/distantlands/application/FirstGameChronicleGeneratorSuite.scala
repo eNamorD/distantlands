@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.setup.GreatForgeCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.powers.PowerImplementationStatus
-import oathdigital.model.{CardId, Chronicle, DenizenId, EdificeId, Suit}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.setup.GreatForgeCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.powers.PowerImplementationStatus
+import distantlands.model.{CardId, Chronicle, DenizenId, EdificeId, Suit}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
   private val status = PowerImplementationStatus.implemented
@@ -55,7 +55,7 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
     assertEquals(chronicle.dispossessed.size, 12)
     assertEquals(chronicle.dispossessed.distinct.size, 12)
     assertEquals(chronicle.worldDeck.toSet intersect chronicle.dispossessed.toSet,
-      Set.empty[oathdigital.model.DenizenId])
+      Set.empty[distantlands.model.DenizenId])
     Suit.all.foreach { suit =>
       val suited = chronicle.dispossessed.filter(id => suitOf(id) == suit)
       assertEquals(suited.size, 2)
@@ -64,7 +64,7 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
   test("the relic deck has every ordinary relic exactly once, implemented ones first"):
     val chronicle = generated
     val ordinary = catalog.relics.filter(_.id != TheGrandScepterCard.id)
-      .map(r => oathdigital.model.RelicId(r.id.value))
+      .map(r => distantlands.model.RelicId(r.id.value))
     assertEquals(chronicle.relicDeck.toSet, ordinary.toSet)
     assertEquals(chronicle.relicDeck.size, ordinary.size)
     val implemented = ImplementedCardCatalog.ordinaryRelics(catalog, status)

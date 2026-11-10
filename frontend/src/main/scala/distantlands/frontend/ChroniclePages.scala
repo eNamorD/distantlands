@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.TrustedGameCreateResponse
+import distantlands.protocol.TrustedGameCreateResponse
 import org.scalajs.dom
 
 /** The two start pages (Chronicle browsing design, "Browser"): the

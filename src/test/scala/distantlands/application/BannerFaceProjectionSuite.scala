@@ -1,13 +1,13 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.banner.{WanderingFlameMove,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.banner.{WanderingFlameMove,
   WanderingFlamePlace}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.p1
 
 /** The banner faces' phase powers reach the player: the Act menu lists each
   * by its own button, and the menu's source (a banner) binds back to the

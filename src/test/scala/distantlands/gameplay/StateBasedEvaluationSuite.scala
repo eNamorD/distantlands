@@ -1,20 +1,20 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
   FairIsleSite}
-import oathdigital.gameplay.powers.action.{BrassHorseCard, DowsingSticksCard}
-import oathdigital.testkit.MenuPlay
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
-import oathdigital.model._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.OathEvent._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes, RoundEndChoices, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, as}
+import distantlands.gameplay.powers.action.{BrassHorseCard, DowsingSticksCard}
+import distantlands.testkit.MenuPlay
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
+import distantlands.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.OathEvent._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, RoundEndChoices, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, as}
 
 class StateBasedEvaluationSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)

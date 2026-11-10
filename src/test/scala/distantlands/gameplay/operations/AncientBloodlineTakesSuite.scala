@@ -1,20 +1,20 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.{OathRules, PowerAccess}
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, DunesSite, FairIsleSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.action.{DowsingSticksCard, SkeletonKey,
+import distantlands.gameplay.{OathRules, PowerAccess}
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.cards.{AncientCitySite, DunesSite, FairIsleSite}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.action.{DowsingSticksCard, SkeletonKey,
   SkeletonKeyCard, WaysideInnCard, WhistleCard}
-import oathdigital.gameplay.powers.wake.{HornedMask, HornedMaskCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.ConsentAskProjection
-import oathdigital.testkit.{Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.wake.{HornedMask, HornedMaskCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.ConsentAskProjection
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Ancient Bloodline on the questions that take a card from a site
   * (catalog batch 8, slice 11): Recover, Skeleton Key and Horned Mask

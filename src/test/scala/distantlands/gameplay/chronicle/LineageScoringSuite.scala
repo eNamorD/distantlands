@@ -1,14 +1,14 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Outcomes
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Outcomes
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Score Lineage Points (CR p. 37, Chronicle ruling 13): p1 won and scores
   * 3, and may give 1 point to another seated player for 2 of theirs. */

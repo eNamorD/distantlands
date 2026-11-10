@@ -1,18 +1,18 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
-import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard,
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite}
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import distantlands.gameplay.powers.poweruse.{CityWall, CityWallCard,
   ForestCouncil, ForestCouncilCard}
-import oathdigital.gameplay.powers.wake.{Hunger, HungerCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, ParkedNode, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.Commands
+import distantlands.gameplay.powers.wake.{Hunger, HungerCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes, ParkedNode, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Commands
 
 /** Hunger refused by City Wall and Forest Council: every ruler is asked
   * at once, and the first deactivation settles it (automatic power

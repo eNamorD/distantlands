@@ -1,11 +1,11 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy,
   OperationRun}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Deferred,
+import distantlands.gameplay.powerresolver.{ContributingPower, Deferred,
   ExecutedBatch, ExecutedTrigger}
-import oathdigital.model.{Defer, DeferralKey, OathViolation, PlayerId,
+import distantlands.model.{Defer, DeferralKey, OathViolation, PlayerId,
   ReadyGame}
 
 /** The walker's side of triggers on executed operations (catalog batch 8,

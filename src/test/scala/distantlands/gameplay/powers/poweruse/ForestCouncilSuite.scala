@@ -1,26 +1,26 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.action.{MessengerCard, RovingTerror,
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.gameplay.powers.action.{MessengerCard, RovingTerror,
   RovingTerrorCard}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.economy.{VowOfBeastkin, VowOfBeastkinCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.TyrantCard
-import oathdigital.gameplay.powers.whenplayed.{ThreateningRoar,
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.economy.{VowOfBeastkin, VowOfBeastkinCard}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.travel.TyrantCard
+import distantlands.gameplay.powers.whenplayed.{ThreateningRoar,
   WhenPlayedHarness}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Forest Council (card 194): "Enemies of Forest Council's ruler cannot
   * place [favor] / [secret] on [suit-beast] cards or use their

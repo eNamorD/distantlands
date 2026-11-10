@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
 import java.nio.file.{Files, Path, Paths}
-import oathdigital.catalog.CatalogHandlerInventory
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.PowerId
+import distantlands.catalog.CatalogHandlerInventory
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.PowerId
 
 /** Every printed power of the catalog that `PowerImplementationStatus`
   * reports unimplemented, exactly. The status reads only the registries a

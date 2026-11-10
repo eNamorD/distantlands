@@ -1,21 +1,21 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions,
+import distantlands.gameplay.walker.{ParkedDecisionAssertions,
   ProcedureWalker, WalkerDice, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look}
-import oathdigital.testkit.Outcomes.ready
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.model.DecisionAnswer._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look}
+import distantlands.testkit.Outcomes.ready
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class CampaignRaidSuite extends munit.FunSuite:
   /** Every `rules(...)` call in this file builds the walker power catalog. */

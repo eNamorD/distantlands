@@ -1,6 +1,6 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.testkit.Table.p2
+import distantlands.testkit.Table.p2
 import LogScripts._
 import PalanquinLogScripts._
 

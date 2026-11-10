@@ -1,4 +1,4 @@
-package oathdigital.application
+package distantlands.application
 
 opaque type UserId = String
 object UserId:

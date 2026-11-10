@@ -1,14 +1,14 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.{GameCommand, TreeDecision}
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.application.{GameCommand, TreeDecision}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Picks from a phase menu as its player does (walker-driven game loop
   * design, "The menus"). */

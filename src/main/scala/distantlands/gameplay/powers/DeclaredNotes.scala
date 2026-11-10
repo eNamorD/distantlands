@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.actions.{ProcedureNotes, RuleNotes}
-import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.model.{NoteKey, PowerId}
+import distantlands.gameplay.actions.{ProcedureNotes, RuleNotes}
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.model.{NoteKey, PowerId}
 
 /** Every note key the catalog declares, by power (derive note keys design,
   * "One declared set union"). The walker reads it to reject a note no power

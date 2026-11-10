@@ -1,7 +1,7 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powers.DeclaredNotes
-import oathdigital.model.{PowerId, LogNote}
+import distantlands.gameplay.powers.DeclaredNotes
+import distantlands.model.{PowerId, LogNote}
 
 /** Journals a note only if its power declares its key (derive note keys
   * design, decisions 5 and 6). A note with no declared key has no wording,
@@ -20,18 +20,18 @@ import oathdigital.model.{PowerId, LogNote}
   * real union: the catalog powers are checked, the inventions are not.
   *
   * Which of the two happens is `strict`, whose default is the system
-  * property `oathdigital.notes.strict`. `build.sbt` sets that property for
+  * property `distantlands.notes.strict`. `build.sbt` sets that property for
   * the test scope and nothing sets it in production, so the player-facing
   * behaviour is the default rather than something a release must remember
   * to ask for. `UndeclaredNoteSuite` asserts the test scope has it.
   */
 private[walker] object NoteCheck:
   private val logger =
-    org.slf4j.LoggerFactory.getLogger("oathdigital.gameplay.walker.NoteCheck")
+    org.slf4j.LoggerFactory.getLogger("distantlands.gameplay.walker.NoteCheck")
 
   /** Whether an undeclared note fails rather than being dropped. */
   def strictByDefault: Boolean =
-    sys.props.get("oathdigital.notes.strict").contains("true")
+    sys.props.get("distantlands.notes.strict").contains("true")
 
   def journal(declared: Option[DeclaredNotes], power: PowerId,
       note: LogNote, covers: Boolean, strict: Boolean = strictByDefault)

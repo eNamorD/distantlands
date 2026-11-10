@@ -1,11 +1,11 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite, DesolateShoreSite, DunesSite, FairIsleSite,
   NarrowPassSite}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** The Narrow Pass's map. Cradle: Ancient City, Broken Peaks. Provinces:
   * the Pass, Buried Giant, Deep Woods. Hinterland: Desolate Shore, Dunes,

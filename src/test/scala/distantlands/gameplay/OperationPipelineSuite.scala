@@ -1,12 +1,12 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.operations._
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.model.TestGameFixtures._
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.operations._
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+import distantlands.model.TestGameFixtures._
 
 class OperationPipelineSuite extends munit.FunSuite:
   private val ready = ReadyGames.of(game)

@@ -1,17 +1,17 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powers.search.{Mushrooms, MushroomsCard,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powers.search.{Mushrooms, MushroomsCard,
   PaintedTrumpet, PaintedTrumpetCard, WineOfWelcome, WineOfWelcomeCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Answers, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Answers, Table}
+import distantlands.testkit.Table.p1
 import LogScripts._
 
 /** The lines for the draws catalog batch 6 adds: from the bottom of a

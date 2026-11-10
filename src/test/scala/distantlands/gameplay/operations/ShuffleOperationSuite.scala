@@ -1,11 +1,11 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Unwrap.accepted
 
 class ShuffleOperationSuite extends munit.FunSuite:
   private val executor = new OperationExecutor()

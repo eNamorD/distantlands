@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Draws from the Dispossessed (catalog batch 10, slice 6): Great Spire,
   * Fallen Spire and Pilgrimage. A draw shuffles the Dispossessed, so the

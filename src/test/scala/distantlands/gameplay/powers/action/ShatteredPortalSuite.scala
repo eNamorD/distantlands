@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.powers.dice.JinxCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay,
   PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 /** Shattered Portal (catalog batch 10, slice 3): with the pawn at its site,
   * roll the round die and place the pawn that many sites Hinterward,

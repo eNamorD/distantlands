@@ -1,10 +1,10 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.ServerModeFixtures.withEmptyLogPage
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.projection.{ChronicleProjection,
+import distantlands.frontend.ServerModeFixtures.withEmptyLogPage
+import distantlands.model.PlayerColor
+import distantlands.protocol.projection.{ChronicleProjection,
   GameProjectionCodec}
-import oathdigital.testkit.Unwrap.present
+import distantlands.testkit.Unwrap.present
 
 import munit.FunSuite
 import scala.collection.mutable.ArrayBuffer

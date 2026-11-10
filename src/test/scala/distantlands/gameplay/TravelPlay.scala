@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.model._
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.model._
 
 /** A Travel driven past its destination pick, for the suites that test what
   * a Travel does rather than the pick. */

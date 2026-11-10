@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.testkit.Dice
+import distantlands.testkit.Dice
 
 class WalkerDiceAdapterSuite extends munit.FunSuite:
   test("a port's default shuffle is a permutation of the pile's positions"):

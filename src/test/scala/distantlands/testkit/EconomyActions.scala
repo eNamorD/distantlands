@@ -1,11 +1,11 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.{ModifierPlay, OathRules}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.{ModifierPlay, OathRules}
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Muster and Trade driven through the rules to the end: start, pick the
   * modifiers in the modifier decision and start the action, then answer the

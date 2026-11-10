@@ -1,30 +1,30 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.catalog.Denizen
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.application._
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.minor.MinorActionProcedures
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.catalog.Denizen
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.application._
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.minor.MinorActionProcedures
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.economy.{GolemLegions, GolemLegionsCard,
+import distantlands.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.economy.{GolemLegions, GolemLegionsCard,
   InitiationRiteCard, VowOfWanderingCard}
-import oathdigital.gameplay.powers.recover.{RelicWorship, RelicWorshipCard}
-import oathdigital.gameplay.powers.search.ForcedLaborCard
-import oathdigital.gameplay.powers.whenplayed.{ThreateningRoarCard,
+import distantlands.gameplay.powers.recover.{RelicWorship, RelicWorshipCard}
+import distantlands.gameplay.powers.search.ForcedLaborCard
+import distantlands.gameplay.powers.whenplayed.{ThreateningRoarCard,
   WizardsConclaveCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Dice, Look, MenuPlay, PlacementPicks, Situation,
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{Dice, Look, MenuPlay, PlacementPicks, Situation,
   Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScriptSupport.{arrangedForNext, atTable, start,
   tableWithOnePawnPerSite}
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** The scripts that play one major or minor action with no power in the
   * way: Search, a facedown adviser played, Muster, Trade, Recover and the

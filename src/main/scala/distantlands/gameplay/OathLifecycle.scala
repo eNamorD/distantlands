@@ -1,6 +1,6 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 private[gameplay] object GameplayTransition:
   def apply(

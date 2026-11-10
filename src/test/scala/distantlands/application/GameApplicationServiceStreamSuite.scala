@@ -1,25 +1,25 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, MinesSite}
-import oathdigital.gameplay.powers.campaign.NatureWorshipCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
+import distantlands.gameplay.powers.campaign.NatureWorshipCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.whenplayed.WizardsConclaveCard
 import scala.concurrent.duration.{Duration, DurationInt}
 
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
-import oathdigital.serialization.GameEventWire
-import oathdigital.gameplay.chronicle.ChronicleBeginProcedure
-import oathdigital.gameplay.setup.SetupProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.testkit.{Commands, Look, Outcomes, PlacementPicks,
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
+import distantlands.serialization.GameEventWire
+import distantlands.gameplay.chronicle.ChronicleBeginProcedure
+import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.testkit.{Commands, Look, Outcomes, PlacementPicks,
   RoundEndChoices, Table}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, as, present, rejected}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, as, present, rejected}
 import ParkedServiceFixture.{firstPlayer, loaded, pickFacedownAdviser,
   playFacedownAdviser, replayingSecond, setupViaService}
 
@@ -196,7 +196,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     assertEquals(reloaded.state, wealth.state)
     assertEquals(after.game.current.turn.phase, Phase.Act)
     assert(after.game.current.turn.usedPowers.contains(
-      oathdigital.gameplay.powers.wake.TakeWealthLimit.useRef(siteId)),
+      distantlands.gameplay.powers.wake.TakeWealthLimit.useRef(siteId)),
       "the replayed journal must restore the use limit it recorded")
     val records = loaded(repository.load("game-wake")).records
     assertEquals(records.map(record =>
@@ -288,7 +288,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
       ),
       Left(GameApplicationError.ReplayFailure(
         1L,
-        oathdigital.model.OathViolation.GameAlreadyExists)))
+        distantlands.model.OathViolation.GameAlreadyExists)))
     assertEquals(
       loaded(repository.load("game-replay-corrupt")).records,
       records)

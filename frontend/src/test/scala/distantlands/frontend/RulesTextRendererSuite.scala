@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.all
+import distantlands.frontend.Dom.all
 import org.scalajs.dom
 
 /** Catalog `rulesText` carries `[token]` markup and Markdown emphasis
@@ -56,7 +56,7 @@ class RulesTextRendererSuite extends munit.FunSuite:
     assertEquals(all(root, "symbol").size, TokenSprite.ids.size)
 
   test("Conspiracy renders as two paragraphs with both banner glyphs"):
-    val text = oathdigital.protocol.projection.VisionCardPresentation
+    val text = distantlands.protocol.projection.VisionCardPresentation
       .byId("vision:conspiracy").rulesText
     val blocks = RulesTextRenderer.powers(text)
     assertEquals(blocks.size, 2)

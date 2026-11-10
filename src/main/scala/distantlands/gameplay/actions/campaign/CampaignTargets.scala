@@ -1,8 +1,8 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** The Campaign targets question as the table shows it (board decisions
   * design, "Campaign targets"): the target the Campaign already has, the two

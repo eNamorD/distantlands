@@ -1,10 +1,10 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GamePresentationProjector, RolledFaces}
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
-import oathdigital.protocol.projection.LogSpan
+import distantlands.application.{GamePresentationProjector, RolledFaces}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
+import distantlands.protocol.projection.LogSpan
 
 /** A card as one viewer may read it: by name, or by its back's kind. */
 private[gamelog] enum CardWord:
@@ -87,7 +87,7 @@ private[gamelog] final class LogWords(catalog: ExecutableCatalog,
 
   /** A card as a card list shows it: its face when named, else its back. */
   private def face(id: CardId, word: CardWord)
-      : oathdigital.protocol.projection.CardDetailsProjection = word match
+      : distantlands.protocol.projection.CardDetailsProjection = word match
     case CardWord.Named(_) => presentation.cardDetails(id, None, hidden = false)
     case CardWord.Back(_) => presentation.hiddenCard(id match
       case _: RelicId => "relic"

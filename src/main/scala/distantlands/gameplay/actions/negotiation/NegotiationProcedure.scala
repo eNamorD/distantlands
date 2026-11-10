@@ -1,10 +1,10 @@
-package oathdigital.gameplay.actions.negotiation
+package distantlands.gameplay.actions.negotiation
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.DeclineDeal
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.roles.Citizenship
+import distantlands.model._
+import distantlands.model.DecisionAnswer.DeclineDeal
 
 /** Negotiation on the walker: choose who to negotiate with, then loop one
   * deal decision that every participant may answer until the deal closes,

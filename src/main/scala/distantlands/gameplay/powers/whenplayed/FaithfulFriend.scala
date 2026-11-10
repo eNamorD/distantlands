@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 object FaithfulFriendCard extends Denizen(DenizenId("28"), "Faithful Friend", Suit.Nomad) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.faithful-friend"),

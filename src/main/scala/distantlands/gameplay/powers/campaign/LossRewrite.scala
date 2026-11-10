@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.model._
 
 /** The core operations a Campaign window's children produce, rewritten one
   * at a time (R3, from Hospital's private tally) through

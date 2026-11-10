@@ -1,8 +1,8 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.model._
-import oathdigital.testkit.PlacementPicks
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.model._
+import distantlands.testkit.PlacementPicks
 
 /** The facedown-adviser play driven up to its placement, for the suites that
   * test the placement rather than the pick. */

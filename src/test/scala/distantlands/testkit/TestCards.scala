@@ -1,7 +1,7 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.catalog._
-import oathdigital.model.{Cost, DenizenId, EdificeId, PowerId, RelicId,
+import distantlands.catalog._
+import distantlands.model.{Cost, DenizenId, EdificeId, PowerId, RelicId,
   SiteId, Suit, Tokens}
 
 /** Cards for suites that graft a power or a name onto a catalog card, or

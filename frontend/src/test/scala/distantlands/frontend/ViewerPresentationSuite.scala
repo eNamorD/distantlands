@@ -1,8 +1,8 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.all
-import oathdigital.frontend.ServerModeFixtures.twoSeatProjection
-import oathdigital.protocol.projection.WalkerStatusProjection
+import distantlands.frontend.Dom.all
+import distantlands.frontend.ServerModeFixtures.twoSeatProjection
+import distantlands.protocol.projection.WalkerStatusProjection
 
 import munit.FunSuite
 

@@ -1,15 +1,15 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameApplicationService,
+import distantlands.application.{GameApplicationService,
   ParkedServiceFixture, TreeDecision}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.travel.{WayStation, WayStationCard}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.travel.{WayStation, WayStationCard}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** How a Travel through Way Station reads in the Game Log: the question posts
   * no "Chose" line, the favor answer posts the toll lines, and the Travel tag

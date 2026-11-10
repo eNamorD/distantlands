@@ -1,17 +1,17 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powers.action.AlchemistCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.StartPreview
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powers.action.AlchemistCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.StartPreview
 
 class TradeProcedureSuite extends munit.FunSuite:
   private val favor = Vector[DecisionOptionRef](DecisionOptionRef.Button("favor"))

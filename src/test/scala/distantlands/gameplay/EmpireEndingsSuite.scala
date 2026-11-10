@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.banner.YewStaffCard
-import oathdigital.gameplay.powers.economy.CupOfPlentyCard
-import oathdigital.model._
-import oathdigital.model.OathEvent.WarExhaustionResolved
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.banner.YewStaffCard
+import distantlands.gameplay.powers.economy.CupOfPlentyCard
+import distantlands.model._
+import distantlands.model.OathEvent.WarExhaustionResolved
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The Empire's endings as rules (CR p. 19; Empire phase design, "Slice
   * 2"). p1 is the Chancellor and p2 a Citizen; p3 is an Exile unless a

@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
-import oathdigital.gameplay.powers.travel.ForbiddenForestCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
+import distantlands.gameplay.powers.travel.ForbiddenForestCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Bandit Forest (E29, ruined): "Imperials cannot place [favor]/[secret] on
   * cards ruled by bandits or use their non-persistent powers." (catalog

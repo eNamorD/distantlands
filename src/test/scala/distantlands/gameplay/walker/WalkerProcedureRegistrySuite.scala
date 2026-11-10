@@ -1,8 +1,8 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.model.{ActionRef, DecisionOptionRef, OathViolation, PlayerId, PowerId, PowerWindow, ProcedureRef, ReadyGame, SiteId, TriggeredProcedureRef}
+import distantlands.gameplay.actions.forge.ForgeProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.model.{ActionRef, DecisionOptionRef, OathViolation, PlayerId, PowerId, PowerWindow, ProcedureRef, ReadyGame, SiteId, TriggeredProcedureRef}
 
 /** Task 8: `WalkerProcedureRegistry.build`/`rebuild` are the single keyed
   * lookup both `OathRules.buildWalker` and `WalkerDecisionProjector` now
@@ -177,7 +177,7 @@ class WalkerProcedureRegistrySuite extends munit.FunSuite:
     * above.
     */
   test("only Campaign declares a Campaign question's roll"):
-    import oathdigital.gameplay.actions.campaign.CampaignIds
+    import distantlands.gameplay.actions.campaign.CampaignIds
     assertEquals(WalkerProcedureRegistry.rollFeedback(ActionRef.Campaign, null,
       state, actor, CampaignIds.placement),
       Some(WalkerRollFeedback(CampaignIds.defensePool)))

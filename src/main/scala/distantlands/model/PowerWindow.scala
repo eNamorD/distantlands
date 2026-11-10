@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 enum MajorActionType(val key: String):
   case Search extends MajorActionType("search")

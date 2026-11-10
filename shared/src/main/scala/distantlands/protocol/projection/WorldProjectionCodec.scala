@@ -1,6 +1,6 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
-import oathdigital.protocol.ProtocolDecodeFailure.InvalidValue
+import distantlands.protocol.ProtocolDecodeFailure.InvalidValue
 import ProjectionCodecSupport._
 
 private[protocol] object WorldProjectionCodec:
@@ -149,7 +149,7 @@ private[protocol] object WorldProjectionCodec:
     ruler <- string(value, "rulerKind", path)
     player <- optionalString(value, "rulerPlayerId", path)
     label <- string(value, "label", path); color <- string(value, "colorToken", path)
-    _ <- Either.cond(count > 0, (), oathdigital.protocol.ProtocolDecodeFailure.InvalidValue(
+    _ <- Either.cond(count > 0, (), distantlands.protocol.ProtocolDecodeFailure.InvalidValue(
       s"$path.count", "expected positive integer"))
     forces <- ((kind, ruler, player, color) match {
       case ("exile", "player", Some(playerId), _) =>
@@ -159,7 +159,7 @@ private[protocol] object WorldProjectionCodec:
         Right(SiteForcesProjection.Imperial(count, label))
       case ("bandit", "bandit", None, "bandit") =>
         Right(SiteForcesProjection.Bandit(count, label))
-      case _ => Left(oathdigital.protocol.ProtocolDecodeFailure.InvalidValue(path,
+      case _ => Left(distantlands.protocol.ProtocolDecodeFailure.InvalidValue(path,
         "force, ruler, and color tokens do not agree"))
     }): Result[SiteForcesProjection]
   yield forces

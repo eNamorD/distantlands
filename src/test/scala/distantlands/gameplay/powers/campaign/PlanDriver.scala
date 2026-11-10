@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.Denizen
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
-import oathdigital.gameplay.CampaignFixture.Board
-import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
+import distantlands.catalog.Denizen
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
+import distantlands.gameplay.CampaignFixture.Board
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   RollPayload, WalkerDice, WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.RecordedOps
-import oathdigital.testkit.Unwrap.present
+import distantlands.model._
+import distantlands.model.DecisionAnswer._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.RecordedOps
+import distantlands.testkit.Unwrap.present
 
 /** Drives a Campaign through the rules with the production battle plans, for
   * the suites that test one plan through a whole Campaign. Every attack die
@@ -46,7 +46,7 @@ object PlanDriver:
   def planlessCard(card: Denizen): DenizenId =
     planless(card).head
 
-  export oathdigital.testkit.Outcomes.ready
+  export distantlands.testkit.Outcomes.ready
 
   /** The notes `power` journaled in `events`, in order, as plain sentences. */
   def said(power: ContributingPower, events: Vector[OathEvent])

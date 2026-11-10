@@ -1,15 +1,15 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.campaign.ShieldWall
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.protocol.projection._
-import oathdigital.testkit.{Commands, Dice, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.campaign.ShieldWall
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.protocol.projection._
+import distantlands.testkit.{Commands, Dice, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** What an Imperial ally is shown of another Imperial player's open plan
   * window (Empire phase design, "Offer panel"). p1, an Exile, raids p3, a

@@ -1,17 +1,17 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GamePresentationProjector,
+import distantlands.application.{GamePresentationProjector,
   WalkerDecisionProjector}
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.engine.ReplayStep
-import oathdigital.gameplay.EmpireEndings
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{ConsentPowers, WalkerPowerCatalog}
-import oathdigital.gameplay.walker.{FollowUpSkipped,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.engine.ReplayStep
+import distantlands.gameplay.EmpireEndings
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{ConsentPowers, WalkerPowerCatalog}
+import distantlands.gameplay.walker.{FollowUpSkipped,
   FollowUpSupplyWaiver, LogNoted, ProcedureDequeued, WalkerCompleted,
   WalkerParked, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogEntry, LogKind, LogSection,
+import distantlands.model._
+import distantlands.protocol.projection.{LogEntry, LogKind, LogSection,
   LogSpan, LogTakenBack}
 import LogSpan.Text
 

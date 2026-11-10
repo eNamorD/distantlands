@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 /** Reads and rewrites the cost node of a Travel that several powers share. */
 private[travel] object TravelPayments:

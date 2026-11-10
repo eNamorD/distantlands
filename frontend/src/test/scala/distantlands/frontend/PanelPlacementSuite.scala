@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
+import distantlands.model.PlayerColor
 
 import org.scalajs.dom
 
@@ -9,7 +9,7 @@ import org.scalajs.dom
   * they sit with the board rather than in the action panel.
   */
 class PanelPlacementSuite extends munit.FunSuite:
-  private val tracks = oathdigital.protocol.projection.GameTracksProjection(round = 2, visionsDrawn = 0,
+  private val tracks = distantlands.protocol.projection.GameTracksProjection(round = 2, visionsDrawn = 0,
     usurperLimited = true, limiterRound = 4, firstPlayerId = "red")
 
   private val oath = OathkeeperStatus("supremacy", None, "oathkeeper",
@@ -17,7 +17,7 @@ class PanelPlacementSuite extends munit.FunSuite:
 
   private def projection(
       oathkeeper: Option[OathkeeperStatus] = Some(oath),
-      trackState: Option[oathdigital.protocol.projection.GameTracksProjection] = Some(tracks)): GameProjection =
+      trackState: Option[distantlands.protocol.projection.GameTracksProjection] = Some(tracks)): GameProjection =
     TestProjections.actingProjection(
       players = Vector(GamePlayer("red", "Red", "Exile", PlayerColor.Red)),
       // The tracker is drawn inside the cradle, so the region has to exist

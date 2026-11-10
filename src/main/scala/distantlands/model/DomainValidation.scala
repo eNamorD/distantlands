@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 sealed trait DomainProblem extends Product with Serializable
 object DomainProblem:

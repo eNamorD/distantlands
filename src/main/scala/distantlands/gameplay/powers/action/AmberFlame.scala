@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object AmberFlameCard extends Relic(RelicId("R32"), "Amber Flame", value = 26, defense = 2):
   val power = PrintedPower(PowerId("relic.amber-flame"),

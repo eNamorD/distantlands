@@ -1,7 +1,7 @@
-package oathdigital.protocol
+package distantlands.protocol
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.ProtocolDecodeFailure.*
+import distantlands.model.PlayerColor
+import distantlands.protocol.ProtocolDecodeFailure.*
 
 class TrustedGameProtocolSuite extends munit.FunSuite:
   private val json = """{"participants":[{"playerId":"p1","color":"red"},{"playerId":"p2","color":"blue"}],""" +

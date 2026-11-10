@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** True Names: its holder's enemy cannot use battle plans matching any of
   * the holder's faceup advisers. */

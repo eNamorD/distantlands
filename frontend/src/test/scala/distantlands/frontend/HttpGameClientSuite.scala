@@ -1,12 +1,12 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 
 import munit.FunSuite
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Unwrap.{accepted, present}
 import scala.collection.mutable
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-import oathdigital.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
+import distantlands.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
   DecisionAnswerWire, GameIntent}
 
 class HttpGameClientSuite extends FunSuite:
@@ -48,9 +48,9 @@ class HttpGameClientSuite extends FunSuite:
     // than through a bespoke `place-pawn` board-target action.
     val opaqueSite = "site:ancient-city"
     val opaqueAdviser = "denizen:0612"
-    val pawnCommand = oathdigital.protocol.GameIntent.ResolveWalker("setup.pawn-placement.red-exile",
+    val pawnCommand = distantlands.protocol.GameIntent.ResolveWalker("setup.pawn-placement.red-exile",
       DecisionAnswerWire.ChooseOneWire("site", opaqueSite))
-    val adviserCommand = oathdigital.protocol.GameIntent.ResolveWalker("setup.adviser-choice.red-exile",
+    val adviserCommand = distantlands.protocol.GameIntent.ResolveWalker("setup.adviser-choice.red-exile",
       DecisionAnswerWire.ChooseOneWire("denizen", opaqueAdviser))
     val transport = transportAnsweringInOrder(Vector(
       Right(TransportResponse(200, projectionJson(

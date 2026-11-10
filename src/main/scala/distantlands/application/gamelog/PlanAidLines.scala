@@ -1,8 +1,8 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.PlanAidSaved
-import oathdigital.protocol.projection.{LogKind, LogSpan}
+import distantlands.model._
+import distantlands.model.OathEvent.PlanAidSaved
+import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
 
 /** The Imperial Tactics lines (Empire phase design, "1b-ii", "Log"). An

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.PowerWindow
+import distantlands.model.PowerWindow
 
 /** A power that hooks a window, with its contributions at that window. */
 final case class HookedPower(power: ContributingPower,

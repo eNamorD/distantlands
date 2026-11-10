@@ -1,4 +1,4 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
 import java.nio.file.{Files, Path, Paths}
 import scala.jdk.CollectionConverters._
@@ -77,7 +77,7 @@ class BackendArchitectureSuite extends munit.FunSuite:
       s"expected at least one ContributingPower under $powersRoot")
 
     val engineImporting = contributions.filter(path =>
-      Files.readString(path).contains("import oathdigital.gameplay.walker"))
+      Files.readString(path).contains("import distantlands.gameplay.walker"))
       .map(_.toString).sorted
     assertEquals(engineImporting, Vector.empty,
       "a power must import no part of the walker engine")
@@ -187,8 +187,8 @@ class BackendArchitectureSuite extends munit.FunSuite:
 
   test("application never imports server or serialization layers"):
     val root = Paths.get("src/main/scala/distantlands/application")
-    val forbidden = Vector("import oathdigital.server", "import oathdigital.persistence",
-      "import oathdigital.serialization")
+    val forbidden = Vector("import distantlands.server", "import distantlands.persistence",
+      "import distantlands.serialization")
     val offenders = Files.walk(root).iterator.asScala.filter(path =>
       path.toString.endsWith(".scala") && forbidden.exists(
         Files.readString(path).contains)).map(_.toString).toVector
@@ -399,7 +399,7 @@ class BackendArchitectureSuite extends munit.FunSuite:
         "application", "persistence", "protocol",
         "serialization", "server"))
     val offenders = constraints.flatMap { case (root, packages) =>
-      val forbidden = packages.map(name => s"import oathdigital.$name")
+      val forbidden = packages.map(name => s"import distantlands.$name")
       Files.walk(root).iterator.asScala.filter(_.toString.endsWith(".scala"))
         .filter(path => forbidden.exists(Files.readString(path).contains))
         .map(_.toString)

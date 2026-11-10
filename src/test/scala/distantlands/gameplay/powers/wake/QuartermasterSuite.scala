@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Refusals, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.PhasePowerHarness
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, Refusals, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.PhasePowerHarness
 
 class QuartermasterSuite extends munit.FunSuite:
   private val quartermaster = QuartermasterCard.id

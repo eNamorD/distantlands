@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Open marker for one rolled die face, in the model so faces can be stored on
   * model state ([[RollOutcome]]) without model importing the gameplay die

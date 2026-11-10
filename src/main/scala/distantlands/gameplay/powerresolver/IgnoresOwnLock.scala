@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{CardId, PowerId}
+import distantlands.model.{CardId, PowerId}
 
 /** A phase power whose use may move or flip its own lock-icon card (catalog
   * batch 10, slice 4). While the walker runs the power's use, the lock on

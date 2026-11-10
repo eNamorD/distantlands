@@ -1,22 +1,22 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.{FacedownAdviserPlay, OathRules, PlacementFixture,
+import distantlands.gameplay.{FacedownAdviserPlay, OathRules, PlacementFixture,
   SearchPlay}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.{BanditPaymasterCard,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.{BanditPaymasterCard,
   DarkEnforcerCard, ScryerCard, SpoiledSuppliesCard}
-import oathdigital.gameplay.powers.campaign.{SecondWindCard, UnstableSummonCard}
-import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.whenplayed.BlackmailCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Outcomes, PlacementPicks, PowerRules, Table,
+import distantlands.gameplay.powers.campaign.{SecondWindCard, UnstableSummonCard}
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.powers.whenplayed.BlackmailCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Outcomes, PlacementPicks, PowerRules, Table,
   TestCards}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Unwrap.accepted
 
 /** Drives a real Search through the rules, with the production walker powers,
   * for the suites of the modifiers and triggers that act on it. It builds on

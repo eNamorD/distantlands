@@ -1,10 +1,10 @@
-package oathdigital.server
+package distantlands.server
 
 import java.security.SecureRandom
 import java.util.Base64
 
-import oathdigital.application.SeatCodeDigest
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.application.SeatCodeDigest
+import distantlands.testkit.Unwrap.accepted
 
 class SeatCodeSuite extends munit.FunSuite:
   test("generated seat codes are unpadded URL-safe encodings of 128 random bits"):

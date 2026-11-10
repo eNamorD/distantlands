@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Keys that journaled events and the client protocol carry. Renaming one
   * breaks saved games or the frontend, so each is spelled out here.

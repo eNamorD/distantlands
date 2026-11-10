@@ -1,7 +1,7 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.{OperationExecutor, PayCostSettlement}
-import oathdigital.model.{ActionRef, Answered, CoreOperation, OathState, OathViolation, PendingTree, ReadyGame, WalkerEvent}
+import distantlands.gameplay.operations.{OperationExecutor, PayCostSettlement}
+import distantlands.model.{ActionRef, Answered, CoreOperation, OathState, OathViolation, PendingTree, ReadyGame, WalkerEvent}
 
 /** Replay half of the walker: applies durable walker facts to state without
   * ever deriving or walking an action tree (batch-1 Task 5).

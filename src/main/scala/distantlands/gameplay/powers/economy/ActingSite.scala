@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.gameplay.powerresolver.{AsksOnSelection, Contribution,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.gameplay.powerresolver.{AsksOnSelection, Contribution,
   ModifierPicks,
   OfferReason, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 /** What Small Friends and Friendly Familiar share (catalog batch 8, slice
   * 7): a Trade modifier that, once picked and paid for, asks which site its

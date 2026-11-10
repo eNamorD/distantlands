@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission,
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.actions.{CardPlayRules, DiscardPermission,
   SiteRemoval}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object ForestWardenCard extends Denizen(DenizenId("218"), "Forest Warden",
     Suit.Beast):

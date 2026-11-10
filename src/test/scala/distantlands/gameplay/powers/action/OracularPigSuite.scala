@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.model._
-import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.PhasePowerHarness
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.model._
+import distantlands.protocol.projection.DecisionQueryProjection
+import distantlands.testkit.PhasePowerHarness
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 class OracularPigSuite extends munit.FunSuite:
   import PowerFixture._

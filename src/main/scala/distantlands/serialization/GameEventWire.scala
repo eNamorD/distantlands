@@ -1,9 +1,9 @@
-package oathdigital.serialization
+package distantlands.serialization
 
 import scala.util.control.NonFatal
 
-import oathdigital.engine.RecordedEvent
-import oathdigital.model._
+import distantlands.engine.RecordedEvent
+import distantlands.model._
 
 final case class GameEventEnvelope(
     formatVersion: Int,

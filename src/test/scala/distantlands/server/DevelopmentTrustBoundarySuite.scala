@@ -1,6 +1,6 @@
-package oathdigital.server
+package distantlands.server
 
-import oathdigital.testkit.Unwrap.rejected
+import distantlands.testkit.Unwrap.rejected
 
 class DevelopmentTrustBoundarySuite extends munit.FunSuite:
   test("development server binding accepts only explicit loopback hosts"):

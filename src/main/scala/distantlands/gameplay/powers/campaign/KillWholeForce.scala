@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 /** The kill of a defeated side's whole force, after the Campaign's losses
   * (R4, from Sticky Fire). Sticky Fire kills its enemy's force this way when

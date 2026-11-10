@@ -1,13 +1,13 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{OptionRestriction, Waiver}
-import oathdigital.gameplay.walker.WalkerSimulation.{PreviewOutcome,
+import distantlands.gameplay.powerresolver.{OptionRestriction, Waiver}
+import distantlands.gameplay.walker.WalkerSimulation.{PreviewOutcome,
   PreviewedOption}
-import oathdigital.model._
-import oathdigital.testkit.PowerStubs.ContributingStub
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.testkit.PowerStubs.ContributingStub
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** An option a waivable `OptionRestriction` bars at a choose-one hooked by
   * its own window: askable when a grant would open it, judged with the

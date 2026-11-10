@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** The era scorepad (Chronicle browsing design, "The era scorepad"). */
 class EraStateSuite extends munit.FunSuite:

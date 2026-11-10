@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.title
+package distantlands.gameplay.powers.title
 
-import oathdigital.gameplay.{OathRules, TravelPlay}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
+import distantlands.gameplay.{OathRules, TravelPlay}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
   FairIsleSite}
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{DeltaPayload, WalkerPowers,
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{DeltaPayload, WalkerPowers,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 class ChaosCultSuite extends munit.FunSuite:
   private val power = ChaosCult
@@ -82,7 +82,7 @@ class ChaosCultSuite extends munit.FunSuite:
     val ready = staged(Vector(active, leader), holder = Some(cultist)).ready
     val parked = accepted(travel(ready))
     val done = accepted(rules.resolveWalker(parked.state, cultist,
-      oathdigital.gameplay.oathkeeper.OathkeeperProcedure.recipientDecisionId,
+      distantlands.gameplay.oathkeeper.OathkeeperProcedure.recipientDecisionId,
       DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(leader))))
     val after = Outcomes.ready(done.state)
     assertEquals(after.game.current.title.holder, Some(leader))

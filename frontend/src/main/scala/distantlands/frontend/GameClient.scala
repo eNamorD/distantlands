@@ -1,12 +1,12 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
 import scala.util.control.NonFatal
-import oathdigital.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
+import distantlands.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
   ProtocolDecodeFailure, GameIntent => GameCommand}
-import oathdigital.protocol.projection.{GameProjection, GameProjectionCodec,
+import distantlands.protocol.projection.{GameProjection, GameProjectionCodec,
   LogPage, LogPageCodec}
 
 final case class TransportResponse(status: Int, body: String)

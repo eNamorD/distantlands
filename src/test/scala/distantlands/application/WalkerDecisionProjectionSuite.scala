@@ -1,28 +1,28 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
-import oathdigital.testkit.MenuPlay
-import oathdigital.model._
-import oathdigital.gameplay.{ModifierPlay, OathRules, WalkerDiceFixture}
-import oathdigital.testkit.CatacombsGame
-import oathdigital.gameplay.actions.RecoverRules
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.model.OathState.Ready
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.protocol.projection.{DecisionOptionProjection,
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
+import distantlands.testkit.MenuPlay
+import distantlands.model._
+import distantlands.gameplay.{ModifierPlay, OathRules, WalkerDiceFixture}
+import distantlands.testkit.CatacombsGame
+import distantlands.gameplay.actions.RecoverRules
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.model.OathState.Ready
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.gameplay.actions.forge.ForgeProcedure
+import distantlands.protocol.projection.{DecisionOptionProjection,
   DecisionQueryProjection, DecisionSectionProjection, DieFace => RolledFace,
   GameProjectionCodec, WalkerDecisionProjection,
   WalkerRollOutcomeProjection}
-import oathdigital.testkit.Dice
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.application.ParkedServiceFixture.loaded
-import oathdigital.testkit.Outcomes
-import oathdigital.testkit.Commands
+import distantlands.testkit.Dice
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.application.ParkedServiceFixture.loaded
+import distantlands.testkit.Outcomes
+import distantlands.testkit.Commands
 
 /** Task 7 (Recover slice, controller ruling (b)) established the
   * application-projector surface: [[WalkerDecisionProjector]] plus the
@@ -340,8 +340,8 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
   test("a Campaign force decision carries no roll"):
     // CampaignFixture's board: p1, with 5 warbands on its board and a Supply
     // of 7, campaigns against the 2 Bandits at its origin.
-    val b = oathdigital.gameplay.CampaignFixture.board(warbands = 5, supply = 7)
-    val game = oathdigital.gameplay.CampaignFixture.rules()
+    val b = distantlands.gameplay.CampaignFixture.board(warbands = 5, supply = 7)
+    val game = distantlands.gameplay.CampaignFixture.rules()
     val started = accepted(game.startWalker(OathState.Ready(b.ready),
       ActionRef.Campaign, p1))
     val projection = new GameProjector(catalog).project("campaign",

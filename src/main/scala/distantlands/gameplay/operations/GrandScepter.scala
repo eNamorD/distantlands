@@ -1,7 +1,7 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.model._
 
 object TheGrandScepterCard extends Relic(RelicId("grand-scepter"), "The Grand Scepter", value = 0, defense = 3):
   val restriction = PrintedPower(PowerId("relic.the-grand-scepter.restriction"),

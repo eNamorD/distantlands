@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{BanditCrownRule, EffectiveSuit}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds, CampaignPlans, CampaignSetup, PlanAid}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.banner.CardPowerBanners
-import oathdigital.gameplay.powers.RuledCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{BanditCrownRule, EffectiveSuit}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.{CampaignAnswers, CampaignIds, CampaignPlans, CampaignSetup, PlanAid}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.banner.CardPowerBanners
+import distantlands.gameplay.powers.RuledCards
+import distantlands.model._
 
 /** What a battle plan reads when it is asked whether it is usable now: the
   * state, the Campaign's setup and the side the window is for.

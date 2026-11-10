@@ -1,6 +1,6 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Vow of Kinship's draw on the Nomad bank (catalog batch 11, slice 5,
   * ruling 9).

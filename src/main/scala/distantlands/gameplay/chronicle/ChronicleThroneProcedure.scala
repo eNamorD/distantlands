@@ -1,8 +1,8 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.walker.ProcedureStart
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.walker.ProcedureStart
+import distantlands.model._
 
 /** The Throne task (CR p. 37, `docs/rules/chronicle.md` task 2), resolved
   * by the player holding its card. Each step is its own power window. */

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** A rule under which cards act as if locked for some players only: Ancient
   * Bloodline (catalog batch 8, slice 11). It judges each card an operation

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.setup.ForestHornCard
-import oathdigital.gameplay.powers.whenplayed.RegionDiscard
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.setup.ForestHornCard
+import distantlands.gameplay.powers.whenplayed.RegionDiscard
+import distantlands.model._
 
 /** Forest Horn (E30, intact), ACTION: place 2 secrets on this card, choose
   * a region, then discard every non-Beast denizen at that region's sites

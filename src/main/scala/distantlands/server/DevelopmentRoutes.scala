@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -9,7 +9,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import org.slf4j.LoggerFactory
 
-import oathdigital.application.GameApplicationService
+import distantlands.application.GameApplicationService
 
 /** The loopback development transport: the game API with the actor taken
   * from `?playerId=`, the raw event history, and the development shell. */

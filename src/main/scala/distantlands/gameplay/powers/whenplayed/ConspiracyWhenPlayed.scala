@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.{BannerRules, VisionRules}
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.{BannerRules, VisionRules}
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** Conspiracy: when played, take a relic or a banner from a player whose pawn
   * is at the actor's site, then return the card to the box.

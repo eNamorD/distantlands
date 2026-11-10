@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.operations.SupplyStrip
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{PlayerFacts, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.operations.SupplyStrip
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{PlayerFacts, SelectedModifier}
+import distantlands.model._
 
 object AwaitedReturnCard extends Denizen(DenizenId("150"), "Awaited Return", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.awaited-return"),

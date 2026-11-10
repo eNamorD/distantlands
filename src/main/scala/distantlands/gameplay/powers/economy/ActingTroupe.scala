@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog}
-import oathdigital.gameplay.{ActingTroupeCard, NoteSupport, PowerAccess}
-import oathdigital.gameplay.powerresolver.{AsksOnSelection, Contribution}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog}
+import distantlands.gameplay.{ActingTroupeCard, NoteSupport, PowerAccess}
+import distantlands.gameplay.powerresolver.{AsksOnSelection, Contribution}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 /** Acting Troupe (card 36, adviser-only), a free selected Trade modifier:
   * "Act as if Acting Troupe is a [suit-beast] or [suit-order] card

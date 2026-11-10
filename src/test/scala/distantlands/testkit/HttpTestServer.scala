@@ -1,4 +1,4 @@
-package oathdigital.testkit
+package distantlands.testkit
 
 import java.net.URI
 import java.net.http.{HttpClient, HttpRequest, HttpResponse}
@@ -11,8 +11,8 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 
-import oathdigital.application.CsrfTokenDigest
-import oathdigital.server.SensitiveTokenDigest
+import distantlands.application.CsrfTokenDigest
+import distantlands.server.SensitiveTokenDigest
 
 /** A route served on a free loopback port for one test, with a client that
   * talks to it. `get` and `post` take a path under `base` and a `cookie`
@@ -78,7 +78,7 @@ object HttpTestServer:
       ActorSystem[Nothing](Behaviors.empty, name)
     try
       val blocking = system.dispatchers.lookup(
-        DispatcherSelector.fromConfig("oathdigital.blocking-dispatcher"))
+        DispatcherSelector.fromConfig("distantlands.blocking-dispatcher"))
       val binding = Await.result(
         Http().newServerAt("127.0.0.1", 0).bind(routeOn(blocking)),
         10.seconds)

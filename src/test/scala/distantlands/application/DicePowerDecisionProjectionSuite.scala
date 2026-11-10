@@ -1,15 +1,15 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.action.{DowsingSticksCard, FaeMerchant,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.action.{DowsingSticksCard, FaeMerchant,
   FaeMerchantCard, GamblingHall, GamblingHallCard, WhistleCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Table}
-import oathdigital.testkit.Outcomes.ready
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Table}
+import distantlands.testkit.Outcomes.ready
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** The parked decisions of the slice 1b powers reach their owner with every
   * option presented, and reach nobody else. A projection is dropped whole when

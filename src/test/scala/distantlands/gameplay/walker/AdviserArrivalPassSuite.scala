@@ -1,12 +1,12 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{AdviserArrival, AdviserArrivals,
+import distantlands.gameplay.powerresolver.{AdviserArrival, AdviserArrivals,
   ArrivalFollowUp, ContributingPower, Contribution, FollowsArrivals}
-import oathdigital.gameplay.powers.action.EldersCard
-import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.action.EldersCard
+import distantlands.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** The adviser arrival pass (catalog batch 5, "The arrival pass"), driven by
   * stub rules over one leaf. */

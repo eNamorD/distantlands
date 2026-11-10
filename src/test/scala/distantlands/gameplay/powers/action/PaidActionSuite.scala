@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.powers.banner.WanderingFlameMove
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.powers.banner.WanderingFlameMove
+import distantlands.model._
 
 /** A card's paid action reads its id and cost from the power its card
   * prints; a banner's, which no card prints, names both. */

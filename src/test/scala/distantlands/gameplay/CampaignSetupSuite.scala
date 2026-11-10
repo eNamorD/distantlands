@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture.{actorRules, board, on,
+import distantlands.gameplay.CampaignFixture.{actorRules, board, on,
   withEnemyAtOrigin}
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.campaign.{CursedCauldronCard,
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.campaign.{CursedCauldronCard,
   SneakAttackCard}
-import oathdigital.gameplay.walker.QueuedStart
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer._
-import oathdigital.testkit.Table
+import distantlands.gameplay.walker.QueuedStart
+import distantlands.model._
+import distantlands.model.DecisionAnswer._
+import distantlands.testkit.Table
 
 class CampaignSetupSuite extends munit.FunSuite:
   private def pending(answers: (String, DecisionAnswer)*) = PendingTree(

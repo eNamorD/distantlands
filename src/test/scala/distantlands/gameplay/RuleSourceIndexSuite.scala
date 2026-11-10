@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.catalog.holding.{ArbiterCard, IronHandCard}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.catalog.holding.{ArbiterCard, IronHandCard}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
-import oathdigital.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.present
+import distantlands.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.present
 
 class RuleSourceIndexSuite extends munit.FunSuite:
   /** A board with a source of every category the rule-source index names:

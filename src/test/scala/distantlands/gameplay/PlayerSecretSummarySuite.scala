@@ -1,12 +1,12 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class PlayerSecretSummarySuite extends munit.FunSuite:
   import FirstGameSetupFixture._
@@ -62,8 +62,8 @@ class PlayerSecretSummarySuite extends munit.FunSuite:
       actor)).committed, 2)
     assertEquals(accepted(PlayerSecretSummary.derive(corrupt,
       inactive)).committed, 0)
-    val projected = new oathdigital.application.GameProjector(catalog)
+    val projected = new distantlands.application.GameProjector(catalog)
       .projectPublic("cross-player-secrets",
-        oathdigital.application.LoadedGame(OathState.Ready(corrupt), 9L))
+        distantlands.application.LoadedGame(OathState.Ready(corrupt), 9L))
     assertEquals(projected.playerBoards.find(_.playerId == actor.value)
       .map(_.committedSecrets), Some(2))

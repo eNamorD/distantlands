@@ -1,13 +1,13 @@
-package oathdigital.server
+package distantlands.server
 
 import java.nio.file.Path
 
-import oathdigital.application.{ChronicleRandomPort, IdentityRepository}
-import oathdigital.application.chronicle.ChronicleConversion
-import oathdigital.gameplay.cards.NewFoundations
-import oathdigital.persistence.HsqldbDatabaseOwner
+import distantlands.application.{ChronicleRandomPort, IdentityRepository}
+import distantlands.application.chronicle.ChronicleConversion
+import distantlands.gameplay.cards.NewFoundations
+import distantlands.persistence.HsqldbDatabaseOwner
 final class ServerRuntime private (
-    val service: oathdigital.application.GameApplicationService,
+    val service: distantlands.application.GameApplicationService,
     val gateway: GameGateway,
     val identities: IdentityRepository,
     val trustedGameProvisioning: TrustedGameProvisioning,
@@ -23,9 +23,9 @@ object ServerRuntime:
       gameIds: () => String = () => TrustedGameProvisioning.generateGameId()
   ): Either[String, ServerRuntime] =
     HsqldbDatabaseOwner.open(databasePath).left.map {
-      case oathdigital.application.RepositoryFailure.StorageFailure(message) =>
+      case distantlands.application.RepositoryFailure.StorageFailure(message) =>
         message
-      case oathdigital.application.RepositoryFailure.InvalidConfiguration(
+      case distantlands.application.RepositoryFailure.InvalidConfiguration(
             message
           ) =>
         message
@@ -33,14 +33,14 @@ object ServerRuntime:
       val repository = database.eventStreams
       val catalog = NewFoundations.catalog
       val firstGameService =
-        new oathdigital.application.GameApplicationService(
+        new distantlands.application.GameApplicationService(
           catalog,
           repository
         )
       val projector =
-        new oathdigital.application.GameProjector(catalog)
+        new distantlands.application.GameProjector(catalog)
       val generatedPlanFactory =
-        new oathdigital.application.GeneratedFirstGamePlanFactory(
+        new distantlands.application.GeneratedFirstGamePlanFactory(
           catalog,
           random
         )

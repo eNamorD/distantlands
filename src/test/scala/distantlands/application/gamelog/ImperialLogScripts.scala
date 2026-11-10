@@ -1,19 +1,19 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.minor.WarbandTransfers
-import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.application._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.minor.WarbandTransfers
+import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.action.GrandScepterAction
-import oathdigital.gameplay.powers.campaign.GrandScepterPlan
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseAmountAnswer,
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.action.GrandScepterAction
+import distantlands.gameplay.powers.campaign.GrandScepterPlan
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseAmountAnswer,
   ChooseOneAnswer, ProposeTerms}
-import oathdigital.testkit.{Commands, Dice, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.{Commands, Dice, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.atTable
 
 /** The Empire's rules (Imperial slice 1a). Kept beside `LogScripts`, which

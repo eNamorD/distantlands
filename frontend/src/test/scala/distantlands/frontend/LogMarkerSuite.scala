@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 class LogMarkerSuite extends munit.FunSuite:
   /** Stands in for `setTimeout`: runs nothing until `fire`. */

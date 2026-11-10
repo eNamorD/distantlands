@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.TheGatheringCard
-import oathdigital.gameplay.VowOfKinshipCard
-import oathdigital.gameplay.powers.whenplayed.SearchPartyCard
-import oathdigital.gameplay.PledgeToDiscordCard
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.roles.CouncilSeatCard
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.catalog.holding.TheGatheringCard
+import distantlands.gameplay.VowOfKinshipCard
+import distantlands.gameplay.powers.whenplayed.SearchPartyCard
+import distantlands.gameplay.PledgeToDiscordCard
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.roles.CouncilSeatCard
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Great Crusade: a free plan for one attack die per nomad card its user
   * rules, counting itself, added or removed, and the card is discarded after

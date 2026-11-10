@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.powerresolver.Transform
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.powerresolver.Transform
+import distantlands.model._
 
 object CarefulPlansCard extends Denizen(DenizenId("254"), "Careful Plans",
     Suit.Order):

@@ -1,6 +1,6 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The Visions a player has revealed, as the victory rules read them: their
   * own, in reveal order, then every other player's revealed Vision that

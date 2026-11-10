@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, RainBootsCard,
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.campaign.{BattleHonorsCard, RainBootsCard,
   WrestlersCard}
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Refusals, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, as, present}
 
 class IvoryEyeSuite extends munit.FunSuite:
   import PowerFixture._
@@ -83,7 +83,7 @@ class IvoryEyeSuite extends munit.FunSuite:
   test("the peeked adviser is named to the actor and to nobody else"):
     val t = accepted(use(staged, IvoryEye, source))
     val card = firstAdviser(staged, target).value
-    def named(board: oathdigital.protocol.projection.PlayerBoardProjection) =
+    def named(board: distantlands.protocol.projection.PlayerBoardProjection) =
       board.advisers.exists(c => c.cardId == card && !c.hidden)
     assert(!named(boardOf(t, actor, target)))
     val done = accepted(answer(t, actor, IvoryEye.decisionId,

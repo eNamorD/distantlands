@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerUse, PowerUseRefusal, PowerUseRestriction, PowerUseStep, Waiver}
-import oathdigital.model._
+import distantlands.model._
 
 object ForestCouncilCard extends Denizen(DenizenId("194"), "Forest Council", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.forest-council"),

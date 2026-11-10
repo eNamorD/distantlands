@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** Yew Staff: its holder holds the Darkest Secret as the card powers they
   * use see it. Each power's own suite tests that it reads the check. */

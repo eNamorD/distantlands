@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.projection.LogEntry
+import distantlands.protocol.projection.LogEntry
 import ServerUiSupport._
 
 /** The whole log, full height over the table (spec, "Overlay"). The card

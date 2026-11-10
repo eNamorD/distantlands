@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
-import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PhasePowerCatalog,
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.powerresolver.{FoldPhase, Transform}
+import distantlands.gameplay.powers.{NoteText, PayOrAsk, PhasePowerCatalog,
   PowerFixture, RulerToll}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, QueuedStart}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, QueuedStart}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, Refusals, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 class WayStationSuite extends munit.FunSuite:
   import PowerFixture._

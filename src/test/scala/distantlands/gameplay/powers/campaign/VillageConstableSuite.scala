@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Village Constable: a free, site-only plan for two attack dice, added or
   * removed, unless the enemy holds the People's Favor. */

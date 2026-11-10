@@ -1,6 +1,6 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Wire spellings shared by the walker's operations and events: a power's
   * source, a procedure reference, and a queued entry, which holds both

@@ -1,22 +1,22 @@
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.PlacementFixture
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{AdviserLimit, NoteText, PhasePowerCatalog,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.PlacementFixture
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{AdviserLimit, NoteText, PhasePowerCatalog,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks, PowerRules,
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, PlacementPicks, PowerRules,
   RecordedOps, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.PhasePowerHarness
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.PhasePowerHarness
 
 class InsomniaSuite extends munit.FunSuite:
   private val rules = PowerRules.withWalkerAndPhasePowers

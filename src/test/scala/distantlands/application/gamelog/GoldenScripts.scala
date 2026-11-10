@@ -1,4 +1,4 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
 /** Every script with a golden file, for the suites that hold for each.
   * The registry lives here and the script files contribute their own

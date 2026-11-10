@@ -1,14 +1,14 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.FairIsleSite
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{PowerStubs, WalkerStubs}
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.cards.FairIsleSite
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{PowerStubs, WalkerStubs}
 
 /** `ParkedDecisionAssertions` is tested here, driving a real `RecoverProcedure`
   * through a real `OathRules` rather than constructing a `PendingTree` by

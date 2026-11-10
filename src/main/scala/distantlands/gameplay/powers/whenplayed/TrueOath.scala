@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   Locked, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{OathkeeperGoalChoice, PowerAnswers,
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{OathkeeperGoalChoice, PowerAnswers,
   RuledCards}
-import oathdigital.model._
+import distantlands.model._
 
 object TrueOathCard extends Denizen(DenizenId("209"), "True Oath",
     Suit.Beast) with Locked with AdviserOnly:

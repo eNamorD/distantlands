@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.{FollowUpPlay, OathRules}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.Look
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.{FollowUpPlay, OathRules}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.Look
+import distantlands.testkit.Unwrap.accepted
 
 /** Second Wind (card 16): an attacker's battle plan that, once the Campaign is
   * won, owes a Travel and then a Campaign, each spending no Supply

@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** The in-memory store the log suites use, held to the store contract. */
 class FakeLogStoreSuite extends LogStoreContract:

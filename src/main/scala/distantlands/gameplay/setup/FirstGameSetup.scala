@@ -1,6 +1,6 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.model.VisionId
+import distantlands.model.VisionId
 
 object FirstGameRulesData:
   val visions: Vector[VisionId] = Vector(

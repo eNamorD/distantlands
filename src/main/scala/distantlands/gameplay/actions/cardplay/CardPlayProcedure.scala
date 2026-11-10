@@ -1,12 +1,12 @@
-package oathdigital.gameplay.actions.cardplay
+package distantlands.gameplay.actions.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.DesecratedGroundRule
-import oathdigital.gameplay.actions.{CardPlay, CardPlayRules, DiscardPermission,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.DesecratedGroundRule
+import distantlands.gameplay.actions.{CardPlay, CardPlayRules, DiscardPermission,
   ProcedureNotes}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.walker.{ModifierChoice, ProcedureStart}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.walker.{ModifierChoice, ProcedureStart}
+import distantlands.model._
 
 /** The embeddable card play (card play slots design, "Placement procedure"):
   *

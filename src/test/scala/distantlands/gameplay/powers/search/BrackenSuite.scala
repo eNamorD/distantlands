@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.ModifierMark
-import oathdigital.gameplay.{ModifierPlay, SearchPlay}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.catalog.ModifierMark
+import distantlands.gameplay.{ModifierPlay, SearchPlay}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 /** Bracken (card 197), a selected Search modifier for 1 secret: "You may
   * put all of the cards you discard on the top or bottom of any one

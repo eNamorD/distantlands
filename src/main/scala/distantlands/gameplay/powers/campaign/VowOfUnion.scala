@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.gameplay.actions.campaign.{CampaignIds,
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.gameplay.actions.campaign.{CampaignIds,
   CampaignProcedure, CampaignSetup}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.{PowerAnswers, WarbandArrangement}
-import oathdigital.model._
+import distantlands.gameplay.powers.{PowerAnswers, WarbandArrangement}
+import distantlands.model._
 
 object VowOfUnionCard extends Denizen(DenizenId("185"), "Vow of Union", Suit.Beast) with Locked with AdviserOnly:
   val campaign = PrintedPower(PowerId("denizen.vow-of-union.campaign"),
@@ -46,7 +46,7 @@ object VowOfUnionCard extends Denizen(DenizenId("185"), "Vow of Union", Suit.Bea
   * names the holder only when the holder is not the active player. It covers
   * nothing: the generic move lines say which sites. Both questions are
   * narrated. Its restriction half is
-  * [[oathdigital.gameplay.powers.cardplay.VowOfUnionAdvisers]].
+  * [[distantlands.gameplay.powers.cardplay.VowOfUnionAdvisers]].
   */
 case object VowOfUnion extends ContributingPower:
   val cardId: DenizenId = VowOfUnionCard.id

@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{EconomyActions, Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.StartPreview
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{EconomyActions, Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.StartPreview
 
 /** Muster asks for its modifiers inside the walk (modifier walker design,
   * slice 3). */

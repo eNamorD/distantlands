@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.{CardRule, NoteSupport, SpendableFavor}
-import oathdigital.model._
+import distantlands.gameplay.{CardRule, NoteSupport, SpendableFavor}
+import distantlands.model._
 
 /** The toll Curfew and Forced Labor charge an enemy of their ruler, on top
   * of the action's own cost: 1 favor given to the ruling player, or burnt

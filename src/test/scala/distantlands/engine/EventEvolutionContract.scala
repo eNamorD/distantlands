@@ -1,6 +1,6 @@
-package oathdigital.engine
+package distantlands.engine
 
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** What every `EventEvolution` promises: a fixed initial state, and a fold
   * that is deterministic and refuses an event the state cannot take. The

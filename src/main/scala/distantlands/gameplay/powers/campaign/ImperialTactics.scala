@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
+import distantlands.model._
 
 /** Imperial Tactics (CR p. 35): an Imperial player may use battle plans an
   * ally lends and meet requirements with an ally's. The rule hooks no

@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** Fake of `LogStore`: a working in-memory map in place of `localStorage`,
   * shared by the suites that need a log's place without a browser. `values`

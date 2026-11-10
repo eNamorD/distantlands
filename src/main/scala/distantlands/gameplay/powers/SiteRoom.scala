@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** Room for a card at a site. Operations never check a site's capacity, so
   * a power that moves a card to a site offers only sites with room (catalog

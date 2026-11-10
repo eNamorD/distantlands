@@ -1,9 +1,9 @@
-package oathdigital.gameplay.actions.minor
+package distantlands.gameplay.actions.minor
 
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.{ImperialLaws, ProcedureNotes}
-import oathdigital.model._
-import oathdigital.model.OathViolation._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.{ImperialLaws, ProcedureNotes}
+import distantlands.model._
+import distantlands.model.OathViolation._
 
 /** Warband Transfers (CR p. 35): as a minor action, an Imperial player
   * moves warbands to or from another Imperial player's board, when that

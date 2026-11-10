@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 object HuntingPartyCard extends Denizen(DenizenId("122"), "Hunting Party", Suit.Order):
   val power = PrintedPower(PowerId("denizen.hunting-party"),

@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{Answered, CampaignPlanOffer, CardId, CoreOperation, Decide, DecisionOptionRef, EdificeId, EdificeSide, NoteKey, OathViolation, OfferedPlan, OfferedReroll, Operation, OperationRestriction, OptionReason, PlayerId, PowerId, LogNote, PowerResolution, PowerSourceRef, PowerWindow, ProcedureRef, ReadyGame, RerollOffer, RuleSourceRef}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.{Answered, CampaignPlanOffer, CardId, CoreOperation, Decide, DecisionOptionRef, EdificeId, EdificeSide, NoteKey, OathViolation, OfferedPlan, OfferedReroll, Operation, OperationRestriction, OptionReason, PlayerId, PowerId, LogNote, PowerResolution, PowerSourceRef, PowerWindow, ProcedureRef, ReadyGame, RerollOffer, RuleSourceRef}
 
 /** Everything a contribution may read at the node it hooks. Carries no
   * mutable state: `catalog` is the card catalog the walk runs, for a power

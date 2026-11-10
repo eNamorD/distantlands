@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.model._
 
 object BagOfSiegeworksCard extends Relic(RelicId("R37"), "Bag of Siegeworks", value = 42, defense = 2):
   val power = PrintedPower(PowerId("relic.bag-of-siegeworks"),

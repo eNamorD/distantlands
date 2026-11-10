@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** `inner`, lifted where consent was given (consent design, slice 3). A
   * refusal that names a waiver is dropped once a grant for what it covers is

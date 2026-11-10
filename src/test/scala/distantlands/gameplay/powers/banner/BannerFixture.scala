@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Staging shared by the banner-face suites, on the quiet table: the actor
   * p1 at Ancient City, p2 at Broken Peaks and p3 at Buried Giant. Both

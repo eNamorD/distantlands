@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.powerresolver.{Contribution, OperationRewrite,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.powerresolver.{Contribution, OperationRewrite,
   Transform}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** The shape of the Muster and Trade modifiers that waive the Supply payment
   * by the suit of the card the action uses (the Cup of Plenty, Animal

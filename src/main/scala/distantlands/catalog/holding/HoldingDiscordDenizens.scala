@@ -1,7 +1,7 @@
-package oathdigital.catalog.holding
+package distantlands.catalog.holding
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.model.{Cost, DenizenId, PowerId, Suit}
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.model.{Cost, DenizenId, PowerId, Suit}
 
 // Generated from the retired runtime JSON (card classes slice 1).
 // Hand-edited from here on; a card moves out when it is implemented.

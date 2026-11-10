@@ -1,7 +1,7 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Assign Tasks, the Sun's last step (CR p. 36, Chronicle rulings 1-3). The
   * winner takes the Throne. The People's Favor's holder takes the World and

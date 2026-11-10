@@ -1,4 +1,4 @@
-package oathdigital.protocol
+package distantlands.protocol
 
 import scala.util.control.NonFatal
 import ProtocolDecodeFailure._
@@ -59,7 +59,7 @@ object TrustedGameCreateRequestCodec:
         obj <- exact(raw, Vector("playerId", "color"), path)
         player <- identifier(obj, "playerId", path)
         color <- text(obj, "color", path).flatMap(key =>
-          oathdigital.model.PlayerColor.fromKey(key).toRight(
+          distantlands.model.PlayerColor.fromKey(key).toRight(
             InvalidValue(s"$path.color", s"unknown player color '$key'")))
       yield BootstrapParticipantRequest(player, color) }
       chronicle <- root("chronicle") match

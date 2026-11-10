@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.dice.RollStep
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.targeting.LostTongue
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.dice.RollStep
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.targeting.LostTongue
+import distantlands.model._
 
 object RelicThiefCard extends Denizen(DenizenId("95"), "Relic Thief", Suit.Discord) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.relic-thief"),

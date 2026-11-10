@@ -1,12 +1,12 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.RawOperationBatch
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.RawOperationBatch
 
 /** The Chronicle's card piles: the gathering pile, the newly Dispossessed,
   * the suited reserves and a lineage's starting advisers. */

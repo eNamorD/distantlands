@@ -1,8 +1,8 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
-import oathdigital.model.OathViolation._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
+import distantlands.model.OathViolation._
 
 /**
  * Builds the initial `ReadyGame` a `GameStarted` event evolves into

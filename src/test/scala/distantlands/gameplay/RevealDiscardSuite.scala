@@ -1,10 +1,10 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** Revealing the top card of a regional discard shows it to the table: a
   * discarded card has no orientation state, so only what the players know

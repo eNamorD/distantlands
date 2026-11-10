@@ -1,12 +1,12 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.catalog.Denizen
-import oathdigital.gameplay.powerresolver.Contribution
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.gameplay.powers.travel.TentsCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
+import distantlands.catalog.Denizen
+import distantlands.gameplay.powerresolver.Contribution
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.gameplay.powers.travel.TentsCard
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
 
 /** A modifier for an action no card gives one to yet: Forge, Challenge or
   * Campaign. It stands in for the future power those windows are kept for

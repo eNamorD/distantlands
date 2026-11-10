@@ -1,11 +1,11 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.{chronicle, orders}
-import oathdigital.model._
-import oathdigital.model.OathEvent.{RoundEnded, WarExhaustionResolved}
-import oathdigital.serialization.WalkerWireEvents.{assertStreamRoundTrips,
+import distantlands.gameplay.setup.FirstGameSetupFixture.{chronicle, orders}
+import distantlands.model._
+import distantlands.model.OathEvent.{RoundEnded, WarExhaustionResolved}
+import distantlands.serialization.WalkerWireEvents.{assertStreamRoundTrips,
   encodedStreamThatRoundTrips}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** Single game facts on the wire: round end, victory, state-based events and
   * the GameStarted Chronicle. */

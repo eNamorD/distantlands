@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** An ACTION that campaigns from a site other than the pawn's (catalog
   * batch 8, slice 13): Wild Allies and Captains. It pays its cost onto the

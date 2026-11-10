@@ -1,13 +1,13 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.NarrowPassSite
-import oathdigital.gameplay.powers.travel.TravelFixture
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.Commands
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.NarrowPassSite
+import distantlands.gameplay.powers.travel.TravelFixture
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Commands
 
 /** A game for consent through the service: TravelFixture's board with the
   * Narrow Pass ruled by p2. p1 is active at the Cradle's plains, and the

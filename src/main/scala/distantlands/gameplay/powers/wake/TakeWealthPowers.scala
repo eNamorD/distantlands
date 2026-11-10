@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** Take Wealth may be used once per turn at each site (batch-1 Task 6).
   *

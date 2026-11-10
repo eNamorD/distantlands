@@ -1,9 +1,9 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.{DeclaredNotes, PhasePowerCatalog,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.{DeclaredNotes, PhasePowerCatalog,
   WalkerPowerCatalog}
-import oathdigital.model.{NoteKey, NotePart, PowerId}
+import distantlands.model.{NoteKey, NotePart, PowerId}
 
 /** Every power's note templates, by power and key (power log lines design,
   * "Wording"), the name a power's notes are written under when it names

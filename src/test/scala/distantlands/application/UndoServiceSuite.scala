@@ -1,18 +1,18 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.{AncientCitySite, FairIsleSite}
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.economy.{GolemLegions, GolemLegionsCard}
-import oathdigital.gameplay.powers.recover.{CatacombsCard, RelicWorship,
+import distantlands.gameplay.cards.{AncientCitySite, FairIsleSite}
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.powers.economy.{GolemLegions, GolemLegionsCard}
+import distantlands.gameplay.powers.recover.{CatacombsCard, RelicWorship,
   RelicWorshipCard}
-import oathdigital.gameplay.powers.travel.{Tents, TentsCard}
-import oathdigital.model._
-import oathdigital.model.OathEvent.StepTakenBack
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.Commands
+import distantlands.gameplay.powers.travel.{Tents, TentsCard}
+import distantlands.model._
+import distantlands.model.OathEvent.StepTakenBack
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Commands
 
 /** Taking back command batches through the service (undo design,
   * "Rulings"). */

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.model._
 
 /** An ACTION phase power gated only by its cost. The engine pays `cost`
   * onto the power's source card and reads "payable, including the

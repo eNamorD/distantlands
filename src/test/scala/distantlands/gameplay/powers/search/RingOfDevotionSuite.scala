@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.ModifierMark
-import oathdigital.gameplay.FacedownAdviserPlay
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.whenplayed.DazzleCard
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.catalog.ModifierMark
+import distantlands.gameplay.FacedownAdviserPlay
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.whenplayed.DazzleCard
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Ring of Devotion (relic R12), a free selected Search modifier: "You may
   * discard cards to your region's discard pile instead of the next region

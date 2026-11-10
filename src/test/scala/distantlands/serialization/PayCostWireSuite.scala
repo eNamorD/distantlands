@@ -1,8 +1,8 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
-import oathdigital.serialization.WalkerWireEvents.recordedOperation
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.serialization.WalkerWireEvents.recordedOperation
+import distantlands.testkit.Unwrap.accepted
 
 class PayCostWireSuite extends munit.FunSuite:
   private val player = PlayerId("red")

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{AutomaticUse, Branch, BuildOps, CoreOperation,
+import distantlands.model.{AutomaticUse, Branch, BuildOps, CoreOperation,
   Operation, PendingTree, LeafOperation, ReadyGame, Repeat,
   RewritableComposite, Sequence}
 

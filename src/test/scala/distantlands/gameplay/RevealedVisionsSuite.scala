@@ -1,9 +1,9 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The victory read path and the Visions that qualify (catalog batch 11,
   * slices 6 and 7). */

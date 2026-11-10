@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules,
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules,
   LaterGameFixture, SetupPawnSites, SetupProcedure}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Answers, ParkedNode, Situation}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Answers, ParkedNode, Situation}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Setup's choices in a later game: l1 is the seated Chancellor, l2 a
   * Citizen and l3 an Exile; p1 goes first. */

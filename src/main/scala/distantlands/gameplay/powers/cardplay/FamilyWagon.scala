@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, PrintedPower}
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.model._
 
 object FamilyWagonCard extends Denizen(DenizenId("168"), "Family Wagon", Suit.Nomad) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.family-wagon"),

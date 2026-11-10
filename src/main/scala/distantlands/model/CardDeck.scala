@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** The four card decks a card can be drawn from or buried into.
   *

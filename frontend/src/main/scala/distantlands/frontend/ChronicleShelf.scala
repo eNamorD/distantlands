@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{ChronicleEntry, ChronicleEntryCodec}
+import distantlands.protocol.{ChronicleEntry, ChronicleEntryCodec}
 import scala.util.Try
 
 /** One stored Chronicle: the server's entry and when this browser saved it. */

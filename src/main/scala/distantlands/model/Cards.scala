@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 enum Orientation { case FaceUp, FaceDown }
 

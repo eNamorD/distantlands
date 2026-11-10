@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.gameplay.powerresolver.{ContributingPower, PhasePower}
-import oathdigital.model.PowerId
+import distantlands.gameplay.powerresolver.{ContributingPower, PhasePower}
+import distantlands.model.PowerId
 
 /** The powers printed on the banner faces, registered through this one object
-  * by [[oathdigital.gameplay.powers.PhasePowerCatalog]], like
-  * [[oathdigital.gameplay.powers.action.MovementPowers]] and the other groups.
+  * by [[distantlands.gameplay.powers.PhasePowerCatalog]], like
+  * [[distantlands.gameplay.powers.action.MovementPowers]] and the other groups.
   *
   * A banner face has no catalog entry, so the name and text a player sees for
   * each of its phase powers are declared here. The texts are the printed ones.

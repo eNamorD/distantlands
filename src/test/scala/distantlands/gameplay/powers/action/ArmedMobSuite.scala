@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
-import oathdigital.gameplay.powers.banner.YewStaffCard
-import oathdigital.gameplay.powers.rest.InsomniaCard
-import oathdigital.gameplay.powers.search.LandWardenCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, ParkedNode, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog}
+import distantlands.gameplay.powers.banner.YewStaffCard
+import distantlands.gameplay.powers.rest.InsomniaCard
+import distantlands.gameplay.powers.search.LandWardenCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, ParkedNode, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class ArmedMobSuite extends munit.FunSuite:
   import PhasePowerHarness._

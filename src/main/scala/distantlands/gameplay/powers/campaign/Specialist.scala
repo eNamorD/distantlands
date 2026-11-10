@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds}
-import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.campaign.{CampaignAnswers, CampaignIds}
+import distantlands.gameplay.powerresolver.{OptionRestriction, PowerCtx}
+import distantlands.model._
 
 object SpecialistCard extends Denizen(DenizenId("114"), "Specialist", Suit.Order):
   val power = PrintedPower(PowerId("denizen.specialist"),

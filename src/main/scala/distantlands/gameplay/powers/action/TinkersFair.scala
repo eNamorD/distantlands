@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.powers.RelicDraws
-import oathdigital.model._
+import distantlands.gameplay.powers.RelicDraws
+import distantlands.model._
 
 object TinkersFairCard extends Denizen(DenizenId("13"), "Tinker's Fair", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.tinker-s-fair"),

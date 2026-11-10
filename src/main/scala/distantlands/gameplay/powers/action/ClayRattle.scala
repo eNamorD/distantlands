@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.model._
 
 object ClayRattleCard extends Relic(RelicId("R47"), "Clay Rattle", value = 45, defense = 2):
   val power = PrintedPower(PowerId("relic.clay-rattle"),

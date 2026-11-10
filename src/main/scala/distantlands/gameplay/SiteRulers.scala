@@ -1,6 +1,6 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Who rules a site, for the powers whose reach is "the sites this card's
   * ruler rules": Toll Roads, Grasping Vines and Secret Police; a card's own

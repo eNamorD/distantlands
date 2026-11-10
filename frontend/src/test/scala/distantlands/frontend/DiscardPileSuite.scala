@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
+import distantlands.model.PlayerColor
 import Dom.all
 import TestBoardOptions.{available, recording}
 import TestSites.quietSite

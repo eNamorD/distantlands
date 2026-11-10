@@ -1,11 +1,11 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.{BrassHorseCard, FaeMerchantCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.{BrassHorseCard, FaeMerchantCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What the journaled Chronicle carries from the campaign: the live roles,
   * era scores, Oathkeeper goal and starting advisers over the baseline.

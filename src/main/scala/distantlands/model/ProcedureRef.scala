@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Stable persisted identity of a procedure whose tree is rebuilt on each
   * walker command. The operation tree itself remains command-local.

@@ -1,16 +1,16 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.gameplay.powers.campaign.ObsidianCageCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.gameplay.powers.campaign.ObsidianCageCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Stock Reliquary and Scatter Relics (CR p. 37). p1 is the Chancellor
   * holding the Throne and the Empire rules Ancient City. */

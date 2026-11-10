@@ -1,15 +1,15 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{ConsentFixture, GameAccepted,
+import distantlands.application.{ConsentFixture, GameAccepted,
   GameApplicationService, TollConsentFixture}
-import oathdigital.gameplay.cards.NarrowPassSite
-import oathdigital.gameplay.powers.travel.TravelFixture
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogEntry, LogTakenBack}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.cards.NarrowPassSite
+import distantlands.gameplay.powers.travel.TravelFixture
+import distantlands.model._
+import distantlands.protocol.projection.{LogEntry, LogTakenBack}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.{formatter, texts}
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** What the Game Log says about consent, and to whom (consent design,
   * "Game Log"). */

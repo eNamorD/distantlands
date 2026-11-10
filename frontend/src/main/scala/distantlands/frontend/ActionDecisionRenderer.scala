@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 import org.scalajs.dom
 import ServerUiSupport._
 private[frontend] object ActionDecisionRenderer:

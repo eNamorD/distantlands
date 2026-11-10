@@ -1,21 +1,21 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{RollPayload, WalkerPowers,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.powerresolver.{FoldPhase, Transform}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.powers.dice.JinxCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{RollPayload, WalkerPowers,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.Look
-import oathdigital.testkit.PowerStubs.ContributingStub
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.Look
+import distantlands.testkit.PowerStubs.ContributingStub
 
 /** Arcane Armor: a defender's plan costing X secrets, which sets X defense
   * dice to double shields at the defense roll, before the rest are rolled.

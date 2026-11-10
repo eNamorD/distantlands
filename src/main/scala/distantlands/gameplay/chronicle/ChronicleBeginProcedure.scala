@@ -1,8 +1,8 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.walker.ProcedureStart
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.walker.ProcedureStart
+import distantlands.model._
 
 /** The winner's Start Chronicle decision (Chronicle steps design, "Explicit
   * start"). The driver starts it once the game has a result, so the winner

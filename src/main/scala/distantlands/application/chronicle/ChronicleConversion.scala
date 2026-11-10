@@ -1,9 +1,9 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.setup.ChronicleAccounting
-import oathdigital.model.Chronicle
-import oathdigital.protocol.ChronicleEntry
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.setup.ChronicleAccounting
+import distantlands.model.Chronicle
+import distantlands.protocol.ChronicleEntry
 
 /** A converted Chronicle: the entry a browser keeps, and the TTS string
   * when TTS can hold the Chronicle. */

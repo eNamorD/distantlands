@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** The kind of warband a player's own warbands are: the shared Imperial kind
   * for a Citizen or Chancellor, the lineage's own Exile kind otherwise. The

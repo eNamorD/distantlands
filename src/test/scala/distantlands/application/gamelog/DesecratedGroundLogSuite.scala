@@ -1,15 +1,15 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameApplicationService,
+import distantlands.application.{GameApplicationService,
   ParkedServiceFixture, TreeDecision}
-import oathdigital.gameplay.SacredGroundCard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.model._
-import oathdigital.testkit.{Commands, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.SacredGroundCard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.model._
+import distantlands.testkit.{Commands, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
 
 /** The kept line as the Game Log shows it (catalog batch 11, ruling 31). */

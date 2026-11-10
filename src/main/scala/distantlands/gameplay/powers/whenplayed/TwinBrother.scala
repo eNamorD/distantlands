@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.gameplay.{EffectiveSuit, NoteSupport}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 object TwinBrotherCard extends Denizen(DenizenId("170"), "Twin Brother", Suit.Nomad) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.twin-brother"),

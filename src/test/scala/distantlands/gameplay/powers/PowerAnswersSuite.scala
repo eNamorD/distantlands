@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
-import oathdigital.testkit.Table.p1
+import distantlands.model._
+import distantlands.testkit.Table.p1
 
 class PowerAnswersSuite extends munit.FunSuite:
   private def chose(decision: String, key: String): Answered =

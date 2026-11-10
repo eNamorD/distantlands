@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 class NoteSetSuite extends munit.FunSuite:
   private val sentence = Vector(NotePart.Text("Took it."))

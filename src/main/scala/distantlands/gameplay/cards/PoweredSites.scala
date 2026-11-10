@@ -1,7 +1,7 @@
-package oathdigital.gameplay.cards
+package distantlands.gameplay.cards
 
-import oathdigital.catalog.Site
-import oathdigital.model.{PowerId, SiteId, Tokens}
+import distantlands.catalog.Site
+import distantlands.model.{PowerId, SiteId, Tokens}
 
 /** The thirteen sites whose power a power object runs: the Travel terrain
   * handlers (`mountain`, `island`, `coast`, `pass`) belong to

@@ -1,19 +1,19 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.cardplay.{WildCry, WildCryCard}
-import oathdigital.gameplay.powers.search.{ErrandBoyCard, NewsFromAfar,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.cardplay.{WildCry, WildCryCard}
+import distantlands.gameplay.powers.search.{ErrandBoyCard, NewsFromAfar,
   NewsFromAfarCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Outcomes, ParkedNode, PowerRules, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Outcomes, ParkedNode, PowerRules, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Search and facedown-adviser play ask for their modifiers inside the walk
   * (modifier walker design, slice 1). */

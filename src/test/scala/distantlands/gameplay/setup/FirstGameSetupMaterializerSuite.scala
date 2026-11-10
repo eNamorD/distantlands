@@ -1,7 +1,7 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** `relicOrder` is implemented-first (`ShufflePolicy.implementedFirst`):
   * site relic slots fill from its top, same as the drawable deck they are

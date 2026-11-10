@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.PlayerSecretSummary
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.PlayerSecretSummary
+import distantlands.model._
 
 object BewitchCard extends Denizen(DenizenId("67"), "Bewitch", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.bewitch"),

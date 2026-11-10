@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.VowOfKinshipCard
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.VowOfKinshipCard
+import distantlands.gameplay.powers.NoteText
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class RoyalTaxSuite extends munit.FunSuite:
   import WhenPlayedHarness._

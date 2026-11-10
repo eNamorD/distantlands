@@ -1,22 +1,22 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.{ModifierPlay, OathRules}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
-import oathdigital.gameplay.powers.search.{Disciples, DisciplesCard,
+import distantlands.gameplay.{ModifierPlay, OathRules}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import distantlands.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import distantlands.gameplay.powers.search.{Disciples, DisciplesCard,
   ErrandBoyCard, ForcedLaborCard, NewsFromAfar, NewsFromAfarCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.DecisionOptionProjection
-import oathdigital.testkit.{Outcomes, PowerStubs, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.DecisionOptionProjection
+import distantlands.testkit.{Outcomes, PowerStubs, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** What the parked source decision shows each pile as: its cost under the
   * selected modifiers, or why it cannot be searched (search source design,

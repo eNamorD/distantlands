@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+import distantlands.catalog.{Denizen, ExecutableCatalog, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powerresolver.{Deferred, OperationRewrite,
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powerresolver.{Deferred, OperationRewrite,
   Transform}
-import oathdigital.gameplay.powers.{PowerAnswers, RuledCards}
-import oathdigital.model._
+import distantlands.gameplay.powers.{PowerAnswers, RuledCards}
+import distantlands.model._
 
 object WildMountsCard extends Denizen(DenizenId("153"), "Wild Mounts", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.wild-mounts"),

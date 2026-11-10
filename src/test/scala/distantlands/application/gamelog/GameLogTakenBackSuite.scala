@@ -1,20 +1,20 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.testkit.MenuPlay
-import oathdigital.application.{GameAccepted, GameApplicationService,
+import distantlands.testkit.MenuPlay
+import distantlands.application.{GameAccepted, GameApplicationService,
   ParkedServiceFixture, TreeDecision}
-import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, DeclineDeal,
+import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, DeclineDeal,
   ProposeTerms}
-import oathdigital.protocol.projection.{LogEntry}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.protocol.projection.{LogEntry}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** What a reader sees of taken-back moves (undo design, "Game Log"). */
 class GameLogTakenBackSuite extends munit.FunSuite:

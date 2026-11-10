@@ -1,12 +1,12 @@
-package oathdigital.server
+package distantlands.server
 
-import oathdigital.model.PlayerColor
+import distantlands.model.PlayerColor
 
 import java.nio.file.Files
 
-import oathdigital.protocol._
-import oathdigital.testkit.Table.p2
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.protocol._
+import distantlands.testkit.Table.p2
+import distantlands.testkit.Unwrap.accepted
 
 class ServerRuntimeSuite extends munit.FunSuite:
   private val request = TrustedGameCreateRequest(Vector(

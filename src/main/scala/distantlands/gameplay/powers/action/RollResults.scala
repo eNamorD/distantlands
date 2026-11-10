@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Reads the outcome an automatic `Roll` wrote into state. A pool that never
   * rolled reads as zero, so a `BuildOps` that runs after a skipped roll needs

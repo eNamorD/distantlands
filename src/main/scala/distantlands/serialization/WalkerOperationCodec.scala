@@ -1,6 +1,6 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Operation spellings for recorded walker steps. `WalkerOperationWireSuite`
   * pins every spelling.

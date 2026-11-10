@@ -1,8 +1,8 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{IndexedRuleSource, RuleSourceFace, RuleSourceIndex}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{IndexedRuleSource, RuleSourceFace, RuleSourceIndex}
+import distantlands.model._
 
 /** The card a power is printed on, so the log can name a modifier or a used
   * power by its card.

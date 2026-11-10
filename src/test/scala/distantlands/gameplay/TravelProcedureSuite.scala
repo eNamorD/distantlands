@@ -1,22 +1,22 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
+import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
   DesolateShoreSite, DunesSite, FairIsleSite, NarrowPassSite, SaltFlatsSite,
   ShroudedWoodsSite}
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.travel.TravelFixture.destinationNotOffered
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation._
-import oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}
-import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, present, rejected}
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.travel.TravelFixture.destinationNotOffered
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation._
+import distantlands.gameplay.walker.{WalkerPowers, WalkerSimulation}
+import distantlands.gameplay.walker.WalkerSimulation.PreviewedOption
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, present, rejected}
 
 /** Travel on the generic walker.
   *

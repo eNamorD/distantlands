@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.cards.HomelandsAndPlains
-import oathdigital.gameplay.operations.OperationRestrictions
-import oathdigital.model.PowerId
+import distantlands.gameplay.cards.HomelandsAndPlains
+import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.model.PowerId
 
 /** Whether a power genuinely runs: it is wired into
   * `WalkerPowerCatalog` or `PhasePowerCatalog`, an

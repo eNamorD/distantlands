@@ -1,10 +1,10 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.ServerModeFixtures.withEmptyLogPage
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{BootstrapParticipantRequest, ChronicleRequest,
+import distantlands.frontend.ServerModeFixtures.withEmptyLogPage
+import distantlands.model.PlayerColor
+import distantlands.protocol.{BootstrapParticipantRequest, ChronicleRequest,
   TrustedGameCreateRequestCodec}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.testkit.Unwrap.{accepted, as, present}
 
 import munit.FunSuite
 import org.scalajs.dom

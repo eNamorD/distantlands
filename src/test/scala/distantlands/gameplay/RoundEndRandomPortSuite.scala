@@ -1,9 +1,9 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.phases.rest.RoundEndRandomPort
-import oathdigital.model.PlayerId
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.RoundEndChoices
+import distantlands.gameplay.phases.rest.RoundEndRandomPort
+import distantlands.model.PlayerId
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.RoundEndChoices
 
 /** What every `RoundEndRandomPort` promises: it picks one of the tied
   * candidates it is given, and its end die shows a face from 1 to 6. The

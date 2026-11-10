@@ -1,4 +1,4 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 final case class VisionCardPresentation(name: String, rulesText: String)
 

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The single-shield rescoring of the defense, for the plans that ignore the
   * defense dice showing a single shield (Bag of Siegeworks, Rain Boots). Each

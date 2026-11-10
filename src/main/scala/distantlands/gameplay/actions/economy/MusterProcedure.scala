@@ -1,9 +1,9 @@
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.model._
 
 /** Muster on the walker: pay one favor on a card at the pawn site and one
   * Supply, and gain a warband for each matching adviser plus one. Takes no

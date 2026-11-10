@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.{NoteSupport, VowOfKinshipCard}
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.model._
-import oathdigital.testkit.{EconomyActions, Look, PowerRules, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.{NoteSupport, VowOfKinshipCard}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.model._
+import distantlands.testkit.{EconomyActions, Look, PowerRules, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** A Vow of Kinship holder's favor lines (catalog batch 11, ruling 29):
   * they count the Nomad bank with the board, and a gain line says the

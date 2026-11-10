@@ -1,9 +1,9 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.engine.ReplayStep
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
+import distantlands.engine.ReplayStep
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
   ProcedureWalker, WalkerCompleted, WalkerParked, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.model._
 
 /** One operation of a recorded batch with the state just before and just
   * after it (spec, "Input"). */

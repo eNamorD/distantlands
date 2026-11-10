@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.model._
 
 object MemoryOfNatureCard extends Denizen(DenizenId("191"), "Memory of Nature", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.memory-of-nature"),

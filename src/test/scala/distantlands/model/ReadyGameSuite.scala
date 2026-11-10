@@ -1,6 +1,6 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.model.TestGameFixtures._
+import distantlands.model.TestGameFixtures._
 
 class ReadyGameSuite extends munit.FunSuite:
   private val second = player.copy(player = PlayerId("player-blue"),

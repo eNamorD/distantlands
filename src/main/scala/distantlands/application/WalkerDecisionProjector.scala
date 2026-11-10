@@ -1,12 +1,12 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.walker.{OptionWarnings, ProcedureWalker,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.walker.{OptionWarnings, ProcedureWalker,
   WalkerPowers, WalkerProcedureRegistry, WalkerSimulation}
-import oathdigital.model._
-import oathdigital.protocol.projection.{CardDetailsProjection,
+import distantlands.model._
+import distantlands.protocol.projection.{CardDetailsProjection,
   CountedConfirmProjection, DecisionOptionProjection, DecisionQueryProjection,
   DecisionSectionProjection, DecisionSlotProjection, DecisionSummaryProjection,
   DecisionTallyProjection, DecisionTallyValueProjection,
@@ -16,7 +16,7 @@ import oathdigital.protocol.projection.{CardDetailsProjection,
 /** Projects a parked generic-walker position (`CurrentGameState.walkerPending`
   * + `walkerProcedure`, Task 6) into the small owner-private
   * [[WalkerDecisionProjection]]. The tree rebuild below dispatches through
-  * [[oathdigital.gameplay.walker.WalkerProcedureRegistry]] (Task 8) -- the
+  * [[distantlands.gameplay.walker.WalkerProcedureRegistry]] (Task 8) -- the
   * same keyed lookup `OathRules.buildWalker` resumes through -- rather than
   * matching on [[ProcedureRef]] itself, so this projector needs no edit when
   * a second procedure registers.

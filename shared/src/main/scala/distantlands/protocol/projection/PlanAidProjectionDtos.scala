@@ -1,4 +1,4 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 /** An Imperial ally's view of another Imperial player's open plan window
   * (Empire phase design, "Offer panel"): what they may offer, drawn as

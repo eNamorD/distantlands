@@ -1,10 +1,10 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.PowerStubs.{RestrictionStub, TransformStub}
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.PowerStubs.{RestrictionStub, TransformStub}
 
 /** The restriction traversal selects a `Branch` with the answers recorded so
   * far, so a Restriction hooked inside a subtree that only exists once a

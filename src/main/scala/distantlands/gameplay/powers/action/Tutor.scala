@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.model._
 
 object TutorCard extends Denizen(DenizenId("69"), "Tutor", Suit.Arcane) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.tutor"),

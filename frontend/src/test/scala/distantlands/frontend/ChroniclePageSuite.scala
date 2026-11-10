@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.ChronicleFixtures.{convertingTransport, entry}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.frontend.ChronicleFixtures.{convertingTransport, entry}
+import distantlands.testkit.Unwrap.{accepted, as, present}
 import org.scalajs.dom
 import scala.collection.mutable.ArrayBuffer
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue

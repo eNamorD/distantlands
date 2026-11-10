@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{ChronicleConvertRequest,
+import distantlands.protocol.{ChronicleConvertRequest,
   ChronicleConvertRequestCodec, ChronicleConvertResponse,
   ChronicleConvertResponseCodec, ChronicleEntry}
 import scala.concurrent.Future

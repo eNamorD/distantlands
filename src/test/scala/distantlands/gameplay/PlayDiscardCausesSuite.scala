@@ -1,9 +1,9 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission}
-import oathdigital.gameplay.actions.cardplay.PlayDiscardCauses
-import oathdigital.model._
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.actions.{CardPlayRules, DiscardPermission}
+import distantlands.gameplay.actions.cardplay.PlayDiscardCauses
+import distantlands.model._
+import distantlands.testkit.Table.p1
 
 /** The causes of a card play's discards (catalog batch 11, rulings 20 and
   * 22). */

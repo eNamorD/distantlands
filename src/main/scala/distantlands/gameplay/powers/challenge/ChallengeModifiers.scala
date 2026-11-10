@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.challenge
+package distantlands.gameplay.powers.challenge
 
-import oathdigital.catalog.{Denizen, Relic}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.challenge.{ChallengeReach,
+import distantlands.catalog.{Denizen, Relic}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.challenge.{ChallengeReach,
   MagiciansCodeCard, SchoolOfVinesCard, SigilOfTheEyeCard,
   SigilOfTheHeartCard}
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, OfferReason, OnEdificeFace, PowerCtx, PowerUse}
-import oathdigital.gameplay.powers.{CatalogResolution, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, SelectedModifier}
+import distantlands.model._
 
 /** The Challenge modifiers (catalog batch 10, slice 11). A pick is the
   * whole effect: the Challenge reads it ([[ChallengeReach]]), so none hooks

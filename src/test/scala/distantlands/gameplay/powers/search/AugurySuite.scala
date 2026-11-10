@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.SearchPlay
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.SearchPlay
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class AugurySuite extends munit.FunSuite:
   import PowerFixture._

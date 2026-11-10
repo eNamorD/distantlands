@@ -1,12 +1,12 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations._
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations._
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class PayCostSettlementSuite extends munit.FunSuite:
   private val active = p1

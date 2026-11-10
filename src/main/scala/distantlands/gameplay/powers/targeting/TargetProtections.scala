@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The persistent rules that keep a player, or what they hold, from being
   * targeted by a Raid, a Challenge or a Conspiracy, campaigned against, or

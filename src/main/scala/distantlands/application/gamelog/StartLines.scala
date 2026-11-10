@@ -1,13 +1,13 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.walker.{ChoicePayload, ProcedureDequeued,
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.walker.{ChoicePayload, ProcedureDequeued,
   WalkerCompleted, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogKind, LogSpan}
+import distantlands.model._
+import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
 
 /** The tag that opens every action that can take modifiers (log action

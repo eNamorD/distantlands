@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent => Intent,
+import distantlands.protocol.{DecisionAnswerWire, GameIntent => Intent,
   NegotiationTerms, NegotiationTransfer}
-import oathdigital.protocol.projection.NegotiationCitizenshipProjection
-import oathdigital.testkit.Unwrap.as
+import distantlands.protocol.projection.NegotiationCitizenshipProjection
+import distantlands.testkit.Unwrap.as
 import ParkedDecision.Surface
 import org.scalajs.dom
 
@@ -184,8 +184,8 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
     assertEquals(ui.submitted, Vector[Intent](Intent.ResolveWalker(
       "negotiation.deal", DecisionAnswerWire.ProposeTermsWire(NegotiationTerms(
         Vector(NegotiationTransfer("blue", 0, Vector.empty)),
-        Vector(oathdigital.protocol.NegotiationDisclosure("blue",
-          oathdigital.protocol.NegotiationInformation.SiteRelic(
+        Vector(distantlands.protocol.NegotiationDisclosure("blue",
+          distantlands.protocol.NegotiationInformation.SiteRelic(
             "site:broken-peaks", "R3"))))))))
 
   private val secretRelic = CardDetails("r2", "relic", "Secret Relic",

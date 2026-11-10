@@ -1,10 +1,10 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.campaign.ObsidianCageCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.protocol.projection.SiteForcesProjection
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.campaign.ObsidianCageCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.protocol.projection.SiteForcesProjection
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** Warbands standing on a card (Obsidian Cage) reach the table on the
   * card's details, one entry per force, in its owner's colour. */

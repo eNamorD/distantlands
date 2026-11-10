@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, SpendableFavor}
-import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds,
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.{NoteSupport, SpendableFavor}
+import distantlands.gameplay.actions.campaign.{CampaignAnswers, CampaignIds,
   CampaignSetup, PlanAid}
-import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{OptionRestriction, PowerCtx}
+import distantlands.model._
 
 object PeaceEnvoyCard extends Denizen(DenizenId("125"), "Peace Envoy", Suit.Order):
   val power = PrintedPower(PowerId("denizen.peace-envoy"),

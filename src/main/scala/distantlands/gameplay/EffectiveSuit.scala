@@ -1,9 +1,9 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   ModifierMark, PrintedPower, Relic}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.model._
 
 object MarriageCard extends Denizen(DenizenId("148"), "Marriage", Suit.Hearth) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.marriage"),

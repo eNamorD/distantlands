@@ -1,8 +1,8 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import oathdigital.gameplay.{CardRule, SiteRulers}
-import oathdigital.model._
+import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import distantlands.gameplay.{CardRule, SiteRulers}
+import distantlands.model._
 
 object HallOfMinistersCard extends Edifice(EdificeId("E16"), Suit.Order):
   object intact extends EdificeFace("Hall of Ministers") with Locked:

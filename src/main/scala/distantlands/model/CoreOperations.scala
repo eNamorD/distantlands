@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Core operations occurring in a game of Oath.
   *

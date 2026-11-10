@@ -1,8 +1,8 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.model._
-import oathdigital.protocol.projection.{Die, DieFace, LogKind, LogSpan}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.model._
+import distantlands.protocol.projection.{Die, DieFace, LogKind, LogSpan}
 import LogScripts._
 
 class GameLogDetailSuite extends munit.FunSuite:

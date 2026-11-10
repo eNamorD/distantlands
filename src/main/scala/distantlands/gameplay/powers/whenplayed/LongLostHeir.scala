@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.model._
 
 object LongLostHeirCard extends Denizen(DenizenId("44"), "Long-Lost Heir", Suit.Beast) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.long-lost-heir"),

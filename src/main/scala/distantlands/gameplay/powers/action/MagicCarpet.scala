@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 object MagicCarpetCard extends Relic(RelicId("R39"), "Magic Carpet", value = 51, defense = 1):
   val power = PrintedPower(PowerId("relic.magic-carpet"),

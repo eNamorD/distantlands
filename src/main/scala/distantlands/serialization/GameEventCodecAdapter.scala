@@ -1,7 +1,7 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.application.{DecodedGameEvent, EventCodecFailure, GameEventCodec}
-import oathdigital.model.OathEvent
+import distantlands.application.{DecodedGameEvent, EventCodecFailure, GameEventCodec}
+import distantlands.model.OathEvent
 
 final class GameEventCodecAdapter extends GameEventCodec:
   def decodeStream(json: String) = GameEventWire.decodeStream(json)

@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.powerresolver.Deferred
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerCompleted}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Outcomes, RecordedOps}
-import oathdigital.testkit.Outcomes.{finished, parked, recorded}
-import oathdigital.testkit.ProcedureWalkerFixture._
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.WalkerStubs.continueOption
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.powerresolver.Deferred
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerCompleted}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Outcomes, RecordedOps}
+import distantlands.testkit.Outcomes.{finished, parked, recorded}
+import distantlands.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.WalkerStubs.continueOption
 
 /** Deferral (operation rewrite design): `Defer` and `TakeDeferred` through
   * the pipeline, the walker dropping what is held when the action ends, and

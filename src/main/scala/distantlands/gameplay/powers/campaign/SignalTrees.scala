@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+import distantlands.catalog.{Denizen, ExecutableCatalog, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.model._
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import distantlands.model._
 
 object SignalTreesCard extends Denizen(DenizenId("217"), "Signal Trees",
     Suit.Beast):

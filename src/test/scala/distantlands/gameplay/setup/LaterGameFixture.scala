@@ -1,7 +1,7 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.application.{ChronicleFirstGamePlan, FirstGameBootstrapConfig}
-import oathdigital.model._
+import distantlands.application.{ChronicleFirstGamePlan, FirstGameBootstrapConfig}
+import distantlands.model._
 
 /** A later game's Chronicle built on [[FirstGameSetupFixture]]'s: its first
   * `world` atlas sites become the Empire's, each with one stored denizen

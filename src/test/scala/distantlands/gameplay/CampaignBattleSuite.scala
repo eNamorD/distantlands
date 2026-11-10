@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.campaign.CampaignBattle
-import oathdigital.model._
+import distantlands.gameplay.actions.campaign.CampaignBattle
+import distantlands.model._
 
 class CampaignBattleSuite extends munit.FunSuite:
   import AttackDieFace._

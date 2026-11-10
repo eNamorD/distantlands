@@ -1,4 +1,4 @@
-package oathdigital.serialization
+package distantlands.serialization
 
 
 sealed trait WireError extends Product with Serializable:

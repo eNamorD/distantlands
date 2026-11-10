@@ -1,8 +1,8 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model.{DenizenId, EdificeId, PowerId, RelicId, Suit}
+import distantlands.catalog.{ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model.{DenizenId, EdificeId, PowerId, RelicId, Suit}
 
 /**
  * Which catalog cards have every printed power implemented (2026-09-21

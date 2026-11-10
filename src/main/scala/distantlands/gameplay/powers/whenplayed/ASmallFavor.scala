@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 object ASmallFavorCard extends Denizen(DenizenId("15"), "A Small Favor", Suit.Discord) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.a-small-favor"),

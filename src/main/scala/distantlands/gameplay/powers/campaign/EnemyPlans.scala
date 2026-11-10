@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{EffectiveSuit, PowerAccess}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{EffectiveSuit, PowerAccess}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** What the adviser rules against an enemy's battle plans share (Beast
   * Tamer, True Names): the faceup holder, when they are the enemy of the

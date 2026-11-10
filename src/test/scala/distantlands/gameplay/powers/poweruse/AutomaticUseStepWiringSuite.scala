@@ -1,23 +1,23 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerUse, PowerUseRefusal, PowerUseRestriction, PowerUseStep}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.economy.{VowOfBeastkin,
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.economy.{VowOfBeastkin,
   VowOfWanderingMuster}
-import oathdigital.gameplay.powers.travel.{Hospitality, Tyrant}
-import oathdigital.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
+import distantlands.gameplay.powers.travel.{Hospitality, Tyrant}
+import distantlands.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
   ThreateningRoar, ThreateningRoarCard}
-import oathdigital.gameplay.walker.{ParkedUses, LogNoted, ProcedureWalker,
+import distantlands.gameplay.walker.{ParkedUses, LogNoted, ProcedureWalker,
   WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{AppendedAutomaticUses, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.testkit.{AppendedAutomaticUses, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Every wrapped automatic power waits at its own step when only a
   * waivable refusal stops it, and stays deactivated by a refusal

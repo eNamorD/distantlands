@@ -1,8 +1,8 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.campaign.ShieldWallCard
-import oathdigital.model._
-import oathdigital.protocol.{GameIntent, WalkerStartArgWire}
+import distantlands.gameplay.powers.campaign.ShieldWallCard
+import distantlands.model._
+import distantlands.protocol.{GameIntent, WalkerStartArgWire}
 
 /** The Imperial Tactics intent maps to the offer it carries (Empire phase
   * design, "1b-ii"); the transport binds its sender as the ally. */

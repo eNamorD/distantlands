@@ -1,10 +1,10 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.ChronicleFixtures.{entry, seatLinksResponse}
-import oathdigital.frontend.ServerModeFixtures.withEmptyLogPage
-import oathdigital.protocol.{ChronicleRequest, ChronicleScore,
+import distantlands.frontend.ChronicleFixtures.{entry, seatLinksResponse}
+import distantlands.frontend.ServerModeFixtures.withEmptyLogPage
+import distantlands.protocol.{ChronicleRequest, ChronicleScore,
   TrustedGameCreateRequestCodec}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.testkit.Unwrap.{accepted, as, present}
 import org.scalajs.dom
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.{Future, Promise}

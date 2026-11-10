@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.NoteSupport
+import distantlands.model._
 
 object DemonTailCard extends Relic(RelicId("R46"), "Demon Tail", value = 69, defense = 1):
   val power = PrintedPower(PowerId("relic.demon-tail"),

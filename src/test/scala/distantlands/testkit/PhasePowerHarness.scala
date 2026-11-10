@@ -1,16 +1,16 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.operations.OperationRestrictions
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
-import oathdigital.model._
-import oathdigital.protocol.projection.{DecisionQueryProjection, PlayerBoardProjection}
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
+import distantlands.model._
+import distantlands.protocol.projection.{DecisionQueryProjection, PlayerBoardProjection}
 
 /** Drives a phase power through the rules for a rule test: the power suites
   * of every phase, and the projection suites that read what a parked power

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powerresolver.PhasePower
 
-/** The phase powers of slice 1b, registered by [[oathdigital.gameplay.powers.PhasePowerCatalog]]
+/** The phase powers of slice 1b, registered by [[distantlands.gameplay.powers.PhasePowerCatalog]]
   * through this one object so that later slices add their own group without
   * editing the same lines.
   */

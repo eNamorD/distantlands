@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 object InsomniaCard extends Denizen(DenizenId("97"), "Insomnia", Suit.Discord) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.insomnia"),
@@ -20,7 +20,7 @@ object InsomniaCard extends Denizen(DenizenId("97"), "Insomnia", Suit.Discord) w
   * as well the limit stays 2. The limit writes no line, as for Silver Tongue.
   *
   * The REST power is an optional
-  * [[oathdigital.gameplay.powerresolver.PhasePower]], once per turn, which the
+  * [[distantlands.gameplay.powerresolver.PhasePower]], once per turn, which the
   * engine enforces. Its line, "{Red} gained 1 secret.", restates the gain in
   * place of the generic gain line, as Tutor's does.
   */

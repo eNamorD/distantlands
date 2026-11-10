@@ -1,8 +1,8 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 object AncientBloodlineCard extends Denizen(DenizenId("165"), "Ancient Bloodline", Suit.Nomad) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.ancient-bloodline"),

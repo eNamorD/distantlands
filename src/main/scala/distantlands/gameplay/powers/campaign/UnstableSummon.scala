@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignProcedure, PlanAmounts}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.campaign.{CampaignProcedure, PlanAmounts}
+import distantlands.model._
 
 object UnstableSummonCard extends Denizen(DenizenId("225"),
     "Unstable Summon", Suit.Discord):

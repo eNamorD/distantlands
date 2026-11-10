@@ -1,8 +1,8 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{DenizenId, EdificeId, PowerId, RelicId, Suit}
-import oathdigital.testkit.TestCards
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.{DenizenId, EdificeId, PowerId, RelicId, Suit}
+import distantlands.testkit.TestCards
 
 class ImplementedCardCatalogSuite extends munit.FunSuite:
   private val implemented: PowerId => Boolean = Set(

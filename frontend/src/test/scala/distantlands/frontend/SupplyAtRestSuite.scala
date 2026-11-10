@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.TestBoards.*
-import oathdigital.model.PlayerColor
+import distantlands.frontend.TestBoards.*
+import distantlands.model.PlayerColor
 
 /** What a board's Supply figure says on hover and opens. */
 class SupplyAtRestSuite extends munit.FunSuite:

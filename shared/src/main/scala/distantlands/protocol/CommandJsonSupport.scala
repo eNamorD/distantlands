@@ -1,4 +1,4 @@
-package oathdigital.protocol
+package distantlands.protocol
 
 /** Command-side JSON primitives. `obj`, `field` and `array` are the
   * projection codecs' primitives; `exact` and `string` differ on purpose:

@@ -1,13 +1,13 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameApplicationService,
+import distantlands.application.{GameApplicationService,
   InMemoryEventStreamRepository}
-import oathdigital.gameplay.powers.setup.GreatClockCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.setup.LaterGameFixture
-import oathdigital.model._
-import oathdigital.testkit.{Dice, Look, Situation}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.setup.GreatClockCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.LaterGameFixture
+import distantlands.model._
+import distantlands.testkit.{Dice, Look, Situation}
+import distantlands.testkit.Table.p1
 
 /** [[LogScripts]]' scripts for a later game. */
 object LaterGameLogScripts:

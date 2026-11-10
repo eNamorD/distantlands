@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.gameplay.CampaignFixture.{on, raidBoard, rules}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver.{commit, winningDice}
-import oathdigital.gameplay.powers.targeting.TargetingFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.CampaignFixture.{on, raidBoard, rules}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver.{commit, winningDice}
+import distantlands.gameplay.powers.targeting.TargetingFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class SecretTestamentSuite extends munit.FunSuite:
   private val testament = SecretTestamentCard.id

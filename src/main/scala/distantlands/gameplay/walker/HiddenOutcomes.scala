@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Draw, Flip, Operation, Orientation, Peek, Reroll,
+import distantlands.model.{Draw, Flip, Operation, Orientation, Peek, Reroll,
   Reveal, Roll, Shuffle}
 
 /** Operations that show a player something the chooser cannot see yet:

@@ -1,4 +1,4 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 /** Every entry with `sequence >= after`, formatted for one seat, and the
   * cursor to ask with next time. */

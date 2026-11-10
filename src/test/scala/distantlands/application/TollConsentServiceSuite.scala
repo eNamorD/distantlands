@@ -1,15 +1,15 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.PayOrAsk
-import oathdigital.gameplay.powers.travel.{TollRoads, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathEvent.ConsentAnswered
-import oathdigital.protocol.projection._
-import oathdigital.testkit.{Look, Outcomes}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.Commands
+import distantlands.gameplay.powers.PayOrAsk
+import distantlands.gameplay.powers.travel.{TollRoads, TravelFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathEvent.ConsentAnswered
+import distantlands.protocol.projection._
+import distantlands.testkit.{Look, Outcomes}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Commands
 
 /** Asking a toll's ruler to travel without paying, through the service
   * (consent design, "Toll and penalty steps", rulings 7 and 10 to 13). */

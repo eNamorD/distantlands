@@ -1,6 +1,6 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 final case class PlayerSecretSummary(available: Int, facedown: Int, committed: Int):
   require(available >= 0 && facedown >= 0 && committed >= 0,

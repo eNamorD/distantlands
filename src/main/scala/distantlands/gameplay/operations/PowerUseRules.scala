@@ -1,9 +1,9 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
   PowerUseRestriction}
-import oathdigital.model._
+import distantlands.model._
 
 /** The power-use filter (catalog batch 8, slice 10): the refusals a use
   * meets, with consent applied, and how an option for a refused use is

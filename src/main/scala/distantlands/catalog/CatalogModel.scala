@@ -1,6 +1,6 @@
-package oathdigital.catalog
+package distantlands.catalog
 
-import oathdigital.model.{CardId, DenizenId, EdificeId, LegacyId,
+import distantlands.model.{CardId, DenizenId, EdificeId, LegacyId,
   PowerId, RelicId, SiteId, Suit}
 
 /**

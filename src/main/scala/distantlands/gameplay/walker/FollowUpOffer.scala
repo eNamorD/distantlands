@@ -1,10 +1,10 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.model._
 
 /** A follow-up entry's question (walker-driven game loop design, ruling 6):
   * the action, for no Supply, or Skip. The driver starts it once it has

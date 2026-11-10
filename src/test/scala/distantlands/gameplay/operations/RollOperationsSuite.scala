@@ -1,7 +1,7 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** `Reroll`: rerolled faces replace the old ones in place, and the skulls
   * and score are worked out again (catalog batch 7, slice 1). */

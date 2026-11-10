@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /**
  * Up to three ordered items in storage at a site: denizens, relics or an

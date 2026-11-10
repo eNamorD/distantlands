@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 object RowdyPubCard extends Denizen(DenizenId("144"), "Rowdy Pub", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.rowdy-pub"),

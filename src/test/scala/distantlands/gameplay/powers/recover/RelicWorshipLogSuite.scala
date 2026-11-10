@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.application.gamelog.LogScripts
-import oathdigital.application.gamelog.LogScripts._
-import oathdigital.testkit.Table.p1
+import distantlands.application.gamelog.LogScripts
+import distantlands.application.gamelog.LogScripts._
+import distantlands.testkit.Table.p1
 
 /** A Recover with a power hooked at `RecoverAfterRelic`, read as the Game
   * Log shows it. Relic Worship appends its Supply gain to the node the

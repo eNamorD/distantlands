@@ -1,6 +1,6 @@
-package oathdigital.protocol
+package distantlands.protocol
 
-import oathdigital.testkit.Unwrap.rejected
+import distantlands.testkit.Unwrap.rejected
 
 class CommandProtocolSuite extends munit.FunSuite:
   import GameIntent._

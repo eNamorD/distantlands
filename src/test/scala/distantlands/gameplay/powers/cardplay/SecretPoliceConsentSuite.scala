@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.{CardPlayProcedure, CardSlots}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture,
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.{CardPlayProcedure, CardSlots}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.ConsentAskProjection
-import oathdigital.testkit.{PhasePowerHarness, PlacementPicks, Table}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.ConsentAskProjection
+import distantlands.testkit.{PhasePowerHarness, PlacementPicks, Table}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Which faceup plays Secret Police makes askable (consent design, ruling 1
   * and slice 3): an enemy at a site the Police's ruler rules may ask that

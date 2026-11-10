@@ -1,11 +1,11 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.protocol.projection.{LogKind, LogPageCodec}
-import oathdigital.server.{DevelopmentRoutes, GameGateway}
-import oathdigital.testkit.HttpTestServer
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.protocol.projection.{LogKind, LogPageCodec}
+import distantlands.server.{DevelopmentRoutes, GameGateway}
+import distantlands.testkit.HttpTestServer
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class GameLogRouteSuite extends munit.FunSuite:
   test("the projector pages the log after a sequence, and refuses past the end"):

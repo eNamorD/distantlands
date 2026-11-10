@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Taking a relic from a site, as Barbed Net and Skeleton Key do.
   *

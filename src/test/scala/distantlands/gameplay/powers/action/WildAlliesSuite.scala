@@ -1,18 +1,18 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite,
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite,
   DesolateShoreSite}
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog,
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.powers.poweruse.{CityWall, CityWallCard}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   ParkedNode, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Wild Allies (card 198): "ACTION: Campaign at any site with a Beast
   * card. Act as if your pawn is there. Spend no Supply and add your
@@ -83,7 +83,7 @@ class WildAlliesSuite extends munit.FunSuite:
 
   test("a Beast edifice and the pawn's own site count, and a facedown " +
       "Beast does not"):
-    val spring = oathdigital.gameplay.powers.economy.HallowedSpringCard.id
+    val spring = distantlands.gameplay.powers.economy.HallowedSpringCard.id
     val ready = alliesWithABeastSiteHoldingTheRival
       .edifice(spring, EdificeSide.Intact, at = home)
       .denizen(WolvesCard.id, at = lonely, facedown = true)

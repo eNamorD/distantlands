@@ -1,4 +1,4 @@
-package oathdigital.protocol
+package distantlands.protocol
 
 /** The Chronicle entry a browser keeps (Chronicle browsing design,
   * "Summary"). */

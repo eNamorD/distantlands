@@ -1,9 +1,9 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.SpendableFavor
-import oathdigital.gameplay.powerresolver.{PhasePowers, QueuedStarts}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.SpendableFavor
+import distantlands.gameplay.powerresolver.{PhasePowers, QueuedStarts}
+import distantlands.model._
 
 /** Whether a queued entry would start now, and what it would cost
   * (walker-driven game loop design, ruling 8; slice 4, plan-time rulings 1

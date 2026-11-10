@@ -1,10 +1,10 @@
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay.cards.{DeepWoodsSite, DunesSite, FairIsleSite}
-import oathdigital.gameplay.oathkeeper.OathkeeperOutcome._
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.cards.{DeepWoodsSite, DunesSite, FairIsleSite}
+import distantlands.gameplay.oathkeeper.OathkeeperOutcome._
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class OathkeeperRulesSuite extends munit.FunSuite:
   /** Each of `rulers` rules one site with a warband: the first Dunes, the

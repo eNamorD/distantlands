@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** The draft set (CONTEXT.md): everything a viewer has staged at the table
   * and not yet sent. One immutable value, bound to one game, seat and

@@ -1,23 +1,23 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.MessengerCard
-import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, MercenariesCard,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.MessengerCard
+import distantlands.gameplay.powers.campaign.{CodeOfHonorCard, MercenariesCard,
   ShieldWallCard, WrestlersCard}
-import oathdigital.testkit.MenuPlay
-import oathdigital.application.{GameProjector, LoadedGame,
+import distantlands.testkit.MenuPlay
+import distantlands.application.{GameProjector, LoadedGame,
   TreeDecision}
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.walker.{FollowUpOffer, FollowUpSkipped}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.{Situation, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Commands
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.walker.{FollowUpOffer, FollowUpSkipped}
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.protocol.projection.DecisionQueryProjection
+import distantlands.testkit.{Situation, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Commands
 
 /** Hunting Party (card 122): after a Search of the world deck, a Campaign is
   * owed, spending no Supply; a discard pile warns and stays choosable
@@ -46,11 +46,11 @@ class HuntingPartySuite extends munit.FunSuite:
     * decision is answered by default. */
   private def offeredAfter(pile: SearchSource, selected: Vector[PowerId])
       : Option[QueuedProcedure] =
-    val source: oathdigital.testkit.Answers = {
+    val source: distantlands.testkit.Answers = {
       case park if park.decisionId == SearchProcedure.sourceDecisionId =>
         ChooseOneAnswer(SearchSource.ref(pile))
     }
-    val skipOffer: oathdigital.testkit.Answers = {
+    val skipOffer: distantlands.testkit.Answers = {
       case park if park.decisionId == FollowUpOffer.decisionId =>
         ChooseOneAnswer(FollowUpOffer.skip)
     }

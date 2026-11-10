@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
 import scala.util.chaining.scalaUtilChainingOps
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.walker.LogNoted
-import oathdigital.model._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.walker.LogNoted
+import distantlands.model._
 
 /** A phase power's notes as plain sentences, for the card suites (power log
   * lines design, "Tests"). Arguments read plainly: a player, card or site by

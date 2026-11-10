@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.GrandMaskCard
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.gameplay.GrandMaskCard
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 /** Grand Mask (R05): "If you're an Exile, during your turn you rule cards
   * except battle plans at Imperial sites, and Imperial players do not."

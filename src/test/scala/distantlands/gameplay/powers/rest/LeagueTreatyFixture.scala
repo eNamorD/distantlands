@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.{Denizen, Site}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.catalog.{Denizen, Site}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** League Treaty staged on p1's Act, shared with the pending-walker
   * invariant (Task 13).

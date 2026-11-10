@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.{PowerAnswers, WarbandArrangement}
-import oathdigital.gameplay.powers.economy.VowOfWandering
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powers.{PowerAnswers, WarbandArrangement}
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.model._
 
 object MessengerCard extends Denizen(DenizenId("105"), "Messenger", Suit.Order):
   val power = PrintedPower(PowerId("denizen.messenger"),

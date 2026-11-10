@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Restriction icons govern how a card is played, moved and swapped
   * (catalog batch 4 design, "The restriction-icon rule"). A `Move` that

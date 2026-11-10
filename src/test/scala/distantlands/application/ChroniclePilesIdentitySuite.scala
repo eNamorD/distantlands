@@ -1,9 +1,9 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** Who may identify a card in the gathering pile or among a lineage's
   * starting advisers (Chronicle World and Beacon plan, Task 1). */

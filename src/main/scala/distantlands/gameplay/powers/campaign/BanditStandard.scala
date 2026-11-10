@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.model._
 
 object BanditStandardCard extends Relic(RelicId("R30"), "Bandit Standard", value = 55, defense = 3):
   val power = PrintedPower(PowerId("relic.bandit-standard"),

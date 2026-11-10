@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.PledgeToDiscordCard
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.{EldersCard, HomesteadersCard}
-import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
-import oathdigital.gameplay.powers.search.LandWardenCard
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.PartitionAnswer
-import oathdigital.testkit.{Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.PledgeToDiscordCard
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.{EldersCard, HomesteadersCard}
+import distantlands.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import distantlands.gameplay.powers.search.LandWardenCard
+import distantlands.model._
+import distantlands.model.DecisionAnswer.PartitionAnswer
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Family Wagon beside Pledge to Discord (catalog batch 8 rulings, slice
   * 8): what goes whatever the order is buried at once, then the active

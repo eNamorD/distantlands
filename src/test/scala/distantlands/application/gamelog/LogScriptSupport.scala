@@ -1,17 +1,17 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application._
-import oathdigital.engine.{RecordedEvent, ReplayStep}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.application._
+import distantlands.engine.{RecordedEvent, ReplayStep}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{DeltaPayload, LogNoted, ProcedureWalker,
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{DeltaPayload, LogNoted, ProcedureWalker,
   WalkerCompleted, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogEntry, LogSpan}
-import oathdigital.testkit.{Dice, Look, MenuPlay, Situation, Step, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.model._
+import distantlands.protocol.projection.{LogEntry, LogSpan}
+import distantlands.testkit.{Dice, Look, MenuPlay, Situation, Step, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What every log script and log suite leans on: the table the scripts
   * begin at, the formatter the suites read lines through, the helpers that

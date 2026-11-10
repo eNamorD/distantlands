@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.action.AlchemistCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{EconomyActions, Look, PhasePowerHarness, PowerRules,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.powers.action.AlchemistCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{EconomyActions, Look, PhasePowerHarness, PowerRules,
   Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class SkilledMerchantsSuite extends munit.FunSuite:
   private val merchants = SkilledMerchantsCard.id

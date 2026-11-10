@@ -1,9 +1,9 @@
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.walker.{ModifierChoice, PricedOptions,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.walker.{ModifierChoice, PricedOptions,
   WalkerPowers}
-import oathdigital.model._
+import distantlands.model._
 
 /** The tree Muster and Trade share (modifier walker design for its first
   * node):

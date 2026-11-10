@@ -1,11 +1,11 @@
-package oathdigital.serialization
+package distantlands.serialization
 
 import scala.util.control.NonFatal
 
-import oathdigital.gameplay.walker.{ActionBoundaryRan, ChoicePayload,
+import distantlands.gameplay.walker.{ActionBoundaryRan, ChoicePayload,
   DeltaPayload, FollowUpSkipped, LogNoted, ProcedureDequeued, RollPayload,
   WalkerCompleted, WalkerParked, WalkerStepPayload, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.model._
 
 /** Wire vocabulary for generic walker journal facts. */
 private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:

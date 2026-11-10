@@ -1,6 +1,6 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.*
+import distantlands.application.*
 
 /** Stub of IdentityRepository: every operation fails the test, so a test
   * overrides exactly the operations the code under test is expected to call

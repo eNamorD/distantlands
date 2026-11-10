@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** What one power, game rule or procedure says about its own effect, for
   * the Game Log (power log lines design, section 1; procedures journal their
@@ -26,7 +26,7 @@ object NoteArg:
   /** Several cards as one phrase, "Tinker, 2 Denizens and a Vision". Each
     * card still passes the log's knowledge rule. */
   final case class Cards(ids: Vector[CardId]) extends NoteArg
-  final case class Banner(banner: oathdigital.model.Banner) extends NoteArg
+  final case class Banner(banner: distantlands.model.Banner) extends NoteArg
   /** "world deck" or "Cradle discard pile". The template supplies the
     * article. */
   final case class Pile(pile: SearchSource) extends NoteArg
@@ -72,7 +72,7 @@ object NoteThing:
   /** A player's pawn, "Blue's pawn". */
   final case class Pawn(player: PlayerId) extends NoteThing
   final case class Card(id: CardId) extends NoteThing
-  final case class Banner(banner: oathdigital.model.Banner) extends NoteThing
+  final case class Banner(banner: distantlands.model.Banner) extends NoteThing
 
 /** `key` is the wire spelling. */
 enum NoteUnit(val key: String, val one: String, val many: String):

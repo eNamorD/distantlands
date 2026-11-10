@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.all
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.GameIntent
-import oathdigital.protocol.projection.PlanAidOfferProjection
+import distantlands.frontend.Dom.all
+import distantlands.model.PlayerColor
+import distantlands.protocol.GameIntent
+import distantlands.protocol.projection.PlanAidOfferProjection
 import org.scalajs.dom
 
 /** The offer panel an Imperial ally builds (Empire phase design, "Offer

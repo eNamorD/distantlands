@@ -1,19 +1,19 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.economy.KnightsErrantCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{FollowUpOffer, FollowUpSkipped,
+import distantlands.gameplay.powers.economy.KnightsErrantCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{FollowUpOffer, FollowUpSkipped,
   ProcedureDequeued, WalkerCompleted}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Outcomes, ParkedNode, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Outcomes, ParkedNode, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** The follow-up offer (walker-driven game loop design, ruling 6): the
   * driver dequeues an entry and asks its actor, who takes the action for no

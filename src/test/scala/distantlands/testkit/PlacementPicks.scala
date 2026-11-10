@@ -1,11 +1,11 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
 
 /** A card play's placement answer, picked by how it plays the card. A test
   * says "play it faceup"; which option of the placement decision does that is

@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** "You're victorious now" (Peace Envoy and Hearts and Minds):
   * a used plan decides the battle for its user's side. Nothing is rolled

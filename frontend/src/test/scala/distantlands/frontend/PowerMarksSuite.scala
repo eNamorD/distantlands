@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.all
-import oathdigital.protocol.projection.ModifierMarkProjection
+import distantlands.frontend.Dom.all
+import distantlands.protocol.projection.ModifierMarkProjection
 import org.scalajs.dom
 
 /** The printed marks drawn as glyphs: a restriction banner over the whole

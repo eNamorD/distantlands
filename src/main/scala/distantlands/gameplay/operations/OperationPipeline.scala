@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 final case class SkippedOperation(requested: CoreOperation,
     reasons: Vector[OperationReason])

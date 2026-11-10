@@ -1,10 +1,10 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
-import oathdigital.gameplay._
-import oathdigital.model.OathViolation._
-import oathdigital.gameplay.operations.Costs
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
+import distantlands.gameplay._
+import distantlands.model.OathViolation._
+import distantlands.gameplay.operations.Costs
 
 object ForgeRules:
   /** The complete pre-release component corpus was audited against CR p.25 / NF

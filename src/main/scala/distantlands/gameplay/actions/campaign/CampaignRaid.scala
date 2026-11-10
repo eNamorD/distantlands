@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.gameplay.actions.{BannerRules, CardPlay, VisionRules}
-import oathdigital.model._
+import distantlands.gameplay.actions.{BannerRules, CardPlay, VisionRules}
+import distantlands.model._
 
 /** Step 9 for a Raid victory: the printed transfer (the takes, then the
   * consequences in a window of their own), then the pawn's relocation. All

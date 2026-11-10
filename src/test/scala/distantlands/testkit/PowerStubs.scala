@@ -1,9 +1,9 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   OptionRestriction, PowerCtx, Restriction, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 /** Stubs of ContributingPower, shared by the walker suites. */
 object PowerStubs:

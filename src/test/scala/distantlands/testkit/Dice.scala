@@ -1,7 +1,7 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.CampaignDicePort
-import oathdigital.model.{AttackDieFace, DefenseDieFace}
+import distantlands.application.CampaignDicePort
+import distantlands.model.{AttackDieFace, DefenseDieFace}
 
 /** The CampaignDicePort doubles for the tests that fix a roll through the
   * application service or a Situation, so one board comes up the same way

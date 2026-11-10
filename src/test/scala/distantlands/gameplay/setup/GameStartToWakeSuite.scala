@@ -1,9 +1,9 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
+import distantlands.testkit.Unwrap.accepted
 
 class GameStartToWakeSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog

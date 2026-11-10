@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** A player's warbands arranged again over their board and a set of sites
   * (P6): Warning Signals over the sites it defends, Messenger over the sites

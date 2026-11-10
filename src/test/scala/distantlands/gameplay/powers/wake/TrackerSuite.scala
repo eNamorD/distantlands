@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.PawnMoves
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.PawnMoves
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   PhasePowerHarness, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Tracker (card 221, catalog batch 10, slice 14): ACTION, choose an enemy
   * pawn at your site and end your Act phase; WAKE, if you chose a pawn last

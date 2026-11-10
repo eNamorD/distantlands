@@ -1,11 +1,11 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.gameplay.cards.GreatSlumSite
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.setup.HallOfDebateCard
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.GreatSlumSite
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
+import distantlands.testkit.Unwrap.accepted
 
 /** A later game's table, built by `GameStartRules` from a Chronicle with an
   * Empire: l1 is the seated Chancellor and p1 goes first. */

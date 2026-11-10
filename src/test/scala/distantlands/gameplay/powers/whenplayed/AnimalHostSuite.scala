@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
   SecondChanceCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
-import oathdigital.gameplay.powers.targeting.OakenFortressCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
+import distantlands.gameplay.powers.targeting.OakenFortressCard
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 class AnimalHostSuite extends munit.FunSuite:
   import WhenPlayedHarness._

@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** The two battle-plan windows: the attacker's, then the defender's. A player's
   * window is a `Repeat` of [[CampaignPlanChoice]] passes, each asking one plan

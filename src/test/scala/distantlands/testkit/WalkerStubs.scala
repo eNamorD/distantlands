@@ -1,6 +1,6 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The walker suites' synthetic tree parts: the buttons of a hand-built
   * decision and a windowed composite. Their stub powers are in

@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Number of dice currently assigned to a named pool (e.g. `"recover"`,
   * `"campaign.attack"`).

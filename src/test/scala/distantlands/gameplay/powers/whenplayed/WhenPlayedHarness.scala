@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
 import scala.reflect.ClassTag
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy,
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy,
   OperationRestrictions}
-import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.gameplay.powers.{NoteText, PowerFixture,
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powers.{NoteText, PowerFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.PowerFixture.{actor, quietTable}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerDice,
+import distantlands.gameplay.powers.PowerFixture.{actor, quietTable}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerDice,
   WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{DecisionAnswers, PowerRules, RecordedOps, Table}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.testkit.{DecisionAnswers, PowerRules, RecordedOps, Table}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Drives a When Played power through its `CardPlayed` hook, the way the
   * Dazzle and Conspiracy suites do. The actor is `PowerFixture.actor`, p1.

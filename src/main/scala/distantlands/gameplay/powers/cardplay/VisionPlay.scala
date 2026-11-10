@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** Reads a faceup Vision play off the card-play hook
   * (`ActionCardPlayedFaceup`), for the cards that forbid or reward one. The

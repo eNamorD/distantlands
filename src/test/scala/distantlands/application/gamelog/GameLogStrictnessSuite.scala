@@ -1,12 +1,12 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.engine.{RecordedEvent, ReplayStep}
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.walker.{DeltaPayload, WalkerCompleted,
+import distantlands.engine.{RecordedEvent, ReplayStep}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.walker.{DeltaPayload, WalkerCompleted,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.testkit.Table.p2
+import distantlands.model._
+import distantlands.testkit.Table.p2
 import LogScripts._
 
 /** The log re-applies a recorded batch to read the state around each of its

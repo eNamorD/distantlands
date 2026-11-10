@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.setup
+package distantlands.gameplay.powers.setup
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.{AncientBloodlineCard,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.{AncientBloodlineCard,
   HallOfMinistersCard}
-import oathdigital.gameplay.powers.{NoteText, PlayerFacts, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.FaeMerchantCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.{NoteText, PlayerFacts, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.FaeMerchantCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Unwrap.accepted
 
 class ProvingGroundsRulesSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog

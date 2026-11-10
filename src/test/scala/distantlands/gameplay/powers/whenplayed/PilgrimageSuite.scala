@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.WalkerDiceFixture
-import oathdigital.gameplay.operations.AncientBloodlineCard
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.{HomesteadersCard, ScryerCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.economy.InitiationRiteCard
-import oathdigital.gameplay.powers.setup.{ForestHornCard, GreatClockCard}
-import oathdigital.gameplay.walker.{WalkerDice, WalkerOutcome}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.WalkerDiceFixture
+import distantlands.gameplay.operations.AncientBloodlineCard
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.{HomesteadersCard, ScryerCard}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.economy.InitiationRiteCard
+import distantlands.gameplay.powers.setup.{ForestHornCard, GreatClockCard}
+import distantlands.gameplay.walker.{WalkerDice, WalkerOutcome}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Pilgrimage (card 161, catalog batch 10, slice 6), WHEN PLAYED: the
   * denizens at p1's site go to the Dispossessed, and as many shuffled

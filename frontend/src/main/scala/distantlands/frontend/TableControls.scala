@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.GameIntent => GameCommand
+import distantlands.protocol.GameIntent => GameCommand
 
 /** What a panel or the board may do to the session: stage a draft or send a
   * command. Two members; a renderer reads its drafts as values and never

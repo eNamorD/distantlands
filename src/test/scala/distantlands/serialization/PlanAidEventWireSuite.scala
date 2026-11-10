@@ -1,8 +1,8 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.gameplay.powers.banner.YewStaffCard
-import oathdigital.gameplay.powers.campaign.ShieldWallCard
-import oathdigital.model._
+import distantlands.gameplay.powers.banner.YewStaffCard
+import distantlands.gameplay.powers.campaign.ShieldWallCard
+import distantlands.model._
 
 /** The Imperial Tactics facts round-trip through the envelope (Empire phase
   * design, "1b-ii"). */

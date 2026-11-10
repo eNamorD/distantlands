@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** One reroll a power offers on a throw: the card that offers it, what using
   * it pays, and what it does (catalog batch 7, slice 1).

@@ -1,6 +1,6 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
-import oathdigital.model.Chronicle
+import distantlands.model.Chronicle
 
 /** The application's boundary to canonical Chronicle JSON (Chronicle
   * browsing design, "ChronicleJsonCodec"). `serialization` implements it;

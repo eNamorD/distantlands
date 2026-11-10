@@ -1,15 +1,15 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.action.{Palanquin, PalanquinCard}
-import oathdigital.gameplay.powers.poweruse.CityWallCard
-import oathdigital.gameplay.powers.travel.{TravelFixture, TyrantCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.Commands
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.action.{Palanquin, PalanquinCard}
+import distantlands.gameplay.powers.poweruse.CityWallCard
+import distantlands.gameplay.powers.travel.{TravelFixture, TyrantCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Commands
 
 /** Undo and Redo around an automatic power's request (automatic power
   * consent design, "Undo coupling" and ruling 9). */

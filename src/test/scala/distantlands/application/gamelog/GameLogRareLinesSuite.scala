@@ -1,20 +1,20 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.WalkerDecisionProjector
-import oathdigital.gameplay.VowOfKinshipCard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.application.WalkerDecisionProjector
+import distantlands.gameplay.VowOfKinshipCard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.operations.BoilingLakeCard
-import oathdigital.gameplay.powers.action.FaeMerchantCard
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{DeltaPayload, WalkerCompleted,
+import distantlands.gameplay.operations.BoilingLakeCard
+import distantlands.gameplay.powers.action.FaeMerchantCard
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{DeltaPayload, WalkerCompleted,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts._
 
 /** Lines no cheap script reaches: each is driven by one recorded batch

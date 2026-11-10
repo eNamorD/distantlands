@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.WalkerDiceFixture
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.WalkerDiceFixture
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.roles.Citizenship
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The four "become a Citizen" When Played denizens (rulings R21, R22). */
 class CitizenshipWhenPlayedSuite extends munit.FunSuite:

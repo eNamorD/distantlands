@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The modifier decision's vocabulary (modifier walker design): the decision
   * an action asks first, one modifier per pass, and the picks read back out

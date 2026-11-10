@@ -1,20 +1,20 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, DunesSite}
-import oathdigital.gameplay.powers.action.BrassHorseCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.setup.HallOfDebateCard
-import oathdigital.model.OathState.Ready
-import oathdigital.catalog.PrintedPower
-import oathdigital.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
-import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table, TestCards}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.PhasePowerHarness
+import distantlands.gameplay.cards.{AncientCitySite, DunesSite}
+import distantlands.gameplay.powers.action.BrassHorseCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.model.OathState.Ready
+import distantlands.catalog.PrintedPower
+import distantlands.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
+import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes, Table, TestCards}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.PhasePowerHarness
 
 /** Synthetic WAKE, ACTION and REST powers on a faceup adviser, injected
   * through `OathRules`, drive the generic phase power path end to end.

@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** What a site asks of a player, which is never both at once: a site is
   * either buildable or plunderable, and the rules give no site both.

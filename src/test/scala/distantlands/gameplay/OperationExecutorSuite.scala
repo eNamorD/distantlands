@@ -1,10 +1,10 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.{Look, RawOperationBatch, Table}
-import oathdigital.testkit.Unwrap.{accepted, as, rejected}
+import distantlands.gameplay.operations._
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
+import distantlands.testkit.{Look, RawOperationBatch, Table}
+import distantlands.testkit.Unwrap.{accepted, as, rejected}
 
 class OperationExecutorSuite extends munit.FunSuite:
   private val redForce = ForceKind.Exile(lineageId)
@@ -72,7 +72,7 @@ class OperationExecutorSuite extends munit.FunSuite:
       : String =
     rejected(OperationPipeline.run(state, Vector(operation),
       OperationPolicy.Permissive, Vector.empty)(Right(_))) match
-      case oathdigital.model.OathViolation.CoreOperationRejected(code, _) =>
+      case distantlands.model.OathViolation.CoreOperationRejected(code, _) =>
         code
       case other => fail(s"expected a CoreOperationRejected, got $other")
 

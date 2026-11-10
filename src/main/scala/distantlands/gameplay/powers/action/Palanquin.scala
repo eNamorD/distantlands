@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.travel.{TollRoads, TollRoadsCard}
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.travel.{TollRoads, TollRoadsCard}
+import distantlands.model._
 
 object PalanquinCard extends Denizen(DenizenId("107"), "Palanquin",
     Suit.Order) with AdviserOnly:

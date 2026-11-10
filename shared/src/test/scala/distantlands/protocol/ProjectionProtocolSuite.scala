@@ -1,9 +1,9 @@
-package oathdigital.protocol
+package distantlands.protocol
 
-import oathdigital.model.PlayerColor
+import distantlands.model.PlayerColor
 
-import oathdigital.protocol.projection._
-import oathdigital.testkit.Unwrap
+import distantlands.protocol.projection._
+import distantlands.testkit.Unwrap
 
 class ProjectionProtocolSuite extends munit.FunSuite:
   /** Fails unless `candidate` encodes and decodes back to itself. */

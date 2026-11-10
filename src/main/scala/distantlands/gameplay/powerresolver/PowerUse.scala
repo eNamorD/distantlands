@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower}
-import oathdigital.model.{CardId, OperationReason, PlayerId, PowerId,
+import distantlands.catalog.{ExecutableCatalog, PrintedPower}
+import distantlands.model.{CardId, OperationReason, PlayerId, PowerId,
   LogNote, ReadyGame}
 
 /** One use of a power, as the power-use restrictions judge it (catalog

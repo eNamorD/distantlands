@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.gameplay.actions.AdviserFace
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.gameplay.actions.AdviserFace
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object LostTapestryCard extends Relic(RelicId("R29"), "Lost Tapestry", value = 85, defense = 1):
   val power = PrintedPower(PowerId("relic.lost-tapestry"),

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
-import oathdigital.model.OathViolation.InvalidEventOrder
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
+import distantlands.model.OathViolation.InvalidEventOrder
 
 /** Role changes as walker trees, shared by every source (Empire phase
   * design, "Slice 3"). Becoming Imperial asks the player which warbands

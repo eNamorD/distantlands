@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Reads of the answers a power's own decisions recorded in the pending
   * tree. A power's effect is a `BuildOps`, which runs after the answer is

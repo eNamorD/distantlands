@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Decide, DecisionOption, DecisionOptionRef,
+import distantlands.model.{Decide, DecisionOption, DecisionOptionRef,
   DecisionQuery, OptionReason}
 
 /** The Continue screen of a choose-one passed when empty (catalog batch 8,

@@ -1,17 +1,17 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.gameplay.KinshipRule
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.dice.{DiceThrow, RerollChoice}
-import oathdigital.gameplay.powerresolver.{ModifierPicks, PowerUseStep}
-import oathdigital.gameplay.walker.{ChoicePayload, RollPayload,
+import distantlands.application.GamePresentationProjector
+import distantlands.gameplay.KinshipRule
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.dice.{DiceThrow, RerollChoice}
+import distantlands.gameplay.powerresolver.{ModifierPicks, PowerUseStep}
+import distantlands.gameplay.walker.{ChoicePayload, RollPayload,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
-import oathdigital.protocol.projection.{LogKind, LogSpan}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
+import distantlands.protocol.projection.{LogKind, LogSpan}
 
 /** The detail lines of a walker run (spec, "Detail lines"): decisions, rolls
   * and deltas, between a start line and the action line that closes the

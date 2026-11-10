@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.{FoldPhase, Transform}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
 
 class MountedLibrarySuite extends munit.FunSuite:
   private val library = MountedLibraryCard.id

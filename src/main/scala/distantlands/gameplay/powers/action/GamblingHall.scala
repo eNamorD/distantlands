@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.dice.RollStep
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.dice.RollStep
+import distantlands.model._
 
 object GamblingHallCard extends Denizen(DenizenId("93"), "Gambling Hall", Suit.Discord) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.gambling-hall"),

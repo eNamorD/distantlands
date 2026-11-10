@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.burn
+package distantlands.gameplay.powers.burn
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 object VowOfSilenceCard extends Denizen(DenizenId("74"), "Vow of Silence", Suit.Arcane) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-silence"),

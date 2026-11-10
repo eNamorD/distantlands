@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{OathViolation, ReadyGame, Shuffle, ShufflePile}
+import distantlands.model.{OathViolation, ReadyGame, Shuffle, ShufflePile}
 
 /** Fills a declared `Shuffle`'s order from the walker's random source. Split
   * out of [[ProcedureWalker]], which is close to the project's per-file

@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 enum AttackDieFace extends DieFace { case HollowSword, OneSword, TwoSwordsSkull }
 object AttackDieFace:

@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, _}
+import distantlands.protocol.{GameIntent => GameCommand, _}
 import org.scalajs.dom
 
 /** The client half of the generic walker decision contract. Both panels

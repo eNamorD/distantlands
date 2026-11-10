@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.PlacementFixture
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap
+import distantlands.gameplay.PlacementFixture
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap
 
 /** Vow of Wisdom (card 203): its holder's play to a site gains 1 secret and
   * no favor. */

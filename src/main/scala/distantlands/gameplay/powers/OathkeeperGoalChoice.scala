@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The question a power asks to change the Oathkeeper goal, and the line
   * that tells the change (catalog batch 8, slice 2). The Red Seer and True

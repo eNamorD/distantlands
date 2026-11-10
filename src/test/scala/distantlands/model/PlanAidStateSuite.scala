@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 class PlanAidStateSuite extends munit.FunSuite:
   private val p1 = PlayerId("p1")

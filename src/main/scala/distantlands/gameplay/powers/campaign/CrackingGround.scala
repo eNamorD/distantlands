@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
 
 object CrackingGroundCard extends Denizen(DenizenId("71"), "Cracking Ground", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.cracking-ground"),

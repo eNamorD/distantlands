@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture.{Board, board, on, rules}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Look
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.CampaignFixture.{Board, board, on, rules}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Look
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** When the plan window is asked (Empire phase design, "1b-ii", "The
   * window"): an Imperial user's window opens for a plan an ally could lend,

@@ -1,17 +1,17 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, OfferReason, OptionRestriction, PowerCtx, Transform}
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, RecordedOps, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Outcomes, RecordedOps, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** The modifier decision on its own: a hand-built tree whose first decision
   * is `ModifierChoice.loop`, walked with stand-in modifiers (modifier walker

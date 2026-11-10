@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.EffectiveSuit
+import distantlands.model._
 
 /** The favor a plan gains one of per card, from each card's suit bank (Tribute
   * Spoils, Military Parade). Only a faceup card has a suit, except an edifice,

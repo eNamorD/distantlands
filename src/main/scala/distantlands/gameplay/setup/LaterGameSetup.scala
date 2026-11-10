@@ -1,9 +1,9 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.StateBasedEvaluation
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.StateBasedEvaluation
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
 
 /** What a Chronicle's lineages bring to the table `FirstGameSetupMaterializer`
   * built (CR pp. 8-11): every seated lineage's starting advisers, and, in a

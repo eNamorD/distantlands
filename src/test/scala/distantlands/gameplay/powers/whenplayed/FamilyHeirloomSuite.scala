@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.WalkerRecordedOpsReducer
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.walker.WalkerOutcome
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{as, rejected}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.WalkerRecordedOpsReducer
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.walker.WalkerOutcome
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{as, rejected}
 
 class FamilyHeirloomSuite extends munit.FunSuite
     with WalkerRecordedOpsReducer:

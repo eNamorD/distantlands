@@ -1,12 +1,12 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.catalog._
-import oathdigital.gameplay.cards.NewFoundations
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
-import oathdigital.model.OathState._
-import oathdigital.gameplay.walker.WalkerCompleted
-import oathdigital.testkit.{Outcomes, Situation}
+import distantlands.catalog._
+import distantlands.gameplay.cards.NewFoundations
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
+import distantlands.model.OathState._
+import distantlands.gameplay.walker.WalkerCompleted
+import distantlands.testkit.{Outcomes, Situation}
 
 /** Shared fixture for the whole gameplay test suite: a real catalog, three
   * Exile participants, and a Chronicle-shaped input for `GameStartRules`
@@ -41,7 +41,7 @@ object FirstGameSetupFixture:
     * the full 60-card world deck this slice's "cheat" policy calls for
     * (2026-09-21 Chronicle design, "Since only ~30 denizens are
     * implemented right now"). */
-  val denizens: Vector[DenizenId] = oathdigital.model.Suit.all.sortBy(_.key).flatMap:
+  val denizens: Vector[DenizenId] = distantlands.model.Suit.all.sortBy(_.key).flatMap:
     suit =>
       catalog.denizens.filter(_.suit == suit).take(10)
         .map(d => DenizenId(d.id.value))
@@ -85,7 +85,7 @@ object FirstGameSetupFixture:
 
   /** Setup driven by `OathRules` from this first-game input, the n-th pawn
     * placed at `placementSites(n)` and every adviser choice keeping the
-    * first card in hand: [[oathdigital.testkit.Situation.wake]] under the
+    * first card in hand: [[distantlands.testkit.Situation.wake]] under the
     * fixture's rules, ready to be driven further.
     */
   def initialSituation(placementSites: Vector[SiteId] = sites): Situation =
@@ -108,7 +108,7 @@ object FirstGameSetupFixture:
       case _ => false
     }
     val events = woken.events.take(setupEnd + 1)
-    val rules = new oathdigital.gameplay.OathRules(catalog)
+    val rules = new distantlands.gameplay.OathRules(catalog)
     val state = events.foldLeft[Either[OathViolation, OathState]](
       Right(NoGame))((state, event) => state.flatMap(rules.evolve(_, event)))
     SetupResult(state.fold(violation =>

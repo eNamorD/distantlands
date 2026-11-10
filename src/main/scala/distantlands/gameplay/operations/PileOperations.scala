@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The `Shuffle` write: a shuffle pile takes the order the walker
   * generated. The order must hold exactly the pile's cards, so a recorded

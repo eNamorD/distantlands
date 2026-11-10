@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 object YewStaffCard extends Relic(RelicId("R40"), "Yew Staff", value = 60, defense = 2):
   val power = PrintedPower(PowerId("relic.yew-staff"),

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
 import java.nio.file.{Files, Path, Paths}
-import oathdigital.gameplay.actions.{ProcedureNotes, RuleNotes}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.{ActionRef, NoteKey, NotePart, PowerId,
+import distantlands.gameplay.actions.{ProcedureNotes, RuleNotes}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.{ActionRef, NoteKey, NotePart, PowerId,
   ProcedureRef}
 
 /** Every power's declared note keys and their wordings, exactly. Note keys

@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.{PhasePower, QueuedStarts}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.action.{PaidAction, PawnMoves}
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.{PhasePower, QueuedStarts}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.action.{PaidAction, PawnMoves}
+import distantlands.model._
 
 object TrackerCard extends Denizen(DenizenId("221"), "Tracker", Suit.Discord) with AdviserOnly:
   val action = PrintedPower(PowerId("denizen.tracker.action"),

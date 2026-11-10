@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.challenge.ChallengeProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.challenge.ChallengeProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 object SecretTestamentCard extends Relic(RelicId("R38"), "Secret Testament", value = 82, defense = 2):
   val power = PrintedPower(PowerId("relic.secret-testament"),

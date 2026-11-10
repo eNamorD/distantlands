@@ -1,12 +1,12 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ParkedNode, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ParkedNode, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Shared steps for Chronicle task tests: the table a task starts from, and
   * a walk that answers every parked Chronicle decision with its plainest
@@ -44,7 +44,7 @@ object ChronicleWalk:
       TriggeredProcedureRef.ChronicleThrone))
     val walked = walkedTo(rules, started,
       ProtectAndDispossess.protectDecisionId)
-    val nine = oathdigital.testkit.Outcomes.ready(walked.state).game.current
+    val nine = distantlands.testkit.Outcomes.ready(walked.state).game.current
       .cardGathering
     accepted(rules.resolveWalker(walked.state, Table.p2,
       ProtectAndDispossess.protectDecisionId,
@@ -106,9 +106,9 @@ object ChronicleWalk:
       procedure: TriggeredProcedureRef)(using munit.Location): ReadyGame =
     val events = answeringEverything(rules, transition).events
     val through = events.indexOf(
-      oathdigital.gameplay.walker.WalkerCompleted(procedure))
+      distantlands.gameplay.walker.WalkerCompleted(procedure))
     munit.Assertions.assert(through >= 0, s"${procedure.key} never completed")
-    oathdigital.testkit.Outcomes.ready(accepted(events.take(through + 1)
+    distantlands.testkit.Outcomes.ready(accepted(events.take(through + 1)
       .foldLeft[Either[OathViolation, OathState]](Right(base))((state, event) =>
         state.flatMap(rules.evolve(_, event)))))
 

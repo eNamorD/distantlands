@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
 import java.util.concurrent.CountDownLatch
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-import oathdigital.testkit.Unwrap.*
+import distantlands.testkit.Unwrap.*
 
 /** What every `EventStreamRepository` promises (the trait's doc): one stream
   * per game, appended atomically, with the expected position compared in

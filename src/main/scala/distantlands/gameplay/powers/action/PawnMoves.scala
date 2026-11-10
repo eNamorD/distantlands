@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Reads and writes shared by the powers that relocate or target a pawn:
   * the movement relics (Whistle, Brass Horse, Magic Carpet), the portals

@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.projection.{Die, DieFace}
+import distantlands.protocol.projection.{Die, DieFace}
 
 /** The faces of the two dice, drawn as the symbols printed on them.
   *
@@ -10,7 +10,7 @@ import oathdigital.protocol.projection.{Die, DieFace}
   * doubler multiplies rather than adding, so it says so in figures.
   *
   * Named `DieFaceChip`, not `DieFace`: the face itself is
-  * `oathdigital.protocol.projection.DieFace`, and this is what the page
+  * `distantlands.protocol.projection.DieFace`, and this is what the page
   * draws for one. The words a face is read by are that enum's; this object
   * keeps only the glyph composition, which is the client's own drawing
   * concern and has no server twin.

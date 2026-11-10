@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.action.OracularPigCard
-import oathdigital.gameplay.powers.campaign.BattlePlan
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{QueuedStart, WalkerDice, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{CardRefs, Look, Table}
-import oathdigital.testkit.CardRefs.{DenizenRef, EdificeRef, RelicRef}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.action.OracularPigCard
+import distantlands.gameplay.powers.campaign.BattlePlan
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{QueuedStart, WalkerDice, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{CardRefs, Look, Table}
+import distantlands.testkit.CardRefs.{DenizenRef, EdificeRef, RelicRef}
 
 /** The boards the Campaign suites share, built on the quiet `Table`.
   *

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.SupplyStrip
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.operations.SupplyStrip
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerCtx, Transform}
-import oathdigital.model.{ActionRef, PowerId, PowerWindow, RuleSourceRef,
+import distantlands.model.{ActionRef, PowerId, PowerWindow, RuleSourceRef,
   StartableRef}
 
 /** The engine's waiver for a queued action (follow-up actions design,

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Answered, ConsentKey, ConsentTurn, Decide, DecisionAnswer, DecisionOptionRef, DieFace, OathViolation, Operation, OptionReason, PowerId}
+import distantlands.model.{Answered, ConsentKey, ConsentTurn, Decide, DecisionAnswer, DecisionOptionRef, DieFace, OathViolation, Operation, OptionReason, PowerId}
 
 /** How a resumed command treats the leaf parked at `pending.at`: a plain
   * `advance` re-parks an unanswered Decide/Roll (or passes a Decide the

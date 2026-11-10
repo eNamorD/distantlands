@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 class OperationTreeSuite extends munit.FunSuite:
   test("primitives are leaves"):

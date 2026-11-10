@@ -1,9 +1,9 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
 
 /** The card accounting a Chronicle passes before game start reads it, and
   * before the Chronicle Phase journals it (Chronicle steps design, "Exit

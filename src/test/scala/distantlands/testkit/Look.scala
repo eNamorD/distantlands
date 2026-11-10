@@ -1,10 +1,10 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.CardRefs.{CardRef, SiteRef}
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.CardRefs.{CardRef, SiteRef}
 
 /** The reads rule tests make of a state, named the way `Table` names what it
   * places. */

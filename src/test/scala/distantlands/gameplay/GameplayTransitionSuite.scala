@@ -1,6 +1,6 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 class GameplayTransitionSuite extends munit.FunSuite:
   test("shared transition helper applies ordered events and stops at failure"):

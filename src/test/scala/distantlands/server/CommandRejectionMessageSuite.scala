@@ -1,7 +1,7 @@
-package oathdigital.server
+package distantlands.server
 
 import munit.FunSuite
-import oathdigital.model.OathViolation
+import distantlands.model.OathViolation
 
 class CommandRejectionMessageSuite extends FunSuite:
   test("rejections surface their authoritative detail"):

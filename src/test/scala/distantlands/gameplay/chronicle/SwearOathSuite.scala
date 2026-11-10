@@ -1,15 +1,15 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.{ProcedureNotes, VisionRules}
-import oathdigital.gameplay.powers.{NoteText, OathkeeperGoalChoice,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.{ProcedureNotes, VisionRules}
+import distantlands.gameplay.powers.{NoteText, OathkeeperGoalChoice,
   WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, RecordedOps, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Outcomes, RecordedOps, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Swear an Oath (CR p. 37). p1 won and holds the Throne. */
 class SwearOathSuite extends munit.FunSuite:

@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.{LancersCard, WildMountsCard}
-import oathdigital.gameplay.powers.setup.GreatForgeCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Unwrap.as
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.{LancersCard, WildMountsCard}
+import distantlands.gameplay.powers.setup.GreatForgeCard
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Unwrap.as
 
 class GreatHerdSuite extends munit.FunSuite:
   import WhenPlayedHarness._

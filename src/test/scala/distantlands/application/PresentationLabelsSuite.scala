@@ -1,15 +1,15 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.cards.DeepWoodsSite
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.whenplayed.{ThreateningRoarCard,
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.cards.DeepWoodsSite
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.whenplayed.{ThreateningRoarCard,
   WizardsConclaveCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class PresentationLabelsSuite extends munit.FunSuite:
   private val presentation = new GamePresentationProjector(catalog)

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OperationRewrite, PowerCtx, Transform}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 object InitiationRiteCard extends Denizen(DenizenId("73"), "Initiation Rite", Suit.Arcane) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.initiation-rite"),

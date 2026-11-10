@@ -1,16 +1,16 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.FacedownAdviserPlay
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.AncientBindingCard
-import oathdigital.gameplay.powers.campaign.RainBootsCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.FacedownAdviserPlay
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.AncientBindingCard
+import distantlands.gameplay.powers.campaign.RainBootsCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** `PlacementPicks`: choosing a card play's placement answer by how it plays
   * the card, and reading what a placement option replaces. */

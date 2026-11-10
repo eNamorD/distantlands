@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.actions.cardplay.CardSlots
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.actions.cardplay.CardSlots
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** The cards of `suits` at a site that a power may discard, for Dark
   * Enforcer, Taming Charm and Great Feast: faceup denizens and ruined

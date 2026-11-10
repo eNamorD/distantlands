@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
   CampaignSetup}
-import oathdigital.model._
+import distantlands.model._
 
 /** How the plans chosen in a Campaign score its defense (catalog batch 4
   * rulings, "The defense score"). The defaults are the printed rules.

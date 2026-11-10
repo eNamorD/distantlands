@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.model._
 
 /** Placing favor or secrets on a card (catalog batch 8, slice 10): a cost
   * paid onto it on the payer's own turn, a gift of favor or secrets onto

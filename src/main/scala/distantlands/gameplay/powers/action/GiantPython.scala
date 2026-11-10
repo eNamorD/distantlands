@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.banner.CardPowerBanners
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.banner.CardPowerBanners
+import distantlands.model._
 
 object GiantPythonCard extends Denizen(DenizenId("186"), "Giant Python", Suit.Beast) with SiteOnly:
   val action = PrintedPower(PowerId("denizen.giant-python.action"),

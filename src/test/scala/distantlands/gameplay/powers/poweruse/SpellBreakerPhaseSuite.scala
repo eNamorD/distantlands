@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
   WardOfSilence}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, PhasePowerHarness, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, PhasePowerHarness, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Spell Breaker on the phase path (catalog batch 8, slice 10): the Act
   * menu shows a refused ACTION askable of the ruler, or unavailable, and

@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 object DevelopmentTrustBoundary:
   val MaximumIdentifierLength: Int = 128

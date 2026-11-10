@@ -1,15 +1,15 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.chronicle.{ChronicleWalk, ProtectAndDispossess}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.LogSpan
-import oathdigital.testkit.Outcomes
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.application.GamePresentationProjector
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.{ChronicleWalk, ProtectAndDispossess}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.LogSpan
+import distantlands.testkit.Outcomes
+import distantlands.testkit.Table.{p1, p2}
 
 /** What each seat reads of the World's lines (CR p. 38): the kept adviser
   * only its keeper, the faceup dispossessed cards everyone, the facedown

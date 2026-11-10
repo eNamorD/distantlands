@@ -1,7 +1,7 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.{CommandAccepted, StepRestored, StepTakenBack}
+import distantlands.model._
+import distantlands.model.OathEvent.{CommandAccepted, StepRestored, StepTakenBack}
 
 /** Undo's journal facts (undo design, "Storage"). */
 private[serialization] trait UndoEventCodec { this: GameEventJsonSupport =>

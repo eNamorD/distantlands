@@ -1,8 +1,8 @@
-package oathdigital.model
+package distantlands.model
 
 class DomainValidationSuite extends munit.FunSuite:
   import TestGameFixtures._
-  import oathdigital.testkit.Table
+  import distantlands.testkit.Table
 
   test("campaign maps retain their structural identities and required slots"):
     // Patched with copy, not a Table step: the state is invalid on purpose.

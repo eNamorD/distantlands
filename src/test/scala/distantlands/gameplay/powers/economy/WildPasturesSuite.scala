@@ -1,21 +1,21 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.{GrandMaskCard, VowOfKinshipCard}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powerresolver.BatchContext
-import oathdigital.gameplay.powers.{NoteText, SearchFixture}
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
+import distantlands.gameplay.{GrandMaskCard, VowOfKinshipCard}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powerresolver.BatchContext
+import distantlands.gameplay.powers.{NoteText, SearchFixture}
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
   TamingCharm, TamingCharmCard}
-import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WildMounts,
+import distantlands.gameplay.powers.campaign.{HorseArchersCard, WildMounts,
   WildMountsCard}
-import oathdigital.gameplay.powers.setup.GreatForgeCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.setup.GreatForgeCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Look, MenuPlay, Outcomes, PowerRules, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Wild Pastures (E07, intact): "Whenever this card's ruler would discard
   * a Nomad card from a power, they may instead pay 1 favor to the Nomad
@@ -216,10 +216,10 @@ class WildPasturesSuite extends munit.FunSuite:
 
   test("a When Played power's two Nomad discards ask in turn, and a ruler " +
       "whose only favor the first pays is not asked again"):
-    import oathdigital.gameplay.operations.OperationRestrictions
-    import oathdigital.gameplay.powers.whenplayed.{ThreateningRoar,
+    import distantlands.gameplay.operations.OperationRestrictions
+    import distantlands.gameplay.powers.whenplayed.{ThreateningRoar,
       ThreateningRoarCard, WhenPlayedHarness}
-    import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
+    import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
     val other = SearchFixture.anyPlainDenizensOf(Suit.Nomad)
       .filterNot(_ == nomad).head
     val roarSite = WhenPlayedHarness.homeSite
@@ -249,10 +249,10 @@ class WildPasturesSuite extends munit.FunSuite:
 
   test("Wild Mounts asks first; skipped, the Nomad plan's discard asks " +
       "Wild Pastures"):
-    import oathdigital.gameplay.CampaignFixture
-    import oathdigital.gameplay.actions.campaign.CampaignIds
-    import oathdigital.gameplay.powers.campaign.PlanDriver
-    import oathdigital.gameplay.powers.search.BrackenCard
+    import distantlands.gameplay.CampaignFixture
+    import distantlands.gameplay.actions.campaign.CampaignIds
+    import distantlands.gameplay.powers.campaign.PlanDriver
+    import distantlands.gameplay.powers.search.BrackenCard
     val bracken = PlanDriver.planlessCard(BrackenCard)
     val horseArchers = HorseArchersCard.id
     val start = Vector(nomad, bracken, horseArchers).foldLeft(
@@ -278,8 +278,8 @@ class WildPasturesSuite extends munit.FunSuite:
 
   test("Search Party's discarded card asks, and paying leaves it in its " +
       "pile"):
-    import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-    import oathdigital.gameplay.powers.whenplayed.SearchPartyFixture._
+    import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+    import distantlands.gameplay.powers.whenplayed.SearchPartyFixture._
     val ready = p1HoldsSearchPartyFacedown(_.discarded(Region.Provinces,
         nomad).favor(p1, 1).warbandsAt(peaks, p1, 2)
       .edifice(pastures, EdificeSide.Intact, at = peaks))

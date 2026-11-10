@@ -1,17 +1,17 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture.{board, rules}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerProcedureRegistry}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.CampaignFixture.{board, rules}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerProcedureRegistry}
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** The lazy pruning's budget (global operation restrictions design,
   * "Performance budget"): a Campaign park on a full board answers in under
   * 50 ms. A benchmark run by hand, never by `sbt test`:
   *
-  * {{{./sbtw "Test/runMain oathdigital.gameplay.SearchBudget"}}}
+  * {{{./sbtw "Test/runMain distantlands.gameplay.SearchBudget"}}}
   *
   * Each measure is the best of five runs after three warm-up runs, so a cold
   * first run does not count. It exits with status 1 when a measure is over

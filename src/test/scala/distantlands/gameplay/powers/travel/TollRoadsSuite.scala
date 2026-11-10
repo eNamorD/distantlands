@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.TravelPlay
-import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.TravelPlay
+import distantlands.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 class TollRoadsSuite extends munit.FunSuite:
   import PowerFixture._

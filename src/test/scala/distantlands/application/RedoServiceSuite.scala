@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.StepRestored
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.Commands
+import distantlands.model._
+import distantlands.model.OathEvent.StepRestored
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Commands
 
 /** Restoring taken-back command batches through the service (undo design,
   * "Redo"). */

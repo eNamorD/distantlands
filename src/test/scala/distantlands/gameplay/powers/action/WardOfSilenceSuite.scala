@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{Look, MenuPlay, ParkedNode, PhasePowerHarness,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{Look, MenuPlay, ParkedNode, PhasePowerHarness,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Ward of Silence: X secrets placed on the card, and X of a player's
   * faceup secrets flipped facedown. */

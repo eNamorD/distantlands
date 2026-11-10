@@ -1,8 +1,8 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.engine.EventEvolutionContract
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model.{OathEvent, OathState, OathViolation}
+import distantlands.engine.EventEvolutionContract
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model.{OathEvent, OathState, OathViolation}
 
 /** `OathRules`, which the service's replay engine delegates to, keeps
   * the `EventEvolution` contract. The events are the first game's setup

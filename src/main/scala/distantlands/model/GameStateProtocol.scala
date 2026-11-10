@@ -1,6 +1,6 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.model._
+import distantlands.model._
 
 final case class MaterialBankState(
     favor: Map[Suit, Int],

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 object MagicWaterskinCard extends Relic(RelicId("R45"), "Magic Waterskin", value = 24, defense = 1):
   val power = PrintedPower(PowerId("relic.magic-waterskin"),

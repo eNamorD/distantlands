@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.powerresolver.OptionRestriction
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.powerresolver.OptionRestriction
+import distantlands.model._
 
 object CodeOfHonorCard extends Denizen(DenizenId("103"), "Code of Honor", Suit.Order):
   val power = PrintedPower(PowerId("denizen.code-of-honor"),

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The fixed order of the Chronicle Phase (Chronicle steps design,
   * "Chaining"). The queue only holds startable procedures, so the driver

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 object BanditChiefCard extends Denizen(DenizenId("100"), "Bandit Chief", Suit.Discord) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.bandit-chief"),

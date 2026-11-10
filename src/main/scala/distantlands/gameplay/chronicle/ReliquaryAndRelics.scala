@@ -1,9 +1,9 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Stock Reliquary and Scatter Relics, the Throne's fourth and fifth steps
   * (CR p. 37). */

@@ -1,14 +1,14 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.testkit.MenuPlay
-import oathdigital.application.{GameApplicationService}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogEntry, LogKind, LogSpan}
-import oathdigital.testkit.{Situation, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.MenuPlay
+import distantlands.application.{GameApplicationService}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.{LogEntry, LogKind, LogSpan}
+import distantlands.testkit.{Situation, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts._
 
 class GameLogHeadlineSuite extends munit.FunSuite:

@@ -1,7 +1,7 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
 
 /** The table as the Stars task stores it (CR pp. 40-41, Chronicle rulings
   * 17 and 18). The Stars steps change nothing on the table; this reads it

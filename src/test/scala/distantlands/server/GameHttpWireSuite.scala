@@ -1,18 +1,18 @@
-package oathdigital.server
+package distantlands.server
 
 import akka.http.scaladsl.model.StatusCodes
-import oathdigital.application.{GameApplicationError, GameIntentMapper,
+import distantlands.application.{GameApplicationError, GameIntentMapper,
   PlayerIntent, TreeDecision}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer, PartitionAnswer}
-import oathdigital.protocol.{DecisionAnswerWire, DecisionPlacementWire,
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer, PartitionAnswer}
+import distantlands.protocol.{DecisionAnswerWire, DecisionPlacementWire,
   DistributeAmountWire, GameIntent}
-import oathdigital.testkit.Unwrap.rejected
+import distantlands.testkit.Unwrap.rejected
 
 class GameHttpWireSuite extends munit.FunSuite:
   test("domain conversion rejects unknown protocol identifiers without throwing"):
     val failure = rejected(GameIntentMapper.map(GameIntent.RequestConsent("travel.destination",
-        oathdigital.protocol.WalkerStartArgWire("teleport", "x"))))
+        distantlands.protocol.WalkerStartArgWire("teleport", "x"))))
     assertEquals(failure.path, "$.intent.target")
 
   test("walker intents map to ResolveWalker intents"):

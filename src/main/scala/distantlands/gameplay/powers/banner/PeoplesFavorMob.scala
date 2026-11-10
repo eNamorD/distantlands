@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.gameplay.actions.{CardPlayRules, DiscardPermission}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
+import distantlands.model._
 
 /** Mob (the Banner of the People's Favor, Mob face): when you play a card to a
   * site, you may first discard a card from the site's card list.

@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.ChronicleFixtures.entry
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.frontend.ChronicleFixtures.entry
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** The browser's stored Chronicles: the list's shape, unreadable entries,
   * the loaded Chronicle, names, and the automatic-save decision. */

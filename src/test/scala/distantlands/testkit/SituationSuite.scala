@@ -1,16 +1,16 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.{GameApplicationService, GameCommand,
+import distantlands.application.{GameApplicationService, GameCommand,
   InMemoryEventStreamRepository, ParkedServiceFixture}
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.{catalog, chronicle,
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
+import distantlands.gameplay.setup.FirstGameSetupFixture.{catalog, chronicle,
   orders, sites}
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class SituationSuite extends munit.FunSuite:
   private def journaledService()

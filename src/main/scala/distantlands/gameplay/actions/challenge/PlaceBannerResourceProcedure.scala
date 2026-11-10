@@ -1,9 +1,9 @@
-package oathdigital.gameplay.actions.challenge
+package distantlands.gameplay.actions.challenge
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.{BannerRules, ProcedureNotes}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.{BannerRules, ProcedureNotes}
+import distantlands.model._
 
 /** Place Banner Resource on the walker: the holder of a banner moves favor or
   * faceup secrets from their own board onto it, for no Supply. Takes no start

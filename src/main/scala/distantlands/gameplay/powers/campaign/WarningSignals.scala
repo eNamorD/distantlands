@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignProcedure, CampaignSetup}
-import oathdigital.gameplay.powers.{PowerAnswers, WarbandArrangement}
-import oathdigital.gameplay.powers.economy.VowOfWandering
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.campaign.{CampaignProcedure, CampaignSetup}
+import distantlands.gameplay.powers.{PowerAnswers, WarbandArrangement}
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.model._
 
 object WarningSignalsCard extends Denizen(DenizenId("25"), "Warning Signals", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.warning-signals"),

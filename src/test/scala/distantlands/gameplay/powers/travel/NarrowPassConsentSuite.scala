@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.{ModifierPlay, OathRules}
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.NarrowPassSite
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.{ModifierPlay, OathRules}
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.NarrowPassSite
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Restriction}
-import oathdigital.gameplay.powers.{PowerFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks}
-import oathdigital.testkit.Table.p2
-import oathdigital.testkit.Unwrap.{accepted, present, rejected}
+import distantlands.gameplay.powers.{PowerFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, PlacementPicks}
+import distantlands.testkit.Table.p2
+import distantlands.testkit.Unwrap.{accepted, present, rejected}
 
 /** Which Travel destinations the Narrow Pass makes askable (consent
   * design, rulings 4 to 8 and 12, "Walker and powers"). The fixture board's

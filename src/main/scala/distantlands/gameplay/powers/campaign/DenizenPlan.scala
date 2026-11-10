@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.model.{DecisionOptionRef, DenizenId, PowerId}
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.model.{DecisionOptionRef, DenizenId, PowerId}
 
 /** A battle plan printed on a denizen. The plan is its card's printed
   * power, so it names the card once: its `id` is the power's, and the plan

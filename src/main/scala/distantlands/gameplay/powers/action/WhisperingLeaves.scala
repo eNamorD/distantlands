@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 object WhisperingLeavesCard extends Denizen(DenizenId("211"), "Whispering Leaves", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.whispering-leaves"),

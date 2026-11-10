@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions.travel
+package distantlands.gameplay.actions.travel
 
-import oathdigital.gameplay.walker.{PricedOptions, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.walker.{PricedOptions, WalkerPowers}
+import distantlands.model._
 
 /** The destination decision as its player is shown it (travel destination
   * design, rulings 3 and 4), priced by [[PricedOptions]]. Every other

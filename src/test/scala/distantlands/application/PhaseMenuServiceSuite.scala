@@ -1,13 +1,13 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.Commands
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Commands
 
 /** A phase menu through the service (walker-driven game loop design,
   * rulings 11 and 12). */

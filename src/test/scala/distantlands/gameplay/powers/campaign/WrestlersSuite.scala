@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Wrestlers: a defender sacrifices a warband from its force for one more
   * defense die, and the force the defense is scored with is one lower.
@@ -35,7 +35,7 @@ class WrestlersSuite extends munit.FunSuite:
     val b = conquest
     val picked = commit(rules(losingDice), b, 4)
       .pick(b.rival, CampaignIds.defenderPlan, ref)
-    assertEquals(oathdigital.testkit.Outcomes.ready(picked.state).game.current
+    assertEquals(distantlands.testkit.Outcomes.ready(picked.state).game.current
       .walkerPicks, Vector(PlayedPick(CampaignIds.defenderPlan, ref, None,
         OptionPrice(warbands = 1), open = false)))
 

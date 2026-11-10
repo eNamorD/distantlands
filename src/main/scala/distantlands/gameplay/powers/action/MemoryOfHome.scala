@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object MemoryOfHomeCard extends Denizen(DenizenId("49"), "Memory of Home", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.memory-of-home"),

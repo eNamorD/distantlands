@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.model._
 
 object GrandMaskCard extends Relic(RelicId("R05"), "Grand Mask", value = 36, defense = 1):
   val power = PrintedPower(PowerId("relic.grand-mask"),

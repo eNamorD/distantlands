@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{ChronicleConvertRequest, ChronicleEntry}
+import distantlands.protocol.{ChronicleConvertRequest, ChronicleEntry}
 import org.scalajs.dom
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import ServerUiSupport.{button, element, text, textField}

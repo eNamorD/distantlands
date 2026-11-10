@@ -1,13 +1,13 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.actions.RecoverRules
-import oathdigital.gameplay.cards.{BrokenPeaksSite, FairIsleSite}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.recover.CatacombsCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.actions.RecoverRules
+import distantlands.gameplay.cards.{BrokenPeaksSite, FairIsleSite}
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.recover.CatacombsCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** A Recover game around Catacombs, for the suites that drive the power
   * through the rules: on the quiet table, p1 in Act at Fair Isle (Recover

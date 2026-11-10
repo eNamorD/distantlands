@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.rest.HolderAdviserLimit
-import oathdigital.model._
+import distantlands.gameplay.{EffectiveSuit, NoteSupport}
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.rest.HolderAdviserLimit
+import distantlands.model._
 
 object AssassinCard extends Denizen(DenizenId("80"), "Assassin", Suit.Discord) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.assassin"),

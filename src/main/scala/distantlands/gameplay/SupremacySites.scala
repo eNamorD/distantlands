@@ -1,6 +1,6 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Each player's count toward Supremacy, for the Oathkeeper title and the
   * Vision of Conquest (Steward of Imperial Domains, CR p. 35): an Exile's

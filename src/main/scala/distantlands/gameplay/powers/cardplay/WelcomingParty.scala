@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object WelcomingPartyCard extends Denizen(DenizenId("50"), "Welcoming Party", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.welcoming-party"),

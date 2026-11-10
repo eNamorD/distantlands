@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import java.nio.file.{Files, Path, Paths}
 

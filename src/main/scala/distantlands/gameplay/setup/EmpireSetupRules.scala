@@ -1,7 +1,7 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.model._
-import oathdigital.model.OathViolation.UnsupportedChronicle
+import distantlands.model._
+import distantlands.model.OathViolation.UnsupportedChronicle
 
 /** Resolves a later game's Empire from its Chronicle and seats. */
 object EmpireSetupRules:

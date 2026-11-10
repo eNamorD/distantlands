@@ -1,10 +1,10 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Unwrap.as
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Unwrap.as
 
 /** `SupplyStrip` finds the actor's Supply payments wherever the cost window
   * holds them (operation rewrite design, slice 2). Pure: no walker. */

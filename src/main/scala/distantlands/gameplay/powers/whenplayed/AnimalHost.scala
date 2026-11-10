@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 object AnimalHostCard extends Denizen(DenizenId("190"), "Animal Host", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.animal-host"),

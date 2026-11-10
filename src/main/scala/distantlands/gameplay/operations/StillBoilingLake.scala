@@ -1,7 +1,7 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import distantlands.model._
 
 object BoilingLakeCard extends Edifice(EdificeId("E24"), Suit.Discord):
   object intact extends EdificeFace("Boiling Lake") with Locked:

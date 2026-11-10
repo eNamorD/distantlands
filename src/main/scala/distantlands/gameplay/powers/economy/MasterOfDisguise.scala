@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   ModifierMark, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.{AsksOnSelection, Contribution,
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.{AsksOnSelection, Contribution,
   ModifierPicks, OfferReason, PowerCtx}
-import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 object MasterOfDisguiseCard extends Denizen(DenizenId("78"), "Master of Disguise", Suit.Arcane) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.master-of-disguise"),

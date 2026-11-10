@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.SearchPlay
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.action.MessengerCard
-import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, MercenariesCard,
+import distantlands.gameplay.SearchPlay
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.action.MessengerCard
+import distantlands.gameplay.powers.campaign.{CodeOfHonorCard, MercenariesCard,
   ShieldWallCard, WrestlersCard}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class NewsFromAfarSuite extends munit.FunSuite:
   import SearchFixture.rules

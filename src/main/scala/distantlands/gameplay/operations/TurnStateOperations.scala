@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Supply, the Visions Drawn track, dice pools and roll outcomes, and the
   * turn, phase and title writes.

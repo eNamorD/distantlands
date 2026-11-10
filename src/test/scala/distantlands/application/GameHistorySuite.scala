@@ -1,8 +1,8 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.{catalog, chronicle, orders}
-import oathdigital.model.OathState
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.{catalog, chronicle, orders}
+import distantlands.model.OathState
+import distantlands.testkit.Unwrap.accepted
 import ParkedServiceFixture.loaded
 
 class GameHistorySuite extends munit.FunSuite:

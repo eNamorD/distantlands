@@ -1,13 +1,13 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked, ModifierMark,
+import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked, ModifierMark,
   PrintsPowers, SiteOnly}
-import oathdigital.gameplay.PlayerSecretSummary
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementationStatus}
-import oathdigital.gameplay.powers.wake.TrackerWake
-import oathdigital.model._
-import oathdigital.protocol.projection._
+import distantlands.gameplay.PlayerSecretSummary
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementationStatus}
+import distantlands.gameplay.powers.wake.TrackerWake
+import distantlands.model._
+import distantlands.protocol.projection._
 
 private[application] final class GamePresentationProjector(
     catalog: ExecutableCatalog

@@ -1,10 +1,10 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.burn.{VowOfDivision, VowOfDivisionCard}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.burn.{VowOfDivision, VowOfDivisionCard}
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** Vow of Kinship's draw (catalog batch 11, slice 5, ruling 9): before a
   * batch runs, a holder's spend that their board cannot cover draws the

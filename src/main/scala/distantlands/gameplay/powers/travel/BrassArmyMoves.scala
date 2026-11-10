@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powerresolver.{Contribution, ExecutedBatch,
+import distantlands.gameplay.powerresolver.{Contribution, ExecutedBatch,
   ExecutedTrigger}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.campaign.BrassArmyCard
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.campaign.BrassArmyCard
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 /** Brass Army (relic R25)'s restriction: "Whenever your pawn moves (travel
   * or place), bury this or flip a secret you have facedown." (catalog batch

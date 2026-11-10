@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Future

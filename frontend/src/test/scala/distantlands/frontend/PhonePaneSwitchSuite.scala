@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import Dom.{all, click, one}
-import oathdigital.protocol.projection.LogKind
+import distantlands.protocol.projection.LogKind
 import org.scalajs.dom
 
 /** On a phone the Actions and Log panes share the bottom of the table and a

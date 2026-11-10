@@ -1,13 +1,13 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx}
-import oathdigital.gameplay.walker.{DeltaPayload, ProcedureWalker,
+import distantlands.gameplay.walker.{DeltaPayload, ProcedureWalker,
   WalkerOutcome, WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.Outcomes.parked
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
+import distantlands.testkit.Outcomes.parked
+import distantlands.testkit.Unwrap.accepted
 
 object OptionRestrictionSuite:
   /** Stub of ContributingPower: one OptionRestriction at one window, nothing

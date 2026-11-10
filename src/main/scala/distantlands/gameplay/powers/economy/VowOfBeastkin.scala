@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, PowerAccess}
-import oathdigital.gameplay.actions.economy.MusterSource
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.{EffectiveSuit, PowerAccess}
+import distantlands.gameplay.actions.economy.MusterSource
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object VowOfBeastkinCard extends Denizen(DenizenId("196"), "Vow of Beastkin", Suit.Beast) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-beastkin"),

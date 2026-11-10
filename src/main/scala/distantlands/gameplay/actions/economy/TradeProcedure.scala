@@ -1,9 +1,9 @@
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.model._
 
 /** Trade on the walker. The start selection is one resource button, `favor`
   * or `secret`, naming what the actor gains: Trade for favor pays one secret

@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.search.LandWardenCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.search.LandWardenCard
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 class DreamThiefSuite extends munit.FunSuite:
   import PhasePowerHarness._

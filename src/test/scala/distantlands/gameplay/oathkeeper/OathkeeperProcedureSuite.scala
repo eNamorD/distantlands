@@ -1,20 +1,20 @@
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay.{OathRules, StateBasedEvaluation, TravelPlay}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.{OathRules, StateBasedEvaluation, TravelPlay}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DesolateShoreSite, DunesSite, FairIsleSite}
-import oathdigital.model.OathEvent.BanditsRefilled
-import oathdigital.model.OathState.Ready
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload,
+import distantlands.model.OathEvent.BanditsRefilled
+import distantlands.model.OathState.Ready
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload,
   ParkedDecisionAssertions, WalkerCompleted, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.MenuPlay
-import oathdigital.testkit.{ActPowerHarness, Outcomes, Table, TakeWealthFixture}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.MenuPlay
+import distantlands.testkit.{ActPowerHarness, Outcomes, Table, TakeWealthFixture}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 class OathkeeperProcedureSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)

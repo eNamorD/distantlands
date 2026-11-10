@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogResolution, PayOrAsk, RulerToll}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, PayOrAsk, RulerToll}
+import distantlands.model._
 
 object ForcedLaborCard extends Denizen(DenizenId("112"), "Forced Labor", Suit.Order) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.forced-labor"),

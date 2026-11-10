@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.economy.VowOfWanderingCard
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class MessengerSuite extends munit.FunSuite:
   private val vow = VowOfWanderingCard.id

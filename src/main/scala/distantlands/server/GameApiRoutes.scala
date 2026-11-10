@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -8,10 +8,10 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import org.slf4j.LoggerFactory
 
-import oathdigital.application.{IdentityFailure, IdentityRepository,
+import distantlands.application.{IdentityFailure, IdentityRepository,
   TrustedSeat}
-import oathdigital.model.PlayerId
-import oathdigital.protocol.projection.LogPageCodec
+import distantlands.model.PlayerId
+import distantlands.protocol.projection.LogPageCodec
 
 /** The game API every transport mounts under its own prefix: `GET` the
   * projection, `POST commands`, `GET log/{after}`. The transport resolves

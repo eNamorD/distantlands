@@ -1,10 +1,10 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.powerresolver.PowerUseStep
-import oathdigital.gameplay.powers.ConsentPowers
-import oathdigital.model._
-import oathdigital.model.OathEvent.{CommandAccepted, ConsentAnswered,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.powerresolver.PowerUseStep
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.model._
+import distantlands.model.OathEvent.{CommandAccepted, ConsentAnswered,
   ConsentPreferenceSet, ConsentPreferencesCleared, ConsentRequestWithdrawn,
   ConsentRequested}
 

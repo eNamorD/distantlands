@@ -1,10 +1,10 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.application.{ChronicleFirstGamePlan, FirstGameBootstrapConfig}
-import oathdigital.gameplay.cards.GreatSlumSite
-import oathdigital.gameplay.powers.setup.HallOfDebateCard
-import oathdigital.model._
-import oathdigital.testkit.Unwrap.{accepted, as, rejected}
+import distantlands.application.{ChronicleFirstGamePlan, FirstGameBootstrapConfig}
+import distantlands.gameplay.cards.GreatSlumSite
+import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.model._
+import distantlands.testkit.Unwrap.{accepted, as, rejected}
 
 class GameStartRulesSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog

@@ -1,12 +1,12 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.wake.TrackerCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.{PlayerId, ReadyGame}
-import oathdigital.protocol.projection.{CardDetailsProjection,
+import distantlands.gameplay.powers.wake.TrackerCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.{PlayerId, ReadyGame}
+import distantlands.protocol.projection.{CardDetailsProjection,
   TrackedPawnProjection}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The pawn a Tracker's holder chose reaches the table on the card, for
   * every viewer, since the choice was made openly (catalog batch 10, slice

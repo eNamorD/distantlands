@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions.challenge
+package distantlands.gameplay.actions.challenge
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** What a Challenge does with the challenged banner's resources before the
   * challenger pays, per banner (rule W: every state-derived effect is a

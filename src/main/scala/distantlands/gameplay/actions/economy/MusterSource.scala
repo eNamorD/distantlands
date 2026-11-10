@@ -1,8 +1,8 @@
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.EffectiveSuit
+import distantlands.model._
 
 /** What a Muster or Trade draws on: the card its cost is placed on, the suit
   * that decides which advisers match and which favor bank a Trade draws from,

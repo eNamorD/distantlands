@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Answered, OathEvent, Operation,
+import distantlands.model.{Answered, OathEvent, Operation,
   OperationRestriction, PlayerId, ReadyGame, Sequence}
 
 /** Command-local walk state: the state threaded through executed deltas,
@@ -16,7 +16,7 @@ private[walker] final case class WalkCtx(
     powers: WalkerPowers,
     dice: WalkerDice,
     /** The procedure of the parked position being resumed. */
-    procedure: Option[oathdigital.model.ProcedureRef],
+    procedure: Option[distantlands.model.ProcedureRef],
     /** The whole action tree, which the search reads. */
     root: Operation,
     /** The states before and after the leaf this command ran last, which

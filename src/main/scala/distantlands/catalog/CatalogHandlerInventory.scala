@@ -1,4 +1,4 @@
-package oathdigital.catalog
+package distantlands.catalog
 
 /** Factual catalog power inventory. It records declared IDs; it does not
   * decide whether or when a power is active.

@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand}
+import distantlands.protocol.{GameIntent => GameCommand}
 import org.scalajs.dom
 import ServerUiSupport.{button, element, text}
 

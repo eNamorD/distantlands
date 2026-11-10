@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, SiteRulers}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx, Restriction}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.model._
+import distantlands.gameplay.{EffectiveSuit, SiteRulers}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx, Restriction}
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.model._
 
 object OakenFortressCard extends Edifice(EdificeId("E28"), Suit.Beast):
   object intact extends EdificeFace("Oaken Fortress") with Locked:

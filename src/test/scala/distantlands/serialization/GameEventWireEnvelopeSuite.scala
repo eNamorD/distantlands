@@ -1,13 +1,13 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.engine.{EventReplayEngine, RecordedEvent}
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture.{catalog,
+import distantlands.engine.{EventReplayEngine, RecordedEvent}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.setup.FirstGameSetupFixture.{catalog,
   setupThroughWake}
-import oathdigital.model._
-import oathdigital.model.OathEvent.{UsurperFlipped, UsurperVictory}
-import oathdigital.serialization.WalkerWireEvents.encodedStream
-import oathdigital.testkit.Unwrap.{accepted, as, rejected}
+import distantlands.model._
+import distantlands.model.OathEvent.{UsurperFlipped, UsurperVictory}
+import distantlands.serialization.WalkerWireEvents.encodedStream
+import distantlands.testkit.Unwrap.{accepted, as, rejected}
 
 /** The event envelope: its fields, ordering, sequences and format version, and
   * the explicit failures for malformed, unsupported and unknown envelopes. */

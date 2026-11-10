@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.{ModifierPlay, PlacementFixture}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerCompleted
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, ParkedNode, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.{ModifierPlay, PlacementFixture}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerCompleted
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, ParkedNode, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Spinning Bee (card 232): declare a suit, then draw from the actor's own
   * discard pile until a card of that suit is drawn. No other Search

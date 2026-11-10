@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogResolution, RuledCards}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, RuledCards}
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 object LostTongueCard extends Denizen(DenizenId("157"), "Lost Tongue", Suit.Nomad) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.lost-tongue"),
@@ -21,7 +21,7 @@ object LostTongueCard extends Denizen(DenizenId("157"), "Lost Tongue", Suit.Noma
   * any way unless they rule a [nomad] card."
   *
   * Each part reads, when it applies, whether the acting player rules a nomad
-  * card ([[oathdigital.gameplay.powers.RuledCards]]):
+  * card ([[distantlands.gameplay.powers.RuledCards]]):
   *
   *  - **Target.** "Target" is a Campaign's target selection only. A Raid's
   *    optional targets (`CampaignTargetSelection`) hide the holder's relics

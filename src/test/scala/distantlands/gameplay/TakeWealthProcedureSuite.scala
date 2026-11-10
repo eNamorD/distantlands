@@ -1,23 +1,23 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.model.OathEvent._
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation._
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.wake.TakeWealthProcedure
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.wake.TakeWealthLimit
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{DeltaPayload, ParkedDecisionAssertions,
+import distantlands.model.OathEvent._
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation._
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.phases.wake.TakeWealthProcedure
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.wake.TakeWealthLimit
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{DeltaPayload, ParkedDecisionAssertions,
   WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table, TakeWealthFixture}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes, Table, TakeWealthFixture}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** Take Wealth on the generic walker (batch 1, Tasks 7-8).
   *
@@ -82,7 +82,7 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
       TakeWealthLimit.useRef(home)))
     parked.assertResumed(transition.state, Phase.Act, actor)
     assertEquals(transition.events.collect {
-      case oathdigital.gameplay.walker.WalkerCompleted(procedure) => procedure
+      case distantlands.gameplay.walker.WalkerCompleted(procedure) => procedure
     }, Vector(ActionRef.TakeWealth, PhaseTransitionRef.EndWake))
     assertEquals(MenuPlay.pendingBeyondMenu(state), None)
     assertEquals(MenuPlay.procedureBeyondMenu(state), None)
@@ -107,7 +107,7 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
     val refilled = result.events.indexWhere(_.isInstanceOf[BanditsRefilled])
     assertEquals(result.events.collect { case event: BanditsRefilled => event }.size, 1)
     assert(refilled >= 0 && refilled < result.events.indexWhere {
-      case oathdigital.gameplay.walker.WalkerCompleted(procedure) =>
+      case distantlands.gameplay.walker.WalkerCompleted(procedure) =>
         procedure == PhaseTransitionRef.EndWake
       case _ => false
     }, result.events.toString)
@@ -190,7 +190,7 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
   test("the recorded operations are the resource move and the use record"):
     val ready = wake(favor = 1, secrets = 1)
     val recorded = took(ready).events.takeWhile {
-      case _: oathdigital.gameplay.walker.WalkerCompleted => false
+      case _: distantlands.gameplay.walker.WalkerCompleted => false
       case _ => true
     }.collect {
       case WalkerStepRecorded(_, DeltaPayload(ops), _) => ops

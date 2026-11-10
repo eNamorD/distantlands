@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.FacedownAdviserPlay
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture,
+import distantlands.gameplay.FacedownAdviserPlay
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{PlacementPicks, Table}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{PlacementPicks, Table}
 
 /** The two ways to play a Vision, each stopped at its placement decision, for
   * the suites of the cards that forbid or reward a faceup Vision.

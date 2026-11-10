@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol._
+import distantlands.protocol._
 import org.scalajs.dom
 import scala.scalajs.js
 

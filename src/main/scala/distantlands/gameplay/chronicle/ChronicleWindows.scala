@@ -1,6 +1,6 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The power window each Chronicle step runs in, in step order (Chronicle
   * steps design, "Windows, not hardcoded actors"). A step is its window's

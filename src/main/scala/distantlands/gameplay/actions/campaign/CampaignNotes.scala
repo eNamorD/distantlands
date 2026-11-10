@@ -1,10 +1,10 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.{BannerRules, ProcedureNotes}
-import oathdigital.gameplay.powers.campaign.AttackScore
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.{BannerRules, ProcedureNotes}
+import distantlands.gameplay.powers.campaign.AttackScore
+import distantlands.model._
 
 /** Every Game Log line a Campaign writes about itself, and what each one
   * reads (procedures journal their own notes design, "Campaign"). The

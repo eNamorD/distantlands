@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.{AdviserFace, CardPlayRules}
-import oathdigital.gameplay.powers.action.{Assassin, PiedPiper}
-import oathdigital.gameplay.powers.cardplay.{FamilyWagon, LostTapestry}
-import oathdigital.gameplay.powers.rest.{Insomnia, SilverTongue}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.{AdviserFace, CardPlayRules}
+import distantlands.gameplay.powers.action.{Assassin, PiedPiper}
+import distantlands.gameplay.powers.cardplay.{FamilyWagon, LostTapestry}
+import distantlands.gameplay.powers.rest.{Insomnia, SilverTongue}
+import distantlands.model._
 
 /** How many advisers a player may hold, for a power that adds an adviser
   * outside card play (Horned Mask).
   *
-  * Card play gets its limit from [[oathdigital.gameplay.actions.CardPlayRules]],
-  * which the [[oathdigital.gameplay.powers.rest.HolderAdviserLimit]] of Silver
+  * Card play gets its limit from [[distantlands.gameplay.actions.CardPlayRules]],
+  * which the [[distantlands.gameplay.powers.rest.HolderAdviserLimit]] of Silver
   * Tongue, of Insomnia and of Assassin narrows. This reads the same facts as
   * a read of state, so the limit is defined once: the default is
   * `CardPlayRules.DefaultAdviserLimit`, and the lowest limit a held card sets

@@ -1,16 +1,16 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.{CampaignDicePort, EventStreamRepository,
+import distantlands.application.{CampaignDicePort, EventStreamRepository,
   GameCommand, GameApplicationService}
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.rest.RoundEndRandomPort
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
-import oathdigital.gameplay.walker.{WalkerDice, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.phases.rest.RoundEndRandomPort
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
+import distantlands.gameplay.walker.{WalkerDice, WalkerPowers}
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** One thing a situation is reached by. */
 enum Step:

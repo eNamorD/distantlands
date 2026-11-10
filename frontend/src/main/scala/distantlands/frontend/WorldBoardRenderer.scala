@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand}
+import distantlands.protocol.{GameIntent => GameCommand}
 import org.scalajs.dom
 import ServerUiSupport._
 
@@ -97,7 +97,7 @@ private[frontend] object WorldBoardRenderer:
       val slots = element("div", "player-slots")
       value.oathkeeper.filter(_.holderPlayerId.contains(player.playerId))
         .foreach { oath =>
-          val presented = oathdigital.protocol.projection
+          val presented = distantlands.protocol.projection
             .OathkeeperPresentation.byGoal.get(oath.goal)
           val pill = button(oath.side.capitalize, s"player-title title-${oath.side}")
           val title = presented.fold(oath.goal)(_.title)
@@ -302,7 +302,7 @@ private[frontend] object WorldBoardRenderer:
       labelX, labelY, markerX, markerY)
 
   private def roundTracker(value: GameProjection,
-      track: oathdigital.protocol.projection.GameTracksProjection): dom.Element =
+      track: distantlands.protocol.projection.GameTracksProjection): dom.Element =
     val section = element("section", "round-tracker")
     val first = playerReference(value, track.firstPlayerId)
     section.setAttribute("aria-label", s"Round ${track.round} of 8; " +
@@ -373,7 +373,7 @@ private[frontend] object WorldBoardRenderer:
     value.oathkeeper.foreach { oath =>
       val status = element("p", "oathkeeper-status")
       status.appendChild(text("span", "oathkeeper-goal",
-        oathdigital.protocol.projection.OathkeeperPresentation.title(oath.goal)))
+        distantlands.protocol.projection.OathkeeperPresentation.title(oath.goal)))
       status.appendChild(text("span", "oathkeeper-holder",
         s"${oath.side.capitalize}: ${oath.holderPlayerId.getOrElse("unheld")}"))
       section.appendChild(status)

@@ -1,14 +1,14 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignPlans, CampaignSetup}
-import oathdigital.gameplay.powers.campaign.{BattlePlans, BrassArmy,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignPlans, CampaignSetup}
+import distantlands.gameplay.powers.campaign.{BattlePlans, BrassArmy,
   BrassArmyCard, Outriders, OutridersCard, PlanContext, TitleDefensePlan,
   Watchdog, WatchdogCard}
-import oathdigital.gameplay.powers.search.AuguryCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Unwrap.present
+import distantlands.gameplay.powers.search.AuguryCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Unwrap.present
 
 /** What the ported plans offer, asked directly: where a plan's card must stand,
   * what it costs and what it does. Whether the user can pay, and how a plan is
@@ -200,7 +200,7 @@ class CampaignPlansSuite extends munit.FunSuite:
       DecisionOptionRef.Button("title"), "the words"))
 
   test("a plan's badge names the side or sides that may use it"):
-    import oathdigital.model.CampaignPlanSide._
+    import distantlands.model.CampaignPlanSide._
     assertEquals(CampaignPlans.badgeOf(Set(Attacker)), Some("Attack Plan"))
     assertEquals(CampaignPlans.badgeOf(Set(Defender)), Some("Defense Plan"))
     assertEquals(CampaignPlans.badgeOf(Set(Attacker, Defender)),

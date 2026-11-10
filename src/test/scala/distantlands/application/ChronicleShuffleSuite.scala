@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.testkit.ChronicleShuffles.reversing
+import distantlands.testkit.ChronicleShuffles.reversing
 
 class ChronicleShuffleSuite extends munit.FunSuite:
   test("implemented-first puts every implemented card ahead of every other"):

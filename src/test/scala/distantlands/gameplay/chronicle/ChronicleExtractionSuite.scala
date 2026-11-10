@@ -1,13 +1,13 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.action.{BookOfRecordsCard, BrassHorseCard,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.action.{BookOfRecordsCard, BrassHorseCard,
   FaeMerchantCard}
-import oathdigital.gameplay.powers.setup.HallOfDebateCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** Reading the finished table into the Chronicle's table fields (Chronicle
   * steps design, "Exit and extraction"; Chronicle rulings 17 and 18). */

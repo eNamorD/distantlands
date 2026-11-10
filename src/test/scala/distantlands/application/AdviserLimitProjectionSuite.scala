@@ -1,13 +1,13 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.action.{EldersCard, PiedPiperCard}
-import oathdigital.gameplay.powers.campaign.{LancersCard, RainBootsCard}
-import oathdigital.gameplay.powers.cardplay.{FamilyWagonCard, LostTapestryCard}
-import oathdigital.gameplay.powers.rest.{InsomniaCard, SilverTongueCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.action.{EldersCard, PiedPiperCard}
+import distantlands.gameplay.powers.campaign.{LancersCard, RainBootsCard}
+import distantlands.gameplay.powers.cardplay.{FamilyWagonCard, LostTapestryCard}
+import distantlands.gameplay.powers.rest.{InsomniaCard, SilverTongueCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Each player board says how many adviser slots to draw (card play slots
   * design, "Projection"). */

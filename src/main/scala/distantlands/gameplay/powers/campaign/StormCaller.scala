@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
 
 object StormCallerCard extends Denizen(DenizenId("167"), "Storm Caller", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.storm-caller"),

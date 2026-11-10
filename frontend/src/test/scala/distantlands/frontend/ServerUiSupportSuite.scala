@@ -1,8 +1,8 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.ServerModeFixtures.twoSeatProjection
-import oathdigital.frontend.TestSites.*
-import oathdigital.model.PlayerColor
+import distantlands.frontend.ServerModeFixtures.twoSeatProjection
+import distantlands.frontend.TestSites.*
+import distantlands.model.PlayerColor
 
 import munit.FunSuite
 

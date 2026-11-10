@@ -1,12 +1,12 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery, DistributeAmount, DistributeSlot, NegotiationBounds, NegotiationTerms, OathViolation, PlayerId}
+import distantlands.model.{DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery, DistributeAmount, DistributeSlot, NegotiationBounds, NegotiationTerms, OathViolation, PlayerId}
 
 /** The whole generic decision contract: whether a declared query is
   * answerable at all, and whether a submitted answer satisfies it.
   *
   * It lives in gameplay rather than beside the vocabulary it validates
-  * because it returns typed [[oathdigital.model.OathViolation]]s, which the model may not name
+  * because it returns typed [[distantlands.model.OathViolation]]s, which the model may not name
   * (plan ruling R3), and in its own object rather than in `ProcedureWalker`
   * because that file is already at the line cap.
   *
@@ -363,9 +363,9 @@ object DecisionQueries:
         yield ()
 
   private def acceptsPartition(decisionId: String,
-      sections: Map[String, oathdigital.model.DecisionSection],
+      sections: Map[String, distantlands.model.DecisionSection],
       declared: Vector[DecisionOptionRef],
-      placements: Vector[oathdigital.model.DecisionPlacement])
+      placements: Vector[distantlands.model.DecisionPlacement])
       : Either[OathViolation, Unit] =
     val placed = placements.map(_.option)
     for

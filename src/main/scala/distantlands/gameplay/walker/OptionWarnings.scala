@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Decide, DecisionOption}
+import distantlands.model.{Decide, DecisionOption}
 
 /** The warnings the offered powers give a choose-one's options (follow-up
   * actions design, ruling 10). The first power's warning wins. An option

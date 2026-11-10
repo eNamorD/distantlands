@@ -1,4 +1,4 @@
-package oathdigital.protocol
+package distantlands.protocol
 
 import scala.util.control.NonFatal
 
@@ -48,7 +48,7 @@ final case class ActorlessCommandRequest(
 
 final case class BootstrapParticipantRequest(
     playerId: String,
-    color: oathdigital.model.PlayerColor
+    color: distantlands.model.PlayerColor
 )
 final case class FirstGameBootstrapRequest(
     expectedNextSequence: Long,

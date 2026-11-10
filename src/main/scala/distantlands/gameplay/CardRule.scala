@@ -1,8 +1,8 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{ModifierMark, PrintedPower}
-import oathdigital.gameplay.cards.NewFoundations
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower}
+import distantlands.gameplay.cards.NewFoundations
+import distantlands.model._
 
 /** Who rules a card at a site (catalog batch 11, slice 2): the site's
   * ruling player (`SiteRule.rulingPlayer`), except that while the Grand

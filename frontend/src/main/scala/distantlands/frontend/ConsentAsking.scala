@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
+import distantlands.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
 import org.scalajs.dom
 
 /** Asking for consent from the table (consent design, user story steps 1

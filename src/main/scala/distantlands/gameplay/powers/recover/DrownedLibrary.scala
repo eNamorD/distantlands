@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.gameplay.actions.recover.{RecoverProcedure,
+import distantlands.gameplay.actions.recover.{RecoverProcedure,
   UndergroundLibraryCard}
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{Contribution, OfferReason,
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{Contribution, OfferReason,
   OnEdificeFace, PowerCtx, PowerUse}
-import oathdigital.gameplay.powers.{CatalogResolution, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, SelectedModifier}
+import distantlands.model._
 
 /** Drowned Library (E13, ruined), a Recover modifier for 1 secret: "If your
   * pawn is at this site, you may recover the top card of the relic deck

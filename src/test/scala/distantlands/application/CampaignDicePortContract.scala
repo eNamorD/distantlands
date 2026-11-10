@@ -1,7 +1,7 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.{AttackDieFace, DefenseDieFace, RoundDieFace}
-import oathdigital.testkit.Dice
+import distantlands.model.{AttackDieFace, DefenseDieFace, RoundDieFace}
+import distantlands.testkit.Dice
 
 /** What every `CampaignDicePort` promises (the trait's doc): a pool of `n`
   * dice rolls `n` faces, and a shuffle of `n` cards is a permutation of

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.model._
 
 /** The standard discard of a denizen a battle plan used, once the plan is spent:
   * the card goes facedown to the discard pile of the region after the card's own

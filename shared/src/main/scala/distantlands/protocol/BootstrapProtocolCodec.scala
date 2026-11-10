@@ -1,4 +1,4 @@
-package oathdigital.protocol
+package distantlands.protocol
 
 import scala.util.control.NonFatal
 import ProtocolDecodeFailure._
@@ -40,7 +40,7 @@ object FirstGameBootstrapCodec:
               _ <- exact(value, Set("playerId", "color"), path)
               player <- CommandJsonSupport.string(value, "playerId", path)
               color <- CommandJsonSupport.string(value, "color", path).flatMap(key =>
-                oathdigital.model.PlayerColor.fromKey(key).toRight(
+                distantlands.model.PlayerColor.fromKey(key).toRight(
                   InvalidValue(s"$path.color", s"unknown player color '$key'")))
             yield done :+ BootstrapParticipantRequest(player, color))
           case (Right(_), (_, index)) => Left(ExpectedObject(s"$$.participants[$index]"))

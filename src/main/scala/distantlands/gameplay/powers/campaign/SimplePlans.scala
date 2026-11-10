@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that change the dice, or pay after the Campaign, and need
   * nothing beyond the plan window: Mercenaries, Wrestlers, Fearsome Shield, the

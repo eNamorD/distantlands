@@ -1,10 +1,10 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy,
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy,
   OperationRun}
-import oathdigital.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
+import distantlands.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
   ContributingPower, FollowsArrivals}
-import oathdigital.model.{NoteStates, OathViolation, PowerId, ReadyGame}
+import distantlands.model.{NoteStates, OathViolation, PowerId, ReadyGame}
 
 /** The adviser arrival pass (catalog batch 5, "The arrival pass"). After a
   * leaf's operations apply, the advisers that arrived in it, new to a player

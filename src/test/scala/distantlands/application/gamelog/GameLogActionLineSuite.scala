@@ -1,20 +1,20 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
-import oathdigital.gameplay.powers.search.{ErrandBoyCard, NewGrowth,
+import distantlands.gameplay.powers.search.{ErrandBoyCard, NewGrowth,
   NewGrowthCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.LogNoted
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.protocol.projection.{LogKind, LogSpan}
-import oathdigital.testkit.{Answers, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.LogNoted
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.protocol.projection.{LogKind, LogSpan}
+import distantlands.testkit.{Answers, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts._
 import CaptainsLogScripts._
 

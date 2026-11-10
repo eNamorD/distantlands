@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
-import oathdigital.gameplay.powers.search.BrackenCard
-import oathdigital.gameplay.powers.whenplayed.AutumnWindCard
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.powers.search.BrackenCard
+import distantlands.gameplay.powers.whenplayed.AutumnWindCard
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
   DeepWoodsSite, DesolateShoreSite}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Walled Garden: a free, site-only defender's plan for one defense die per
   * beast card at any site, offered only when its site is a Conquest target. */

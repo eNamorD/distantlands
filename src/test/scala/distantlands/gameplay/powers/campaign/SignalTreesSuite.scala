@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.{HomesteadersCard, OracleCard,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.{HomesteadersCard, OracleCard,
   TavernSongsCard, WildAlliesCard, WolvesCard}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Signal Trees: a secret placed; the top three cards of the user's
   * region's discard pile are revealed and discarded, for two attack dice

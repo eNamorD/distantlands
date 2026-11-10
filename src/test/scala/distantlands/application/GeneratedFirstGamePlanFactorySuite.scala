@@ -1,10 +1,10 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.PowerImplementationStatus
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
-import oathdigital.model._
-import oathdigital.testkit.ChronicleShuffles
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.PowerImplementationStatus
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.model._
+import distantlands.testkit.ChronicleShuffles
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
@@ -86,7 +86,7 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     LineageState(LineageId(id), None, role, Vector.empty, Vector.empty)
 
   private def seatedFirst(lineages: Vector[LineageState],
-      random: oathdigital.application.ChronicleRandomPort) =
+      random: distantlands.application.ChronicleRandomPort) =
     accepted(new GeneratedFirstGamePlanFactory(catalog, random).build(config,
       ChronicleChoice.Saved(FirstGameSetupFixture.chronicle.copy(
         lineages = lineages)))).resolvedConfig.firstPlayer
@@ -103,7 +103,7 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     // of the seated Citizens.
     val citizens = Vector(lineage("l9", Role.Chancellor),
       lineage("l1", Role.Citizen), lineage("l3", Role.Citizen))
-    val reversingCitizens = new oathdigital.application.ChronicleRandomPort:
+    val reversingCitizens = new distantlands.application.ChronicleRandomPort:
       def shuffle[A](values: Vector[A]): Vector[A] =
         if values.size == 2 then values.reverse else values
     assertEquals(seatedFirst(citizens, ChronicleShuffles.unshuffled),

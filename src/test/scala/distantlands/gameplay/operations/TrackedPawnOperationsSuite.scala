@@ -1,9 +1,9 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
-import oathdigital.testkit.{RawOperationBatch, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.model._
+import distantlands.testkit.{RawOperationBatch, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** The Tracker's record across turns (catalog batch 10, slice 14):
   * `TrackPawn` writes the holder's choice and `ClearTrackedPawn` removes

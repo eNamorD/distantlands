@@ -1,14 +1,14 @@
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.RawOperationBatch
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.RawOperationBatch
 
 /** Becoming a Citizen or the Chancellor, and exile (CR p. 34; Empire phase
   * design, "Slice 3"). */

@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.chronicle.ChronicleEntries
-import oathdigital.gameplay.chronicle.EvolvedChronicleFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.OathState
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.application.chronicle.ChronicleEntries
+import distantlands.gameplay.chronicle.EvolvedChronicleFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.OathState
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** The Chronicle every seat sees (Chronicle browsing design, "Projection"). */
 class ChronicleProjectionSuite extends munit.FunSuite:

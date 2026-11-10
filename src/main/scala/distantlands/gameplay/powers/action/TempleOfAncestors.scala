@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.actions.PlacementLimit
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.PlacementLimit
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object TempleOfAncestorsCard extends Edifice(EdificeId("E10"), Suit.Nomad):
   object intact extends EdificeFace("Temple of Ancestors") with Locked:

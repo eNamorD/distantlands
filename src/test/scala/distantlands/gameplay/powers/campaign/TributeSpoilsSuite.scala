@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.whenplayed.RoyalTaxCard
-import oathdigital.gameplay.roles.CouncilSeatCard
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.powers.whenplayed.RoyalTaxCard
+import distantlands.gameplay.roles.CouncilSeatCard
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Tribute Spoils: a plan for either side, a favor placed, offered only in a
   * Conquest. If its user wins, they gain a favor for each denizen and edifice

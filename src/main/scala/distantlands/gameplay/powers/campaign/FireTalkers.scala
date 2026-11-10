@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
 
 object FireTalkersCard extends Denizen(DenizenId("31"), "Fire Talkers", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.fire-talkers"),

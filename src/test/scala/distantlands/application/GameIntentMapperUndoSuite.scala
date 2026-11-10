@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.protocol.GameIntent
+import distantlands.protocol.GameIntent
 
 class GameIntentMapperUndoSuite extends munit.FunSuite:
   test("an Undo intent maps to Undo"):

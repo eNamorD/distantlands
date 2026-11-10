@@ -1,11 +1,11 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.{SelectedModifier, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.challenge.SchoolOfVines
-import oathdigital.gameplay.powers.recover.{CatacombsContribution,
+import distantlands.gameplay.powers.{SelectedModifier, WalkerPowerCatalog}
+import distantlands.gameplay.powers.challenge.SchoolOfVines
+import distantlands.gameplay.powers.recover.{CatacombsContribution,
   DrownedLibrary}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 /** The catalog's `persistent` flag against the resolution every registered
   * walker power declares. A modifier is catalogued `persistent: false` and
@@ -52,56 +52,56 @@ class PowerKindsCatalogSuite extends munit.FunSuite:
   test("Dazzle is a When Played power whatever its flag: it must fire on the " +
       "play, so it does not derive its resolution from the flag"):
     assertEquals(flag("denizen.dazzle"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.whenplayed.Dazzle.resolution,
+    assertEquals(distantlands.gameplay.powers.whenplayed.Dazzle.resolution,
       PowerResolution.Automatic)
 
   test("Vow of Obedience's rule is automatic whatever its flag: the flag is " +
       "false because of its REST"):
     assertEquals(flag("denizen.vow-of-obedience"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.cardplay.VowOfObedience
+    assertEquals(distantlands.gameplay.powers.cardplay.VowOfObedience
       .resolution, PowerResolution.Automatic)
 
   test("Pied Piper's limit is automatic whatever its flag: the flag is " +
       "false because of its ACTION"):
     assertEquals(flag("denizen.pied-piper"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.action.PiedPiper.resolution,
+    assertEquals(distantlands.gameplay.powers.action.PiedPiper.resolution,
       PowerResolution.Automatic)
 
   test("Chaos Cult is a persistent rule and fires on every title change"):
     assertEquals(flag("denizen.chaos-cult"), Some(true))
-    assertEquals(oathdigital.gameplay.powers.title.ChaosCult
+    assertEquals(distantlands.gameplay.powers.title.ChaosCult
       .resolution, PowerResolution.Automatic)
 
   test("Tyrant's rule is automatic whatever its flag: it is a must, not a " +
       "modifier"):
     assertEquals(flag("denizen.tyrant"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.travel.Tyrant.resolution,
+    assertEquals(distantlands.gameplay.powers.travel.Tyrant.resolution,
       PowerResolution.Automatic)
 
   test("Hospitality's rule is automatic whatever its flag: it is a must, " +
       "not a modifier"):
     assertEquals(flag("denizen.hospitality"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.travel.Hospitality.resolution,
+    assertEquals(distantlands.gameplay.powers.travel.Hospitality.resolution,
       PowerResolution.Automatic)
 
   test("Keep's rule is automatic whatever its flag: it is a must, not a " +
       "modifier"):
     assertEquals(flag("denizen.keep"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.campaign.KeepRule.resolution,
+    assertEquals(distantlands.gameplay.powers.campaign.KeepRule.resolution,
       PowerResolution.Automatic)
 
   test("Vow of Beastkin's rule is automatic whatever its flag"):
     assertEquals(flag("denizen.vow-of-beastkin"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.economy.VowOfBeastkin.resolution,
+    assertEquals(distantlands.gameplay.powers.economy.VowOfBeastkin.resolution,
       PowerResolution.Automatic)
 
   test("Vow of Wandering's Muster power is automatic whatever its flag"):
     assertEquals(flag("denizen.vow-of-wandering.muster"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.economy.VowOfWanderingMuster
+    assertEquals(distantlands.gameplay.powers.economy.VowOfWanderingMuster
       .resolution, PowerResolution.Automatic)
 
   test("Vow of Poverty's rule is automatic whatever its flag: the flag is " +
       "false because of its REST"):
     assertEquals(flag("denizen.vow-of-poverty"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.economy.VowOfPoverty.resolution,
+    assertEquals(distantlands.gameplay.powers.economy.VowOfPoverty.resolution,
       PowerResolution.Automatic)

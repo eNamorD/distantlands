@@ -1,7 +1,7 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** Gather Denizens, the World's second step (CR p. 38). Every adviser and
   * every discard pile goes into the gathering pile, the tokens on an

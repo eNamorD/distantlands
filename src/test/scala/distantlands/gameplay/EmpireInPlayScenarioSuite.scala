@@ -1,16 +1,16 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.application._
-import oathdigital.gameplay.actions.minor.MinorActionProcedures
-import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
-import oathdigital.gameplay.powers.PayOrAsk
-import oathdigital.gameplay.powers.travel.{TollRoads, TollRoadsCard}
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Commands, Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.application._
+import distantlands.gameplay.actions.minor.MinorActionProcedures
+import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
+import distantlands.gameplay.powers.PayOrAsk
+import distantlands.gameplay.powers.travel.{TollRoads, TollRoadsCard}
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{Commands, Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** A Citizen's turn and the Exile's after it, played through the service on
   * a table where the Empire holds two sites (Empire slice 1a): the Citizen

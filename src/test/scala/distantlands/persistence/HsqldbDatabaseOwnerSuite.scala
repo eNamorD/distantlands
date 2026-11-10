@@ -1,4 +1,4 @@
-package oathdigital.persistence
+package distantlands.persistence
 
 import java.nio.file.{Files, Path}
 import java.sql.DriverManager
@@ -7,9 +7,9 @@ import java.util.concurrent.CountDownLatch
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-import oathdigital.application._
-import oathdigital.application.MembershipRole.Player
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application._
+import distantlands.application.MembershipRole.Player
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class HsqldbDatabaseOwnerSuite extends munit.FunSuite:
   private given executionContext: ExecutionContext =
@@ -121,7 +121,7 @@ class HsqldbDatabaseOwnerSuite extends munit.FunSuite:
         Right(Some(GameMembership(
           "game-reopen",
           UserId("owner"),
-          oathdigital.application.MembershipRole.Owner,
+          distantlands.application.MembershipRole.Owner,
           None
         )))
       )

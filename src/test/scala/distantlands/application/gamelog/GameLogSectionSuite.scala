@@ -1,8 +1,8 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogEntry}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.model._
+import distantlands.protocol.projection.{LogEntry}
 import LogScripts._
 
 /** Which entries share a band (log action sections design, "Server"): every

@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.gameplay.powers.economy.VowOfWandering
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.model._
 
 object HospitalCard extends Denizen(DenizenId("149"), "Hospital", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.hospital"),

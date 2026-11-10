@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 private[frontend] final case class MapBounds(
     viewWidth: Double, viewHeight: Double, contentWidth: Double, contentHeight: Double):

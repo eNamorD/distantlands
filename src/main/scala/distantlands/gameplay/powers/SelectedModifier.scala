@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.{Denizen, PrintedPower, Relic}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.catalog.{Denizen, PrintedPower, Relic}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, PowerCtx, PowerUse}
-import oathdigital.model._
+import distantlands.model._
 
 /** A power the player picks for a major action in the walk's modifier
   * decision (modifier walker design), and that then applies to that action

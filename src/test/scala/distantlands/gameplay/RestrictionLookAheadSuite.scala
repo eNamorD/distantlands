@@ -1,14 +1,14 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{OfferHost, PowerCtx}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers,
+import distantlands.gameplay.powerresolver.{OfferHost, PowerCtx}
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers,
   WalkerSimulation}
-import oathdigital.model._
-import oathdigital.testkit.PowerStubs.RestrictionStub
-import oathdigital.testkit.Table
-import oathdigital.testkit.Outcomes
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.DecisionOptions.button
+import distantlands.model._
+import distantlands.testkit.PowerStubs.RestrictionStub
+import distantlands.testkit.Table
+import distantlands.testkit.Outcomes
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.DecisionOptions.button
 
 /** The walker hides an option whose answer would break a `Restriction`, even
   * when the restriction's window exists only once that answer is given, so a

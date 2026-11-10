@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.{PlacementFixture, PowerAccess}
-import oathdigital.gameplay.actions.{CardPlayRules, RuleNotes}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.operations.{AncientBloodlineCard,
+import distantlands.gameplay.{PlacementFixture, PowerAccess}
+import distantlands.gameplay.actions.{CardPlayRules, RuleNotes}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.operations.{AncientBloodlineCard,
   HallOfMinistersCard}
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.campaign.CodeOfHonorCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PlacementPicks, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Forest Warden (card 218), a selected Search modifier: "If you play a
   * [suit-beast] card to a site, you may bury a card at the site first." */

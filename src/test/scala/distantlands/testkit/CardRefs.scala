@@ -1,8 +1,8 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.catalog.{Denizen, Edifice, Legacy, Relic, Site}
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
+import distantlands.catalog.{Denizen, Edifice, Legacy, Relic, Site}
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
 
 /** A card or site as a test names it: by its catalog object
   * (`AlchemistCard`, `DeepWoodsSite`), so the code reads the card's name,

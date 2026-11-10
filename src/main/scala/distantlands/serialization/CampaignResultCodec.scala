@@ -1,6 +1,6 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
+import distantlands.model._
 import scala.util.control.NonFatal
 
 /** Wire spelling of [[CampaignResult]], for the `record-campaign-result`

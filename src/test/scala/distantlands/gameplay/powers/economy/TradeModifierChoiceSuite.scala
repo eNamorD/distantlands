@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{EconomyActions, Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{EconomyActions, Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Trade asks for its modifiers inside the walk, after its resource
   * (modifier walker design, slice 3). */

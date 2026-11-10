@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.testkit.ChronicleShuffles
+import distantlands.testkit.ChronicleShuffles
 
 /** What every `ChronicleRandomPort` promises (the trait's doc): a shuffle
   * returns the same values in some order. The real random port and the shared

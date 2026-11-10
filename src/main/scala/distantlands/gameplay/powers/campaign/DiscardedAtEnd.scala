@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model.{NoteKey, Operation, PowerWindow}
+import distantlands.model.{NoteKey, Operation, PowerWindow}
 
 /** A battle plan whose card says "At end, discard": the card goes to a
   * discard pile once the Campaign has resolved, whoever won, and the plan

@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** The three task cards a player can hold in the Chronicle (CR p. 36). The
   * Sun and the Stars are resolved by no holder. */

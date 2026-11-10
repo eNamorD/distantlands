@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent => GameCommand}
+import distantlands.protocol.{DecisionAnswerWire, GameIntent => GameCommand}
 import org.scalajs.dom
 
 /** The deal panel for a parked negotiation. Every viewer sees who is in the

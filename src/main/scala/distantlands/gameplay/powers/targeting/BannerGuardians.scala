@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.CardRule
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.CardRule
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx}
-import oathdigital.gameplay.powers.setup.{HallOfDebateCard,
+import distantlands.gameplay.powers.setup.{HallOfDebateCard,
   TomeGuardiansCard}
-import oathdigital.model._
+import distantlands.model._
 
 /** A persistent rule of an intact edifice face that keeps a banner its
   * ruler holds from being targeted by the ruler's enemies (catalog batch 9,

@@ -1,13 +1,13 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ChoicePayload, WalkerCompleted,
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ChoicePayload, WalkerCompleted,
   WalkerParked, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
-import oathdigital.protocol.projection.{LogKind, LogSpan}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
+import distantlands.protocol.projection.{LogKind, LogSpan}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts._
 
 import scala.concurrent.duration.{Duration, DurationInt}
@@ -91,7 +91,7 @@ class GameLogPropertiesSuite extends munit.FunSuite:
     * Campaign's losses post at completion). The states a card may be
     * identified in are therefore every state from the run's first event
     * through the posting event. */
-  private def runStates(steps: Vector[oathdigital.engine.ReplayStep[OathState,
+  private def runStates(steps: Vector[distantlands.engine.ReplayStep[OathState,
       OathEvent]], at: Int): Vector[OathState] =
     val first = (at - 1 to 0 by -1).find(index =>
       steps(index).event.event.isInstanceOf[WalkerCompleted]).fold(0)(_ + 1)
@@ -218,7 +218,7 @@ class GameLogPropertiesSuite extends munit.FunSuite:
   /** The card a span's id names, found among the cards either side of its
     * step. */
   private def cardId(value: String,
-      step: oathdigital.engine.ReplayStep[OathState, OathEvent])
+      step: distantlands.engine.ReplayStep[OathState, OathEvent])
       : Option[CardId] =
     Vector(step.before, step.after).collectFirst {
       case OathState.Ready(ready) => CardIndex.from(ready.game).toOption

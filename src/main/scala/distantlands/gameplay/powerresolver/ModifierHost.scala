@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{DecisionOptionRef, Operation}
+import distantlands.model.{DecisionOptionRef, Operation}
 
 /** An action's modifier decision, as a power judged there finds it at
   * `PowerCtx.operation`. It names what the player selected when the action

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powerresolver.PhasePower
 
 /** The phase powers of slice 1d, registered by
-  * [[oathdigital.gameplay.powers.PhasePowerCatalog]] through this one object,
+  * [[distantlands.gameplay.powers.PhasePowerCatalog]] through this one object,
   * like [[DiceAndRelicDrawPowers]] and [[TargetPowers]].
   */
 object MovementPowers:

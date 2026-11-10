@@ -1,23 +1,23 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.{DeepWoodsSite, FairIsleSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.campaign.{ArcaneArmorCard, BattleHonorsCard,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.cards.{DeepWoodsSite, FairIsleSite}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.campaign.{ArcaneArmorCard, BattleHonorsCard,
   FireTalkersCard, GleamingArmorCard, WatchdogCard}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ParkedNode, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.powers.dice.JinxCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ParkedNode, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Spell Breaker over battle plans and rerolls (catalog batch 8, slice
   * 10): a refused plan is withheld with the plain reason, since nobody is

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object AutumnWindCard extends Denizen(DenizenId("213"), "Autumn Wind", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.autumn-wind"),

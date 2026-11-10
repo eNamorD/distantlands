@@ -1,9 +1,9 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.p1
 
 class ChallengeProjectionSuite extends munit.FunSuite:
   /** p1, in Act, has 6 favor, 6 faceup and 4 facedown secrets and the

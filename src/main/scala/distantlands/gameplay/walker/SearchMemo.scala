@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Answered, DecisionAnswer, OathViolation, Operation,
+import distantlands.model.{Answered, DecisionAnswer, OathViolation, Operation,
   PlayerId, ProcedureRef, ReadyGame}
 
 /** The verdicts of the searches one [[WalkerPowers]] instance has run (global

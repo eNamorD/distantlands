@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent => Intent}
+import distantlands.model.PlayerColor
+import distantlands.protocol.{DecisionAnswerWire, GameIntent => Intent}
 import Dom.{all, click, one, press}
 import ParkedDecision.{Routed, Surface}
 import TestProjections.actingProjection

@@ -1,13 +1,13 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.{MinesSite, NarrowPassSite}
-import oathdigital.gameplay.powers.travel.TravelFixture
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentPreferenceSet,
+import distantlands.gameplay.cards.{MinesSite, NarrowPassSite}
+import distantlands.gameplay.powers.travel.TravelFixture
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentPreferenceSet,
   ConsentPreferencesCleared}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.Commands
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Commands
 
 /** Consent preferences through the service (consent design, rulings 15 to
   * 18, "Undo" and plan decision 1). */

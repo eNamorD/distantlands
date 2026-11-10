@@ -1,7 +1,7 @@
-package oathdigital.gameplay.consent
+package distantlands.gameplay.consent
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
 
 /** Folds the consent facts into `ReadyGame.consent` (consent design,

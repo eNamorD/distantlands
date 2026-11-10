@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{AutomaticUse, Operation, PendingTree, ReadyGame}
+import distantlands.model.{AutomaticUse, Operation, PendingTree, ReadyGame}
 
 /** The automatic use whose power-use step a walk is parked at (automatic
   * power consent design, "Reaching the step"). The step is the first child

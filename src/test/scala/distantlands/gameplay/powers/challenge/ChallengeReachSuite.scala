@@ -1,21 +1,21 @@
-package oathdigital.gameplay.powers.challenge
+package distantlands.gameplay.powers.challenge
 
-import oathdigital.catalog.ModifierMark
-import oathdigital.gameplay.{ModifierPlay, OathRules}
-import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
+import distantlands.catalog.ModifierMark
+import distantlands.gameplay.{ModifierPlay, OathRules}
+import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   ChallengeReach, SchoolOfVinesCard, SigilOfTheEyeCard, SigilOfTheHeartCard}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ModifierChoice
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ModifierChoice
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   ParkedNode, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** School of Vines (E27, intact), Sigil of the Eye (R43) and Sigil of the
   * Heart (R44): free Challenge modifiers that lift the pawn-site

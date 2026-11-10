@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powers.ConsentPowers
-import oathdigital.model._
-import oathdigital.protocol.projection.{CardDetailsProjection,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.model._
+import distantlands.protocol.projection.{CardDetailsProjection,
   ConsentAlternativeProjection, ConsentAskProjection,
   DecisionOptionProjection}
 

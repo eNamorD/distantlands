@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.model._
 
 object NaysayersCard extends Denizen(DenizenId("21"), "Naysayers", Suit.Discord) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.naysayers"),

@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 object CircletOfCommandCard extends Relic(RelicId("R15"), "Circlet of Command", value = 12, defense = 0):
   val power = PrintedPower(PowerId("relic.circlet-of-command"),

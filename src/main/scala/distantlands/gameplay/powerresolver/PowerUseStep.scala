@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The question an automatic power's use waits on when only waivable
   * restrictions refuse it (automatic power consent design, "The power-use

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.{BanditCrownRule, SiteRulers}
-import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx,
+import distantlands.gameplay.{BanditCrownRule, SiteRulers}
+import distantlands.gameplay.powerresolver.{OptionRestriction, PowerCtx,
   Waiver}
-import oathdigital.model._
+import distantlands.model._
 
 /** A toll or penalty a card's ruling player, or the Bandit Crown's holder
   * under bandits, may waive (consent design, "Toll and penalty steps"). When

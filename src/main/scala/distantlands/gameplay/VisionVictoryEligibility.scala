@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.model._
+import distantlands.gameplay.actions.VisionRules
+import distantlands.model._
 
 /** CR pp. 16-17, 19: the one authoritative true-Vision qualification rule. */
 object VisionVictoryEligibility:

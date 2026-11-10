@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** A board's secrets burnt down to the number its player keeps, for Book
   * Burning and Ancient Binding. A burn takes faceup secrets unless it names

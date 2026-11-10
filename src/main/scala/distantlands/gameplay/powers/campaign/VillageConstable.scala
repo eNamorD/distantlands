@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.model._
 
 object VillageConstableCard extends Denizen(DenizenId("132"), "Village Constable", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.village-constable"),

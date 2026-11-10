@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.setup
+package distantlands.gameplay.powers.setup
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
-import oathdigital.gameplay.powers.RelicDraws
-import oathdigital.model._
+import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
+import distantlands.gameplay.powers.RelicDraws
+import distantlands.model._
 
 object GreatForgeCard extends Edifice(EdificeId("E06"), Suit.Nomad):
   object intact extends EdificeFace("Great Forge") with Locked:

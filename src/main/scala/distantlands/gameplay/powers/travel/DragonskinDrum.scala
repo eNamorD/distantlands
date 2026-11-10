@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{PlayerFacts, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{PlayerFacts, SelectedModifier}
+import distantlands.model._
 
 object DragonskinDrumCard extends Relic(RelicId("R20"), "Dragonskin Drum", value = 59, defense = 2):
   val power = PrintedPower(PowerId("relic.dragonskin-drum"),

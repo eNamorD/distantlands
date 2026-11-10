@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.action.{ConvoysCard, HomesteadersCard}
-import oathdigital.gameplay.powers.campaign.RainBootsCard
-import oathdigital.gameplay.powers.search.DisciplesCard
-import oathdigital.gameplay.powers.setup.HallOfDebateCard
-import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
-import oathdigital.model.OathState.Ready
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Outcomes, PowerRules}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.action.{ConvoysCard, HomesteadersCard}
+import distantlands.gameplay.powers.campaign.RainBootsCard
+import distantlands.gameplay.powers.search.DisciplesCard
+import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.gameplay.powers.whenplayed.BanditChiefCard
+import distantlands.model.OathState.Ready
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.NoteText
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Outcomes, PowerRules}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class LeagueTreatySuite extends munit.FunSuite:
   import LeagueTreatyFixture._

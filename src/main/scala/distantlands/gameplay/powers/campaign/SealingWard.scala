@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 object SealingWardCard extends Denizen(DenizenId("72"), "Sealing Ward", Suit.Arcane) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.sealing-ward"),

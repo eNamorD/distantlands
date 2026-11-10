@@ -1,4 +1,4 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 /** The parked `Decide`'s declared question, described rather than derived.
   *

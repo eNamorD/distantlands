@@ -1,8 +1,8 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.WalkerDecisionProjector
-import oathdigital.model._
-import oathdigital.protocol.projection.LogSpan
+import distantlands.application.WalkerDecisionProjector
+import distantlands.model._
+import distantlands.protocol.projection.LogSpan
 import LogSpan.Text
 
 /** A chosen option as the log names it: a player, site, card or banner as

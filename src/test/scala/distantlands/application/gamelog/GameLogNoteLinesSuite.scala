@@ -1,21 +1,21 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.engine.ReplayStep
-import oathdigital.gameplay.actions.{CardPlayRules, ProcedureNotes,
+import distantlands.engine.ReplayStep
+import distantlands.gameplay.actions.{CardPlayRules, ProcedureNotes,
   RuleNotes, VisionRules}
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.{DowsingSticksCard, DreamThief,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.{DowsingSticksCard, DreamThief,
   GamblingHall, MagicCarpet, QuickExit, Wolves}
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.rest.{SilverTongue, SilverTongueCard}
-import oathdigital.gameplay.powers.wake.Hunger
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.rest.{SilverTongue, SilverTongueCard}
+import distantlands.gameplay.powers.wake.Hunger
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
   WalkerCompleted, WalkerParked, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogEntry, LogKind, LogSpan}
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.p2
+import distantlands.model._
+import distantlands.protocol.projection.{LogEntry, LogKind, LogSpan}
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p2
 import LogScripts._
 
 /** Lines powers write about themselves (power log lines design, section 2).

@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, firstMatch}
-import oathdigital.frontend.TestBoards.*
-import oathdigital.model.PlayerColor
-import oathdigital.testkit.Unwrap.{as, present}
+import distantlands.frontend.Dom.{all, firstMatch}
+import distantlands.frontend.TestBoards.*
+import distantlands.model.PlayerColor
+import distantlands.testkit.Unwrap.{as, present}
 
 import org.scalajs.dom
 
@@ -47,7 +47,7 @@ class PlayerBoardSuite extends munit.FunSuite:
     WorldBoardRenderer.playerBoards(
       TestProjections.actingProjection(players = Vector(redExile, blueChancellor))
         .copy(tracks = first.map(id =>
-          oathdigital.protocol.projection.GameTracksProjection(round = 1,
+          distantlands.protocol.projection.GameTracksProjection(round = 1,
             visionsDrawn = 0, usurperLimited = false, limiterRound = 0,
             firstPlayerId = id))),
       "red")
@@ -349,9 +349,9 @@ class PlayerBoardSuite extends munit.FunSuite:
 
   test("a held banner names what it holds: favor or secrets, not resources"):
     val banners = Vector(
-      oathdigital.protocol.projection.BannerProjection("peoples-favor",
+      distantlands.protocol.projection.BannerProjection("peoples-favor",
         "mob", Some("red"), 3),
-      oathdigital.protocol.projection.BannerProjection("darkest-secret",
+      distantlands.protocol.projection.BannerProjection("darkest-secret",
         "wandering-flame", Some("red"), 1))
     val rendered = render(board.copy(banners = banners), supplyMaximum = 7)
     val labels = all(rendered, ".banner-face").map(_.getAttribute("aria-label"))
@@ -364,7 +364,7 @@ class PlayerBoardSuite extends munit.FunSuite:
     val node = render(board.withAdvisers(oak)
       .withRelics(CardDetails("r1", "relic", "Crown",
         orientation = Some("face-up")))
-      .copy(banners = Vector(oathdigital.protocol.projection.BannerProjection(
+      .copy(banners = Vector(distantlands.protocol.projection.BannerProjection(
         "peoples-favor", "mob", Some("red"), 2))), supplyMaximum = 7)
     assertEquals(all(node, ".board-cards .card-face").map(_.getAttribute("class")),
       Vector("card-face card-face-denizen",

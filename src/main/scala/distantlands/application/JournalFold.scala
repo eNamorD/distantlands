@@ -1,8 +1,8 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.engine.{EventReplayFailure, RecordedEvent, ReplayStep}
-import oathdigital.model._
-import oathdigital.model.OathEvent.{CommandAccepted, StepRestored, StepTakenBack}
+import distantlands.engine.{EventReplayFailure, RecordedEvent, ReplayStep}
+import distantlands.model._
+import distantlands.model.OathEvent.{CommandAccepted, StepRestored, StepTakenBack}
 
 /** One command's batch (undo design, "Terms"): the events in `[from,
   * until)`, opened by `CommandAccepted(issuer)`, with the states around it. */

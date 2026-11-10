@@ -1,7 +1,7 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
-import oathdigital.model.{DecisionAnswer, DecisionOptionRef, DecisionQuery,
+import distantlands.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
+import distantlands.model.{DecisionAnswer, DecisionOptionRef, DecisionQuery,
   OathViolation, PlayerId}
 
 /** The `Inspect` decision (catalog batch 2, N5): cards to look at and one

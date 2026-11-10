@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
-import oathdigital.gameplay.powers.{PowerAnswers, SiteRoom}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.{EffectiveSuit, NoteSupport}
+import distantlands.gameplay.powers.{PowerAnswers, SiteRoom}
+import distantlands.model._
 
 object ResettleCard extends Denizen(DenizenId("159"), "Resettle", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.resettle"),

@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.banner.SecretTestamentCard
-import oathdigital.gameplay.powers.targeting.{LostTongue, LostTongueCard}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.banner.SecretTestamentCard
+import distantlands.gameplay.powers.targeting.{LostTongue, LostTongueCard}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
 
 /** Favored Son (card 235), WHEN PLAYED: take the People's Favor, and
   * return its favor by its left ribbon (catalog batch 10, slice 11). */

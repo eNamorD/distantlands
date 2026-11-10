@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.setup.GreatSpireCard
-import oathdigital.gameplay.powers.whenplayed.{BewitchCard, DazzleCard,
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.setup.GreatSpireCard
+import distantlands.gameplay.powers.whenplayed.{BewitchCard, DazzleCard,
   ThreateningRoarCard}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 /** Great Spire (E11 intact, catalog batch 10, slice 6): pay 1 secret, put
   * up to 3 shuffled Dispossessed cards on top of the Spire's region's

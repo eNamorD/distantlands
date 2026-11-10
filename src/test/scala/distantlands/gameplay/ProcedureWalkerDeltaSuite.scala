@@ -1,14 +1,14 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{DeltaPayload, ProcedureWalker,
+import distantlands.gameplay.walker.{DeltaPayload, ProcedureWalker,
   WalkerOutcome, WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.model._
 // ProcedureWalkerFixture's ready, with S3 cleared, replaces the fixture's.
-import oathdigital.model.TestGameFixtures.{ready as _, _}
-import oathdigital.testkit.{RecordedOps, Table}
-import oathdigital.testkit.Outcomes.recorded
-import oathdigital.testkit.PowerStubs.OperationRestrictionStub
-import oathdigital.testkit.ProcedureWalkerFixture._
+import distantlands.model.TestGameFixtures.{ready as _, _}
+import distantlands.testkit.{RecordedOps, Table}
+import distantlands.testkit.Outcomes.recorded
+import distantlands.testkit.PowerStubs.OperationRestrictionStub
+import distantlands.testkit.ProcedureWalkerFixture._
 
 /** ProcedureWalker's delta leaves: a walk records one
   * `WalkerStepRecorded` per executed leaf, BuildOps and composites shrink or

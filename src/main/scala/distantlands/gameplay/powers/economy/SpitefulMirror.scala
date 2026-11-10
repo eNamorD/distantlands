@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Relic}
-import oathdigital.gameplay.{NoteSupport, PowerAccess, SpitefulMirrorCard}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Relic}
+import distantlands.gameplay.{NoteSupport, PowerAccess, SpitefulMirrorCard}
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 /** Spiteful Mirror (relic R41), a selected Trade and Muster modifier:
   * "[secret] This turn, you may act as if any cards you use to trade or

@@ -1,12 +1,12 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.cards.NewFoundations
-import oathdigital.gameplay.operations.OperationRestrictions
-import oathdigital.gameplay.powerresolver.{ContributingPower, DiscardsItself,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.cards.NewFoundations
+import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.gameplay.powerresolver.{ContributingPower, DiscardsItself,
   ModifierPicks,
   PowerUseRestriction, PowerWindowIndex}
-import oathdigital.model.{ActionRef, Answered, CardId, OperationRestriction,
+import distantlands.model.{ActionRef, Answered, CardId, OperationRestriction,
   PowerId, PowerResolution, ProcedureRef}
 
 /** The powers available to one `advance`/`roll`/`resolve` command (Task 3).
@@ -38,7 +38,7 @@ final case class WalkerPowers(powers: Vector[ContributingPower],
       * refuse a note no power declared. `WalkerPowerCatalog` supplies it;
       * a `WalkerPowers` assembled from hand-made powers has no catalog
       * behind it and declares nothing, so its notes are not checked. */
-    declared: Option[oathdigital.gameplay.powers.DeclaredNotes] = None,
+    declared: Option[distantlands.gameplay.powers.DeclaredNotes] = None,
     /** Set for a preview or a simulation (automatic power consent design,
       * "Search and previews"): an automatic use that waits on its rulers
       * is walked as if they let it work, so the walk never parks at its
@@ -50,7 +50,7 @@ final case class WalkerPowers(powers: Vector[ContributingPower],
       * against the production catalog unless it names another. */
     catalog: ExecutableCatalog = NewFoundations.catalog,
     /** The card each power that ignores its own lock may move, by power
-      * ([[oathdigital.gameplay.powerresolver.IgnoresOwnLock]]).
+      * ([[distantlands.gameplay.powerresolver.IgnoresOwnLock]]).
       * `WalkerPowerCatalog.default` fills it from the phase powers; a
       * `WalkerPowers` assembled by hand exempts nothing. */
     lockExemptions: Map[PowerId, CardId] = Map.empty):

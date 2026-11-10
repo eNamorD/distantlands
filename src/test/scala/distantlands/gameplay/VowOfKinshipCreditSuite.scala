@@ -1,9 +1,9 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** Vow of Kinship's credit (catalog batch 11, slice 5, ruling 9): favor
   * bound for its holder's board lands in the Nomad bank, however it was

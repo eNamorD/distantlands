@@ -1,20 +1,20 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.Site
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.catalog.Site
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.action.FaeMerchantCard
-import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
-import oathdigital.gameplay.powers.setup.GreatMarketCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.{CardPlay, ProcedureNotes}
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.action.FaeMerchantCard
+import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
+import distantlands.gameplay.powers.setup.GreatMarketCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.{CardPlay, ProcedureNotes}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Shape Empire (CR p. 37, Chronicle rulings 6, 9, 11 and 14). p1 is the
   * Chancellor holding the Throne; the Empire's sites are the ones each test

@@ -1,11 +1,11 @@
-package oathdigital.gameplay.phases.wake
+package distantlands.gameplay.phases.wake
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers,
   PowerUse}
-import oathdigital.model._
+import distantlands.model._
 
 /** Forced Wake steps (catalog batch 2, N8).
   *

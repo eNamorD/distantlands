@@ -1,14 +1,14 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.action.GamblingHallCard
-import oathdigital.gameplay.walker.{LogNoted, ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.action.GamblingHallCard
+import distantlands.gameplay.walker.{LogNoted, ProcedureWalker, WalkerOutcome,
   WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.Outcomes.{finished, parked}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.DecisionOptions.button
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
+import distantlands.testkit.Outcomes.{finished, parked}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.DecisionOptions.button
 
 /** The `Note` node (power log lines design, section 1). */
 class LogNoteWalkerSuite extends munit.FunSuite:

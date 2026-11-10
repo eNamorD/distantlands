@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.model._
+import distantlands.gameplay.operations._
+import distantlands.model._
 
 private[gameplay] object StateBasedOperationPolicy extends OperationPolicy:
   override def validate(

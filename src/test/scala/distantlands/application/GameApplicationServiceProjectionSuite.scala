@@ -1,32 +1,32 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.Site
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.catalog.Site
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite, DesolateShoreSite, DunesSite, FairIsleSite,
   GoldenValleySite}
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.campaign.{CursedCauldronCard,
+import distantlands.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import distantlands.gameplay.powers.campaign.{CursedCauldronCard,
   NatureWorshipCard, StickyFireCard, WrestlersCard}
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.whenplayed.{ThreateningRoarCard,
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.whenplayed.{ThreateningRoarCard,
   WizardsConclaveCard}
-import oathdigital.protocol.projection.{ActivePlayerResourcesProjection,
+import distantlands.protocol.projection.{ActivePlayerResourcesProjection,
   CurrentSiteResourcesProjection, SiteForcesProjection}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer,
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer,
   PartitionAnswer}
-import oathdigital.server.GameHttpWire
-import oathdigital.gameplay.setup.SetupProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.OathState.Ready
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, PlacementPicks, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.server.GameHttpWire
+import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.OathState.Ready
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.testkit.{Look, MenuPlay, Outcomes, PlacementPicks, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 import ParkedServiceFixture.firstPlayer
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** The application service's projections: who sees which decision, site,
   * hand and preview.

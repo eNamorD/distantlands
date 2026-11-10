@@ -1,21 +1,21 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.campaign.RainBootsCard
-import oathdigital.gameplay.powers.economy.GolemLegionsCard
-import oathdigital.gameplay.powers.search.DisciplesCard
-import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
-import oathdigital.model.OathState.Ready
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.rest.{LeagueTreatyContribution,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.campaign.RainBootsCard
+import distantlands.gameplay.powers.economy.GolemLegionsCard
+import distantlands.gameplay.powers.search.DisciplesCard
+import distantlands.gameplay.powers.whenplayed.BanditChiefCard
+import distantlands.model.OathState.Ready
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.rest.{LeagueTreatyContribution,
   LeagueTreatyFixture, SilverTongue, SilverTongueFixture}
-import oathdigital.gameplay.powers.rest.LeagueTreatyFixture.{
+import distantlands.gameplay.powers.rest.LeagueTreatyFixture.{
   leagueTreatyAct, withFavoredCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** The rules half of the pending-walker invariant: over a parked walker,
   * neither a walker start nor any legacy `handle` overload runs.

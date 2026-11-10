@@ -1,7 +1,7 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
-import oathdigital.protocol.projection.LogSpan
+import distantlands.model._
+import distantlands.protocol.projection.LogSpan
 import LogSpan.Text
 
 class LogWordsSuite extends munit.FunSuite:
@@ -32,7 +32,7 @@ class LogWordsSuite extends munit.FunSuite:
       AttackDieFace.TwoSwordsSkull)).map(_.text),
       Some("sword, two swords and a skull"))
     assertEquals(LogWords.dice(Vector(DefenseDieFace.OneShield))
-      .map(_.die), Some(oathdigital.protocol.projection.Die.Defense))
+      .map(_.die), Some(distantlands.protocol.projection.Die.Defense))
     assertEquals(LogWords.dice(Vector(AttackDieFace.OneSword,
       DefenseDieFace.Blank)), None)
     assertEquals(LogWords.dice(Vector.empty), None)

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Pure Search source and cost rules shared by the walker and projections.
   * Which piles a Search may pick is the source decision's business: a power

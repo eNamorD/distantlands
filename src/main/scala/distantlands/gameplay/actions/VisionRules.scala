@@ -1,6 +1,6 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.model._
+import distantlands.model._
 
 object VisionRules:
   val Conquest = VisionId("vision:vision-of-conquest")

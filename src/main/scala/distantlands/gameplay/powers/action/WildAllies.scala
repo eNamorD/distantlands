@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.model._
 
 object WildAlliesCard extends Denizen(DenizenId("198"), "Wild Allies", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.wild-allies"),

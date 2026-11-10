@@ -1,9 +1,9 @@
-package oathdigital.gameplay.phases
+package distantlands.gameplay.phases
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{EffectiveSuit, InPlayCardResources,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{EffectiveSuit, InPlayCardResources,
   PlayerResourceSources}
-import oathdigital.model._
+import distantlands.model._
 
 /** One in-play card's planned Rest return. Denizens and edifices return both
   * favor (to their suit bank, Discord for a Pledge to Discord holder's

@@ -1,12 +1,12 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions,
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions,
   WalkerCompleted, WalkerDice, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Drives a phase power by its id through the rules, with fixed dice and a
   * journal replay check. The power suites of every phase use it. The acting

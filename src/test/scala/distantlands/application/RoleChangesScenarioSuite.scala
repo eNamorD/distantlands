@@ -1,17 +1,17 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.action.GrandScepterAction
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Commands, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.action.GrandScepterAction
+import distantlands.gameplay.roles.Citizenship
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Commands, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Role changes played through the service (CR p. 34). An Exile holding
   * the Grand Scepter becomes a Citizen and on a later turn exiles themself

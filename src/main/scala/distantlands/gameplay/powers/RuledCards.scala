@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{CardRule, EffectiveSuit}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{CardRule, EffectiveSuit}
+import distantlands.model._
 
 /** The cards a ruler rules (catalog batch 3 rulings, "Cards a player
   * rules"): a player's faceup advisers, and the denizens and edifices it

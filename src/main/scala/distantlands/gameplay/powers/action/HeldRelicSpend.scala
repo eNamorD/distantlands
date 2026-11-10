@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 /** A relic the player holds, faceup or facedown, chosen and then spent:
   * Arcane Brokers and Bog discard it, Relic Breaker buries it (catalog batch

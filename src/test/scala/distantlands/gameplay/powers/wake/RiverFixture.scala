@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, RiverbankSite, TidalMarshesSite}
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** Staging for the River. The first game has one River in play, Ancient
   * City, where the actor's pawn stands. `withRivers` puts more in play.

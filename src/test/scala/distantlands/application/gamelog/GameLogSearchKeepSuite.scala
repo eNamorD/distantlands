@@ -1,20 +1,20 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
   SecondChanceCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powers.search.{LandWarden, LandWardenCard,
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powers.search.{LandWarden, LandWardenCard,
   SpinningBee, SpinningBeeCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
-import oathdigital.testkit.{Answers, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
+import distantlands.testkit.{Answers, Table}
+import distantlands.testkit.Table.p1
 import LogScripts._
 
 /** The lines of the Searches slice 4 adds: Spinning Bee's own line, a

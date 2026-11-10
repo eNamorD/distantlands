@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.CampaignFixture
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
-import oathdigital.gameplay.powerresolver.{PowerCtx, Restriction}
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{HomesteadersCard, WildAlliesCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, as}
-import oathdigital.testkit.StartPreview
+import distantlands.gameplay.CampaignFixture
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powerresolver.{PowerCtx, Restriction}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.{HomesteadersCard, WildAlliesCard}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, as}
+import distantlands.testkit.StartPreview
 
 class FortressRulesSuite extends munit.FunSuite:
   import CampaignFixture.{Board, board, on, withEnemyAtOrigin}

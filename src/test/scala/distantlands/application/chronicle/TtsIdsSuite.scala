@@ -1,7 +1,7 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
 
 /** The TTS id tables against the TTS codec's own name tables (resource
   * copied from chronicle-codec.js at f6051bb0) and the catalog's names. A

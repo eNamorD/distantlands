@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.MessengerCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look,
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.MessengerCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look,
   PhasePowerHarness, PowerRules, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.AppendedAutomaticUses
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.AppendedAutomaticUses
 
 class VowOfBeastkinSuite extends munit.FunSuite:
   private val vow = VowOfBeastkinCard.id

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.model._
 
 object MarbleFountainsCard extends Edifice(EdificeId("E15"), Suit.Arcane):
   object intact extends EdificeFace("Marble Fountains") with Locked:

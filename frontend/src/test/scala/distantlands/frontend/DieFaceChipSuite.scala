@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import Dom.all
-import oathdigital.protocol.projection.{Die, DieFace}
+import distantlands.protocol.projection.{Die, DieFace}
 import org.scalajs.dom
 
 /** The seven faces the engine projects for both dice, drawn as the symbols

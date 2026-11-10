@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object WardOfSilenceCard extends Denizen(DenizenId("202"), "Ward of Silence",
     Suit.Arcane):

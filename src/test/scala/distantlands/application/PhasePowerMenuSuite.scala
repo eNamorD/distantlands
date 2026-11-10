@@ -1,18 +1,18 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.powers.action.WhistleCard
-import oathdigital.gameplay.powers.economy.GolemLegionsCard
-import oathdigital.gameplay.powers.rest.{SilverTongueCard, SilverTongueFixture}
-import oathdigital.gameplay.powers.setup.HallOfDebateCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table, TestCards}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.present
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.action.WhistleCard
+import distantlands.gameplay.powers.economy.GolemLegionsCard
+import distantlands.gameplay.powers.rest.{SilverTongueCard, SilverTongueFixture}
+import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table, TestCards}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.present
 
 class PhasePowerMenuSuite extends munit.FunSuite:
   private val projector = new GameProjector(catalog)
@@ -33,7 +33,7 @@ class PhasePowerMenuSuite extends munit.FunSuite:
 
   test("a synthetic WAKE or ACTION power is offered only in its phase's " +
       "menu"):
-    import oathdigital.gameplay.PhasePowerFixture.{TestPower, card, holding,
+    import distantlands.gameplay.PhasePowerFixture.{TestPower, card, holding,
       powerId}
     // TestPower stands in for the power Magician's Code prints, which p1
     // holds faceup.
@@ -49,8 +49,8 @@ class PhasePowerMenuSuite extends munit.FunSuite:
         }
 
   test("a phase power used from a held relic is offered at the relic"):
-    import oathdigital.gameplay.{IndexedRuleSource, RuleSourceIndex}
-    import oathdigital.gameplay.PhasePowerFixture.TestPower
+    import distantlands.gameplay.{IndexedRuleSource, RuleSourceIndex}
+    import distantlands.gameplay.PhasePowerFixture.TestPower
     // p1 holds the Whistle faceup; TestPower stands in for the Whistle's
     // printed power.
     val relic = WhistleCard.id
@@ -68,7 +68,7 @@ class PhasePowerMenuSuite extends munit.FunSuite:
 
   test("a phase power used from an edifice at the pawn's site is offered at " +
       "the edifice"):
-    import oathdigital.gameplay.PhasePowerFixture.{TestPower, card, powerId}
+    import distantlands.gameplay.PhasePowerFixture.{TestPower, card, powerId}
     // Hall of Debate stands at Ancient City, p1's site; the copied catalog
     // grafts onto its intact face the power Magician's Code prints, which
     // TestPower stands in for.
@@ -163,7 +163,7 @@ class PhasePowerMenuSuite extends munit.FunSuite:
     assert(tongueOwner.walkerDecision.nonEmpty)
 
   test("a site's phase power is offered in the Wake menu at its site"):
-    import oathdigital.gameplay.powers.wake.RiverFixture
+    import distantlands.gameplay.powers.wake.RiverFixture
     // p1 wakes at Ancient City, a River, with Riverbank and Tidal Marshes in
     // play as two more.
     val ready = RiverFixture.staged(rivers =

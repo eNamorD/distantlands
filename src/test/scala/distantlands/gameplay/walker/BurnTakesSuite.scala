@@ -1,11 +1,11 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{BurnTake, Burnt,
+import distantlands.gameplay.powerresolver.{BurnTake, Burnt,
   Contribution, TakesBurns}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class BurnTakesSuite extends munit.FunSuite:
   /** A test power: claims for p1 every burn another player makes. Its line

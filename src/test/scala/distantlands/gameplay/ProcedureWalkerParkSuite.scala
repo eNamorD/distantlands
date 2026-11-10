@@ -1,14 +1,14 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload,
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload,
   ProcedureWalker, WalkerOutcome, WalkerStepRecorded}
-import oathdigital.testkit.RecordedOps
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.Outcomes.{parked, recorded}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.WalkerStubs._
-import oathdigital.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.RecordedOps
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.Outcomes.{parked, recorded}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.WalkerStubs._
+import distantlands.testkit.ProcedureWalkerFixture._
 
 /** ProcedureWalker's parks: a Decide parks and resumes, accepts exactly its
   * declared answers from its owner, and a `Repeat(guard, body)` with a pure

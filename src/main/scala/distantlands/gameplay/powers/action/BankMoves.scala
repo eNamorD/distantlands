@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.model._
+import distantlands.model._
 
 /** A move of favor from one favor bank to another, for Levelers and Memory
   * of Home: the move, and the line that reads it back. */

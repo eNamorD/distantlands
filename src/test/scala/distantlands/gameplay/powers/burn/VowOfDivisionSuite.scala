@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.burn
+package distantlands.gameplay.powers.burn
 
-import oathdigital.gameplay.CampaignFixture.{raidBoard, rules,
+import distantlands.gameplay.CampaignFixture.{raidBoard, rules,
   withAdviserFor}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   winningDice}
-import oathdigital.gameplay.powers.targeting.TargetingFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.targeting.TargetingFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
 
 class VowOfDivisionSuite extends munit.FunSuite:
   private val vow = VowOfDivisionCard.id

@@ -1,28 +1,28 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.chronicle.{ChronicleBeginProcedure,
+import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   ChronicleSunProcedure, BuildEdifice, IntroduceNewcomers, LineageScoring,
   OfferCitizenship, ProtectAndDispossess, ShapeEmpire, SwearOath,
   WelcomeStranger,
   ChronicleStarsProcedure}
-import oathdigital.gameplay.actions.campaign.CampaignNotes
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
+import distantlands.gameplay.actions.campaign.CampaignNotes
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.actions.minor.{MinorActionProcedures,
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.forge.ForgeProcedure
+import distantlands.gameplay.actions.minor.{MinorActionProcedures,
   WarbandTransfers}
-import oathdigital.gameplay.actions.negotiation.NegotiationProcedure
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.setup.SetupProcedure
-import oathdigital.gameplay.walker.FollowUpOffer
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogKind, LogSpan}
+import distantlands.gameplay.actions.negotiation.NegotiationProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.walker.FollowUpOffer
+import distantlands.model._
+import distantlands.protocol.projection.{LogKind, LogSpan}
 
 /** Whether the tag posts at this event: the anchor each procedure declares
   * (log action sections design, "The tag entry"). */

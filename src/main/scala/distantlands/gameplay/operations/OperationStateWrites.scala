@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** State writers shared by every operation family, and the one collector of
   * card transfers that both a guard and a mutation read. Nothing here decides

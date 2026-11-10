@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.NarrowPassSite
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.travel.{TollRoads, TollRoadsCard,
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.NarrowPassSite
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.travel.{TollRoads, TollRoadsCard,
   TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, ParkedNode, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, ParkedNode, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Palanquin's destinations that wait on consent: Toll Roads' payer or
   * ruler, a Pass's ruler, and the user's own toll (catalog batch 8, slice

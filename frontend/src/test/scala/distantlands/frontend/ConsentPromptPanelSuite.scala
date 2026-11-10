@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.all
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => Intent}
-import oathdigital.protocol.projection.WalkerWaitingProjection
+import distantlands.frontend.Dom.all
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent}
+import distantlands.protocol.projection.WalkerWaitingProjection
 import org.scalajs.dom
 
 /** The asked ruler's prompt and the requester's wait (consent design, user

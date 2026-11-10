@@ -1,18 +1,18 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.application._
-import oathdigital.gameplay.actions.ImperialLaws
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.phases.ActOffers
-import oathdigital.gameplay.actions.minor.WarbandTransfers
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentRequested}
-import oathdigital.protocol.projection._
-import oathdigital.testkit.{Commands, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application._
+import distantlands.gameplay.actions.ImperialLaws
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.phases.ActOffers
+import distantlands.gameplay.actions.minor.WarbandTransfers
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentRequested}
+import distantlands.protocol.projection._
+import distantlands.testkit.{Commands, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Warband Transfers (CR p. 35): an Imperial player moves warbands to or
   * from another Imperial player's board, at their site and with their

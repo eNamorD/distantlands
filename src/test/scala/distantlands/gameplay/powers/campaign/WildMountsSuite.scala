@@ -1,18 +1,18 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powers.search.BrackenCard
-import oathdigital.gameplay.powers.whenplayed.AutumnWindCard
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.WildAlliesCard
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.powers.search.BrackenCard
+import distantlands.gameplay.powers.whenplayed.AutumnWindCard
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powerresolver.{FoldPhase, Transform}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.WildAlliesCard
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Wild Mounts: a free plan that lets its user discard one Beast card they
   * rule instead of their Nomad battle plans at the end of the Campaign. */
@@ -207,7 +207,7 @@ class WildMountsSuite extends munit.FunSuite:
   * the Campaign is a bare `PlanDiscard.denizen`, with no helper and no
   * line, as a plan that forgets `afterCampaign` would build it. */
 private final case class BareDiscardNomadPlan(
-    catalog: oathdigital.catalog.ExecutableCatalog) extends BattlePlan:
+    catalog: distantlands.catalog.ExecutableCatalog) extends BattlePlan:
   val cardId: DenizenId = HorseArchersCard.id
   def id: PowerId = PowerId("test.bare-discard-nomad-plan")
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)

@@ -1,8 +1,8 @@
-package oathdigital.server
+package distantlands.server
 
-import oathdigital.application._
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.testkit.HttpTestServer
+import distantlands.application._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.testkit.HttpTestServer
 
 class GameTrustBoundaryRoutesSuite extends munit.FunSuite:
   private val catalog = ExecutableCatalog(

@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powers.search.BrackenCard
-import oathdigital.gameplay.powers.whenplayed.AutumnWindCard
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.powers.search.BrackenCard
+import distantlands.gameplay.powers.whenplayed.AutumnWindCard
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Battle Axes: a free plan for two attack dice, added or removed, offered
   * only while the enemy rules a beast card. */

@@ -1,8 +1,8 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, RollPayload,
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, RollPayload,
   WalkerStepRecorded}
-import oathdigital.model.{CoreOperation, OathEvent}
+import distantlands.model.{CoreOperation, OathEvent}
 
 /** The operations a recorded step applied, for the suites that assert what a
   * walk recorded.

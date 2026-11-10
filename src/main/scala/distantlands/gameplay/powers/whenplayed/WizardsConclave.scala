@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PowerAnswers, RuledCards}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PowerAnswers, RuledCards}
+import distantlands.model._
 
 object WizardsConclaveCard extends Denizen(DenizenId("208"), "Wizard's Conclave", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.wizard-s-conclave"),

@@ -1,4 +1,4 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
 /** Plan-time clamps for supply-capped effects. `clamp` bounds a
   * requested amount of a limited resource (for example favor held in a suit

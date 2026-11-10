@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.PoolKey
+import distantlands.model.PoolKey
 
 /** The roll a parked decision wants shown beside it: which pool, the number
   * the score is measured against where there is one, and any consequence the

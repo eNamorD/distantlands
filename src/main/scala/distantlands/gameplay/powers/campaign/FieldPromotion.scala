@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 object FieldPromotionCard extends Denizen(DenizenId("106"), "Field Promotion", Suit.Order):
   val power = PrintedPower(PowerId("denizen.field-promotion"),

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
-import oathdigital.gameplay.phases.RestCleanup
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
+import distantlands.gameplay.phases.RestCleanup
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 object ARoundOfAleCard extends Denizen(DenizenId("129"), "A Round of Ale", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.a-round-of-ale"),

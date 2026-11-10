@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object ConvoysCard extends Denizen(DenizenId("151"), "Convoys", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.convoys"),

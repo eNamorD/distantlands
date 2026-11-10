@@ -1,20 +1,20 @@
-package oathdigital.server
+package distantlands.server
 
-import oathdigital.model.{PlayerColor, TriggeredProcedureRef}
+import distantlands.model.{PlayerColor, TriggeredProcedureRef}
 
 import java.nio.file.{Files, Path}
 import java.sql.{Connection, DriverManager}
-import oathdigital.application._
-import oathdigital.application.chronicle.{ChronicleConversion, ChronicleEntries}
-import oathdigital.gameplay.chronicle.EvolvedChronicleFixture
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.{catalog, chronicle,
+import distantlands.application._
+import distantlands.application.chronicle.{ChronicleConversion, ChronicleEntries}
+import distantlands.gameplay.chronicle.EvolvedChronicleFixture
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.{catalog, chronicle,
   orders, participants}
-import oathdigital.gameplay.setup.SetupProcedure
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.persistence.HsqldbDatabaseOwner
-import oathdigital.protocol._
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.persistence.HsqldbDatabaseOwner
+import distantlands.protocol._
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class TrustedGameProvisioningSuite extends munit.FunSuite:
   /** The parked decision, as this suite rebuilds it: the same catalog and

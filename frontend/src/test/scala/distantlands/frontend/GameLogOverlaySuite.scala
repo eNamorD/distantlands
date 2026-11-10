@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import Dom.{click, press}
-import oathdigital.protocol.projection.LogKind
+import distantlands.protocol.projection.LogKind
 import org.scalajs.dom
 
 /** The Log pane's heading opens the whole log over the table (spec,

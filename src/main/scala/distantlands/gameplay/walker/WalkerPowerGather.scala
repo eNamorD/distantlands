@@ -1,9 +1,9 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, ContributionCollector, OfferHost, OptionRestriction, PowerCtx, RerollHost, Restriction, Waiver}
-import oathdigital.model.PowerResolution
-import oathdigital.model.{Answered, AutomaticUse, Branch, BuildOps, ConsentAnswer, ConsentAsk, ConsentKey, ConsentTurn, Decide, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery, OathViolation, OfferedPlan, OfferedReroll, Operation, CoreOperation, OptionReason, PendingTree, PlayerId, PowerId, LogNote, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Simultaneous}
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{ContributingPower, ContributionCollector, OfferHost, OptionRestriction, PowerCtx, RerollHost, Restriction, Waiver}
+import distantlands.model.PowerResolution
+import distantlands.model.{Answered, AutomaticUse, Branch, BuildOps, ConsentAnswer, ConsentAsk, ConsentKey, ConsentTurn, Decide, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery, OathViolation, OfferedPlan, OfferedReroll, Operation, CoreOperation, OptionReason, PendingTree, PlayerId, PowerId, LogNote, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Simultaneous}
 
 /** Task 3's power-gather/fold mechanics for [[ProcedureWalker]], split into
   * their own file to keep `ProcedureWalker.scala` under the project's
@@ -54,7 +54,7 @@ private[walker] object WalkerPowerGather:
   def applyWindow(window: Option[PowerWindow], operation: Operation,
       state: ReadyGame,
       actor: PlayerId, powers: WalkerPowers, path: Vector[String],
-      ops: Vector[Operation], procedure: Option[oathdigital.model.ProcedureRef],
+      ops: Vector[Operation], procedure: Option[distantlands.model.ProcedureRef],
       answered: Vector[Answered] = Vector.empty, resuming: Boolean = false)
       : (Vector[Operation], Vector[PowerId]) =
     window match

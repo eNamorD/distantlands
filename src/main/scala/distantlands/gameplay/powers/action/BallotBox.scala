@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.gameplay.powers.economy.VowOfWandering
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.model._
 
 object BallotBoxCard extends Denizen(DenizenId("141"), "Ballot Box", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.ballot-box"),

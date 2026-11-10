@@ -1,6 +1,6 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The amounts battle plans ask for (`PlanAmount`), and the read of the
   * answer (catalog batch 7, slice 3). */

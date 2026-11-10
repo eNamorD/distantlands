@@ -1,13 +1,13 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Situation, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Commands
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Situation, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Commands
 
 /** Real batches that undo never takes back (undo design, "Barriers"). */
 class UndoBarrierPlaySuite extends munit.FunSuite:

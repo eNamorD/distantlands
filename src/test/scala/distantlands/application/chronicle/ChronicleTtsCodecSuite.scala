@@ -1,15 +1,15 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
-import oathdigital.application.FirstGameBootstrapMapper.lineageOf
-import oathdigital.catalog.holding.{ArbiterCard, LightFingersCard}
-import oathdigital.gameplay.actions.challenge.SigilOfTheEyeCard
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.SpitefulMirrorCard
-import oathdigital.gameplay.powers.action.WhistleCard
-import oathdigital.gameplay.powers.campaign.ScoutsCard
-import oathdigital.gameplay.powers.cardplay.LostTapestryCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
+import distantlands.application.FirstGameBootstrapMapper.lineageOf
+import distantlands.catalog.holding.{ArbiterCard, LightFingersCard}
+import distantlands.gameplay.actions.challenge.SigilOfTheEyeCard
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.SpitefulMirrorCard
+import distantlands.gameplay.powers.action.WhistleCard
+import distantlands.gameplay.powers.campaign.ScoutsCard
+import distantlands.gameplay.powers.cardplay.LostTapestryCard
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
 
 /** TTS strings to and from Chronicles (Chronicle TTS codec design). */
 class ChronicleTtsCodecSuite extends munit.FunSuite:

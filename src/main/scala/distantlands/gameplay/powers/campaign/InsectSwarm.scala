@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
 
 object InsectSwarmCard extends Denizen(DenizenId("184"), "Insect Swarm", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.insect-swarm"),

@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import scala.concurrent.ExecutionContext
 

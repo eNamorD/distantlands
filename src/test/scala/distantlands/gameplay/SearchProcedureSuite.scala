@@ -1,22 +1,22 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.{AncientBindingCard, FaeMerchantCard,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.{AncientBindingCard, FaeMerchantCard,
   SecondChanceCard}
-import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powerresolver.Transform
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks, PowerStubs, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powerresolver.Transform
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, PlacementPicks, PowerStubs, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 class SearchProcedureSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)

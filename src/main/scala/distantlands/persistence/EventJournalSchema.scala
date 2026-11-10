@@ -1,4 +1,4 @@
-package oathdigital.persistence
+package distantlands.persistence
 
 import java.sql.Connection
 

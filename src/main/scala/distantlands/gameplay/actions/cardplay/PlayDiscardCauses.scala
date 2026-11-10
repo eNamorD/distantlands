@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions.cardplay
+package distantlands.gameplay.actions.cardplay
 
-import oathdigital.gameplay.actions.{DiscardPermission, SiteRemoval}
-import oathdigital.model._
+import distantlands.gameplay.actions.{DiscardPermission, SiteRemoval}
+import distantlands.model._
 
 /** The causes of a card play's discards (catalog batch 11, slice 4;
   * rulings 20 and 22):

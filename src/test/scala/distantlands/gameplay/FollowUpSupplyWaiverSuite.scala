@@ -1,18 +1,18 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, FairIsleSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.economy.KnightsErrantCard
-import oathdigital.gameplay.powers.travel.{SpecialEnvoy, SpecialEnvoyCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Look, Outcomes, RecordedOps, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.economy.KnightsErrantCard
+import distantlands.gameplay.powers.travel.{SpecialEnvoy, SpecialEnvoyCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Look, Outcomes, RecordedOps, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** A queued action spends no Supply (follow-up actions design, ruling 4),
   * on its start and on every resume, and a queued action may run in Rest. */
@@ -80,7 +80,7 @@ class FollowUpSupplyWaiverSuite extends munit.FunSuite:
     assert(FollowUpPlay.taken(rules, travelled.state, p1).isRight)
 
   test("each action pays at its own cost window"):
-    import oathdigital.gameplay.walker.FollowUpSupplyWaiver.costWindow
+    import distantlands.gameplay.walker.FollowUpSupplyWaiver.costWindow
     assertEquals(Vector(ActionRef.Campaign, ActionRef.Travel, ActionRef.Search,
       ActionRef.Muster, ActionRef.Trade, ActionRef.Forge, ActionRef.Challenge,
       ActionRef.Recover).map(costWindow), Vector(

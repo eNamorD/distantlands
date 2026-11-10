@@ -1,37 +1,37 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.{CampaignFixture, OathRules, PowerAccess}
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.{CampaignFixture, OathRules, PowerAccess}
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite, FairIsleSite}
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.phases.wake.ForcedWakeProcedure
-import oathdigital.gameplay.powerresolver.{ModifierPicks, PowerUse,
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.phases.wake.ForcedWakeProcedure
+import distantlands.gameplay.powerresolver.{ModifierPicks, PowerUse,
   PowerUseStep}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{DowsingSticksCard, RovingTerror,
+import distantlands.gameplay.powers.action.{DowsingSticksCard, RovingTerror,
   RovingTerrorCard, WildAlliesCard}
-import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, FireTalkersCard,
+import distantlands.gameplay.powers.campaign.{BattleHonorsCard, FireTalkersCard,
   PlanDriver, WrestlersCard}
-import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.powers.economy.{MapLibraryCard, SmallFriendsCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.{TravelFixture, Tyrant, TyrantCard}
-import oathdigital.gameplay.powers.wake.HungerCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.powers.dice.JinxCard
+import distantlands.gameplay.powers.economy.{MapLibraryCard, SmallFriendsCard}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.travel.{TravelFixture, Tyrant, TyrantCard}
+import distantlands.gameplay.powers.wake.HungerCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   ParkedNode, PhasePowerHarness, PowerRules, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** City Wall (card 252): "While at this site, enemies of City Wall's ruler
   * cannot place [favor] / [secret] on cards or use non-persistent powers."

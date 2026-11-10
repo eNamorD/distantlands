@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.PlacementLimit
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, OperationRewrite,
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.PlacementLimit
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.{Contribution, OperationRewrite,
   Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object LandWardenCard extends Denizen(DenizenId("130"), "Land Warden", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.land-warden"),

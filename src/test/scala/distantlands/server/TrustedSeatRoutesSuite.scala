@@ -1,23 +1,23 @@
-package oathdigital.server
+package distantlands.server
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.model.{PlayerColor, PlayerId}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.model.{PlayerColor, PlayerId}
 
 import java.net.{CookieManager, CookiePolicy, URI}
 import java.net.http.{HttpClient, HttpRequest, HttpResponse => JavaResponse}
 import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters._
-import oathdigital.application._
-import oathdigital.application.chronicle.ChronicleEntries
-import oathdigital.gameplay.chronicle.EvolvedChronicleFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
-import oathdigital.gameplay.setup.SetupProcedure
-import oathdigital.protocol._
-import oathdigital.testkit.HttpTestServer
-import oathdigital.testkit.ChronicleShuffles.reversing
-import oathdigital.testkit.Table.p2
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application._
+import distantlands.application.chronicle.ChronicleEntries
+import distantlands.gameplay.chronicle.EvolvedChronicleFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.setup.FirstGameSetupFixture.chronicle
+import distantlands.gameplay.setup.SetupProcedure
+import distantlands.protocol._
+import distantlands.testkit.HttpTestServer
+import distantlands.testkit.ChronicleShuffles.reversing
+import distantlands.testkit.Table.p2
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class TrustedSeatRoutesSuite extends munit.FunSuite:
   /** The server generates game IDs. These tests name the ID each creation
@@ -66,7 +66,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
     val bare = new GameProjector(catalog).project("trusted",
       present(accepted(service.load("trusted")), "the trusted game"), p2)
     assertEquals(bare.viewerPlayerId, None)
-    assert(!oathdigital.protocol.projection.GameProjectionCodec.encode(bare)
+    assert(!distantlands.protocol.projection.GameProjectionCodec.encode(bare)
       .contains("viewerPlayerId"))
     assert(accepted(gateway.load("trusted", p2Seat)).walkerDecision.nonEmpty)
     assert(accepted(gateway.load("trusted", p3Seat)).walkerDecision.isEmpty)
@@ -96,7 +96,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
     val TrustedGatewayGame(_, gateway, afterBegin) = begunTrustedGame()
     val code = SeatCode.generate(new java.security.SecureRandom())
     // Stub of IdentityRepository: the one seat is p2's in "trusted".
-    val identities = new oathdigital.testkit.IdentityRepositoryStub:
+    val identities = new distantlands.testkit.IdentityRepositoryStub:
       override def resolveTrustedSeat(digest: SeatCodeDigest) =
         Either.cond(digest == code.digest, TrustedSeat("trusted", "p2"),
           IdentityFailure.TrustedSeatNotFound)
@@ -275,7 +275,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       val page = send(server, "/games/log-game/api/log/0", cookie = cookie)
       assertEquals(page.statusCode(), 200, page.body())
       assertEquals(page.headers().firstValue("Cache-Control").orElse(""), "no-store")
-      val decoded = accepted(oathdigital.protocol.projection.LogPageCodec
+      val decoded = accepted(distantlands.protocol.projection.LogPageCodec
         .decode(page.body()))
       assertEquals(decoded.after, 0L)
       assertEquals(send(server, "/games/log-game/api/log/0").statusCode(), 403)
@@ -479,7 +479,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
     withServer() { (server, runtime) =>
       val code = codeOf(create(server, "failure"), "p1")
       // The seat routes and the shared API routes log under this package.
-      val logger = org.slf4j.LoggerFactory.getLogger("oathdigital.server")
+      val logger = org.slf4j.LoggerFactory.getLogger("distantlands.server")
         .asInstanceOf[ch.qos.logback.classic.Logger]
       val captured = new ch.qos.logback.core.read.ListAppender[ch.qos.logback.classic.spi.ILoggingEvent]
       captured.start(); logger.addAppender(captured)

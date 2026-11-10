@@ -1,7 +1,7 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.{AttackDieFace, DefenseDieFace, DieFace}
-import oathdigital.protocol.projection.{DieFace => RolledFace}
+import distantlands.model.{AttackDieFace, DefenseDieFace, DieFace}
+import distantlands.protocol.projection.{DieFace => RolledFace}
 
 /** The shared face vocabulary for a face the engine rolled: one table from
   * the engine's open `DieFace` to the seven faces the two dice print, which
@@ -14,7 +14,7 @@ import oathdigital.protocol.projection.{DieFace => RolledFace}
   * again for itself, held to these by a test; it reads this instead
   * (decision-id vocabulary decision, item 3).
   *
-  * `oathdigital.model.DieFace` is open, so a face family neither pool rolls
+  * `distantlands.model.DieFace` is open, so a face family neither pool rolls
   * maps to nothing rather than to a guess, and a wire leaves it out rather
   * than inventing a key for it. The round die is such a family: Shattered
   * Portal's own line states its number, no decision follows its roll, and

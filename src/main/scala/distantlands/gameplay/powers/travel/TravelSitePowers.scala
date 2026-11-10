@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.gameplay.powerresolver._
-import oathdigital.gameplay.cards.{BrokenPeaksSite, DesolateShoreSite,
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.powerresolver._
+import distantlands.gameplay.cards.{BrokenPeaksSite, DesolateShoreSite,
   FairIsleSite, GreenShoreSite, HeadwatersSite, HiddenPlaceSite, MinesSite,
   NarrowPassSite, RockyCoastSite, SunkenIslesSite, TidalMarshesSite}
-import oathdigital.model.{DecisionOptionRef, Location, Move, NoteKey,
+import distantlands.model.{DecisionOptionRef, Location, Move, NoteKey,
   NotePart, NoteSet, OathViolation, Operation, Piece, PlayerId,
   PositionedLocation, PowerId, LogNote, PowerSourceRef, PowerWindow,
   ReadyGame, RuleSourceRef, SiteId, SiteRule, SiteRuler, SpendSupply}

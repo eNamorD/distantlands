@@ -1,14 +1,14 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.search.{NewsFromAfar, NewsFromAfarCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.Commands
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import distantlands.gameplay.powers.search.{NewsFromAfar, NewsFromAfarCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Commands
 
 /** The source decision through the service: Undo takes back the start, and
   * the answer draws, so nothing takes it back (search source design,

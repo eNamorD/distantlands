@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.OathEvent
+import distantlands.model.OathEvent
 
 final case class EventCodecFailure(code: String, path: String, message: String)
     extends Product with Serializable

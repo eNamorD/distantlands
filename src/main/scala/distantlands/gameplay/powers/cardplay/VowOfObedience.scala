@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.powerresolver._
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver._
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.model._
 
 object VowOfObedienceCard extends Denizen(DenizenId("121"), "Vow of Obedience", Suit.Order) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-obedience"),

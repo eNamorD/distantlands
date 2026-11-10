@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
+import distantlands.model._
 
 sealed trait AuthenticatedPrincipal extends Product with Serializable:
   def userId: UserId

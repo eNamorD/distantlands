@@ -1,6 +1,6 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.model._
+import distantlands.model._
 
 /** How a permission removes a card from the site a card is played to:
   * discarded, or buried (Forest Warden). */

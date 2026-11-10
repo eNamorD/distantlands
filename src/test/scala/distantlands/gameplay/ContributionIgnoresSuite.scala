@@ -1,9 +1,9 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{Contribution, ContributionCollector, ContributingPower, PowerCtx, PowerWindowIndex, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.powerresolver.{Contribution, ContributionCollector, ContributingPower, PowerCtx, PowerWindowIndex, Transform}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** The named ignore is decided with the context the powers are gathered in, so
   * a power can ignore another only for the node at hand. `shouldIgnore` (with no

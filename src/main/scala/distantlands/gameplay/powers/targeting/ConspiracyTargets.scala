@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.model._
 
 /** Narrows a played Conspiracy's target decision for a rule that protects
   * some of its targets (Lost Tongue).

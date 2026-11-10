@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object SingingMaskCard extends Relic(RelicId("R28"), "Singing Mask", value = 54, defense = 1):
   val power = PrintedPower(PowerId("relic.singing-mask"),

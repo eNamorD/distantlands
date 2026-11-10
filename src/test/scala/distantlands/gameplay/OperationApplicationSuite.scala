@@ -1,12 +1,12 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.{RawOperationBatch, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.operations._
+import distantlands.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
+import distantlands.testkit.{RawOperationBatch, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** The shape guard through the two interfaces that cross it: the resolver's
   * `OperationApplication.validate`, which reports every reason, and

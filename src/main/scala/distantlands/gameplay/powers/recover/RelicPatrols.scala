@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.{CardRule, SiteRulers}
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.{CardRule, SiteRulers}
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Restriction, Waiver}
-import oathdigital.model._
+import distantlands.model._
 
 object RelicPatrolsCard extends Edifice(EdificeId("E17"), Suit.Order):
   object intact extends EdificeFace("Relic Patrols") with Locked:

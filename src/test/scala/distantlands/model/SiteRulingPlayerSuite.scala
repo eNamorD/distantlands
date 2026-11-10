@@ -1,8 +1,8 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.gameplay.cards.DunesSite
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.cards.DunesSite
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class SiteRulingPlayerSuite extends munit.FunSuite:
   private val dunes = DunesSite

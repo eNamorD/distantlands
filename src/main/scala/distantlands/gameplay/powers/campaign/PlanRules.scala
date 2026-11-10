@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that reach beyond the plan window, the rules that tax them,
   * and the persistent rules of a Campaign, registered together: Sticky Fire (a

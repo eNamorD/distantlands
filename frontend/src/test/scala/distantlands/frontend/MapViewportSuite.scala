@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.scalajs.js

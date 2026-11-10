@@ -1,19 +1,19 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.{PlanDriver, SecondWindCard}
-import oathdigital.gameplay.powers.travel.{SpecialEnvoy, SpecialEnvoyCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness,
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.{PlanDriver, SecondWindCard}
+import distantlands.gameplay.powers.travel.{SpecialEnvoy, SpecialEnvoyCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness,
   RecordedOps, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** A queued walk belongs to its entry's actor, on another player's turn
   * (catalog batch 8, slice 14, rulings 1, 2 and 5). */

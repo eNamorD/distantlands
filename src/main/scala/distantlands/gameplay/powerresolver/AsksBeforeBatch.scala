@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{CoreOperation, Decide, DecisionAnswer, LogNote,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.{CoreOperation, Decide, DecisionAnswer, LogNote,
   PlayerId, ReadyGame}
 
 /** What a power reads when it looks at a walker batch before the batch

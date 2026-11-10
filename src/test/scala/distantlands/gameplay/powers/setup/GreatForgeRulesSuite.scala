@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.setup
+package distantlands.gameplay.powers.setup
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.walker.{LogNoted, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
+import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.walker.{LogNoted, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Unwrap.accepted
 
 class GreatForgeRulesSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog

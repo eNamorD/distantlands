@@ -1,10 +1,10 @@
-package oathdigital.gameplay.actions.negotiation
+package distantlands.gameplay.actions.negotiation
 
-import oathdigital.gameplay.SpendableFavor
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
+import distantlands.gameplay.SpendableFavor
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.roles.Citizenship
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 
 /** One deal, derived from the answers recorded so far. */
 final case class DealState(participants: Vector[PlayerId],

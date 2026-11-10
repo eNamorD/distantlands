@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** One shape violation against an operation, mirroring the code/detail of the
   * [[OperationError]] the mutation pipeline would reject with.

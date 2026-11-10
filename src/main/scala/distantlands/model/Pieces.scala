@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** The pieces an operation moves, and where in a location it moves them
   * from or to. Split out of `CoreOperations.scala`, which holds the sealed
@@ -6,7 +6,7 @@ package oathdigital.model
 sealed trait Piece extends Product with Serializable
 object Piece:
   final case class Card(id: CardId) extends Piece
-  final case class Banner(banner: oathdigital.model.Banner) extends Piece
+  final case class Banner(banner: distantlands.model.Banner) extends Piece
   final case class Pawn(player: PlayerId) extends Piece
 
   sealed trait Counted extends Piece { def amount: Int }

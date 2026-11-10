@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.powers.banner.CardPowerBanners
-import oathdigital.gameplay.powers.OathkeeperGoalChoice
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.powers.banner.CardPowerBanners
+import distantlands.gameplay.powers.OathkeeperGoalChoice
+import distantlands.model._
 
 object TheRedSeerCard extends Denizen(DenizenId("244"), "The Red Seer",
     Suit.Nomad):

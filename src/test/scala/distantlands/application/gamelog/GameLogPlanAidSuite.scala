@@ -1,14 +1,14 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameApplicationService, TreeDecision}
-import oathdigital.gameplay.actions.campaign.{CampaignIds, PlanAid}
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.campaign.ShieldWall
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{Commands, Dice, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application.{GameApplicationService, TreeDecision}
+import distantlands.gameplay.actions.campaign.{CampaignIds, PlanAid}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.campaign.ShieldWall
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{Commands, Dice, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.{formatter, texts}
 
 /** What the Game Log says about Imperial Tactics offers (Empire phase

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.phases.rest
+package distantlands.gameplay.phases.rest
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.OathViolation._
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.OathViolation._
+import distantlands.model._
 
 /** Begin Rest: the supported-state gate and the phase change, nothing else.
   *

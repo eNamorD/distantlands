@@ -1,21 +1,21 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.action.AlchemistCard
-import oathdigital.gameplay.powers.campaign.VowOfPeaceCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.{FollowUpPlay, ModifierPlay, OathRules,
+import distantlands.gameplay.powers.action.AlchemistCard
+import distantlands.gameplay.powers.campaign.VowOfPeaceCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.{FollowUpPlay, ModifierPlay, OathRules,
   WalkerDiceFixture}
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes, ParkedNode, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, ParkedNode, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class KnightsErrantSuite extends munit.FunSuite:
   private val knights = KnightsErrantCard.id

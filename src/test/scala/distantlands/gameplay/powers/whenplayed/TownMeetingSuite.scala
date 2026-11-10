@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.MarriageCard
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.gameplay.powers.search.LandWardenCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.MarriageCard
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.search.LandWardenCard
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
 
 class TownMeetingSuite extends munit.FunSuite:
   import WhenPlayedHarness._

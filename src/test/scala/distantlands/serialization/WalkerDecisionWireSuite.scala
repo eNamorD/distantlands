@@ -1,16 +1,16 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.powers.campaign.{SecondWindCard, StickyFireCard}
-import oathdigital.model._
-import oathdigital.gameplay.walker.{ActionBoundaryRan, ChoicePayload,
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.powers.campaign.{SecondWindCard, StickyFireCard}
+import distantlands.model._
+import distantlands.gameplay.walker.{ActionBoundaryRan, ChoicePayload,
   FollowUpSkipped,
   ProcedureDequeued, WalkerCompleted, WalkerParked, WalkerStepRecorded}
-import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer,
+import distantlands.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer,
   PartitionAnswer}
-import oathdigital.serialization.WalkerWireEvents.{assertStreamRoundTrips,
+import distantlands.serialization.WalkerWireEvents.{assertStreamRoundTrips,
   encodedStream, encodedStreamThatRoundTrips}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Unwrap.accepted
 
 /** Walker decision answers on the wire: every answer and option reference kind
   * round trips on a recorded step and on a park, and deleted legacy tags are

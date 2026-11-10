@@ -1,7 +1,7 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.{FirstGameRulesData, FirstGameSetupFixture}
-import oathdigital.model._
+import distantlands.gameplay.setup.{FirstGameRulesData, FirstGameSetupFixture}
+import distantlands.model._
 
 class ChronicleFirstGamePlanSuite extends munit.FunSuite:
   private val config = FirstGameBootstrapConfig(
@@ -18,7 +18,7 @@ class ChronicleFirstGamePlanSuite extends munit.FunSuite:
     val orders = ChronicleFirstGamePlan.dealOrder(config,
       short.worldDeck, short.relicDeck)
     assertEquals(orders.participants, config.participants)
-    assert(oathdigital.gameplay.setup.GameStartRules
+    assert(distantlands.gameplay.setup.GameStartRules
       .evolve(FirstGameSetupFixture.catalog, short, orders).isLeft)
 
   test("a later game deals hands only to players with no starting advisers"):

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.model._
 
 /** Introduce Newcomers, the Beacon's first step (CR p. 39). The Beacon task
   * holder chooses three different suits, for three draws, two and one.

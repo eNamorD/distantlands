@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Consent on the operation path (consent design, slice 3): the refusals an
   * option's plan meets, and the ask they allow. */

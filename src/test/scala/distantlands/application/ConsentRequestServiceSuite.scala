@@ -1,18 +1,18 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.NarrowPassSite
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.travel.TravelFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathEvent.{CommandAccepted, ConsentAnswered,
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.NarrowPassSite
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.travel.TravelFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathEvent.{CommandAccepted, ConsentAnswered,
   ConsentPreferenceSet, ConsentRequestWithdrawn, ConsentRequested}
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, PlacementPicks}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.Commands
+import distantlands.testkit.{Look, MenuPlay, Outcomes, PlacementPicks}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Commands
 
 /** Asking for consent and answering through the service (consent design,
   * user story, rulings 10 to 14, "Commands"). */

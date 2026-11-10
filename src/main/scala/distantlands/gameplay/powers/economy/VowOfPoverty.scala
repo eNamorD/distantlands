@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PhasePower, PowerCtx, Restriction}
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.gameplay.powers.cardplay.FavorBankChoice
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.model._
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.gameplay.powers.cardplay.FavorBankChoice
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.model._
 
 object VowOfPovertyCard extends Denizen(DenizenId("193"), "Vow of Poverty", Suit.Beast) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-poverty"),

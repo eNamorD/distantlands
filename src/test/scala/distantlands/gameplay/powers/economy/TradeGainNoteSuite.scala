@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.powers.search.BrackenCard
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
-import oathdigital.model._
-import oathdigital.testkit.{EconomyActions, PowerRules, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.search.BrackenCard
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
+import distantlands.model._
+import distantlands.testkit.{EconomyActions, PowerRules, Table}
+import distantlands.testkit.Table.p1
 
 /** What the Trade's own line says when a `TradeGain` power rewrites the gain
   * in place to record it. All three such powers return the record and the

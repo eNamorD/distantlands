@@ -1,9 +1,9 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.TestGameFixtures._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.TestGameFixtures._
 
 /** A `Repeat` around a `Branch` around a decision two players may answer: the
   * shape Negotiation's deal loop takes, exercised with a synthetic tree.

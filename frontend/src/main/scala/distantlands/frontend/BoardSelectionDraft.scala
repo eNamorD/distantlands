@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DecisionOptionWire,
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
   GameIntent => GameCommand}
 
 /** What a viewer has picked for a parked board decision and not yet

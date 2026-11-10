@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.actions.RuleNotes
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.actions.RuleNotes
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** Every power's declared notes (power log lines design, "Wording"). */
 class LogNoteCatalogSuite extends munit.FunSuite:

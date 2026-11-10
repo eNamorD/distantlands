@@ -1,16 +1,16 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentRequested}
-import oathdigital.testkit.{Commands, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentRequested}
+import distantlands.testkit.{Commands, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Asking Spell Breaker's ruler about a phase power the Act menu shows
   * askable, through the service: the menu wraps every option in its band,

@@ -1,7 +1,7 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.operations.GrandScepterSource
-import oathdigital.model._
+import distantlands.gameplay.operations.GrandScepterSource
+import distantlands.model._
 
 /** Crown Chancellor, the Sun's sixth step (CR p. 36, Chronicle ruling 10).
   * The winner becomes Chancellor and takes the Grand Scepter. An Exile's

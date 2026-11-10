@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Table}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.PhasePowerHarness
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, Table}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.PhasePowerHarness
 
 class ElderSuite extends munit.FunSuite:
   import PowerFixture._

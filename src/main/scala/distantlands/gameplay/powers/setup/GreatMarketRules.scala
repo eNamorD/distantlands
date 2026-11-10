@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.setup
+package distantlands.gameplay.powers.setup
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
+import distantlands.model._
 
 object GreatMarketCard extends Edifice(EdificeId("E02"), Suit.Discord):
   object intact extends EdificeFace("Great Market") with Locked:

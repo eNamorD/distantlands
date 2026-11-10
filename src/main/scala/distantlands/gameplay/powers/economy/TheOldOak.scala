@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Deferred,
   OperationRewrite, Transform}
-import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 object TheOldOakCard extends Denizen(DenizenId("42"), "The Old Oak", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.the-old-oak"),

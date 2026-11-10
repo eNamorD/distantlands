@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powerresolver.{ModifierPicks, QueuedStarts}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.BrassArmyCard
-import oathdigital.gameplay.powers.travel.{BrassArmyMoves, HospitalityCard,
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powerresolver.{ModifierPicks, QueuedStarts}
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.campaign.BrassArmyCard
+import distantlands.gameplay.powers.travel.{BrassArmyMoves, HospitalityCard,
   SpecialEnvoyCard, TravelFixture, TyrantCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureDequeued, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureDequeued, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   ParkedNode, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Palanquin: the user is placed where the target could travel, and the
   * target travels there, off turn and for no Supply (catalog batch 8,

@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** An option that states its price projects as the option it wraps, with the
   * price worded as details.

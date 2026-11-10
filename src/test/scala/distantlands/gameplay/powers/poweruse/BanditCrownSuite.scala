@@ -1,25 +1,25 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.{BanditCrownCard, PassMap, PowerAccess,
+import distantlands.gameplay.{BanditCrownCard, PassMap, PowerAccess,
   RuleSourceFace}
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite,
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite,
   NarrowPassSite}
-import oathdigital.gameplay.operations.{HallOfMinisters, HallOfMinistersCard}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.ConsentPowers
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
-import oathdigital.gameplay.powers.cardplay.{SecretPolice, SecretPoliceCard}
-import oathdigital.gameplay.powers.economy.{Curfew, CurfewCard}
-import oathdigital.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
-import oathdigital.gameplay.powers.search.{ForcedLabor, ForcedLaborCard}
-import oathdigital.gameplay.powers.travel.{ForbiddenForest,
+import distantlands.gameplay.operations.{HallOfMinisters, HallOfMinistersCard}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
+import distantlands.gameplay.powers.cardplay.{SecretPolice, SecretPoliceCard}
+import distantlands.gameplay.powers.economy.{Curfew, CurfewCard}
+import distantlands.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
+import distantlands.gameplay.powers.search.{ForcedLabor, ForcedLaborCard}
+import distantlands.gameplay.powers.travel.{ForbiddenForest,
   ForbiddenForestCard, GraspingVines, GraspingVinesCard, Tents, TentsCard,
   TollRoads, TollRoadsCard}
-import oathdigital.gameplay.powers.wake.{HiddenPassages, HiddenPassagesCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.wake.{HiddenPassages, HiddenPassagesCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Bandit Crown (R11): its holder uses the cards at bandit-ruled sites as
   * if they ruled them, and the bandits still rule (catalog batch 11,

@@ -1,25 +1,25 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.protocol.projection.{DecisionQueryProjection,
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.testkit.MenuPlay
+import distantlands.protocol.projection.{DecisionQueryProjection,
   DecisionSectionProjection, GameProjection}
-import oathdigital.model._
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted,
+import distantlands.model._
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.actions.forge.ForgeProcedure
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted,
   WalkerParked}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.model.DecisionAnswer.PartitionAnswer
-import oathdigital.server.GameHttpWire
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.application.ForgeWalkerFixture.{forgeService, forgeSite,
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.model.DecisionAnswer.PartitionAnswer
+import distantlands.server.GameHttpWire
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.application.ForgeWalkerFixture.{forgeService, forgeSite,
   forgeTable, mixedForgeCostCatalog}
-import oathdigital.testkit.{Look, Outcomes}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.present
+import distantlands.testkit.{Look, Outcomes}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.present
 import ParkedServiceFixture.{loaded, parkedAssertions, replayingSecond}
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** The application service drives a walker Forge through
   * `StartWalker`/`ResolveWalker` alone, and its journal replays to the same

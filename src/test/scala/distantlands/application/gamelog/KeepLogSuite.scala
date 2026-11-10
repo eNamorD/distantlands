@@ -1,12 +1,12 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.campaign.KeepCard
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.model._
-import oathdigital.testkit.{Dice, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.campaign.KeepCard
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.model._
+import distantlands.testkit.{Dice, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, raidAnswers, texts}
 
 /** How Keep reads in the Game Log: its line says where the defender's

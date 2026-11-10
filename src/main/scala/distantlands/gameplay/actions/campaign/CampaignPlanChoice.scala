@@ -1,8 +1,8 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.OfferHost
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.OfferHost
+import distantlands.model._
 
 /** One side's battle-plan window: the node the powers' `Offer`s are folded into.
   * A pass of it, inside a `Repeat`, asks the user to choose one plan and then

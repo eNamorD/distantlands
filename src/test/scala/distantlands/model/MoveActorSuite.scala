@@ -1,6 +1,6 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.testkit.Table.{p1, p2}
 
 /** A move names the player who moves it (catalog batch 8, slice 11): the
   * player its composite names, or the one its builder gives, or none when

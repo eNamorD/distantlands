@@ -1,6 +1,6 @@
-package oathdigital.gameplay.actions.dice
+package distantlands.gameplay.actions.dice
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The dice of one roll that a reroll may change, and who rolled them
   * (catalog batch 7, slice 1). `indices` address the pool's recorded

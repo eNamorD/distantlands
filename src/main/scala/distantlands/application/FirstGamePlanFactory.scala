@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
+import distantlands.model._
 
 final case class FirstGameBootstrapConfig(
     participants: Vector[FirstGameParticipant],

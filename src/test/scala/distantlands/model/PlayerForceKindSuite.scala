@@ -1,7 +1,7 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.testkit.Table
-import oathdigital.testkit.Unwrap.present
+import distantlands.testkit.Table
+import distantlands.testkit.Unwrap.present
 
 class PlayerForceKindSuite extends munit.FunSuite:
   private val ready = Table.start.ready

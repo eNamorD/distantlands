@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 object BanditPaymasterCard extends Denizen(DenizenId("219"), "Bandit Paymaster", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.bandit-paymaster"),

@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The consequences of answering a decision option, worded for display, read
   * off the operations the walk recorded for it. It words only what a player

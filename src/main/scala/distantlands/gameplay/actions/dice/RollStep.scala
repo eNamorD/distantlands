@@ -1,6 +1,6 @@
-package oathdigital.gameplay.actions.dice
+package distantlands.gameplay.actions.dice
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The one way a tree rolls dice (catalog batch 7, slice 1): an automatic
   * `Roll`, then the roller's reroll choice, asked again after each reroll

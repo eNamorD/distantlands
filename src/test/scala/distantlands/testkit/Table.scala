@@ -1,17 +1,17 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.{CampaignDicePort, GameApplicationService,
+import distantlands.application.{CampaignDicePort, GameApplicationService,
   InMemoryEventStreamRepository}
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DunesSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.rest.RoundEndRandomPort
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.phases.rest.RoundEndRandomPort
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** A game state assembled directly for a rule test, not reached by play
   * (`CONTEXT.md`, "Table").

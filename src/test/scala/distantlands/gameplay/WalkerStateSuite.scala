@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
 
 class WalkerStateSuite extends munit.FunSuite:
   private val actor = playerId

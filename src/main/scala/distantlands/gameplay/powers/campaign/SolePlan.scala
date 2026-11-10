@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds}
-import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx}
-import oathdigital.model._
+import distantlands.gameplay.actions.campaign.{CampaignAnswers, CampaignIds}
+import distantlands.gameplay.powerresolver.{OptionRestriction, PowerCtx}
+import distantlands.model._
 
 /** The restrictions of a battle plan its user may use with no other (Code
   * of Honor; Peace Envoy in slice 2), at the window of each side in

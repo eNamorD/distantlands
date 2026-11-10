@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Refusals, Table}
-import oathdigital.testkit.ActPowerHarness.usableIds
-import oathdigital.testkit.Outcomes.ready
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, MenuPlay, PhasePowerHarness, Refusals, Table}
+import distantlands.testkit.ActPowerHarness.usableIds
+import distantlands.testkit.Outcomes.ready
+import distantlands.testkit.Unwrap.accepted
 
 /** Stone Portal (catalog batch 9, slice 6): from its site, place your pawn
   * elsewhere; from a site you rule, place it at the Portal. */

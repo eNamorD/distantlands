@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import munit.Assertions.fail
 import scala.collection.mutable

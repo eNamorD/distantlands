@@ -1,13 +1,13 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{LogNoted, ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.walker.{LogNoted, ProcedureWalker, WalkerOutcome,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.PowerStubs.{ActionForbiddingStub, OptionHidingStub, hideSource, hidNote}
-import oathdigital.testkit.Outcomes.{finished, parked}
-import oathdigital.testkit.DecisionOptions.button
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.PowerStubs.{ActionForbiddingStub, OptionHidingStub, hideSource, hidNote}
+import distantlands.testkit.Outcomes.{finished, parked}
+import distantlands.testkit.DecisionOptions.button
 
 class LogNoteHideSuite extends munit.FunSuite:
   private val window = PowerWindow.ChallengeAmountSelection

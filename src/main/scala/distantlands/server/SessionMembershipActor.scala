@@ -1,10 +1,10 @@
-package oathdigital.server
+package distantlands.server
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import akka.http.scaladsl.model.HttpRequest
 
-import oathdigital.application.{AuthenticationFailure, AuthorizationFailure,
+import distantlands.application.{AuthenticationFailure, AuthorizationFailure,
   GameAccessContext, MembershipAuthorizationService}
 
 /** The authenticated transport's actor, for when X6 issues sessions: the

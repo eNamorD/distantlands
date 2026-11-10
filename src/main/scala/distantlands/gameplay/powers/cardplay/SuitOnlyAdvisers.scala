@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{EffectiveSuit, PledgeToDiscordCard}
-import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{EffectiveSuit, PledgeToDiscordCard}
+import distantlands.gameplay.actions.{AdviserFace, AdviserPlayNote,
   CardPlayRules}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
   Contribution, ExecutedBatch, ExecutedTrigger, FollowsArrivals, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 /** A rule that its holder may have only faceup advisers of one suit, and
   * buries every other adviser they have or would gain: Family Wagon's

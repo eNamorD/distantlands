@@ -1,10 +1,10 @@
-package oathdigital.gameplay.actions.minor
+package distantlands.gameplay.actions.minor
 
-import oathdigital.gameplay.SpendableFavor
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.model._
-import oathdigital.model.OathViolation._
+import distantlands.gameplay.SpendableFavor
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.roles.Citizenship
+import distantlands.model._
+import distantlands.model.OathViolation._
 
 /** Self-exile (CR p. 34): as a minor action a Citizen gives the Chancellor
   * 1 favor per Imperial warband on their board, but no less than 3, and is

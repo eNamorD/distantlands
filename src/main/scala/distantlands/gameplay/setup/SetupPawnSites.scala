@@ -1,6 +1,6 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.model._
+import distantlands.model._
 
 object SetupPawnSites:
   /** Where a player may place their pawn in Setup (CR p. 13, Empire ruling

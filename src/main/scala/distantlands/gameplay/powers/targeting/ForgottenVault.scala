@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.model._
 
 object ForgottenVaultCard extends Denizen(DenizenId("75"), "Forgotten Vault", Suit.Arcane) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.forgotten-vault"),

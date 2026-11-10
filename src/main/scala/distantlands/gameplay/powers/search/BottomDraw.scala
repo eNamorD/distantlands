@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.actions.SearchRules
-import oathdigital.model._
+import distantlands.gameplay.actions.SearchRules
+import distantlands.model._
 
 /** How a Search modifier makes the draw take cards from the bottom of its
   * pile (Wine of Welcome, Mushrooms).

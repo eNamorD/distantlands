@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, click, one}
-import oathdigital.frontend.TestBoards.*
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent => Intent}
+import distantlands.frontend.Dom.{all, click, one}
+import distantlands.frontend.TestBoards.*
+import distantlands.model.PlayerColor
+import distantlands.protocol.{DecisionAnswerWire, GameIntent => Intent}
 
 /** "Play facedown adviser" starts the walker with no card. The walk's first
   * decision is the pick, answered on the player's board like any board

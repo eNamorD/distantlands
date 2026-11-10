@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.TestBoardOptions.adviserPlayAtRedSlot3
-import oathdigital.protocol.{DecisionAnswerWire, DecisionOptionWire,
+import distantlands.frontend.TestBoardOptions.adviserPlayAtRedSlot3
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
   GameIntent => Intent}
 
 /** The board draft and the option states drawn from it, with no DOM: a

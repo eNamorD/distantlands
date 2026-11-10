@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.DesecratedGroundRule
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.gameplay.DesecratedGroundRule
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 /** Desecrated Ground (E08's ruined face): "If an Exile reveals a Vision
   * while their pawn is at this site, they do not discard their current

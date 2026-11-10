@@ -1,21 +1,21 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.actions.{CardPlay, CardPlayRules}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.cardplay.CardSlots
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{ArcaneBrokersCard,
+import distantlands.gameplay.actions.{CardPlay, CardPlayRules}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.cardplay.CardSlots
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.{ArcaneBrokersCard,
   WardOfSilenceCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.whenplayed.{Riots, RiotsCard,
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.whenplayed.{Riots, RiotsCard,
   WhenPlayedHarness}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, PlacementPicks, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Still Boiling Lake (catalog batch 9, slice 5): no card may be played to
   * its site, until a discard effect takes the Lake away. */

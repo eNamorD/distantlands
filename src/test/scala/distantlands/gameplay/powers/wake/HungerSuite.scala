@@ -1,22 +1,22 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.application.{GameCommand, ParkedServiceFixture}
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.application.{GameCommand, ParkedServiceFixture}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted,
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Answers, Look, Outcomes,
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Answers, Look, Outcomes,
   PhasePowerHarness, Refusals, Situation, Table}
-import oathdigital.testkit.Table.{p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.{p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 class HungerSuite extends munit.FunSuite:
   import PowerFixture.actor

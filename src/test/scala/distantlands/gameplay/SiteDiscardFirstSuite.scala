@@ -1,18 +1,18 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.powers.action.AncientBindingCard
-import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, RainBootsCard,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.powers.action.AncientBindingCard
+import distantlands.gameplay.powers.campaign.{BattleHonorsCard, RainBootsCard,
   WrestlersCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, PlacementPicks, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.as
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, PlacementPicks, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.as
 
 /** A site discard permission through the walker: a Replace site slot
   * discards its card with the standard returns, at any capacity.

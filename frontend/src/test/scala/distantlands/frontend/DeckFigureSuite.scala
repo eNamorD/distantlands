@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, one}
-import oathdigital.frontend.TestBoardOptions.recording
-import oathdigital.frontend.TestSites.quietSite
-import oathdigital.model.PlayerColor
+import distantlands.frontend.Dom.{all, one}
+import distantlands.frontend.TestBoardOptions.recording
+import distantlands.frontend.TestSites.quietSite
+import distantlands.model.PlayerColor
 import org.scalajs.dom
 
 /** The world deck and each region's discard are drawn as a card with its
@@ -12,7 +12,7 @@ import org.scalajs.dom
   */
 class DeckFigureSuite extends munit.FunSuite:
   private val red = GamePlayer("red", "Red", "Exile", PlayerColor.Red)
-  private val tracks = oathdigital.protocol.projection.GameTracksProjection(
+  private val tracks = distantlands.protocol.projection.GameTracksProjection(
     round = 1, visionsDrawn = 0, usurperLimited = false, limiterRound = 4,
     firstPlayerId = "red")
   private val facedown = CardDetails("hidden", "denizen", "Facedown denizen",

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.setup
+package distantlands.gameplay.powers.setup
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object HallOfDebateCard extends Edifice(EdificeId("E01"), Suit.Discord):
   object intact extends EdificeFace("Hall of Debate") with Locked:

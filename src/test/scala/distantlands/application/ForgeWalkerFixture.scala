@@ -1,15 +1,15 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.campaign.MercenariesCard
-import oathdigital.gameplay.powers.search.MushroomsCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.testkit.MenuPlay
-import oathdigital.model._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.testkit.{Table, TestCards}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.campaign.MercenariesCard
+import distantlands.gameplay.powers.search.MushroomsCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.testkit.MenuPlay
+import distantlands.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.testkit.{Table, TestCards}
+import distantlands.testkit.Table.p1
 
 /** The board a walker Forge is driven from, shared by every suite that needs
   * one.
@@ -60,20 +60,20 @@ object ForgeWalkerFixture:
     * declares no decision node there at all. This override is what gives
     * the PARKED path a real board to be tested against.
     */
-  lazy val mixedForgeCostCatalog: oathdigital.catalog.ExecutableCatalog =
+  lazy val mixedForgeCostCatalog: distantlands.catalog.ExecutableCatalog =
     catalog.copy(sites = catalog.sites.map(site =>
       if site.id != forgeSite then site
       else TestCards.siteLike(site)(forgeRequirements = Some(Tokens(2, 1)))))
 
   /** A fresh service begun at [[forgeTable]] under `cat`, and its
     * repository. The stream is empty, so the Forge starts at sequence 0. */
-  def forgeService(cat: oathdigital.catalog.ExecutableCatalog = catalog)
+  def forgeService(cat: distantlands.catalog.ExecutableCatalog = catalog)
       : (GameApplicationService, InMemoryEventStreamRepository) =
     forgeTable.service(catalog = cat)
 
   /** A parked Forge: the catalog it ran under (the assertions need its
     * printed cost) and the parked position. p1 forges at [[forgeSite]]. */
-  final case class ParkedForge(catalog: oathdigital.catalog.ExecutableCatalog,
+  final case class ParkedForge(catalog: distantlands.catalog.ExecutableCatalog,
       started: GameAccepted)
 
   /** The position a mixed-cost Forge PARKS from: the fixture board above,

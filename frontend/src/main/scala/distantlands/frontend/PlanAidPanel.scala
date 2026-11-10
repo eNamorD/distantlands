@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.projection.PlanAidOfferProjection
+import distantlands.protocol.projection.PlanAidOfferProjection
 import org.scalajs.dom
 import ServerUiSupport.{button, element, text}
 

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
+import distantlands.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
   OathViolation, RoundDieFace}
 
 /** Where the walker's randomness comes from: an automatic `Roll`'s faces,

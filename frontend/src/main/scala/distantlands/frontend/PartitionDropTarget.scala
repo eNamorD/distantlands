@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** Where a card dragged over a partition zone lands, read off the pointer.
   *

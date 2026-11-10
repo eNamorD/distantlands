@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.{KinshipDraws, KinshipRule, VowOfKinshipCard}
-import oathdigital.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
+import distantlands.gameplay.{KinshipDraws, KinshipRule, VowOfKinshipCard}
+import distantlands.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
   AsksBeforeBatch, BatchAsk, BatchContext, Contribution, FollowsArrivals,
   Replacement}
-import oathdigital.model._
+import distantlands.model._
 
 /** Vow of Kinship (card 152, catalog batch 11, rulings 9, 10, 12 and 26 to
   * 29). The credit, the draw and the spend checks are rules

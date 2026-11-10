@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.SearchPlay
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
+import distantlands.gameplay.SearchPlay
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
   ScryerCard, SecondChanceCard}
-import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
-import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.whenplayed.{BlackmailCard,
+import distantlands.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.powers.whenplayed.{BlackmailCard,
   ThreateningRoarCard}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Observatory (card 64): while the actor's pawn is at its site, every
   * region's discard pile is offered, each at 2 Supply (catalog batch 6,

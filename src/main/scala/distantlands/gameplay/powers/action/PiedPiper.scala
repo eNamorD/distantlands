@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.AdviserFace
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.AdviserFace
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object PiedPiperCard extends Denizen(DenizenId("182"), "Pied Piper", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.pied-piper"),

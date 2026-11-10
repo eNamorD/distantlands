@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
-import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.CodeOfHonorCard
+import distantlands.gameplay.powers.economy.VowOfWanderingCard
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class BallotBoxSuite extends munit.FunSuite:
   private val vow = VowOfWanderingCard.id

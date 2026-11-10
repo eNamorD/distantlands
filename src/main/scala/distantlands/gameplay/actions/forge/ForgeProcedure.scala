@@ -1,11 +1,11 @@
-package oathdigital.gameplay.actions.forge
+package distantlands.gameplay.actions.forge
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.{ForgeRules, ProcedureNotes}
-import oathdigital.gameplay.walker.ModifierChoice
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.PartitionAnswer
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.{ForgeRules, ProcedureNotes}
+import distantlands.gameplay.walker.ModifierChoice
+import distantlands.model._
+import distantlands.model.DecisionAnswer.PartitionAnswer
 
 /** Declared Forge procedure tree for the walker (batch 1, Task 2).
   *
@@ -63,7 +63,7 @@ import oathdigital.model.DecisionAnswer.PartitionAnswer
   * that starts with the player unable to pay spends Supply and then fails at
   * its last node.
   *
-  * `build`/`rebuild` take the [[oathdigital.catalog.ExecutableCatalog]] to read the site's printed
+  * `build`/`rebuild` take the [[distantlands.catalog.ExecutableCatalog]] to read the site's printed
   * cost; nothing else about the catalog reaches the tree, which closes over
   * the actor and that cost alone.
   */
@@ -202,7 +202,7 @@ object ForgeProcedure:
       .toRight(OathViolation.ForgeUnavailable("site has no printed Forge cost"))
 
   /** The two sections a Forge assignment spreads its targets across. Stable
-    * keys: a recorded [[oathdigital.model.DecisionPlacement]] names one of
+    * keys: a recorded [[distantlands.model.DecisionPlacement]] names one of
     * these, and the trailing operation node reads the resource back out of it.
     */
   val favorSectionKey: String = "pay-favor"

@@ -1,9 +1,9 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.{BannerRules, ImperialLaws}
-import oathdigital.gameplay.powers.ConsentPowers
-import oathdigital.model._
-import oathdigital.protocol.projection._
+import distantlands.gameplay.actions.{BannerRules, ImperialLaws}
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.model._
+import distantlands.protocol.projection._
 
 /** A waivable power's name as the panels write it: its source's name, the
   * Narrow Pass for the Pass. */

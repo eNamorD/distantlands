@@ -1,6 +1,6 @@
-package oathdigital.engine
+package distantlands.engine
 
-import oathdigital.testkit.RunningTotalEvolution
+import distantlands.testkit.RunningTotalEvolution
 
 class EventReplayEngineSuite extends munit.FunSuite:
   private val engine = new EventReplayEngine(RunningTotalEvolution)

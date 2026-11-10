@@ -1,12 +1,12 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, RollPayload,
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powers.dice.JinxCard
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, RollPayload,
   WalkerCompleted, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import LogScripts._
 
 /** The lines of a reroll: the roll as rolled, then the throw restated after

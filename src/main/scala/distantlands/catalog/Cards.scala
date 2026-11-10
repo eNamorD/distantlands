@@ -1,6 +1,6 @@
-package oathdigital.catalog
+package distantlands.catalog
 
-import oathdigital.model.{CampaignPlanSide, Cost, DenizenId, EdificeId,
+import distantlands.model.{CampaignPlanSide, Cost, DenizenId, EdificeId,
   LegacyId, MajorActionType, PowerId, RelicId, SiteId, Suit, Tokens}
 
 /** The modifier icon a power prints beside its braid, when it prints one:

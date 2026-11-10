@@ -1,23 +1,23 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog,
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog,
   PowerFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, PlacementPicks, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, PlacementPicks, PowerRules, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 /** Temple of Ancestors (catalog batch 9, slice 9): draw the world deck's
   * bottom card and play it to the advisers, or discard it, as if searched. */
 class TempleOfAncestorsSuite extends munit.FunSuite:
   import PowerFixture._
-  import oathdigital.testkit.PhasePowerHarness.{after, awaits, parked}
+  import distantlands.testkit.PhasePowerHarness.{after, awaits, parked}
 
   private val temple = TempleOfAncestorsCard.id
   private val source = DecisionOptionRef.Edifice(temple)
@@ -75,7 +75,7 @@ class TempleOfAncestorsSuite extends munit.FunSuite:
     assertEquals(Look(after(done)).advisers(actor),
       Vector[CardId](WrestlersCard.id))
     val events = t.events ++ done.events
-    assertEquals(oathdigital.testkit.ActPowerHarness.replayed(rules, ready,
+    assertEquals(distantlands.testkit.ActPowerHarness.replayed(rules, ready,
       events), after(done))
     assertWireRoundTrips(events)
 

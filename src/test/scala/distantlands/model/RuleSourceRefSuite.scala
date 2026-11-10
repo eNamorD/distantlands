@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 class RuleSourceRefSuite extends munit.FunSuite:
   test("rule source identities are stable and distinguish broad source kinds"):

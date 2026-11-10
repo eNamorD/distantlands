@@ -1,8 +1,8 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powers.campaign.HorseArchersCard
-import oathdigital.model._
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.campaign.HorseArchersCard
+import distantlands.model._
+import distantlands.testkit.Table.p1
 
 /** Which operations show a player something the chooser cannot see, and how
   * far each of the two questions looks (hidden outcome depth decision).

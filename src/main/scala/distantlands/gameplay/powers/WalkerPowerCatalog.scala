@@ -1,28 +1,28 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.operations.OperationRestrictions
-import oathdigital.gameplay.powerresolver.{ContributingPower,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.gameplay.powerresolver.{ContributingPower,
   IgnoresOwnLock, PowerUseRestriction}
-import oathdigital.gameplay.powers.action._
-import oathdigital.gameplay.powers.banner._
-import oathdigital.gameplay.powers.burn._
-import oathdigital.gameplay.powers.campaign._
-import oathdigital.gameplay.powers.cardplay._
-import oathdigital.gameplay.powers.dice._
-import oathdigital.gameplay.powers.economy._
-import oathdigital.gameplay.powers.poweruse._
-import oathdigital.gameplay.powers.recover._
-import oathdigital.gameplay.powers.rest._
-import oathdigital.gameplay.powers.setup._
-import oathdigital.gameplay.powers.targeting._
-import oathdigital.gameplay.powers.title._
-import oathdigital.gameplay.powers.travel._
-import oathdigital.gameplay.powers.wake._
-import oathdigital.gameplay.powers.whenplayed._
-import oathdigital.gameplay.roles.CouncilSeat
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model.{CardId, PowerId}
+import distantlands.gameplay.powers.action._
+import distantlands.gameplay.powers.banner._
+import distantlands.gameplay.powers.burn._
+import distantlands.gameplay.powers.campaign._
+import distantlands.gameplay.powers.cardplay._
+import distantlands.gameplay.powers.dice._
+import distantlands.gameplay.powers.economy._
+import distantlands.gameplay.powers.poweruse._
+import distantlands.gameplay.powers.recover._
+import distantlands.gameplay.powers.rest._
+import distantlands.gameplay.powers.setup._
+import distantlands.gameplay.powers.targeting._
+import distantlands.gameplay.powers.title._
+import distantlands.gameplay.powers.travel._
+import distantlands.gameplay.powers.wake._
+import distantlands.gameplay.powers.whenplayed._
+import distantlands.gameplay.roles.CouncilSeat
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model.{CardId, PowerId}
 
 /** The real catalog of `ContributingPower`s wired onto the generic walker
   * seam. Every power names its card, so all are always present; `default`

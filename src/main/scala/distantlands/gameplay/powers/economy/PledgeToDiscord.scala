@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.PledgeToDiscordCard
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.gameplay.PledgeToDiscordCard
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 /** Pledge to Discord (card 223, adviser-only, locked): "Your advisers all
   * have the [suit-discord] suit instead of their printed suit. Marriage

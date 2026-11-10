@@ -1,12 +1,12 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.operations.{HallOfMinistersCard,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.operations.{HallOfMinistersCard,
   OperationRestrictions}
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** The own-power lock exemption (catalog batch 10, slice 4): while a power
   * that ignores its own lock is used, its card's lock does not bind; every

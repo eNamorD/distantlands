@@ -1,24 +1,24 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.{ModifierPlay, SearchPlay}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.{ModifierPlay, SearchPlay}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture,
   SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{TempleOfAncestors,
+import distantlands.gameplay.powers.action.{TempleOfAncestors,
   TempleOfAncestorsCard}
-import oathdigital.gameplay.powers.cardplay.{WelcomingParty,
+import distantlands.gameplay.powers.cardplay.{WelcomingParty,
   WelcomingPartyCard}
-import oathdigital.gameplay.powers.search.{Bracken, BrackenCard, NewGrowth,
+import distantlands.gameplay.powers.search.{Bracken, BrackenCard, NewGrowth,
   NewGrowthCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, PlacementPicks, PowerRules, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, PlacementPicks, PowerRules, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Search Party's play is not the Search's (catalog batch 10, slice 12,
   * ruling 5): no modifier picked for the Search reaches it, and Temple of

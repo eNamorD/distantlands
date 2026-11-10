@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, WardOfSilenceCard}
-import oathdigital.gameplay.powers.campaign.ArcaneArmorCard
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Table}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.{ArcaneBrokersCard, WardOfSilenceCard}
+import distantlands.gameplay.powers.campaign.ArcaneArmorCard
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Table}
 
 class GossipSuite extends munit.FunSuite:
   import PowerFixture._

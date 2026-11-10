@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.one
-import oathdigital.frontend.TestBoardOptions.recording
-import oathdigital.frontend.TestSites.quietSite
-import oathdigital.model.PlayerColor
+import distantlands.frontend.Dom.one
+import distantlands.frontend.TestBoardOptions.recording
+import distantlands.frontend.TestSites.quietSite
+import distantlands.model.PlayerColor
 
 /** The parked destination decision draws each site's cost or reason on its site box (travel
   * destination design, rulings 2 to 4). */

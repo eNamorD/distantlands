@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Files, Path, StandardOpenOption}

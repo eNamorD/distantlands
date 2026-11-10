@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import Dom.{all, click, firstMatch, press}
 import org.scalajs.dom
@@ -52,7 +52,7 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
       orientation = Some("face-up"), powers = Vector(
         PowerFace("Spend no Supply if you're traveling here.",
           persistent = true, modifier = Some(
-            oathdigital.protocol.projection.ModifierMarkProjection.Action(
+            distantlands.protocol.projection.ModifierMarkProjection.Action(
               Vector("travel")))),
         PowerFace("**ACTION:** Gain [favor].", cost = Vector("secret"))))
     val MountedOverlay(root, overlay) = mountedOverlay()
@@ -110,8 +110,8 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
   test("a Tracker's chosen pawn gets a Tracking row naming its colour"):
     val MountedOverlay(root, overlay) = mountedOverlay()
     overlay.show(card.copy(tracking = Some(
-      oathdigital.protocol.projection.TrackedPawnProjection("p2",
-        oathdigital.model.PlayerColor.Red, "Tracking Red"))),
+      distantlands.protocol.projection.TrackedPawnProjection("p2",
+        distantlands.model.PlayerColor.Red, "Tracking Red"))),
       focusableOpener())
     val rows = all(root, ".card-overlay-property").map(row =>
       (row.querySelector("dt").textContent, row.querySelector("dd").textContent))
@@ -295,7 +295,7 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
     overlay.showSupply(SupplyAtRest.Panel("Warbands in bank: 5",
       "(2 on your board, 0 on sites)",
       SupplyTracker.Track(Vector(SupplyBand(0, None, 4)), supply = 4,
-        banked = 5, maximum = 7, oathdigital.model.PlayerColor.Red),
+        banked = 5, maximum = 7, distantlands.model.PlayerColor.Red),
       "Supply gain at Rest: 4 plus unspent Supply (max 7)"), focusableOpener())
     assertEquals(firstMatch(root, ".card-overlay-name").map(_.textContent),
       Some("Supply"))

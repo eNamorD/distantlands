@@ -1,16 +1,16 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.{AncientCitySite, NarrowPassSite}
-import oathdigital.gameplay.powers.cardplay.SecretPoliceCard
-import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
-import oathdigital.gameplay.powers.travel.{TravelFixture, TyrantCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.Commands
+import distantlands.gameplay.cards.{AncientCitySite, NarrowPassSite}
+import distantlands.gameplay.powers.cardplay.SecretPoliceCard
+import distantlands.gameplay.powers.poweruse.{CityWall, CityWallCard}
+import distantlands.gameplay.powers.travel.{TravelFixture, TyrantCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Commands
 
 /** What each viewer is shown of consent (consent design, "Projection" and
   * "Testing", hidden information). */

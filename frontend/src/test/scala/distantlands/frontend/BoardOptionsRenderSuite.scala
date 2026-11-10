@@ -1,10 +1,10 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, click, one, press}
-import oathdigital.frontend.TestBoardOptions.{available, option, recording}
-import oathdigital.frontend.TestBoards.*
-import oathdigital.frontend.TestSites.*
-import oathdigital.model.PlayerColor
+import distantlands.frontend.Dom.{all, click, one, press}
+import distantlands.frontend.TestBoardOptions.{available, option, recording}
+import distantlands.frontend.TestBoards.*
+import distantlands.frontend.TestSites.*
+import distantlands.model.PlayerColor
 import org.scalajs.dom
 import scala.scalajs.js
 

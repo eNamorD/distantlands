@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.FacedownAdviserPlay
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.SearchFixture._
-import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, DowsingSticksCard,
+import distantlands.gameplay.FacedownAdviserPlay
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.SearchFixture._
+import distantlands.gameplay.powers.action.{ArcaneBrokersCard, DowsingSticksCard,
   WardOfSilenceCard}
-import oathdigital.gameplay.powers.campaign.ArcaneArmorCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.campaign.ArcaneArmorCard
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** A When Played power that asks the player something asks it after the card
   * has left the temporary hand (or the facedown slot). The walker rebuilds the

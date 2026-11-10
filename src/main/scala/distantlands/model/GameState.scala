@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 final case class PlayerBoardState(
     favor: Int,
@@ -90,9 +90,9 @@ object Phase:
   case object Wake extends Phase { val key = "wake" }
   case object Act extends Phase { val key = "act" }
   case object Rest extends Phase { val key = "rest" }
-  private[oathdigital] case object RoundEnd extends Phase:
+  private[distantlands] case object RoundEnd extends Phase:
     val key = "round-end"
-  private[oathdigital] case object WarExhaustion extends Phase:
+  private[distantlands] case object WarExhaustion extends Phase:
     val key = "war-exhaustion"
   /** The post-game Chronicle tasks. Entered once, after the game has a
     * result, when the winner starts the Chronicle. */
@@ -123,7 +123,7 @@ object PowerSourceRef:
   final case class Card(id: CardId) extends PowerSourceRef
 
   /** A banner whose printed face power was used. */
-  final case class Banner(banner: oathdigital.model.Banner) extends PowerSourceRef
+  final case class Banner(banner: distantlands.model.Banner) extends PowerSourceRef
 
   /** The source a phase power's start selection names, for its notes. */
   def of(ref: DecisionOptionRef): Option[PowerSourceRef] = ref match

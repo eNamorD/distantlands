@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.gameplay.actions.economy.{MusterSource, TradeProcedure}
-import oathdigital.gameplay.powerresolver.Contribution
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.gameplay.actions.economy.{MusterSource, TradeProcedure}
+import distantlands.gameplay.powerresolver.Contribution
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object CupOfPlentyCard extends Relic(RelicId("R07"), "Cup of Plenty", value = 96, defense = 1):
   val power = PrintedPower(PowerId("relic.cup-of-plenty"),

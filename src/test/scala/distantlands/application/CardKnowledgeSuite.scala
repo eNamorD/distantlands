@@ -1,13 +1,13 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.DunesSite
-import oathdigital.gameplay.operations.OperationExecutor
-import oathdigital.gameplay.powers.action.FaeMerchantCard
-import oathdigital.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.cards.DunesSite
+import distantlands.gameplay.operations.OperationExecutor
+import distantlands.gameplay.powers.action.FaeMerchantCard
+import distantlands.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** Knowledge follows the card (spec, "Knowledge follows the card"). The
   * board and the log read knowledge through the same `identifiesAt`, so

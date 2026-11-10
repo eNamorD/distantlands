@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.model._
+import distantlands.model._
 
 /** One secret leaving a player's board, faceup first, for Sleight of Hand
   * and Witch's Bargain.

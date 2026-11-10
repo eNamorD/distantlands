@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.Unwrap.accepted
 
 /** Bracken, Cracked Horn and Ring of Devotion exclude each other: once one
   * is picked, the other two show unavailable (catalog batch 10, slice 9,

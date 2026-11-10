@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 class ChronicleFilesSuite extends munit.FunSuite:
   test("a download is named after the Chronicle, with unsafe characters " +

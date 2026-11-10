@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** The roles of the players at the table (Empire phase design, "Role").
   * A role lives on the lineage; every read of who is Imperial, or who is

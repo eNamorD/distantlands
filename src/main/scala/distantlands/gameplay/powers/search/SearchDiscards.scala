@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, OperationRewrite, PowerCtx, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 /** What Bracken, Cracked Horn and Ring of Devotion share (catalog batch 10,
   * slice 9): a selected Search modifier that changes where the user's own

@@ -1,7 +1,7 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Who acts in the Chronicle, and the questions its steps share. */
 object ChronicleTasks:

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powers.economy.KnightsErrantCard
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.economy.KnightsErrantCard
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** The queue's replay (walker-driven game loop design, "The queue"):
   * queueing appends or goes in front, a dequeue takes the head and holds it

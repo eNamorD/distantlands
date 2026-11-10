@@ -1,16 +1,16 @@
-package oathdigital.gameplay.campaign
+package distantlands.gameplay.campaign
 
-import oathdigital.gameplay.CampaignFixture
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.gameplay.powers.action.WildAlliesCard
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.QueuedStart
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
+import distantlands.gameplay.CampaignFixture
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import distantlands.gameplay.powers.action.WildAlliesCard
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.QueuedStart
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes}
 
 class CampaignOriginSuite extends munit.FunSuite:
   private val source =

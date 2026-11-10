@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.search.MushroomsCard
-import oathdigital.gameplay.powers.whenplayed.{BanditChiefCard,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.search.MushroomsCard
+import distantlands.gameplay.powers.whenplayed.{BanditChiefCard,
   ThreateningRoarCard}
-import oathdigital.model._
-import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.{Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.protocol.projection.DecisionQueryProjection
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 class ScryerSuite extends munit.FunSuite:
   import PowerFixture._

@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -44,7 +44,7 @@ object OathServer:
       ActorSystem[Nothing](Behaviors.empty, "oathdigital-server")
     given executionContext: ExecutionContext = system.executionContext
     val blockingExecutionContext = system.dispatchers.lookup(
-      DispatcherSelector.fromConfig("oathdigital.blocking-dispatcher")
+      DispatcherSelector.fromConfig("distantlands.blocking-dispatcher")
     )
     val readiness = ServerReadiness.starting(config.version)
     system.log.info(

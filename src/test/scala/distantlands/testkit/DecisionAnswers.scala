@@ -1,6 +1,6 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.model.{DecisionAnswer, DecisionOptionRef}
+import distantlands.model.{DecisionAnswer, DecisionOptionRef}
 
 /** Answers to a parked decision, built the way a client would send them. */
 object DecisionAnswers:

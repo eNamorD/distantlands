@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.model._
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.model._
 
 /** "You can only have two advisers", printed on an adviser: refactor P4 of
   * catalog batch 3, shared by Silver Tongue and Insomnia.

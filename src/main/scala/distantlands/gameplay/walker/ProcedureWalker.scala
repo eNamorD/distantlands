@@ -1,9 +1,9 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.OperationResolution
-import oathdigital.model.{Answered, AutomaticUse, Branch, Burn, BuildOps, CoreOperation, Decide, DieFace, EndWalk, Note, NoteStates, OathState, OathViolation, Operation, PayCost, PendingTree, PlayerId, PoolKey, PowerId, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Repeat, Reroll, Roll, RollMode, Shuffle, Simultaneous, TakeDeferred, WalkerEvent}
+import distantlands.gameplay.operations.OperationResolution
+import distantlands.model.{Answered, AutomaticUse, Branch, Burn, BuildOps, CoreOperation, Decide, DieFace, EndWalk, Note, NoteStates, OathState, OathViolation, Operation, PayCost, PendingTree, PlayerId, PoolKey, PowerId, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Repeat, Reroll, Roll, RollMode, Shuffle, Simultaneous, TakeDeferred, WalkerEvent}
 
-/** Auto-walk engine over an [[oathdigital.model.Operation]] action tree (Tasks 3-5).
+/** Auto-walk engine over an [[distantlands.model.Operation]] action tree (Tasks 3-5).
   *
   * Contract (plan-owner rulings + brief):
   *  - `advance(state, action, pending)` walks `action` from `pending.at`
@@ -23,12 +23,12 @@ import oathdigital.model.{Answered, AutomaticUse, Branch, Burn, BuildOps, CoreOp
   *    [[ChoicePayload]] is recorded, and the walk continues.
   *  - Every other leaf validates + executes via `OperationPipeline`
   *    (`OperationPolicy.Permissive`) and records one [[WalkerStepRecorded]]
-  *    per executed leaf. [[oathdigital.model.BuildOps]] leaves are executed at walk time:
+  *    per executed leaf. [[distantlands.model.BuildOps]] leaves are executed at walk time:
   *    `build(state, pending)` yields the delta batch to run and record (an
   *    empty batch runs nothing and records nothing). A `BuildOps` batch a
   *    power asks about first walks the power's questions under the leaf
   *    ([[BatchQuestions]]).
-  *  - [[oathdigital.model.Branch]] composites are resolved at walk time by evaluating
+  *  - [[distantlands.model.Branch]] composites are resolved at walk time by evaluating
   *    `select(state, pending)` and walking the selected operations as the
   *    branch's children (statically the branch has none).
   *  - `Repeat(guard, body)` runs whole body passes while `guard(state,
@@ -156,7 +156,7 @@ object ProcedureWalker extends DecideNarrowing:
     * command before the walk: see [[WalkerPowerGather.restrictionViolations]]. */
   def restrictionViolations(tree: Operation, powers: WalkerPowers,
       state: ReadyGame, actor: PlayerId,
-      answered: Vector[oathdigital.model.Answered] = Vector.empty,
+      answered: Vector[distantlands.model.Answered] = Vector.empty,
       procedure: Option[ProcedureRef] = None)
       : Vector[OathViolation] = WalkerPowerGather.restrictionViolations(tree,
     powers, state, actor, answered, procedure)

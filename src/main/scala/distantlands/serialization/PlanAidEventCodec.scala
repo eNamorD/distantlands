@@ -1,7 +1,7 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.{PlanAidCleared, PlanAidSaved}
+import distantlands.model._
+import distantlands.model.OathEvent.{PlanAidCleared, PlanAidSaved}
 
 /** The Imperial Tactics facts (Empire phase design, "1b-ii"). */
 private[serialization] trait PlanAidEventCodec { this: GameEventJsonSupport =>

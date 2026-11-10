@@ -1,27 +1,27 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.whenplayed.{ThreateningRoarCard,
+import distantlands.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import distantlands.gameplay.powers.whenplayed.{ThreateningRoarCard,
   WizardsConclaveCard}
-import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.model._
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.walker.{ChoicePayload, WalkerStepRecorded}
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.OathViolation.WrongPlayer
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.model._
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.walker.{ChoicePayload, WalkerStepRecorded}
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.OathViolation.WrongPlayer
+import distantlands.testkit.{Look, Outcomes, PlacementPicks, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 import ParkedServiceFixture.{loaded, parkedAssertions,
   pickFacedownAdviser, playFacedownAdviser, replayingSecond}
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** The application service persists and reloads the walker actions and
   * parks besides Recover and Forge: League Treaty, previews, minor actions,

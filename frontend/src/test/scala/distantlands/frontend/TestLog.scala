@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.projection.{LogEntry, LogKind, LogSection,
+import distantlands.protocol.projection.{LogEntry, LogKind, LogSection,
   LogSpan, LogTakenBack}
 import org.scalajs.dom
 import scala.scalajs.js

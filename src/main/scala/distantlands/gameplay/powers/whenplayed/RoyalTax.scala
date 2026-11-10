@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 object RoyalTaxCard extends Denizen(DenizenId("117"), "Royal Tax", Suit.Order):
   val power = PrintedPower(PowerId("denizen.royal-tax"),

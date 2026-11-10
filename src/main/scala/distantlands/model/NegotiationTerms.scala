@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 final case class NegotiationTransfer(
     recipient: PlayerId,

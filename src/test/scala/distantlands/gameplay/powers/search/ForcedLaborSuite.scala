@@ -1,22 +1,22 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.{NoteText, PayOrAsk, SearchFixture,
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.{NoteText, PayOrAsk, SearchFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.StartPreview
+import distantlands.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PlacementPicks, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.StartPreview
 
 /** Forced Labor's ruler toll on a Search. The toll itself, including the
   * favor burnt when bandits rule, is shared with Curfew (`RulerToll`) and
-  * pinned in [[oathdigital.gameplay.powers.economy.CurfewSuite]]. */
+  * pinned in [[distantlands.gameplay.powers.economy.CurfewSuite]]. */
 class ForcedLaborSuite extends munit.FunSuite:
   import SearchFixture.rules
 

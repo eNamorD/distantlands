@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** A granter's standing answer to one requester on one power (consent
   * design, ruling 15). Case-by-case is no entry. */

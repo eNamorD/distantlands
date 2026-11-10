@@ -1,8 +1,8 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.walker.ProcedureStart
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.walker.ProcedureStart
+import distantlands.model._
 
 /** The last Chronicle procedure: journals the evolved Chronicle (Chronicle
   * steps design, "Exit and extraction"), and refuses one that fails the

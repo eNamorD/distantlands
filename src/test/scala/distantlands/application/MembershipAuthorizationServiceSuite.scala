@@ -1,13 +1,13 @@
-package oathdigital.application
+package distantlands.application
 
 import java.nio.file.Files
 
-import oathdigital.application.AuthorizationFailure._
-import oathdigital.application.ProjectionScope._
-import oathdigital.model.PlayerId
-import oathdigital.persistence.HsqldbDatabaseOwner
-import oathdigital.testkit.IdentityRepositoryStub
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.application.AuthorizationFailure._
+import distantlands.application.ProjectionScope._
+import distantlands.model.PlayerId
+import distantlands.persistence.HsqldbDatabaseOwner
+import distantlands.testkit.IdentityRepositoryStub
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 class MembershipAuthorizationServiceSuite extends munit.FunSuite:
   private val ownerUser = UserId("owner-user")

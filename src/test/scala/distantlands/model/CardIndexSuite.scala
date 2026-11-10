@@ -1,6 +1,6 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 class CardIndexSuite extends munit.FunSuite:
   import TestGameFixtures._

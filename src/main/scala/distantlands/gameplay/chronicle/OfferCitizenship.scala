@@ -1,8 +1,8 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 /** Offer Citizenship, the Throne's first step (CR p. 37, Chronicle rulings
   * 5 and 20-22). The Throne holder offers Citizenship to any seated Exiles,

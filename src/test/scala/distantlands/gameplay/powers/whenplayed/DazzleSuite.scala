@@ -1,18 +1,18 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.campaign.SpiralCastleCard
-import oathdigital.gameplay.operations.{AncientBloodlineCard,
+import distantlands.gameplay.powers.campaign.SpiralCastleCard
+import distantlands.gameplay.operations.{AncientBloodlineCard,
   HallOfMinistersCard}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
-import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
-import oathdigital.gameplay.powers.setup.ProvingGroundsCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.rejected
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
+import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
+import distantlands.gameplay.powers.setup.ProvingGroundsCard
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.rejected
 
 class DazzleSuite extends munit.FunSuite:
   import WhenPlayedHarness._

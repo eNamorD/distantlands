@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Deferred,
   DiscardsItself, FoldPhase, OperationRewrite, Transform}
-import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
-import oathdigital.gameplay.powers.action.SiteCards
-import oathdigital.model._
+import distantlands.gameplay.powers.{PowerAnswers, SelectedModifier}
+import distantlands.gameplay.powers.action.SiteCards
+import distantlands.model._
 
 object MountedLibraryCard extends Denizen(DenizenId("248"), "Mounted Library", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.mounted-library"),

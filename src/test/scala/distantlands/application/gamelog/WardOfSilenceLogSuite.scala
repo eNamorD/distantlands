@@ -1,11 +1,11 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
-import oathdigital.gameplay.powers.action.{WardOfSilence, WardOfSilenceCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powers.action.{WardOfSilence, WardOfSilenceCard}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, texts}
 
 /** How Ward of Silence reads in the Game Log: its line is the action's own,

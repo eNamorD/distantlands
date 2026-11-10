@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.CardRule
-import oathdigital.gameplay.operations.BoilingLakeCard
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.CardRule
+import distantlands.gameplay.operations.BoilingLakeCard
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 
 /** Boiling Lake (E24, intact), an automatic rule of the intact face: "If

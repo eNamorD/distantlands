@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BuriedGiantSite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.WildAlliesCard
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Look
-import oathdigital.testkit.Unwrap.present
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.BuriedGiantSite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.WildAlliesCard
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Look
+import distantlands.testkit.Unwrap.present
 
 /** Mercenaries: a favor placed for three more attack dice, or three fewer for
   * the attacker when it defends, and gone when its user is defeated. */

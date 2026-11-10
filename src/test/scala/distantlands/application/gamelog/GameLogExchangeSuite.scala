@@ -1,10 +1,10 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogKind}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.{LogKind}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts._
 
 /** The negotiation scripts stand p2 with the actor, p1, at Ancient City:

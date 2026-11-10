@@ -1,33 +1,33 @@
-package oathdigital.gameplay.cards
+package distantlands.gameplay.cards
 
-import oathdigital.catalog.{Denizen, Edifice, ExecutableCatalog, Legacy, Relic, Site}
-import oathdigital.catalog.holding._
-import oathdigital.gameplay.{ActingTroupeCard, BanditCrownCard, GrandMaskCard,
+import distantlands.catalog.{Denizen, Edifice, ExecutableCatalog, Legacy, Relic, Site}
+import distantlands.catalog.holding._
+import distantlands.gameplay.{ActingTroupeCard, BanditCrownCard, GrandMaskCard,
   MarriageCard, PledgeToDiscordCard, SacredGroundCard, SpitefulMirrorCard,
   VowOfKinshipCard}
-import oathdigital.gameplay.actions.challenge.{MagiciansCodeCard,
+import distantlands.gameplay.actions.challenge.{MagiciansCodeCard,
   SchoolOfVinesCard, SigilOfTheEyeCard, SigilOfTheHeartCard}
-import oathdigital.gameplay.actions.recover.UndergroundLibraryCard
-import oathdigital.gameplay.operations.{AncientBloodlineCard, BoilingLakeCard,
+import distantlands.gameplay.actions.recover.UndergroundLibraryCard
+import distantlands.gameplay.operations.{AncientBloodlineCard, BoilingLakeCard,
   HallOfMinistersCard, TheGrandScepterCard}
-import oathdigital.gameplay.powers.action._
-import oathdigital.gameplay.powers.banner._
-import oathdigital.gameplay.powers.burn._
-import oathdigital.gameplay.powers.campaign._
-import oathdigital.gameplay.powers.cardplay._
-import oathdigital.gameplay.powers.dice._
-import oathdigital.gameplay.powers.economy._
-import oathdigital.gameplay.powers.poweruse._
-import oathdigital.gameplay.powers.recover._
-import oathdigital.gameplay.powers.rest._
-import oathdigital.gameplay.powers.search._
-import oathdigital.gameplay.powers.setup._
-import oathdigital.gameplay.powers.targeting._
-import oathdigital.gameplay.powers.title._
-import oathdigital.gameplay.powers.travel._
-import oathdigital.gameplay.powers.wake._
-import oathdigital.gameplay.powers.whenplayed._
-import oathdigital.gameplay.roles.CouncilSeatCard
+import distantlands.gameplay.powers.action._
+import distantlands.gameplay.powers.banner._
+import distantlands.gameplay.powers.burn._
+import distantlands.gameplay.powers.campaign._
+import distantlands.gameplay.powers.cardplay._
+import distantlands.gameplay.powers.dice._
+import distantlands.gameplay.powers.economy._
+import distantlands.gameplay.powers.poweruse._
+import distantlands.gameplay.powers.recover._
+import distantlands.gameplay.powers.rest._
+import distantlands.gameplay.powers.search._
+import distantlands.gameplay.powers.setup._
+import distantlands.gameplay.powers.targeting._
+import distantlands.gameplay.powers.title._
+import distantlands.gameplay.powers.travel._
+import distantlands.gameplay.powers.wake._
+import distantlands.gameplay.powers.whenplayed._
+import distantlands.gameplay.roles.CouncilSeatCard
 
 /** Every printed New Foundations component, listed by kind in printed-id
   * order. A new card is added here and in its own file; `CardCatalogSuite`

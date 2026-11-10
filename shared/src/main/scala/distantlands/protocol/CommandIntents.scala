@@ -1,4 +1,4 @@
-package oathdigital.protocol
+package distantlands.protocol
 
 /** Actorless, cross-platform command vocabulary. All identifiers remain opaque
   * strings until the application mapping boundary validates them.

@@ -1,17 +1,17 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.OperationConsent
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower}
-import oathdigital.gameplay.powers.action.AlchemistCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.OperationConsent
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
+import distantlands.gameplay.powers.action.AlchemistCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** The walker's search shows an option askable when only waivable
   * operation refusals stop its path and a grant would open it (catalog

@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** A card [[Bury]] can send to the bottom of its deck. Split out of
   * `CoreOperations.scala`, which holds the sealed `CoreOperation` family

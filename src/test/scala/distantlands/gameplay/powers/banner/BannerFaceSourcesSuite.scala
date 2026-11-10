@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.gameplay.{RuleSourceFace, RuleSourceIndex}
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.{RuleSourceFace, RuleSourceIndex}
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** The source index lists each banner face's powers, and the reviewed
   * catalog still audits every source the index lists.

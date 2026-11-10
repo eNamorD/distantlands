@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** What the victory screen calls each kind of win (Empire phase design,
   * "Slice 2", "UI"). */

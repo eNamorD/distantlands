@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
-import oathdigital.model._
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.model._
 
 /** What the Search source powers share (catalog batch 6, slice 3). Each
   * rewrites the source decision, which its window (`SearchSourceSelection`)

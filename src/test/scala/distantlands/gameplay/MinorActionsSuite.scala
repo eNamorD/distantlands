@@ -1,29 +1,29 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.minor.MinorActionProcedures
-import oathdigital.gameplay.actions.minor.MinorActionProcedures.{toBoard,
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.minor.MinorActionProcedures
+import distantlands.gameplay.actions.minor.MinorActionProcedures.{toBoard,
   toSite}
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.campaign.{CursedCauldronCard,
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.campaign.{CursedCauldronCard,
   SealingWardCard, StickyFireCard}
-import oathdigital.gameplay.powers.economy.{VowOfWandering, VowOfWanderingCard}
-import oathdigital.gameplay.walker.ActionBoundaryRan
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{ParkedNode, PowerStubs}
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
-import oathdigital.testkit.{Journal, Look, Outcomes, PlacementPicks, PowerRules,
+import distantlands.gameplay.powers.economy.{VowOfWandering, VowOfWanderingCard}
+import distantlands.gameplay.walker.ActionBoundaryRan
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{ParkedNode, PowerStubs}
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
+import distantlands.testkit.{Journal, Look, Outcomes, PlacementPicks, PowerRules,
   Table}
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.gameplay.setup._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.gameplay.setup._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class MinorActionsSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)

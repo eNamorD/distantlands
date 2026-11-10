@@ -1,9 +1,9 @@
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower}
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
+import distantlands.model._
 
 object CouncilSeatCard extends Denizen(DenizenId("123"), "Council Seat", Suit.Order) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.council-seat"),

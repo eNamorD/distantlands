@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** A pile a Search draws from, as the board option that names it (search
   * source design, ruling 2). */

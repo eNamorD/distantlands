@@ -1,8 +1,8 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.model._
+import distantlands.model._
 
 object SacredGroundCard extends Edifice(EdificeId("E08"), Suit.Nomad):
   object intact extends EdificeFace("Sacred Ground") with Locked:

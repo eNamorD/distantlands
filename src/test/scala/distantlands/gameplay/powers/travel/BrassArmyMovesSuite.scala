@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.CampaignFixture.{on, raidBoard, rules}
-import oathdigital.gameplay.TravelPlay
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.BrassArmyCard
-import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
+import distantlands.gameplay.CampaignFixture.{on, raidBoard, rules}
+import distantlands.gameplay.TravelPlay
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.BrassArmyCard
+import distantlands.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   winningDice}
-import oathdigital.gameplay.powers.targeting.TargetingFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, RecordedOps, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.targeting.TargetingFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, RecordedOps, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class BrassArmyMovesSuite extends munit.FunSuite:
   private val brass = BrassArmyCard.id

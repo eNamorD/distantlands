@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 class TentsSuite extends munit.FunSuite:
   import PowerFixture._

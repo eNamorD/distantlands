@@ -1,11 +1,11 @@
-package oathdigital.gameplay.actions.challenge
+package distantlands.gameplay.actions.challenge
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.{BannerRules, ProcedureNotes}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.walker.ModifierChoice
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.{BannerRules, ProcedureNotes}
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.walker.ModifierChoice
+import distantlands.model._
 
 /** Challenge on the walker: spend one Supply, choose a banner, choose how many
   * resources replace it, return the banner's resources (the ribbon), then pay

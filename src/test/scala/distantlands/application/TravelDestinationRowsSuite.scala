@@ -1,21 +1,21 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.travel.{Tents, TentsCard, TollRoads,
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.powers.travel.{Tents, TentsCard, TollRoads,
   TollRoadsCard, TravelFixture, WayStationCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.DecisionOptionProjection
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Unwrap.{accepted, present, rejected}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.DecisionOptionProjection
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Unwrap.{accepted, present, rejected}
 
 /** What the parked destination decision shows each site as: its cost under
   * the selected modifiers, or why it cannot be reached (travel destination
   * design, rulings 3 and 4). */
 class TravelDestinationRowsSuite extends munit.FunSuite:
   import TravelFixture._
-  import oathdigital.gameplay.powers.PowerFixture.actor
+  import distantlands.gameplay.powers.PowerFixture.actor
 
   private val projector = new WalkerDecisionProjector(catalog,
     new GamePresentationProjector(catalog))
@@ -114,7 +114,7 @@ class TravelDestinationRowsSuite extends munit.FunSuite:
     val started = accepted(rules.startWalker(Ready(ready), ActionRef.Travel,
       actor, Vector.empty))
     assert(!started.events.exists(_.isInstanceOf[
-      oathdigital.gameplay.walker.LogNoted]))
+      distantlands.gameplay.walker.LogNoted]))
 
   test("a destination both blocked and unaffordable gives the block"):
     // Dunes costs 2 from the Cradle, and Narrow Pass blocks it.

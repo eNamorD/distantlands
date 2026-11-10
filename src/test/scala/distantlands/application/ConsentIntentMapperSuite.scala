@@ -1,7 +1,7 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.protocol.{GameIntent, WalkerStartArgWire}
+import distantlands.model._
+import distantlands.protocol.{GameIntent, WalkerStartArgWire}
 
 /** The consent intents map to their model intents; the gateway binds the
   * sender as the actor (TrustedSeatRoutesSuite). */

@@ -1,6 +1,6 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** What a note reads (power log lines design, "Amounts are what
   * happened"), and the sentences several powers and procedures share. It

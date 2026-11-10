@@ -1,7 +1,7 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.{FirstGameRulesData, SetupDeal}
-import oathdigital.model._
+import distantlands.gameplay.setup.{FirstGameRulesData, SetupDeal}
+import distantlands.model._
 
 /**
  * Derives the concrete per-game deal (2026-09-21 Chronicle design, slice 2):

@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 object TyrantCard extends Denizen(DenizenId("111"), "Tyrant", Suit.Order) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.tyrant"),

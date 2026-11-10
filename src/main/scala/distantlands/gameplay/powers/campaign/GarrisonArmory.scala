@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignSetup}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignSetup}
+import distantlands.model._
 
 object GarrisonArmoryCard extends Denizen(DenizenId("255"), "Garrison Armory", Suit.Order):
   val power = PrintedPower(PowerId("denizen.garrison-armory"),

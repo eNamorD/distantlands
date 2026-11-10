@@ -1,6 +1,6 @@
-package oathdigital.protocol
+package distantlands.protocol
 
-import oathdigital.protocol.projection.ProjectionCodecSupport._
+import distantlands.protocol.projection.ProjectionCodecSupport._
 
 /** A lineage's era score, and its Imperial role: `"chancellor"` or
   * `"citizen"`, absent for an Exile. An entry saved before roles were kept

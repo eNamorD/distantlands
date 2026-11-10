@@ -1,6 +1,6 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Wire spelling of the two Oathkeeper operations, `set-oathkeeper` (the
   * title's holder) and `set-oathkeeper-goal` (the campaign's goal). Split out

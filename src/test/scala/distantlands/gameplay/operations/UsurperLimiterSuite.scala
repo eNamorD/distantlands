@@ -1,9 +1,9 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Unwrap.{accepted, rejected}
-import oathdigital.testkit.RawOperationBatch
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Unwrap.{accepted, rejected}
+import distantlands.testkit.RawOperationBatch
 
 /** The Usurper Limiter (Empire slice 3a, ruling R5). */
 class UsurperLimiterSuite extends munit.FunSuite:

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.phases.wake
+package distantlands.gameplay.phases.wake
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.wake.TakeWealthLimit
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.wake.TakeWealthLimit
+import distantlands.model._
 
 /** Declared Take Wealth procedure tree for the walker (batch 1, Task 7).
   *
@@ -20,7 +20,7 @@ import oathdigital.model._
   * gate `build` runs.
   *
   * **The limit is not a gate here.** "Once per turn at each site" is a
-  * `Restriction` declared by [[oathdigital.gameplay.powers.wake.TakeWealthLimit]] at this tree's own window, so
+  * `Restriction` declared by [[distantlands.gameplay.powers.wake.TakeWealthLimit]] at this tree's own window, so
   * it is gathered and run at command entry like any other power's cannot-rule.
   * `build` therefore gates on what the printed action requires and nothing
   * else: the phase, the actor's pawn site, no enemy pawn on it, and the
@@ -63,7 +63,7 @@ object TakeWealthProcedure:
     *
     * A resource kind is not a game object, so it rides the reference
     * vocabulary's `Button` -- the variant for a choice with no game object
-    * behind it. Both directions read [[oathdigital.model.WakeResource]]'s own `key`, so the
+    * behind it. Both directions read [[distantlands.model.WakeResource]]'s own `key`, so the
     * spelling a client must send and the spelling this action accepts are
     * one definition rather than two matches that agree today.
     */

@@ -1,10 +1,10 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Outcomes.{finished, parked}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Outcomes.{finished, parked}
+import distantlands.testkit.Table.p1
 
 /** When a `Repeat` stops. Its guard reads only state and answers, so a pass that
   * records nothing and asks nothing cannot change what the guard reads, and the

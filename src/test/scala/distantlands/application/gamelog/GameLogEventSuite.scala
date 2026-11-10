@@ -1,9 +1,9 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogEntry, LogKind, LogSpan}
-import oathdigital.testkit.Table.p3
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.model._
+import distantlands.protocol.projection.{LogEntry, LogKind, LogSpan}
+import distantlands.testkit.Table.p3
 import LogScripts._
 
 class GameLogEventSuite extends munit.FunSuite:

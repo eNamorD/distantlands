@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.campaign.GlamorCard
-import oathdigital.gameplay.cards.BuriedGiantSite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.search.DisciplesCard
-import oathdigital.gameplay.powers.targeting.{LostTongue, LostTongueCard}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.campaign.GlamorCard
+import distantlands.gameplay.cards.BuriedGiantSite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.search.DisciplesCard
+import distantlands.gameplay.powers.targeting.{LostTongue, LostTongueCard}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class WizardsConclaveSuite extends munit.FunSuite:
   import WhenPlayedHarness._

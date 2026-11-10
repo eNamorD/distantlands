@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+import distantlands.catalog.{Denizen, ExecutableCatalog, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object SaltTheEarthCard extends Denizen(DenizenId("89"), "Salt the Earth", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.salt-the-earth"),

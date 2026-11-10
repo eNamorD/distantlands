@@ -1,18 +1,18 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.{ModifierPlay, SearchPlay}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.{PayOrAsk, SearchFixture}
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
+import distantlands.gameplay.{ModifierPlay, SearchPlay}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.{PayOrAsk, SearchFixture}
+import distantlands.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
   SecondChanceCard}
-import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Mushrooms (card 183): for 1 secret, the Search spends no Supply and
   * draws one card from the bottom of a discard pile; the world deck is

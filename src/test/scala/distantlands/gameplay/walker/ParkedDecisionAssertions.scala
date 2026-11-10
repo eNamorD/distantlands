@@ -1,11 +1,11 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.ParkedNode
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.ParkedNode
 
 /** What a parked position holds, derived the way the walker derives it
   * rather than read off a value the rules stored.

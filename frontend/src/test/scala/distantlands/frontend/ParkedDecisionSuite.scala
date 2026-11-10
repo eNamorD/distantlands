@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
+import distantlands.model.PlayerColor
 import ParkedDecision.{RecoverStep, Routed, Surface}
 
 /** The route as a pure function of a viewer's projection: one case per query

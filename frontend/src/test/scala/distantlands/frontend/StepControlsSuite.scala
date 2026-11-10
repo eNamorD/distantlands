@@ -1,8 +1,8 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => Intent}
-import oathdigital.protocol.projection.StepOfferProjection
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent}
+import distantlands.protocol.projection.StepOfferProjection
 import org.scalajs.dom
 
 /** The Undo and Redo controls (undo design, "Controls"): each shows only

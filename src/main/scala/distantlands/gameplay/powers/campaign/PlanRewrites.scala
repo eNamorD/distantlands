@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that rewrite the Campaign around them (catalog batch
   * 6, slice 2, and batch 7, slice 4), registered together: Peace Envoy

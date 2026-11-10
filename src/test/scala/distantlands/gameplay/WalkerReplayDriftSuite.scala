@@ -1,19 +1,19 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.{DunesSite, FairIsleSite}
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.testkit.{CatacombsGame, Look, Outcomes, RecordedOps, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, as}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.recover.CatacombsContribution
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerCompleted,
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.cards.{DunesSite, FairIsleSite}
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.testkit.{CatacombsGame, Look, Outcomes, RecordedOps, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, as}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.recover.CatacombsContribution
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerCompleted,
   WalkerOutcome, WalkerParked, WalkerPowers}
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model._
 
 /** Task 8 step 3: the replay-drift check.
   *

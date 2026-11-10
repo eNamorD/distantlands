@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.phases.RestCleanupPlan
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.search.{DisciplesCard, LandWardenCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.phases.RestCleanupPlan
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.powers.search.{DisciplesCard, LandWardenCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class DissentSuite extends munit.FunSuite:
   import WhenPlayedHarness._

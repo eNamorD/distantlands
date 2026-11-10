@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** What the winner banner and the game-over status call a win, from its
   * victory kind's wire key: "Usurper victory", "Successor to the

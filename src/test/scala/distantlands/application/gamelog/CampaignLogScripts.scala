@@ -1,21 +1,21 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.CampaignDicePort
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.application.CampaignDicePort
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.GrandMaskCard
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.powers.campaign.{Glamor, GlamorCard,
+import distantlands.gameplay.GrandMaskCard
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.powers.campaign.{Glamor, GlamorCard,
   ObsidianCageCard, OutridersCard, RelicHunter, RelicHunterCard, StickyFire, StickyFireCard,
   ToweringRampartCard}
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.search.WineOfWelcomeCard
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer,
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.search.WineOfWelcomeCard
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer,
   ChooseManyAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Answers, Dice, MenuPlay, Park, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.{Answers, Dice, MenuPlay, Park, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, raidAnswers}
 
 /** The Campaign branches the older goldens never play: a won Raid's

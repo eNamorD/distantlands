@@ -1,27 +1,27 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.Site
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
+import distantlands.catalog.Site
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
   FairIsleSite}
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.campaign.{CursedCauldronCard,
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.campaign.{CursedCauldronCard,
   StickyFireCard, VowOfPeaceCard, WrestlersCard}
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model._
-import oathdigital.protocol.projection.{CountedConfirmProjection,
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model._
+import distantlands.protocol.projection.{CountedConfirmProjection,
   DecisionQueryProjection, DecisionSummaryProjection, DecisionTallyProjection,
   DecisionTallyValueProjection, WalkerWaitingProjection}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.testkit.Unwrap.{accepted, as, present}
 
 /** A park on a `Roll` node projects nothing: every production roll is
   * automatic and no command answers a parked one (parked-roll retirement

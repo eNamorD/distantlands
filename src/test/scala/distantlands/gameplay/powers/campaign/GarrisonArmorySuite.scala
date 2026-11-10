@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.WalkerDiceFixture.swordsCyclingDefense
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DefenseDieFace.{OneShield, TwoShields}
-import oathdigital.testkit.Look
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.WalkerDiceFixture.swordsCyclingDefense
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DefenseDieFace.{OneShield, TwoShields}
+import distantlands.testkit.Look
 
 /** Garrison Armory: a defender's plan, a favor placed, in a Conquest, so that
   * the warbands at the targets add their defense twice. */

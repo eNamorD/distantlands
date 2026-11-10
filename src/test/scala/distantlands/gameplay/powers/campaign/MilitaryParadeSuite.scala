@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
-import oathdigital.gameplay.powers.search.BrackenCard
-import oathdigital.gameplay.MarriageCard
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.powers.whenplayed.RoyalTaxCard
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.roles.CouncilSeatCard
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.powers.search.BrackenCard
+import distantlands.gameplay.MarriageCard
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.powers.whenplayed.RoyalTaxCard
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.roles.CouncilSeatCard
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Military Parade: a free plan for either side. If its user wins, they gain a
   * favor for each faceup adviser the enemy holds then, from that adviser's

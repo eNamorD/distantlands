@@ -1,6 +1,6 @@
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The lines a "become a Citizen" power writes under its own name: "Became
   * a Citizen." or, in a game that had no Empire, "Became the Chancellor." */

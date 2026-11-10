@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import distantlands.model._
 
 /** Test powers the Muster and Trade suites share. The boards they act on
   * are built with `Table`.

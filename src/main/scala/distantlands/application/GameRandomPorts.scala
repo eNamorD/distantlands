@@ -1,7 +1,7 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.walker.WalkerDice
-import oathdigital.model._
+import distantlands.gameplay.walker.WalkerDice
+import distantlands.model._
 
 
 trait CampaignDicePort:

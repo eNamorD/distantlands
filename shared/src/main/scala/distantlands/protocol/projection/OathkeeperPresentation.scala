@@ -1,4 +1,4 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 /** The Oath in play, as its goal card is printed: the title, what the
   * Oathkeeper holds it by, and the successor clause on the card's band.

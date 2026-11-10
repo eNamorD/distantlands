@@ -1,16 +1,16 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission,
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.actions.{CardPlayRules, DiscardPermission,
   PlaySites, SiteRemoval}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.Outcomes
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.protocol.projection.DecisionQueryProjection
+import distantlands.testkit.Outcomes
+import distantlands.testkit.Unwrap.{accepted, as, present}
 
 /** Driving the card-play walk, shared by the placement suites. The powers
   * built here are stubs of ContributingPower: they change `CardPlayRules`

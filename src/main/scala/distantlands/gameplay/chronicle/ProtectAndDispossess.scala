@@ -1,8 +1,8 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Protect and Dispossess, the World's third step (CR p. 38). The World
   * task holder protects one of the two faceup stacks by naming a card in

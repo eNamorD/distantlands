@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx, Restriction}
-import oathdigital.gameplay.powers.{CatalogResolution, RuledCards}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, RuledCards}
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 object DiplomatCard extends Denizen(DenizenId("230"), "Diplomat", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.diplomat"),

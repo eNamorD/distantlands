@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import scala.concurrent.{Await, ExecutionContext}
 import scala.concurrent.duration.DurationInt
@@ -6,10 +6,10 @@ import scala.concurrent.duration.DurationInt
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.headers.Cookie
 
-import oathdigital.application._
-import oathdigital.application.MembershipRole._
-import oathdigital.model.PlayerId
-import oathdigital.testkit.{HttpTestServer, IdentityRepositoryStub}
+import distantlands.application._
+import distantlands.application.MembershipRole._
+import distantlands.model.PlayerId
+import distantlands.testkit.{HttpTestServer, IdentityRepositoryStub}
 
 /** The session resolution X6 will mount: a session cookie names a user, and
   * the user's membership in the game is their access. */

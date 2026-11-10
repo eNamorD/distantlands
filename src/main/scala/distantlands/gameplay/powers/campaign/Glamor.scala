@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignProcedure, PlanAmounts}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.campaign.{CampaignProcedure, PlanAmounts}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object GlamorCard extends Denizen(DenizenId("207"), "Glamor", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.glamor"),

@@ -1,29 +1,29 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.phases.{ActOffers, PhaseMenu, PhasePowerProcedure}
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.phases.wake.TakeWealthProcedure
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.banner.{WanderingFlameMove,
+import distantlands.gameplay.phases.{ActOffers, PhaseMenu, PhasePowerProcedure}
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.phases.wake.TakeWealthProcedure
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import distantlands.gameplay.powers.banner.{WanderingFlameMove,
   WanderingFlamePlace}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.rest.{Insomnia, InsomniaCard}
-import oathdigital.gameplay.powers.wake.TakeWealthLimit
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.rest.{Insomnia, InsomniaCard}
+import distantlands.gameplay.powers.wake.TakeWealthLimit
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   Transform}
-import oathdigital.gameplay.walker.{ProcedureDequeued, QueuedStart,
+import distantlands.gameplay.walker.{ProcedureDequeued, QueuedStart,
   WalkerCompleted, WalkerPowers, WalkerProcedureRegistry}
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, PowerRules, Refusals,
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes, PowerRules, Refusals,
   Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** A phase's menu (walker-driven game loop design, "The menus"), parked as
   * the driver leaves it. */

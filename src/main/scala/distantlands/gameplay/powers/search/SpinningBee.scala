@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+import distantlands.catalog.{Denizen, ExecutableCatalog, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.actions.{CardPlay, SearchRules}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.gameplay.actions.{CardPlay, SearchRules}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, OperationRewrite, OptionRestriction, PowerCtx, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object SpinningBeeCard extends Denizen(DenizenId("232"), "Spinning Bee", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.spinning-bee"),

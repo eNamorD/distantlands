@@ -1,8 +1,8 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.actions.{ProcedureNotes, VisionRules}
-import oathdigital.gameplay.powers.{OathkeeperGoalChoice, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.actions.{ProcedureNotes, VisionRules}
+import distantlands.gameplay.powers.{OathkeeperGoalChoice, PowerAnswers}
+import distantlands.model._
 
 /** Swear an Oath, the Throne's last step (CR p. 37). After a win by a
   * Vision, the Oathkeeper goal becomes that Vision's goal; a winner who met

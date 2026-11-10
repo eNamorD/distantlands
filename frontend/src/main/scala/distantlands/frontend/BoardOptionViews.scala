@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** How a board option is drawn; `classes` are its CSS classes. */
 private[frontend] enum OptionState(val classes: Vector[String]):

@@ -1,11 +1,11 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.travel.{TollRoads, TollRoadsCard,
+import distantlands.gameplay.powers.travel.{TollRoads, TollRoadsCard,
   TravelFixture}
-import oathdigital.model._
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.Commands
+import distantlands.model._
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Commands
 
 /** A game for a toll's consent through the service: TravelFixture's board
   * with Toll Roads at the Provinces' plains, and p2 ruling it and the coast.

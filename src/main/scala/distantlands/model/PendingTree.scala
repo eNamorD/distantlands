@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** One recorded answer to a parked walker decision.
   *

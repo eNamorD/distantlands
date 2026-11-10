@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.action.{PaidAction, PawnMoves}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.action.{PaidAction, PawnMoves}
+import distantlands.model._
 
 /** Wandering Flame, move (the Banner of the Darkest Secret, Wandering Flame
   * face), ACTION: place your pawn at any other site with a secret on the site

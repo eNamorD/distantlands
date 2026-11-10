@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.{CampaignConsentFixture, PassMap}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.NarrowPassSite
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.{CampaignConsentFixture, PassMap}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.NarrowPassSite
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction}
-import oathdigital.gameplay.powers.action.WildAlliesCard
-import oathdigital.gameplay.walker.{ProcedureWalker, QueuedStart,
+import distantlands.gameplay.powers.action.WildAlliesCard
+import distantlands.gameplay.walker.{ProcedureWalker, QueuedStart,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Which campaign targets the Narrow Pass makes askable (consent design,
   * ruling 2 and slice 2). The Pass's own campaign clause grants consent, so

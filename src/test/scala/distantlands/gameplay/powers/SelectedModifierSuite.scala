@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.Denizen
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.catalog.Denizen
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   PowerCtx}
-import oathdigital.gameplay.powers.travel.TentsCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.travel.TentsCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** The kit every selected modifier stands on: it is offered only for its own
   * action, only when the player may use its card and can pay for it, and it
@@ -89,7 +89,7 @@ class SelectedModifierSuite extends munit.FunSuite:
     val priced = Probe(TentsCard, Cost(favor = 1), travel)
     val ready = tentsAtAncientCity(1).ready
     assertEquals(priced.selectionPayments(ready, actor), Vector(
-      oathdigital.gameplay.operations.Costs.onCard(actor, card, Cost(favor = 1),
+      distantlands.gameplay.operations.Costs.onCard(actor, card, Cost(favor = 1),
         catalog)))
     assertEquals(free.selectionPayments(ready, actor), Vector.empty)
 

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Fearsome Shield: a defender burns two faceup secrets for two more defense
   * dice, and nothing is placed on the relic.
@@ -40,7 +40,7 @@ class FearsomeShieldSuite extends munit.FunSuite:
     val b = defending(3)
     val picked = commit(rules(losingDice), b, 4)
       .pick(b.rival, CampaignIds.defenderPlan, ref)
-    assertEquals(oathdigital.testkit.Outcomes.ready(picked.state).game.current
+    assertEquals(distantlands.testkit.Outcomes.ready(picked.state).game.current
       .walkerPicks, Vector(PlayedPick(CampaignIds.defenderPlan, ref, None,
         OptionPrice(secretsBurnt = 2), open = false)))
 

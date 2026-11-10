@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, Relic}
-import oathdigital.gameplay.actions.campaign.CampaignBattle
-import oathdigital.model.{AttackDieFace, CampaignPlanSide, DecisionOptionRef}
-import oathdigital.model.AttackDieFace.{HollowSword, OneSword, TwoSwordsSkull}
+import distantlands.catalog.{Denizen, Relic}
+import distantlands.gameplay.actions.campaign.CampaignBattle
+import distantlands.model.{AttackDieFace, CampaignPlanSide, DecisionOptionRef}
+import distantlands.model.AttackDieFace.{HollowSword, OneSword, TwoSwordsSkull}
 
 /** The attack scorer's steps (catalog batch 4 rulings, "The attack score"):
   * face values, Lancers' doubling, the skull cap, War Tortoise, the total.

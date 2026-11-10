@@ -1,7 +1,7 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.model._
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.model._
 
 /** Welcome a Stranger, the Beacon's second step (CR p. 39): the holder
   * keeps one drawn newcomer as a facedown starting adviser and the rest go

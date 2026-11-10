@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.{GrandMaskCard, OathRules, SiteRulers}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.dice.{Jinx, JinxCard}
-import oathdigital.gameplay.powers.economy.{Curfew, CurfewCard}
-import oathdigital.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
-import oathdigital.gameplay.powers.targeting.ForgottenVaultCard
-import oathdigital.gameplay.powers.wake.{Quartermaster, QuartermasterCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{EconomyActions, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.{GrandMaskCard, OathRules, SiteRulers}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.dice.{Jinx, JinxCard}
+import distantlands.gameplay.powers.economy.{Curfew, CurfewCard}
+import distantlands.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
+import distantlands.gameplay.powers.targeting.ForgottenVaultCard
+import distantlands.gameplay.powers.wake.{Quartermaster, QuartermasterCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{EconomyActions, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The rules that read a card's ruler, under the Grand Mask (catalog batch
   * 11, ruling 7): during the wearer's turn they read the wearer for every

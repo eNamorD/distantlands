@@ -1,11 +1,11 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powers.{DeclaredNotes, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.{WarningSignals, WarningSignalsCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.model.{ActionRef, NoteArg, PlayerId, PowerId, LogNote,
+import distantlands.gameplay.powers.{DeclaredNotes, WalkerPowerCatalog}
+import distantlands.gameplay.powers.campaign.{WarningSignals, WarningSignalsCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.model.{ActionRef, NoteArg, PlayerId, PowerId, LogNote,
   PowerSourceRef}
 
 /** A note whose key no power declares has no wording, so the Game Log would
@@ -61,7 +61,7 @@ class UndeclaredNoteSuite extends munit.FunSuite:
 
   test("the test build sets the strict property"):
     assert(NoteCheck.strictByDefault,
-      "build.sbt must set -Doathdigital.notes.strict=true for the test " +
+      "build.sbt must set -Ddistantlands.notes.strict=true for the test " +
         "scope, or an undeclared note passes every suite silently")
 
   test("a procedure is held to its declared keys like a power"):

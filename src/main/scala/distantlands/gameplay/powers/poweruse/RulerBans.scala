@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.{CardRule, SiteRulers}
-import oathdigital.gameplay.powerresolver.{PowerUseRefusal, Waiver}
-import oathdigital.model._
+import distantlands.gameplay.{CardRule, SiteRulers}
+import distantlands.gameplay.powerresolver.{PowerUseRefusal, Waiver}
+import distantlands.model._
 
 /** The ban a site card holds over its ruler's enemies (Spell Breaker,
   * Forest Council, City Wall; catalog batch 8, slice 10). The ruler is the

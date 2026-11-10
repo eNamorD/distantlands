@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
+import distantlands.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Deferred,
   FoldPhase, ModifierHost, OfferReason, OperationRewrite, PowerCtx,
   Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object SecretSignalCard extends Denizen(DenizenId("55"), "Secret Signal", Suit.Arcane) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.secret-signal"),

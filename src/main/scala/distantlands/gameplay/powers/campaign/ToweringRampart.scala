@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.model._
+import distantlands.model._
 
 object ToweringRampartCard extends Edifice(EdificeId("E20"), Suit.Order):
   object intact extends EdificeFace("Towering Rampart") with Locked:

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.model._
+import distantlands.model._
 
 object SpiralCastleCard extends Edifice(EdificeId("E23"), Suit.Hearth):
   object intact extends EdificeFace("Spiral Castle") with Locked:

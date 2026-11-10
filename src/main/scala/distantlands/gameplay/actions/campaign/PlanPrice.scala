@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.gameplay.SpendableFavor
-import oathdigital.model._
+import distantlands.gameplay.SpendableFavor
+import distantlands.model._
 
 /** What a battle plan costs its user, for the option that offers it. The payments
   * are read from the operations a dry run of the plan's application recorded,

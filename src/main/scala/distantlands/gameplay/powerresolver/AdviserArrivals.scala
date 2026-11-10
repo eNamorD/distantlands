@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{AdviserState, CardId, CoreOperation, DenizenState,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.{AdviserState, CardId, CoreOperation, DenizenState,
   Note, Orientation, PlayerId, ReadyGame, VisionState}
 
 /** An adviser that arrived during one walker leaf: `card` is new among

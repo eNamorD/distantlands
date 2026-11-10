@@ -1,8 +1,8 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, firstMatch}
-import oathdigital.frontend.TestSites.*
-import oathdigital.testkit.Unwrap.as
+import distantlands.frontend.Dom.{all, firstMatch}
+import distantlands.frontend.TestSites.*
+import distantlands.testkit.Unwrap.as
 import org.scalajs.dom
 
 /** The site box, which carries its own numbers in its corners the way a

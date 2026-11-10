@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.ChronicleFixtures.{convertingTransport, entry}
-import oathdigital.protocol.{ChronicleConvertRequest,
+import distantlands.frontend.ChronicleFixtures.{convertingTransport, entry}
+import distantlands.protocol.{ChronicleConvertRequest,
   ChronicleConvertRequestCodec}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Unwrap.{accepted, present}
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue

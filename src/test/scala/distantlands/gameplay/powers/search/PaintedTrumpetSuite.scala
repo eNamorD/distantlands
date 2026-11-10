@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.{ModifierPlay, SearchPlay}
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
+import distantlands.gameplay.{ModifierPlay, SearchPlay}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
   MessengerCard, ScryerCard, SecondChanceCard}
-import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
-import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Painted Trumpet (relic R23): a Search of a discard pile draws the top
   * card of each discard pile instead, and nothing modifies that draw

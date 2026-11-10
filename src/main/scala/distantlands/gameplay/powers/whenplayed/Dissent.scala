@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.RuledCards
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.RuledCards
+import distantlands.model._
 
 object DissentCard extends Denizen(DenizenId("84"), "Dissent", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.dissent"),

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.model.ReadyGame
-import oathdigital.testkit.{Look, Outcomes, Table}
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.model.ReadyGame
+import distantlands.testkit.{Look, Outcomes, Table}
 
 class ASmallFavorSuite extends munit.FunSuite:
   import PowerFixture._

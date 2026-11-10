@@ -1,10 +1,10 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.dice.{RerollChoice, RollStep}
-import oathdigital.gameplay.walker.{ModifierChoice, WalkerRollFeedback,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.dice.{RerollChoice, RollStep}
+import distantlands.gameplay.walker.{ModifierChoice, WalkerRollFeedback,
   WalkerStatusLine}
-import oathdigital.model._
+import distantlands.model._
 
 /** Campaign on the walker, in the rulebook's order: choose the kind and the
   * targets, commit force and gather both dice pools, use battle plans, roll

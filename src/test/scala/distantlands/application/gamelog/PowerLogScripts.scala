@@ -1,27 +1,27 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.application._
-import oathdigital.gameplay.{ModifierPlay, TravelPlay}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.{BarbedNet, BarbedNetCard,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.application._
+import distantlands.gameplay.{ModifierPlay, TravelPlay}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.{BarbedNet, BarbedNetCard,
   DowsingSticksCard, GamblingHall, GamblingHallCard, Oracle, OracleCard, Wolves,
   WolvesCard}
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.cardplay.{WildCry, WildCryCard}
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.search.{Augury, AuguryCard, NewsFromAfar,
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.cardplay.{WildCry, WildCryCard}
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.search.{Augury, AuguryCard, NewsFromAfar,
   NewsFromAfarCard}
-import oathdigital.gameplay.powers.travel.{Tents, TentsCard}
-import oathdigital.gameplay.powers.wake.HungerCard
-import oathdigital.gameplay.powers.whenplayed.{FamilyHeirloom,
+import distantlands.gameplay.powers.travel.{Tents, TentsCard}
+import distantlands.gameplay.powers.wake.HungerCard
+import distantlands.gameplay.powers.whenplayed.{FamilyHeirloom,
   FamilyHeirloomCard, WizardsConclaveCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Answers, Dice, Look, MenuPlay, PlacementPicks}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Answers, Dice, Look, MenuPlay, PlacementPicks}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 
 /** The scripts that play one named power: a modifier picked into an

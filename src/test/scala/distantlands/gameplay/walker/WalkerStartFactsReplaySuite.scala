@@ -1,8 +1,8 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite}
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.cards.{BuriedGiantSite, DunesSite}
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** Start facts are restored by replay, checked against the recorded start on
   * every later park, and cleared when the walk completes (travel destination

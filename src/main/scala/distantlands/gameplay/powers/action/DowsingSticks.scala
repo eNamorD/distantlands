@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.powers.RelicDraws
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.powers.RelicDraws
+import distantlands.model._
 
 object DowsingSticksCard extends Relic(RelicId("R09"), "Dowsing Sticks", value = 9, defense = 1):
   val power = PrintedPower(PowerId("relic.dowsing-sticks"),

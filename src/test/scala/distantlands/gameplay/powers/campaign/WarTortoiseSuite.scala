@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.WalkerDiceFixture.{skullThenSwords,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.WalkerDiceFixture.{skullThenSwords,
   swordsCyclingDefense}
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** War Tortoise: a favor placed. Used by the defender, the attacker's skull
   * faces score nothing and payable skulls still kill; used by the attacker,

@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
 import scala.collection.mutable
 
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, Offer, OfferHost, PowerCtx, Transform}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, Offer, OfferHost, PowerCtx, Transform}
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.testkit.{Look, RecordedOps, Table}
-import oathdigital.testkit.Outcomes.{finished, parked}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, as}
+import distantlands.model._
+import distantlands.testkit.{Look, RecordedOps, Table}
+import distantlands.testkit.Outcomes.{finished, parked}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, as}
 
 /** The `Offer` contribution and the node that hosts it: what the walker hands a
   * host, in which order, and how a host is told the walk is resuming inside it.

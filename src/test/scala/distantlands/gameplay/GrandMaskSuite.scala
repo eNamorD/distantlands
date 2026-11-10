@@ -1,15 +1,15 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.powers.campaign.{ToweringRampartCard,
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.powers.campaign.{ToweringRampartCard,
   WrestlersCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Grand Mask (R05): its wearer, an Exile in their own turn, rules the
   * cards at Imperial sites except battle plans, and the Imperials do not;

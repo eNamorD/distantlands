@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{CoreOperation, Operation, PlayerId, ReadyGame}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.{CoreOperation, Operation, PlayerId, ReadyGame}
 
 /** What a trigger on executed operations reads (catalog batch 8, slice 6):
   * the walk's card catalog, the active player, the operations one walker

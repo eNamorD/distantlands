@@ -1,10 +1,10 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** Recover eligibility and scoring, shared by the walker's declared procedure
-  * ([[oathdigital.gameplay.actions.recover.RecoverProcedure]]), the reviewed
+  * ([[distantlands.gameplay.actions.recover.RecoverProcedure]]), the reviewed
   * Recover powers, and the application-layer projectors. Carries no walker or
   * legacy-command knowledge of its own -- just the rules every caller needs
   * to agree on.

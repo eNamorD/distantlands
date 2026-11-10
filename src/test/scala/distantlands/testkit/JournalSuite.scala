@@ -1,7 +1,7 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.setup.FirstGameSetupFixture
 
 /** A journal replay returns the state its events reach and fails naming the
   * first event that does not replay; a replay evolved from a ready game

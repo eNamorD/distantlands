@@ -1,11 +1,11 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.walker.{QueuedStart, WalkerPowers,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.walker.{QueuedStart, WalkerPowers,
   WalkerProcedureRegistry, WalkerSimulation}
-import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
-import oathdigital.model._
+import distantlands.gameplay.walker.WalkerSimulation.PreviewedOption
+import distantlands.model._
 
 /** A start dry-run as the phase menu runs it (walker-driven game loop
   * design, slice 5, plan-time ruling 4). It is for suites that asked a

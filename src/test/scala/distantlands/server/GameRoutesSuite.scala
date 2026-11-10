@@ -1,23 +1,23 @@
-package oathdigital.server
+package distantlands.server
 
-import oathdigital.application.{
+import distantlands.application.{
   GameApplicationService,
   GameCommand,
   GameProjector,
   InMemoryEventStreamRepository
 }
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.campaign.NatureWorshipCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
-import oathdigital.gameplay.setup.SetupProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.campaign.NatureWorshipCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.whenplayed.WizardsConclaveCard
+import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
   DecisionAnswerWire, GameIntent}
-import oathdigital.testkit.HttpTestServer
-import oathdigital.testkit.HttpTestServer.cacheControl
-import oathdigital.testkit.Table.p2
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.HttpTestServer
+import distantlands.testkit.HttpTestServer.cacheControl
+import distantlands.testkit.Table.p2
+import distantlands.testkit.Unwrap.accepted
 
 class GameRoutesSuite extends munit.FunSuite:
   /** The development routes serving "route-game", begun with p2 first and

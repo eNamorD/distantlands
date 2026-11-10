@@ -1,13 +1,13 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerCompleted}
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures.{blueId, redAndBlue}
-import oathdigital.testkit.{Outcomes, RawOperationBatch, RecordedOps, Table}
-import oathdigital.testkit.Outcomes.{finished, parked, recorded}
-import oathdigital.testkit.ProcedureWalkerFixture._
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerCompleted}
+import distantlands.model._
+import distantlands.model.TestGameFixtures.{blueId, redAndBlue}
+import distantlands.testkit.{Outcomes, RawOperationBatch, RecordedOps, Table}
+import distantlands.testkit.Outcomes.{finished, parked, recorded}
+import distantlands.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** `ActAsIfAdvisers` (catalog batch 11, slice 3): it records the player
   * whose advisers the walk's actor acts with, a parked walk keeps it, and

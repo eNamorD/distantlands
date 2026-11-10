@@ -1,6 +1,6 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Step 9 for a Conquest victory: place surviving warbands on the conquered
   * targets. Unplaced survivors simply stay on the board. Survivors that

@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import Dom.{all, firstMatch}
-import oathdigital.protocol.projection.TrackedPawnProjection
+import distantlands.protocol.projection.TrackedPawnProjection
 import org.scalajs.dom
 
 /** `CardFace` is the one place a projected `CardDetails` becomes DOM, so
@@ -51,7 +51,7 @@ class CardFaceSuite extends munit.FunSuite:
 
   test("warbands caged on a card show as counted warbands in their colour"):
     val cage = knowable.copy(orientation = Some("face-up"), warbands = Vector(
-      SiteForces.Exile(2, "p2", oathdigital.model.PlayerColor.Blue,
+      SiteForces.Exile(2, "p2", distantlands.model.PlayerColor.Blue,
         "Blue Warbands")))
     val node = CardFace.render(cage)
     val group = firstMatch(node, ".card-tokens .card-warbands.force-blue")
@@ -63,7 +63,7 @@ class CardFaceSuite extends munit.FunSuite:
 
   test("a Tracker's chosen pawn shows on the card in its player's colour"):
     val tracker = knowable.copy(orientation = Some("face-up"), tracking =
-      Some(TrackedPawnProjection("p2", oathdigital.model.PlayerColor.Red,
+      Some(TrackedPawnProjection("p2", distantlands.model.PlayerColor.Red,
         "Tracking Red")))
     val marker = firstMatch(CardFace.render(tracker),
       ".card-tokens .card-tracking.force-red")
@@ -166,7 +166,7 @@ class CardFaceSuite extends munit.FunSuite:
     assertEquals(all(node, ".restriction-mark"), Vector.empty)
 
   test("each power's modifier tab or plan crown stands at the face's foot"):
-    import oathdigital.protocol.projection.ModifierMarkProjection
+    import distantlands.protocol.projection.ModifierMarkProjection
     val node = CardFace.render(faceUp.copy(powers = Vector(
       PowerFace("Spend no Supply.", persistent = true,
         modifier = Some(ModifierMarkProjection.Action(Vector("travel")))),

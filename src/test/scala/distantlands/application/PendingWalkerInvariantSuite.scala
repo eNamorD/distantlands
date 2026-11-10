@@ -1,17 +1,17 @@
-package oathdigital.application
+package distantlands.application
 
 import java.nio.file.{Files, Paths}
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.MinesSite
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.cards.MinesSite
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import ParkedServiceFixture.loaded
-import oathdigital.testkit.Commands
-import oathdigital.testkit.Unwrap.{accepted, present, rejected}
+import distantlands.testkit.Commands
+import distantlands.testkit.Unwrap.{accepted, present, rejected}
 
 /** The application half of the pending-walker invariant (spec, Testing).
   * Over each of the spec's four parked contexts, one instance of every

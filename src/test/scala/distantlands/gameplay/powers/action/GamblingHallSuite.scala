@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.walker.LogNoted
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.powers.dice.JinxCard
+import distantlands.gameplay.walker.LogNoted
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
   Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 class GamblingHallSuite extends munit.FunSuite:
   import ActPowerHarness._

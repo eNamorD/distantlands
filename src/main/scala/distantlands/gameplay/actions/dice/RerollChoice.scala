@@ -1,8 +1,8 @@
-package oathdigital.gameplay.actions.dice
+package distantlands.gameplay.actions.dice
 
-import oathdigital.gameplay.SpendableFavor
-import oathdigital.gameplay.powerresolver.{OfferHost, PowerCtx, RerollHost}
-import oathdigital.model._
+import distantlands.gameplay.SpendableFavor
+import distantlands.gameplay.powerresolver.{OfferHost, PowerCtx, RerollHost}
+import distantlands.model._
 
 /** One pass of a roll step's reroll choice: the node the powers'
   * `OfferReroll`s are folded into (catalog batch 7, slice 1). A `Repeat` of

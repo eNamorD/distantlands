@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.CampaignPlans
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.actions.campaign.CampaignPlans
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   FoldPhase, Offer, OptionRestriction, PowerCtx, PowerUse, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 /** A power that offers a Campaign battle plan. It is chosen at the plan step,
   * by the ruler of its source, so it is automatic: it needs no selection at the

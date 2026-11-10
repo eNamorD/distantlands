@@ -1,7 +1,7 @@
-package oathdigital.gameplay.cards
+package distantlands.gameplay.cards
 
-import oathdigital.catalog.Site
-import oathdigital.model.{PowerId, Suit, SiteId, Tokens}
+import distantlands.catalog.Site
+import distantlands.model.{PowerId, Suit, SiteId, Tokens}
 
 /** The eleven sites whose power no power object runs. The six Homelands'
   * `homeland-<suit>` handlers are card play's Homeland rule,

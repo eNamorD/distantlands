@@ -1,18 +1,18 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.OathViolation._
-import oathdigital.model.{OathViolation, ReadyGame, Region, SiteId}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.OathViolation._
+import distantlands.model.{OathViolation, ReadyGame, Region, SiteId}
 
 /** Travel's printed rules: the region-to-region Supply table, and nothing
   * else.
   *
   * The table returns the printed base of a route; everything that shapes it
   * lives elsewhere. Terrain is stated by the site powers themselves
-  * ([[oathdigital.gameplay.powers.travel.TravelSitePowers]]) as `Transform`s
+  * ([[distantlands.gameplay.powers.travel.TravelSitePowers]]) as `Transform`s
   * over the pay node, folded by the walker at `PowerWindow.TravelCost`. The
   * destinations a client is offered come from
-  * [[oathdigital.gameplay.actions.travel.TravelProcedure]], which prices every
+  * [[distantlands.gameplay.actions.travel.TravelProcedure]], which prices every
   * route through this table inside the tree the command walks, so what a
   * client is offered and what the command accepts are one expression. Role
   * and Foundation faces gate nothing here: the procedure previews every

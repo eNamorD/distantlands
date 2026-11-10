@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.projection.{LogEntry, LogSpan, LogTakenBack}
+import distantlands.protocol.projection.{LogEntry, LogSpan, LogTakenBack}
 import ServerUiSupport._
 
 /** One reading of the game log (spec, "Pane" and "Overlay"). The pane and the

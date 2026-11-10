@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.gameplay.operations.OperationRestrictions
-import oathdigital.model.{NoteKey, PowerId}
+import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.model.{NoteKey, PowerId}
 
 /** The game rules that write Game Log lines (power log lines design, "Game
   * rules"): each rule's id and the keys it writes. A rule is not a power, so

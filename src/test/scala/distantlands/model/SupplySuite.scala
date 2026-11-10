@@ -1,6 +1,6 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.gameplay.phases.rest.FinishRestProcedure.ExileSupply
+import distantlands.gameplay.phases.rest.FinishRestProcedure.ExileSupply
 
 class SupplySuite extends munit.FunSuite:
   test("an Exile with nine or more banked warbands refreshes to six"):

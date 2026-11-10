@@ -1,15 +1,15 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.ImperialLaws
-import oathdigital.gameplay.actions.minor.MinorActionProcedures
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentRequested}
-import oathdigital.protocol.projection._
-import oathdigital.testkit.{Commands, MenuPlay, Outcomes, ParkedNode, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.actions.ImperialLaws
+import distantlands.gameplay.actions.minor.MinorActionProcedures
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentRequested}
+import distantlands.protocol.projection._
+import distantlands.testkit.{Commands, MenuPlay, Outcomes, ParkedNode, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Chancellor's Eye through the service: a Citizen asks the Chancellor
   * before moving warbands from their site to their board, and a grant

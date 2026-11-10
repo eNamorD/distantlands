@@ -1,25 +1,25 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.PlacementFixture.cardPlayDecisionId
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.PlacementFixture.cardPlayDecisionId
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerUse, PowerUseRefusal, PowerUseRestriction}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, PhasePowerHarness, PlacementPicks,
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, PhasePowerHarness, PlacementPicks,
   Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, as, present, rejected}
-import oathdigital.testkit.AppendedAutomaticUses
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, as, present, rejected}
+import distantlands.testkit.AppendedAutomaticUses
 
 class ConspiracyWhenPlayedSuite extends munit.FunSuite:
   import WhenPlayedHarness.assertJournalRebuilds

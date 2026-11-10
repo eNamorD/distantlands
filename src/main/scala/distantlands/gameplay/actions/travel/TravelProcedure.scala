@@ -1,9 +1,9 @@
-package oathdigital.gameplay.actions.travel
+package distantlands.gameplay.actions.travel
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.{ProcedureNotes, TravelRules}
-import oathdigital.gameplay.walker.{ModifierChoice, WalkerPowers}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.{ProcedureNotes, TravelRules}
+import distantlands.gameplay.walker.{ModifierChoice, WalkerPowers}
+import distantlands.model._
 
 /** Travel on the walker (travel destination design; modifier walker design).
   *

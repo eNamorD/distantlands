@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.{NoteText, PlayerFacts}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.{NoteText, PlayerFacts}
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
 
 /** Obsidian Cage's battle plan: a victorious user moves the enemy's force,
   * as the losses left it, onto the Cage. */

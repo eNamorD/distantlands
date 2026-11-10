@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.model._
 
 object ShieldWallCard extends Denizen(DenizenId("108"), "Shield Wall", Suit.Order):
   val power = PrintedPower(PowerId("denizen.shield-wall"),

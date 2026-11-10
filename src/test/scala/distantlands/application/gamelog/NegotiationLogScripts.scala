@@ -1,15 +1,15 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application._
-import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, DeclineDeal, ProposeTerms}
-import oathdigital.testkit.{MenuPlay, Situation, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.application._
+import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, DeclineDeal, ProposeTerms}
+import distantlands.testkit.{MenuPlay, Situation, Table}
+import distantlands.testkit.Table.{p1, p2}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** The Negotiation scripts: a deal declined, a deal agreed, and a facedown
   * adviser disclosed. Reached through `LogScripts`.

@@ -1,8 +1,8 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.operations.Costs
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.operations.Costs
+import distantlands.model._
 
 /** One chosen battle plan being paid for and applied. It carries the side, the
   * user and the source, in the window `CampaignPlanApplication`, so a power can

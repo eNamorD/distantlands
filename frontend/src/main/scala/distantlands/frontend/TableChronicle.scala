@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.ChronicleEntry
-import oathdigital.protocol.projection.ChronicleProjection
+import distantlands.protocol.ChronicleEntry
+import distantlands.protocol.projection.ChronicleProjection
 import org.scalajs.dom
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import ServerUiSupport.{button, element, text, textField}

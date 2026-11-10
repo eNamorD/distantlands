@@ -1,7 +1,7 @@
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay.SupremacySites
-import oathdigital.model._
+import distantlands.gameplay.SupremacySites
+import distantlands.model._
 
 sealed trait OathkeeperOutcome extends Product with Serializable
 object OathkeeperOutcome:

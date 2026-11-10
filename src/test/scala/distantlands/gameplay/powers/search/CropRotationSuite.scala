@@ -1,23 +1,23 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.FacedownAdviserPlay
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.MessengerCard
-import oathdigital.gameplay.powers.banner.PeoplesFavorMob
-import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, ShieldWallCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Refusals,
+import distantlands.gameplay.FacedownAdviserPlay
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.MessengerCard
+import distantlands.gameplay.powers.banner.PeoplesFavorMob
+import distantlands.gameplay.powers.campaign.{CodeOfHonorCard, ShieldWallCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, PlacementPicks, Refusals,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class CropRotationSuite extends munit.FunSuite:
   import SearchFixture.{discardMore, keep, place, placeReplacing, rules, start}

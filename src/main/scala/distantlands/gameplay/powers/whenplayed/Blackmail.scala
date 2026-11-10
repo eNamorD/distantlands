@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.targeting.LostTongue
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.targeting.LostTongue
+import distantlands.model._
 
 object BlackmailCard extends Denizen(DenizenId("82"), "Blackmail", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.blackmail"),

@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 // The card-play hooks are power windows, not Oath operations: they extend
 // the unsealed [[Operation]], so they live outside `CoreOperations.scala`

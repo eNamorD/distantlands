@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Builds the children of the composite operations in
   * `CoreOperations.scala`: a world card's discard move, the favor and

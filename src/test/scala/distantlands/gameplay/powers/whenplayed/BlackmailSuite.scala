@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.cards.BuriedGiantSite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.search.{PaintedTrumpetCard,
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.cards.BuriedGiantSite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.search.{PaintedTrumpetCard,
   RingOfDevotionCard}
-import oathdigital.gameplay.powers.targeting.LostTongueCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.targeting.LostTongueCard
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class BlackmailSuite extends munit.FunSuite:
   import WhenPlayedHarness._

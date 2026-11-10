@@ -1,8 +1,8 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.DecisionAnswerWire
-import oathdigital.protocol.projection.DieFace
-import oathdigital.testkit.Unwrap.present
+import distantlands.protocol.DecisionAnswerWire
+import distantlands.protocol.projection.DieFace
+import distantlands.testkit.Unwrap.present
 
 import munit.FunSuite
 
@@ -75,6 +75,6 @@ class WalkerDecisionDraftSuite extends FunSuite:
       query = Some(query))
     assertEquals(WalkerPanelSupport.resolveChooseOneCommand(decision,
       query.options(1)),
-      oathdigital.protocol.GameIntent.ResolveWalker("oathkeeper.recipient",
+      distantlands.protocol.GameIntent.ResolveWalker("oathkeeper.recipient",
         DecisionAnswerWire.ChooseOneWire("player", "yellow")))
 

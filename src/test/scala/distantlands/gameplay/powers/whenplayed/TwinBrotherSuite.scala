@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.{CharmingFriendCard, EldersCard}
-import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
-import oathdigital.gameplay.walker.WalkerOutcome
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{as, rejected}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.{CharmingFriendCard, EldersCard}
+import distantlands.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
+import distantlands.gameplay.walker.WalkerOutcome
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{as, rejected}
 
 class TwinBrotherSuite extends munit.FunSuite:
   import WhenPlayedHarness._

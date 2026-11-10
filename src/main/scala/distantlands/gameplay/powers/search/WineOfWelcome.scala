@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.gameplay.actions.SearchRules
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.gameplay.actions.SearchRules
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 object WineOfWelcomeCard extends Relic(RelicId("R33"), "Wine of Welcome", value = 7, defense = 1):
   val power = PrintedPower(PowerId("relic.wine-of-welcome"),

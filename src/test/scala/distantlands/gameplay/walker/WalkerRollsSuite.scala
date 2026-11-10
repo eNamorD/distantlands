@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Roll outcome mechanics: what a face vector scores, what a recorded roll may
   * claim, and how repeated rolls of one pool accumulate.

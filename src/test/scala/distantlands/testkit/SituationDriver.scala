@@ -1,17 +1,17 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.{EventStreamRepository, ExpectedStream,
+import distantlands.application.{EventStreamRepository, ExpectedStream,
   GameCommand, GameApplicationService, PlayerIntent, TreeDecision}
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.rest.RoundEndRandomPort
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.walker.{DeltaPayload, WalkerDice, WalkerPowers,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.phases.rest.RoundEndRandomPort
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.walker.{DeltaPayload, WalkerDice, WalkerPowers,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.serialization.GameEventWire
+import distantlands.model._
+import distantlands.serialization.GameEventWire
 
 /** How a [[Situation]] is reached: one step becomes one transition, and every
   * park it causes is answered by the shared loop in [[run]]. The two

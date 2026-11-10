@@ -1,6 +1,6 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
+import distantlands.model._
 
 /** What a player asks the game to do, every identifier a model type. Mirrors
   * `protocol.GameIntent` case for case; `GameIntentMapper` is the only

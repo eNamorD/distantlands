@@ -1,13 +1,13 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.operations.OperationRestrictions
-import oathdigital.gameplay.powers.action.{EnchantressCard, WaysideInnCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.gameplay.powers.action.{EnchantressCard, WaysideInnCard}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** The restriction-icon rule (catalog batch 4 design, "The restriction-icon
   * rule"): whichever operation moves it, an adviser-only card cannot land

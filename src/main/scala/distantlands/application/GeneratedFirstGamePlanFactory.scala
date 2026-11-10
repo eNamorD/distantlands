@@ -1,9 +1,9 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.PowerImplementationStatus
-import oathdigital.gameplay.setup.SetupDeal
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.PowerImplementationStatus
+import distantlands.gameplay.setup.SetupDeal
+import distantlands.model._
 
 /**
  * Production first-game Chronicle derivation: draws a random Chronicle

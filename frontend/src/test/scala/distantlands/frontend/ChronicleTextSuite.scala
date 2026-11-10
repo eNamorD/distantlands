@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.ChronicleSummary
+import distantlands.protocol.ChronicleSummary
 
 class ChronicleTextSuite extends munit.FunSuite:
   test("lineage names a generated lineage by its color"):

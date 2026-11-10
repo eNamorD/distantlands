@@ -1,10 +1,10 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.MessageDigest
 
-import oathdigital.model.{Chronicle, Role}
-import oathdigital.protocol.{ChronicleEntry, ChronicleScore, ChronicleSummary}
+import distantlands.model.{Chronicle, Role}
+import distantlands.protocol.{ChronicleEntry, ChronicleScore, ChronicleSummary}
 
 /** A Chronicle as a browser keeps it (Chronicle browsing design, "Digest"
   * and "Summary"). */

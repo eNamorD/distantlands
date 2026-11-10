@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.rest.LeagueTreatyCard
-import oathdigital.gameplay.powers.search.PaintedTrumpetCard
-import oathdigital.gameplay.walker.{LogNoted, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.powers.rest.LeagueTreatyCard
+import distantlands.gameplay.powers.search.PaintedTrumpetCard
+import distantlands.gameplay.walker.{LogNoted, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class ARoundOfAleSuite extends munit.FunSuite:
   import WhenPlayedHarness._

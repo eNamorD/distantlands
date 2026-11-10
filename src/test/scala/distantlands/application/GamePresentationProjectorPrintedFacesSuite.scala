@@ -1,9 +1,9 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.{EdificeSide, EdificeState, Tokens, VisionId}
-import oathdigital.testkit.Table
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.{EdificeSide, EdificeState, Tokens, VisionId}
+import distantlands.testkit.Table
 
 /** Card presentation must echo the authoritative printed text, independent
   * of which plan factory derived the game. */
@@ -14,7 +14,7 @@ class GamePresentationProjectorPrintedFacesSuite extends munit.FunSuite:
     val ids = Vector("vision:vision-of-conquest", "vision:vision-of-sanctuary",
       "vision:vision-of-rebellion", "vision:vision-of-faith", "vision:conspiracy")
     ids.foreach { id =>
-      val expected = oathdigital.protocol.projection.VisionCardPresentation.byId(id)
+      val expected = distantlands.protocol.projection.VisionCardPresentation.byId(id)
       val details = projector.cardDetails(VisionId(id), None, hidden = false)
       assertEquals(details.name, expected.name)
       assertEquals(details.rulesText, Some(expected.rulesText))

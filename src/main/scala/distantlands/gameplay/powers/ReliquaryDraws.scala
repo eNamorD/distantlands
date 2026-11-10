@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** A random relic from the Reliquary, taken facedown (Bewitch, Ancient
   * Pact, Royal Ambitions). The draw shuffles the Reliquary, so the walker

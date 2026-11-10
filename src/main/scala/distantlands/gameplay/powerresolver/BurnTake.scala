@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{Piece, PlayerId, PositionedLocation, LogNote}
+import distantlands.model.{Piece, PlayerId, PositionedLocation, LogNote}
 
 /** Favor or secrets a player burns: how many, where from, and who burns
   * them (catalog batch 8, "A burn's actor"). A cost's burnt portion is its

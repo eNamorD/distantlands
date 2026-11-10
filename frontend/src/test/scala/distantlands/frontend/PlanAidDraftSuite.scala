@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent, WalkerStartArgWire}
-import oathdigital.protocol.projection.PlanAidOfferProjection
+import distantlands.protocol.{GameIntent, WalkerStartArgWire}
+import distantlands.protocol.projection.PlanAidOfferProjection
 
 /** An Imperial ally's draft offer (Empire phase design, "Offer panel"). */
 class PlanAidDraftSuite extends munit.FunSuite:

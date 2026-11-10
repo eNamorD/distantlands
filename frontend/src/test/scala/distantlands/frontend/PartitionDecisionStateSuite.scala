@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DecisionPlacementWire}
-import oathdigital.testkit.Unwrap.present
+import distantlands.protocol.{DecisionAnswerWire, DecisionPlacementWire}
+import distantlands.testkit.Unwrap.present
 
 /** Task 5: the two-zone move/drag interaction, with no idea what it is
   * partitioning. Nothing below names a card, a denizen or a resource -- the
@@ -121,7 +121,7 @@ class PartitionDecisionStateSuite extends munit.FunSuite:
     assertEquals(draft.optionsIn("pay-favor").map(_.id),
       Vector("denizen:1", "denizen:2"))
     assertEquals(draft.optionsIn("pay-secret").map(_.id), Vector("denizen:3"))
-    assertEquals(draft.command("red"), Some(oathdigital.protocol.GameIntent.ResolveWalker("forge-9", DecisionAnswerWire.PartitionWire(Vector(
+    assertEquals(draft.command("red"), Some(distantlands.protocol.GameIntent.ResolveWalker("forge-9", DecisionAnswerWire.PartitionWire(Vector(
         DecisionPlacementWire("denizen", "denizen:1", "pay-favor"),
         DecisionPlacementWire("denizen", "denizen:2", "pay-favor"),
         DecisionPlacementWire("denizen", "denizen:3", "pay-secret"))))))
@@ -135,7 +135,7 @@ class PartitionDecisionStateSuite extends munit.FunSuite:
     val repaired = short.move(WalkerPartitionDraft.itemId(query.options.head),
       "pay-secret")
     assert(repaired.canConfirm)
-    assertEquals(repaired.command("red"), Some(oathdigital.protocol.GameIntent.ResolveWalker("forge-9", DecisionAnswerWire.PartitionWire(Vector(
+    assertEquals(repaired.command("red"), Some(distantlands.protocol.GameIntent.ResolveWalker("forge-9", DecisionAnswerWire.PartitionWire(Vector(
         DecisionPlacementWire("denizen", "denizen:2", "pay-favor"),
         DecisionPlacementWire("denizen", "denizen:3", "pay-favor"),
         DecisionPlacementWire("denizen", "denizen:1", "pay-secret"))))))

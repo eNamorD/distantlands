@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** A card's printed power that an operation restriction or a procedure
   * enforces, with no walker or phase power: the Hall of Ministers,

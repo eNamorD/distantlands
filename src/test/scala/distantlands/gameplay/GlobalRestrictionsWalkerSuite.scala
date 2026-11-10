@@ -1,16 +1,16 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.SealingWardCard
-import oathdigital.gameplay.powers.cardplay.WildCryCard
-import oathdigital.gameplay.powers.travel.DragonskinDrumCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.SealingWardCard
+import distantlands.gameplay.powers.cardplay.WildCryCard
+import distantlands.gameplay.powers.travel.DragonskinDrumCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** The production powers carry the global restrictions into every walker
   * step, whichever node runs the operation (global operation restrictions

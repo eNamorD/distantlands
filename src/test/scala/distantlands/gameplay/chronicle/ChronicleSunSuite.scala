@@ -1,18 +1,18 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.action.BrassHorseCard
-import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.gameplay.{GrandMaskCard, OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerCompleted
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.action.BrassHorseCard
+import distantlands.gameplay.powers.economy.VowOfWanderingCard
+import distantlands.gameplay.{GrandMaskCard, OathRules, WalkerDiceFixture}
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerCompleted
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** The Sun task (CR p. 36): reveal held relics, crown the winner, assign
   * the tasks. Every game here is p1's win, already in the Chronicle phase
@@ -237,7 +237,7 @@ class ChronicleSunSuite extends munit.FunSuite:
 
   test("the Sun writes who was crowned and who took each task"):
     val done = sunWithTasksGiven(ChronicleWalk.chronicleWonByP1)
-    val id = oathdigital.gameplay.actions.ProcedureNotes.id(
+    val id = distantlands.gameplay.actions.ProcedureNotes.id(
       TriggeredProcedureRef.ChronicleSun)
     assertEquals(NoteText.said(id, ChronicleSunProcedure.noteKeys,
       done.events).map(_.text), Vector("The Empire broke",

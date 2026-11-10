@@ -1,4 +1,4 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 import ProjectionCodecSupport._
 import WorldProjectionCodec.{decodeCard, encodeCard}
@@ -16,7 +16,7 @@ private[projection] object ActionProjectionCodec:
     pool <- string(value, "pool", path)
     keys <- strings(value, "faces", path)
     faces <- traverse(keys, s"$path.faces")((key, child) =>
-      DieFace.byKey.get(key).toRight(oathdigital.protocol
+      DieFace.byKey.get(key).toRight(distantlands.protocol
         .ProtocolDecodeFailure.UnknownVariant(child,
           s"unknown die face '$key'")))
     score <- int(value, "score", path)
@@ -154,7 +154,7 @@ private[projection] object ActionProjectionCodec:
       case "distribute" => decodeDistribute(value, path)
       case "negotiate" => decodeNegotiate(value, path)
       case "inspect" => decodeInspect(value, path)
-      case other => Left(oathdigital.protocol.ProtocolDecodeFailure
+      case other => Left(distantlands.protocol.ProtocolDecodeFailure
         .UnknownVariant(s"$path.form", s"unknown decision form '$other'"))
   yield query
 

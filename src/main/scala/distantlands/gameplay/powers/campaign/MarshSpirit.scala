@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx}
-import oathdigital.model._
+import distantlands.model._
 
 object MarshSpiritCard extends Denizen(DenizenId("192"), "Marsh Spirit", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.marsh-spirit"),

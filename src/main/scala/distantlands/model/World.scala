@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 enum Role(val isImperial: Boolean):
   case Exile extends Role(false)

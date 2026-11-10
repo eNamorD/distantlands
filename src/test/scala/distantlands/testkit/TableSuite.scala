@@ -1,24 +1,24 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.application.{GameApplicationService, 
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.application.{GameApplicationService, 
   InMemoryEventStreamRepository, ParkedServiceFixture}
-import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
-import oathdigital.gameplay.StateBasedEvaluation
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.StateBasedEvaluation
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DunesSite, FairIsleSite}
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.powers.action.{AlchemistCard, BrassHorseCard,
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.powers.action.{AlchemistCard, BrassHorseCard,
   DowsingSticksCard, EldersCard, ScryerCard, WolvesCard}
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.search.ForcedLaborCard
-import oathdigital.gameplay.powers.targeting.CircletOfCommandCard
-import oathdigital.gameplay.powers.whenplayed.{DazzleCard,
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.search.ForcedLaborCard
+import distantlands.gameplay.powers.targeting.CircletOfCommandCard
+import distantlands.gameplay.powers.whenplayed.{DazzleCard,
   ThreateningRoarCard}
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 import Table.{p1, p2, p3}
 import Unwrap.{accepted, present}
 

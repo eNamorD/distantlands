@@ -1,10 +1,10 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.walker.{DeltaPayload, WalkerCompleted,
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.walker.{DeltaPayload, WalkerCompleted,
   WalkerOutcome, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.model._
+import distantlands.model.OathState.Ready
 import Outcomes.*
 
 /** The rules-result reads return what a test expects and fail with what

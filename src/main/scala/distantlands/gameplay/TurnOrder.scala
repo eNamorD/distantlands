@@ -1,6 +1,6 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The order of a round (CR p. 17). A round runs from the player recorded
   * when it began (ruling R4); the next round begins with the Chancellor,

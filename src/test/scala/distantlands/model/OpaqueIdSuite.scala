@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 class OpaqueIdSuite extends munit.FunSuite:
 

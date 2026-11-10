@@ -1,13 +1,13 @@
-package oathdigital.gameplay.cards
+package distantlands.gameplay.cards
 
-import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked,
   ModifierMark, PrintedPower, PrintsPowers, SiteOnly}
-import oathdigital.gameplay.powers.{PhasePowerCatalog,
+import distantlands.gameplay.powers.{PhasePowerCatalog,
   PowerImplementationStatus, SelectedModifier, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.BattlePlan
-import oathdigital.gameplay.powers.challenge.SchoolOfVines
-import oathdigital.gameplay.powers.recover.DrownedLibrary
-import oathdigital.model.{MajorActionType, PowerId}
+import distantlands.gameplay.powers.campaign.BattlePlan
+import distantlands.gameplay.powers.challenge.SchoolOfVines
+import distantlands.gameplay.powers.recover.DrownedLibrary
+import distantlands.model.{MajorActionType, PowerId}
 
 /** The printed-corpus checks `validate-component-catalog.py` ran on the JSON,
   * now run on the Scala catalog. Suits, edifice faces and the single Grand
@@ -179,7 +179,7 @@ class CardCatalogSuite extends munit.FunSuite:
     // handler a game rule runs leaves holding too.
     val implemented = PowerImplementationStatus.implemented
     def held(card: AnyRef): Boolean =
-      card.getClass.getPackageName == "oathdigital.catalog.holding"
+      card.getClass.getPackageName == "distantlands.catalog.holding"
     def misplaced(card: AnyRef, name: String, powers: Vector[PowerId])
         : Option[String] =
       Option.when(held(card) == powers.exists(implemented))(

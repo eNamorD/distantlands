@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Pawn and banner moves. The guard threads the pawns' sites and the
   * banners' holders through one operation's leaves so two moves of one piece

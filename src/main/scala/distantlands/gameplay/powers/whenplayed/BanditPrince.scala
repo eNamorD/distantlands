@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.gameplay.powers.economy.VowOfWandering
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.model._
 
 object BanditPrinceCard extends Denizen(DenizenId("226"), "Bandit Prince", Suit.Discord) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.bandit-prince"),

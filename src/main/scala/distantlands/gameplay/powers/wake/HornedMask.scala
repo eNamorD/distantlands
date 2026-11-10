@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
-import oathdigital.gameplay.actions.{AdviserFace, CardPlay, CardPlayRules}
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.powers.{AdviserLimit, PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.{EffectiveSuit, NoteSupport}
+import distantlands.gameplay.actions.{AdviserFace, CardPlay, CardPlayRules}
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powers.{AdviserLimit, PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 object HornedMaskCard extends Relic(RelicId("R06"), "Horned Mask", value = 48, defense = 2):
   val power = PrintedPower(PowerId("relic.horned-mask"),

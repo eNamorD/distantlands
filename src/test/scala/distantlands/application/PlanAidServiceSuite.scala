@@ -1,18 +1,18 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignProcedure,
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignProcedure,
   PlanAid}
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.{EncirclementCard, ShieldWall}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.{EncirclementCard, ShieldWall}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Commands, Dice, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{Commands, Dice, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Imperial Tactics offers through the service (Empire phase design,
   * "1b-ii"): an ally's offer is a standing fact, saved over the user's

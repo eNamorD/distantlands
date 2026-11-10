@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{CardRule, NoteSupport, SiteRulers}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogResolution, PayOrAsk}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.{CardRule, NoteSupport, SiteRulers}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogResolution, PayOrAsk}
+import distantlands.model._
 
 object GraspingVinesCard extends Denizen(DenizenId("178"), "Grasping Vines", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.grasping-vines"),

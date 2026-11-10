@@ -1,8 +1,8 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DecisionOptionWire,
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
   GameIntent => Intent}
-import oathdigital.testkit.Unwrap.{as, present}
+import distantlands.testkit.Unwrap.{as, present}
 
 class WalkerSelectionDraftSuite extends munit.FunSuite:
   private def site(id: String) = DecisionOptionState("site", id, id)

@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import java.net.URI
 import java.nio.charset.StandardCharsets
@@ -9,7 +9,7 @@ import scala.util.Try
 
 import akka.http.scaladsl.model.HttpRequest
 
-import oathdigital.application._
+import distantlands.application._
 
 final case class AuthenticatedHttpSession(
     principal: AuthenticatedPrincipal,

@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.PhasePowerCatalog
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.PhasePowerCatalog
+import distantlands.gameplay.roles.Citizenship
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** The Grand Scepter's Action: "You may become a Citizen if an Exile"
   * (CR p. 34; Empire slice 3a). The acting player is p1. */

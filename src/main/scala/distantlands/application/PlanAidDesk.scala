@@ -1,9 +1,9 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.{OathRules, SpendableFavor}
-import oathdigital.gameplay.actions.campaign.{CampaignIds, PlanAid}
-import oathdigital.model._
-import oathdigital.model.OathEvent.{PlanAidCleared, PlanAidSaved}
+import distantlands.gameplay.{OathRules, SpendableFavor}
+import distantlands.gameplay.actions.campaign.{CampaignIds, PlanAid}
+import distantlands.model._
+import distantlands.model.OathEvent.{PlanAidCleared, PlanAidSaved}
 
 /** The Imperial Tactics command (Empire phase design, "1b-ii"): an ally's
   * whole offer, accepted at any time while an Imperial user's plan

@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.action.{GiantPythonCard, RovingTerror,
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.gameplay.powers.action.{GiantPythonCard, RovingTerror,
   RovingTerrorCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** Giant Python's restriction (card 186): "Other cards at this site cannot
   * be used for non-persistent powers or placing [favor] / [secret]."

@@ -1,4 +1,4 @@
-package oathdigital.persistence
+package distantlands.persistence
 
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
@@ -13,8 +13,8 @@ import com.zaxxer.hikari.HikariDataSource
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.HsqldbProfile.api._
 
-import oathdigital.application.RepositoryFailure
-import oathdigital.application._
+import distantlands.application.RepositoryFailure
+import distantlands.application._
 
 /** Owns the sole datasource, schema lifecycle, and HSQLDB shutdown. */
 final class HsqldbDatabaseOwner private (

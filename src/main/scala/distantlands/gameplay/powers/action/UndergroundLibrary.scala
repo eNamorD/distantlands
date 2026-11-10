@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.recover.UndergroundLibraryCard
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.recover.UndergroundLibraryCard
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Underground Library (E13, intact), ACTION: place 1 favor on this card,
   * peek at every relic at the sites of the Library's region, then swap one
@@ -24,7 +24,7 @@ import oathdigital.model._
   * Lines: "{Blue} peeked at the relics in the Cradle: {relics}.", covering
   * the peeks, then "Swapped {given} for {taken} at {site}.", covering the
   * swap, or "No relic could be swapped." The ruined face is
-  * [[oathdigital.gameplay.powers.recover.DrownedLibrary]].
+  * [[distantlands.gameplay.powers.recover.DrownedLibrary]].
   */
 case object UndergroundLibrary
     extends PaidAction(UndergroundLibraryCard.intact.power):

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.walker.LogNoted
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.walker.LogNoted
+import distantlands.model._
 
 /** Vow of Peace's second sentence: attackers cannot sacrifice warbands to
   * increase their attack against a faceup holder.

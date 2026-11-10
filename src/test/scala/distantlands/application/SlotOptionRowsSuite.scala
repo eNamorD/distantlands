@@ -1,19 +1,19 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.setup.GreatForgeCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.protocol.projection.{CardDetailsProjection, DecisionOptionProjection, DecisionQueryProjection}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.present
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.setup.GreatForgeCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.protocol.projection.{CardDetailsProjection, DecisionOptionProjection, DecisionQueryProjection}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.present
 
 /** How a card slot option reads in the Action panel. Plan 1 shows the slots
   * as labelled rows; plan 2's board summary reuses the same words.

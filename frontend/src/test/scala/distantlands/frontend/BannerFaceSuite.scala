@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, click, one}
-import oathdigital.frontend.TestBoardOptions.{available, option, recording}
+import distantlands.frontend.Dom.{all, click, one}
+import distantlands.frontend.TestBoardOptions.{available, option, recording}
 
 /** A banner drawn as its component: a square face with its side across the
   * top, its name in the middle and what it holds below. The rules it prints

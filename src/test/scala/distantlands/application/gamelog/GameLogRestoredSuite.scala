@@ -1,14 +1,14 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameApplicationService,
+import distantlands.application.{GameApplicationService,
   ParkedServiceFixture}
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogEntry}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.protocol.projection.{LogEntry}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** What a reader sees of restored moves (undo design, "Redo" 4): a redo
   * leaves no trace, and the restored lines read as if never taken back. */

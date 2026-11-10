@@ -1,19 +1,19 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.engine.EventEvolution
-import oathdigital.gameplay.chronicle.ChronicleSequence
-import oathdigital.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.rest.{TurnBoundary,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.engine.EventEvolution
+import distantlands.gameplay.chronicle.ChronicleSequence
+import distantlands.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.phases.rest.{TurnBoundary,
   RoundEndRandomPort}
-import oathdigital.gameplay.phases.wake.ForcedWakeProcedure
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.walker.{ActionBoundaryRan, ProcedureDequeued}
-import oathdigital.model._
-import oathdigital.model.OathEvent._
-import oathdigital.model.OathState._
-import oathdigital.model.OathViolation._
+import distantlands.gameplay.phases.wake.ForcedWakeProcedure
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.walker.{ActionBoundaryRan, ProcedureDequeued}
+import distantlands.model._
+import distantlands.model.OathEvent._
+import distantlands.model.OathState._
+import distantlands.model.OathViolation._
 
 /** What runs between walks (walker-driven game loop design, "The driver").
   * Every finished walk is handed to [[next]]. In the Chronicle phase it

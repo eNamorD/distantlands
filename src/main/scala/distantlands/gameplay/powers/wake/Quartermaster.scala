@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.{CardRule, NoteSupport}
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.model._
+import distantlands.gameplay.{CardRule, NoteSupport}
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.model._
 
 object QuartermasterCard extends Denizen(DenizenId("258"), "Quartermaster", Suit.Order) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.quartermaster"),

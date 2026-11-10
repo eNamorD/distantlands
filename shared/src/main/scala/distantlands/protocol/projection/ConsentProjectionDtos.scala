@@ -1,4 +1,4 @@
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 /** Whom an askable option would ask, and about which powers, for the
   * client to word its confirmation (consent design, "Projection"). Player

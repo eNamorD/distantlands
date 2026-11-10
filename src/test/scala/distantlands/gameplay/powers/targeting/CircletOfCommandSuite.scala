@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.CampaignFixture.{RaidBoard, raidBoard}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx}
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.CampaignFixture.{RaidBoard, raidBoard}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.{OptionRestriction, PowerCtx}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Unwrap.{accepted, as, present}
+import distantlands.testkit.Table.{p1, p2}
 
 class CircletOfCommandSuite extends munit.FunSuite:
   import TargetingFixture._

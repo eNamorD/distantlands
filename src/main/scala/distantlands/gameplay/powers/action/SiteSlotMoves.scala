@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.cardplay.CardSlots
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.cardplay.CardSlots
+import distantlands.model._
 
 /** Where a site card that moves itself may go (Giant Python, Roving Terror;
   * catalog batch 8, slice 10): `slot` at `site`, replacing `replaced` with

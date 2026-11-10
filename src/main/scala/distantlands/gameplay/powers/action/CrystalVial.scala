@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.{EffectiveSuit, NoteSupport}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object CrystalVialCard extends Relic(RelicId("R21"), "Crystal Vial", value = 71, defense = 1):
   val power = PrintedPower(PowerId("relic.crystal-vial"),

@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
 
 /** Spiral Castle and Spiral Dungeons (catalog batch 9, slice 7): the
   * loser's pawn is sent to the edifice's site and they lose 2 Supply. */

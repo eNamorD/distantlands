@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OperationRewrite, PowerCtx, Transform}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 object VowOfWisdomCard extends Denizen(DenizenId("203"), "Vow of Wisdom",
     Suit.Arcane) with AdviserOnly:

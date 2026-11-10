@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Answered, CoreOperation, DecisionAnswer, DecisionOptionRef, DieFace, PlayerId, PoolKey, PowerId, LogNote, ProcedureRef, QueuedProcedure, WalkerEvent}
+import distantlands.model.{Answered, CoreOperation, DecisionAnswer, DecisionOptionRef, DieFace, PlayerId, PoolKey, PowerId, LogNote, ProcedureRef, QueuedProcedure, WalkerEvent}
 
 /** What one recorded walker step recorded: the step applied operations, it
   * recorded an answer, or it recorded dice. Sealed so the set is closed and
@@ -70,7 +70,7 @@ final case class WalkerStepRecorded(
 /** Durable state fact written whenever walking stops at a Decide or Roll.
   * `procedure` is stored beside pointer-only PendingTree on replay so generic
   * resume commands can rebuild the correct tree after reload -- one of the
-  * three [[oathdigital.model.ProcedureRef]] families (Task 4), tagged with its family on the
+  * three [[distantlands.model.ProcedureRef]] families (Task 4), tagged with its family on the
   * wire so a decoder rejects a reference read back under the wrong one.
   * `startArgs` (batch-1 Task 5) is carried on every park because a procedure
   * whose tree needs what the player selected at the start cannot rebuild

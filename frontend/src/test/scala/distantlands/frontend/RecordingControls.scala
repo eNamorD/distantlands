@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.GameIntent => Intent
+import distantlands.protocol.GameIntent => Intent
 
 /** Spy of `TableControls`: records what was staged and submitted instead
   * of touching a session, shared by every panel render suite. `drafts` is

@@ -1,13 +1,13 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.DeepWoodsSite
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerCompleted}
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, RecordedOps}
-import oathdigital.testkit.Outcomes.{finished, parked, recorded}
-import oathdigital.testkit.ProcedureWalkerFixture._
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.DeepWoodsSite
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerCompleted}
+import distantlands.model._
+import distantlands.testkit.{Outcomes, RecordedOps}
+import distantlands.testkit.Outcomes.{finished, parked, recorded}
+import distantlands.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.Unwrap.accepted
 
 /** `ActAsIf` (catalog batch 8, item 13c): it records the site the walk's
   * actor acts as if at, a parked walk keeps it, and the walk's end clears

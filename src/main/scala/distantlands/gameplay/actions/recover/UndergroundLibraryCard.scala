@@ -1,8 +1,8 @@
-package oathdigital.gameplay.actions.recover
+package distantlands.gameplay.actions.recover
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.model._
+import distantlands.model._
 
 /** Underground Library (E13). The card lives beside the Recover, which
   * reads Drowned Library's pick (`RecoverProcedure.fromRelicDeck`); its

@@ -1,8 +1,8 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
 import munit.FunSuite
-import oathdigital.gameplay.walker.DecisionQueries
-import oathdigital.model._
+import distantlands.gameplay.walker.DecisionQueries
+import distantlands.model._
 
 class DecisionQueriesSuite extends FunSuite:
   private val first = DecisionOption.Button(DecisionOptionRef.Button("first"), "First")

@@ -1,6 +1,6 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Unwrap.accepted
 
 class PlayerSetupStateSuite extends munit.FunSuite:
   import TestGameFixtures._

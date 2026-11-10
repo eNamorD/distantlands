@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{ModifierPicks, PowerCtx}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{ModifierPicks, PowerCtx}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object SearchPartyCard extends Denizen(DenizenId("240"), "Search Party",
     Suit.Nomad):

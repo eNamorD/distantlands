@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.roles.{Citizenship, CouncilSeat}
-import oathdigital.model._
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.roles.{Citizenship, CouncilSeat}
+import distantlands.model._
 
 /** The Grand Scepter's battle plan, for either side: "[favor-burnt]
   * [favor-burnt][favor-burnt] If you are Imperial and victorious against a

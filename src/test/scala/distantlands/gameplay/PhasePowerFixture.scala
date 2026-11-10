@@ -1,12 +1,12 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** A synthetic phase power on p1's faceup adviser, shared by the engine suite
   * and the projection suite (Task 11).

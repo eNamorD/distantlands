@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.gameplay.SpendableFavor
-import oathdigital.model._
+import distantlands.gameplay.SpendableFavor
+import distantlands.model._
 
 /** Shared printed banner invariants. Mob and Raid both use the printed
   * deterministic leftmost policy. Wandering Flame site ties belong to the player.

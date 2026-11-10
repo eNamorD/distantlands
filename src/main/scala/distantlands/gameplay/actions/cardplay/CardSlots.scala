@@ -1,12 +1,12 @@
-package oathdigital.gameplay.actions.cardplay
+package distantlands.gameplay.actions.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.actions.{AdviserFace, CardPlay, CardPlayRules,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.actions.{AdviserFace, CardPlay, CardPlayRules,
   DiscardPermission, SiteRemoval, VisionRules}
-import oathdigital.gameplay.operations.{OperationConsent,
+import distantlands.gameplay.operations.{OperationConsent,
   OperationRestrictions}
-import oathdigital.model._
+import distantlands.model._
 
 /** One way to play a card: the option the placement decision offers, and
   * where the planner puts the card when it is chosen. A Replace option's

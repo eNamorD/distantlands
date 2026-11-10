@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+import distantlands.catalog.{Denizen, ExecutableCatalog, ModifierMark,
   PrintedPower, SiteOnly}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogResolution, PayOrAsk,
+import distantlands.gameplay.powers.{CatalogResolution, PayOrAsk,
   PowerAnswers, RuledCards, RulerToll}
-import oathdigital.model._
+import distantlands.model._
 
 object CurfewCard extends Denizen(DenizenId("119"), "Curfew", Suit.Order) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.curfew"),

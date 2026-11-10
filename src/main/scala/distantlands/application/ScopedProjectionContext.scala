@@ -1,7 +1,7 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.{PlayerId, PlayerState, ReadyGame, SiteState}
-import oathdigital.protocol.projection._
+import distantlands.model.{PlayerId, PlayerState, ReadyGame, SiteState}
+import distantlands.protocol.projection._
 
 private[application] final case class ScopedProjectionContext(
     ready: ReadyGame,

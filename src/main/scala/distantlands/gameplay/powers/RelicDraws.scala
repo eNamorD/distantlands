@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.model._
 
 /** Relic draws that powers share. */
 object RelicDraws:

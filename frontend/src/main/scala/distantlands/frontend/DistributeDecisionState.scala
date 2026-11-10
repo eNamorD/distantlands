@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DistributeAmountWire,
+import distantlands.protocol.{DecisionAnswerWire, DistributeAmountWire,
   GameIntent => GameCommand}
 
 /** One slot's identity and bounds, as the stepper sees them. */

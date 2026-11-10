@@ -1,14 +1,14 @@
-package oathdigital.server
+package distantlands.server
 
-import oathdigital.testkit.HttpTestServer
-import oathdigital.testkit.HttpTestServer.cacheControl
+import distantlands.testkit.HttpTestServer
+import distantlands.testkit.HttpTestServer.cacheControl
 
 class ProductionFrontendRoutesSuite extends munit.FunSuite:
-  /** What the build packaged under oathdigital/frontend, which the routes
+  /** What the build packaged under distantlands/frontend, which the routes
     * serve as is. */
   private def packagedBytes(name: String): Array[Byte] =
     val stream = getClass.getClassLoader
-      .getResourceAsStream(s"oathdigital/frontend/$name")
+      .getResourceAsStream(s"distantlands/frontend/$name")
     try stream.readAllBytes()
     finally stream.close()
 

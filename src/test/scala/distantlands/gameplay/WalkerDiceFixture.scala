@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.WalkerDice
-import oathdigital.model._
+import distantlands.gameplay.walker.WalkerDice
+import distantlands.model._
 
 /** Dice for the walks that roll by themselves. A tree with an automatic
   * `Roll` asks its dice source mid-command, so a test that drives such a

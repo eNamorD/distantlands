@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** "Take favor from any one favor bank", for Vow of Obedience's REST, Book
   * Binders and Spirit Snare. The player chooses among the banks that hold

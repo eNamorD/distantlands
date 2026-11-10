@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.InPlayCardResources
-import oathdigital.gameplay.powers.SecretBurns
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.InPlayCardResources
+import distantlands.gameplay.powers.SecretBurns
+import distantlands.model._
 
 object AncientBindingCard extends Denizen(DenizenId("23"), "Ancient Binding", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.ancient-binding"),

@@ -1,13 +1,13 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
   PowerUseRestriction}
-import oathdigital.gameplay.powers.action.RovingTerrorCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.action.RovingTerrorCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** The power-use filter's consent rules (catalog batch 8, slice 10): a
   * remembered grant lifts a refusal, and a refused option is askable only

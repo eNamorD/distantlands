@@ -1,10 +1,10 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.operations._
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 class SupplyAdjustSuite extends munit.FunSuite:
   private val ready = ReadyGames.of(game)

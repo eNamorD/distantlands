@@ -1,4 +1,4 @@
-package oathdigital.application
+package distantlands.application
 
 enum TrustedGameStoreFailure { case DuplicateGame, CodeCollision, InvalidInput, StorageFailure }
 

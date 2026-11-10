@@ -1,6 +1,6 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The start checks procedures share. */
 object ProcedureStart:

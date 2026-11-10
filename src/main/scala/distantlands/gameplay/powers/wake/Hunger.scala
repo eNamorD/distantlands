@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.{EffectiveSuit, NoteSupport}
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object HungerCard extends Denizen(DenizenId("216"), "Hunger", Suit.Beast) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.hunger"),

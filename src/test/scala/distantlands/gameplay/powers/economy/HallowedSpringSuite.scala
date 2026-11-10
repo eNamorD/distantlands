@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
   Table}
-import oathdigital.testkit.Table.p1
+import distantlands.testkit.Table.p1
 
 /** Hallowed Spring (catalog batch 9, slice 5): a Trade for secrets at its
   * site places both favor on the card instead of burning one. */

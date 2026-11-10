@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.model._
 
 object ScryerCard extends Denizen(DenizenId("19"), "Scryer", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.scryer"),

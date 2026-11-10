@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+import distantlands.catalog.{Denizen, ExecutableCatalog, ModifierMark,
   PrintedPower, SiteOnly}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier, SiteRoom}
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{PowerAnswers, SelectedModifier, SiteRoom}
+import distantlands.model._
 
 object MovingMarketCard extends Denizen(DenizenId("241"), "Moving Market", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.moving-market"),

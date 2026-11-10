@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
-import oathdigital.testkit.ActPowerHarness.usableIds
-import oathdigital.testkit.Outcomes.ready
-import oathdigital.testkit.Table.{p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Refusals, Table}
+import distantlands.testkit.ActPowerHarness.usableIds
+import distantlands.testkit.Outcomes.ready
+import distantlands.testkit.Table.{p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 class WhistleSuite extends munit.FunSuite:
   import PowerFixture._

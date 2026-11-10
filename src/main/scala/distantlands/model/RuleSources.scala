@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** Stable identity for a runtime rule source. PowerUseRef remains the narrower,
   * wire-compatible identity for use-limited powers.

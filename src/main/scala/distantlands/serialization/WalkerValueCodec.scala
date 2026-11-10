@@ -1,6 +1,6 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Wire spellings for the values a recorded operation is made of -- pieces,
   * locations, positions, costs, gives, dice kinds, die faces, orientations

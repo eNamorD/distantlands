@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Bandit Standard: a free attacker's plan from a faceup relic, for one attack
   * die per bandit warband in the region of the attacker's pawn, never against

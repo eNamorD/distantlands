@@ -1,11 +1,11 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.testkit.PowerStubs.TransformStub
-import oathdigital.gameplay.walker.WalkerSimulation.{PreviewOutcome,
+import distantlands.testkit.PowerStubs.TransformStub
+import distantlands.gameplay.walker.WalkerSimulation.{PreviewOutcome,
   PreviewedOption}
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.p1
 
 class WalkerPreviewSuite extends munit.FunSuite:
   private val cheap = DecisionOptionRef.Button("cheap")

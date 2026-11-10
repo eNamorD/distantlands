@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, PledgeToDiscordCard}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.{EffectiveSuit, PledgeToDiscordCard}
+import distantlands.model._
 
 object GreatCrusadeCard extends Denizen(DenizenId("164"), "Great Crusade", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.great-crusade"),

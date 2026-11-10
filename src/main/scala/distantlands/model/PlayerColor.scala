@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** The closed set of colours a player can be. The server, the wire and the
   * frontend all read this one list, so a new colour is one edit here and the

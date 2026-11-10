@@ -1,7 +1,7 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** TTS Chronicle numbers for catalog ids (harsch1/oath-nf-tts-scripts
   * chronicle-codec.js at f6051bb0). Deck cards are their printed number,

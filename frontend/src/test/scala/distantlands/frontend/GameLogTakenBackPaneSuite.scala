@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.projection.{LogEntry, LogKind, LogSection,
+import distantlands.protocol.projection.{LogEntry, LogKind, LogSection,
   LogSpan, LogTakenBack}
 
 /** Taken-back moves in the log (undo design, "Game Log"): each contiguous

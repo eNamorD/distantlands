@@ -1,7 +1,7 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent}
+import distantlands.protocol.{DecisionAnswerWire, GameIntent}
 
 /** The Inspect decision's panel: the cards in order, faces and backs, and
   * the one Done button. Runs under jsdom. */

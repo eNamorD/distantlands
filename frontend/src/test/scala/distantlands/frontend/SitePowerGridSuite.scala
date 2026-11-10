@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.all
-import oathdigital.frontend.TestSites.quietSite
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => Intent}
+import distantlands.frontend.Dom.all
+import distantlands.frontend.TestSites.quietSite
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent}
 import org.scalajs.dom
 
 /** A site power's label opens the power, and its ruler's preferences grid

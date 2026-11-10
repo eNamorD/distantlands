@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.{ActPowerHarness, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.{ActPowerHarness, Look}
 
 /** Keep: a defender who rules Keep's site and loses a Raid gives up only
   * what was targeted, and their pawn goes to Keep's site. */

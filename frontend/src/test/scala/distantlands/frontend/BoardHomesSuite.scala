@@ -1,8 +1,8 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.TestBoards.*
-import oathdigital.frontend.TestSites.*
-import oathdigital.model.PlayerColor
+import distantlands.frontend.TestBoards.*
+import distantlands.frontend.TestSites.*
+import distantlands.model.PlayerColor
 
 /** Whether an option has a place on the table the projection draws, which
   * decides between the board and the Action panel.

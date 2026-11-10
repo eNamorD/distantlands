@@ -1,4 +1,4 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
 class LimitedResourceSuite extends munit.FunSuite:
   test("clamp takes the full requested amount when available"):

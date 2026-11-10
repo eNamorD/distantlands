@@ -1,8 +1,8 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
-import oathdigital.gameplay.walker.LogNoted
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.gameplay.walker.LogNoted
+import distantlands.testkit.Unwrap.accepted
 
 /** Power notes on the wire: every argument kind and source round trips, and a
   * note with a bad source, unit or amount is refused. */

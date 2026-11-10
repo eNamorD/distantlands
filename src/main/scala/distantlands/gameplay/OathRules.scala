@@ -1,19 +1,19 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.engine.EventEvolution
-import oathdigital.gameplay.aid.PlanAidEvolution
-import oathdigital.gameplay.consent.ConsentEvolution
-import oathdigital.gameplay.phases.rest.RoundEndRandomPort
-import oathdigital.model._
-import oathdigital.gameplay.powerresolver.{PhasePowers}
-import oathdigital.gameplay.walker.{ActionBoundaryRan, FollowUpSkipped,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.engine.EventEvolution
+import distantlands.gameplay.aid.PlanAidEvolution
+import distantlands.gameplay.consent.ConsentEvolution
+import distantlands.gameplay.phases.rest.RoundEndRandomPort
+import distantlands.model._
+import distantlands.gameplay.powerresolver.{PhasePowers}
+import distantlands.gameplay.walker.{ActionBoundaryRan, FollowUpSkipped,
   LogNoted, ProcedureDequeued, ProcedureWalker, WalkerCompleted, WalkerDice,
   WalkerParked, WalkerPowers, WalkerProcedureRegistry, WalkerStepRecorded}
-import oathdigital.gameplay._
-import oathdigital.model.OathEvent._
-import oathdigital.model.OathState._
-import oathdigital.model.OathViolation._
+import distantlands.gameplay._
+import distantlands.model.OathEvent._
+import distantlands.model.OathState._
+import distantlands.model.OathViolation._
 
 /** Deterministic aggregate boundary for setup and gameplay routing.
   *
@@ -87,7 +87,7 @@ final class OathRules(protected val catalog: ExecutableCatalog,
       case GameStarted(chronicle, orders) =>
         state match
           case NoGame =>
-            oathdigital.gameplay.setup.GameStartRules
+            distantlands.gameplay.setup.GameStartRules
               .evolve(catalog, chronicle, orders).map(Ready.apply)
           case _ => Left(GameAlreadyExists)
 
@@ -117,8 +117,8 @@ object OathRules:
     Operation]
 
   /** Production tree source: every registered procedure declares its own
-    * tree via [[oathdigital.gameplay.walker.WalkerProcedureRegistry]] (Task
-    * 8) -- this is no longer an exhaustive match on [[oathdigital.model.ActionRef]], so an
+    * tree via [[distantlands.gameplay.walker.WalkerProcedureRegistry]] (Task
+    * 8) -- this is no longer an exhaustive match on [[distantlands.model.ActionRef]], so an
     * unregistered procedure rejects with a typed `Left` instead of a
     * `MatchError`.
     */

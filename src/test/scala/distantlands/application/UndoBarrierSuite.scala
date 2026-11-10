@@ -1,12 +1,12 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.walker.{DeltaPayload, RollPayload,
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** Which closed command batches undo never takes back (undo design,
   * "Barriers"). Each case is one batch of one event. */

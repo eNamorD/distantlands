@@ -1,4 +1,4 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
 /** The TTS string layer against the test strings of chronicle-codec.js at
   * f6051bb0, made by the Lua exporter in TTS. */

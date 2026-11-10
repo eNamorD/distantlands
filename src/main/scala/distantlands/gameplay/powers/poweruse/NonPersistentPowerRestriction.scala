@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{BanditCrownRule, SiteRulers}
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{BanditCrownRule, SiteRulers}
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerUse, PowerUseRefusal, PowerUseRestriction, Waiver}
-import oathdigital.gameplay.powers.action.GiantPythonCard
-import oathdigital.gameplay.powers.travel.ForbiddenForestCard
-import oathdigital.model._
+import distantlands.gameplay.powers.action.GiantPythonCard
+import distantlands.gameplay.powers.travel.ForbiddenForestCard
+import distantlands.model._
 
 /** A persistent rule that guards some cards against non-persistent powers
   * and placements (catalog batch 10, slice 1): Giant Python's "Other cards

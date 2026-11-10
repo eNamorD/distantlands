@@ -1,10 +1,10 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
-import oathdigital.testkit.RecordedOps
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
+import distantlands.testkit.RecordedOps
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
 
 /** `EndWalk` finishes the walk where it is reached: nothing after it runs,
   * in its own children or in any enclosing node. */

@@ -1,6 +1,6 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.testkit.Table
+import distantlands.testkit.Table
 
 /** A small hand-built game with plain ids and no catalog, for the model and
   * operation suites that build states no Table step reaches.

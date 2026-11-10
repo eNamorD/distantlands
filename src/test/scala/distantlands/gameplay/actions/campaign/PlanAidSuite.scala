@@ -1,10 +1,10 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.gameplay.powers.banner.YewStaffCard
-import oathdigital.gameplay.powers.campaign.ShieldWallCard
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.banner.YewStaffCard
+import distantlands.gameplay.powers.campaign.ShieldWallCard
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What Imperial Tactics lends a plan's user (Empire phase design,
   * "1b-ii"). The quiet table seats p1, p2 and p3; with p2 the Chancellor

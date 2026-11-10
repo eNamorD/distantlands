@@ -1,4 +1,4 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
 import java.nio.file.{Files, Path, Paths}
 import GoldenScripts.named

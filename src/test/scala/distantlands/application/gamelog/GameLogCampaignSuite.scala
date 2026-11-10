@@ -1,7 +1,7 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
-import oathdigital.testkit.Table.{p2, p3}
+import distantlands.model._
+import distantlands.testkit.Table.{p2, p3}
 import CampaignLogScripts.{banditPlanApplied, defenderChoseAPlan,
   raidUnderOutriders}
 import LogScripts._

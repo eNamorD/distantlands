@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OperationRewrite, PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object HallowedSpringCard extends Edifice(EdificeId("E26"), Suit.Beast):
   object intact extends EdificeFace("Hallowed Spring") with Locked:

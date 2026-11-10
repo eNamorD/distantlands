@@ -1,6 +1,6 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model.SecretSide
+import distantlands.model.SecretSide
 
 /** Wire spellings for the side of a secret move (catalog batch 8, slice 5),
   * split out of `WalkerOperationCodec` to keep it under the 800-line bound.

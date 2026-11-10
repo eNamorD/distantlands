@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The Campaign battle plans the first batch's engine ported, registered
   * together: the title's defense, Outriders, Brass Army and Watchdog. All are

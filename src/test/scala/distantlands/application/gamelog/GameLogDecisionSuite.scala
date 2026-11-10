@@ -1,4 +1,4 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
 import LogScripts._
 

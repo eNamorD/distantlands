@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 /** A typed payment, which [[PayCost]] settles: `favor`/`secret` are
   * placed at a destination card, `favorBurnt`/`secretBurnt` leave play to

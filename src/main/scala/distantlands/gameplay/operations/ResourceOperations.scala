@@ -1,7 +1,7 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.KinshipRule
-import oathdigital.model._
+import distantlands.gameplay.KinshipRule
+import distantlands.model._
 
 /** Favor, secrets and warbands: counted moves, secret flips, and the
   * resource descriptions a discard carries. The mutation debits every source

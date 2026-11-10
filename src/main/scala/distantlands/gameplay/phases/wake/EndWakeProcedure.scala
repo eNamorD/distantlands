@@ -1,7 +1,7 @@
-package oathdigital.gameplay.phases.wake
+package distantlands.gameplay.phases.wake
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** Declared End Wake procedure tree for the walker (batch 1, Task 7).
   *
@@ -18,7 +18,7 @@ import oathdigital.model._
   * to stay a phase transition and it has: what changed is that it is no
   * longer a second hand-written `handle`/`evolve` pair beside the walker's.
   *
-  * **What follows Wake is stated here, once.** [[oathdigital.model.EnterPhase]] takes any
+  * **What follows Wake is stated here, once.** [[distantlands.model.EnterPhase]] takes any
   * phase and the walker asks nothing about phases, so the turn's order lives
   * in the procedure that performs the change. The Wake menu offers End Wake
   * only in Wake (walker-driven game loop design, ruling 9), so a second End

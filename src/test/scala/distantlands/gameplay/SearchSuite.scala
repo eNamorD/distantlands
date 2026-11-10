@@ -1,13 +1,13 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.{SearchRules, VisionRules}
-import oathdigital.gameplay.powers.action.{FaeMerchantCard, ScryerCard,
+import distantlands.gameplay.actions.{SearchRules, VisionRules}
+import distantlands.gameplay.powers.action.{FaeMerchantCard, ScryerCard,
   SecondChanceCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.model._
+import distantlands.testkit.Table
 
 class SearchSuite extends munit.FunSuite:
 

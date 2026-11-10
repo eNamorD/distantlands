@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.{PlayerFacts, RelicDraws}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.{PlayerFacts, RelicDraws}
+import distantlands.model._
 
 object FaeMerchantCard extends Denizen(DenizenId("180"), "Fae Merchant", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.fae-merchant"),

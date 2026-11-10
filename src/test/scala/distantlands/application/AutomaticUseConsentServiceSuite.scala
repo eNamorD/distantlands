@@ -1,14 +1,14 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.PowerUseStep
-import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
-import oathdigital.gameplay.powers.travel.{TravelFixture, Tyrant, TyrantCard}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
-import oathdigital.testkit.Commands
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.PowerUseStep
+import distantlands.gameplay.powers.poweruse.{CityWall, CityWallCard}
+import distantlands.gameplay.powers.travel.{TravelFixture, Tyrant, TyrantCard}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Commands
 
 /** City Wall's ruler decides whether an enemy's Tyrant works, through the
   * service (automatic power consent design, user story and rulings 2, 5

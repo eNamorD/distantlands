@@ -1,13 +1,13 @@
-package oathdigital.server
+package distantlands.server
 
 import scala.concurrent.Future
 
 import akka.http.scaladsl.model.HttpRequest
 
-import oathdigital.application._
-import oathdigital.model.PlayerId
-import oathdigital.protocol.ActorlessCommandRequest
-import oathdigital.protocol.projection.{GameProjection, LogPage}
+import distantlands.application._
+import distantlands.model.PlayerId
+import distantlands.protocol.ActorlessCommandRequest
+import distantlands.protocol.projection.{GameProjection, LogPage}
 
 /** Who a request is, for one game: the seat it holds, or a view with no
   * seat. A transport resolves it before any service call. */

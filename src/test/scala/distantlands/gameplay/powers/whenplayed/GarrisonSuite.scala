@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.PowerFixture.warbandBank
-import oathdigital.gameplay.WalkerRecordedOpsReducer
-import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.rejected
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.PowerFixture.warbandBank
+import distantlands.gameplay.WalkerRecordedOpsReducer
+import distantlands.gameplay.powers.economy.VowOfWanderingCard
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.rejected
 
 class GarrisonSuite extends munit.FunSuite with WalkerRecordedOpsReducer:
   private val vow = VowOfWanderingCard.id

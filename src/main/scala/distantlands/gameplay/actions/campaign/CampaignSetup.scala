@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** Decision ids and pool keys of the Campaign procedure. */
 object CampaignIds:

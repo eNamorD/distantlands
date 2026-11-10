@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.ChronicleSummary
+import distantlands.protocol.ChronicleSummary
 import scala.scalajs.js
 
 /** How the Chronicle pages word a Chronicle's summary. */

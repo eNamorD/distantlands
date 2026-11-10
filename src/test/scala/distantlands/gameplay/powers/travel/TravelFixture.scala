@@ -1,19 +1,19 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.{OathRules, TravelPlay}
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite, SaltFlatsSite,
+import distantlands.gameplay.{OathRules, TravelPlay}
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.{BuriedGiantSite, DunesSite, SaltFlatsSite,
   ShroudedWoodsSite}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{PowerFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}
-import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ParkedNode, Refusals, Table}
-import oathdigital.testkit.PowerRules
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{PowerFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{WalkerPowers, WalkerSimulation}
+import distantlands.gameplay.walker.WalkerSimulation.PreviewedOption
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ParkedNode, Refusals, Table}
+import distantlands.testkit.PowerRules
+import distantlands.testkit.Unwrap.accepted
 
 /** A Travel board for the modifiers and rules of Travel: the map of
   * `TravelProcedureSuite`, with named sites and the active player at the

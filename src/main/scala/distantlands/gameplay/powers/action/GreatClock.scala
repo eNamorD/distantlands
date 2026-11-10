@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.setup.{GreatClockCard, RoundMarker}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.setup.{GreatClockCard, RoundMarker}
+import distantlands.model._
 
 /** Great Clock (E12, intact), ACTION: advance the round marker once, if
   * possible. "Do not roll the round die. This cannot end the game."

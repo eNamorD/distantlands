@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.DispossessedDraws
-import oathdigital.gameplay.powers.setup.GreatSpireCard
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.DispossessedDraws
+import distantlands.gameplay.powers.setup.GreatSpireCard
+import distantlands.model._
 
 /** Great Spire (E11, intact), ACTION: place 1 secret on this card, add 3
   * random cards from the Dispossessed to this region's discard pile, then

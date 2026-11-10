@@ -1,14 +1,14 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
+import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
   DesolateShoreSite, DunesSite, FairIsleSite, NarrowPassSite, RockyCoastSite}
-import oathdigital.gameplay.powerresolver._
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.travel.TravelSitePowers
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table, TestCards}
-import oathdigital.testkit.Unwrap.present
+import distantlands.gameplay.powerresolver._
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.travel.TravelSitePowers
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
+import distantlands.testkit.{Look, Table, TestCards}
+import distantlands.testkit.Unwrap.present
 
 /** Travel terrain rules are proved against contribution collection, before
   * Travel owns a walker tree. Every cost node has R25's real shape: a

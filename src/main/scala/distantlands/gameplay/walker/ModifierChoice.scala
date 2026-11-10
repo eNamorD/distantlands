@@ -1,10 +1,10 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.{PowerAccess, SpendableFavor}
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{AsksOnSelection, ContributingPower,
+import distantlands.gameplay.{PowerAccess, SpendableFavor}
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{AsksOnSelection, ContributingPower,
   ModifierHost, ModifierPicks, OfferReason, OnEdificeFace, PowerCtx}
-import oathdigital.model._
+import distantlands.model._
 
 /** One pass of an action's modifier decision (modifier walker design): the
   * walk's first decision, a `Repeat` of these passes that ends on "Start".

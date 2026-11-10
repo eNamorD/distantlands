@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.server.Directives._
@@ -21,7 +21,7 @@ object ProductionFrontendRoutes:
 
   val gamePage: Route =
     respondWithHeader(IndexCacheControl):
-      getFromResource("oathdigital/frontend/index.html")
+      getFromResource("distantlands/frontend/index.html")
 
   val route: Route =
     pathEndOrSingleSlash {
@@ -35,10 +35,10 @@ object ProductionFrontendRoutes:
       pathPrefix("assets"):
         respondWithHeader(AssetCacheControl):
           path("main.js") {
-            getFromResource("oathdigital/frontend/main.js")
+            getFromResource("distantlands/frontend/main.js")
           } ~
             path("styles.css") {
-              getFromResource("oathdigital/frontend/styles.css")
+              getFromResource("distantlands/frontend/styles.css")
             } ~
             path("fonts" / Atkinson):
-              getFromResource(s"oathdigital/frontend/fonts/$Atkinson")
+              getFromResource(s"distantlands/frontend/fonts/$Atkinson")

@@ -1,15 +1,15 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.catalog.Locked
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.catalog.Locked
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** The World task (CR p. 38). p1 is the Chancellor; p2 holds the World. */
 class WorldTaskSuite extends munit.FunSuite:

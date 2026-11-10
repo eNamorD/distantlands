@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, OathkeeperGoalChoice}
-import oathdigital.gameplay.powers.action.WolvesCard
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, OathkeeperGoalChoice}
+import distantlands.gameplay.powers.action.WolvesCard
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** True Oath: with three other Beast cards ruled, its player may change the
   * Oathkeeper goal. */

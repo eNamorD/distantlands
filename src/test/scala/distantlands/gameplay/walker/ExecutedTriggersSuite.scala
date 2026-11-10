@@ -1,13 +1,13 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{Contribution, ExecutedBatch,
+import distantlands.gameplay.powerresolver.{Contribution, ExecutedBatch,
   ExecutedTrigger}
-import oathdigital.testkit.RecordedOps
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.Outcomes.{finished, parked, recorded}
-import oathdigital.testkit.ProcedureWalkerFixture._
-import oathdigital.testkit.WalkerStubs.continueOption
+import distantlands.testkit.RecordedOps
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.Outcomes.{finished, parked, recorded}
+import distantlands.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.WalkerStubs.continueOption
 
 class ExecutedTriggersSuite extends munit.FunSuite:
   /** Whether `executed` moves the fixture actor's pawn. */

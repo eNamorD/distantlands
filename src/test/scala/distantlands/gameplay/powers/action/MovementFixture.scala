@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.cards.{DeepWoodsSite, GoldenValleySite}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.cards.{DeepWoodsSite, GoldenValleySite}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
 
 /** Staging and driving shared by the Whistle, Brass Horse and Magic Carpet
   * suites, on the quiet table: the actor p1 at Ancient City, p2 at Broken

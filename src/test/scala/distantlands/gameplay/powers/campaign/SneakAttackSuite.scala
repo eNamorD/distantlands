@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.{FollowUpPlay, OathRules}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.FollowUpOffer
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.DistributeAnswer
-import oathdigital.testkit.{ActPowerHarness, Look, ParkedNode}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.{FollowUpPlay, OathRules}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.FollowUpOffer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.DistributeAnswer
+import distantlands.testkit.{ActPowerHarness, Look, ParkedNode}
+import distantlands.testkit.Unwrap.accepted
 
 /** Sneak Attack (card 98): after another player's Campaign, its holder may
   * campaign against that player for no Supply, off turn, before the

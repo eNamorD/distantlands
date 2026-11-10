@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import java.net.{DatagramSocket, Inet4Address, InetAddress, NetworkInterface}
 

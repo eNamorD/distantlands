@@ -1,11 +1,11 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, RollPayload,
+import distantlands.gameplay.walker.{ProcedureWalker, RollPayload,
   WalkerOutcome, WalkerStepRecorded}
-import oathdigital.testkit.RecordedOps
-import oathdigital.model._
-import oathdigital.testkit.Outcomes.{parked, recorded}
-import oathdigital.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.RecordedOps
+import distantlands.model._
+import distantlands.testkit.Outcomes.{parked, recorded}
+import distantlands.testkit.ProcedureWalkerFixture._
 
 /** ProcedureWalker's Roll nodes: a Roll parks, and `roll()` takes the faces,
   * counts from state and walks on.

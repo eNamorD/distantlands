@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.{NoteSupport, SiteRulers}
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.{NoteSupport, SiteRulers}
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object ImperialSealCard extends Relic(RelicId("R26"), "Imperial Seal", value = 35, defense = 2):
   val power = PrintedPower(PowerId("relic.imperial-seal"),

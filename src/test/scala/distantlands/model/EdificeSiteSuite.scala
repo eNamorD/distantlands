@@ -1,8 +1,8 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.setup.GreatMarketCard
-import oathdigital.testkit.Table
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.setup.GreatMarketCard
+import distantlands.testkit.Table
 
 class EdificeSiteSuite extends munit.FunSuite:
   private val edifice = GreatMarketCard.id

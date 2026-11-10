@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 /** Bandit Crown (R11): "You may use cards at sites ruled by bandits as if
   * you ruled them."

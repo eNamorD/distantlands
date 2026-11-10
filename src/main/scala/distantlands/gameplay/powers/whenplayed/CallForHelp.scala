@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   Locked, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 object CallForHelpCard extends Denizen(DenizenId("246"), "Call for Help", Suit.Nomad) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.call-for-help"),

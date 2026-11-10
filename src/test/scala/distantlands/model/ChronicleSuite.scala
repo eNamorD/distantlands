@@ -1,6 +1,6 @@
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
+import distantlands.gameplay.setup.FirstGameSetupFixture.chronicle
 
 /** A Chronicle's name (Chronicle browsing design, "Model"). */
 class ChronicleSuite extends munit.FunSuite:

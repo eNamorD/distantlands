@@ -1,17 +1,17 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.{CardPlayRules, RuleNotes}
-import oathdigital.gameplay.cards.DeepWoodsSite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.AncientBindingCard
-import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, RainBootsCard,
+import distantlands.gameplay.actions.{CardPlayRules, RuleNotes}
+import distantlands.gameplay.cards.DeepWoodsSite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.AncientBindingCard
+import distantlands.gameplay.powers.campaign.{BattleHonorsCard, RainBootsCard,
   WrestlersCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.as
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.as
 
 /** The Homeland rule's line (power log lines design, "Game rules"): a play to
   * the Homeland of the card's suit may replace a card there, and the Homeland

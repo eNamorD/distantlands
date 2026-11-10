@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.SacredGroundCard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.SacredGroundCard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** Sacred Ground (E08's intact face), a persistent rule: "Players cannot play
   * Visions, except the Conspiracy, faceup unless their pawn is at this site."

@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.model._
 
 object DarkEnforcerCard extends Denizen(DenizenId("227"), "Dark Enforcer", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.dark-enforcer"),

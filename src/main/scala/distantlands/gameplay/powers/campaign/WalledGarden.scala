@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.model._
 
 object WalledGardenCard extends Denizen(DenizenId("195"), "Walled Garden", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.walled-garden"),

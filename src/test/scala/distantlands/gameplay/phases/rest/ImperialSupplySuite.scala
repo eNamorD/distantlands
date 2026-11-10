@@ -1,7 +1,7 @@
-package oathdigital.gameplay.phases.rest
+package distantlands.gameplay.phases.rest
 
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class ImperialSupplySuite extends munit.FunSuite:
   /** p1 is the Chancellor and p2 a Citizen. */

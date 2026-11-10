@@ -1,21 +1,21 @@
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.OperationRestrictions
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.action.{EldersCard, PiedPiperCard,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.action.{EldersCard, PiedPiperCard,
   WaysideInnCard, WolvesCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.rest.SilverTongueCard
-import oathdigital.gameplay.powers.whenplayed.{ASmallFavorCard,
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.rest.SilverTongueCard
+import distantlands.gameplay.powers.whenplayed.{ASmallFavorCard,
   FaithfulFriendCard, FamilyHeirloomCard}
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Refusals, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 class HornedMaskSuite extends munit.FunSuite:
   import PowerFixture._

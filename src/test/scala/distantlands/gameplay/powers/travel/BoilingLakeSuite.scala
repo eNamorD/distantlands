@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.operations.BoilingLakeCard
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness,
+import distantlands.gameplay.operations.BoilingLakeCard
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 /** Boiling Lake (catalog batch 9, slice 4): a traveller who does not rule
   * the Lake's site kills 2 of their board's warbands on arrival, if able. */

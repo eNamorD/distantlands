@@ -1,16 +1,16 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.model._
-import oathdigital.testkit.Look
-import oathdigital.model.DecisionAnswer._
-import oathdigital.testkit.ActPowerHarness
-import oathdigital.testkit.Unwrap.present
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.powers.economy.VowOfWanderingCard
+import distantlands.model._
+import distantlands.testkit.Look
+import distantlands.model.DecisionAnswer._
+import distantlands.testkit.ActPowerHarness
+import distantlands.testkit.Unwrap.present
+import distantlands.testkit.Outcomes.assertWireRoundTrips
 
 /** Warning Signals: a defender rearranges their warbands over their board and
   * the sites they rule, before their force is scored, and the card is discarded

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.travel.TentsCard
-import oathdigital.model._
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.travel.TentsCard
+import distantlands.model._
+import distantlands.testkit.Table.p1
 
 /** The modifier decision's vocabulary: its id per window, its Start answer,
   * and the picks read back out of the answers (modifier walker design,

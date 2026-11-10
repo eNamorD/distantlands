@@ -1,15 +1,15 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.FollowUpPlay
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.FollowUpPlay
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.economy.KnightsErrantCard
-import oathdigital.gameplay.walker.{FollowUpOffer, FollowUpSkipped}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.Commands
+import distantlands.gameplay.powers.economy.KnightsErrantCard
+import distantlands.gameplay.walker.{FollowUpOffer, FollowUpSkipped}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Commands
 
 /** The follow-up offer is a parked walker decision, so the service holds
   * every other command until its player answers (walker-driven game loop

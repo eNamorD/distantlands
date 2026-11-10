@@ -1,24 +1,24 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.ForgeRules
-import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.action.MessengerCard
-import oathdigital.gameplay.powers.campaign.{MartialCultureCard, WrestlersCard}
-import oathdigital.gameplay.powers.travel.TentsCard
-import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ChoicePayload, DecisionQueries,
+import distantlands.gameplay.actions.ForgeRules
+import distantlands.gameplay.actions.forge.ForgeProcedure
+import distantlands.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite}
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.action.MessengerCard
+import distantlands.gameplay.powers.campaign.{MartialCultureCard, WrestlersCard}
+import distantlands.gameplay.powers.travel.TentsCard
+import distantlands.gameplay.powers.whenplayed.BanditChiefCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ChoicePayload, DecisionQueries,
   LogNoted, ProcedureWalker, WalkerOutcome, WalkerPowers,
   WalkerStepPayload, WalkerStepRecorded}
-import oathdigital.model.DecisionAnswer.PartitionAnswer
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{EmptyWindowModifier, Look, Outcomes, RecordedOps,
+import distantlands.model.DecisionAnswer.PartitionAnswer
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{EmptyWindowModifier, Look, Outcomes, RecordedOps,
   Table, TestCards}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, as, present}
 
 /** The declared Forge tree, walked with `ProcedureWalker.advance`/`resolve`.
   *

@@ -1,10 +1,10 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Outcomes, RoundEndChoices, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Outcomes, RoundEndChoices, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Stable Regime with a Successor taking the win (CR p. 19; Empire phase
   * design, "Slice 2"), played through the service. */

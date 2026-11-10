@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
 
 object RustingRayCard extends Denizen(DenizenId("57"), "Rusting Ray", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.rusting-ray"),

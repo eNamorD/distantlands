@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.PrintedPower
-import oathdigital.gameplay.actions.campaign.{CampaignPlanApplication,
+import distantlands.catalog.PrintedPower
+import distantlands.gameplay.actions.campaign.{CampaignPlanApplication,
   CampaignPlans, CampaignSetup, PlanAid}
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 /** A persistent rule of a faceup adviser that adds a cost to every battle plan
   * its holder's enemy chooses (Gleaming Armor, Insect Swarm).

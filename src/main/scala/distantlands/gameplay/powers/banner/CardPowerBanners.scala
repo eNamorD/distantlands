@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** The banners as a card power sees them for the player using it (catalog
   * batch 8, slice 9). Only card powers read it. Challenge, scoring, the

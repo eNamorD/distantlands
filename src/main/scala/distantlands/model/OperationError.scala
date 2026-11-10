@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 sealed trait OperationError extends Product with Serializable:
   def code: String

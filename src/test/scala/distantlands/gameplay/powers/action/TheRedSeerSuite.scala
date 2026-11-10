@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, OathkeeperGoalChoice,
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, OathkeeperGoalChoice,
   PhasePowerCatalog}
-import oathdigital.gameplay.powers.banner.YewStaffCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, ParkedNode, PhasePowerHarness,
+import distantlands.gameplay.powers.banner.YewStaffCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, ParkedNode, PhasePowerHarness,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** The Red Seer: with the Darkest Secret, change the Oathkeeper goal to
   * anything but Devotion. */

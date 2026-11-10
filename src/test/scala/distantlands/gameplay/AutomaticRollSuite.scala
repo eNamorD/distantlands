@@ -1,11 +1,11 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, RollPayload, WalkerDice,
+import distantlands.gameplay.walker.{ProcedureWalker, RollPayload, WalkerDice,
   WalkerOutcome, WalkerPowers, WalkerSimulation, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.Outcomes.{finished, ready as readyOf}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
+import distantlands.testkit.Outcomes.{finished, ready as readyOf}
+import distantlands.testkit.Unwrap.accepted
 
 /** Automatic rolls: a `Roll` that takes its faces from the walker's dice
   * source and keeps walking, and the rules around it.

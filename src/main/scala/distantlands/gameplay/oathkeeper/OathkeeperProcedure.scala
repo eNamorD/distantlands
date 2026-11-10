@@ -1,9 +1,9 @@
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
 /** Declared tree for every Oathkeeper title change (triggered, started by the
   * action boundary).

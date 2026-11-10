@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.CampaignFixture.{RaidBoard, on, raidBoard}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.setup.{HallOfDebateCard, TomeGuardiansCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Journal, Outcomes}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.CampaignFixture.{RaidBoard, on, raidBoard}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.setup.{HallOfDebateCard, TomeGuardiansCard}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Journal, Outcomes}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Hall of Debate and Tome Guardians (catalog batch 9, slice 2): a Raid by
   * an enemy of the intact face's ruler may not target the banner that

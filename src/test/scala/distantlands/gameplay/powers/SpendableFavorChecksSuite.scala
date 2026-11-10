@@ -1,15 +1,15 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.VowOfKinshipCard
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.challenge.PlaceBannerResourceProcedure
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powers.economy.{VowOfPoverty, VowOfPovertyCard}
-import oathdigital.gameplay.powers.travel.TollRoads
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.VowOfKinshipCard
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.challenge.PlaceBannerResourceProcedure
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powers.economy.{VowOfPoverty, VowOfPovertyCard}
+import distantlands.gameplay.powers.travel.TollRoads
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** The checks of a spend read a Vow of Kinship holder's Nomad bank with
   * their board (catalog batch 11, rulings 9 and 26); Vow of Poverty's

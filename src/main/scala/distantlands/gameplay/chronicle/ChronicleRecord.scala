@@ -1,8 +1,8 @@
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.setup.ChronicleAccounting
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.setup.ChronicleAccounting
+import distantlands.model._
 
 /** The Chronicle the Chronicle Phase journals (Chronicle steps design,
   * "Exit and extraction"). Roles, era scores, the Oathkeeper goal and

@@ -1,13 +1,13 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.walker.{DeltaPayload, ProcedureWalker,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.walker.{DeltaPayload, ProcedureWalker,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.model.OathState.Ready
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.model.OathState.Ready
 
 /** Replay applies a recorded `PayCost` the way the pipeline ran it: a payer who
   * is not the active player settles at once, so the recorded (requested)

@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The When Played powers of catalog batches 3 and 4, which
   * `WalkerPowerCatalog` wires in. Each names its denizen card, so all are

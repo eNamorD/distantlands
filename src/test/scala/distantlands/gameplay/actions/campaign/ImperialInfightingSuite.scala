@@ -1,16 +1,16 @@
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.gameplay.CampaignFixture
-import oathdigital.gameplay.CampaignFixture.{Board, board, on}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
+import distantlands.gameplay.CampaignFixture
+import distantlands.gameplay.CampaignFixture.{Board, board, on}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers, WalkerProcedureRegistry}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Outcomes.ready
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Outcomes.ready
+import distantlands.testkit.Unwrap.{accepted, as, present}
 
 /** Imperial Infighting (CR p. 35): who defends the Empire's sites, which
   * Imperial player may target them, and Imperial players raiding each

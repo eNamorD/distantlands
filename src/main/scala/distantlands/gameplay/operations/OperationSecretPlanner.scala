@@ -1,7 +1,7 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model.ReadyGame
-import oathdigital.model.{Location, Move, OperationError, Piece, SecretSide}
+import distantlands.model.ReadyGame
+import distantlands.model.{Location, Move, OperationError, Piece, SecretSide}
 
 
 /** Resolves secret orientations for one atomic operation snapshot. */

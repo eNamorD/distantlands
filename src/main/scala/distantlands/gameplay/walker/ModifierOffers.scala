@@ -1,9 +1,9 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.KinshipDraws
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx}
-import oathdigital.model.{OathViolation, PlayerId, PowerResolution,
+import distantlands.gameplay.KinshipDraws
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx}
+import distantlands.model.{OathViolation, PlayerId, PowerResolution,
   ProcedureRef, ReadyGame, Sequence}
 
 /** The modifiers a player may select for a procedure, read from one walker

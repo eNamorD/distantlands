@@ -1,4 +1,4 @@
-package oathdigital.protocol
+package distantlands.protocol
 
 private[protocol] object CommandNestedCodecs:
   import CommandJsonSupport._

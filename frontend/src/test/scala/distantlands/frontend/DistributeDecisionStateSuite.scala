@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** The stepper interaction behind a parked distribution, with no idea what
   * it distributes: slots are opaque ids with bounds, and confirmation is

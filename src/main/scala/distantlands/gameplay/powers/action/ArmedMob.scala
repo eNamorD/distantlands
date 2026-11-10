@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
-import oathdigital.gameplay.actions.{BannerRules, CardPlay}
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.gameplay.powers.banner.CardPowerBanners
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.{EffectiveSuit, NoteSupport}
+import distantlands.gameplay.actions.{BannerRules, CardPlay}
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.gameplay.powers.banner.CardPowerBanners
+import distantlands.model._
 
 object ArmedMobCard extends Denizen(DenizenId("53"), "Armed Mob", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.armed-mob"),

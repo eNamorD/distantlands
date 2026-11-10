@@ -1,4 +1,4 @@
-package oathdigital.model
+package distantlands.model
 
 enum CampaignKind(val key: String):
   case Conquest extends CampaignKind("conquest")
@@ -16,11 +16,11 @@ object CampaignRaidTarget:
       extends CampaignRaidTarget:
     def stableKey: String = s"relic:${playerId.value}:${relicId.value}"
     private[model] def canonicalOrder = 1 -> s"${playerId.value}:${relicId.value}"
-  final case class Banner(playerId: PlayerId, banner: oathdigital.model.Banner)
+  final case class Banner(playerId: PlayerId, banner: distantlands.model.Banner)
       extends CampaignRaidTarget:
     def stableKey: String = s"banner:${playerId.value}:${banner.key}"
     private[model] def canonicalOrder =
-      (2 + oathdigital.model.Banner.all.indexOf(banner)) -> playerId.value
+      (2 + distantlands.model.Banner.all.indexOf(banner)) -> playerId.value
 
   def canonical(targets: Iterable[CampaignRaidTarget]): Vector[CampaignRaidTarget] =
     targets.toVector.sortBy(_.canonicalOrder)

@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
+import distantlands.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
 
 /** An Imperial ally's offer as they build it (Empire phase design, "Offer
   * panel"): keys are `kind:id`, as the prompt and the board spell them. It

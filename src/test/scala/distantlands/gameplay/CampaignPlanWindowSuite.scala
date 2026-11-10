@@ -1,22 +1,22 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds,
   CampaignPlanApplication, CampaignPlanChoice, CampaignProcedure}
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.campaign.{BattlePlan, OutridersCard,
+import distantlands.gameplay.powers.campaign.{BattlePlan, OutridersCard,
   PlanContext, PlanDriver, PlanUse, WatchdogCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, RecordedOps}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.model.DecisionAnswer._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, RecordedOps}
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** The plan window itself, with plans of the suite's own: what a plan may cost,
   * who pays and when, which plans are offered after each pick, and how a plan

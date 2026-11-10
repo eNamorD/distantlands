@@ -1,14 +1,14 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerUse, PowerUseRefusal, PowerUseRestriction, PowerUseStep}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** The walker judges an `AutomaticUse` where the walk reaches it: its
   * effect runs unless a power-use restriction refuses the use in the state

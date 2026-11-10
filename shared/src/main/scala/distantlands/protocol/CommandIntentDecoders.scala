@@ -1,4 +1,4 @@
-package oathdigital.protocol
+package distantlands.protocol
 
 private[protocol] object CommandIntentDecoders:
   import CommandJsonSupport._

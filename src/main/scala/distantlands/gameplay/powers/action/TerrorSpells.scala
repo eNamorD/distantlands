@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.powers.banner.CardPowerBanners
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.powers.banner.CardPowerBanners
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object TerrorSpellsCard extends Denizen(DenizenId("61"), "Terror Spells", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.terror-spells"),

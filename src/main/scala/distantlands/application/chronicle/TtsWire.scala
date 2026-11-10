@@ -1,4 +1,4 @@
-package oathdigital.application.chronicle
+package distantlands.application.chronicle
 
 /** A stored site: its TTS index and up to three TTS item ids. */
 final case class TtsSite(index: Int, items: Vector[Int])

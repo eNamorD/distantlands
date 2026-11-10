@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.dice.RollStep
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.dice.RollStep
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.model._
 
 /** Shattered Portal (E14, ruined), ACTION: with the user's pawn at its site,
   * place 1 secret on it, roll the round die and place the pawn that many

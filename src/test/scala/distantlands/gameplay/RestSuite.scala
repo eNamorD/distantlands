@@ -1,25 +1,25 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.holding.ArbiterCard
-import oathdigital.gameplay.powers.search.CrackedHornCard
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DunesSite, GoldenValleySite}
-import oathdigital.gameplay.phases.{PhaseMenu, RestCleanupPlan}
-import oathdigital.gameplay.powers.action.{DowsingSticksCard, MessengerCard}
-import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, RainBootsCard,
+import distantlands.gameplay.phases.{PhaseMenu, RestCleanupPlan}
+import distantlands.gameplay.powers.action.{DowsingSticksCard, MessengerCard}
+import distantlands.gameplay.powers.campaign.{CodeOfHonorCard, RainBootsCard,
   WrestlersCard}
-import oathdigital.gameplay.powers.rest.NaysayersCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.setup.HallOfDebateCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-import oathdigital.gameplay.walker.WalkerCompleted
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, RoundEndChoices, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation.UnsupportedRestState
-import oathdigital.testkit.Unwrap.{accepted, present, rejected}
+import distantlands.gameplay.powers.rest.NaysayersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.walker.WalkerCompleted
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes, RoundEndChoices, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation.UnsupportedRestState
+import distantlands.testkit.Unwrap.{accepted, present, rejected}
 
 class RestSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)
@@ -256,4 +256,4 @@ class RestSuite extends munit.FunSuite:
     // ends in the same command.
     assertEquals(after.turn.phase, Phase.Act)
     assert(rested.events.contains(
-      oathdigital.gameplay.walker.WalkerCompleted(PhaseTransitionRef.EndWake)))
+      distantlands.gameplay.walker.WalkerCompleted(PhaseTransitionRef.EndWake)))

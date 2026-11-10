@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.CardRule
-import oathdigital.gameplay.operations.SupplyStrip
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.CardRule
+import distantlands.gameplay.operations.SupplyStrip
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   FoldPhase, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogResolution, PowerAnswers, RulerToll}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, PowerAnswers, RulerToll}
+import distantlands.model._
 
 object WayStationCard extends Denizen(DenizenId("169"), "Way Station", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.way-station"),

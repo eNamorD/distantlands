@@ -1,17 +1,17 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{WalkerProcedureRegistry,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.powers.dice.JinxCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{WalkerProcedureRegistry,
   WalkerRollFeedback}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
 
 /** Master at Arms (card 249): a free attacker battle plan. Once chosen,
   * after the attack roll its user may reroll any number of the dice showing

@@ -1,6 +1,6 @@
-package oathdigital.protocol
+package distantlands.protocol
 
-import oathdigital.protocol.projection._
+import distantlands.protocol.projection._
 
 class LogPageCodecSuite extends munit.FunSuite:
   private val page = LogPage("game", 4L, 9L, Vector(

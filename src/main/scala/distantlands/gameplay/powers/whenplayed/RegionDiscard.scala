@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.CardPlay
+import distantlands.model._
 
 /** The region discard of Dazzle, Threatening Roar and Riots (catalog batch
   * 3, refactor P7): every site denizen and ruined edifice of a kept suit at

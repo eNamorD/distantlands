@@ -1,18 +1,18 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.action.AlchemistCard
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.action.AlchemistCard
 import scala.collection.mutable.ArrayBuffer
 
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** `PowerCtx.procedure`: the procedure a window is walked for. */
 class EnclosingProcedureSuite extends munit.FunSuite:

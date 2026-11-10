@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, LongbowsCard,
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.{BattleHonorsCard, LongbowsCard,
   ScoutsCard, WrestlersCard}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, MenuPlay,
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look, MenuPlay,
   Outcomes, PhasePowerHarness, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Master of Disguise (card 78, ruling 8): picked first in a Trade, it asks
   * whose advisers its holder acts with, and for the rest of that Trade
@@ -193,7 +193,7 @@ class MasterOfDisguiseSuite extends munit.FunSuite:
       "it in the Nomad bank"):
     // p1 holds the Vow; disguised as p2, it is lifted for the Trade.
     val lifted = disguiseHolderBesideWrestlers()
-      .adviser(p1, oathdigital.gameplay.VowOfKinshipCard)
+      .adviser(p1, distantlands.gameplay.VowOfKinshipCard)
       .bankFavor(Suit.Nomad, 0).ready
     val liftedDone = answeredWith(disguisedAs(tradeForFavorBegun(lifted),
       p2), TradeProcedure.decisionId, DecisionOptionRef.Denizen(wrestlers))
@@ -201,7 +201,7 @@ class MasterOfDisguiseSuite extends munit.FunSuite:
     assertEquals(Look(liftedDone.state).bankFavor(Suit.Nomad), 0)
     // p2 holds the Vow; disguised as p2, p1 acts with it.
     val lent = disguiseHolderBesideWrestlers()
-      .adviser(p2, oathdigital.gameplay.VowOfKinshipCard)
+      .adviser(p2, distantlands.gameplay.VowOfKinshipCard)
       .bankFavor(Suit.Nomad, 0).ready
     val lentDone = answeredWith(disguisedAs(tradeForFavorBegun(lent), p2),
       TradeProcedure.decisionId, DecisionOptionRef.Denizen(wrestlers))

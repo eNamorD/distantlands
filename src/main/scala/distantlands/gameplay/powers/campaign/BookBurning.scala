@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powers.SecretBurns
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.SecretBurns
+import distantlands.model._
 
 object BookBurningCard extends Denizen(DenizenId("22"), "Book Burning", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.book-burning"),

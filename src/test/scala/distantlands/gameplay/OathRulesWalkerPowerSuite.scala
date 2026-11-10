@@ -1,16 +1,16 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ChoicePayload, ProcedureWalker,
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ChoicePayload, ProcedureWalker,
   WalkerParked, WalkerPowers, WalkerProcedureRegistry,
   WalkerStepRecorded}
-import oathdigital.model.OathState.Ready
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Outcomes, PowerStubs, Table, WalkerStubs}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model.OathState.Ready
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Outcomes, PowerStubs, Table, WalkerStubs}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Wiring at the aggregate boundary: `OathRules` gathers restrictions
   * once per command, at command entry, and rejects the whole command before

@@ -1,9 +1,9 @@
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx,
+import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx,
   Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** The `AutomaticUse` nodes a power's fold appends (catalog batch 8, slice
   * 10, part 2), read straight from its transforms, so a suite can pin which

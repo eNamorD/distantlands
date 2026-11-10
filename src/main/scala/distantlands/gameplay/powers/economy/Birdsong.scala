@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.Contribution
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.Contribution
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object BirdsongCard extends Denizen(DenizenId("176"), "Birdsong", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.birdsong"),

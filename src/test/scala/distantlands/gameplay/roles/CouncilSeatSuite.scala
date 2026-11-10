@@ -1,13 +1,13 @@
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.actions.minor.SelfExile
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.minor.SelfExile
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Council Seat (card 123): "If you're a Citizen, you cannot be exiled,
   * even by yourself." (catalog batch 10, slice 1, ruling 8). Every exile

@@ -1,4 +1,4 @@
-package oathdigital.application
+package distantlands.application
 
 /** The in-memory repository, the fake every service test uses, held to
   * the repository contract. */

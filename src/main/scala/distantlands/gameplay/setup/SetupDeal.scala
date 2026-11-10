@@ -1,6 +1,6 @@
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The deal's arithmetic that the plan factory and game start share. */
 object SetupDeal:

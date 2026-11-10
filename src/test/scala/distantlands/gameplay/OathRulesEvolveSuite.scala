@@ -1,8 +1,8 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.{catalog, freshReady}
-import oathdigital.model.OathState.Ready
-import oathdigital.model.{OathViolation, WalkerEvent}
+import distantlands.gameplay.setup.FirstGameSetupFixture.{catalog, freshReady}
+import distantlands.model.OathState.Ready
+import distantlands.model.{OathViolation, WalkerEvent}
 
 /** `WalkerEvent` is an open family, so `OathRules.evolve` cannot match it
   * exhaustively. A walker event type it does not know must be rejected with

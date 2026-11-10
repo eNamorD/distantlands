@@ -1,9 +1,9 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent => GameCommand}
+import distantlands.model.PlayerColor
+import distantlands.protocol.{DecisionAnswerWire, GameIntent => GameCommand}
 
-import oathdigital.protocol.projection.{LogKind, LogPage, LogSpan,
+import distantlands.protocol.projection.{LogKind, LogPage, LogSpan,
   LogTakenBack}
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue

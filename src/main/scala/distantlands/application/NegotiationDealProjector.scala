@@ -1,7 +1,7 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.protocol.projection._
+import distantlands.model._
+import distantlands.protocol.projection._
 
 /** Projects a [[DecisionQuery.Negotiate]] for one viewer.
   *

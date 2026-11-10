@@ -1,11 +1,11 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
-import oathdigital.gameplay.powers.action.{Palanquin, PalanquinCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powers.action.{Palanquin, PalanquinCard}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2}
 import LogScripts.atTable
 
 /** Journaled Palanquin uses, for the Game Log suites (catalog batch 8,

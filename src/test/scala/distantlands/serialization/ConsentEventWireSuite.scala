@@ -1,9 +1,9 @@
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.TyrantCard
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.powers.travel.TyrantCard
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
 
 /** The consent facts round-trip through the envelope (consent design,

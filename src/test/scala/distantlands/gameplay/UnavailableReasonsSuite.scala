@@ -1,12 +1,12 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.PowerStubs.{ActionForbiddingStub, OptionHidingStub, hideSource, hidNote}
-import oathdigital.testkit.Outcomes.parked
-import oathdigital.testkit.DecisionOptions.button
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.PowerStubs.{ActionForbiddingStub, OptionHidingStub, hideSource, hidNote}
+import distantlands.testkit.Outcomes.parked
+import distantlands.testkit.DecisionOptions.button
 
 /** An option a power hides is still shown, as unavailable, when the power
   * says why (board decisions design, "Unavailable options"): the reason is

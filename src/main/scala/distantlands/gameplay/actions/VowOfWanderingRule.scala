@@ -1,7 +1,7 @@
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 /** Vow of Wandering's ban on placing warbands on sites (card 247). The
   * power that enforces it reads this, and so does Move Warbands, which asks

@@ -1,14 +1,14 @@
-package oathdigital.gameplay.campaign
+package distantlands.gameplay.campaign
 
-import oathdigital.gameplay.CampaignFixture
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignNotes}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.CampaignFixture
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignNotes}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.search.WineOfWelcomeCard
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.search.WineOfWelcomeCard
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** What a Campaign's note builders read from the step they restate, with
   * no formatter in the way (procedures journal their own notes design,

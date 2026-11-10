@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.CardRule
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.CardRule
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 object LeagueTreatyCard extends Denizen(DenizenId("237"), "League Treaty", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.league-treaty"),

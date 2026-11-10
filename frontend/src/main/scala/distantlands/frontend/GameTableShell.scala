@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import ServerUiSupport._
@@ -100,7 +100,7 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   fullLog.onclick = _ => openLog()
   log.header.appendChild(fullLog)
   private var phonePane = "actions"
-  private var logShown = Vector.empty[oathdigital.protocol.projection.LogEntry]
+  private var logShown = Vector.empty[distantlands.protocol.projection.LogEntry]
   private var logSeenThrough = Option.empty[Long]
 
   private def showPhonePane(id: String): Unit =
@@ -235,7 +235,7 @@ private[frontend] final class GameTableShell(mount: dom.Element,
     * is read once per seat, so the pane and the overlay divide at the same
     * entry. */
   def showLog(gameId: String, seatId: String,
-      entries: Vector[oathdigital.protocol.projection.LogEntry],
+      entries: Vector[distantlands.protocol.projection.LogEntry],
       colors: Map[String, String]): Unit =
     val sessionKey = s"$gameId|$seatId"
     if !logSeat.contains(sessionKey) then

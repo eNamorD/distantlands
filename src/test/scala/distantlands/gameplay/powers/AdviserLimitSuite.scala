@@ -1,14 +1,14 @@
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.actions.{AdviserFace, CardPlayRules, VisionRules}
-import oathdigital.gameplay.powers.action.PiedPiperCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.cardplay.{FamilyWagonCard, LostTapestryCard}
-import oathdigital.gameplay.powers.rest.SilverTongueCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.Orientation
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.{AdviserFace, CardPlayRules, VisionRules}
+import distantlands.gameplay.powers.action.PiedPiperCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.cardplay.{FamilyWagonCard, LostTapestryCard}
+import distantlands.gameplay.powers.rest.SilverTongueCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.Orientation
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class AdviserLimitSuite extends munit.FunSuite:
   private val tongue = SilverTongueCard.id

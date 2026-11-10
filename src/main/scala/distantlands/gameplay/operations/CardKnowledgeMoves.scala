@@ -1,6 +1,6 @@
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Knowledge follows the card (Game Log design, "Knowledge follows the
   * card"). A player who knew a card keeps knowing it when it moves, into a

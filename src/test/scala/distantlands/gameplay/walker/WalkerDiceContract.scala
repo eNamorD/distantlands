@@ -1,10 +1,10 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.application.CampaignDicePort
-import oathdigital.gameplay.WalkerDiceFixture
-import oathdigital.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
+import distantlands.application.CampaignDicePort
+import distantlands.gameplay.WalkerDiceFixture
+import distantlands.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
   RoundDieFace}
-import oathdigital.testkit.Unwrap.*
+import distantlands.testkit.Unwrap.*
 
 /** One dice source under contract: a name for the test title, the source, and
   * the pool sizes it can answer (a stub that returns fixed faces answers one

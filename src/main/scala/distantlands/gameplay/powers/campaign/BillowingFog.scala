@@ -1,8 +1,8 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx}
+import distantlands.model._
 
 object BillowingFogCard extends Denizen(DenizenId("59"), "Billowing Fog", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.billowing-fog"),

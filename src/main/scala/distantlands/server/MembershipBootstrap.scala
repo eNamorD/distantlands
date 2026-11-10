@@ -1,8 +1,8 @@
-package oathdigital.server
+package distantlands.server
 
-import oathdigital.application._
-import oathdigital.protocol.FirstGameBootstrapRequest
-import oathdigital.protocol.projection.GameProjection
+import distantlands.application._
+import distantlands.protocol.FirstGameBootstrapRequest
+import distantlands.protocol.projection.GameProjection
 
 enum BootstrapFailure:
   case Authorization(error: AuthorizationFailure)

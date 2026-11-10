@@ -1,13 +1,13 @@
-package oathdigital.gameplay.phases
+package distantlands.gameplay.phases
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{IndexedRuleSource, PowerAccess, RuleSourceIndex}
-import oathdigital.gameplay.operations.{Costs, PowerUseRules}
-import oathdigital.model.OathViolation._
-import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers, PowerUse,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{IndexedRuleSource, PowerAccess, RuleSourceIndex}
+import distantlands.gameplay.operations.{Costs, PowerUseRules}
+import distantlands.model.OathViolation._
+import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers, PowerUse,
   PowerUseRefusal, PowerUseRestriction, QueuedStarts}
-import oathdigital.gameplay.walker.{QueuedStart, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.walker.{QueuedStart, WalkerPowers}
+import distantlands.model._
 
 /** Use Power (rest-walker spec, Phase powers).
   *

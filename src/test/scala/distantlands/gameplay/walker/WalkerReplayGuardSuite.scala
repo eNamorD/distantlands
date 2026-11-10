@@ -1,9 +1,9 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Replay applies recorded operations through the executor. The executor
   * runs the shape guard as the mutation's precondition, so a recorded

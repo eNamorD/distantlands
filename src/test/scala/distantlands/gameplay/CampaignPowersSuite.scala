@@ -1,14 +1,14 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.{VowOfPeaceCard,
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.{VowOfPeaceCard,
   VowOfPeaceContribution}
-import oathdigital.gameplay.powers.travel.{NarrowPassSitePower,
+import distantlands.gameplay.powers.travel.{NarrowPassSitePower,
   TravelSitePowers}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Unwrap.present
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Unwrap.present
 
 class CampaignPowersSuite extends munit.FunSuite:
   private val initial = Table.start.ready

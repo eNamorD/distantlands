@@ -1,11 +1,11 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.projection.{DieFace, WalkerStatusProjection}
+import distantlands.protocol.projection.{DieFace, WalkerStatusProjection}
 
-import oathdigital.frontend.Dom.{all, one, press}
-import oathdigital.protocol.{DecisionAnswerWire, DecisionOptionWire,
+import distantlands.frontend.Dom.{all, one, press}
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
   GameIntent => Intent}
-import oathdigital.testkit.Unwrap.as
+import distantlands.testkit.Unwrap.as
 import ParkedDecision.Surface
 import org.scalajs.dom
 

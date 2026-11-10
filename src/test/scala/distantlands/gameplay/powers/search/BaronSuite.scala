@@ -1,20 +1,20 @@
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.MessengerCard
-import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, ShieldWallCard,
+import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.MessengerCard
+import distantlands.gameplay.powers.campaign.{CodeOfHonorCard, ShieldWallCard,
   WrestlersCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PlacementPicks, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Baron (card 250), a selected Search modifier: "You may play to any site
   * you rule, and you may discard a card from that site first." */

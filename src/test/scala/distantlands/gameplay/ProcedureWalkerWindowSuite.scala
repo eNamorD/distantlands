@@ -1,17 +1,17 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{PowerCtx, Transform}
-import oathdigital.gameplay.walker.{ChoicePayload, ProcedureWalker,
+import distantlands.gameplay.powerresolver.{PowerCtx, Transform}
+import distantlands.gameplay.walker.{ChoicePayload, ProcedureWalker,
   WalkerOutcome, WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 // ProcedureWalkerFixture's ready, with S3 cleared, replaces the fixture's.
-import oathdigital.model.TestGameFixtures.{ready as _, _}
-import oathdigital.testkit.{PowerStubs, RecordedOps}
-import oathdigital.testkit.PowerStubs.{RestrictionStub, TransformStub}
-import oathdigital.testkit.Outcomes.{finished, recorded}
-import oathdigital.testkit.WalkerStubs._
-import oathdigital.testkit.ProcedureWalkerFixture._
+import distantlands.model.TestGameFixtures.{ready as _, _}
+import distantlands.testkit.{PowerStubs, RecordedOps}
+import distantlands.testkit.PowerStubs.{RestrictionStub, TransformStub}
+import distantlands.testkit.Outcomes.{finished, recorded}
+import distantlands.testkit.WalkerStubs._
+import distantlands.testkit.ProcedureWalkerFixture._
 
 /** ProcedureWalker's windowed nodes: power contributions gather and fold at a
   * window, a leaf records its windows' contributions, restrictions reject at

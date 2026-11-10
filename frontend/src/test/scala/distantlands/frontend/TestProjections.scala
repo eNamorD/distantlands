@@ -1,4 +1,4 @@
-package oathdigital.frontend
+package distantlands.frontend
 
 /** Builders for the projected game a render suite draws. */
 private[frontend] object TestProjections:

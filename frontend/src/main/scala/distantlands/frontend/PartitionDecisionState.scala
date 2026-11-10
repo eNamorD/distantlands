@@ -1,6 +1,6 @@
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DecisionPlacementWire,
+import distantlands.protocol.{DecisionAnswerWire, DecisionPlacementWire,
   GameIntent => GameCommand}
 
 /** One named bucket a partition interaction spreads its items across: the

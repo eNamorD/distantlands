@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PowerAnswers, ReliquaryDraws}
-import oathdigital.gameplay.roles.{Citizenship, RoleNotes}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PowerAnswers, ReliquaryDraws}
+import distantlands.gameplay.roles.{Citizenship, RoleNotes}
+import distantlands.model._
 
 /** A WHEN PLAYED "if you're an Exile and ..., you may [take a random relic
   * from the Reliquary and] become a Citizen": Long-Lost Heir, Bewitch,

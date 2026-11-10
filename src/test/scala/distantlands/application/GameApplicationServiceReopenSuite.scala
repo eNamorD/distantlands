@@ -1,25 +1,25 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
-import oathdigital.testkit.MenuPlay
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.whenplayed.WizardsConclaveCard
+import distantlands.testkit.MenuPlay
 import java.nio.file.Files
 
-import oathdigital.protocol.projection.{DecisionQueryProjection,
+import distantlands.protocol.projection.{DecisionQueryProjection,
   GameProjection}
-import oathdigital.model._
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ProposeTerms}
-import oathdigital.persistence.OwnedHsqldbEventStreamRepository
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.model.DecisionAnswer.{AcceptDeal, ProposeTerms}
+import distantlands.persistence.OwnedHsqldbEventStreamRepository
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 import ParkedServiceFixture.{loaded, replayingSecond}
-import oathdigital.testkit.Commands
+import distantlands.testkit.Commands
 
 /** A game reopened from HSQL keeps its Rest cleanup, private relic
   * knowledge and Negotiation state.
@@ -49,7 +49,7 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
       // Begin Rest finished the Rest and woke the next player.
       assertEquals(ready.game.current.turn.phase, Phase.Wake)
       assertNotEquals(ready.game.current.turn.activePlayer, p1)
-      val summary = accepted(oathdigital.gameplay.PlayerSecretSummary
+      val summary = accepted(distantlands.gameplay.PlayerSecretSummary
         .derive(ready, p1))
       assertEquals(summary.facedown, 0)
       assertEquals(summary.totalSecrets, summary.available + summary.committed)

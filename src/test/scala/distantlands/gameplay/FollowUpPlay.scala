@@ -1,7 +1,7 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.FollowUpOffer
-import oathdigital.model._
+import distantlands.gameplay.walker.FollowUpOffer
+import distantlands.model._
 
 /** Answers a follow-up offer as its player does (walker-driven game loop
   * design, ruling 6). */

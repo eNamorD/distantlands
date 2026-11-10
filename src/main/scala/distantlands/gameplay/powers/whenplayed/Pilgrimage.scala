@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.{Deferred, PowerCtx}
-import oathdigital.gameplay.powers.DispossessedDraws
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Deferred, PowerCtx}
+import distantlands.gameplay.powers.DispossessedDraws
+import distantlands.model._
 
 object PilgrimageCard extends Denizen(DenizenId("161"), "Pilgrimage", Suit.Nomad) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.pilgrimage"),

@@ -1,12 +1,12 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.{RevealedVisions, TurnOrder}
-import oathdigital.gameplay.actions.PlacementLimit
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ExecutedBatch,
+import distantlands.gameplay.{RevealedVisions, TurnOrder}
+import distantlands.gameplay.actions.PlacementLimit
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ExecutedBatch,
   ExecutedTrigger, Transform}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** False Prophet's claim, when its Vision is discarded (card 85; catalog
   * batch 11, rulings 14, 32 and 33): "If it is ever discarded, kill the

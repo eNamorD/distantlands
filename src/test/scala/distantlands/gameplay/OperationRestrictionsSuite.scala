@@ -1,20 +1,20 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.operations.{GrandScepter, HallOfMinisters,
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.{GrandScepter, HallOfMinisters,
   HallOfMinistersCard, LockedCards, OperationConsent, OperationPipeline,
   OperationPolicy, OperationRestrictions, RestrictionIcons,
   StillBoilingLake}
-import oathdigital.gameplay.powers.campaign.{SealingWardCard, WrestlersCard}
-import oathdigital.gameplay.powers.cardplay.WildCryCard
-import oathdigital.gameplay.powers.economy.MountedLibraryCard
-import oathdigital.gameplay.powers.search.{CropRotationCard, ErrandBoyCard}
-import oathdigital.gameplay.powers.travel.DragonskinDrumCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.campaign.{SealingWardCard, WrestlersCard}
+import distantlands.gameplay.powers.cardplay.WildCryCard
+import distantlands.gameplay.powers.economy.MountedLibraryCard
+import distantlands.gameplay.powers.search.{CropRotationCard, ErrandBoyCard}
+import distantlands.gameplay.powers.travel.DragonskinDrumCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** The global operation restrictions (global operation restrictions design,
   * "Rules"): a locked card cannot be moved or flipped while it shows its lock,
@@ -236,10 +236,10 @@ class OperationRestrictionsSuite extends munit.FunSuite:
     val cropRotation = CropRotationCard.id
     val ready = Table.start.adviser(p1, cropRotation)
       .adviser(p1, mountedLibrary).ready
-    val selected = oathdigital.gameplay.walker.WalkerPowers.selected(
-      oathdigital.gameplay.powers.WalkerPowerCatalog.default(catalog),
-      Vector(oathdigital.gameplay.powers.economy.MountedLibrary.id,
-        oathdigital.gameplay.powers.search.CropRotation.id))
+    val selected = distantlands.gameplay.walker.WalkerPowers.selected(
+      distantlands.gameplay.powers.WalkerPowerCatalog.default(catalog),
+      Vector(distantlands.gameplay.powers.economy.MountedLibrary.id,
+        distantlands.gameplay.powers.search.CropRotation.id))
     def refused(card: DenizenId): Option[String] = selected
       .operationRestrictions.flatMap(_.reason(ready,
         discard(card, Location.PlayArea(p1)))).headOption.map(_.code)

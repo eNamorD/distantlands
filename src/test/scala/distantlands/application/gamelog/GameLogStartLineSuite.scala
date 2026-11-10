@@ -1,9 +1,9 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogEntry, LogKind, LogSpan}
-import oathdigital.testkit.Look
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.model._
+import distantlands.protocol.projection.{LogEntry, LogKind, LogSpan}
+import distantlands.testkit.Look
+import distantlands.testkit.Table.{p1, p2}
 import LogScripts._
 
 class GameLogStartLineSuite extends munit.FunSuite:

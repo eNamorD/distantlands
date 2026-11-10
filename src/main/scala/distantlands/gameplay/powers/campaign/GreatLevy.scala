@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
 
 object TheGreatLevyCard extends Denizen(DenizenId("137"), "The Great Levy", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.the-great-levy"),

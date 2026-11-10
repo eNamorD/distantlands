@@ -1,13 +1,13 @@
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.cards.DeepWoodsSite
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.ConsentPowers
-import oathdigital.gameplay.powers.action.RovingTerrorCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.cards.DeepWoodsSite
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.gameplay.powers.action.RovingTerrorCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** Spell Breaker (card 162): "Enemies of Spell Breaker's ruler cannot use
   * powers that cost any [secret] or [secret-burnt]." (catalog batch 8,

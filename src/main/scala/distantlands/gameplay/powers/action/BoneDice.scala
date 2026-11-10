@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.dice.RollStep
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.actions.dice.RollStep
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 object BoneDiceCard extends Relic(RelicId("R24"), "Bone Dice", value = 1, defense = 1):
   val power = PrintedPower(PowerId("relic.bone-dice"),

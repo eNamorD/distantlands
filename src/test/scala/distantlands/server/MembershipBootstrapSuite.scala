@@ -1,15 +1,15 @@
-package oathdigital.server
+package distantlands.server
 
 import java.nio.file.Files
 
-import oathdigital.application._
-import oathdigital.application.MembershipRole._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.persistence.HsqldbDatabaseOwner
-import oathdigital.protocol.FirstGameBootstrapRequest
-import oathdigital.testkit.Outcomes
-import oathdigital.testkit.ChronicleShuffles.unshuffled
-import oathdigital.testkit.Unwrap.{accepted, present, rejected}
+import distantlands.application._
+import distantlands.application.MembershipRole._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.persistence.HsqldbDatabaseOwner
+import distantlands.protocol.FirstGameBootstrapRequest
+import distantlands.testkit.Outcomes
+import distantlands.testkit.ChronicleShuffles.unshuffled
+import distantlands.testkit.Unwrap.{accepted, present, rejected}
 
 /** The owner's bootstrap of a provisioned game, kept for X6 without a
   * route: who may begin it, which seats it may name, and what it writes. */
@@ -138,12 +138,12 @@ class MembershipBootstrapSuite extends munit.FunSuite:
       "participants" -> ujson.Arr.from(playerIds.zipWithIndex.map {
         case (playerId, index) => ujson.Obj(
           "playerId" -> playerId,
-          "color" -> oathdigital.model.PlayerColor.all(index).key)
+          "color" -> distantlands.model.PlayerColor.all(index).key)
       }),
       "firstPlayer" -> firstPlayer))))
 
   private def encoded(value: FirstGameBootstrapRequest): String =
-    oathdigital.protocol.FirstGameBootstrapCodec.encode(value)
+    distantlands.protocol.FirstGameBootstrapCodec.encode(value)
 
   /** Spy of EventStreamRepository: delegates to an
     * InMemoryEventStreamRepository, which is a fake, and counts the appends

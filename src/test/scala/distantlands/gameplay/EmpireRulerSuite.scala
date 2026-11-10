@@ -1,10 +1,10 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{DunesSite, FairIsleSite}
-import oathdigital.gameplay.powers.targeting.ForgottenVaultCard
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.cards.{DunesSite, FairIsleSite}
+import distantlands.gameplay.powers.targeting.ForgottenVaultCard
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class EmpireRulerSuite extends munit.FunSuite:
   private val dunes = DunesSite.id

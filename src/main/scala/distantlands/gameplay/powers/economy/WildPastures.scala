@@ -1,11 +1,11 @@
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.{CardRule, SpendableFavor}
-import oathdigital.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
+import distantlands.gameplay.{CardRule, SpendableFavor}
+import distantlands.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
   BatchContext, Contribution, OnEdificeFace, Replacement}
-import oathdigital.model._
+import distantlands.model._
 
 object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
   object intact extends EdificeFace("Wild Pastures") with Locked:

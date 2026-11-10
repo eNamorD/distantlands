@@ -1,13 +1,13 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.phases.rest.RoundEndRandomPort
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathEvent._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Outcomes, RoundEndChoices, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.phases.rest.RoundEndRandomPort
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathEvent._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Outcomes, RoundEndChoices, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** The end of a round in a game with an Empire (CR p. 19; Empire phase
   * design, "Slice 2"), from `endRound` and through replay. p1 is the

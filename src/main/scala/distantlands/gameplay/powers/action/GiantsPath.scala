@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{IgnoresOwnLock, QueuedStarts}
-import oathdigital.gameplay.powers.{PowerAnswers, SiteRoom}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{IgnoresOwnLock, QueuedStarts}
+import distantlands.gameplay.powers.{PowerAnswers, SiteRoom}
+import distantlands.model._
 
 /** Giant's Path (E09, intact), ACTION: place 1 secret on this card, move it
   * to another site, then place the user's pawn there (catalog batch 10,

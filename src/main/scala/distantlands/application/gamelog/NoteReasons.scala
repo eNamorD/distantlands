@@ -1,8 +1,8 @@
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{PlayerId, PowerId, LogNote, ReadyGame}
+import distantlands.application.GamePresentationProjector
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.{PlayerId, PowerId, LogNote, ReadyGame}
 
 /** A power's note as one line of plain text: the reason an option it hid is
   * not on offer (board decisions design, "Unavailable options"). It is

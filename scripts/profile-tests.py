@@ -5,7 +5,7 @@
       Runs the gate (root/test frontend/test), reports its wall-clock and
       CPU time, and ranks the root suites and tests by time.
 
-  scripts/profile-tests.py 'oathdigital.gameplay.powers.campaign.*'
+  scripts/profile-tests.py 'distantlands.gameplay.powers.campaign.*'
       Runs the matching root suites under Java Flight Recorder, ranks them,
       and lists the hottest frames.
 
@@ -122,7 +122,7 @@ def frames(recording, top):
     watched = collections.Counter()
     counted = 0
     for names in stacks(recording):
-        if not any(name.startswith("oathdigital.") for name in names):
+        if not any(name.startswith("distantlands.") for name in names):
             continue
         counted += 1
         leaf[names[0]] += 1
@@ -130,7 +130,7 @@ def frames(recording, top):
             if any(fragment in name for name in names):
                 watched[fragment] += 1
         for name in set(names):
-            if name.startswith("oathdigital."):
+            if name.startswith("distantlands."):
                 inclusive[name] += 1
     if counted == 0:
         return ["No samples ran oathdigital code."]

@@ -1,13 +1,13 @@
-package oathdigital.catalog
+package distantlands.catalog
 
-import oathdigital.gameplay.cards.NewFoundations
-import oathdigital.gameplay.powers.action.AlchemistCard
-import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.setup.HallOfDebateCard
-import oathdigital.model.{DenizenId, EdificeId, LegacyId, PowerId, RelicId,
+import distantlands.gameplay.cards.NewFoundations
+import distantlands.gameplay.powers.action.AlchemistCard
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.model.{DenizenId, EdificeId, LegacyId, PowerId, RelicId,
   SiteId, Suit}
-import oathdigital.testkit.TestCards
-import oathdigital.testkit.Unwrap.present
+import distantlands.testkit.TestCards
+import distantlands.testkit.Unwrap.present
 
 class ExecutableCatalogSuite extends munit.FunSuite:
   private val catalog = NewFoundations.catalog

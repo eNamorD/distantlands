@@ -1,9 +1,9 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
+import distantlands.gameplay.operations._
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
   RollPayload, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.model._
 
 /** Test-only scaffolding shared by `RecoverProcedureSuite` and
   * `WalkerReplayDriftSuite`: folds a walker command's recorded

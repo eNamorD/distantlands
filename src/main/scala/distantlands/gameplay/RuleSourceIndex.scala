@@ -1,8 +1,8 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.catalog.PrintedPower
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.catalog.PrintedPower
+import distantlands.model._
 
 /** Orientation is a factual property only; callers still own activation rules. */
 enum RuleSourceFace:

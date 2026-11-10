@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.campaign.ObsidianCageCard
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.campaign.ObsidianCageCard
+import distantlands.model._
 
 /** Obsidian Cage (relic R18), ACTION: "Move any number of warbands from
   * Obsidian Cage to any board of the same color."

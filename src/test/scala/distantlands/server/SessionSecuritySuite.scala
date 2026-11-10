@@ -1,4 +1,4 @@
-package oathdigital.server
+package distantlands.server
 
 import java.nio.file.Files
 import java.util.concurrent.{Executors, TimeUnit}
@@ -9,11 +9,11 @@ import scala.concurrent.{Await, ExecutionContext}
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.headers.{Cookie, HttpCookiePair, RawHeader}
 
-import oathdigital.application._
-import oathdigital.persistence.HsqldbDatabaseOwner
-import oathdigital.testkit.HttpTestServer.{csrfDigest, csrfToken}
-import oathdigital.testkit.IdentityRepositoryStub
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.application._
+import distantlands.persistence.HsqldbDatabaseOwner
+import distantlands.testkit.HttpTestServer.{csrfDigest, csrfToken}
+import distantlands.testkit.IdentityRepositoryStub
+import distantlands.testkit.Unwrap.accepted
 
 class SessionSecuritySuite extends munit.FunSuite:
   private val cookieName = "oath_session"

@@ -1,9 +1,9 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, SpendableFavor}
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.{NoteSupport, SpendableFavor}
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 object WitchsBargainCard extends Denizen(DenizenId("77"), "Witch's Bargain", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.witchs-bargain"),

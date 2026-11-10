@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object FestivalDistrictCard extends Edifice(EdificeId("E21"), Suit.Hearth):
   object intact extends EdificeFace("Festival District") with Locked:

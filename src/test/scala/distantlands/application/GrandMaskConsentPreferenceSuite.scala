@@ -1,14 +1,14 @@
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.{GrandMaskCard, OathRules}
-import oathdigital.gameplay.cards.BrokenPeaksSite
-import oathdigital.gameplay.powers.{ConsentPowers, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathEvent.ConsentPreferencesCleared
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.{GrandMaskCard, OathRules}
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.{ConsentPowers, WalkerPowerCatalog}
+import distantlands.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathEvent.ConsentPreferencesCleared
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** A standing preference under the Grand Mask (catalog batch 11, slice 2,
   * "Preferences"): the wearer's turn makes them the granter of the masked

@@ -1,10 +1,10 @@
-package oathdigital.gameplay.powers.title
+package distantlands.gameplay.powers.title
 
-import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.model._
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.model._
 
 object ChaosCultCard extends Denizen(DenizenId("101"), "Chaos Cult", Suit.Discord) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.chaos-cult"),

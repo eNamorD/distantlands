@@ -1,7 +1,7 @@
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** A When Played power of one denizen. When that card is played, `effect`'s
   * operations run after whatever other powers contributed at the

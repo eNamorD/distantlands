@@ -1,7 +1,7 @@
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.OperationConsent
-import oathdigital.model._
+import distantlands.gameplay.operations.OperationConsent
+import distantlands.model._
 
 /** The reasons of a choose-one's options that the search hid because a
   * power's operation refusal rejects their path (catalog batch 8, slice

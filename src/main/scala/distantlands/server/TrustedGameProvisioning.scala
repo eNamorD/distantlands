@@ -1,13 +1,13 @@
-package oathdigital.server
+package distantlands.server
 
 import java.net.URI
 import java.security.SecureRandom
 import scala.util.Try
 import scala.util.control.NonFatal
-import oathdigital.application._
-import oathdigital.application.chronicle.ChronicleConversion
-import oathdigital.model.OathViolation
-import oathdigital.protocol._
+import distantlands.application._
+import distantlands.application.chronicle.ChronicleConversion
+import distantlands.model.OathViolation
+import distantlands.protocol._
 
 enum TrustedGameFailure:
   case InvalidRequest, DuplicateGame, CodeCollision, StorageFailure

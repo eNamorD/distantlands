@@ -1,6 +1,6 @@
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{Branch, CoreOperation, DeferralKey, Operation,
+import distantlands.model.{Branch, CoreOperation, DeferralKey, Operation,
   PendingTree, ReadyGame, TakeDeferred}
 
 /** Reads and resolves the ops a power holds with `Defer` (operation rewrite

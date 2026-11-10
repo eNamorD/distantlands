@@ -1,10 +1,10 @@
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.PowerId
-import oathdigital.model.{PowerWindow, RuleSourceRef, Sequence}
-import oathdigital.testkit.Table
+import distantlands.gameplay.powerresolver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.PowerId
+import distantlands.model.{PowerWindow, RuleSourceRef, Sequence}
+import distantlands.testkit.Table
 
 /** Task 2: the gather protocol as a pure collector, with hand-built fixture
   * powers -- no catalog, no walker. Ignores are ContributionIgnoresSuite's.
