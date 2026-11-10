@@ -136,6 +136,14 @@ Taken with the owner on 2026-11-09.
     at the site to their board. After every transfer, each new ruler places
     any number of their warbands from their board to the site, at least 1
     (FAQ). Denizens, relics, pawns and other forces at the site stay.
+28. **Own colour, on any turn** (2026-11-10). Every Imperial player's own
+    colour is the Imperial warbands, so any Imperial player may give an
+    Imperial site, on any player's turn, and takes its warbands to their
+    own board (FAQ: no permission needed from the Chancellor).
+29. **One warband per site, after the returns** (2026-11-10). A recipient
+    needs one warband on their board for every site they receive, counted
+    after the warbands of the sites they give in the same deal come back.
+    While anyone would be short, nobody may accept, and the reason shows.
 
 ### Whispering Stone
 
@@ -157,7 +165,8 @@ Taken with the owner on 2026-11-10.
     Tribunal (intact) and Traveling Negotiator, both non-persistent, as
     they stop any non-persistent power. A refusal City Wall's ruler could
     waive only blocks: the Negotiation asks no consent. Ruling 26 answers
-    the same question for Council Arbiter and Festival District.
+    the same question for Council Arbiter and Festival District, and
+    ruling 27 for Deed Writer.
 25. **Judged as the user's use.** A blocker judges the use of whoever holds
     the card or has the access, at their own site. If either side of a
     pair has an unblocked route, the two may negotiate.
@@ -166,6 +175,9 @@ Taken with the owner on 2026-11-10.
     non-persistent, judged as the use of the holder or the player with
     access. A blocked holder opens no adviser terms; another participant's
     unblocked access to Festival District still opens them for all.
+27. **Deed Writer is blocked the same way** (2026-11-10). The three
+    blockers stop Deed Writer, which is non-persistent, judged as its
+    holder's use. A blocked holder opens no site terms.
 
 ## The deal model
 
@@ -197,9 +209,10 @@ Taken with the owner on 2026-11-10.
   every command, as now.
 - **Acceptance checks.** Beside affordability, accepting is refused when the
   net result would leave anyone over their adviser limit (ruling 17,
-  through `AdviserLimit.of` and the count card play uses), or when a site
-  term breaks rulings 18 and 19. The panel shows each reason on the
-  disabled Accept button.
+  through `AdviserLimit.of` and the count card play uses), or when a
+  recipient would have too few warbands to rule every site they receive
+  (ruling 29). The bounds already keep out a site term that breaks rulings
+  18 and 19. The panel shows each reason on the disabled Accept button.
 - **Substance.** `DealState.hasSubstance` also counts promises (ruling 13).
 - **One decision id per deal.** The deal fold reads only the answers to
   `<prefix>.deal`. The Negotiate action uses `negotiation`, Whispering Stone
@@ -311,24 +324,42 @@ faceup keeping its power with its new holder.
 
 ## Slice 4: Site terms
 
-**Deed Writer** (rulings 18 to 20).
+**Deed Writer** (rulings 18 to 20, 27 to 29).
 
-- **Kinds.** `Site` for a pair when either side holds Deed Writer.
-- **Bounds.** The sites an author rules with their own-colour warbands,
-  offered to recipients with at least one own-colour warband on their board
-  and not Imperial alongside an Imperial author.
-- **Settlement.** The old ruler's warbands at the site go to their board in
-  the transfer step. After every transfer, each new ruler answers
-  `deed-writer.warbands`: a number from 1 to the warbands on their board,
-  asked in participant order. Rule then follows the warbands as usual.
+- **Read once, at the start.** `NegotiationSites` names the faceup holder
+  of Deed Writer who may use it under the walk's power-use restrictions.
+  The start stores them in `NegotiationStartFacts` (`deedWriterUsers`),
+  beside slice 3's adviser users.
+- **Kinds.** `Site` for a pair when either side may use Deed Writer.
+- **Bounds.** The sites an author's own-colour warbands hold, on any turn
+  (ruling 28), less any site another author already offers. They are
+  offered to every recipient `kinds` allows except an Imperial recipient
+  of an Imperial author (ruling 19) and a faceup Vow of Wandering holder,
+  who cannot place warbands on sites.
+- **Acceptance.** `DecisionQuery.Negotiate.shortOfWarbands` names the
+  recipients who would have fewer warbands on their board than sites they
+  receive, counted after their own given sites' warbands come back
+  (ruling 29). While it is not empty nobody may accept.
+- **Settlement.** After the other transfers, a required step moves each
+  given site's warbands to the old ruler's board. Then, for each site in
+  the order the sites moved, its new ruler answers
+  `deed-writer.warbands.<site>`: a number from 1 to the warbands on their
+  board, less one for each site they still have to place on. The answer
+  places that many from their board, a required move. Rule then follows
+  the warbands as usual. The bandit refill runs only at the action
+  boundary, so a site left empty while its new ruler answers stays empty.
 - **Log.** "Blue gave Broken Peaks to Red." and the placement line "Red
-  placed 3 warbands at Broken Peaks."
+  placed 3 warbands at Broken Peaks." The generic "Moved n warbands"
+  detail line is not written for a Negotiation, which writes its own.
 - **Catalog.** Deed Writer leaves holding.
 
 Tests: an own-colour site offered and a bandit or Imperial one refused;
-the recipient with an empty board refused; a swap moving both sites; the
-old ruler's warbands returned and the new ruler asked for 1 to N; rule
-passing to the new ruler.
+two Imperial players offered no site to each other; a Citizen giving an
+Imperial site on an Exile's turn; City Wall stopping Deed Writer's holder;
+a Vow of Wandering holder offered no site; a recipient with an empty board
+short of warbands, and the same recipient able to accept when a swap
+returns theirs; a swap moving both sites; the old ruler's warbands returned
+and the new ruler asked for 1 to N; rule passing to the new ruler.
 
 ## Slice 5: A remote, private deal
 
