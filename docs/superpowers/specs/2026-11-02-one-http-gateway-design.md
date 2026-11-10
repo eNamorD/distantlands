@@ -39,14 +39,14 @@ player to `ScopedProjectionContext`.
 | routes | `GameRoutes` (256 lines) | `TrustedSeatRoutes` (179) | `AuthenticatedGameRoutes` (302, with its gateway) |
 | gateway | `GameServerGateway` (in `GameRoutes.scala`) | `TrustedGameGateway` (46) | `AuthenticatedGameGateway` (in `AuthenticatedGameRoutes.scala`) |
 | URL | `/api/dev/first-games/{gameId}` `?playerId=` | `/games/{gameId}/api` | `/api/authenticated/first-games/{gameId}` |
-| actor from | the `playerId` query parameter, `DevelopmentTrustBoundary.validateIdentifier` | the `oath_seat` cookie, `IdentityRepository.resolveTrustedSeat`, game id checked | the session cookie, `SessionCookieAuthenticator`, then `MembershipAuthorizationService` |
-| mounted | development mode only | both modes; the only transport in trusted alpha | development mode, only when `OATH_SESSION_COOKIE_NAME` and `OATH_AUTHENTICATED_PUBLIC_ORIGIN` are both set |
+| actor from | the `playerId` query parameter, `DevelopmentTrustBoundary.validateIdentifier` | the `distantlands_seat` cookie, `IdentityRepository.resolveTrustedSeat`, game id checked | the session cookie, `SessionCookieAuthenticator`, then `MembershipAuthorizationService` |
+| mounted | development mode only | both modes; the only transport in trusted alpha | development mode, only when `DLQ_SESSION_COOKIE_NAME` and `DLQ_AUTHENTICATED_PUBLIC_ORIGIN` are both set |
 | frontend client | `HttpGameClient` | `TrustedHttpGameClient` | none |
 | extras | `/events` (raw history), the development shell | `/s/{code}`, `POST /games`, page redirects, cookie issue | `/bootstrap` |
 | route tests | 4 (`GameRoutesSuite`) + 1 (`GameTrustBoundaryRoutesSuite`) | 18 (`TrustedSeatRoutesSuite`) | 5 (`AuthenticatedGameRoutesSuite`) + 7 (`AuthenticatedGameBootstrapRoutesSuite`) |
 
 Counted from `ServerRoutes.route`, `GameClient.scala` and
-`grep -c 'test(' src/test/scala/oathdigital/server/*.scala`.
+`grep -c 'test(' src/test/scala/distantlands/server/*.scala`.
 
 ### The service calls each writes
 
@@ -155,7 +155,7 @@ Three implementations, each a few lines of code that exist today:
 
 - `QueryParameterActor`: `?playerId=` validated by
   `DevelopmentTrustBoundary.validateIdentifier`, always a `Seat`.
-- `SeatCookieActor`: the `oath_seat` cookie, `SeatCode.parse`,
+- `SeatCookieActor`: the `distantlands_seat` cookie, `SeatCode.parse`,
   `resolveTrustedSeat`, `seat.gameId == gameId`, always a `Seat`;
   `Forbidden` otherwise. This is `TrustedSeatRoutes.authenticate` and
   `TrustedGameGateway.actor` moved behind the trait.

@@ -1,0 +1,387 @@
+package distantlands.frontend
+
+import distantlands.protocol.{GameIntent => GameCommand}
+import org.scalajs.dom
+import ServerUiSupport._
+
+private[frontend] object WorldBoardRenderer:
+  def players(value: GameProjection, playerId: String,
+      options: BoardOptions = BoardOptions.none): dom.Element =
+    playerBoards(value, playerId, options)
+
+  /** A resource as its glyph and its count, with the sentence the words used
+    * to carry kept as the accessible name.
+    */
+  private def counted(token: String, value: String,
+      accessible: String): dom.Element =
+    val node = element("span", "resource")
+    node.setAttribute("aria-label", accessible)
+    node.appendChild(RulesTextRenderer.glyph(token))
+    node.appendChild(dom.document.createTextNode(value))
+    node
+
+  /** Turn order read from the viewer's own seat. The seating vector is
+    * already the cyclic turn order, so anchoring it on the viewer gives who
+    * plays after them without tracking the first player -- and unlike an
+    * active-player anchor, the strip does not rotate under them as turns pass.
+    */
+  private[frontend] def seatOrder(players: Vector[GamePlayer],
+      viewer: Option[String]): Vector[GamePlayer] =
+    viewer.map(id => players.indexWhere(_.playerId == id)).filter(_ > 0)
+      .fold(players)(at => players.drop(at) ++ players.take(at))
+
+  def playerBoards(value: GameProjection, playerId: String,
+      options: BoardOptions = BoardOptions.none): dom.Element =
+    val panel = element("section", "panel player-boards")
+    // The seat the client holds, not the projection's viewer: a trusted
+    // session adopts its seat from that viewer before it renders and refuses
+    // to display a projection that disagrees with it (`ServerModeUi.store`),
+    // so this is the one answer that is right in both modes.
+    seatOrder(value.players, Some(playerId).filter(_.nonEmpty))
+      .foreach { player =>
+      val section = element("section", "player-board")
+      section.setAttribute("data-player-id", player.playerId)
+      if value.activeParticipantId.contains(player.playerId) then
+        section.classList.add("player-board-active")
+        section.setAttribute("aria-label", s"${player.displayName}, active player")
+      // Everything left of the cards stands for the player, so a decision
+      // that picks a player lights the whole block rather than the name
+      // alone. A control inside it (Supply, a title, the Vision) still
+      // answers for itself.
+      val playerSummary = element("div", "player-summary")
+      options.decorate(playerSummary,
+        Vector(BoardOptionViews.key("player", player.playerId)))
+      section.appendChild(playerSummary)
+      // One line for who and what they hold: the pane is a strip across the
+      // top of the table, so every line it spends is a line of card.
+      val identity = element("h3", "player-identity")
+      identity.appendChild(playerReference(value, player.playerId))
+      identity.appendChild(text("span", "player-role", player.role))
+      if value.tracks.exists(_.firstPlayerId == player.playerId) then
+        identity.appendChild(text("span", "player-first-badge", "First Player"))
+      playerSummary.appendChild(identity)
+      value.playerBoards.find(_.playerId == player.playerId).foreach { board =>
+      val resources = element("span", "resources")
+      val warbands = text("span", "resource", s"Warbands ${board.warbands}")
+      HoverTip.set(warbands, warbandsNote(board,
+        own = player.playerId == playerId))
+      resources.appendChild(warbands)
+      val favor = counted("favor", board.favor.toString, s"Favor ${board.favor}")
+      HoverTip.set(favor, "Favor")
+      resources.appendChild(favor)
+      val summary = secretSummaryLines(board.faceUpSecrets, board.totalSecrets,
+        board.faceDownSecrets, board.committedSecrets)
+      val secrets = counted("secret", s"${board.faceUpSecrets}/${board.totalSecrets}",
+        summary.mkString(". "))
+      HoverTip.set(secrets, summary.mkString("\n"))
+      resources.appendChild(secrets)
+      // Supply is the one figure with a rule behind it: the bank sets the
+      // band, the band sets the Rest. The figure opens that rule.
+      val supply = button(s"Supply ${board.supply}/${value.supplyMaximum}",
+        "resource supply-open")
+      HoverTip.set(supply, SupplyAtRest.note(player.role, board))
+      supply.onclick = _ =>
+        if SupplyAtRest.readsTrack(player.role) then
+          CardInspection.openSupply(SupplyAtRest.panel(board,
+            if board.supplyBands.nonEmpty then board.supplyBands
+            else value.supplyBands, value.supplyMaximum, player.color,
+            own = player.playerId == playerId), supply)
+        else CardInspection.openText(SupplyAtRest.title,
+          SupplyAtRest.citizenLines, supply)
+      resources.appendChild(supply)
+      identity.appendChild(resources)
+
+      // A title and a Vision are states of the player, not cards in a hand:
+      // in the physical game a Vision is played sideways, which is what this
+      // row stands in for.
+      val slots = element("div", "player-slots")
+      value.oathkeeper.filter(_.holderPlayerId.contains(player.playerId))
+        .foreach { oath =>
+          val presented = distantlands.protocol.projection
+            .OathkeeperPresentation.byGoal.get(oath.goal)
+          val pill = button(oath.side.capitalize, s"player-title title-${oath.side}")
+          val title = presented.fold(oath.goal)(_.title)
+          HoverTip.set(pill, title)
+          pill.onclick = _ => CardInspection.openText(title,
+            presented.fold(Vector.empty[String])(_.lines), pill)
+          slots.appendChild(pill)
+        }
+      // The spot is drawn empty only while the decision lights it: the strip
+      // never scrolls, so an empty spot may not spend a row on every board.
+      // A reveal that replaces marks every Vision it discards; one that
+      // keeps them (Desecrated Ground) lights an empty spot after them.
+      val visionKey = Vector(BoardOptionViews.key("revealed-vision",
+        player.playerId))
+      val lit = options.view(visionKey)
+      val replacing = lit.exists(_.option.replaces.nonEmpty)
+      board.revealedVisions.foreach { card =>
+        val pill = button(card.name, "player-slot-vision")
+        pill.onclick = _ => CardInspection.open(card, pill)
+        // The warbands on the Vision (False Prophet's claims), one mark in
+        // each claimant's colour; the card face counts them. The marks are
+        // hidden from assistive technology, so the pill's name says them.
+        if card.warbands.nonEmpty then pill.setAttribute("aria-label",
+          (card.name +: card.warbands.map(forceText)).mkString(", "))
+        card.warbands.foreach { forces =>
+          val mark = text("span", "player-slot-vision-warband " +
+            forceCssClass(forces), "●")
+          mark.setAttribute("aria-hidden", "true")
+          HoverTip.set(mark, forceText(forces))
+          pill.appendChild(mark)
+        }
+        slots.appendChild(
+          if replacing then options.control(pill, visionKey,
+            Some(card.name -> (CardInspection.open(card, _))))
+          else pill)
+      }
+      lit.filterNot(_ => replacing).foreach { _ =>
+        val spot = button("Vision", "player-slot-vision player-slot-vision-empty")
+        spot.setAttribute("aria-label", "Empty revealed Vision spot")
+        slots.appendChild(options.control(spot, visionKey, None))
+      }
+      if slots.childNodes.length > 0 then playerSummary.appendChild(slots)
+
+      // One row, no headings: two labelled rows cost more height than the pane
+      // has, and a relic's square box already says which card is which.
+      val cards = element("div", "board-cards")
+      cards.setAttribute("aria-label", "Cards in play")
+      board.advisers.zipWithIndex.foreach((card, at) => cards.appendChild(
+        options.card(CardFace.render(card), card,
+          boardCardKeys("adviser-slot", player.playerId, at, card))))
+      (board.advisers.size until board.adviserLimit).foreach(at =>
+        cards.appendChild(openSlot(options, "denizen", "Empty adviser slot",
+          at, BoardOptionViews.key("adviser-slot", s"${player.playerId}:$at"))))
+      // A banner matters more than a relic, so it comes first of the two.
+      board.banners.foreach(banner =>
+        cards.appendChild(BannerFace.place(banner, options)))
+      board.relics.zipWithIndex.foreach((card, at) => cards.appendChild(
+        options.card(CardFace.render(card), card,
+          boardCardKeys("relic-slot", player.playerId, at, card))))
+      section.appendChild(cards)
+      }
+      panel.appendChild(section)
+    }
+    panel
+
+  /** Where a board's warbands are, one place a line. `own` is the viewer's
+    * board, which is "your" board; any other is "their". */
+  private[frontend] def warbandsNote(board: PlayerBoard, own: Boolean): String =
+    Vector(s"Warbands on ${if own then "your" else "their"} board: ${board.warbands}",
+      s"Warbands on sites: ${board.siteWarbands}",
+      s"Warbands in bank: ${board.bankedWarbands}").mkString("\n")
+
+  /** The keys a card on a player board answers to: its slot, and the card
+    * itself when the viewer may know which card it is.
+    */
+  private def boardCardKeys(slot: String, playerId: String, at: Int,
+      card: CardDetails): Vector[String] =
+    BoardOptionViews.key(slot, s"$playerId:$at") +:
+      Option.unless(card.hidden)(BoardOptions.cardKey(card)).toVector
+
+  /** The parked decision's badge for the option on `keys`, drawn inside
+    * `target`: what choosing it costs (travel destination and search source
+    * designs, ruling 3). */
+  private def badged(target: dom.Element, keys: Vector[String],
+      options: BoardOptions): Unit =
+    options.view(keys).flatMap(_.option.badge).foreach { badge =>
+      val chip = text("span", "target-detail-badge", "")
+      RulesTextRenderer.cost(badge, chip)
+      target.appendChild(chip)
+    }
+
+  /** The World pane. `options` draws the parked board decision onto its
+    * sites, cards, pawns, banks and banners.
+    */
+  def world(
+      value: GameProjection,
+      options: BoardOptions,
+      submit: Option[GameCommand => Unit] = None
+  ): dom.Element =
+    val panel = element("section", "panel world")
+    panel.setAttribute("aria-label", "The World")
+    panel.appendChild(text("h2", "", "The World"))
+    // The world deck is a Search's source and Clay Rattle's pile.
+    val deckKeys = Vector(BoardOptionViews.key("deck", "world"))
+    val deck = deckBody(value.worldDeckCount, value.worldDeckTopCardKind)
+    options.decorate(deck, deckKeys)
+    badged(deck, deckKeys, options)
+    val regions = element("div", "regions")
+    value.world.foreach { region =>
+      val section = element("section", "region")
+      val name = region.regionId match
+        case "cradle" => "Cradle"
+        case "provinces" => "Provinces"
+        case "hinterland" => "Hinterland"
+        case other => other
+      section.setAttribute("aria-label", name)
+      // The discard stands in the header's upper right, its top level with
+      // the region's name.
+      val header = element("div", "region-header")
+      header.appendChild(text("h3", "region-label", name))
+      val discardTitle = s"$name discard pile"
+      val discardKeys = Vector(BoardOptionViews.key("discard-pile",
+        region.regionId))
+      val discard = openableDeck(region.discardCount,
+        region.discardTopCardKind, discardTitle, region.discardCards)
+      badged(discard, discardKeys, options)
+      header.appendChild(deckFigure("Discard", options.control(discard,
+        discardKeys, Option.when(region.discardCount > 0)(discardTitle ->
+          (anchor => CardInspection.openCards(
+            s"$discardTitle (${region.discardCount})", region.discardCards,
+            anchor))))))
+      section.appendChild(header)
+      val sites = element("div", "sites")
+      region.sites.foreach { site =>
+        val control = element("article", "site site-readonly")
+        control.setAttribute("aria-label", site.label)
+        val siteKeys = Vector(BoardOptionViews.key("site", site.siteId))
+        options.decorate(control, siteKeys)
+        control.appendChild(siteHeading(site))
+        // What reaching this site costs, or why it cannot be reached, comes
+        // from the decision that offers it.
+        badged(control, siteKeys, options)
+        val pawns = element("div", "site-pawns")
+        value.pawnLocations.filter(_.siteId == site.siteId).foreach { pawn =>
+          val marker = element("span", "pawn")
+          marker.appendChild(dom.document.createTextNode("● "))
+          marker.appendChild(playerReference(value, pawn.playerId))
+          options.decorate(marker,
+            Vector(BoardOptionViews.key("player", pawn.playerId)))
+          pawns.appendChild(marker)
+        }
+        // Appended whether or not anyone stands here: the row holds its line
+        // of height either way, so the cards below it sit at the same place in
+        // every site on the board.
+        control.appendChild(pawns)
+        control.appendChild(siteDetails(site, options,
+          SitePowerLinks.of(value, submit)))
+        sites.appendChild(control)
+      }
+      section.appendChild(sites)
+      // The world deck shares the Cradle's foot with the round tracker, the
+      // deck as tall as the tracker's wheel.
+      if region.regionId == "cradle" then
+        val row = element("div", "deck-row")
+        value.tracks.foreach(track => row.appendChild(roundTracker(value, track)))
+        row.appendChild(deckFigure("World deck", deck))
+        section.appendChild(row)
+      regions.appendChild(section)
+    }
+    // The shared bank is a column beside the regions, not a row under them:
+    // the map pane is wider than it is tall, so the map fits by its height.
+    val layout = element("div", "world-layout")
+    val main = element("div", "world-main")
+    main.appendChild(regions)
+    main.appendChild(favorBanks(value, options))
+    layout.appendChild(main)
+    layout.appendChild(sharedBank(value, options))
+    panel.appendChild(layout)
+    panel
+
+  private[frontend] final case class RoundSegment(path: String, labelX: Double,
+      labelY: Double, markerX: Double, markerY: Double)
+
+  private[frontend] def roundSegment(round: Int): RoundSegment =
+    val center = 100.0; val outer = 88.0; val inner = 49.0
+    val start = Math.toRadians(-90.0 + (round - 1) * 45.0 + 2.0)
+    val end = Math.toRadians(-90.0 + round * 45.0 - 2.0)
+    def point(radius: Double, angle: Double) =
+      (center + radius * Math.cos(angle), center + radius * Math.sin(angle))
+    val (outerStartX, outerStartY) = point(outer, start)
+    val (outerEndX, outerEndY) = point(outer, end)
+    val (innerEndX, innerEndY) = point(inner, end)
+    val (innerStartX, innerStartY) = point(inner, start)
+    val middle = (start + end) / 2.0
+    val (labelX, labelY) = point(68.0, middle)
+    val (markerX, markerY) = point(94.0, middle)
+    def n(value: Double) = f"$value%.2f"
+    RoundSegment(s"M ${n(outerStartX)} ${n(outerStartY)} " +
+      s"A ${n(outer)} ${n(outer)} 0 0 1 ${n(outerEndX)} ${n(outerEndY)} " +
+      s"L ${n(innerEndX)} ${n(innerEndY)} " +
+      s"A ${n(inner)} ${n(inner)} 0 0 0 ${n(innerStartX)} ${n(innerStartY)} Z",
+      labelX, labelY, markerX, markerY)
+
+  private def roundTracker(value: GameProjection,
+      track: distantlands.protocol.projection.GameTracksProjection): dom.Element =
+    val section = element("section", "round-tracker")
+    val first = playerReference(value, track.firstPlayerId)
+    section.setAttribute("aria-label", s"Round ${track.round} of 8; " +
+      s"Visions Drawn ${track.visionsDrawn}; first player ${first.textContent}")
+    val svg = dom.document.createElementNS("http://www.w3.org/2000/svg", "svg")
+      .asInstanceOf[dom.svg.SVG]
+    svg.setAttribute("viewBox", "0 0 200 200")
+    svg.setAttribute("role", "img")
+    svg.setAttribute("aria-label", s"Eight-segment round tracker, current round ${track.round}")
+    (1 to 8).foreach { round =>
+      val segment = roundSegment(round)
+      val group = dom.document.createElementNS("http://www.w3.org/2000/svg", "g")
+      group.setAttribute("data-round", round.toString)
+      val path = dom.document.createElementNS("http://www.w3.org/2000/svg", "path")
+      path.setAttribute("d", segment.path)
+      path.setAttribute("class", if round == track.round then "round-current" else "round-segment")
+      val label = dom.document.createElementNS("http://www.w3.org/2000/svg", "text")
+      label.setAttribute("x", segment.labelX.toString)
+      label.setAttribute("y", segment.labelY.toString)
+      label.setAttribute("text-anchor", "middle"); label.setAttribute("dominant-baseline", "middle")
+      label.textContent = round.toString
+      group.appendChild(path); group.appendChild(label)
+      if track.usurperLimited && round == track.limiterRound then
+        val marker = dom.document.createElementNS("http://www.w3.org/2000/svg", "text")
+        marker.setAttribute("x", segment.markerX.toString)
+        marker.setAttribute("y", segment.markerY.toString)
+        marker.setAttribute("text-anchor", "middle"); marker.setAttribute("class", "limiter-marker")
+        marker.textContent = "◆"; group.appendChild(marker)
+      svg.appendChild(group)
+    }
+    section.appendChild(svg)
+    val summary = text("p", "track-summary",
+      s"Visions Drawn ${track.visionsDrawn} · First player ")
+    summary.appendChild(first)
+    section.appendChild(summary)
+    // Beside the marker the tracker already draws on that round, rather than
+    // in the action panel, which is about this turn rather than the game.
+    if track.usurperLimited then
+      section.appendChild(text("p", "usurper-notice",
+        s"Usurper locked until round ${track.limiterRound}"))
+    section
+
+  private def favorBanks(value: GameProjection,
+      options: BoardOptions): dom.Element =
+    val banks = element("div", "favor-banks")
+    banks.setAttribute("aria-label", "Favor banks")
+    value.favorBanks.foreach { bank =>
+      val box = text("span", s"favor-bank suit-${bank.suit}", "")
+      // The symbol first, as on a card: a player matching a bank against a
+      // card's suit reads the shape, not the word.
+      box.appendChild(RulesTextRenderer.glyph(s"suit-${bank.suit}"))
+      box.appendChild(dom.document.createTextNode(
+        s"${bank.suit.capitalize}: ${bank.count}"))
+      // The count is favor, drawn as the favor token is everywhere else.
+      box.appendChild(RulesTextRenderer.glyph("favor"))
+      options.decorate(box,
+        Vector(BoardOptionViews.key("favor-bank", bank.suit)))
+      banks.appendChild(box)
+    }
+    banks
+
+  private def sharedBank(value: GameProjection,
+      options: BoardOptions): dom.Element =
+    val section = element("section", "shared-bank")
+    section.appendChild(text("h3", "", "Shared Bank"))
+    // The oath and its holder on lines of their own: run together, the
+    // holder wrapped mid-phrase in the bank's column.
+    value.oathkeeper.foreach { oath =>
+      val status = element("p", "oathkeeper-status")
+      status.appendChild(text("span", "oathkeeper-goal",
+        distantlands.protocol.projection.OathkeeperPresentation.title(oath.goal)))
+      status.appendChild(text("span", "oathkeeper-holder",
+        s"${oath.side.capitalize}: ${oath.holderPlayerId.getOrElse("unheld")}"))
+      section.appendChild(status)
+    }
+    section.appendChild(pileDisplay("Relic deck", value.relicDeckCount, None))
+    if value.banners.nonEmpty then
+      val banners = element("div", "shared-banners")
+      value.banners.foreach(banner =>
+        banners.appendChild(BannerFace.place(banner, options)))
+      section.appendChild(banners)
+    section

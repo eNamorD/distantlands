@@ -113,7 +113,7 @@ The code forced these, or the spec left them open. Task 7 records each one in th
     - Grasping Vines `spared`: `Killed nothing, with {ruler}'s consent.`
   - Every other id, command, event, log line and UI string is slice 1's.
 - **Rulings** (spec, "Rulings"). These apply: 1, 3, 4, 5, 7, 8, 10, 12, 13, 14 and 15–19. Each step carries one power, so ruling 9's several granters still cannot arise.
-- **Never touch the live database `var/oathdigital`.** Never run `preview_start`.
+- **Never touch the live database `var/distantlands`.** Never run `preview_start`.
 - **Concurrent sessions.** Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree on branch `feat/consent-slice4`.
   - `EnterWorktree` branches from `origin`, which lags local `main`, so fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -122,7 +122,7 @@ The code forced these, or the spec left them open. Task 7 records each one in th
   - Copy this plan into the worktree if it is not committed on `main` yet; Task 7 commits it.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Verification commands:**
-  - One suite: `./sbtw "testOnly oathdigital.gameplay.walker.ChooseOneConsentSuite"` (any fully qualified suite name).
+  - One suite: `./sbtw "testOnly distantlands.gameplay.walker.ChooseOneConsentSuite"` (any fully qualified suite name).
   - Whole server: `./sbtw test`.
   - Full gate (Task 7):
     1. `./sbtw "test" "frontend/test"`
@@ -133,7 +133,7 @@ The code forced these, or the spec left them open. Task 7 records each one in th
 
 ## File map
 
-All `src/main/scala/...` paths below are under `src/main/scala/oathdigital/`, and test paths under `src/test/scala/oathdigital/`.
+All `src/main/scala/...` paths below are under `src/main/scala/distantlands/`, and test paths under `src/test/scala/distantlands/`.
 
 Created:
 
@@ -173,15 +173,15 @@ Modified:
 ### Task 1: The walker asks about a choose-one's barred option, and previews through a step
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/walker/ChooseOneConsentSuite.scala`
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSearch.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`narrowAt`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala` (`previewParked`, `answer`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` (doc only)
-- Test: `src/test/scala/oathdigital/gameplay/walker/WalkerPreviewSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/walker/ChooseOneConsentSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`narrowAt`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala` (`previewParked`, `answer`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/PricedOptions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` (doc only)
+- Test: `src/test/scala/distantlands/gameplay/walker/WalkerPreviewSuite.scala`
 
 **Interfaces:**
 - Consumes (slices 1 to 3):
@@ -200,17 +200,17 @@ Modified:
 
 - [ ] **Step 1: Write the failing walker tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/ChooseOneConsentSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/ChooseOneConsentSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{OptionRestriction, Waiver}
-import oathdigital.model._
-import oathdigital.testkit.PowerStubs.ContributingStub
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powerresolver.{OptionRestriction, Waiver}
+import distantlands.model._
+import distantlands.testkit.PowerStubs.ContributingStub
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** An option a waivable `OptionRestriction` bars at a choose-one hooked by
   * its own window: askable when a grant would open it, judged with the
@@ -306,7 +306,7 @@ class ChooseOneConsentSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Write the failing preview tests**
 
-In `src/test/scala/oathdigital/gameplay/walker/WalkerPreviewSuite.scala`, change the import `import oathdigital.gameplay.walker.WalkerSimulation.PreviewOutcome` to `import oathdigital.gameplay.walker.WalkerSimulation.{PreviewOutcome, PreviewedOption}`, then append:
+In `src/test/scala/distantlands/gameplay/walker/WalkerPreviewSuite.scala`, change the import `import distantlands.gameplay.walker.WalkerSimulation.PreviewOutcome` to `import distantlands.gameplay.walker.WalkerSimulation.{PreviewOutcome, PreviewedOption}`, then append:
 
 ```scala
   /** Two plain decisions, then a step in `stepWindow`, then 2 Supply. */
@@ -358,7 +358,7 @@ In `src/test/scala/oathdigital/gameplay/walker/WalkerPreviewSuite.scala`, change
 
 - [ ] **Step 3: Add the window**
 
-In `src/main/scala/oathdigital/model/PowerWindow.scala`, after the `NegotiationSettlement` case, add:
+In `src/main/scala/distantlands/model/PowerWindow.scala`, after the `NegotiationSettlement` case, add:
 
 ```scala
   /** A toll or penalty step an enemy of the card's player ruler answers: pay,
@@ -370,7 +370,7 @@ In `src/main/scala/oathdigital/model/PowerWindow.scala`, after the `NegotiationS
 
 - [ ] **Step 4: Run the walker tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.ChooseOneConsentSuite oathdigital.gameplay.walker.WalkerPreviewSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.ChooseOneConsentSuite distantlands.gameplay.walker.WalkerPreviewSuite"`
 
 Expected: FAIL.
 - "a barred option a grant would open is askable" fails: the free option is `Noted`, not `Askable`.
@@ -380,7 +380,7 @@ Expected: FAIL.
 
 - [ ] **Step 5: Add `optionAsks` to `WalkerPowerGather`**
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, add `DecisionOption` to the `oathdigital.model` import. After `optionAskable`, add:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, add `DecisionOption` to the `distantlands.model` import. After `optionAskable`, add:
 
 ```scala
   /** The asks of a parked choose-one's options that its own window's option
@@ -421,7 +421,7 @@ The `filter(_.power == noted)` keeps an option some other rule withheld (a writt
 
 - [ ] **Step 6: Add `reasoned` to `WalkerSearch`**
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerSearch.scala`, after `explained`, add:
+In `src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala`, after `explained`, add:
 
 ```scala
   /** `decide` with each unavailable option `reasons` names given that reason
@@ -443,7 +443,7 @@ In `src/main/scala/oathdigital/gameplay/walker/WalkerSearch.scala`, after `expla
 
 - [ ] **Step 7: Apply the asks in `narrowAt`**
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace `narrowAt` and its doc comment with:
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, replace `narrowAt` and its doc comment with:
 
 ```scala
   /** `decide` narrowed to the options from which some path reaches a legal
@@ -471,13 +471,13 @@ In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace `
 
 - [ ] **Step 8: Run the walker suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.ChooseOneConsentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.ChooseOneConsentSuite"`
 
 Expected: PASS, 5 tests.
 
 - [ ] **Step 9: Make previews follow a step**
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala`, add `PowerWindow` to the `oathdigital.model` import.
+In `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala`, add `PowerWindow` to the `distantlands.model` import.
 
 In the doc comment of `previewParked`, replace `(one level deep).` with:
 
@@ -515,7 +515,7 @@ Replace `answer` with:
 
 - [ ] **Step 10: Make badges and shortfalls read every way on**
 
-In `src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala`, replace `answerable` and `badge` (with their doc comments) with:
+In `src/main/scala/distantlands/gameplay/walker/PricedOptions.scala`, replace `answerable` and `badge` (with their doc comments) with:
 
 ```scala
   /** Whether the walk can go on from `outcome`: it finished, its further
@@ -544,7 +544,7 @@ In `shortfall`, replace `val (supply, favor) = spent(outcome.operations, actor)`
 
 - [ ] **Step 11: Update the `OptionRestriction` doc**
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`, in the `OptionRestriction` doc comment, replace
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, in the `OptionRestriction` doc comment, replace
 
 ```
   * enemies: a grant remembered for the decision and the option lifts it, and
@@ -563,22 +563,22 @@ with
 
 - [ ] **Step 12: Run the walker suites and the whole server**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.*"`. Expected: PASS.
+Run: `./sbtw "testOnly distantlands.gameplay.walker.*"`. Expected: PASS.
 
 Run: `./sbtw test`. Expected: PASS. No card uses the window yet, so every other suite is unchanged.
 
 - [ ] **Step 13: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerSearch.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala \
-  src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala \
-  src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala \
-  src/test/scala/oathdigital/gameplay/walker/ChooseOneConsentSuite.scala \
-  src/test/scala/oathdigital/gameplay/walker/WalkerPreviewSuite.scala
+git add src/main/scala/distantlands/model/PowerWindow.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala \
+  src/main/scala/distantlands/gameplay/walker/PricedOptions.scala \
+  src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala \
+  src/test/scala/distantlands/gameplay/walker/ChooseOneConsentSuite.scala \
+  src/test/scala/distantlands/gameplay/walker/WalkerPreviewSuite.scala
 git commit -m "feat(consent): ask about a choose-one's barred option, and preview through a pay-or-ask step"
 ```
 
@@ -587,15 +587,15 @@ git commit -m "feat(consent): ask about a choose-one's barred option, and previe
 ### Task 2: Toll Roads asks to pay or travel free
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/PayOrAsk.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsConsentSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RulerToll.scala` (`payOption`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala` (`rewrite`, `favorOwed`)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/travel/WayStationSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/PayOrAsk.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsConsentSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/RulerToll.scala` (`payOption`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala` (`rewrite`, `favorOwed`)
+- Modify: `src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/travel/WayStationSuite.scala`
+- Modify: `src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala`
 
 **Interfaces:**
 - Consumes (Task 1): `PowerWindow.PayOrAsk`; the walker's choose-one asks; previews through a step.
@@ -615,7 +615,7 @@ git commit -m "feat(consent): ask about a choose-one's barred option, and previe
 
 - [ ] **Step 1: Add the test helper**
 
-In `src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala`, after `travel`, add:
+In `src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala`, after `travel`, add:
 
 ```scala
   /** `from`, parked on a pay-or-ask step, continued by `actor` answering it
@@ -629,17 +629,17 @@ In `src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala`, afte
 
 - [ ] **Step 2: Write the failing consent tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsConsentSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsConsentSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks,
+import distantlands.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Outcomes, PlacementPicks,
   Table}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Toll Roads' pay-or-ask step (consent design, "Toll and penalty steps",
   * rulings 7, 8 and 12). */
@@ -711,21 +711,21 @@ class TollRoadsConsentSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.TollRoadsConsentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.TollRoadsConsentSuite"`
 
 Expected: compilation FAIL: `PayOrAsk` and `TollRoads.free` are not defined.
 
 - [ ] **Step 4: Write `PayOrAsk`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/PayOrAsk.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/PayOrAsk.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx,
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.{OptionRestriction, PowerCtx,
   Waiver}
-import oathdigital.model._
+import distantlands.model._
 
 /** A toll or penalty a card's ruling player may waive (consent design, "Toll
   * and penalty steps"). When a player other than the payer rules the card,
@@ -806,7 +806,7 @@ object PayOrAsk:
 
 - [ ] **Step 5: Add the paying option to `RulerToll`**
 
-In `src/main/scala/oathdigital/gameplay/powers/RulerToll.scala`, after `enemyRuler`, add:
+In `src/main/scala/distantlands/gameplay/powers/RulerToll.scala`, after `enemyRuler`, add:
 
 ```scala
   /** The paying option of a toll step, "Give 1 favor to {owner}",
@@ -826,9 +826,9 @@ In `src/main/scala/oathdigital/gameplay/powers/RulerToll.scala`, after `enemyRul
 
 - [ ] **Step 6: Convert Toll Roads**
 
-In `src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala`:
+In `src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala`:
 
-1. Change the import `import oathdigital.gameplay.powers.{CatalogResolution, NoteSupport}` to `import oathdigital.gameplay.powers.{CatalogResolution, NoteSupport, PayOrAsk, RulerToll}`.
+1. Change the import `import distantlands.gameplay.powers.{CatalogResolution, NoteSupport}` to `import distantlands.gameplay.powers.{CatalogResolution, NoteSupport, PayOrAsk, RulerToll}`.
 
 2. Replace the class's doc comment with:
 
@@ -922,7 +922,7 @@ In `src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala`:
 
 - [ ] **Step 7: Ask Way Station first and pay it last, and count the step's favor**
 
-In `src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala`:
+In `src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala`:
 
 1. In the class's doc comment, replace
 
@@ -995,15 +995,15 @@ with
 
 - [ ] **Step 8: Run the consent suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.TollRoadsConsentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.TollRoadsConsentSuite"`
 
 Expected: PASS, 4 tests.
 
 - [ ] **Step 9: Update the Toll Roads and Way Station suites**
 
-In `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala`:
+In `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala`:
 
-1. Change the import `import oathdigital.gameplay.powers.{NoteText, PowerFixture}` to `import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}`.
+1. Change the import `import distantlands.gameplay.powers.{NoteText, PowerFixture}` to `import distantlands.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}`.
 
 2. After `said`, add:
 
@@ -1022,9 +1022,9 @@ In `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala`:
 
    Leave every other test as it is. A broke traveller is still refused until Task 5. A site the ruler does not rule, the ruler's own Travel and bandits get no step.
 
-In `src/test/scala/oathdigital/gameplay/powers/travel/WayStationSuite.scala`:
+In `src/test/scala/distantlands/gameplay/powers/travel/WayStationSuite.scala`:
 
-1. Change the import `import oathdigital.gameplay.powers.{NoteText, PowerFixture, RulerToll}` to `import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture, RulerToll}`.
+1. Change the import `import distantlands.gameplay.powers.{NoteText, PowerFixture, RulerToll}` to `import distantlands.gameplay.powers.{NoteText, PayOrAsk, PowerFixture, RulerToll}`.
 
 2. Replace the last two tests with:
 
@@ -1057,7 +1057,7 @@ In `src/test/scala/oathdigital/gameplay/powers/travel/WayStationSuite.scala`:
 
 - [ ] **Step 10: Pin the badge of a granted toll**
 
-In `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`, change the import `import oathdigital.gameplay.powers.travel.{Tents, TravelFixture}` to `import oathdigital.gameplay.powers.travel.{Tents, TollRoads, TravelFixture}`. After the test "a toll adds its favor to the badge", add:
+In `src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala`, change the import `import distantlands.gameplay.powers.travel.{Tents, TravelFixture}` to `import distantlands.gameplay.powers.travel.{Tents, TollRoads, TravelFixture}`. After the test "a toll adds its favor to the badge", add:
 
 ```scala
   test("a toll its ruler waived reads both ways on"):
@@ -1074,7 +1074,7 @@ In `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`, ch
 
 - [ ] **Step 11: Run the travel suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.* oathdigital.application.TravelDestinationRowsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.* distantlands.application.TravelDestinationRowsSuite"`
 
 Expected: PASS. The existing toll badges ("1 Supply · 1 favor", "1 Supply · 1 favor or 2 favor") and "Needs 1 favor; you have 0" keep their text, because the previews follow the step.
 
@@ -1087,15 +1087,15 @@ Expected: PASS. If a suite outside this task's list fails because a Travel now p
 - [ ] **Step 13: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/PayOrAsk.scala \
-  src/main/scala/oathdigital/gameplay/powers/RulerToll.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/TravelFixture.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsConsentSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/WayStationSuite.scala \
-  src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/PayOrAsk.scala \
+  src/main/scala/distantlands/gameplay/powers/RulerToll.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/TollRoadsConsentSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/WayStationSuite.scala \
+  src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala
 git commit -m "feat(consent): Toll Roads asks an enemy to pay or travel free with its ruler's consent"
 ```
 
@@ -1104,13 +1104,13 @@ git commit -m "feat(consent): Toll Roads asks an enemy to pay or travel free wit
 ### Task 3: Forced Labor and Curfew ask to pay or go free
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RulerToll.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/ForcedLabor.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/Curfew.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (doc only)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala` (a test's name)
+- Modify: `src/main/scala/distantlands/gameplay/powers/RulerToll.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/ForcedLabor.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/Curfew.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (doc only)
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala` (a test's name)
 
 **Interfaces:**
 - Consumes (Task 2): `PayOrAsk` (`around`, `question`, `outcome`), `PayOrAsk.pay`, `PayOrAsk.free` and `RulerToll.payOption`.
@@ -1123,12 +1123,12 @@ git commit -m "feat(consent): Toll Roads asks an enemy to pay or travel free wit
 
 - [ ] **Step 1: Write the failing tests**
 
-In `src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala`:
+In `src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala`:
 
 1. Change these imports:
-   - `import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}` to `import oathdigital.gameplay.powers.{NoteText, PayOrAsk, SearchFixture, WalkerPowerCatalog}`;
-   - `import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}` to `import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, PlacementPicks, Table}`;
-   - `import oathdigital.testkit.Unwrap.accepted` to `import oathdigital.testkit.Unwrap.{accepted, present}`.
+   - `import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}` to `import distantlands.gameplay.powers.{NoteText, PayOrAsk, SearchFixture, WalkerPowerCatalog}`;
+   - `import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Table}` to `import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, PlacementPicks, Table}`;
+   - `import distantlands.testkit.Unwrap.accepted` to `import distantlands.testkit.Unwrap.{accepted, present}`.
 
 2. After `said`, add:
 
@@ -1182,12 +1182,12 @@ The suite-level `automatic` replaces them.
       s"Gave nothing, with ${p2.value}'s consent.", covers = false)))
 ```
 
-In `src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala`:
+In `src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala`:
 
 1. Change these imports, and add one:
-   - `import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}` to `import oathdigital.gameplay.powers.{NoteText, PayOrAsk, WalkerPowerCatalog}`;
-   - `import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions, Look, Table}` to `import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions, Look, Outcomes, PlacementPicks, Table}`;
-   - add `import oathdigital.testkit.Unwrap.{accepted, present}`.
+   - `import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}` to `import distantlands.gameplay.powers.{NoteText, PayOrAsk, WalkerPowerCatalog}`;
+   - `import distantlands.testkit.{ActPowerHarness, CatalogNames, EconomyActions, Look, Table}` to `import distantlands.testkit.{ActPowerHarness, CatalogNames, EconomyActions, Look, Outcomes, PlacementPicks, Table}`;
+   - add `import distantlands.testkit.Unwrap.{accepted, present}`.
 
 2. After `said`, add:
 
@@ -1246,13 +1246,13 @@ In `src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala`:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.ForcedLaborSuite oathdigital.gameplay.powers.economy.CurfewSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.ForcedLaborSuite distantlands.gameplay.powers.economy.CurfewSuite"`
 
 Expected: compilation FAIL: `ForcedLabor.decisionId`, `ForcedLabor.free`, `Curfew.decisionId` and `Curfew.free` are not defined.
 
 - [ ] **Step 3: Add the shared toll step to `RulerToll`**
 
-In `src/main/scala/oathdigital/gameplay/powers/RulerToll.scala`:
+In `src/main/scala/distantlands/gameplay/powers/RulerToll.scala`:
 
 1. In the object's doc comment, replace
 
@@ -1299,9 +1299,9 @@ with
 
 - [ ] **Step 4: Convert Forced Labor**
 
-In `src/main/scala/oathdigital/gameplay/powers/search/ForcedLabor.scala`:
+In `src/main/scala/distantlands/gameplay/powers/search/ForcedLabor.scala`:
 
-1. Change `import oathdigital.gameplay.powers.{CatalogResolution, RulerToll}` to `import oathdigital.gameplay.powers.{CatalogResolution, PayOrAsk, RulerToll}`.
+1. Change `import distantlands.gameplay.powers.{CatalogResolution, RulerToll}` to `import distantlands.gameplay.powers.{CatalogResolution, PayOrAsk, RulerToll}`.
 
 2. In the class's doc comment, replace
 
@@ -1369,9 +1369,9 @@ with
 
 - [ ] **Step 5: Convert Curfew**
 
-In `src/main/scala/oathdigital/gameplay/powers/economy/Curfew.scala`:
+In `src/main/scala/distantlands/gameplay/powers/economy/Curfew.scala`:
 
-1. Change `import oathdigital.gameplay.powers.{CatalogResolution, PowerAnswers, RuledCards, RulerToll}` to `import oathdigital.gameplay.powers.{CatalogResolution, PayOrAsk, PowerAnswers, RuledCards, RulerToll}`.
+1. Change `import distantlands.gameplay.powers.{CatalogResolution, PowerAnswers, RuledCards, RulerToll}` to `import distantlands.gameplay.powers.{CatalogResolution, PayOrAsk, PowerAnswers, RuledCards, RulerToll}`.
 
 2. In the class's doc comment, replace
 
@@ -1465,7 +1465,7 @@ with
 
 - [ ] **Step 6: Run the two suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.ForcedLaborSuite oathdigital.gameplay.powers.economy.CurfewSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.ForcedLaborSuite distantlands.gameplay.powers.economy.CurfewSuite"`
 
 Expected: PASS.
 
@@ -1473,7 +1473,7 @@ Expected: PASS.
 
 Forced Labor's toll now runs after the Search's Supply, so the log script's story changes.
 
-In `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, in the doc comment of `forcedLaborSearch`, replace
+In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, in the doc comment of `forcedLaborSearch`, replace
 
 ```
     * Ancient City, where p1 stands: p1's Search of the world deck gives p2
@@ -1489,7 +1489,7 @@ with
     * Supply and the start's 1 favor. */
 ```
 
-In `src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala`, rename the test
+In `src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala`, rename the test
 
 ```scala
   test("a Search whose first recorded step is Forced Labor's toll opens " +
@@ -1507,7 +1507,7 @@ Leave its body as it is.
 
 - [ ] **Step 8: Run the suites that read Forced Labor's toll**
 
-Run: `./sbtw "testOnly oathdigital.application.SearchSourceRowsSuite oathdigital.application.gamelog.GameLogStartLineSuite"`
+Run: `./sbtw "testOnly distantlands.application.SearchSourceRowsSuite distantlands.application.gamelog.GameLogStartLineSuite"`
 
 Expected: PASS.
 - "Forced Labor's toll joins the badge of both piles" keeps `2 Supply · 1 favor`, because the previews follow the step.
@@ -1524,13 +1524,13 @@ Expected: PASS. If a suite outside this task's list fails because a Search or a 
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/RulerToll.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/ForcedLabor.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/Curfew.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogStartLineSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/RulerToll.scala \
+  src/main/scala/distantlands/gameplay/powers/search/ForcedLabor.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/Curfew.scala \
+  src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogStartLineSuite.scala
 git commit -m "feat(consent): Forced Labor and Curfew ask an enemy to pay or go free with their ruler's consent"
 ```
 
@@ -1539,8 +1539,8 @@ git commit -m "feat(consent): Forced Labor and Curfew ask an enemy to pay or go 
 ### Task 4: Grasping Vines asks to kill or travel free
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/travel/GraspingVinesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/travel/GraspingVinesSuite.scala`
 
 **Interfaces:**
 - Consumes (Task 2): `PayOrAsk.around`, `PayOrAsk.pay`, `PayOrAsk.free` and `TravelFixture.answeringStep`.
@@ -1548,12 +1548,12 @@ git commit -m "feat(consent): Forced Labor and Curfew ask an enemy to pay or go 
 
 - [ ] **Step 1: Write the failing tests**
 
-In `src/test/scala/oathdigital/gameplay/powers/travel/GraspingVinesSuite.scala`:
+In `src/test/scala/distantlands/gameplay/powers/travel/GraspingVinesSuite.scala`:
 
 1. Change these imports:
-   - `import oathdigital.gameplay.powers.{NoteText, PowerFixture}` to `import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}`;
-   - `import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes, Table}` to `import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes, PlacementPicks, Table}`;
-   - `import oathdigital.testkit.Unwrap.accepted` to `import oathdigital.testkit.Unwrap.{accepted, present}`.
+   - `import distantlands.gameplay.powers.{NoteText, PowerFixture}` to `import distantlands.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}`;
+   - `import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes, Table}` to `import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes, PlacementPicks, Table}`;
+   - `import distantlands.testkit.Unwrap.accepted` to `import distantlands.testkit.Unwrap.{accepted, present}`.
 
 2. After `said`, add:
 
@@ -1599,15 +1599,15 @@ In `src/test/scala/oathdigital/gameplay/powers/travel/GraspingVinesSuite.scala`:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.GraspingVinesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.GraspingVinesSuite"`
 
 Expected: compilation FAIL: `GraspingVines.decisionId` and `GraspingVines.free` are not defined.
 
 - [ ] **Step 3: Convert Grasping Vines**
 
-In `src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala`:
+In `src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala`:
 
-1. Change `import oathdigital.gameplay.powers.{CatalogResolution, NoteSupport}` to `import oathdigital.gameplay.powers.{CatalogResolution, NoteSupport, PayOrAsk}`.
+1. Change `import distantlands.gameplay.powers.{CatalogResolution, NoteSupport}` to `import distantlands.gameplay.powers.{CatalogResolution, NoteSupport, PayOrAsk}`.
 
 2. In the class's doc comment, replace
 
@@ -1703,15 +1703,15 @@ and after the line `  * traveller with no warband reads nothing.`, add:
 
 - [ ] **Step 4: Run the Vines suite, then the whole server**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.GraspingVinesSuite"`. Expected: PASS.
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.GraspingVinesSuite"`. Expected: PASS.
 
 Run: `./sbtw test`. Expected: PASS. If a suite outside this task's list fails because a Travel now parks on the Vines' step, answer the step with `PayOrAsk.pay` there, and list the suite in the commit.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/GraspingVinesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/GraspingVinesSuite.scala
 git commit -m "feat(consent): Grasping Vines asks an enemy to kill or travel free with its ruler's consent"
 ```
 
@@ -1720,12 +1720,12 @@ git commit -m "feat(consent): Grasping Vines asks an enemy to kill or travel fre
 ### Task 5: A payer who cannot pay may still ask
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`narrowAt`, `reach`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala` (`previewParked`)
-- Test: `src/test/scala/oathdigital/gameplay/walker/ChooseOneConsentSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala`, `TollRoadsConsentSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala`
-- Test: `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`narrowAt`, `reach`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala` (`previewParked`)
+- Test: `src/test/scala/distantlands/gameplay/walker/ChooseOneConsentSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala`, `TollRoadsConsentSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala`, `src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala`
+- Test: `src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala`
 
 **Interfaces:**
 - Consumes (Tasks 1 to 4):
@@ -1739,7 +1739,7 @@ git commit -m "feat(consent): Grasping Vines asks an enemy to kill or travel fre
 
 - [ ] **Step 1: Write the failing walker tests**
 
-In `src/test/scala/oathdigital/gameplay/walker/ChooseOneConsentSuite.scala`, add the import `import oathdigital.gameplay.walker.WalkerSimulation.{PreviewOutcome, PreviewedOption}`, then append:
+In `src/test/scala/distantlands/gameplay/walker/ChooseOneConsentSuite.scala`, add the import `import distantlands.gameplay.walker.WalkerSimulation.{PreviewOutcome, PreviewedOption}`, then append:
 
 ```scala
   private val unpayable = DecisionOption.Unavailable(payButton,
@@ -1789,7 +1789,7 @@ In `src/test/scala/oathdigital/gameplay/walker/ChooseOneConsentSuite.scala`, add
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.ChooseOneConsentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.ChooseOneConsentSuite"`
 
 Expected: FAIL.
 - "a step its payer cannot pay is still reached" fails in `parkedAt`. The search finds no answer at the step, so "go" has nothing left and the advance is refused.
@@ -1799,7 +1799,7 @@ Expected: FAIL.
 
 - [ ] **Step 3: Let the search stop where an option may be asked about**
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace `reach` and its doc comment with:
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, replace `reach` and its doc comment with:
 
 ```scala
   /** A search at a decision it reaches. Back at a decision it already stands
@@ -1827,7 +1827,7 @@ In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace `
       grantable(decide, ctx, path)).toMap
 ```
 
-Add `OptionReason` to the `oathdigital.model` import if it is not there.
+Add `OptionReason` to the `distantlands.model` import if it is not there.
 
 - [ ] **Step 4: Keep a step the walk reaches only to ask**
 
@@ -1862,7 +1862,7 @@ In the same file, replace `narrowAt` (Task 1's version) with:
 
 - [ ] **Step 5: Preview an unpayable step's free way on**
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala`, add `ConsentKey`, `ConsentTurn` and `OptionReason` to the `oathdigital.model` import.
+In `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala`, add `ConsentKey`, `ConsentTurn` and `OptionReason` to the `distantlands.model` import.
 
 In the doc comment of `previewParked`, after the sentence Task 1 added (ending `asks (consent slice 4).`), add:
 
@@ -1917,13 +1917,13 @@ After `waitsOnStep`, add:
 
 - [ ] **Step 6: Run the walker suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.*"`
 
 Expected: PASS.
 
 - [ ] **Step 7: Rewrite the card tests a short payer now passes**
 
-In `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala`, replace the test "a traveller who cannot pay does not get the destination" with:
+In `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala`, replace the test "a traveller who cannot pay does not get the destination" with:
 
 ```scala
   test("a traveller who cannot pay, and was refused this turn, does not " +
@@ -1940,7 +1940,7 @@ In `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala`, rep
     assert(candidates(refused).contains(hinterlandPlains))
 ```
 
-In `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsConsentSuite.scala`, append:
+In `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsConsentSuite.scala`, append:
 
 ```scala
   test("a traveller who cannot pay is offered the destination to ask, and " +
@@ -1958,7 +1958,7 @@ In `src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsConsentSuite.scal
       Some(coast))
 ```
 
-In `src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala`, replace the test "a searcher who cannot pay is not offered the Search" with:
+In `src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala`, replace the test "a searcher who cannot pay is not offered the Search" with:
 
 ```scala
   test("a searcher who cannot pay may start the Search only to ask its " +
@@ -1972,7 +1972,7 @@ In `src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala`, r
     assert(SearchFixture.start(banditBroke).isLeft)
 ```
 
-In `src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala`, replace the test "a trader who cannot pay is not offered the card" with:
+In `src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala`, replace the test "a trader who cannot pay is not offered the card" with:
 
 ```scala
   test("a trader who cannot pay is offered the card only to ask its ruler; " +
@@ -1982,7 +1982,7 @@ In `src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala`, repla
       .favor(p1, 0).ready))
 ```
 
-In `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`, replace the test "a toll the actor cannot pay says how much favor it needs" with:
+In `src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala`, replace the test "a toll the actor cannot pay says how much favor it needs" with:
 
 ```scala
   test("a toll the actor cannot pay says how much favor it needs, under " +
@@ -2006,21 +2006,21 @@ In `src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala`, re
 
 - [ ] **Step 8: Run the card suites and the whole server**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.* oathdigital.gameplay.powers.search.ForcedLaborSuite oathdigital.gameplay.powers.economy.CurfewSuite oathdigital.application.TravelDestinationRowsSuite oathdigital.application.SearchSourceRowsSuite"`. Expected: PASS.
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.* distantlands.gameplay.powers.search.ForcedLaborSuite distantlands.gameplay.powers.economy.CurfewSuite distantlands.application.TravelDestinationRowsSuite distantlands.application.SearchSourceRowsSuite"`. Expected: PASS.
 
 Run: `./sbtw test`. Expected: PASS.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala \
-  src/test/scala/oathdigital/gameplay/walker/ChooseOneConsentSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/travel/TollRoadsConsentSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/CurfewSuite.scala \
-  src/test/scala/oathdigital/application/TravelDestinationRowsSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala \
+  src/test/scala/distantlands/gameplay/walker/ChooseOneConsentSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/travel/TollRoadsConsentSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/CurfewSuite.scala \
+  src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala
 git commit -m "feat(consent): let a payer who cannot pay a toll ask its ruler to go free"
 ```
 
@@ -2029,11 +2029,11 @@ git commit -m "feat(consent): let a payer who cannot pay a toll ask its ruler to
 ### Task 6: The service, the prompt and the log
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/TollConsentFixture.scala`
-- Create: `src/test/scala/oathdigital/application/TollConsentServiceSuite.scala`
-- Modify: `src/main/scala/oathdigital/application/ConsentProjector.scala` (`target`)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogConsentSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala`
+- Create: `src/test/scala/distantlands/application/TollConsentFixture.scala`
+- Create: `src/test/scala/distantlands/application/TollConsentServiceSuite.scala`
+- Modify: `src/main/scala/distantlands/application/ConsentProjector.scala` (`target`)
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogConsentSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -2043,16 +2043,16 @@ git commit -m "feat(consent): let a payer who cannot pay a toll ask its ruler to
 
 - [ ] **Step 1: Write the fixture**
 
-Create `src/test/scala/oathdigital/application/TollConsentFixture.scala`:
+Create `src/test/scala/distantlands/application/TollConsentFixture.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.travel.{TollRoads, TravelFixture}
-import oathdigital.model._
-import oathdigital.testkit.CatalogNames
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.travel.{TollRoads, TravelFixture}
+import distantlands.model._
+import distantlands.testkit.CatalogNames
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** A game for a toll's consent through the service: TravelFixture's board
   * with Toll Roads at the Provinces' plains, and p2 ruling it and the coast.
@@ -2082,20 +2082,20 @@ object TollConsentFixture:
 
 - [ ] **Step 2: Write the failing service tests**
 
-Create `src/test/scala/oathdigital/application/TollConsentServiceSuite.scala`:
+Create `src/test/scala/distantlands/application/TollConsentServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.PayOrAsk
-import oathdigital.gameplay.powers.travel.{TollRoads, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathEvent.ConsentAnswered
-import oathdigital.protocol.projection._
-import oathdigital.testkit.{Look, Outcomes}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.PayOrAsk
+import distantlands.gameplay.powers.travel.{TollRoads, TravelFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathEvent.ConsentAnswered
+import distantlands.protocol.projection._
+import distantlands.testkit.{Look, Outcomes}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Asking a toll's ruler to travel without paying, through the service
   * (consent design, "Toll and penalty steps", rulings 7 and 10 to 13). */
@@ -2188,7 +2188,7 @@ class TollConsentServiceSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Write the failing log and registry tests**
 
-In `src/test/scala/oathdigital/application/gamelog/GameLogConsentSuite.scala`, change `import oathdigital.application.{ConsentFixture, GameAccepted, GameApplicationService, GameCommand}` to `import oathdigital.application.{ConsentFixture, GameAccepted, GameApplicationService, GameCommand, TollConsentFixture}`, then append:
+In `src/test/scala/distantlands/application/gamelog/GameLogConsentSuite.scala`, change `import distantlands.application.{ConsentFixture, GameAccepted, GameApplicationService, GameCommand}` to `import distantlands.application.{ConsentFixture, GameAccepted, GameApplicationService, GameCommand, TollConsentFixture}`, then append:
 
 ```scala
   test("a request from a button names it by its label"):
@@ -2200,10 +2200,10 @@ In `src/test/scala/oathdigital/application/gamelog/GameLogConsentSuite.scala`, c
       "Toll Roads and select Travel without paying."), texts(log(service, p1)))
 ```
 
-In `src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala`:
+In `src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala`:
 
-1. Change `import oathdigital.gameplay.powers.travel.{MinesSite, NarrowPassSite, NarrowPassSitePower, TravelFixture}` to `import oathdigital.gameplay.powers.travel.{GraspingVines, MinesSite, NarrowPassSite, NarrowPassSitePower, TollRoads, TravelFixture}`.
-2. Add the imports `import oathdigital.gameplay.powers.economy.Curfew` and `import oathdigital.gameplay.powers.search.ForcedLabor`.
+1. Change `import distantlands.gameplay.powers.travel.{MinesSite, NarrowPassSite, NarrowPassSitePower, TravelFixture}` to `import distantlands.gameplay.powers.travel.{GraspingVines, MinesSite, NarrowPassSite, NarrowPassSitePower, TollRoads, TravelFixture}`.
+2. Add the imports `import distantlands.gameplay.powers.economy.Curfew` and `import distantlands.gameplay.powers.search.ForcedLabor`.
 3. Append:
 
 ```scala
@@ -2230,7 +2230,7 @@ Without p2's warbands, no player rules Toll Roads' site, so the second case has 
 
 - [ ] **Step 4: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.TollConsentServiceSuite oathdigital.application.gamelog.GameLogConsentSuite oathdigital.gameplay.powers.ConsentPowersSuite"`
+Run: `./sbtw "testOnly distantlands.application.TollConsentServiceSuite distantlands.application.gamelog.GameLogConsentSuite distantlands.gameplay.powers.ConsentPowersSuite"`
 
 Expected: FAIL in one test only: "the ruler's prompt names the free option by its label" gets the raw key `free.<coast id>` instead of `Travel without paying`. The other new tests already pass:
 - the log line reads the label from the parked decision through `ChoiceWords`;
@@ -2240,7 +2240,7 @@ If "after No, a traveller who cannot pay has only Undo" fails because the projec
 
 - [ ] **Step 5: Name a button by its label in the prompt**
 
-In `src/main/scala/oathdigital/application/ConsentProjector.scala`, replace `target` and its doc comment with:
+In `src/main/scala/distantlands/application/ConsentProjector.scala`, replace `target` and its doc comment with:
 
 ```scala
   /** The option asked about, named as its decision row names it. A button
@@ -2267,18 +2267,18 @@ In `src/main/scala/oathdigital/application/ConsentProjector.scala`, replace `tar
 
 - [ ] **Step 6: Run the tests and the consent suites**
 
-Run: `./sbtw "testOnly oathdigital.application.TollConsentServiceSuite oathdigital.application.gamelog.GameLogConsentSuite oathdigital.gameplay.powers.ConsentPowersSuite oathdigital.application.ConsentProjectionSuite oathdigital.application.ConsentRequestServiceSuite"`
+Run: `./sbtw "testOnly distantlands.application.TollConsentServiceSuite distantlands.application.gamelog.GameLogConsentSuite distantlands.gameplay.powers.ConsentPowersSuite distantlands.application.ConsentProjectionSuite distantlands.application.ConsentRequestServiceSuite"`
 
 Expected: PASS. The Pass's prompt still reads "Dunes": a site is not a button.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/ConsentProjector.scala \
-  src/test/scala/oathdigital/application/TollConsentFixture.scala \
-  src/test/scala/oathdigital/application/TollConsentServiceSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogConsentSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala
+git add src/main/scala/distantlands/application/ConsentProjector.scala \
+  src/test/scala/distantlands/application/TollConsentFixture.scala \
+  src/test/scala/distantlands/application/TollConsentServiceSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogConsentSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala
 git commit -m "feat(consent): ask a toll's ruler through the service, and name a button in the prompt"
 ```
 

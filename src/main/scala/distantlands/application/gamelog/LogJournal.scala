@@ -1,0 +1,142 @@
+package distantlands.application.gamelog
+
+import distantlands.engine.ReplayStep
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
+  ProcedureWalker, WalkerCompleted, WalkerParked, WalkerStepRecorded}
+import distantlands.model._
+
+/** One operation of a recorded batch with the state just before and just
+  * after it (spec, "Input"). */
+private[gamelog] final case class OpStep(operation: CoreOperation,
+    before: ReadyGame, after: ReadyGame)
+
+/** A walker run in progress: its procedure, whose action it is (the walk's
+  * actor: a dequeued entry's actor, else the turn's player), the index of
+  * its first event, and -- once posted -- the segment end of its start line.
+  */
+private[gamelog] final case class Run(procedure: ProcedureRef, actor: PlayerId,
+    first: Int, started: Option[Int])
+
+/** The scanned journal a formatting reads. Indices are positions in `steps`;
+  * `sequence` reads an event's journal sequence. They differ once an undo
+  * has voided events, which the formatter leaves out of the steps it reads
+  * (undo design, "Game Log").
+  *
+  * A segment is what one command appends, ending at a `walker.parked` or
+  * `walker.completed`; a line may read ahead to the end of its own segment
+  * and no further (spec, "Posting").
+  */
+private[gamelog] final class LogJournal(
+    steps: Vector[ReplayStep[OathState, OathEvent]],
+    applied: ReplayStep[OathState, OathEvent] => Vector[OpStep] =
+      LogJournal.opSteps):
+  private val closings: Vector[Option[Int]] =
+    steps.indices.foldRight(List.empty[Option[Int]]) { (index, later) =>
+      val next = later.headOption.flatten
+      (steps(index).event.event match
+        case _: WalkerParked | _: WalkerCompleted => Some(index)
+        case _ => next) :: later
+    }.toVector
+
+  private val batches: Vector[Vector[OpStep]] = steps.map(applied)
+
+  def size: Int = steps.size
+  def event(index: Int): OathEvent = steps(index).event.event
+  def sequence(index: Int): Long = steps(index).event.index
+  def readyBefore(index: Int): Option[ReadyGame] =
+    LogJournal.ready(steps(index).before)
+  def readyAfter(index: Int): Option[ReadyGame] =
+    LogJournal.ready(steps(index).after)
+  def ops(index: Int): Vector[OpStep] = batches(index)
+
+  /** The last event of `index`'s segment: its closing event, or `index`
+    * itself when no closing event follows in this prefix. */
+  def segmentEnd(index: Int): Int = closings(index).getOrElse(index)
+
+  /** The procedure `index`'s segment belongs to, named only by the segment's
+    * closing event: a step carries none. */
+  def procedureAt(index: Int): Option[ProcedureRef] =
+    closings(index).map(event).collect {
+      case parked: WalkerParked => parked.procedure
+      case completed: WalkerCompleted => completed.procedure
+    }
+
+  /** Whether `power` journals its own `used` note in `run`, up to the end of
+    * `at`'s segment. That line then replaces "Used {card}". */
+  def notedUse(run: Run, power: PowerId, at: Int): Boolean =
+    (run.first to segmentEnd(at)).exists(index => event(index) match
+      case LogNoted(`power`, note, _) => NoteKey.isUse(note.key)
+      case _ => false)
+
+  /** Whether a covering note restates the step at `index`: one follows it
+    * in its segment before the next step.
+    *
+    * A note is never covered. A covering note drops the generic lines of
+    * the step it restates, and a procedure's own note is not a generic
+    * line; see `NoteLines.posts` for why answering this for a note would
+    * be a new rule rather than the existing one extended. */
+  def covered(index: Int): Boolean = event(index) match
+    case _: WalkerStepRecorded =>
+      (index + 1 to segmentEnd(index)).iterator.map(event)
+        .takeWhile(!_.isInstanceOf[WalkerStepRecorded])
+        .exists {
+          case noted: LogNoted => noted.covers
+          case _ => false
+        }
+    case _ => false
+
+  /** Every answer `run` recorded from its first event through `at`. */
+  def answers(run: Run, at: Int): Vector[Answered] =
+    (run.first to at).toVector.map(event).collect {
+      case WalkerStepRecorded(_, ChoicePayload(id, answer, by), _) =>
+        Answered(id, answer, by)
+    }
+
+  /** Supply `player` lost to `SpendSupply` in event `index`, from the states
+    * around each spend: a spend is clamped when applied. */
+  def supplySpent(index: Int, player: PlayerId): Int =
+    ops(index).collect {
+      case OpStep(SpendSupply(spender, _, _), before, after)
+          if spender == player =>
+        LogJournal.supply(before, player) - LogJournal.supply(after, player)
+    }.sum
+
+private[gamelog] object LogJournal:
+  /** `opSteps`, applying each step once however many journals of one
+    * request read it: a voided step's operations and states are the same
+    * values in every prefix that holds it. Keyed by journal sequence, which
+    * is unique per step. */
+  def sharedOpSteps(): ReplayStep[OathState, OathEvent] => Vector[OpStep] =
+    val done = scala.collection.mutable.HashMap.empty[Long, Vector[OpStep]]
+    step => done.getOrElseUpdate(step.event.index, opSteps(step))
+
+  def ready(state: OathState): Option[ReadyGame] = state match
+    case OathState.Ready(ready) => Some(ready)
+    case _ => None
+
+  def supply(ready: ReadyGame, player: PlayerId): Int =
+    ready.game.current.player(player)
+      .fold(0)(_.board.supply.supply)
+
+  /** A step's batch applied one operation at a time from the state before
+    * the step, through the fold replay uses.
+    *
+    * A journal that loaded has had this batch applied already, so a
+    * rejection here is a programming error rather than a damaged journal:
+    * `history` and `load` share one `reconstruct`, and a journal that fails
+    * it yields no history to format. Only a hand-built step can reach this,
+    * and swallowing the rejection let a test narrate lines from a state its
+    * operations never reached (log operation strictness decision). */
+  def opSteps(step: ReplayStep[OathState, OathEvent]): Vector[OpStep] =
+    (step.before, step.event.event) match
+      case (OathState.Ready(start),
+          WalkerStepRecorded(_, DeltaPayload(ops), _)) =>
+        val states = ProcedureWalker.applyRecordedBatch(start, ops) match
+          case Right(applied) => applied
+          case Left(violation) => throw new IllegalStateException(
+            s"the recorded batch at journal position ${step.event.index} " +
+              s"does not apply: $violation")
+        ops.zip(start +: states).zip(states).map {
+          case ((operation, before), after) => OpStep(operation, before, after)
+        }
+      case _ => Vector.empty

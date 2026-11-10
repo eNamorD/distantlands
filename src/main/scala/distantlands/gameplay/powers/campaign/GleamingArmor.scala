@@ -1,0 +1,50 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
+
+object GleamingArmorCard extends Denizen(DenizenId("66"), "Gleaming Armor", Suit.Arcane) with AdviserOnly:
+  val power = PrintedPower(PowerId("denizen.gleaming-armor"),
+    persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
+    text = "Your enemy's battle plans have an added cost of [secret].")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Gleaming Armor (card 66), a persistent rule of a faceup adviser: "Your enemy's
+  * battle plans have an added cost of [secret]."
+  *
+  * A `PlanSurcharge`: every plan the holder's enemy chooses costs one more
+  * secret, placed onto the plan's source card like any plan's cost. The title
+  * has no card, so the added cost of the title's plan is turning one of its
+  * user's faceup secrets facedown. Bandits hold no secrets and cannot pay it.
+  *
+  * Each taxed plan writes "{Red}'s battle plans cost 1 extra secret."
+  */
+case object GleamingArmor extends PlanSurcharge:
+  val id: PowerId = GleamingArmorCard.power.id
+  /** The added cost, in secrets. */
+  val Secret: Int = 1
+  /** "{Red}'s battle plans cost {1} extra secret." */
+  val notes: NoteSet = NoteSet(id)
+  val taxed: NoteKey = notes.key("taxed", Vector(NotePart.Arg(0),
+    NotePart.Text("'s battle plans cost "), NotePart.Arg(1),
+    NotePart.Plural(1, " extra secret.", " extra secrets.")))
+
+  val cardId: DenizenId = GleamingArmorCard.id
+  protected def power: PrintedPower = GleamingArmorCard.power
+  protected def cost: Cost = Cost(secret = GleamingArmor.Secret)
+  protected def surchargeNotes: NoteSet = GleamingArmor.notes
+  protected def amount: Int = GleamingArmor.Secret
+  protected def unpayable: OathViolation =
+    OathViolation.InsufficientSecrets(GleamingArmor.Secret, 0)
+
+  // Turning a secret facedown does nothing without one, so the cost of the
+  // title's plan is checked here rather than left to a best-effort flip.
+  override protected def onTitle(ready: ReadyGame, user: PlayerId)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    val faceUp = ready.game.current.player(user)
+      .fold(0)(_.board.faceUpSecrets)
+    if faceUp >= GleamingArmor.Secret then Right(Vector[CoreOperation](
+      FlipSecrets(user, GleamingArmor.Secret, SecretSide.FaceUp,
+        SecretSide.FaceDown)))
+    else Left(OathViolation.InsufficientSecrets(GleamingArmor.Secret, faceUp))

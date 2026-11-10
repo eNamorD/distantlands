@@ -7,7 +7,7 @@
 **Architecture:**
 
 - **P3.** Gleaming Armor's surcharge moves into a new trait, `PlanSurcharge`. The trait takes the added cost, the line and the title's payment as members. Gleaming Armor and Insect Swarm both extend it. `GleamingArmorSuite` passes unchanged.
-- Book Burning, Field Promotion, Tribute Spoils and Military Parade are `BattlePlan`s (`src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`).
+- Book Burning, Field Promotion, Tribute Spoils and Military Parade are `BattlePlan`s (`src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`).
   - Each one acts once the Campaign has resolved, through a `later` step at `CampaignActionEligibility`, as Battle Honors does.
   - Their `plan` changes no dice.
 - Tribute Spoils and Military Parade share a new helper, `FavorBySuit`. It turns a list of cards into one favor gain per suit bank.
@@ -28,7 +28,7 @@
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -99,9 +99,9 @@ Production:
 | `gameplay/powers/campaign/PlanRules.scala` | Modify | Registers Insect Swarm and Book Burning |
 | `gameplay/powers/campaign/SimplePlans.scala` | Modify | Registers Field Promotion, Tribute Spoils and Military Parade |
 
-All production paths are under `src/main/scala/oathdigital/`.
+All production paths are under `src/main/scala/distantlands/`.
 
-Tests, under `src/test/scala/oathdigital/gameplay/powers/campaign/`:
+Tests, under `src/test/scala/distantlands/gameplay/powers/campaign/`:
 
 | File | Change |
 |---|---|
@@ -116,7 +116,7 @@ Docs: `docs/ROADMAP.md` (Task 5).
 
 ### How the suites drive a Campaign
 
-Read `campaign/PlanDriver.scala` and `src/test/scala/oathdigital/gameplay/CampaignFixture.scala` before writing a suite. In short:
+Read `campaign/PlanDriver.scala` and `src/test/scala/distantlands/gameplay/CampaignFixture.scala` before writing a suite. In short:
 
 - `board(extras, warbands, supply)`: p1, the actor, stands at the origin (Ancient City, defense 2), which two bandits rule. `extras` further sites are bandit-ruled too. Every other site starts empty and holds no card. p2 (`b.other`) and p3 stand at the first site nobody rules.
 - `againstPlayer(b)`: p2 rules the origin with two warbands and holds the Oath title, so p2 is offered the title's defense plan until they use it. That keeps p2's plan window open.
@@ -135,11 +135,11 @@ Read `campaign/PlanDriver.scala` and `src/test/scala/oathdigital/gameplay/Campai
 ### Task 1: `PlanSurcharge` (P3), then Insect Swarm
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanSurcharge.scala`
-- Modify (replace the whole file): `src/main/scala/oathdigital/gameplay/powers/campaign/GleamingArmor.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/InsectSwarm.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/InsectSwarmSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/PlanSurcharge.scala`
+- Modify (replace the whole file): `src/main/scala/distantlands/gameplay/powers/campaign/GleamingArmor.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/InsectSwarm.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/InsectSwarmSuite.scala`
 
 **Interfaces:**
 - Consumes: `CampaignPlanApplication` (`setup`, `side`, `user`, `source`), `CampaignPlans.cardOf`, `Costs.onCard`, `CatalogResolution.of`, `CatalogCards.denizen`.
@@ -147,17 +147,17 @@ Read `campaign/PlanDriver.scala` and `src/test/scala/oathdigital/gameplay/Campai
 
 - [ ] **Step 1: Create `PlanSurcharge`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/PlanSurcharge.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/PlanSurcharge.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.{CampaignPlanApplication, CampaignPlans}
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.{CampaignPlanApplication, CampaignPlans}
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.model._
 
 /** A persistent rule of a faceup adviser that adds a cost to every battle plan
   * its holder's enemy chooses (Gleaming Armor, Insect Swarm).
@@ -249,14 +249,14 @@ trait PlanSurcharge extends ContributingPower:
 
 - [ ] **Step 2: Rewrite Gleaming Armor on it**
 
-Replace the whole of `src/main/scala/oathdigital/gameplay/powers/campaign/GleamingArmor.scala` with:
+Replace the whole of `src/main/scala/distantlands/gameplay/powers/campaign/GleamingArmor.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Gleaming Armor (card 66), a persistent rule of a faceup adviser: "Your enemy's
   * battle plans have an added cost of [secret]."
@@ -303,22 +303,22 @@ object GleamingArmor:
 
 - [ ] **Step 3: Run Gleaming Armor's suite, unchanged**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.GleamingArmorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.GleamingArmorSuite"`
 Expected: PASS, all 11 tests, with no change to the suite.
 
 - [ ] **Step 4: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/InsectSwarmSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/InsectSwarmSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** Insect Swarm: while its faceup holder is in a Campaign, every plan the enemy
   * chooses costs one more favor, burnt from the plan's user's board, whatever
@@ -476,19 +476,19 @@ class InsectSwarmSuite extends munit.FunSuite:
 
 - [ ] **Step 5: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.InsectSwarmSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.InsectSwarmSuite"`
 Expected: FAIL to compile, with "Not found: InsectSwarm".
 
 - [ ] **Step 6: Create Insect Swarm**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/InsectSwarm.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/InsectSwarm.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Insect Swarm (card 184), a persistent rule of a faceup adviser: "Your
   * enemy's battle plans each have an added cost of [favor-burnt]."
@@ -525,7 +525,7 @@ object InsectSwarm:
 
 - [ ] **Step 7: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`, add the line after `GleamingArmor.forCatalog(catalog).toVector ++`:
+In `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`, add the line after `GleamingArmor.forCatalog(catalog).toVector ++`:
 
 ```scala
       InsectSwarm.forCatalog(catalog).toVector ++
@@ -535,13 +535,13 @@ and in the doc comment replace "and the rule that taxes them" with "and the rule
 
 - [ ] **Step 8: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS. 10 new tests in `InsectSwarmSuite`, and `GleamingArmorSuite` and every other campaign plan suite still pass.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/PlanSurcharge.scala src/main/scala/oathdigital/gameplay/powers/campaign/GleamingArmor.scala src/main/scala/oathdigital/gameplay/powers/campaign/InsectSwarm.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/InsectSwarmSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/PlanSurcharge.scala src/main/scala/distantlands/gameplay/powers/campaign/GleamingArmor.scala src/main/scala/distantlands/gameplay/powers/campaign/InsectSwarm.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/InsectSwarmSuite.scala
 git commit -m "feat(powers): add Insect Swarm and share the plan surcharge with Gleaming Armor"
 ```
 
@@ -550,9 +550,9 @@ git commit -m "feat(powers): add Insect Swarm and share the plan surcharge with 
 ### Task 2: Book Burning
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/BookBurning.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/BookBurningSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/BookBurning.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/BookBurningSuite.scala`
 
 **Interfaces:**
 - Consumes: `BattlePlan`, `PlanContext.denizen/setup`, `PlanUse.won/result`, `NoteSupport.secrets(step, player): Int`, `FlipSecrets`, `Burn.secrets(amount, from)`.
@@ -560,17 +560,17 @@ git commit -m "feat(powers): add Insect Swarm and share the plan surcharge with 
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/BookBurningSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/BookBurningSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.walker.{WalkerDice, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.walker.{WalkerDice, WalkerStepRecorded}
+import distantlands.model._
 
 /** Book Burning: a free attacker's plan, offered only in a Raid. If the attacker
   * wins, every secret on the defender's board is burnt but one, the facedown
@@ -662,19 +662,19 @@ class BookBurningSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.BookBurningSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.BookBurningSuite"`
 Expected: FAIL to compile, with "Not found: BookBurning".
 
 - [ ] **Step 3: Create Book Burning**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/BookBurning.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/BookBurning.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.{CatalogCards, NoteSupport}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.{CatalogCards, NoteSupport}
+import distantlands.model._
 
 /** Book Burning (card 22), an attacker's battle plan: "If you're victorious in
   * a raid, burn all [secret] on the defender's board except their last
@@ -751,7 +751,7 @@ object BookBurning:
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`, add the line after `Hospital.forCatalog(catalog).toVector`, moving the `++` so the chain stays valid:
+In `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`, add the line after `Hospital.forCatalog(catalog).toVector`, moving the `++` so the chain stays valid:
 
 ```scala
       Hospital.forCatalog(catalog).toVector ++
@@ -762,13 +762,13 @@ In the doc comment, replace "and Hospital (killed warbands saved until the end)"
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS. 6 new tests in `BookBurningSuite`, and every existing campaign plan suite still passes.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/BookBurning.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/test/scala/oathdigital/gameplay/powers/campaign/BookBurningSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/BookBurning.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/test/scala/distantlands/gameplay/powers/campaign/BookBurningSuite.scala
 git commit -m "feat(powers): add Book Burning"
 ```
 
@@ -777,9 +777,9 @@ git commit -m "feat(powers): add Book Burning"
 ### Task 3: Field Promotion
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/FieldPromotion.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/FieldPromotionSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/FieldPromotion.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/FieldPromotionSuite.scala`
 
 **Interfaces:**
 - Consumes: `BattlePlan`, `PlanContext.denizen`, `PlanUse.won/user`, `PlayerFacts.forceKind(ready, player): Either[OathViolation, ForceKind]`, `NoteSupport.gainedKey`, `NoteSupport.gainedNote`, `NoteSupport.warbands`.
@@ -787,17 +787,17 @@ git commit -m "feat(powers): add Book Burning"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/FieldPromotionSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/FieldPromotionSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.powers.{NoteText, PlayerFacts}
-import oathdigital.gameplay.powers.PowerFixture.warbandBank
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.powers.{NoteText, PlayerFacts}
+import distantlands.gameplay.powers.PowerFixture.warbandBank
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Field Promotion: a plan for either side, a favor placed, that gains three
   * warbands if its user wins, or what their supply holds. */
@@ -891,19 +891,19 @@ class FieldPromotionSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.FieldPromotionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.FieldPromotionSuite"`
 Expected: FAIL to compile, with "Not found: FieldPromotion".
 
 - [ ] **Step 3: Create Field Promotion**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/FieldPromotion.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/FieldPromotion.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.{CatalogCards, NoteSupport, PlayerFacts}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.{CatalogCards, NoteSupport, PlayerFacts}
+import distantlands.model._
 
 /** Field Promotion (card 106), a battle plan for either side: "[favor] If
   * you're victorious, gain three warbands."
@@ -951,7 +951,7 @@ object FieldPromotion:
 
 - [ ] **Step 4: Register it**
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`, change the last line of the chain:
+In `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`, change the last line of the chain:
 
 ```scala
       BattleAxes.forCatalog(catalog).toVector ++
@@ -962,13 +962,13 @@ In the doc comment, replace "Encirclement, Disgraced Captain and Battle Axes" wi
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS. 6 new tests in `FieldPromotionSuite`, and every existing campaign plan suite still passes.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/FieldPromotion.scala src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala src/test/scala/oathdigital/gameplay/powers/campaign/FieldPromotionSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/FieldPromotion.scala src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala src/test/scala/distantlands/gameplay/powers/campaign/FieldPromotionSuite.scala
 git commit -m "feat(powers): add Field Promotion"
 ```
 
@@ -977,12 +977,12 @@ git commit -m "feat(powers): add Field Promotion"
 ### Task 4: `FavorBySuit`, then Tribute Spoils and Military Parade
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/FavorBySuit.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/TributeSpoils.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/MilitaryParade.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/TributeSpoilsSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/MilitaryParadeSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/FavorBySuit.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/TributeSpoils.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/MilitaryParade.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/TributeSpoilsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/MilitaryParadeSuite.scala`
 
 **Interfaces:**
 - Consumes: `BattlePlan`, `PlanContext.denizen/setup/enemy`, `PlanUse.won/user/result/side/actor/ready`, `CampaignResult.targetSites/defender`, `ExecutableCatalog.suitOf(id: CardId): Option[Suit]`, `Suit.all: Vector[Suit]`.
@@ -993,16 +993,16 @@ git commit -m "feat(powers): add Field Promotion"
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/TributeSpoilsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/TributeSpoilsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** Tribute Spoils: a plan for either side, a favor placed, offered only in a
   * Conquest. If its user wins, they gain a favor for each denizen and edifice
@@ -1083,15 +1083,15 @@ class TributeSpoilsSuite extends munit.FunSuite:
     assert(!run.offered(b.actor).contains(ref))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/MilitaryParadeSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/MilitaryParadeSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Military Parade: a free plan for either side. If its user wins, they gain a
   * favor for each faceup adviser the enemy holds then, from that adviser's
@@ -1189,18 +1189,18 @@ class MilitaryParadeSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.TributeSpoilsSuite oathdigital.gameplay.powers.campaign.MilitaryParadeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.TributeSpoilsSuite distantlands.gameplay.powers.campaign.MilitaryParadeSuite"`
 Expected: FAIL. Both suites compile, because they name no new production symbol. Every test that picks the plan fails with an `IllegalStateException` ending "was refused: ...", thrown by `Run.answer`, because the plan is not offered yet. The two "not offered" tests pass already; they pin the conditions once the plans exist.
 
 - [ ] **Step 3: Create `FavorBySuit`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/FavorBySuit.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/FavorBySuit.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** The favor a plan gains one of per card, from each card's suit bank (Tribute
   * Spoils, Military Parade). Only a faceup card has a suit, except an edifice,
@@ -1228,14 +1228,14 @@ object FavorBySuit:
 
 - [ ] **Step 4: Create Tribute Spoils**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/TributeSpoils.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/TributeSpoils.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Tribute Spoils (card 239), a battle plan for either side: "[favor] If you're
   * victorious in a conquest, take [favor] for each card at targeted sites from
@@ -1288,14 +1288,14 @@ object TributeSpoils:
 
 - [ ] **Step 5: Create Military Parade**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/MilitaryParade.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/MilitaryParade.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Military Parade (card 109), a battle plan for either side: "If you're
   * victorious, gain [favor] from the favor banks matching each adviser of your
@@ -1353,7 +1353,7 @@ object MilitaryParade:
 
 - [ ] **Step 6: Register them**
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`, change the last line of the chain:
+In `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`, change the last line of the chain:
 
 ```scala
       FieldPromotion.forCatalog(catalog).toVector ++
@@ -1365,13 +1365,13 @@ In the doc comment, replace "Battle Axes and Field Promotion" with "Battle Axes,
 
 - [ ] **Step 7: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS. 10 new tests (4 in `TributeSpoilsSuite`, 6 in `MilitaryParadeSuite`), and every existing campaign plan suite still passes.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/FavorBySuit.scala src/main/scala/oathdigital/gameplay/powers/campaign/TributeSpoils.scala src/main/scala/oathdigital/gameplay/powers/campaign/MilitaryParade.scala src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala src/test/scala/oathdigital/gameplay/powers/campaign/TributeSpoilsSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/MilitaryParadeSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/FavorBySuit.scala src/main/scala/distantlands/gameplay/powers/campaign/TributeSpoils.scala src/main/scala/distantlands/gameplay/powers/campaign/MilitaryParade.scala src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala src/test/scala/distantlands/gameplay/powers/campaign/TributeSpoilsSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/MilitaryParadeSuite.scala
 git commit -m "feat(powers): add Tribute Spoils and Military Parade"
 ```
 

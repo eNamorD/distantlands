@@ -20,13 +20,13 @@
 
 ## File structure
 
-- `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala`: persistent shell, content replacement, focus and scroll restoration, developer panel.
-- `frontend/src/main/scala/oathdigital/frontend/MapViewport.scala`: DOM map sizing, zoom, drag and resize lifecycle.
-- `frontend/src/main/scala/oathdigital/frontend/MapViewState.scala`: pure fit and bounded scroll geometry.
-- `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala`: route existing renderer output into shell.
-- `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala`: one combined player display with existing target callbacks.
+- `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala`: persistent shell, content replacement, focus and scroll restoration, developer panel.
+- `frontend/src/main/scala/distantlands/frontend/MapViewport.scala`: DOM map sizing, zoom, drag and resize lifecycle.
+- `frontend/src/main/scala/distantlands/frontend/MapViewState.scala`: pure fit and bounded scroll geometry.
+- `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala`: route existing renderer output into shell.
+- `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala`: one combined player display with existing target callbacks.
 - `frontend/styles.css`: viewport layout and panel styles appended after existing content CSS, shared by development and packaged frontend assets.
-- `frontend/src/test/scala/oathdigital/frontend/MapViewStateSuite.scala`: geometry and update regression tests.
+- `frontend/src/test/scala/distantlands/frontend/MapViewStateSuite.scala`: geometry and update regression tests.
 
 ### Task 1: Navigation model
 

@@ -12,22 +12,22 @@ function Fail([string]$Message) { throw "bundled distribution smoke failed: $Mes
 $app = (Resolve-Path -LiteralPath $AppDirectory).Path
 $bundledJava = Join-Path $app 'jre\bin\java.exe'
 if (-not (Test-Path -LiteralPath $bundledJava)) { Fail "missing bundled jre\ in $app" }
-if (-not (Test-Path -LiteralPath (Join-Path $app 'Start Oath Digital.bat'))) { Fail 'missing Start Oath Digital.bat' }
+if (-not (Test-Path -LiteralPath (Join-Path $app 'Start Distant Lands.bat'))) { Fail 'missing Start Distant Lands.bat' }
 
-$temporary = Join-Path ([IO.Path]::GetTempPath()) ('oathdigital-bundled-' + [guid]::NewGuid())
+$temporary = Join-Path ([IO.Path]::GetTempPath()) ('distantlands-bundled-' + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $temporary | Out-Null
 $log = Join-Path $temporary 'server.log'
 $errorLog = Join-Path $temporary 'server.err.log'
-$appData = Join-Path $temporary 'local\OathDigital'
+$appData = Join-Path $temporary 'local\DistantLands'
 
 $env:LOCALAPPDATA = Join-Path $temporary 'local'
 Remove-Item Env:JAVA_HOME -ErrorAction SilentlyContinue
 $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
-$env:OATH_LAUNCH = 'desktop'
-$env:OATH_OPEN_BROWSER = 'false'
-$env:OATH_PORT = "$Port"
+$env:DLQ_LAUNCH = 'desktop'
+$env:DLQ_OPEN_BROWSER = 'false'
+$env:DLQ_PORT = "$Port"
 
-$process = Start-Process -FilePath (Join-Path $app 'bin\oathdigital.bat') -NoNewWindow -PassThru `
+$process = Start-Process -FilePath (Join-Path $app 'bin\distantlands.bat') -NoNewWindow -PassThru `
   -RedirectStandardOutput $log -RedirectStandardError $errorLog
 try {
   $url = $null
@@ -49,7 +49,7 @@ try {
   $java = Get-CimInstance Win32_Process -Filter "Name = 'java.exe'" |
     Where-Object { $_.ExecutablePath -ieq $bundledJava }
   if (-not $java) { Fail 'server is not running on the bundled runtime' }
-  if (-not (Test-Path -LiteralPath (Join-Path $appData 'oathdigital.properties'))) { Fail 'settings file was not created' }
+  if (-not (Test-Path -LiteralPath (Join-Path $appData 'distantlands.properties'))) { Fail 'settings file was not created' }
   if (-not (Get-ChildItem -LiteralPath (Join-Path $appData 'data') -Filter 'database.*' -ErrorAction SilentlyContinue)) {
     Fail 'database was not created in the app-data folder'
   }

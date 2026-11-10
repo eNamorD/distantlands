@@ -1,0 +1,109 @@
+package distantlands.gameplay.powers.action
+
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
+
+object TamingCharmCard extends Denizen(DenizenId("37"), "Taming Charm", Suit.Arcane):
+  val power = PrintedPower(PowerId("denizen.taming-charm"),
+    persistent = false, cost = Cost(secret = 1),
+    text = "**ACTION:** Discard a [suit-beast] or [suit-nomad] card at " +
+      "your site to gain [favor] [favor] from the matching favor " +
+      "bank.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Taming Charm (card 37), ACTION: place 1 secret on this card, then
+  * discard a Beast or Nomad card at your site to gain 2 favor from the
+  * matching favor bank.
+  *
+  * The player chooses a faceup Beast or Nomad denizen or ruined edifice at
+  * their site ([[SiteCards]]), which gets the standard discard. The discard
+  * returns the card's favor to the bank the gain takes from, so the gain
+  * runs as its own step, read after the discard: 2 favor, or all the bank
+  * holds. The choice is narrated: the line names the card.
+  *
+  * The line covers the step before it: the gain's Gain line, or, with the
+  * bank empty, the discard's Discarded line. With nothing to discard, the
+  * cost stays paid and the line names the site.
+  */
+case object TamingCharm extends PaidAction(TamingCharmCard.power):
+  val decisionId: String = "power.taming-charm.card"
+  val Gained: Int = 2
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Red} discarded {card} and gained {n favor} from {the Beast bank}." */
+  val gained: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
+    NotePart.Text(" discarded "), NotePart.Arg(1),
+    NotePart.Text(" and gained "), NotePart.Arg(2), NotePart.Text(" from "),
+    NotePart.Arg(3), NotePart.Text(".")))
+  /** "{Red} discarded {card}." */
+  val discardedOnly: NoteKey = notes.key("used.discarded", Vector(
+    NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1),
+    NotePart.Text(".")))
+  /** "{site} held no Beast or Nomad card." */
+  val bare: NoteKey = notes.key("used.none", Vector(NotePart.Arg(0),
+    NotePart.Text(" held no Beast or Nomad card.")))
+  /** "No Beast or Nomad card at {site} could be discarded." */
+  val kept: NoteKey = notes.key("used.kept", Vector(
+    NotePart.Text("No Beast or Nomad card at "), NotePart.Arg(0),
+    NotePart.Text(" could be discarded.")))
+
+  private val cards = new SiteCards(Set(Suit.Beast, Suit.Nomad))
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
+    Branch((live, _) => cards.ask(catalog, live, player, decisionId,
+      "Taming Charm: discard a Beast or Nomad card at your site")),
+    BuildOps((live, pending) => discard(catalog, live, player, pending),
+      required = true),
+    BuildOps((live, pending) => Right(gain(catalog, live, player, pending))),
+    Note(this.id, tamedNote(catalog, _, player, source), covers = true))))
+
+  private def discard(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId, pending: PendingTree)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    cards.chosen(catalog, ready, player, pending, decisionId) match
+      case None => Right(Vector.empty)
+      case Some((site, card, suit)) => cards.discard(ready, site, card, suit,
+        player, required = true, cause = Some(DiscardCause(id))).map(Vector(_))
+
+  /** The gain from the bank of the answered card's suit, read from the
+    * catalog: the card has left the site by now. */
+  private def gain(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId, pending: PendingTree)
+      : Vector[CoreOperation] = (for
+    answer <- PowerAnswers.one(pending, decisionId)
+    card <- DecisionOptionRef.cardOf(answer)
+    suit <- catalog.suitOf(card)
+    take = Gained.min(ready.banks.favor.getOrElse(suit, 0))
+    if take > 0
+  yield Gain.Favor(player, suit, take)).toVector
+
+  private def tamedNote(catalog: ExecutableCatalog,
+      states: NoteStates, player: PlayerId,
+      source: DecisionOptionRef): Option[LogNote] =
+    PowerSourceRef.of(source).flatMap(card =>
+      NoteSupport.answer(states, decisionId)
+        .flatMap(DecisionOptionRef.cardOf) match
+        case Some(chosen) => Some(line(catalog, states, card, player, chosen))
+        case None => states.now.game.current.pawnSite(player).map(site =>
+          // A card was there, but a refusal kept it: it was not discarded.
+          if cards.at(catalog, states.now, site).nonEmpty then
+            kept(card, NoteArg.Site(site))
+          else bare(card, NoteArg.Site(site))))
+
+  /** The favor the player gained in the step before the note: the gain's,
+    * or none when the empty bank skipped it. */
+  private def line(catalog: ExecutableCatalog,
+      states: NoteStates, card: PowerSourceRef, player: PlayerId,
+      chosen: CardId): LogNote =
+    val favor = states.previous.fold(0)(NoteSupport.favor(_, player))
+    catalog.suitOf(chosen).filter(_ => favor > 0) match
+      case Some(suit) => NoteSupport.toBank(states, player)(gained(card,
+        NoteArg.Player(player), NoteArg.Card(chosen),
+        NoteArg.Amount(favor, NoteUnit.Favor), NoteArg.Bank(suit)))
+      case None =>
+        discardedOnly(card, NoteArg.Player(player), NoteArg.Card(chosen))

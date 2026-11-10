@@ -1,0 +1,124 @@
+package distantlands.server
+
+import java.net.URI
+import java.security.SecureRandom
+import scala.util.Try
+import scala.util.control.NonFatal
+import distantlands.application._
+import distantlands.application.chronicle.ChronicleConversion
+import distantlands.model.OathViolation
+import distantlands.protocol._
+
+enum TrustedGameFailure:
+  case InvalidRequest, DuplicateGame, CodeCollision, StorageFailure
+  /** The request's Chronicle cannot start a game; the reason is shown. */
+  case Refused(reason: String)
+
+final class TrustedGameProvisioning(
+    service: GameApplicationService,
+    planFactory: FirstGamePlanFactory,
+    store: TrustedGameStore,
+    chronicles: ChronicleConversion,
+    generateCode: () => SeatCode = () => TrustedGameProvisioning.generateCode(),
+    nowMillis: () => Long = () => System.currentTimeMillis(),
+    generateGameId: () => String = () => TrustedGameProvisioning.generateGameId()
+):
+  import TrustedGameFailure._
+
+  def create(request: TrustedGameCreateRequest, publicBaseUrl: String)
+      : Either[TrustedGameFailure, TrustedGameCreateResponse] =
+    try
+      for
+        valid <- TrustedGameCreateRequestCodec.decode(TrustedGameCreateRequestCodec.encode(request))
+          .left.map(_ => InvalidRequest)
+        origin <- validatedOrigin(publicBaseUrl)
+        choice <- valid.chronicle match
+          case ChronicleRequest.New(name) => Right(ChronicleChoice.New(name.trim))
+          case ChronicleRequest.Saved(json) =>
+            chronicles.decode(json).map(ChronicleChoice.Saved(_)).left.map(Refused(_))
+        // The plan factory shuffles the seating and picks the first player,
+        // so the first participant is only a placeholder.
+        config = FirstGameBootstrapMapper.map(FirstGameBootstrapRequest(
+          0L, valid.participants, valid.participants.head.playerId))
+        plan <- planFactory.build(config, choice).left.map(failure =>
+          Refused(failure.message))
+        saved = valid.chronicle.isInstanceOf[ChronicleRequest.Saved]
+        placed <- place(valid.participants, plan, saved, None, 1)
+        (gameId, codes) = placed
+      yield TrustedGameCreateResponse(gameId, codes.map { case (player, code) =>
+        TrustedSeatLink(player, s"$origin/s/${code.raw}") },
+        chronicles.entry(plan.chronicle))
+    catch { case NonFatal(_) => Left(StorageFailure) }
+
+  /** Stores the game under a freshly drawn ID. A taken ID is drawn again, up
+    * to `MaxGameIdAttempts` draws, keeping the seat codes already generated.
+    * Game start's refusal of a `saved` Chronicle is shown to the host; for a
+    * generated one it means the request itself was wrong.
+    */
+  private def place(participants: Vector[BootstrapParticipantRequest],
+      plan: FirstGamePlan, saved: Boolean, seats: Option[Vector[(String, SeatCode)]], attempt: Int)
+      : Either[TrustedGameFailure, (String, Vector[(String, SeatCode)])] =
+    val gameId = generateGameId()
+    for
+      prepared <- service.prepareBootstrap(gameId, plan.chronicle,
+        plan.orders).left.map:
+        case GameApplicationError.CommandRejected(
+            OathViolation.UnsupportedChronicle(reason)) => Refused(reason)
+        // A saved Chronicle can fail game start's other checks too, such
+        // as a stored site holding two edifices; the host sees why.
+        case GameApplicationError.CommandRejected(violation) if saved =>
+          Refused(s"game start refused the Chronicle: $violation")
+        case _: GameApplicationError.CommandRejected => InvalidRequest
+        case _ => StorageFailure
+      codes <- seats.fold(generateSeats(participants))(Right(_))
+      placed <- store.create(gameId, codes.map { case (player, code) =>
+          code.digest -> player }, prepared.records, nowMillis()) match
+        case Left(TrustedGameStoreFailure.DuplicateGame)
+            if attempt < TrustedGameProvisioning.MaxGameIdAttempts =>
+          place(participants, plan, saved, Some(codes), attempt + 1)
+        case Left(TrustedGameStoreFailure.DuplicateGame) => Left(DuplicateGame)
+        case Left(TrustedGameStoreFailure.CodeCollision) => Left(CodeCollision)
+        case Left(TrustedGameStoreFailure.InvalidInput) => Left(InvalidRequest)
+        case Left(TrustedGameStoreFailure.StorageFailure) => Left(StorageFailure)
+        case Right(()) => Right(gameId -> codes)
+    yield placed
+
+  private def generateSeats(participants: Vector[BootstrapParticipantRequest])
+      : Either[TrustedGameFailure, Vector[(String, SeatCode)]] =
+    var used = Set.empty[SeatCodeDigest]
+    val seats = Vector.newBuilder[(String, SeatCode)]
+    val remaining = participants.iterator
+    while remaining.hasNext do
+      val participant = remaining.next()
+      var selected = Option.empty[SeatCode]
+      var attempts = 0
+      while selected.isEmpty && attempts < 8 do
+        val code = generateCode()
+        attempts += 1
+        if !used.contains(code.digest) then selected = Some(code)
+      selected match
+        case None => return Left(CodeCollision)
+        case Some(code) =>
+          used += code.digest
+          seats += participant.playerId -> code
+    Right(seats.result())
+
+  private def validatedOrigin(value: String): Either[TrustedGameFailure, String] =
+    Try(new URI(value)).toOption.filter { uri =>
+      uri.isAbsolute && !uri.isOpaque &&
+        Option(uri.getScheme).exists(scheme => Set("http", "https").contains(scheme.toLowerCase)) &&
+        Option(uri.getHost).exists(_.nonEmpty) && uri.getPort >= -1 && uri.getPort <= 65535 &&
+        uri.getRawUserInfo == null && uri.getRawQuery == null && uri.getRawFragment == null &&
+        Option(uri.getRawPath).forall(_.isEmpty)
+    }.map(_.toString).toRight(InvalidRequest)
+
+object TrustedGameProvisioning:
+  val MaxGameIdAttempts: Int = 8
+  private val GameIdAlphabet = "abcdefghijklmnopqrstuvwxyz234567"
+  private lazy val random = new SecureRandom()
+  private def generateCode(): SeatCode = SeatCode.generate(random)
+
+  /** "game-" and 12 random lowercase base32 characters: 60 bits, within the
+    * identifier rule of `TrustedGameCodecFields.identifier`. */
+  def generateGameId(): String =
+    "game-" + Vector.fill(12)(GameIdAlphabet(random.nextInt(GameIdAlphabet.length))).mkString

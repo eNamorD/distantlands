@@ -24,7 +24,7 @@
 
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn`. An unused import or private member fails the build.
 - Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`).
-- Never touch the live database `var/oathdigital`. Browser checks use a scratch copy only.
+- Never touch the live database `var/distantlands`. Browser checks use a scratch copy only.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Never commit `node_modules`, `.tooling` or `target`.
 - Work in a git worktree. `EnterWorktree` branches from `origin`, which lags local `main`, so fast-forward the new branch to local `main` first. Then symlink the main checkout's `.tooling` into the worktree before the first `./sbtw`.
 - Commit trailer: the committing model's own `Co-Authored-By` line.
@@ -90,7 +90,7 @@ These were settled while planning (2026-09-26). The spec already records 1, 2, 4
 
 ## File Structure
 
-- Create `src/main/scala/oathdigital/gameplay/SiteRulers.scala`, which holds the ruler helpers moved out of Travel.
+- Create `src/main/scala/distantlands/gameplay/SiteRulers.scala`, which holds the ruler helpers moved out of Travel.
 - Modify these walker files:
   - `gameplay/walker/WalkerPowerGather.scala`: `probe`, `narrowed`, and `answered` in `restrictionViolations`.
   - `gameplay/walker/ProcedureWalker.scala`: `WalkerPowers.probing` and `hasRestrictions`, `WalkCtx.root`, and the `runLeaf` wrapper.
@@ -119,10 +119,10 @@ These were settled while planning (2026-09-26). The spec already records 1, 2, 4
 ### Task 1: Move the ruler helpers out of Travel
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/SiteRulers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelPayments.scala:35-64`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala:32-37`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala:30-35`
+- Create: `src/main/scala/distantlands/gameplay/SiteRulers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelPayments.scala:35-64`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala:32-37`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala:30-35`
 
 **Interfaces:**
 - Produces: `private[gameplay] object SiteRulers` with these methods:
@@ -136,9 +136,9 @@ This is a refactor that changes no behaviour, so the existing suites are its tes
 - [ ] **Step 1: Create `SiteRulers.scala`**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Who rules a site, and where a rule card stands, for the powers whose reach
   * is "the sites this card's ruler rules": Toll Roads, Grasping Vines and
@@ -175,7 +175,7 @@ In `TravelPayments.scala`, delete everything from the comment line `/** Who rule
 
 - [ ] **Step 3: Point Toll Roads and Grasping Vines at `SiteRulers`**
 
-In `TollRoads.scala`, add `import oathdigital.gameplay.SiteRulers` and replace the body of `toll`'s for-comprehension head with:
+In `TollRoads.scala`, add `import distantlands.gameplay.SiteRulers` and replace the body of `toll`'s for-comprehension head with:
 
 ```scala
   private def toll(ctx: PowerCtx): Option[CoreOperation] = for
@@ -201,7 +201,7 @@ Leave the `yield` body unchanged. In `GraspingVines.scala`, add the same import 
 
 - [ ] **Step 4: Run the covering suites**
 
-Run: `./sbtw "testOnly *TollRoadsSuite *GraspingVinesSuite oathdigital.model.WorldModelSuite"`
+Run: `./sbtw "testOnly *TollRoadsSuite *GraspingVinesSuite distantlands.model.WorldModelSuite"`
 Expected: PASS, with no test changed.
 
 - [ ] **Step 5: Run the full server suite and record the baseline**
@@ -212,10 +212,10 @@ Expected: PASS. Record the test count and the wall time; Task 2 compares against
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/SiteRulers.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/TravelPayments.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala
+git add src/main/scala/distantlands/gameplay/SiteRulers.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/TravelPayments.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala
 git commit -m "refactor(powers): move the site ruler helpers out of Travel"
 ```
 
@@ -224,9 +224,9 @@ git commit -m "refactor(powers): move the site ruler helpers out of Travel"
 ### Task 2: Restriction look-ahead
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`WalkerPowers` line 41, the three `WalkCtx(` constructions, `WalkCtx` line 272, `runLeaf`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`
-- Test: `src/test/scala/oathdigital/gameplay/RestrictionLookAheadSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`WalkerPowers` line 41, the three `WalkCtx(` constructions, `WalkCtx` line 272, `runLeaf`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`
+- Test: `src/test/scala/distantlands/gameplay/RestrictionLookAheadSuite.scala`
 - Docs: `docs/architecture/rule-resolution.md`
 
 **Interfaces:**
@@ -239,16 +239,16 @@ git commit -m "refactor(powers): move the site ruler helpers out of Travel"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/RestrictionLookAheadSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/RestrictionLookAheadSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{OfferHost, PowerCtx}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.initialReady
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers,
+import distantlands.gameplay.powerresolver.{OfferHost, PowerCtx}
+import distantlands.gameplay.setup.FirstGameSetupFixture.initialReady
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers,
   WalkerSimulation}
-import oathdigital.model._
+import distantlands.model._
 
 /** The walker hides an option whose answer would break a `Restriction`, even
   * when the restriction's window exists only once that answer is given, so a
@@ -400,12 +400,12 @@ class RestrictionLookAheadSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RestrictionLookAheadSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RestrictionLookAheadSuite"`
 Expected: FAIL. The offered-option tests still see "yes", the narrowing tests see the declared queries, the emptied decisions park, the recursion test counts 0 calls, and the answers test gets no violation. Two tests already pass, because they assert that nothing is hidden: "a violation the answers so far already produce hides nothing" and "a choose-amount whose permitted values have a gap is left whole".
 
 - [ ] **Step 3: Give `WalkerPowers` the flag**
 
-In `ProcedureWalker.scala`, change the import to `import oathdigital.gameplay.powerresolver.{ContributingPower, Restriction}` and replace the `WalkerPowers` declaration (line 41) with:
+In `ProcedureWalker.scala`, change the import to `import distantlands.gameplay.powerresolver.{ContributingPower, Restriction}` and replace the `WalkerPowers` declaration (line 41) with:
 
 ```scala
 final case class WalkerPowers(powers: Vector[ContributingPower],
@@ -429,7 +429,7 @@ Extend the scaladoc above it with one paragraph:
 
 In `WalkerPowerGather.scala`:
 
-1. Add `DecisionAnswer` and `ProcedureRef` to the `oathdigital.model` import.
+1. Add `DecisionAnswer` and `ProcedureRef` to the `distantlands.model` import.
 2. Replace the whole `restrictOptions` method with the two methods below. `narrowed` is the old per-`Decide` body, shared with the probe:
 
 ```scala
@@ -610,7 +610,7 @@ In `ProcedureWalker.scala`:
 
 - [ ] **Step 6: Run the new suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RestrictionLookAheadSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RestrictionLookAheadSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Run the whole server suite and compare the time**
@@ -644,9 +644,9 @@ the answer, as a card-play hook does.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/test/scala/oathdigital/gameplay/RestrictionLookAheadSuite.scala \
+git add src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/test/scala/distantlands/gameplay/RestrictionLookAheadSuite.scala \
   docs/architecture/rule-resolution.md
 git commit -m "feat(walker): hide options whose answer would break a restriction"
 ```
@@ -656,15 +656,15 @@ git commit -m "feat(walker): hide options whose answer would break a restriction
 ### Task 3: Vow of Obedience
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/VisionPlay.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/FavorBankChoice.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfObedience.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RestPowers.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/cardplay/VisionPlayFixture.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfObedienceSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/VisionPlay.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/FavorBankChoice.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/VowOfObedience.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/RestPowers.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/cardplay/VisionPlayFixture.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/VowOfObedienceSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's look-ahead, which removes a forbidden faceup placement.
@@ -688,17 +688,17 @@ git commit -m "feat(walker): hide options whose answer would break a restriction
 
 - [ ] **Step 1: Write the test fixture**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/VisionPlayFixture.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/VisionPlayFixture.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.powers.{CardStaging, PowerFixture, SearchFixture,
+import distantlands.gameplay.powers.{CardStaging, PowerFixture, SearchFixture,
   TargetsFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.ParkedNode
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.ParkedNode
 
 /** The two ways to play a Vision, each stopped at its placement decision, for
   * the suites of the cards that forbid or reward a faceup Vision.
@@ -739,20 +739,20 @@ object VisionPlayFixture:
 
 - [ ] **Step 2: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfObedienceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/VowOfObedienceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powers.{CardStaging, PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powers.{CardStaging, PhasePowerCatalog, PowerFixture,
   PowerImplementationStatus, SearchFixture, TargetsFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 class VowOfObedienceSuite extends munit.FunSuite:
   import PowerFixture._
@@ -853,18 +853,18 @@ class VowOfObedienceSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.VowOfObedienceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.VowOfObedienceSuite"`
 Expected: FAIL to compile, because `VowOfObedience` is not defined.
 
 - [ ] **Step 4: Write `VisionPlay`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/VisionPlay.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/VisionPlay.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** Reads a faceup Vision play off the card-play hook
   * (`ActionCardPlayedFaceup`), for the cards that forbid or reward one. The
@@ -898,12 +898,12 @@ private[cardplay] object VisionPlay:
 
 - [ ] **Step 5: Write `FavorBankChoice`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/FavorBankChoice.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/FavorBankChoice.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** "Take favor from any one favor bank", for Vow of Obedience's REST and
   * Book Binders. The player chooses among the banks that hold favor; one
@@ -950,15 +950,15 @@ private[cardplay] object FavorBankChoice:
 
 - [ ] **Step 6: Write `VowOfObedience`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfObedience.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/VowOfObedience.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** Vow of Obedience (card 121): "You cannot play Visions faceup. REST: Take
   * [favor] from any one favor bank."
@@ -1026,7 +1026,7 @@ object CardPlayTriggers:
       VowOfObedience.forCatalog(catalog).toVector
 ```
 
-In `PhasePowerCatalog.scala`, add `import oathdigital.gameplay.powers.cardplay.VowOfObedience` and change the first line of the vector to:
+In `PhasePowerCatalog.scala`, add `import distantlands.gameplay.powers.cardplay.VowOfObedience` and change the first line of the vector to:
 
 ```scala
     PhasePowers(SilverTongue.forCatalog(catalog).toVector ++
@@ -1043,27 +1043,27 @@ In `PowerKindsCatalogSuite.scala`, add after the Dazzle test:
   test("Vow of Obedience's rule is automatic whatever its flag: the flag is " +
       "false because of its REST"):
     assertEquals(flag("denizen.vow-of-obedience"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.cardplay.VowOfObedience
+    assertEquals(distantlands.gameplay.powers.cardplay.VowOfObedience
       .forCatalog(catalog).get.resolution, PowerResolution.Automatic)
 ```
 
 - [ ] **Step 9: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.RuleResolutionSuite oathdigital.gameplay.powers.PowerImplementationStatusSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.* distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.RuleResolutionSuite distantlands.gameplay.powers.PowerImplementationStatusSuite"`
 Expected: PASS.
 
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/VisionPlay.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/FavorBankChoice.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfObedience.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala \
-  src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala \
-  src/main/scala/oathdigital/gameplay/powers/RestPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/VisionPlayFixture.scala \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfObedienceSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/VisionPlay.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/FavorBankChoice.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/VowOfObedience.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala \
+  src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala \
+  src/main/scala/distantlands/gameplay/powers/RestPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/cardplay/VisionPlayFixture.scala \
+  src/test/scala/distantlands/gameplay/powers/cardplay/VowOfObedienceSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(powers): Vow of Obedience forbids faceup Visions and takes favor at Rest"
 ```
 
@@ -1072,12 +1072,12 @@ git commit -m "feat(powers): Vow of Obedience forbids faceup Visions and takes f
 ### Task 4: Secret Police and Sacred Ground
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/SacredGround.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/SecretPoliceSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/SacredGroundSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/SacredGround.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/SecretPoliceSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/SacredGroundSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `SiteRulers` from Task 1, `VisionPlay` and `VisionPlayFixture` from Task 3, and `PowerAccess.pawnSite`.
@@ -1085,16 +1085,16 @@ git commit -m "feat(powers): Vow of Obedience forbids faceup Visions and takes f
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/SecretPoliceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/SecretPoliceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.{CardStaging, PowerFixture,
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.{CardStaging, PowerFixture,
   PowerImplementationStatus, SearchFixture, TargetsFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class SecretPoliceSuite extends munit.FunSuite:
   import PowerFixture._
@@ -1167,16 +1167,16 @@ class SecretPoliceSuite extends munit.FunSuite:
       .contains("adviser-faceup"))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/SacredGroundSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/SacredGroundSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.{CardStaging, CatalogCards, PowerFixture,
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.{CardStaging, CatalogCards, PowerFixture,
   PowerImplementationStatus, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** E08 never appears in a generated game (the Nomad Homeland takes E06), so
   * each test places it by hand.
@@ -1239,21 +1239,21 @@ class SacredGroundSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.SecretPoliceSuite oathdigital.gameplay.powers.cardplay.SacredGroundSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.SecretPoliceSuite distantlands.gameplay.powers.cardplay.SacredGroundSuite"`
 Expected: FAIL to compile, because `SecretPolice` and `SacredGround` are not defined.
 
 - [ ] **Step 3: Write `SecretPolice`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{PowerAccess, SiteRulers}
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{PowerAccess, SiteRulers}
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** Secret Police (card 113), a persistent rule of a site card: "Enemies cannot
   * play Visions faceup while their pawn is at any site ruled by Secret
@@ -1293,18 +1293,18 @@ object SecretPolice:
 
 - [ ] **Step 4: Write `SacredGround`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/SacredGround.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/SacredGround.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.gameplay.powers.setup.EdificeSetupSupport
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** Sacred Ground (E08's intact face), a persistent rule: "Players cannot play
   * Visions, except the Conspiracy, faceup unless their pawn is at this site."
@@ -1351,18 +1351,18 @@ In `PowerKindsCatalogSuite`, add `"denizen.secret-police"` and `"edifice.e08.int
 
 - [ ] **Step 6: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.* distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/SacredGround.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/SecretPoliceSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/SacredGroundSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/SacredGround.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala \
+  src/test/scala/distantlands/gameplay/powers/cardplay/SecretPoliceSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/cardplay/SacredGroundSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(powers): Secret Police and Sacred Ground forbid faceup Visions"
 ```
 
@@ -1371,11 +1371,11 @@ git commit -m "feat(powers): Secret Police and Sacred Ground forbid faceup Visio
 ### Task 5: Book Binders
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/BookBinders.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/BookBindersSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/BookBinders.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/BookBindersSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala`
 
 **Interfaces:**
 - Consumes: `VisionPlay.played` and `FavorBankChoice.take` from Task 3.
@@ -1383,18 +1383,18 @@ git commit -m "feat(powers): Secret Police and Sacred Ground forbid faceup Visio
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/cardplay/BookBindersSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/cardplay/BookBindersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powerresolver.{PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CardStaging, PowerFixture, SearchFixture,
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powerresolver.{PowerCtx, Transform}
+import distantlands.gameplay.powers.{CardStaging, PowerFixture, SearchFixture,
   TargetsFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
 
 class BookBindersSuite extends munit.FunSuite:
   import PowerFixture._
@@ -1493,20 +1493,20 @@ class BookBindersSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.BookBindersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.BookBindersSuite"`
 Expected: FAIL to compile, because `BookBinders` is not defined.
 
 - [ ] **Step 3: Write `BookBinders`**
 
-Create `src/main/scala/oathdigital/gameplay/powers/cardplay/BookBinders.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/cardplay/BookBinders.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution}
+import distantlands.model._
 
 /** Book Binders (card 140), a persistent rule of a faceup adviser: "After
   * another player plays a Vision faceup, you gain [favor] [favor] from any one
@@ -1574,17 +1574,17 @@ object BookBinders:
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.powers.PowerImplementationStatusSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.* distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.powers.PowerImplementationStatusSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/BookBinders.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/CardPlayTriggers.scala \
-  src/test/scala/oathdigital/gameplay/powers/cardplay/BookBindersSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/BookBinders.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala \
+  src/test/scala/distantlands/gameplay/powers/cardplay/BookBindersSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala
 git commit -m "feat(powers): Book Binders rewards another player's faceup Vision"
 ```
 
@@ -1593,8 +1593,8 @@ git commit -m "feat(powers): Book Binders rewards another player's faceup Vision
 ### Task 6: Vow of Peace's second sentence
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/VowOfPeaceContribution.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/VowOfPeaceSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/VowOfPeaceContribution.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/VowOfPeaceSuite.scala`
 
 **Interfaces:**
 - Consumes: `CampaignSetup.setup` and the `CampaignSacrificeSelection` window on the sacrifice `Decide`.
@@ -1602,15 +1602,15 @@ git commit -m "feat(powers): Book Binders rewards another player's faceup Vision
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/VowOfPeaceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/VowOfPeaceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Vow of Peace's second sentence: attackers cannot sacrifice warbands to
   * increase their attack against a faceup holder.
@@ -1674,7 +1674,7 @@ class VowOfPeaceSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.VowOfPeaceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.VowOfPeaceSuite"`
 Expected: FAIL. The two protection tests find `campaign.sacrifice` among the decisions asked. The others pass.
 
 - [ ] **Step 3: Add the transform**
@@ -1682,12 +1682,12 @@ Expected: FAIL. The two protection tests find `campaign.sacrifice` among the dec
 Replace the body of `VowOfPeaceContribution.scala` above `object VowOfPeaceContribution` with the following, and keep the object as it is:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** Vow of Peace: "You cannot campaign. Attackers cannot sacrifice warbands to
   * increase their attack against you." A faceup copy held as an adviser does
@@ -1736,14 +1736,14 @@ final case class VowOfPeaceContribution private (cardId: DenizenId)
 
 - [ ] **Step 4: Run the Campaign suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.CampaignPowersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.CampaignPowersSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/VowOfPeaceContribution.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/VowOfPeaceSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/VowOfPeaceContribution.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/VowOfPeaceSuite.scala
 git commit -m "feat(powers): attackers cannot sacrifice against a Vow of Peace holder"
 ```
 
@@ -1832,11 +1832,11 @@ Expected: both report no problems.
 
 - [ ] **Step 7: Smoke-check in the browser on a scratch database**
 
-1. Copy `var/oathdigital` to a scratch directory. Never open the live one.
+1. Copy `var/distantlands` to a scratch directory. Never open the live one.
 2. Serve this worktree's build against the copy on port 8093:
 
 ```bash
-./sbtw "runMain oathdigital.server.OathServer --database-path <scratch>/oathdigital --catalog-path docs/catalog/new-foundations-component-catalog.json --port 8093"
+./sbtw "runMain distantlands.server.DistantLandsServer --database-path <scratch>/distantlands --catalog-path docs/catalog/new-foundations-component-catalog.json --port 8093"
 ```
 
    If the server takes no `--port` flag, use whatever flag Slice 1's verification used, as `docs/superpowers/plans/2026-09-26-game-log-slice1.md` records it.

@@ -78,10 +78,10 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 unique_suffix=$(date +%s)-$$
-container_name=oathdigital-smoke-container-$unique_suffix
-volume_name=oathdigital-smoke-volume-$unique_suffix
+container_name=distantlands-smoke-container-$unique_suffix
+volume_name=distantlands-smoke-volume-$unique_suffix
 temporary_root=${TMPDIR:-/tmp}
-temporary_directory=$(mktemp -d "$temporary_root/oathdigital-container-smoke.XXXXXX")
+temporary_directory=$(mktemp -d "$temporary_root/distantlands-container-smoke.XXXXXX")
 game_id=
 creation_response=$temporary_directory/creation.json
 command_response=$temporary_directory/command.json
@@ -104,14 +104,14 @@ docker volume create "$volume_name" >/dev/null
 volume_created=1
 
 # Only the overrides the loopback publish genuinely requires are passed here.
-# OATH_HOST and OATH_DATABASE_PATH deliberately come from the image's own
+# DLQ_HOST and DLQ_DATABASE_PATH deliberately come from the image's own
 # defaults, so this gate exercises what `docker run` does out of the box.
 docker create \
   --name "$container_name" \
   --publish "127.0.0.1:$port:8080" \
-  --env OATH_PORT=8080 \
-  --env OATH_PUBLIC_BASE_URL="http://127.0.0.1:$port" \
-  --volume "$volume_name:/var/lib/oathdigital" \
+  --env DLQ_PORT=8080 \
+  --env DLQ_PUBLIC_BASE_URL="http://127.0.0.1:$port" \
+  --volume "$volume_name:/var/lib/distantlands" \
   "$image" >/dev/null
 container_created=1
 docker start "$container_name" >/dev/null
@@ -219,7 +219,7 @@ exchange_seat() {
   fi
   [ "$exchange_status" = 303 ] ||
     fail "$player_id seat exchange returned HTTP $exchange_status instead of 303 on run $run_label"
-  grep -F 'oath_seat' "$cookie_jar" >/dev/null ||
+  grep -F 'distantlands_seat' "$cookie_jar" >/dev/null ||
     fail "$player_id seat exchange did not store a cookie on run $run_label"
 }
 
@@ -351,7 +351,7 @@ case "$container_exit" in
   *) fail "container exited with unexpected status $container_exit after stop" ;;
 esac
 docker logs --since "$stop_started" "$container_name" 2>&1 | \
-  grep -F 'Oath Digital database closed' >/dev/null ||
+  grep -F 'Distant Lands database closed' >/dev/null ||
   fail "container did not log database close evidence for the final stop"
 
 smoke_succeeded=1

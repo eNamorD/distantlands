@@ -636,10 +636,10 @@ decide the shape.
   `OathRulesWalker` out of `OathRules`, and `WalkerReplay` out of
   `ProcedureWalker`. Measured 2026-09-13, after
   `2026-09-12-walker-ownership-and-phases-design.md` landed
-  (`wc -l src/main/scala/oathdigital/serialization/Walker*Codec.scala
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala
-  src/main/scala/oathdigital/gameplay/actions/Campaign.scala`):
+  (`wc -l src/main/scala/distantlands/serialization/Walker*Codec.scala
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala
+  src/main/scala/distantlands/gameplay/actions/Campaign.scala`):
   `WalkerEventCodec.scala` 196 (Task 1 split its operation spellings out to
   `WalkerOperationCodec.scala`, now 623), `ProcedureWalker.scala` 674,
   `OathRulesWalker.scala` 445, `actions/Campaign.scala` still exactly 800 —

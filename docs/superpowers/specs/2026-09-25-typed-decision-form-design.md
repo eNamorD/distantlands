@@ -107,7 +107,7 @@ resolves option labels from live state, narrows the option set through
 `WalkerSimulation.previewParked` for procedures that require a playable
 option, redacts a negotiation per viewer, and drops the whole query when any
 option fails to present. None of that belongs on a wire type, and none of it
-moves. `shared/src/main` may import only `oathdigital.protocol`, which the new
+moves. `shared/src/main` may import only `distantlands.protocol`, which the new
 cases satisfy; anything from `model` would have to be fully qualified, as
 `SiteForcesProjection` does for `PlayerColor`.
 

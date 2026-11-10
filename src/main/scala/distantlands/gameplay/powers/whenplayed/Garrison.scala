@@ -1,0 +1,93 @@
+package distantlands.gameplay.powers.whenplayed
+
+import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.model._
+
+object GarrisonCard extends Denizen(DenizenId("7"), "Garrison", Suit.Order) with SiteOnly:
+  val power = PrintedPower(PowerId("denizen.garrison"),
+    persistent = false, cost = Cost.free,
+    text = "**WHEN PLAYED:** gain one warband per site you rule, and " +
+      "put one warband from your board on each site you rule.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Garrison (card 7), WHEN PLAYED: gain one warband per site you rule, and
+  * put one warband from your board on each site you rule.
+  *
+  * Three siblings run in order. The gain is optional and capped by the bank.
+  * The decision is a live `Branch` that exists only when the board holds
+  * fewer warbands than there are ruled sites, read after the gain ran (the
+  * walker re-selects it against the same stored state on resume). The
+  * placement puts a warband on every ruled site, or on the chosen ones. A
+  * holder of Vow of Wandering places none and is not asked: the Vow's line
+  * takes the place of the question.
+  */
+case object Garrison extends WhenPlayedPower:
+  val cardId: DenizenId = GarrisonCard.id
+  val id: PowerId = GarrisonCard.power.id
+  val decisionId: String = "cardplay.garrison.sites"
+
+  private def ruled(ready: ReadyGame, actor: PlayerId): Vector[SiteId] =
+    PowerAccess.ruledSites(ready, actor).toVector.sortBy(_.value)
+
+  private def gain(ready: ReadyGame, actor: PlayerId)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    val count = ruled(ready, actor).size
+    if count == 0 then Right(Vector.empty)
+    else PlayerFacts.forceKind(ready, actor).map(kind =>
+      Vector(Gain.Warbands(actor, kind, count)))
+
+  private def ask(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
+    val sites = ruled(ready, actor)
+    val held = PlayerFacts.player(ready, actor).map(_.board.warbands)
+      .getOrElse(0)
+    if held == 0 || held >= sites.size then Vector.empty
+    else Vector(Decide(decisionId, actor, DecisionQuery.ChooseMany(held, held,
+      sites.map(site => DecisionOption.Site(DecisionOptionRef.Site(site))),
+      heading = Some("Garrison: choose the sites that each receive a warband"),
+      confirm = Some(CountedConfirm("Place warbands at", "site", "sites")))))
+
+  private def place(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    val sites = ruled(ready, actor)
+    for
+      held <- PlayerFacts.player(ready, actor).map(_.board.warbands)
+      kind <- PlayerFacts.forceKind(ready, actor)
+      chosen <-
+        if held >= sites.size then Right(sites)
+        else if held == 0 then Right(Vector.empty[SiteId])
+        else answered(pending)
+    yield chosen.map(site => Move(Piece.Warbands(kind, 1),
+      PositionedLocation(Location.PlayArea(actor)),
+      PositionedLocation(Location.Site(site))))
+
+  private def answered(pending: PendingTree)
+      : Either[OathViolation, Vector[SiteId]] =
+    pending.answered.collectFirst {
+      case Answered(`decisionId`, DecisionAnswer.ChooseManyAnswer(chosen), _) =>
+        chosen.collect { case DecisionOptionRef.Site(site) => site }
+    }.toRight(OathViolation.InvalidEventOrder(
+      "no Garrison site choice is recorded"))
+
+  private val notes = NoteSet(id)
+  notes.borrow(VowOfWandering.forbidden)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  /** Whether Vow of Wandering stops the placement: the actor holds it and
+    * rules a site. */
+  private def barred(ready: ReadyGame, actor: PlayerId): Boolean =
+    VowOfWandering.holds(ready, actor) && ruled(ready, actor).nonEmpty
+
+  def effect(ctx: PowerCtx): Vector[Operation] =
+    Vector(
+      BuildOps((ready, _) => gain(ready, ctx.actor)),
+      Branch((ready, _) =>
+        if barred(ready, ctx.actor) then Vector(Note(id, _ =>
+          Some(VowOfWandering.forbidden(PowerSourceRef.Card(cardId)))))
+        else ask(ready, ctx.actor)),
+      BuildOps((ready, pending) =>
+        if barred(ready, ctx.actor) then Right(Vector.empty)
+        else place(ready, ctx.actor, pending)))

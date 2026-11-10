@@ -86,7 +86,7 @@ The product owner settled these on 2026-10-16. They override the slice 14 entry 
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
   - Engine files under `gameplay/walker` and `gameplay/operations` never name a power.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -104,8 +104,8 @@ The product owner settled these on 2026-10-16. They override the slice 14 entry 
   - `PlanDriver.winningDice` makes every attack die a sword, and `losingDice` every attack die half a sword. Both make every defense die blank.
   - `Table.offering(entry)` parks a follow-up offer for `entry`. `FollowUpPlay.taken` and `skipped` answer it, and `FollowUpPlay.offered(state)` reads the parked offer's entry.
   - `PlanDriver.committed(game, started, b, force, raid = ...)` answers the kind, targets and force as `b.actor`. For an off-turn Campaign, pass `b.copy(actor = holder, ready = ...)`.
-- **Note keys** are declared through a `NoteSet`. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"` when a task changes keys. This plan adds none.
-- **The unimplemented-powers snapshot** is `src/test/resources/powers/unimplemented.txt`. Regenerate it with `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.UnimplementedPowersSuite"`, and check that the diff drops only `denizen.sneak-attack`.
+- **Note keys** are declared through a `NoteSet`. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"` when a task changes keys. This plan adds none.
+- **The unimplemented-powers snapshot** is `src/test/resources/powers/unimplemented.txt`. Regenerate it with `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.UnimplementedPowersSuite"`, and check that the diff drops only `denizen.sneak-attack`.
 - **Names, exactly:**
   - `CurrentGameState.walkActor: PlayerId` in `model/GameState.scala`.
   - `CampaignSetup.queuedDefender(ready, actor): Option[PlayerId]` and `CampaignSetup.kindsAgainst(ready, actor, defender: PlayerId): Vector[CampaignKind]`.
@@ -117,18 +117,18 @@ The product owner settled these on 2026-10-16. They override the slice 14 entry 
 ### Task 1: A walk belongs to its entry's actor
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (`CurrentGameState`, the `QueuedProcedure` doc)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`advance`, `roll`, `resolve`, `narrowParked`, `awaitedPlayer`, `awaitedPlayers`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (`followUpAt`, `foldedChildrenAt`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala` (four reads)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkState.scala` (doc)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala` (doc)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`startNow`, `startTriggered`, `resolveWalker`, `rollWalkerPrepared`, `walkerResumeContext`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (two rebuilds)
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` (`PowerCtx.activePlayer` doc)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/SpecialEnvoy.scala`
-- Modify: `src/main/scala/oathdigital/model/PendingTree.scala` (doc only, if it still says the procedure belongs to `turn.activePlayer`)
-- Create: `src/test/scala/oathdigital/gameplay/OffTurnWalkSuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (`CurrentGameState`, the `QueuedProcedure` doc)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`advance`, `roll`, `resolve`, `narrowParked`, `awaitedPlayer`, `awaitedPlayers`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (`followUpAt`, `foldedChildrenAt`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala` (four reads)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkState.scala` (doc)
+- Modify: `src/main/scala/distantlands/gameplay/walker/QueuedStart.scala` (doc)
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`startNow`, `startTriggered`, `resolveWalker`, `rollWalkerPrepared`, `walkerResumeContext`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (two rebuilds)
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` (`PowerCtx.activePlayer` doc)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/SpecialEnvoy.scala`
+- Modify: `src/main/scala/distantlands/model/PendingTree.scala` (doc only, if it still says the procedure belongs to `turn.activePlayer`)
+- Create: `src/test/scala/distantlands/gameplay/OffTurnWalkSuite.scala`
 
 **Interfaces:**
 - Produces: `CurrentGameState.walkActor: PlayerId`. Every later task relies on walks, simulations and projections using it.
@@ -136,21 +136,21 @@ The product owner settled these on 2026-10-16. They override the slice 14 entry 
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.SecondWindCard
-import oathdigital.gameplay.powers.travel.SpecialEnvoy
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.SecondWindCard
+import distantlands.gameplay.powers.travel.SpecialEnvoy
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
   PhasePowerHarness, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** A queued walk belongs to its entry's actor, on another player's turn
   * (catalog batch 8, slice 14, rulings 1, 2 and 5). */
@@ -250,13 +250,13 @@ class OffTurnWalkSuite extends munit.FunSuite:
 ```
 
 Notes for the implementer:
-- `PlanDriver` lives in `oathdigital.gameplay.powers.campaign` (test sources). Import it, and drop the unused `ProcedureWalker` import.
-- Check that `PhasePowerHarness.ops` and `ActPowerHarness.replayed` have the signatures used here (`src/test/scala/oathdigital/testkit/`). Adjust the call, not the assertion.
+- `PlanDriver` lives in `distantlands.gameplay.powers.campaign` (test sources). Import it, and drop the unused `ProcedureWalker` import.
+- Check that `PhasePowerHarness.ops` and `ActPowerHarness.replayed` have the signatures used here (`src/test/scala/distantlands/testkit/`). Adjust the call, not the assertion.
 - Broken Peaks is unused unless the Campaign test needs it. Remove any unused `val` before building, since `-Wunused` fails the build.
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OffTurnWalkSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OffTurnWalkSuite"`
 Expected: compile error: `walkActor` is not a member of `CurrentGameState`. Once Step 3's first edit is in, the Travel and Campaign tests fail with `WrongPlayer(p1, p2)` from `requireActivePlayer`, and the Special Envoy test fails on `Phase.Rest`.
 
 - [ ] **Step 3: Add `walkActor`**
@@ -339,7 +339,7 @@ Add to its Scaladoc: "Off turn (a defender's Second Wind Travel) it only waives 
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OffTurnWalkSuite oathdigital.gameplay.FollowUpRulesSuite oathdigital.gameplay.FollowUpSupplyWaiverSuite oathdigital.gameplay.OathRulesWalkerPowerSuite oathdigital.gameplay.MinorActionsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OffTurnWalkSuite distantlands.gameplay.FollowUpRulesSuite distantlands.gameplay.FollowUpSupplyWaiverSuite distantlands.gameplay.OathRulesWalkerPowerSuite distantlands.gameplay.MinorActionsSuite"`
 Expected: all pass. `MinorActionsSuite`'s off-turn refusal still gives `WrongPlayer(p1, p2)`, since a minor action has no queue entry.
 
 Run: `./sbtw "test"`
@@ -348,17 +348,17 @@ Expected: all pass. Every existing walk's entry actor is the turn's player, so n
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkState.scala \
-  src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala \
-  src/main/scala/oathdigital/gameplay/powers/travel/SpecialEnvoy.scala \
-  src/test/scala/oathdigital/gameplay/OffTurnWalkSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkState.scala \
+  src/main/scala/distantlands/gameplay/walker/QueuedStart.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala \
+  src/main/scala/distantlands/gameplay/powers/travel/SpecialEnvoy.scala \
+  src/test/scala/distantlands/gameplay/OffTurnWalkSuite.scala
 git commit -m "feat(walker): a queued walk belongs to its entry's actor"
 ```
 
@@ -369,8 +369,8 @@ Add `PendingTree.scala` to the list if Step 4 changed its doc.
 ### Task 2: Second Wind for a winning defender
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SecondWind.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/campaign/SecondWindSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SecondWind.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/campaign/SecondWindSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's off-turn walk.
@@ -446,7 +446,7 @@ In `SecondWindSuite`, replace the test "a defender is not offered it" with the t
       Some(owedTo(b.rival, ActionRef.Campaign)))
 ```
 
-Imports to add: `oathdigital.gameplay.actions.travel.TravelProcedure` and `oathdigital.model.DecisionAnswer.ChooseOneAnswer`.
+Imports to add: `distantlands.gameplay.actions.travel.TravelProcedure` and `distantlands.model.DecisionAnswer.ChooseOneAnswer`.
 
 Notes for the implementer:
 - With `losingDice`, p1's 2 attack dice score 1 against the rival's 2 warbands, so the defender wins. With `winningDice`, 5 swords beat 2. Check `winner` before relying on it, as the tests do.
@@ -456,7 +456,7 @@ Notes for the implementer:
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SecondWindSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SecondWindSuite"`
 Expected: the defender tests fail. The plan is not offered to the defender, so `pick` throws "campaign.defender-plan was refused".
 
 - [ ] **Step 3: Offer it on both sides**
@@ -483,14 +483,14 @@ Also correct the summary line "an attacker's battle plan" to "a battle plan".
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SecondWindSuite oathdigital.gameplay.powers.campaign.BattlePlanSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SecondWindSuite distantlands.gameplay.powers.campaign.BattlePlanSuite"`
 Expected: all pass. If `BattlePlanSuite` (or a plan-catalog snapshot) lists each plan's sides, update the Second Wind row only.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/SecondWind.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/SecondWindSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/SecondWind.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/SecondWindSuite.scala
 git commit -m "feat(batch8): Second Wind for a winning defender, walked off turn"
 ```
 
@@ -499,14 +499,14 @@ git commit -m "feat(batch8): Second Wind for a winning defender, walked off turn
 ### Task 3: A declared defender, and Sneak Attack
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala` (`startArgs`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/SneakAttack.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala` (remove `SneakAttackCard`, list it from its new home as the file lists moved cards)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala` (register)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala` (`startArgs`)
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/SneakAttack.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala` (remove `SneakAttackCard`, list it from its new home as the file lists moved cards)
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala` (register)
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
-- Create: `src/test/scala/oathdigital/gameplay/powers/campaign/SneakAttackSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/CampaignSetupSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/campaign/SneakAttackSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/CampaignSetupSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `walkActor`, and Task 2's back-queued Second Wind entries.
@@ -561,7 +561,7 @@ Add to `CampaignSetupSuite`. Match its existing imports and board helpers. These
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignSetupSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignSetupSuite"`
 Expected: compile error: `queuedDefender` and `kindsAgainst` are not members of `CampaignSetup`.
 
 - [ ] **Step 3: Read the queued defender**
@@ -645,22 +645,22 @@ Its error text becomes "takes no start selection but a power's queued origin or 
 
 - [ ] **Step 4: Run the setup tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignSetupSuite oathdigital.gameplay.campaign.CampaignOriginSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignSetupSuite distantlands.gameplay.campaign.CampaignOriginSuite"`
 Expected: all pass.
 
 - [ ] **Step 5: Write the failing Sneak Attack tests**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.FollowUpPlay
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.DistributeAnswer
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.FollowUpPlay
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.DistributeAnswer
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Sneak Attack (card 98): after another player's Campaign, its holder may
   * campaign against that player for no Supply, off turn, before the
@@ -822,31 +822,31 @@ class SneakAttackSuite extends munit.FunSuite:
 ```
 
 Notes for the implementer:
-- `Table` must be imported (`oathdigital.testkit.Table`) for `Table.p1` and `Table.p2`. Prefer `b.rival` and `b.actor` where a `Board` is in scope.
+- `Table` must be imported (`distantlands.testkit.Table`) for `Table.p1` and `Table.p2`. Prefer `b.rival` and `b.actor` where a `Board` is in scope.
 - The defender's Second Wind test proves ruling 7's third clause: the rival's Campaign is off turn. `rivalRulesOriginAndHoldsOathkeeper` leaves the rival's pawn with p3's, so the rival can raid p3 without travelling. If the defender's plan window parks before the attacker's, swap `finishAttackerPlans` and the `pick`.
-- The skip test follows `VowOfUnionSuite`'s first test. p3's board starts with 3 warbands, so moving Broken Peaks' 2 leaves 5 on the board. Import `DistributeAmount` from `oathdigital.model`. If the arrangement's slot order differs, copy that suite's `arranged` shape.
+- The skip test follows `VowOfUnionSuite`'s first test. p3's board starts with 3 warbands, so moving Broken Peaks' 2 leaves 5 on the board. Import `DistributeAmount` from `distantlands.model`. If the arrangement's slot order differs, copy that suite's `arranged` shape.
 - In the Vow of Peace test, the `Unavailable` option's fields may be named differently. Match how `WildAlliesSuite` reads an unavailable reason.
 - `commit(..., 4).finishPlanWindows` against 2 bandits with `winningDice` wins the Conquest. The placement answer of 0 may leave the origin unruled: the Raid against p1, who still stands there, is the legal kind. That is why the taken Campaign commits with `raid = true`.
 
 - [ ] **Step 6: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SneakAttackSuite"`
-Expected: compile error: `SneakAttackCard` is not in `oathdigital.gameplay.powers.campaign`.
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SneakAttackSuite"`
+Expected: compile error: `SneakAttackCard` is not in `distantlands.gameplay.powers.campaign`.
 
 - [ ] **Step 7: Write Sneak Attack**
 
 Move `SneakAttackCard` from `HoldingDiscordDenizens.scala` into the new file. Check how that file references cards that moved out, for example `SecondWindCard`, and list Sneak Attack the same way.
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.model._
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.model._
 
 object SneakAttackCard extends Denizen(DenizenId("98"), "Sneak Attack", Suit.Discord) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.sneak-attack"),
@@ -917,7 +917,7 @@ Regenerate the unimplemented snapshot. The diff drops `denizen.sneak-attack` onl
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SneakAttackSuite oathdigital.gameplay.powers.campaign.SecondWindSuite oathdigital.gameplay.powers.campaign.HeraldSuite oathdigital.gameplay.powers.UnimplementedPowersSuite oathdigital.gameplay.CampaignSetupSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SneakAttackSuite distantlands.gameplay.powers.campaign.SecondWindSuite distantlands.gameplay.powers.campaign.HeraldSuite distantlands.gameplay.powers.UnimplementedPowersSuite distantlands.gameplay.CampaignSetupSuite"`
 Expected: all pass.
 
 Run: `./sbtw "test"`
@@ -926,14 +926,14 @@ Expected: all pass.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SneakAttack.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala \
+git add src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SneakAttack.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/campaign/SneakAttackSuite.scala \
-  src/test/scala/oathdigital/gameplay/CampaignSetupSuite.scala
+  src/test/scala/distantlands/gameplay/powers/campaign/SneakAttackSuite.scala \
+  src/test/scala/distantlands/gameplay/CampaignSetupSuite.scala
 git commit -m "feat(batch8): Sneak Attack campaigns off turn against the last attacker"
 ```
 
@@ -942,11 +942,11 @@ git commit -m "feat(batch8): Sneak Attack campaigns off turn against the last at
 ### Task 4: The Game Log names an off-turn actor once
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` (`walker`'s `Run` actor, the `FollowUpSkipped` line)
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala` (the tag)
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogJournal.scala` (the `Run` doc)
-- Create: `src/test/scala/oathdigital/application/gamelog/OffTurnLogScripts.scala`
-- Create: `src/test/scala/oathdigital/application/gamelog/GameLogOffTurnSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` (`walker`'s `Run` actor, the `FollowUpSkipped` line)
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala` (the tag)
+- Modify: `src/main/scala/distantlands/application/gamelog/LogJournal.scala` (the `Run` doc)
+- Create: `src/test/scala/distantlands/application/gamelog/OffTurnLogScripts.scala`
+- Create: `src/test/scala/distantlands/application/gamelog/GameLogOffTurnSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1 to 3.
@@ -957,16 +957,16 @@ git commit -m "feat(batch8): Sneak Attack campaigns off turn against the last at
 Model them on `CaptainsLogScripts.scala`: `atTable(name, table, dice)`, answers through `act.withAnswers`, and `Script(name, service, actor)`. Check that `withAnswers` answers each park as its awaited player. If it answers as the script's actor, give the off-turn answers their owner in the same way `LogScripts` answers a defender's plan.
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.campaign.SneakAttackCard
-import oathdigital.gameplay.walker.FollowUpOffer
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Dice, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.campaign.SneakAttackCard
+import distantlands.gameplay.walker.FollowUpOffer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{CatalogNames, Dice, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, raidAnswers}
 
 /** Journaled walks by a player who is not the active player, for the Game
@@ -1012,9 +1012,9 @@ Notes for the implementer:
 - [ ] **Step 2: Write the failing log tests**
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.testkit.Table.p2
+import distantlands.testkit.Table.p2
 import LogScripts._
 import OffTurnLogScripts._
 
@@ -1103,7 +1103,7 @@ Read `ActionLines.travelLines` for the Travel line's exact words. If it names th
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogOffTurnSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogOffTurnSuite"`
 Expected: the tag tests fail, since the tag starts "Campaign". The skip test fails, since the line ends "Campaign skipped.". The Travel test fails because the Travel line is missing: `travelLines` posts only when the mover is `run.actor`.
 
 - [ ] **Step 4: The run's actor is the walk's**
@@ -1154,17 +1154,17 @@ In `GameLogFormatter`, the `FollowUpSkipped` line becomes "… skipped by Blue."
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: all pass, the existing Game Log suites included. Every existing run's dequeued actor is the turn's player.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala \
-  src/main/scala/oathdigital/application/gamelog/StartLines.scala \
-  src/main/scala/oathdigital/application/gamelog/LogJournal.scala \
-  src/test/scala/oathdigital/application/gamelog/OffTurnLogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogOffTurnSuite.scala
+git add src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala \
+  src/main/scala/distantlands/application/gamelog/StartLines.scala \
+  src/main/scala/distantlands/application/gamelog/LogJournal.scala \
+  src/test/scala/distantlands/application/gamelog/OffTurnLogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogOffTurnSuite.scala
 git commit -m "feat(log): an off-turn walk's tag names its actor"
 ```
 

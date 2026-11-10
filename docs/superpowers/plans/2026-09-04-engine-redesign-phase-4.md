@@ -60,8 +60,8 @@ git commit -m "docs: amend decision 2 for action-level composite Operations"
 ### Task 2: Contribution vocabulary + suppression registry (powerresolver)
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/PowerContributions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/PowerModel.scala` (no interface change needed; Power untouched)
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/PowerContributions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/PowerModel.scala` (no interface change needed; Power untouched)
 
 **Interfaces:**
 - Consumes: existing `Power`, `PowerWindow`, `RuleSourceRef`, `PowerId`.
@@ -71,15 +71,15 @@ git commit -m "docs: amend decision 2 for action-level composite Operations"
   - `trait WindowContext { def activePowers: Vector[PowerId] }`-style minimal marker (each window family extends with its own data).
 
 - [ ] **Step 1: Write failing test** (in `PowerResolverSuite.scala` or new `SuppressionRegistrySuite.scala`): register a dominant suppressing two others with a condition; assert `suppress` returns suppressed ids when condition true, empty otherwise.
-- [ ] **Step 2: Run to verify fail**: `./sbtw "testOnly oathdigital.gameplay.*Suppression*"` → FAIL (missing symbols).
+- [ ] **Step 2: Run to verify fail**: `./sbtw "testOnly distantlands.gameplay.*Suppression*"` → FAIL (missing symbols).
 - [ ] **Step 3: Implement** `PowerContributions.scala` per interfaces above.
 - [ ] **Step 4: Pass + commit.**
 
 ### Task 3: Terrain powers become contribution-bearing bundle powers
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/TravelPowers.scala`
-- Modify (helper home): `src/main/scala/oathdigital/gameplay/powers/PowerSupport.scala` (add a `TravelCostPower`-style private bundle base: id, modifier, `CostContribution`, optional restriction) — keep ≤20-line authoring.
+- Modify: `src/main/scala/distantlands/gameplay/powers/TravelPowers.scala`
+- Modify (helper home): `src/main/scala/distantlands/gameplay/powers/PowerSupport.scala` (add a `TravelCostPower`-style private bundle base: id, modifier, `CostContribution`, optional restriction) — keep ≤20-line authoring.
 
 **Interfaces:**
 - Consumes: Task 2 `CostContribution`, `SuppressionRegistry`; existing `ReviewedPowerCatalog.powers` ordering.
@@ -94,9 +94,9 @@ git commit -m "docs: amend decision 2 for action-level composite Operations"
 ### Task 4: Generic TravelCost window fold + legality
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/TravelCostWindow.scala` (powers-owned window object; NOT an integration mirror)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/Travel.scala` (`TravelRules`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/TravelOperationPolicy.scala` (only if needed for the simulated-op legality; likely untouched)
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/TravelCostWindow.scala` (powers-owned window object; NOT an integration mirror)
+- Modify: `src/main/scala/distantlands/gameplay/actions/Travel.scala` (`TravelRules`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/TravelOperationPolicy.scala` (only if needed for the simulated-op legality; likely untouched)
 
 **Interfaces:**
 - Consumes: Task 3 powers; `ReviewedPowerCatalog.resolver`; region base matrix (moved/kept in TravelRules).
@@ -111,7 +111,7 @@ git commit -m "docs: amend decision 2 for action-level composite Operations"
 ### Task 5: Narrow Pass restriction power body
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/TravelPowers.scala` (fill Narrow Pass body)
+- Modify: `src/main/scala/distantlands/gameplay/powers/TravelPowers.scala` (fill Narrow Pass body)
 
 **Interfaces:**
 - Consumes: `OperationRestriction` (from `operations/OperationValidator.scala`); typed `OathViolation.TravelPassBlocked(passSiteId, destination)`.
@@ -126,11 +126,11 @@ git commit -m "docs: amend decision 2 for action-level composite Operations"
 ### Task 6: Delete travel machinery from RuleResolution + move TakeWealthRules
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/RuleResolution.scala` — delete `RuntimeRuleRegistry` travel handlers (`default` → empty `RuleRegistry()` stub), `TravelModifierKind`, `travelModifierKind` member, `RuleQueryContext.Travel`, unused travel-only `RuleOutcome` cases (ModifyCost/RequireDecision/PostActionEffect only if no remaining consumers — verify by compile), `RuleDecisionBoundary` if orphaned.
-- Create: `src/main/scala/oathdigital/gameplay/phases/TakeWealthRules.scala` (move `TakeWealthRules.validate` verbatim; usedPowers/PowerUseRef semantics untouched, decision 11).
+- Modify: `src/main/scala/distantlands/gameplay/RuleResolution.scala` — delete `RuntimeRuleRegistry` travel handlers (`default` → empty `RuleRegistry()` stub), `TravelModifierKind`, `travelModifierKind` member, `RuleQueryContext.Travel`, unused travel-only `RuleOutcome` cases (ModifyCost/RequireDecision/PostActionEffect only if no remaining consumers — verify by compile), `RuleDecisionBoundary` if orphaned.
+- Create: `src/main/scala/distantlands/gameplay/phases/TakeWealthRules.scala` (move `TakeWealthRules.validate` verbatim; usedPowers/PowerUseRef semantics untouched, decision 11).
 - Modify: consumers imports (`Wake.scala`, `LegalActionProjector.scala`).
-- Modify: `src/main/scala/oathdigital/gameplay/actions/Travel.scala` remove activations/`resolveTravel` machinery.
-- Modify: `src/main/scala/oathdigital/gameplay/actions/Negotiation.scala` if its `RuntimeRuleRegistry.default.resolve` still compiles against empty stub (behavior unchanged: relevant handlers unregistered → unsupported block).
+- Modify: `src/main/scala/distantlands/gameplay/actions/Travel.scala` remove activations/`resolveTravel` machinery.
+- Modify: `src/main/scala/distantlands/gameplay/actions/Negotiation.scala` if its `RuntimeRuleRegistry.default.resolve` still compiles against empty stub (behavior unchanged: relevant handlers unregistered → unsupported block).
 
 - [ ] **Step 1: compile-driven deletion** — `./sbtw "Test/compile"`; fix imports; keep RuleRegistry/RuleActivation/RuleOutcome/RuleQueryContext (Campaign/Negotiation/TakeWealth) shared.
 - [ ] **Step 2: test updates**: `RuleResolutionSuite.scala` — delete travel-handler lookup assertions (lines 39–50 partial), keep generic-registry tests; `TravelSuite` unaffected beyond Task 5; add stub test asserting Negotiation still blocks identically.

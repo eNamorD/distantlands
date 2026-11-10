@@ -1,0 +1,139 @@
+package distantlands.gameplay.powers.setup
+
+import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
+import distantlands.model._
+
+object GreatMarketCard extends Edifice(EdificeId("E02"), Suit.Discord):
+  object intact extends EdificeFace("Great Market") with Locked:
+    val power = PrintedPower(PowerId("edifice.e02.intact"),
+      persistent = false, cost = Cost.free,
+      text = "**SETUP (END) / WHEN EXPLORED:** Place [favor] on this site " +
+        "for each denizen _(including this)_ in this region. " +
+        "_Players may take it in Wake._")
+    val powers: Vector[PrintedPower] = Vector(power)
+  object ruined extends EdificeFace("Bandit Market"):
+    val power = PrintedPower(PowerId("edifice.e02.ruined"),
+      persistent = false, cost = Cost.free,
+      text = "**SETUP (END) / WHEN EXPLORED:** Place [favor] on each site " +
+        "ruled by the bandits. _(Players may take it in Wake.)_ Burn " +
+        "[favor-burnt] from each favor bank.")
+    val powers: Vector[PrintedPower] = Vector(power)
+
+/** E02, both faces (2026-09-21 Chronicle design, "Setup powers"). Each names
+  * `PowerWindow.WhenExplored` alongside `SetupEnd` so the same contribution
+  * will serve WHEN EXPLORED once an explore procedure exists to fire it;
+  * nothing folds that window yet, so only the SETUP path runs or is tested.
+  */
+sealed abstract class MarketRule extends ContributingPower:
+  def edifice: EdificeId
+  protected def side: EdificeSide
+
+  final def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+
+  private def at(ready: ReadyGame): Option[SiteId] =
+    ready.game.current.edificeSite(edifice, side)
+
+  override def applicable(ctx: PowerCtx): Boolean = at(ctx.state).isDefined
+
+  protected def build(ready: ReadyGame, at: SiteId)
+      : Either[OathViolation, Vector[CoreOperation]]
+
+  /** The line this face writes after its effect. */
+  protected def note(at: SiteId): Note
+
+  final def contributions: Map[PowerWindow, Vector[Contribution]] =
+    val effect = Vector(Transform((ctx, ops) => at(ctx.state) match {
+      case Some(site) =>
+        ops :+ BuildOps((ready, _) => build(ready, site)) :+ note(site)
+      case None => ops
+    }))
+    Map(PowerWindow.SetupEnd -> effect, PowerWindow.WhenExplored -> effect)
+object MarketRule:
+  /** The favor on `site` in `ready`. */
+  def siteFavor(ready: ReadyGame, site: SiteId): Int =
+    ready.game.current.map.sites.get(site).fold(0)(_.tokens.favor)
+
+  def favor(amount: Int): NoteArg = NoteArg.Amount(amount, NoteUnit.Favor)
+
+case object GreatMarket extends MarketRule:
+  val id: PowerId = GreatMarketCard.intact.power.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Placed {3 favor} on {site}." */
+  val placed: NoteKey = notes.key("placed", Vector(NotePart.Text("Placed "),
+    NotePart.Arg(0), NotePart.Text(" on "), NotePart.Arg(1), NotePart.Text(".")))
+
+  val edifice: EdificeId = GreatMarketCard.id
+  protected def side: EdificeSide = EdificeSide.Intact
+
+
+  protected def note(at: SiteId): Note = Note(id, states => for
+    step <- states.previous
+    placed = MarketRule.siteFavor(step._2, at) - MarketRule.siteFavor(step._1, at)
+    if placed > 0
+  yield GreatMarket.placed(PowerSourceRef.Card(edifice), MarketRule.favor(placed),
+    NoteArg.Site(at)))
+
+  protected def build(ready: ReadyGame, at: SiteId)
+      : Either[OathViolation, Vector[CoreOperation]] = for
+    region <- ready.game.current.map.regionOf(at).toRight(
+      OathViolation.InvalidEventOrder(s"${at.value} is not in play"))
+  yield
+    val current = ready.game.current
+    val count = current.map.inPlay.filter(s => current.map.regionOf(s).contains(region))
+      .flatMap(s => current.map.sites(s).denizens).size
+    if count == 0 then Vector.empty
+    else Vector(Move(Piece.Favor(count),
+      PositionedLocation(Location.SharedBank), PositionedLocation(Location.Site(at))))
+
+case object BanditMarket extends MarketRule:
+  val id: PowerId = GreatMarketCard.ruined.power.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Placed {2 favor} on the bandit sites and burned {6 favor} from the
+    * banks." */
+  val placedAndBurned: NoteKey = notes.key("placed-and-burned", Vector(
+    NotePart.Text("Placed "), NotePart.Arg(0),
+    NotePart.Plural(0, " on the bandit site", " on the bandit sites"),
+    NotePart.Text(" and burned "), NotePart.Arg(1),
+    NotePart.Text(" from the banks.")))
+  /** "Placed {2 favor} on the bandit sites." */
+  val placed: NoteKey = notes.key("placed", Vector(NotePart.Text("Placed "),
+    NotePart.Arg(0),
+    NotePart.Plural(0, " on the bandit site.", " on the bandit sites.")))
+  /** "Burned {6 favor} from the banks." */
+  val burned: NoteKey = notes.key("burned", Vector(NotePart.Text("Burned "),
+    NotePart.Arg(0), NotePart.Text(" from the banks.")))
+
+  val edifice: EdificeId = GreatMarketCard.id
+  protected def side: EdificeSide = EdificeSide.Ruined
+
+
+  /** Each bandit site took one favor from the shared supply; the banks lost
+    * only the burn. */
+  protected def note(at: SiteId): Note = Note(id, states =>
+    states.previous.flatMap { case (before, after) =>
+      val placed = after.game.current.map.sites.keysIterator.map(site =>
+        MarketRule.siteFavor(after, site) - MarketRule.siteFavor(before, site))
+        .filter(_ > 0).sum
+      val burned = Suit.all.map(suit => before.banks.favor.getOrElse(suit, 0) -
+        after.banks.favor.getOrElse(suit, 0)).sum
+      val card = PowerSourceRef.Card(edifice)
+      if placed > 0 && burned > 0 then Some(BanditMarket.placedAndBurned(card,
+        MarketRule.favor(placed), MarketRule.favor(burned)))
+      else if placed > 0 then Some(BanditMarket.placed(card, MarketRule.favor(placed)))
+      else if burned > 0 then Some(BanditMarket.burned(card, MarketRule.favor(burned)))
+      else None
+    })
+
+  protected def build(ready: ReadyGame, at: SiteId)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    val current = ready.game.current
+    val bandited = current.map.inPlay.filter(s => SiteRule.ruler(
+      current.map.sites(s).forces, current.players).contains(SiteRuler.Bandits))
+    val placed: Vector[CoreOperation] = bandited.map(s => Move(Piece.Favor(1),
+      PositionedLocation(Location.SharedBank), PositionedLocation(Location.Site(s))))
+    val burned: Vector[CoreOperation] = Suit.all.map(bank =>
+      Burn.favor(1, PositionedLocation(Location.FavorBank(bank)), None))
+    Right(placed ++ burned)

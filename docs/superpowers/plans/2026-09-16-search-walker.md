@@ -33,13 +33,13 @@
 - `application/GameApplicationService.scala`, `GameIntentMapper.scala`, `Authorization.scala`, `LegalActionProjector.scala`, `WalkerDecisionProjector.scala`, `frontend/ModifierWorkflow.scala`, `ActionDecisionRenderer.scala`: generic start/resolve routing and scoped controls.
 - `gameplay/actions/Search.scala`, `CardPlay.scala`, `MinorActions.scala`, `model/PendingProcedures.scala`, event/codec/projection files: legacy cutover deletions after parity.
 
-Paths above are relative to `src/main/scala/oathdigital/` unless prefixed by `shared/` or `frontend/`. Confirm exact declarations with `rg` before editing; preserve unrelated cases in shared files.
+Paths above are relative to `src/main/scala/distantlands/` unless prefixed by `shared/` or `frontend/`. Confirm exact declarations with `rg` before editing; preserve unrelated cases in shared files.
 
 ---
 
 ### Task 1: Partition capacity and actual discard order
 
-**Files:** Modify `src/main/scala/oathdigital/model/Decisions.scala`, `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala`, `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala`, `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala`, `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`, `frontend/src/main/scala/oathdigital/frontend/PartitionDecisionState.scala`. Create `src/test/scala/oathdigital/gameplay/DecisionQueriesSuite.scala`; test `src/test/scala/oathdigital/application/WalkerDecisionProjectionSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/PartitionDecisionStateSuite.scala`.
+**Files:** Modify `src/main/scala/distantlands/model/Decisions.scala`, `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala`, `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala`, `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala`, `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`, `frontend/src/main/scala/distantlands/frontend/PartitionDecisionState.scala`. Create `src/test/scala/distantlands/gameplay/DecisionQueriesSuite.scala`; test `src/test/scala/distantlands/application/WalkerDecisionProjectionSuite.scala`, `frontend/src/test/scala/distantlands/frontend/PartitionDecisionStateSuite.scala`.
 
 **Interfaces:** `DecisionSection(key: String, label: String, minRequired: Int, maxAllowed: Option[Int] = None)`; matching projected section. `PartitionAnswer.placements` remains ordered.
 
@@ -66,7 +66,7 @@ def placements: Vector[(String, String)] =
 
 ### Task 2: Recorded track change and semantic card-play hook
 
-**Files:** Modify `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala`, relevant operation validation/mutation files, `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`. Test `src/test/scala/oathdigital/gameplay/OperationExecutorSuite.scala`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`, `src/test/scala/oathdigital/gameplay/ProcedureWalkerSuite.scala` (use actual existing suite name found by `rg --files`).
+**Files:** Modify `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala`, relevant operation validation/mutation files, `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`. Test `src/test/scala/distantlands/gameplay/OperationExecutorSuite.scala`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, `src/test/scala/distantlands/gameplay/ProcedureWalkerSuite.scala` (use actual existing suite name found by `rg --files`).
 
 **Interfaces:** A recorded zero-argument `AdvanceVisionsDrawn` leaf advances the track by exactly one when a world-deck Vision stops Search. `CardPlayed(card: WorldCardId, resultingSource: RuleSourceRef)` is a `CoreOperation` with `window = Some(ActionCardPlayed)` and empty children; it is never a recorded delta.
 
@@ -85,7 +85,7 @@ assertEquals(tree.children.size, 1)
 
 ### Task 3: Shared card-play placement tree and Silver Tongue
 
-**Files:** Create `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`. Modify `src/main/scala/oathdigital/gameplay/powerresolver/PowerModel.scala`, `src/main/scala/oathdigital/gameplay/powers/rest/SilverTongue.scala`. Test new `src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala` and `SilverTongueSuite.scala`.
+**Files:** Create `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`. Modify `src/main/scala/distantlands/gameplay/powerresolver/PowerModel.scala`, `src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala`. Test new `src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala` and `SilverTongueSuite.scala`.
 
 **Interfaces:** `CardPlayProcedure.build(catalog, ready, actor, card, origin): Either[OathViolation, Operation]` returns an embeddable tree; `origin` distinguishes temporary hand from held facedown adviser without persisting a second pending procedure. Stable decision IDs distinguish placement, adviser replacement, and site replacement. `SearchPlayAdviser` replaces the old facedown-only window for both orientations. Faceup Conspiracy retains its existing post-play legacy pending handoff, recorded as a state operation so replay preserves it; this slice does not migrate the Conspiracy procedure itself.
 
@@ -104,7 +104,7 @@ assert(tree.isRight)
 
 ### Task 4: Search tree and modifier contract
 
-**Files:** Create `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala`; modify `src/main/scala/oathdigital/model/ProcedureRef.scala`, `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`, `src/main/scala/oathdigital/application/GameApplicationService.scala`, `src/main/scala/oathdigital/application/LegalActionProjector.scala`. Test new `SearchProcedureSuite.scala`, `WalkerProcedureRegistrySuite.scala`, and application Search tests.
+**Files:** Create `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala`; modify `src/main/scala/distantlands/model/ProcedureRef.scala`, `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, `src/main/scala/distantlands/application/GameApplicationService.scala`, `src/main/scala/distantlands/application/LegalActionProjector.scala`. Test new `SearchProcedureSuite.scala`, `WalkerProcedureRegistrySuite.scala`, and application Search tests.
 
 **Interfaces:** `ActionRef.Search`, `SearchProcedure.build/rebuild(catalog, ready, actor, startArgs)`, `startArgs` carrying exactly one generic `DecisionOptionRef.Button` (`search:world` or `search:regional-discard:<region-key>`). The sealed option family has no regional-discard ref; parse only these two source spellings in Search, without adding a Search-specific model case. Registry declares `modifierWindow = Some(SearchModifierSelection)` and continuation IDs for card selection and placement. Application retains draw-port preparation at command boundary; prepared identities must match authoritative source order.
 
@@ -124,7 +124,7 @@ assert(started.isRight)
 
 ### Task 5: Dazzle and selective diagnostic retirement
 
-**Files:** Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala`; modify `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, `ActionPowers.scala`, `SearchPowers.scala`, and source-scoped diagnostic dispatch in `OathRules.scala` if required. Test new `DazzleSuite.scala`, `SearchSuite.scala`, and `MinorActionsSuite.scala`.
+**Files:** Create `src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala`; modify `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, `ActionPowers.scala`, `SearchPowers.scala`, and source-scoped diagnostic dispatch in `OathRules.scala` if required. Test new `DazzleSuite.scala`, `SearchSuite.scala`, and `MinorActionsSuite.scala`.
 
 **Interfaces:** Dazzle contributes at `ActionCardPlayed`, matches `CardPlayed` for its catalog card ID, and inserts `BuildOps` declaring one default-optional semantic `Discard` operation per Hearth/Order site card in actor's pawn region. The prerequisite's generic pipeline and shared discard restriction, not Dazzle, decide which operations are rule-impossible.
 
@@ -143,7 +143,7 @@ assertEquals(played.window, Some(PowerWindow.ActionCardPlayed))
 
 ### Task 6: Facedown-adviser wrapper and generic UI
 
-**Files:** Modify `src/main/scala/oathdigital/model/ProcedureRef.scala`, `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, `src/main/scala/oathdigital/application/GameApplicationService.scala`, `GameIntentMapper.scala`, `Authorization.scala`, `WalkerDecisionProjector.scala`; modify `frontend/src/main/scala/oathdigital/frontend/ModifierWorkflow.scala`, `ActionDecisionRenderer.scala`, `ServerModeUi.scala` and relevant shared protocol files. Test `MinorActionsSuite.scala`, `WalkerDecisionProjectionSuite.scala`, `frontend/.../ServerModeUiSuite.scala`.
+**Files:** Modify `src/main/scala/distantlands/model/ProcedureRef.scala`, `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, `src/main/scala/distantlands/application/GameApplicationService.scala`, `GameIntentMapper.scala`, `Authorization.scala`, `WalkerDecisionProjector.scala`; modify `frontend/src/main/scala/distantlands/frontend/ModifierWorkflow.scala`, `ActionDecisionRenderer.scala`, `ServerModeUi.scala` and relevant shared protocol files. Test `MinorActionsSuite.scala`, `WalkerDecisionProjectionSuite.scala`, `frontend/.../ServerModeUiSuite.scala`.
 
 **Interfaces:** `ActionRef.PlayFacedownAdviser` starts a thin wrapper over `CardPlayProcedure` with one `DecisionOptionRef.Denizen` or `.Vision` card start argument. It declares `SearchModifierSelection`; its continuation maps placement/replacement decisions to existing generic `WalkerDecisionProjection` rather than `PendingCardDecisionProjection`.
 
@@ -163,7 +163,7 @@ assert(started.isRight)
 
 ### Task 7: Differential gate and legacy Search deletion
 
-**Files:** Modify `src/main/scala/oathdigital/gameplay/actions/Search.scala`, `CardPlay.scala`, `MinorActions.scala`, `model/PendingProcedures.scala`, `gameplay/model/GameEventProtocol.scala`, `gameplay/OathRules.scala`, `application/GameCommands.scala`, `GameApplicationService.scala`, `PendingProcedureProjector.scala`, `serialization/ActionEventCodec.scala`, `GameEventWire.scala`, shared intent/projection codecs and frontend legacy card-decision files. Update fixtures and affected tests, including `ForgeWalkerFixture.scala`, `VisionsSuite.scala`, `PendingWalkerInvariantSuite.scala`, `GameApplicationServiceSuite.scala`.
+**Files:** Modify `src/main/scala/distantlands/gameplay/actions/Search.scala`, `CardPlay.scala`, `MinorActions.scala`, `model/PendingProcedures.scala`, `gameplay/model/GameEventProtocol.scala`, `gameplay/OathRules.scala`, `application/GameCommands.scala`, `GameApplicationService.scala`, `PendingProcedureProjector.scala`, `serialization/ActionEventCodec.scala`, `GameEventWire.scala`, shared intent/projection codecs and frontend legacy card-decision files. Update fixtures and affected tests, including `ForgeWalkerFixture.scala`, `VisionsSuite.scala`, `PendingWalkerInvariantSuite.scala`, `GameApplicationServiceSuite.scala`.
 
 **Interfaces:** Only `StartWalker`/`ResolveWalker` express Search and facedown-adviser card play. No `PendingProcedure.Search`, `SearchStarted`, `SearchCompleted`, `BeginSearch`, or `CompleteSearch` production path survives. Other pending cases, Vision/Conspiracy behavior, and unrelated diagnostics remain.
 

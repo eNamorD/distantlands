@@ -32,7 +32,7 @@
   - No power name appears in walker or `gameplay/operations` sources. `gameplay/actions` may import a power, as `TravelRules` does.
 - **Line width.** Scala lines this plan writes stay at or under 80 characters, as in the files around them. Re-wrap any line that comes out longer.
 - **Indentation in lists.** A code block inside a list item is indented two extra spaces for the list. Drop those two when you copy it.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -86,23 +86,23 @@ Check each of these in the code before Task 1. If a name or signature differs, r
 | File | Change | Task |
 |---|---|---|
 | `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md` | modify | 1, 3 |
-| `src/main/scala/oathdigital/model/ProcedureRef.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala` | create | 1 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` | modify | 1 |
-| `src/main/scala/oathdigital/application/gamelog/{ActionLines,StartLines,DetailLines}.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/actions/{MinorActions,MinorActionOperationPolicy}.scala` | delete | 2 |
-| `src/main/scala/oathdigital/gameplay/{OathRules,OathDriver,OathRulesWalker}.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/powers/economy/VowOfWandering.scala` | modify (doc) | 2 |
-| `src/main/scala/oathdigital/model/{GameEventProtocol,GameViolation}.scala` | modify | 2 |
-| `src/main/scala/oathdigital/serialization/ActionEventCodec.scala` | delete | 2 |
-| `src/main/scala/oathdigital/serialization/GameEventWire.scala` | modify | 2 |
-| `src/main/scala/oathdigital/application/{GameCommands,Authorization,GameIntentMapper,GameApplicationService,UndoBarrier}.scala` | modify | 2 |
-| `src/main/scala/oathdigital/application/gamelog/{EventLines,GameLogFormatter,LogSections}.scala` | modify | 2 |
-| `shared/src/main/scala/oathdigital/protocol/{CommandIntents,CommandIntentCodec,CommandIntentDecoders}.scala` | modify | 2 |
-| `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala` | modify | 2 |
-| `src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala` | modify | 1, 2 |
-| `src/test/scala/oathdigital/application/gamelog/{LogScripts,GameLogEventSuite,GameLogSectionSuite}.scala` | modify | 1, 2 |
-| `src/test/scala/oathdigital/model/ProcedureRefSuite.scala` | modify | 1 |
+| `src/main/scala/distantlands/model/ProcedureRef.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala` | create | 1 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` | modify | 1 |
+| `src/main/scala/distantlands/application/gamelog/{ActionLines,StartLines,DetailLines}.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/actions/{MinorActions,MinorActionOperationPolicy}.scala` | delete | 2 |
+| `src/main/scala/distantlands/gameplay/{OathRules,OathDriver,OathRulesWalker}.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/powers/economy/VowOfWandering.scala` | modify (doc) | 2 |
+| `src/main/scala/distantlands/model/{GameEventProtocol,GameViolation}.scala` | modify | 2 |
+| `src/main/scala/distantlands/serialization/ActionEventCodec.scala` | delete | 2 |
+| `src/main/scala/distantlands/serialization/GameEventWire.scala` | modify | 2 |
+| `src/main/scala/distantlands/application/{GameCommands,Authorization,GameIntentMapper,GameApplicationService,UndoBarrier}.scala` | modify | 2 |
+| `src/main/scala/distantlands/application/gamelog/{EventLines,GameLogFormatter,LogSections}.scala` | modify | 2 |
+| `shared/src/main/scala/distantlands/protocol/{CommandIntents,CommandIntentCodec,CommandIntentDecoders}.scala` | modify | 2 |
+| `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala` | modify | 2 |
+| `src/test/scala/distantlands/gameplay/MinorActionsSuite.scala` | modify | 1, 2 |
+| `src/test/scala/distantlands/application/gamelog/{LogScripts,GameLogEventSuite,GameLogSectionSuite}.scala` | modify | 1, 2 |
+| `src/test/scala/distantlands/model/ProcedureRefSuite.scala` | modify | 1 |
 | other test suites (listed in Task 2) | modify | 2 |
 | `docs/ROADMAP.md` | modify | 3 |
 
@@ -114,15 +114,15 @@ The procedures exist, run, replay and post their lines. The legacy commands stil
 
 **Files:**
 - Modify: `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md`
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala`
-- Create: `src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`, `StartLines.scala`, `DetailLines.scala`
-- Modify tests: `src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala`, `src/test/scala/oathdigital/model/ProcedureRefSuite.scala`, `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, `src/test/scala/oathdigital/application/gamelog/GameLogEventSuite.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`, `StartLines.scala`, `DetailLines.scala`
+- Modify tests: `src/test/scala/distantlands/gameplay/MinorActionsSuite.scala`, `src/test/scala/distantlands/model/ProcedureRefSuite.scala`, `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, `src/test/scala/distantlands/application/gamelog/GameLogEventSuite.scala`
 
 **Interfaces:**
-- Produces, in `oathdigital.model.ActionRef`: `PeekSiteRelics` (key `"peek-site-relics"`), `RevealOwnedRelic` (`"reveal-owned-relic"`) and `MoveWarbands` (`"move-warbands"`), appended to `ActionRef.all` in that order.
-- Produces, in `oathdigital.gameplay.actions.minor`:
+- Produces, in `distantlands.model.ActionRef`: `PeekSiteRelics` (key `"peek-site-relics"`), `RevealOwnedRelic` (`"reveal-owned-relic"`) and `MoveWarbands` (`"move-warbands"`), appended to `ActionRef.all` in that order.
+- Produces, in `distantlands.gameplay.actions.minor`:
 
   ```scala
   object MinorActionProcedures:
@@ -181,17 +181,17 @@ In the "Slices" section, append to item 3 ("**The minor actions.** ..."): " Thei
 
 - [ ] **Step 3: Write the failing rules tests**
 
-In `src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala`, keep every existing test for now. Add these imports:
+In `src/test/scala/distantlands/gameplay/MinorActionsSuite.scala`, keep every existing test for now. Add these imports:
 
 ```scala
-import oathdigital.gameplay.actions.minor.MinorActionProcedures
-import oathdigital.gameplay.actions.minor.MinorActionProcedures.{toBoard,
+import distantlands.gameplay.actions.minor.MinorActionProcedures
+import distantlands.gameplay.actions.minor.MinorActionProcedures.{toBoard,
   toSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.economy.VowOfWandering
-import oathdigital.gameplay.walker.ActionBoundaryRan
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{ParkedNode, PowerStubs}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.gameplay.walker.ActionBoundaryRan
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{ParkedNode, PowerStubs}
 ```
 
 Add these helpers after `base`:
@@ -369,7 +369,7 @@ Then add the tests:
 
 If `Table.relic` places relics in a different order than added, read `Look(...).player(p1).relics` and order both expected vectors the same way the table holds them; do not sort in the procedure.
 
-In `src/test/scala/oathdigital/model/ProcedureRefSuite.scala`, extend the hand list of `ActionRef.all` keys:
+In `src/test/scala/distantlands/model/ProcedureRefSuite.scala`, extend the hand list of `ActionRef.all` keys:
 
 ```scala
       Vector("search", "play-facedown-adviser", "recover", "forge",
@@ -380,12 +380,12 @@ In `src/test/scala/oathdigital/model/ProcedureRefSuite.scala`, extend the hand l
 
 - [ ] **Step 4: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.MinorActionsSuite oathdigital.model.ProcedureRefSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.MinorActionsSuite distantlands.model.ProcedureRefSuite"`
 Expected: compile errors: `PeekSiteRelics` is not a member of `ActionRef`, and `MinorActionProcedures` is not found.
 
 - [ ] **Step 5: The procedure references**
 
-In `src/main/scala/oathdigital/model/ProcedureRef.scala`, after `case object Campaign extends ActionRef { val key = "campaign" }`, add:
+In `src/main/scala/distantlands/model/ProcedureRef.scala`, after `case object Campaign extends ActionRef { val key = "campaign" }`, add:
 
 ```scala
   /** The three minor actions that were legacy commands (walker-driven game
@@ -408,16 +408,16 @@ Append them to `ActionRef.all`:
 
 - [ ] **Step 6: The procedures**
 
-Create `src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.minor
+package distantlands.gameplay.actions.minor
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.OathLifecycle
-import oathdigital.gameplay.powers.economy.VowOfWandering
-import oathdigital.model._
-import oathdigital.model.OathViolation.{InvalidEventOrder,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.OathLifecycle
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.model._
+import distantlands.model.OathViolation.{InvalidEventOrder,
   MinorActionUnavailable, PawnSiteMissing}
 
 /** The three minor actions that were legacy commands (walker-driven game
@@ -619,7 +619,7 @@ Notes:
 
 - [ ] **Step 7: Register them**
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, import `oathdigital.gameplay.actions.minor.MinorActionProcedures`. After the `ActionRef.Campaign` entry, add:
+In `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, import `distantlands.gameplay.actions.minor.MinorActionProcedures`. After the `ActionRef.Campaign` entry, add:
 
 ```scala
     /** The legacy minor actions (walker-driven game loop design, slice 3).
@@ -648,7 +648,7 @@ In `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, i
 
 - [ ] **Step 8: The Game Log lines**
 
-In `src/main/scala/oathdigital/application/gamelog/StartLines.scala`, in `name`, extend the no-tag arm:
+In `src/main/scala/distantlands/application/gamelog/StartLines.scala`, in `name`, extend the no-tag arm:
 
 ```scala
       // No modifier window, so no tag.
@@ -658,7 +658,7 @@ In `src/main/scala/oathdigital/application/gamelog/StartLines.scala`, in `name`,
           _: ActionRef.UsePower => None
 ```
 
-In `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`, in `lines`, before `case ActionRef.Negotiation =>`, add:
+In `src/main/scala/distantlands/application/gamelog/ActionLines.scala`, in `lines`, before `case ActionRef.Negotiation =>`, add:
 
 ```scala
       // The minor actions post their legacy lines, now as action lines.
@@ -693,7 +693,7 @@ In `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`, in `lines
 
 `words.card` returns the type `words.cards` takes; check `LogWords` and adjust the names if they differ.
 
-In `src/main/scala/oathdigital/application/gamelog/DetailLines.scala`, keep these ops from repeating as detail lines:
+In `src/main/scala/distantlands/application/gamelog/DetailLines.scala`, keep these ops from repeating as detail lines:
 
 - the warbands-to-site `Move` arm's guard becomes `if run.procedure != ActionRef.Campaign && run.procedure != ActionRef.MoveWarbands`;
 - the `Peek` arm's guard becomes `if run.procedure != ActionRef.Negotiation && run.procedure != ActionRef.PeekSiteRelics`;
@@ -701,12 +701,12 @@ In `src/main/scala/oathdigital/application/gamelog/DetailLines.scala`, keep thes
 
 - [ ] **Step 9: Run the rules tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.MinorActionsSuite oathdigital.model.ProcedureRefSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.MinorActionsSuite distantlands.model.ProcedureRefSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite"`
 Expected: PASS.
 
 - [ ] **Step 10: The Game Log scripts and tests**
 
-In `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, import `oathdigital.gameplay.actions.minor.MinorActionProcedures`. After `revealRelic`, add:
+In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, import `distantlands.gameplay.actions.minor.MinorActionProcedures`. After `revealRelic`, add:
 
 ```scala
   /** p1 peeks at Broken Peaks, where Sticky Fire lies. p2 and p3 stand
@@ -748,7 +748,7 @@ Import `ChooseOneAnswer` and `Situation` if the file does not yet. Add both scri
     "warbands-moved" -> (() => warbandsMoved),
 ```
 
-In `src/test/scala/oathdigital/application/gamelog/GameLogEventSuite.scala`, add:
+In `src/test/scala/distantlands/application/gamelog/GameLogEventSuite.scala`, add:
 
 ```scala
   test("Peek Site Relics names the relics for the peeker only"):
@@ -776,7 +776,7 @@ In `src/test/scala/oathdigital/application/gamelog/GameLogEventSuite.scala`, add
     assertEquals(moves.map(_.section).distinct.size, 2)
 ```
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS. If a new script fails a `GameLogPropertiesSuite` property, the failure names the property; fix the procedure or the line, not the property.
 
 - [ ] **Step 11: Run everything**
@@ -788,16 +788,16 @@ Expected: PASS, with the new tests added to the baseline count.
 
 ```bash
 git add docs/superpowers/specs/2026-10-09-walker-game-loop-design.md \
-  src/main/scala/oathdigital/model/ProcedureRef.scala \
-  src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/application/gamelog/ActionLines.scala \
-  src/main/scala/oathdigital/application/gamelog/StartLines.scala \
-  src/main/scala/oathdigital/application/gamelog/DetailLines.scala \
-  src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala \
-  src/test/scala/oathdigital/model/ProcedureRefSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogEventSuite.scala
+  src/main/scala/distantlands/model/ProcedureRef.scala \
+  src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/application/gamelog/ActionLines.scala \
+  src/main/scala/distantlands/application/gamelog/StartLines.scala \
+  src/main/scala/distantlands/application/gamelog/DetailLines.scala \
+  src/test/scala/distantlands/gameplay/MinorActionsSuite.scala \
+  src/test/scala/distantlands/model/ProcedureRefSuite.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogEventSuite.scala
 git status --short
 git commit -m "feat(walker): the three legacy minor actions as walker procedures"
 ```
@@ -807,15 +807,15 @@ git commit -m "feat(walker): the three legacy minor actions as walker procedures
 ### Task 2: The legacy minor actions go
 
 **Files:**
-- Delete: `src/main/scala/oathdigital/gameplay/actions/MinorActions.scala`, `src/main/scala/oathdigital/gameplay/actions/MinorActionOperationPolicy.scala`, `src/main/scala/oathdigital/serialization/ActionEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`, `OathDriver.scala`, `OathRulesWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/VowOfWandering.scala` (doc)
-- Modify: `src/main/scala/oathdigital/model/GameEventProtocol.scala`, `GameViolation.scala`
-- Modify: `src/main/scala/oathdigital/serialization/GameEventWire.scala`
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala`, `GameApplicationService.scala`, `UndoBarrier.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/EventLines.scala`, `GameLogFormatter.scala`, `LogSections.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala`
+- Delete: `src/main/scala/distantlands/gameplay/actions/MinorActions.scala`, `src/main/scala/distantlands/gameplay/actions/MinorActionOperationPolicy.scala`, `src/main/scala/distantlands/serialization/ActionEventCodec.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`, `OathDriver.scala`, `OathRulesWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/VowOfWandering.scala` (doc)
+- Modify: `src/main/scala/distantlands/model/GameEventProtocol.scala`, `GameViolation.scala`
+- Modify: `src/main/scala/distantlands/serialization/GameEventWire.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala`, `GameApplicationService.scala`, `UndoBarrier.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/EventLines.scala`, `GameLogFormatter.scala`, `LogSections.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala`
 - Modify tests: listed in Steps 1, 5 and 6
 
 **Interfaces:**
@@ -824,7 +824,7 @@ git commit -m "feat(walker): the three legacy minor actions as walker procedures
 
 - [ ] **Step 1: Write the failing frontend test**
 
-In `frontend/src/test/scala/oathdigital/frontend/ActionOptionRowSuite.scala`:
+In `frontend/src/test/scala/distantlands/frontend/ActionOptionRowSuite.scala`:
 
 - Give `panel` a `controls` parameter and use it:
 
@@ -852,12 +852,12 @@ In `frontend/src/test/scala/oathdigital/frontend/ActionOptionRowSuite.scala`:
       Vector(GameCommand.StartWalker("move-warbands")))
   ```
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ActionOptionRowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ActionOptionRowSuite"`
 Expected: FAIL: the minor rows still show the warband count rows, and the click submits `MoveWarbands`.
 
 - [ ] **Step 2: The frontend buttons start the procedures**
 
-In `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala`, inside `value.minorActions.foreach { minor => ... }`, delete the `if minor.canPeekSiteRelics then` block, the `minor.facedownRelics.foreach` block and the `Vector(true -> minor.maxBoardToSite, ...)` block. Keep the facedown-adviser button. After the `value.minorActions.foreach` block's closing brace, add:
+In `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala`, inside `value.minorActions.foreach { minor => ... }`, delete the `if minor.canPeekSiteRelics then` block, the `minor.facedownRelics.foreach` block and the `Vector(true -> minor.maxBoardToSite, ...)` block. Keep the facedown-adviser button. After the `value.minorActions.foreach` block's closing brace, add:
 
 ```scala
      // The legacy minor actions are walker procedures (walker-driven game
@@ -881,7 +881,7 @@ In `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala`, 
 
 `MinorActionsProjection` keeps its fields; slice 4 deletes it with the panel.
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ActionOptionRowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ActionOptionRowSuite"`
 Expected: PASS.
 
 - [ ] **Step 3: Delete the commands and intents**

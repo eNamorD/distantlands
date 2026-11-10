@@ -1,0 +1,22 @@
+package distantlands.serialization
+
+import distantlands.application.{DecodedGameEvent, EventCodecFailure, GameEventCodec}
+import distantlands.model.OathEvent
+
+final class GameEventCodecAdapter extends GameEventCodec:
+  def decodeStream(json: String) = GameEventWire.decodeStream(json)
+    .left.map(toFailure)
+    .map(_.map(value => DecodedGameEvent(value.gameId, value.sequence,
+      value.eventType, value.event)))
+
+  def encodeEvent(gameId: String, sequence: Long, event: OathEvent) =
+    GameEventWire.encodeEvent(gameId, sequence, event)
+    .left.map(toFailure).map(ujson.write(_))
+
+  private def toFailure(value: WireError): EventCodecFailure =
+    EventCodecFailure(value.productPrefix, productPath(value), value.toString)
+
+  private def productPath(value: Product): String =
+    value.productIterator.collectFirst {
+      case path: String if path.startsWith("$") => path
+    }.getOrElse("$")

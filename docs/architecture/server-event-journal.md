@@ -135,7 +135,7 @@ set; both options are gone. Hosting is covered in
 The session authenticator accepts only a 43-128 character base64url-shaped
 raw session cookie, hashes it with SHA-256 at the edge, and sends only the
 fixed digest to `IdentityRepository`. Resolution runs on
-`oathdigital.blocking-dispatcher`, not Akka's request dispatcher. Missing,
+`distantlands.blocking-dispatcher`, not Akka's request dispatcher. Missing,
 malformed, unknown, expired, and revoked sessions share one failure, which
 the API answers with one stable `401`. Raw session and CSRF tokens never
 enter repositories, logs, projections, or errors. `SameOriginCsrfProtection`
@@ -157,11 +157,11 @@ session cookie flags and lifecycle belong to the later issuance boundary.
 Start the server with a database path:
 
 ```sh
-./sbtw 'runMain oathdigital.server.OathServer --database-path var/oathdigital'
+./sbtw 'runMain distantlands.server.DistantLandsServer --database-path var/distantlands'
 ```
 
 The default bind address is `127.0.0.1:8080`; override it with `--host` and
-`--port` (or `OATH_HOST` and `OATH_PORT`). HSQLDB creates several files using
+`--port` (or `DLQ_HOST` and `DLQ_PORT`). HSQLDB creates several files using
 the supplied path prefix. Use a durable local directory in production.
 
 Akka Coordinated Shutdown first unbinds HTTP and then closes the application
@@ -177,7 +177,7 @@ Focused tests and standalone tools may use the explicitly owning
 their `close` delegates to their visible owner. Production code opens only
 `HsqldbDatabaseOwner`, preventing two silent owners for one database path.
 
-Synchronous journal/application calls run on `oathdigital.blocking-dispatcher`,
+Synchronous journal/application calls run on `distantlands.blocking-dispatcher`,
 a dedicated fixed thread pool defined in `application.conf`; they do not run on
 Akka's default dispatcher. Coordinated database shutdown also uses the blocking
 dispatcher. Logback supplies the SLF4J backend so
@@ -188,7 +188,7 @@ startup, bind, and shutdown messages are not silently discarded.
 Every transport serves the same three endpoints through `GameApiRoutes`:
 `GET` the projection, `POST commands`, `GET log/{after}`, under its own
 prefix. The transport resolves the actor through an `ActorResolution`
-(`SeatCookieActor` for the `oath_seat` cookie, `QueryParameterActor` for the
+(`SeatCookieActor` for the `distantlands_seat` cookie, `QueryParameterActor` for the
 development `?playerId=`, `SessionMembershipActor` once X6 issues sessions)
 into a `GameAccess`: a `Seat(player)` or a `Public` view. `GameGateway` then
 does load, submit and log once over that access: a seat sees its own
@@ -252,7 +252,7 @@ For same-origin local development, build the frontend and start the server:
 
 ```sh
 ./sbtw frontend/fastLinkJS
-./sbtw 'runMain oathdigital.server.OathServer --database-path var/oathdigital'
+./sbtw 'runMain distantlands.server.DistantLandsServer --database-path var/distantlands'
 ```
 
 Open `http://127.0.0.1:8080/`. The server serves `frontend/index.html`, styles,

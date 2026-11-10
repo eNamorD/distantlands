@@ -1,0 +1,98 @@
+package distantlands.frontend
+
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
+  GameIntent => Intent}
+import distantlands.testkit.Unwrap.{as, present}
+
+class WalkerSelectionDraftSuite extends munit.FunSuite:
+  private def site(id: String) = DecisionOptionState("site", id, id)
+  private val many = DecisionQueryState.ChooseMany(
+    Vector(site("a"), site("b"), site("c")), minOptions = 2, maxOptions = 2,
+    heading = Some("Choose sites"))
+  private val amount = DecisionQueryState.ChooseAmount(minAmount = 3,
+    maxAmount = 6, suggested = None, confirmLabel = "Take banner",
+    heading = Some("Place more than 2 favor"))
+  private val context = BoardSelectionContext("game", "red", 9)
+  private def parked(id: String, query: DecisionQueryState) =
+    Some(WalkerDecisionState("challenge", id, query = Some(query)))
+
+  /** The choose-many draft that opens for the parked decision `id`; fails
+    * with what opened instead when that is not one.
+    */
+  private def openedChooseManyDraft(id: String, query: DecisionQueryState)
+      : WalkerChooseManyDraft =
+    as[WalkerChooseManyDraft](present(WalkerSelectionDraft.reconcile(None,
+      context, parked(id, query)), "a draft"))
+
+  /** The choose-amount draft that opens for the parked decision `id`. */
+  private def openedAmountDraft(id: String, query: DecisionQueryState)
+      : WalkerAmountDraft =
+    as[WalkerAmountDraft](present(WalkerSelectionDraft.reconcile(None,
+      context, parked(id, query)), "a draft"))
+
+  test("a choose-many draft opens empty, toggles, and never exceeds its count"):
+    val draft = openedChooseManyDraft("challenge.ribbon-site", many)
+    assertEquals(draft.selected, Vector.empty)
+    assert(!draft.canConfirm)
+    val two = draft.toggle("site:a").toggle("site:c")
+    assertEquals(two.selected, Vector("site:a", "site:c"))
+    assert(two.canConfirm)
+    assertEquals(two.toggle("site:b"), two)
+    assertEquals(two.toggle("site:a").selected, Vector("site:c"))
+
+  test("a choose-many range confirms between its minimum and maximum"):
+    val range = many.copy(minOptions = 1, maxOptions = 3)
+    val draft = openedChooseManyDraft("negotiation.negotiators", range)
+    assert(!draft.canConfirm)
+    assert(draft.toggle("site:a").canConfirm)
+    assert(draft.toggle("site:a").toggle("site:b").toggle("site:c").canConfirm)
+
+  test("an optional choose-many confirms an empty selection and submits it"):
+    val optional = many.copy(minOptions = 0, maxOptions = 3)
+    val draft = openedChooseManyDraft("campaign.targets", optional)
+    assert(draft.canConfirm)
+    assertEquals(draft.command, Some(Intent.ResolveWalker("campaign.targets",
+      DecisionAnswerWire.ChooseManyWire(Vector.empty))))
+    assertEquals(draft.toggle("site:b").command, Some(Intent.ResolveWalker(
+      "campaign.targets", DecisionAnswerWire.ChooseManyWire(
+        Vector(DecisionOptionWire("site", "b"))))))
+
+  test("a choose-many draft submits its selection in declared option order"):
+    val draft = openedChooseManyDraft("challenge.ribbon-site", many)
+    assertEquals(draft.toggle("site:c").command, None)
+    assertEquals(draft.toggle("site:c").toggle("site:a").command,
+      Some(Intent.ResolveWalker("challenge.ribbon-site",
+        DecisionAnswerWire.ChooseManyWire(Vector(DecisionOptionWire("site", "a"),
+          DecisionOptionWire("site", "c"))))))
+
+  test("a choose-amount draft opens at the minimum and clamps to its range"):
+    val draft = openedAmountDraft("challenge.amount", amount)
+    assertEquals(draft.amount, 3)
+    assertEquals(draft.choose(9).amount, 6)
+    assertEquals(draft.choose(1).amount, 3)
+    assertEquals(draft.choose(5).command, Some(Intent.ResolveWalker(
+      "challenge.amount", DecisionAnswerWire.ChooseAmountWire(5))))
+
+  test("a draft opens at the amount the question suggests"):
+    // Campaign suggests the whole force: the common answer is committed by
+    // default, and dialling it down is one click.
+    val draft = openedAmountDraft("campaign.force",
+      amount.copy(suggested = Some(6)))
+    assertEquals(draft.amount, 6)
+    // A suggestion outside the range cannot drag the opening value with it.
+    val clamped = openedAmountDraft("campaign.force",
+      amount.copy(suggested = Some(9)))
+    assertEquals(clamped.amount, 6)
+
+  test("reconcile keeps a draft for the same decision and drops it otherwise"):
+    val first = openedChooseManyDraft("challenge.ribbon-site", many)
+    val edited = first.toggle("site:a")
+    assertEquals(WalkerSelectionDraft.reconcile(Some(edited), context,
+      parked("challenge.ribbon-site", many)), Some(edited))
+    assertEquals(WalkerSelectionDraft.reconcile(Some(edited), context.copy(
+      sequence = 10), parked("challenge.ribbon-site", many)),
+      Some(first.copy(context = context.copy(sequence = 10))))
+    assertEquals(WalkerSelectionDraft.reconcile(Some(edited), context,
+      parked("challenge.amount", amount)).map(_.getClass),
+      Some(classOf[WalkerAmountDraft]))
+    assertEquals(WalkerSelectionDraft.reconcile(Some(edited), context, None), None)

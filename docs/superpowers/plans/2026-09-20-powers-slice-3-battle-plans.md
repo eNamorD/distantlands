@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- `BackendArchitectureSuite` and `scripts/check-architecture.py` apply: production files stay at or under 800 lines; no power name appears in `gameplay/walker` or `gameplay/operations` sources; a power imports nothing from `oathdigital.gameplay.walker`; no direct state write (`copy(advisers =`, `map.copy(sites =` and similar) under `gameplay/powers`. `scripts/check-markdown-links.py` gates the docs.
+- `BackendArchitectureSuite` and `scripts/check-architecture.py` apply: production files stay at or under 800 lines; no power name appears in `gameplay/walker` or `gameplay/operations` sources; a power imports nothing from `distantlands.gameplay.walker`; no direct state write (`copy(advisers =`, `map.copy(sites =` and similar) under `gameplay/powers`. `scripts/check-markdown-links.py` gates the docs.
 - Every power is declared solely as a `ContributingPower` (through the `BattlePlan` kit, or a plain contribution for Gleaming Armor) over existing operations. Engine changes are only those named in "Engine changes" below.
 - A power is registered through one object of powers per sub-slice and one line in `WalkerPowerCatalog` (`BattlePlans`, `SimplePlans`, `PlanRules`), as slices 1 and 2 did. A power whose card is absent from the catalog is omitted.
 - A battle plan is automatic whatever its catalog `persistent` flag says: it is chosen at the plan step, not selected at the start of the action. Gleaming Armor is a persistent rule and takes its resolution from the flag.
@@ -75,7 +75,7 @@ These facts are read from the code, or established by compiling and running the 
 
 ## File Structure
 
-All paths are under `src/main/scala/oathdigital/` (production) or `src/test/scala/oathdigital/` (tests) unless written in full. The step blocks below give full paths.
+All paths are under `src/main/scala/distantlands/` (production) or `src/test/scala/distantlands/` (tests) unless written in full. The step blocks below give full paths.
 
 - **Task 1:** modify `model/CampaignTypes.scala`, `serialization/CampaignResultCodec.scala`, `gameplay/actions/campaign/CampaignBattle.scala` and `CampaignOutcome.scala`, `application/CampaignResultProjector.scala`, `shared/src/main/.../ActionProjectionDtos.scala` and `CampaignResultProjectionCodec.scala`, `frontend/src/main/.../CampaignResultPanel.scala`; the eight suites that name the field.
 - **Task 2:** modify `gameplay/powerresolver/ContributingPower.scala` and `ContributionCollector.scala`, `gameplay/walker/WalkerPowerGather.scala`, `ProcedureWalker.scala`, `WalkerSimulation.scala` and `WalkerReplay.scala`, `model/CampaignTypes.scala` (the offer types). Test: `gameplay/OfferHostSuite`, `RepeatPassSuite`, `WalkerReplaySettlementSuite`.
@@ -104,7 +104,7 @@ The field is called `victorious` and is true when the attacker prevailed, which 
 
 The suites are renamed first, so that they fail to compile until the field is.
 
-In `frontend/src/test/scala/oathdigital/frontend/CampaignResultPanelSuite.scala`, replace:
+In `frontend/src/test/scala/distantlands/frontend/CampaignResultPanelSuite.scala`, replace:
 
 ```scala
 
@@ -128,7 +128,7 @@ with:
     assertEquals(draw(None).children.length, 0)
 ```
 
-In `frontend/src/test/scala/oathdigital/frontend/CampaignResultPanelSuite.scala`, replace:
+In `frontend/src/test/scala/distantlands/frontend/CampaignResultPanelSuite.scala`, replace:
 
 ```scala
   test("a defeat and a Raid against a player read as such") {
@@ -152,7 +152,7 @@ with:
     assert(text.contains("blue"), text)
 ```
 
-In `src/test/scala/oathdigital/application/CampaignResultProjectionSuite.scala`, replace:
+In `src/test/scala/distantlands/application/CampaignResultProjectionSuite.scala`, replace:
 
 ```scala
       Vector(b.origin.value), Vector.empty, force = 4,
@@ -176,7 +176,7 @@ with:
     assertEquals(projector.projectPublic("campaign", LoadedGame(state, 40))
 ```
 
-In `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala`, replace:
+In `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala`, replace:
 
 ```scala
     assertEquals(reloaded.state, accepted.state)
@@ -200,7 +200,7 @@ with:
   test("create advance and reload replay the complete persisted v2 stream") {
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, replace:
 
 ```scala
       CampaignKind.Conquest, CampaignDefender.Bandits, Vector(b.origin),
@@ -224,7 +224,7 @@ with:
     assertEquals(boardWarbands(sacrificed.state, b.actor), 5)
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, replace:
 
 ```scala
     val start = committed(game, b, 2)
@@ -248,7 +248,7 @@ with:
     assertEquals(done.continue, OathContinue.ActActionSelection(b.actor))
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, replace:
 
 ```scala
     val won = game.resolveWalker(start.state, b.actor, CampaignIds.sacrifice,
@@ -272,7 +272,7 @@ with:
   }
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, replace:
 
 ```scala
     val done = committed(game, b, 0)
@@ -296,7 +296,7 @@ with:
 
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignRaidSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignRaidSuite.scala`, replace:
 
 ```scala
       CampaignRaidTarget.Pawn(b.other), CampaignRaidTarget.Relic(b.other, relic),
@@ -320,7 +320,7 @@ with:
   test("a Raid victory transfers in the printed order and then asks where the pawn goes") {
 ```
 
-In `src/test/scala/oathdigital/gameplay/operations/RecordCampaignResultSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/operations/RecordCampaignResultSuite.scala`, replace:
 
 ```scala
     attackFaces = Vector(AttackDieFace.HollowSword, AttackDieFace.TwoSwordsSkull),
@@ -344,7 +344,7 @@ with:
     new OperationExecutor().executeAll(ready, Vector(RecordCampaignResult(result)))
 ```
 
-In `src/test/scala/oathdigital/gameplay/operations/RecordCampaignResultSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/operations/RecordCampaignResultSuite.scala`, replace:
 
 ```scala
   }
@@ -368,7 +368,7 @@ with:
     assertEquals(record(once, later), Some(later))
 ```
 
-In `src/test/scala/oathdigital/serialization/CampaignResultCodecSuite.scala`, replace:
+In `src/test/scala/distantlands/serialization/CampaignResultCodecSuite.scala`, replace:
 
 ```scala
     attackFaces = Vector(AttackDieFace.HollowSword, AttackDieFace.TwoSwordsSkull),
@@ -406,7 +406,7 @@ with:
     sacrificed = 0, force = 0)
 ```
 
-In `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`, replace:
+In `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, replace:
 
 ```scala
         attackFaces = Vector(AttackDieFace.OneSword), attackScore = 1,
@@ -438,7 +438,7 @@ Expected: FAIL to compile, for example `unknown parameter name: attackerWins`.
 
 - [ ] **Step 3: Implement**
 
-In `frontend/src/main/scala/oathdigital/frontend/CampaignResultPanel.scala`, replace:
+In `frontend/src/main/scala/distantlands/frontend/CampaignResultPanel.scala`, replace:
 
 ```scala
       box.appendChild(text("p", "campaign-result-defense",
@@ -462,7 +462,7 @@ with:
 }
 ```
 
-In `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala`, replace:
+In `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala`, replace:
 
 ```scala
     sacrificed: Int,
@@ -480,7 +480,7 @@ with:
     attackerWins: Boolean)
 ```
 
-In `shared/src/main/scala/oathdigital/protocol/projection/CampaignResultProjectionCodec.scala`, replace:
+In `shared/src/main/scala/distantlands/protocol/projection/CampaignResultProjectionCodec.scala`, replace:
 
 ```scala
 private[projection] object CampaignResultProjectionCodec {
@@ -504,7 +504,7 @@ private[projection] object CampaignResultProjectionCodec {
     "attackerPlayerId" -> value.attackerPlayerId, "kind" -> value.kind,
 ```
 
-In `shared/src/main/scala/oathdigital/protocol/projection/CampaignResultProjectionCodec.scala`, replace:
+In `shared/src/main/scala/distantlands/protocol/projection/CampaignResultProjectionCodec.scala`, replace:
 
 ```scala
     "attackScore" -> value.attackScore, "skullLosses" -> value.skullLosses,
@@ -528,7 +528,7 @@ with:
     value <- obj(raw, path)
 ```
 
-In `shared/src/main/scala/oathdigital/protocol/projection/CampaignResultProjectionCodec.scala`, replace:
+In `shared/src/main/scala/distantlands/protocol/projection/CampaignResultProjectionCodec.scala`, replace:
 
 ```scala
     sacrificed <- int(value, "sacrificed", path)
@@ -554,7 +554,7 @@ with:
 }
 ```
 
-In `src/main/scala/oathdigital/application/CampaignResultProjector.scala`, replace:
+In `src/main/scala/distantlands/application/CampaignResultProjector.scala`, replace:
 
 ```scala
         result.force, result.attackFaces.map(attackFace), result.attackScore,
@@ -578,7 +578,7 @@ with:
   // The wire spellings, duplicated because the application layer may not
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala`, replace:
 
 ```scala
       .map { attacker =>
@@ -610,7 +610,7 @@ with:
             case CampaignKind.Raid => raidBoardLosses(ready, result)
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignOutcome.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/campaign/CampaignOutcome.scala`, replace:
 
 ```scala
     val losses: Operation = Sequence(Vector[Operation](BuildOps((ready, _) =>
@@ -634,7 +634,7 @@ with:
         case CampaignKind.Raid => CampaignRaid.steps(ready, actor, result)
 ```
 
-In `src/main/scala/oathdigital/model/CampaignTypes.scala`, replace:
+In `src/main/scala/distantlands/model/CampaignTypes.scala`, replace:
 
 ```scala
   *
@@ -660,7 +660,7 @@ final case class CampaignResult(
     attacker: PlayerId,
 ```
 
-In `src/main/scala/oathdigital/model/CampaignTypes.scala`, replace:
+In `src/main/scala/distantlands/model/CampaignTypes.scala`, replace:
 
 ```scala
     sacrificed: Int,
@@ -684,7 +684,7 @@ with:
 }
 ```
 
-In `src/main/scala/oathdigital/serialization/CampaignResultCodec.scala`, replace:
+In `src/main/scala/distantlands/serialization/CampaignResultCodec.scala`, replace:
 
 ```scala
       "defenseFaces" -> ujson.Arr.from(result.defenseFaces.map(face =>
@@ -708,7 +708,7 @@ with:
       : Either[WireError, CampaignResult] = try {
 ```
 
-In `src/main/scala/oathdigital/serialization/CampaignResultCodec.scala`, replace:
+In `src/main/scala/distantlands/serialization/CampaignResultCodec.scala`, replace:
 
 ```scala
       raidTargets, value("force").num.toInt, attackFaces,
@@ -919,7 +919,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 **Files:**
 - Modify: the files listed for Task 2 in "File Structure".
-- Test: `src/test/scala/oathdigital/gameplay/OfferHostSuite.scala`, `RepeatPassSuite.scala`, `WalkerReplaySettlementSuite.scala`.
+- Test: `src/test/scala/distantlands/gameplay/OfferHostSuite.scala`, `RepeatPassSuite.scala`, `WalkerReplaySettlementSuite.scala`.
 
 **Interfaces:**
 - Produces: `PowerCtx.answered: Vector[Answered]` (default empty); `Offer(plan: PowerCtx => Option[CampaignPlanOffer]) extends Contribution`; `trait OfferHost extends Operation { def expand(offers: Vector[OfferedPlan], pass: OfferHost.Pass): Vector[Operation] }` with `OfferHost.Pass(state: ReadyGame, answered: Vector[Answered], resuming: Boolean, applies: Operation => Either[OathViolation, Vector[CoreOperation]])`; `GatheredContributions.offers`; `WalkerSimulation.applies(tree, state, powers)`; `CampaignPlanOffer(source, label, costs, effects)` and `OfferedPlan(power, offer)`.
@@ -931,17 +931,17 @@ This task adds the generic half of E8 and touches no Campaign code. A windowed n
 
 `OfferHostSuite` uses hosts and offering powers of its own. `RepeatPassSuite` pins the loop rule. `WalkerReplaySettlementSuite` replays a recorded off-turn `PayCost`, and fails without the change to `WalkerReplay`, where the payment would rest on the card.
 
-Create `src/test/scala/oathdigital/gameplay/OfferHostSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/OfferHostSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
 import scala.collection.mutable
 
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, Offer, OfferHost, PowerCtx, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.initialReady
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, Offer, OfferHost, PowerCtx, Transform}
+import distantlands.gameplay.setup.FirstGameSetupFixture.initialReady
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
 
 /** The `Offer` contribution and the node that hosts it: what the walker hands a
   * host, in which order, and how a host is told the walk is resuming inside it.
@@ -1099,14 +1099,14 @@ class OfferHostSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/RepeatPassSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/RepeatPassSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.initialReady
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.initialReady
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
 
 /** When a `Repeat` stops. Its guard reads only state and answers, so a pass that
   * records nothing and asks nothing cannot change what the guard reads, and the
@@ -1149,15 +1149,15 @@ class RepeatPassSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/WalkerReplaySettlementSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/WalkerReplaySettlementSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{DeltaMeaning, ProcedureWalker, WalkerStepPayload, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{DeltaMeaning, ProcedureWalker, WalkerStepPayload, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Replay applies a recorded `PayCost` the way the pipeline ran it: a payer who
   * is not the active player settles at once, so the recorded (requested)
@@ -1229,17 +1229,17 @@ class WalkerReplaySettlementSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OfferHostSuite oathdigital.gameplay.RepeatPassSuite oathdigital.gameplay.WalkerReplaySettlementSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OfferHostSuite distantlands.gameplay.RepeatPassSuite distantlands.gameplay.WalkerReplaySettlementSuite"`
 Expected: FAIL to compile, for example `not found: type OfferHost`.
 
 - [ ] **Step 3: Implement**
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{CoreOperation, DecisionOptionRef, OathViolation, Operation, PlayerId, PowerId, PowerResolution, PowerWindow, ProcedureRef, ReadyGame, RuleSourceRef}
+import distantlands.model.{CoreOperation, DecisionOptionRef, OathViolation, Operation, PlayerId, PowerId, PowerResolution, PowerWindow, ProcedureRef, ReadyGame, RuleSourceRef}
 
 /** Everything a contribution may read at the node it hooks. Carries no
   * mutable state and no catalog -- a power looks up whatever else it needs
@@ -1248,15 +1248,15 @@ import oathdigital.model.{CoreOperation, DecisionOptionRef, OathViolation, Opera
 with:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{Answered, CampaignPlanOffer, CoreOperation, DecisionOptionRef, OathViolation, OfferedPlan, Operation, PlayerId, PowerId, PowerResolution, PowerWindow, ProcedureRef, ReadyGame, RuleSourceRef}
+import distantlands.model.{Answered, CampaignPlanOffer, CoreOperation, DecisionOptionRef, OathViolation, OfferedPlan, Operation, PlayerId, PowerId, PowerResolution, PowerWindow, ProcedureRef, ReadyGame, RuleSourceRef}
 
 /** Everything a contribution may read at the node it hooks. Carries no
   * mutable state and no catalog -- a power looks up whatever else it needs
 ```
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
 
 ```scala
       * modifier is being selected for. `None` for the command that starts a
@@ -1286,7 +1286,7 @@ with:
 /** The three ways a power may speak at a hooked node (spec decision 9). A
 ```
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
 
 ```scala
 final case class OptionRestriction(
@@ -1344,11 +1344,11 @@ object OfferHost {
   * only the windows it hooks and the contributions it offers there.
 ```
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`, replace:
 
 ```scala
-import oathdigital.model.PowerId
-import oathdigital.model.PowerWindow
+import distantlands.model.PowerId
+import distantlands.model.PowerWindow
 
 /** The result of one gather at a hooked node: transforms, restrictions and
   * option restrictions declared by the surviving powers, tagged with the power that declared
@@ -1367,8 +1367,8 @@ final case class GatheredContributions(
 with:
 
 ```scala
-import oathdigital.model.PowerId
-import oathdigital.model.PowerWindow
+import distantlands.model.PowerId
+import distantlands.model.PowerWindow
 
 /** The result of one gather at a hooked node: transforms, restrictions, option
   * restrictions and offers declared by the surviving powers, tagged with the
@@ -1386,7 +1386,7 @@ final case class GatheredContributions(
 /** Turns "which powers hook this window" into "which transforms, restrictions
 ```
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`, replace:
 
 ```scala
     val transforms = Vector.newBuilder[(PowerId, Transform)]
@@ -1422,7 +1422,7 @@ with:
 
 ```
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`, replace:
 
 ```scala
       transforms = transforms.result(),
@@ -1447,7 +1447,7 @@ with:
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, replace:
 
 ```scala
       cursor: Option[Vector[String]], resume: Resume,
@@ -1472,7 +1472,7 @@ with:
 
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, replace:
 
 ```scala
       walkFolded(repeat.window, repeat, repeat.children, current, path, at, resume,
@@ -1498,13 +1498,13 @@ with:
 
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{ContributingPower, ContributionCollector, OptionRestriction, PowerCtx}
-import oathdigital.model.{Answered, Branch, Decide, DecisionOptionRef, DecisionQuery, OathViolation, Operation, PendingTree, PlayerId, PowerId, PowerWindow, PrimitiveOperation, ReadyGame}
+import distantlands.gameplay.powerresolver.{ContributingPower, ContributionCollector, OptionRestriction, PowerCtx}
+import distantlands.model.{Answered, Branch, Decide, DecisionOptionRef, DecisionQuery, OathViolation, Operation, PendingTree, PlayerId, PowerId, PowerWindow, PrimitiveOperation, ReadyGame}
 
 /** Task 3's power-gather/fold mechanics for [[ProcedureWalker]], split into
   * their own file to keep `ProcedureWalker.scala` under the project's
@@ -1513,16 +1513,16 @@ import oathdigital.model.{Answered, Branch, Decide, DecisionOptionRef, DecisionQ
 with:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{ContributingPower, ContributionCollector, OfferHost, OptionRestriction, PowerCtx}
-import oathdigital.model.{Answered, Branch, Decide, DecisionOptionRef, DecisionQuery, OathViolation, OfferedPlan, Operation, PendingTree, PlayerId, PowerId, PowerWindow, PrimitiveOperation, ReadyGame}
+import distantlands.gameplay.powerresolver.{ContributingPower, ContributionCollector, OfferHost, OptionRestriction, PowerCtx}
+import distantlands.model.{Answered, Branch, Decide, DecisionOptionRef, DecisionQuery, OathViolation, OfferedPlan, Operation, PendingTree, PlayerId, PowerId, PowerWindow, PrimitiveOperation, ReadyGame}
 
 /** Task 3's power-gather/fold mechanics for [[ProcedureWalker]], split into
   * their own file to keep `ProcedureWalker.scala` under the project's
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
     * the gather's contribution order, to be recorded verbatim on whichever
@@ -1532,7 +1532,7 @@ In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace
   def applyWindow(window: Option[PowerWindow], operation: Operation,
       state: ReadyGame,
       activePlayer: PlayerId, powers: WalkerPowers, path: Vector[String],
-      ops: Vector[Operation], procedure: Option[oathdigital.model.ProcedureRef])
+      ops: Vector[Operation], procedure: Option[distantlands.model.ProcedureRef])
       : (Vector[Operation], Vector[PowerId]) =
     window match {
       case None => (ops, Vector.empty)
@@ -1554,14 +1554,14 @@ with:
   def applyWindow(window: Option[PowerWindow], operation: Operation,
       state: ReadyGame,
       activePlayer: PlayerId, powers: WalkerPowers, path: Vector[String],
-      ops: Vector[Operation], procedure: Option[oathdigital.model.ProcedureRef],
+      ops: Vector[Operation], procedure: Option[distantlands.model.ProcedureRef],
       answered: Vector[Answered] = Vector.empty, resuming: Boolean = false)
       : (Vector[Operation], Vector[PowerId]) =
     window match {
       case None => (ops, Vector.empty)
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
           powers.powers.map(power => power.id -> power).toMap
@@ -1585,7 +1585,7 @@ with:
           case (acc, (powerId, transform)) =>
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
         val restricted = operation match {
@@ -1613,7 +1613,7 @@ with:
         (restricted, gathered.order)
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
         case branch: Branch => descend(applyWindow(branch.window, branch,
@@ -1643,7 +1643,7 @@ with:
     }
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
       case branch: Branch =>
@@ -1697,13 +1697,13 @@ with:
   }
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`, replace:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.OperationExecutor
-import oathdigital.model.{Answered, OathState, OathViolation, PendingTree, ReadyGame, WalkerEvent}
+import distantlands.gameplay.operations.OperationExecutor
+import distantlands.model.{Answered, OathState, OathViolation, PendingTree, ReadyGame, WalkerEvent}
 
 /** Replay half of the walker: applies durable walker facts to state without
   * ever deriving or walking an action tree (batch-1 Task 5).
@@ -1712,16 +1712,16 @@ import oathdigital.model.{Answered, OathState, OathViolation, PendingTree, Ready
 with:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.{OperationExecutor, PayCostSettlement}
-import oathdigital.model.{Answered, CoreOperation, OathState, OathViolation, PendingTree, ReadyGame, WalkerEvent}
+import distantlands.gameplay.operations.{OperationExecutor, PayCostSettlement}
+import distantlands.model.{Answered, CoreOperation, OathState, OathViolation, PendingTree, ReadyGame, WalkerEvent}
 
 /** Replay half of the walker: applies durable walker facts to state without
   * ever deriving or walking an action tree (batch-1 Task 5).
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`, replace:
 
 ```scala
       .map(OathState.Ready)
@@ -1755,7 +1755,7 @@ with:
       event: WalkerEvent): Either[OathViolation, ReadyGame] = {
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`, replace:
 
 ```scala
           _ <- validateStep(step)
@@ -1780,7 +1780,7 @@ with:
       case WalkerParked(procedure, at, answered, modifiers, startArgs) => for {
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala`, replace:
 
 ```scala
               "only a tree that runs to the end has an outcome to simulate"))
@@ -1798,7 +1798,7 @@ with:
         }
     }
 
-  /** Whether `tree` could run now, as an [[oathdigital.gameplay.powerresolver.OfferHost]]
+  /** Whether `tree` could run now, as an [[distantlands.gameplay.powerresolver.OfferHost]]
     * asks it of a plan, and the operations it would record: the same windows and
     * powers fold it and the same pipeline validates it. A tree that parks on a
     * decision is accepted when everything before the decision ran, because a
@@ -1816,7 +1816,7 @@ with:
     * and first walk a start performs, with nothing persisted. A tree that
 ```
 
-In `src/main/scala/oathdigital/model/CampaignTypes.scala`, replace:
+In `src/main/scala/distantlands/model/CampaignTypes.scala`, replace:
 
 ```scala
     effects: Vector[CampaignPlanEffect]
@@ -1852,7 +1852,7 @@ final case class OfferedPlan(power: PowerId, offer: CampaignPlanOffer)
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OfferHostSuite oathdigital.gameplay.RepeatPassSuite oathdigital.gameplay.WalkerReplaySettlementSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.PayCostSettlementSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OfferHostSuite distantlands.gameplay.RepeatPassSuite distantlands.gameplay.WalkerReplaySettlementSuite distantlands.gameplay.ProcedureWalkerSuite distantlands.gameplay.PayCostSettlementSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -1873,7 +1873,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 **Files:**
 - Modify and create: the files listed for Task 3 in "File Structure".
-- Test: `src/test/scala/oathdigital/gameplay/CampaignPlanWindowSuite.scala`, `CampaignPlansSuite.scala` (rewritten), `application/PricedOptionProjectionSuite.scala`; `CampaignFixture` and `CampaignProcedureSuite` (modified).
+- Test: `src/test/scala/distantlands/gameplay/CampaignPlanWindowSuite.scala`, `CampaignPlansSuite.scala` (rewritten), `application/PricedOptionProjectionSuite.scala`; `CampaignFixture` and `CampaignProcedureSuite` (modified).
 
 **Interfaces:**
 - Consumes: Task 2's `Offer`, `OfferHost`, `PowerCtx.answered`, `WalkerSimulation.applies`, `CampaignPlanOffer`, `OfferedPlan`; E4's `PayCost(player, placedAt, cost, intoOccupied, matchingBank)` and `Costs.onCard`.
@@ -1891,7 +1891,7 @@ This task moves Campaign's plans onto the seam.
 
 `CampaignPlanWindowSuite` drives the window with plans of its own: costs, off-turn payment, options rebuilt after each pick, a sacrifice that resumes inside the plan, a power that adds to a cost, a later hook, a bandit defender. `CampaignPlansSuite` is rewritten to ask the four ported plans what they offer. The existing suites change where they must: the fixture defaults to the production powers, the options are priced, a payment is recorded as a `PayCost`, and the facedown site card test becomes a ruler-only test.
 
-In `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignFixture.scala`, replace:
 
 ```scala
     current => current.copy(players = current.players.map(p =>
@@ -1925,7 +1925,7 @@ with:
   /** Rules with exactly these walker powers, for a suite that tests the plan
     * window with plans of its own.
     */
-  def rulesWith(powers: Vector[oathdigital.gameplay.powerresolver.ContributingPower],
+  def rulesWith(powers: Vector[distantlands.gameplay.powerresolver.ContributingPower],
       dice: WalkerDice = anyDice): OathRules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowers(powers), walkerDice = dice)
 
@@ -1933,7 +1933,7 @@ with:
     * blanks, of whatever count the pool holds.
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignFixture.scala`, replace:
 
 ```scala
             case _ => true },
@@ -1973,7 +1973,7 @@ with:
     replacePlayer(b.copy(ready = scrub(b.ready, relic)), b.actor)(p =>
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignFixture.scala`, replace:
 
 ```scala
       title = current.title.copy(holder = Some(b.other),
@@ -2002,17 +2002,17 @@ with:
     b.copy(ready = scrub(b.ready, card).updateCurrent(current => current.copy(map =
 ```
 
-Create `src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignPlans, CampaignSetup}
-import oathdigital.gameplay.powers.campaign.{BattlePlans, BrassArmy, Outriders, PlanContext, TitleDefensePlan, Watchdog}
-import oathdigital.gameplay.powers.campaign.BattlePlan
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignPlans, CampaignSetup}
+import distantlands.gameplay.powers.campaign.{BattlePlans, BrassArmy, Outriders, PlanContext, TitleDefensePlan, Watchdog}
+import distantlands.gameplay.powers.campaign.BattlePlan
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** What the ported plans offer, asked directly: where a plan's card must stand,
   * what it costs and what it does. Whether the user can pay, and how a plan is
@@ -2202,32 +2202,32 @@ class CampaignPlansSuite extends munit.FunSuite {
 }
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, replace:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture.{Board, againstPlayer, board, cardWith, relicWith, rules, withAdviser, withEnemyAtOrigin, withRelic, withSecrets, withSiteCard}
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds, CampaignProcedure}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, RollPayload,
+import distantlands.gameplay.CampaignFixture.{Board, againstPlayer, board, cardWith, relicWith, rules, withAdviser, withEnemyAtOrigin, withRelic, withSecrets, withSiteCard}
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds, CampaignProcedure}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, RollPayload,
   WalkerPowers, WalkerStepRecorded}
 ```
 
 with:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture.{Board, actorRules, againstPlayer, board, cardWith, relicWith, rules, withAdviser, withEnemyAtOrigin, withRelic, withSecrets, withSiteCard}
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds, CampaignProcedure}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, RollPayload,
+import distantlands.gameplay.CampaignFixture.{Board, actorRules, againstPlayer, board, cardWith, relicWith, rules, withAdviser, withEnemyAtOrigin, withRelic, withSecrets, withSiteCard}
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds, CampaignProcedure}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, RollPayload,
   WalkerPowers, WalkerStepRecorded}
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, replace:
 
 ```scala
     val tree = CampaignProcedure.rebuild(catalog, ready(transition.state),
@@ -2251,7 +2251,7 @@ with:
   private def supply(state: OathState, id: PlayerId): Int =
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, replace:
 
 ```scala
     assertEquals(plans.continue, OathContinue.AwaitingCampaignDecision(b.actor,
@@ -2292,7 +2292,7 @@ with:
     assertEquals(picked.continue, OathContinue.AwaitingCampaignDecision(b.actor,
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, replace:
 
 ```scala
     assertEquals(first.continue, OathContinue.AwaitingCampaignDecision(b.actor,
@@ -2318,7 +2318,7 @@ with:
     val done = answer(first.state, b.actor, CampaignIds.attackerPlan, finish).toOption.get
 ```
 
-In `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`, replace:
 
 ```scala
         DistributeAmount(DecisionOptionRef.Site(b.extras.head), 2)))).isLeft)
@@ -2371,16 +2371,16 @@ with:
   test("a victory with nothing placed refills the bandits at the action boundary") {
 ```
 
-Create `src/test/scala/oathdigital/application/PricedOptionProjectionSuite.scala`:
+Create `src/test/scala/distantlands/application/PricedOptionProjectionSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model.OathState.Ready
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model.OathState.Ready
+import distantlands.model._
 
 /** An option that states its price projects as the option it wraps, with the
   * price worded as details.
@@ -2432,22 +2432,22 @@ class PricedOptionProjectionSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/CampaignPlanWindowSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/CampaignPlanWindowSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlanApplication, CampaignProcedure}
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, Transform}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.powers.campaign.{BattlePlan, PlanContext, PlanUse}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerDice, WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlanApplication, CampaignProcedure}
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, Transform}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.powers.campaign.{BattlePlan, PlanContext, PlanUse}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerDice, WalkerPowers, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.model.DecisionAnswer._
+import distantlands.model.OathState.Ready
 
 /** The plan window itself, with plans of the suite's own: what a plan may cost,
   * who pays and when, which plans are offered after each pick, and how a plan
@@ -2902,12 +2902,12 @@ class CampaignPlanWindowSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignPlanWindowSuite oathdigital.gameplay.CampaignPlansSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.application.PricedOptionProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignPlanWindowSuite distantlands.gameplay.CampaignPlansSuite distantlands.gameplay.CampaignProcedureSuite distantlands.application.PricedOptionProjectionSuite"`
 Expected: FAIL to compile, for example `not found: type BattlePlan`.
 
 - [ ] **Step 3: Implement**
 
-In `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`, replace:
+In `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`, replace:
 
 ```scala
       Some(DecisionOptionProjection(ref.kind, ref.wireId, label, card,
@@ -2931,7 +2931,7 @@ with:
         if (ready.game.current.players.exists(_.player == player.id))
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala`, replace:
 
 ```scala
     }
@@ -2981,13 +2981,13 @@ with:
 
 ```
 
-Create `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanSteps.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanSteps.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** The two battle-plan windows: the attacker's, then the defender's. A player's
   * window is a `Repeat` of [[CampaignPlanChoice]] passes, each asking one plan
@@ -3017,12 +3017,12 @@ private[campaign] object CampaignPlanSteps {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlans.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlans.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The battle-plan vocabulary the plan window and the powers that offer plans
   * share: who uses a plan, how a plan's source is named in a decision, and the
@@ -3095,7 +3095,7 @@ object CampaignPlans {
 }
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`, replace:
 
 ```scala
       Some(PowerWindow.CampaignAttackRoll)),
@@ -3119,7 +3119,7 @@ with:
     Roll(CampaignIds.defensePool, DiceSpec(DiceKind.Defense), RollMode.Automatic,
 ```
 
-In `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala`, replace:
 
 ```scala
   val sacrifice = "campaign.sacrifice"
@@ -3153,31 +3153,31 @@ with:
   val defensePool: PoolKey = PoolKey("campaign.defense")
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
-import oathdigital.gameplay.powers.economy.KnightsErrant
-import oathdigital.gameplay.powers.cardplay.CardPlayTriggers
-import oathdigital.gameplay.powers.recover.CatacombsContribution
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.campaign.VowOfPeaceContribution
+import distantlands.gameplay.powers.economy.KnightsErrant
+import distantlands.gameplay.powers.cardplay.CardPlayTriggers
+import distantlands.gameplay.powers.recover.CatacombsContribution
 ```
 
 with:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.campaign.{BattlePlans, VowOfPeaceContribution}
-import oathdigital.gameplay.powers.economy.KnightsErrant
-import oathdigital.gameplay.powers.cardplay.CardPlayTriggers
-import oathdigital.gameplay.powers.recover.CatacombsContribution
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.campaign.{BattlePlans, VowOfPeaceContribution}
+import distantlands.gameplay.powers.economy.KnightsErrant
+import distantlands.gameplay.powers.cardplay.CardPlayTriggers
+import distantlands.gameplay.powers.recover.CatacombsContribution
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
   * play runs `ActionCardPlayedFaceup` for Conspiracy.
@@ -3202,7 +3202,7 @@ object WalkerPowerCatalog {
   def default(catalog: ExecutableCatalog): WalkerPowers =
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
       ActionModifiers.forCatalog(catalog) ++
@@ -3225,7 +3225,7 @@ with:
 }
 ```
 
-In `src/main/scala/oathdigital/model/CampaignTypes.scala`, replace:
+In `src/main/scala/distantlands/model/CampaignTypes.scala`, replace:
 
 ```scala
   case object Defender extends CampaignPlanSide
@@ -3253,7 +3253,7 @@ object CampaignPlanCost {
   final case class Favor(count: Int) extends CampaignPlanCost {
 ```
 
-In `src/main/scala/oathdigital/model/CampaignTypes.scala`, replace:
+In `src/main/scala/distantlands/model/CampaignTypes.scala`, replace:
 
 ```scala
   final case class Secret(count: Int) extends CampaignPlanCost {
@@ -3313,7 +3313,7 @@ object CampaignPlanEffect {
 sealed trait CampaignPlanSource extends Product with Serializable {
 ```
 
-In `src/main/scala/oathdigital/model/CampaignTypes.scala`, replace:
+In `src/main/scala/distantlands/model/CampaignTypes.scala`, replace:
 
 ```scala
       extends CampaignPlanSource {
@@ -3339,7 +3339,7 @@ with:
     def stableKey: String = s"relic:${playerId.value}:${id.value}"
 ```
 
-In `src/main/scala/oathdigital/model/CampaignTypes.scala`, replace:
+In `src/main/scala/distantlands/model/CampaignTypes.scala`, replace:
 
 ```scala
   }
@@ -3382,7 +3382,7 @@ final case class CampaignPlanOffer(source: CampaignPlanSource, label: String,
     costs: Vector[CampaignPlanCost], effects: Vector[CampaignPlanEffect])
 ```
 
-In `src/main/scala/oathdigital/model/Decisions.scala`, replace:
+In `src/main/scala/distantlands/model/Decisions.scala`, replace:
 
 ```scala
   final case class FavorBank(ref: DecisionOptionRef.FavorBank)
@@ -3414,7 +3414,7 @@ with:
     * a reference alone cannot present one.
 ```
 
-In `src/main/scala/oathdigital/model/Decisions.scala`, replace:
+In `src/main/scala/distantlands/model/Decisions.scala`, replace:
 
 ```scala
     case value: DecisionOptionRef.Deck => Some(Deck(value))
@@ -3447,7 +3447,7 @@ final case class OptionPrice(favor: Int = 0, secrets: Int = 0,
 /** One named bucket a [[DecisionQuery.Partition]] spreads its options across.
 ```
 
-In `src/main/scala/oathdigital/model/PowerWindow.scala`, replace:
+In `src/main/scala/distantlands/model/PowerWindow.scala`, replace:
 
 ```scala
   }
@@ -3475,12 +3475,12 @@ with:
     val key = "campaign.after-outcome"
 ```
 
-Create `src/main/scala/oathdigital/application/PriceDetails.scala`:
+Create `src/main/scala/distantlands/application/PriceDetails.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.OptionPrice
+import distantlands.model.OptionPrice
 
 /** The cost of an option, worded for display: what a player weighs when they
   * choose a battle plan. Every part is a line of its own, in a fixed order, and
@@ -3503,14 +3503,14 @@ private[application] object PriceDetails {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanApplication.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanApplication.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.operations.Costs
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.operations.Costs
+import distantlands.model._
 
 /** One chosen battle plan being paid for and applied. It carries the side, the
   * user and the source, in the window `CampaignPlanApplication`, so a power can
@@ -3678,14 +3678,14 @@ private[campaign] object PlanAnswers {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignPlanChoice.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/campaign/CampaignPlanChoice.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.OfferHost
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.OfferHost
+import distantlands.model._
 
 /** One side's battle-plan window: the node the powers' `Offer`s are folded into.
   * A pass of it, inside a `Repeat`, asks the user to choose one plan and then
@@ -3777,12 +3777,12 @@ final class CampaignPlanChoice(catalog: ExecutableCatalog, val actor: PlayerId,
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/actions/campaign/PlanPrice.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/campaign/PlanPrice.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** What a battle plan costs its user, for the option that offers it. The payments
   * are read from the operations a dry run of the plan's application recorded,
@@ -3821,13 +3821,13 @@ private[campaign] object PlanPrice {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Offer, Transform}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Offer, Transform}
+import distantlands.model._
 
 /** A power that offers a Campaign battle plan. It is chosen at the plan step,
   * by the ruler of its source, so it is automatic: it needs no selection at the
@@ -3893,13 +3893,13 @@ object BattlePlan {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlans.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlans.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The Campaign battle plans the first batch's engine ported, registered
   * together: the title's defense, Outriders, Brass Army and Watchdog. A plan
@@ -3915,14 +3915,14 @@ object BattlePlans {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/BrassArmy.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/BrassArmy.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Brass Army (relic R25), an attacker's battle plan: "[secret] +4 attack dice."
   *
@@ -3952,15 +3952,15 @@ object BrassArmy {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/Outriders.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/Outriders.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds}
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds}
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Outriders (card 104), an attacker's battle plan: "Ignore all skulls you roll."
   *
@@ -3993,14 +3993,14 @@ object Outriders {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds, CampaignPlans, CampaignSetup}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.gameplay.actions.campaign.{CampaignAnswers, CampaignIds, CampaignPlans, CampaignSetup}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** What a battle plan reads when it is asked whether it is usable now: the
   * state, the Campaign's setup and the side the window is for.
@@ -4130,12 +4130,12 @@ object PlanUse {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/TitleDefensePlan.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/TitleDefensePlan.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The title's defense, a defender's battle plan that no card prints: the holder
   * of the Oathkeeper title, when defending, adds one defense die, and a Usurper
@@ -4171,14 +4171,14 @@ object TitleDefensePlan {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/Watchdog.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/Watchdog.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Watchdog (card 234), a defender's battle plan: "+1 defense die if any target
   * is in the Cradle."
@@ -4210,7 +4210,7 @@ object Watchdog {
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignPlanWindowSuite oathdigital.gameplay.CampaignPlansSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.CampaignPowersSuite oathdigital.application.PricedOptionProjectionSuite oathdigital.application.CampaignResultProjectionSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignPlanWindowSuite distantlands.gameplay.CampaignPlansSuite distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.CampaignRaidSuite distantlands.gameplay.CampaignPowersSuite distantlands.application.PricedOptionProjectionSuite distantlands.application.CampaignResultProjectionSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -4455,7 +4455,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 **Files:**
 - Create and modify: the files listed for Task 4 in "File Structure".
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/{PlanDriver, MercenariesSuite, WrestlersSuite, FearsomeShieldSuite, RampartSuite, BattleHonorsSuite}.scala`; `CampaignFixture` (modified).
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/{PlanDriver, MercenariesSuite, WrestlersSuite, FearsomeShieldSuite, RampartSuite, BattleHonorsSuite}.scala`; `CampaignFixture` (modified).
 
 **Interfaces:**
 - Consumes: Task 3's `BattlePlan`, `PlanContext`, `PlanUse`, `CampaignPlanOffer`, the costs and effects.
@@ -4478,7 +4478,7 @@ The suites drive a whole Campaign through the rules with the production powers. 
 
 - [ ] **Step 1: Write the tests**
 
-In `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignFixture.scala`, replace:
 
 ```scala
     p.copy(relics = p.relics :+ RelicState(RelicId(relic), Orientation.FaceUp,
@@ -4515,15 +4515,15 @@ with:
 
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/BattleHonorsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/BattleHonorsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Battle Honors: a free plan for either side that gains two favor from the Order
   * bank if its user wins, as much as the bank holds.
@@ -4632,15 +4632,15 @@ class BattleHonorsSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/FearsomeShieldSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/FearsomeShieldSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Fearsome Shield: a defender burns two faceup secrets for two more defense
   * dice, and nothing is placed on the relic.
@@ -4699,17 +4699,17 @@ class FearsomeShieldSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/MercenariesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/MercenariesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** Mercenaries: a favor placed for three more attack dice, or three fewer for the
   * attacker when it defends, and gone when its user is defeated.
@@ -4856,20 +4856,20 @@ class MercenariesSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
-import oathdigital.gameplay.CampaignFixture.Board
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerDice, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
+import distantlands.gameplay.CampaignFixture.Board
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerDice, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.model.DecisionAnswer._
+import distantlands.model.OathState.Ready
 
 /** Drives a Campaign through the rules with the production battle plans, for the
   * suites that test one plan through a whole Campaign. Every attack die is a sword
@@ -4974,15 +4974,15 @@ object PlanDriver {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/RampartSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/RampartSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** The Rampart edifice: two more defense dice for its ruler when their pawn is
   * at its site or the site is targeted (intact), one more when it is targeted
@@ -5082,7 +5082,7 @@ class RampartSuite extends munit.FunSuite {
   test("the two faces are two powers of one card, registered once each") {
     assertEquals(ToweringRampart.id.value, "edifice.e20.intact")
     assertEquals(CrackedRampart.id.value, "edifice.e20.ruined")
-    val ids = SimplePlans.forCatalog(oathdigital.gameplay.setup
+    val ids = SimplePlans.forCatalog(distantlands.gameplay.setup
       .FirstGameSetupFixture.catalog).map(_.id)
     assertEquals(ids.count(id => id == ToweringRampart.id ||
       id == CrackedRampart.id), 2)
@@ -5090,15 +5090,15 @@ class RampartSuite extends munit.FunSuite {
 }
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/WrestlersSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/WrestlersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Wrestlers: a defender sacrifices a warband from its force for one more
   * defense die, and the force the defense is scored with is one lower.
@@ -5178,36 +5178,36 @@ class WrestlersSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.MercenariesSuite oathdigital.gameplay.powers.campaign.WrestlersSuite oathdigital.gameplay.powers.campaign.FearsomeShieldSuite oathdigital.gameplay.powers.campaign.RampartSuite oathdigital.gameplay.powers.campaign.BattleHonorsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.MercenariesSuite distantlands.gameplay.powers.campaign.WrestlersSuite distantlands.gameplay.powers.campaign.FearsomeShieldSuite distantlands.gameplay.powers.campaign.RampartSuite distantlands.gameplay.powers.campaign.BattleHonorsSuite"`
 Expected: FAIL to compile, for example `not found: value SimplePlans`.
 
 - [ ] **Step 3: Implement**
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.campaign.{BattlePlans, VowOfPeaceContribution}
-import oathdigital.gameplay.powers.economy.KnightsErrant
-import oathdigital.gameplay.powers.cardplay.CardPlayTriggers
-import oathdigital.gameplay.powers.recover.CatacombsContribution
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.campaign.{BattlePlans, VowOfPeaceContribution}
+import distantlands.gameplay.powers.economy.KnightsErrant
+import distantlands.gameplay.powers.cardplay.CardPlayTriggers
+import distantlands.gameplay.powers.recover.CatacombsContribution
 ```
 
 with:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.campaign.{BattlePlans, SimplePlans, VowOfPeaceContribution}
-import oathdigital.gameplay.powers.economy.KnightsErrant
-import oathdigital.gameplay.powers.cardplay.CardPlayTriggers
-import oathdigital.gameplay.powers.recover.CatacombsContribution
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.campaign.{BattlePlans, SimplePlans, VowOfPeaceContribution}
+import distantlands.gameplay.powers.economy.KnightsErrant
+import distantlands.gameplay.powers.cardplay.CardPlayTriggers
+import distantlands.gameplay.powers.recover.CatacombsContribution
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
       TargetProtections.forCatalog(catalog) ++
@@ -5230,14 +5230,14 @@ with:
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/BattleHonors.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/BattleHonors.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Battle Honors (card 2), a battle plan for either side: "If you're victorious,
   * gain 2 favor from the Order bank."
@@ -5280,14 +5280,14 @@ object BattleHonors {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/CrackedRampart.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/CrackedRampart.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Cracked Rampart (edifice E20, ruined), a defender's battle plan: "+1 defense
   * die if this site is targeted."
@@ -5317,14 +5317,14 @@ object CrackedRampart {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/FearsomeShield.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/FearsomeShield.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Fearsome Shield (relic R27), a defender's battle plan: "[secret-burnt]
   * [secret-burnt] +2 defense dice."
@@ -5353,14 +5353,14 @@ object FearsomeShield {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/Mercenaries.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/Mercenaries.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Mercenaries (card 12), a battle plan for either side: "[favor] +-3 attack
   * dice. If you are defeated while using this power, discard Mercenaries."
@@ -5406,15 +5406,15 @@ object Mercenaries {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.operations.DiscardRestrictions
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.operations.DiscardRestrictions
+import distantlands.model._
 
 /** The standard discard of a denizen a battle plan used, once the plan is spent:
   * the card goes facedown to the discard pile of the region after the card's own
@@ -5461,13 +5461,13 @@ object PlanDiscard {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/SimplePlans.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/SimplePlans.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that change the dice, or pay after the Campaign, and need
   * nothing beyond the plan window: Mercenaries, Wrestlers, Fearsome Shield, the
@@ -5485,14 +5485,14 @@ object SimplePlans {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/ToweringRampart.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/ToweringRampart.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Towering Rampart (edifice E20, intact), a defender's battle plan: "+2 defense
   * dice if your pawn is at this site or this site is targeted."
@@ -5523,14 +5523,14 @@ object ToweringRampart {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/Wrestlers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/Wrestlers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Wrestlers (card 1), a defender's battle plan: "+1 defense die if you sacrifice
   * one warband in your force."
@@ -5564,7 +5564,7 @@ object Wrestlers {
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.MercenariesSuite oathdigital.gameplay.powers.campaign.WrestlersSuite oathdigital.gameplay.powers.campaign.FearsomeShieldSuite oathdigital.gameplay.powers.campaign.RampartSuite oathdigital.gameplay.powers.campaign.BattleHonorsSuite oathdigital.gameplay.DiscardRestrictionsCoverageSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.MercenariesSuite distantlands.gameplay.powers.campaign.WrestlersSuite distantlands.gameplay.powers.campaign.FearsomeShieldSuite distantlands.gameplay.powers.campaign.RampartSuite distantlands.gameplay.powers.campaign.BattleHonorsSuite distantlands.gameplay.DiscardRestrictionsCoverageSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -5704,7 +5704,7 @@ The question has to come before the losses and needs the state as it stands befo
 
 - [ ] **Step 1: Write the tests**
 
-In `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`, replace:
+In `src/test/scala/distantlands/gameplay/CampaignFixture.scala`, replace:
 
 ```scala
     */
@@ -5732,15 +5732,15 @@ with:
         if (p.player == b.other) p.copy(
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/StickyFireSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/StickyFireSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Sticky Fire: when its user wins, they may kill the whole of the enemy's force,
   * and if they do they give the loser a favor. The question is asked in the
@@ -5907,12 +5907,12 @@ class StickyFireSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.StickyFireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.StickyFireSuite"`
 Expected: FAIL to compile, for example `not found: value StickyFire`.
 
 - [ ] **Step 3: Implement**
 
-In `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`, replace:
+In `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`, replace:
 
 ```scala
   */
@@ -5942,31 +5942,31 @@ object CampaignProcedure {
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] = for {
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.campaign.{BattlePlans, SimplePlans, VowOfPeaceContribution}
-import oathdigital.gameplay.powers.economy.KnightsErrant
-import oathdigital.gameplay.powers.cardplay.CardPlayTriggers
-import oathdigital.gameplay.powers.recover.CatacombsContribution
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.campaign.{BattlePlans, SimplePlans, VowOfPeaceContribution}
+import distantlands.gameplay.powers.economy.KnightsErrant
+import distantlands.gameplay.powers.cardplay.CardPlayTriggers
+import distantlands.gameplay.powers.recover.CatacombsContribution
 ```
 
 with:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.campaign.{BattlePlans, PlanRules, SimplePlans, VowOfPeaceContribution}
-import oathdigital.gameplay.powers.economy.KnightsErrant
-import oathdigital.gameplay.powers.cardplay.CardPlayTriggers
-import oathdigital.gameplay.powers.recover.CatacombsContribution
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.campaign.{BattlePlans, PlanRules, SimplePlans, VowOfPeaceContribution}
+import distantlands.gameplay.powers.economy.KnightsErrant
+import distantlands.gameplay.powers.cardplay.CardPlayTriggers
+import distantlands.gameplay.powers.recover.CatacombsContribution
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
       TargetProtections.forCatalog(catalog) ++
@@ -5989,7 +5989,7 @@ with:
       Dazzle.forCatalog(catalog) :+ TakeWealthLimit :+ ConspiracyWhenPlayed)
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`, replace:
 
 ```scala
   *    (Outriders ignores the skulls when the attack is scored). It runs only when
@@ -6015,7 +6015,7 @@ with:
   */
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`, replace:
 
 ```scala
   def plan(context: PlanContext): Option[CampaignPlanOffer]
@@ -6044,7 +6044,7 @@ with:
   final override def resolution: PowerResolution = PowerResolution.Automatic
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`, replace:
+In `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`, replace:
 
 ```scala
           PlanUse.chosen(ready, pending, ctx.activePlayer, cardRef, sides,
@@ -6077,7 +6077,7 @@ with:
 
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, replace:
 
 ```scala
       rollDecisionId = None,
@@ -6101,7 +6101,7 @@ with:
           OathContinue.AwaitingEconomyDecision(actor, decision)),
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, replace:
+In `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, replace:
 
 ```scala
       rollDecisionId = None,
@@ -6125,13 +6125,13 @@ with:
       rebuild = CampaignProcedure.rebuild),
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that reach beyond the plan window, registered together:
   * Sticky Fire, which asks a question in the losses. A power whose card is absent
@@ -6143,15 +6143,15 @@ object PlanRules {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/StickyFire.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/StickyFire.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powers.{CatalogCards, PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powers.{CatalogCards, PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 /** Sticky Fire (relic R01), a battle plan for either side: "If you're victorious,
   * you may kill all the warbands in your enemy's force. If you do, you must give
@@ -6276,7 +6276,7 @@ object StickyFire {
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.StickyFireSuite oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.StickyFireSuite distantlands.gameplay.CampaignRaidSuite distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -6308,7 +6308,7 @@ Warning Signals (card 25) is a defender's plan for a player defender: "Move any 
 
 - [ ] **Step 1: Write the tests**
 
-In `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala`, replace:
+In `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala`, replace:
 
 ```scala
     def pick(who: PlayerId, id: String, ref: DecisionOptionRef): Run =
@@ -6359,17 +6359,17 @@ with:
         : Option[OathViolation] =
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/WarningSignalsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/WarningSignalsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer._
 
 /** Warning Signals: a defender rearranges their warbands over their board and the
   * sites they rule, before their force is scored, and the card is discarded when
@@ -6537,18 +6537,18 @@ class WarningSignalsSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.WarningSignalsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.WarningSignalsSuite"`
 Expected: FAIL to compile, for example `not found: value WarningSignals`.
 
 - [ ] **Step 3: Implement**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that reach beyond the plan window, registered together:
   * Sticky Fire, which asks a question in the losses, and Warning Signals, which
@@ -6562,15 +6562,15 @@ object PlanRules {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/WarningSignals.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/WarningSignals.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.{CampaignProcedure, CampaignSetup}
-import oathdigital.gameplay.powers.{CatalogCards, PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.{CampaignProcedure, CampaignSetup}
+import distantlands.gameplay.powers.{CatalogCards, PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 /** Warning Signals (card 25), a defender's battle plan: "Move any warbands to and
   * from your board and any sites you rule (except the last warband from a site).
@@ -6672,7 +6672,7 @@ object WarningSignals {
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.WarningSignalsSuite oathdigital.gameplay.powers.campaign.StickyFireSuite oathdigital.gameplay.BackendArchitectureSuite oathdigital.gameplay.DiscardRestrictionsCoverageSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.WarningSignalsSuite distantlands.gameplay.powers.campaign.StickyFireSuite distantlands.gameplay.BackendArchitectureSuite distantlands.gameplay.DiscardRestrictionsCoverageSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -6704,16 +6704,16 @@ Gleaming Armor (card 66) is a persistent rule of a faceup adviser: "Your enemy's
 
 - [ ] **Step 1: Write the tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/campaign/GleamingArmorSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/campaign/GleamingArmorSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** Gleaming Armor: while its faceup holder is in a Campaign, every plan the enemy
   * chooses costs one more secret, placed onto its card, or turned facedown for the
@@ -6867,7 +6867,7 @@ class GleamingArmorSuite extends munit.FunSuite {
   }
 
   test("the card is registered once and is automatic, as the catalog marks it persistent") {
-    val plans = oathdigital.gameplay.powers.WalkerPowerCatalog.default(catalog)
+    val plans = distantlands.gameplay.powers.WalkerPowerCatalog.default(catalog)
       .powers.filter(_.id == GleamingArmor.id)
     assertEquals(plans.size, 1)
     assertEquals(plans.head.resolution, PowerResolution.Automatic)
@@ -6878,18 +6878,18 @@ class GleamingArmorSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.GleamingArmorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.GleamingArmorSuite"`
 Expected: FAIL to compile, for example `not found: value GleamingArmor`.
 
 - [ ] **Step 3: Implement**
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that reach beyond the plan window, and the rule that taxes
   * them, registered together: Sticky Fire (a question in the losses), Warning
@@ -6905,17 +6905,17 @@ object PlanRules {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/campaign/GleamingArmor.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/campaign/GleamingArmor.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.{CampaignPlanApplication, CampaignPlans}
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.{CampaignPlanApplication, CampaignPlans}
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution}
+import distantlands.model._
 
 /** Gleaming Armor (card 66), a persistent rule of a faceup adviser: "Your enemy's
   * battle plans have an added cost of [secret]."
@@ -6997,7 +6997,7 @@ object GleamingArmor {
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.GleamingArmorSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.GleamingArmorSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Run the whole suite and the architecture check**

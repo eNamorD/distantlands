@@ -17,7 +17,7 @@
 - Branch and worktree off local `0.2.0-alpha`, never `main`. Merge back into `0.2.0-alpha`.
 - Scalac runs with `-Werror`. A new sealed case breaks every exhaustive match; fix each one the compiler names.
 - Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`, `BackendArchitectureSuite`). `model` must not import `gameplay`, `application` or `serialization`. `gameplay` must not import `application` or `serialization`. `gameplay/walker/ProcedureWalker.scala` is at 797 lines: add nothing to it.
-- Tests run with `oathdigital.notes.strict=true`: a log note key not declared by its writer throws.
+- Tests run with `distantlands.notes.strict=true`: a log note key not declared by its writer throws.
 - Old journals need not decode. New fields and operations are required on the wire.
 - Test helper names state what they build. A doc comment does not excuse a vague name.
 - Never `git add -A` (the worktree symlinks show as untracked). Add files by path.
@@ -54,7 +54,7 @@ Digital accounting choices made here, inside the rules:
 
 ## File Structure
 
-Paths below are relative to the repo root. `M/` is `src/main/scala/oathdigital/` and `T/` is `src/test/scala/oathdigital/`.
+Paths below are relative to the repo root. `M/` is `src/main/scala/distantlands/` and `T/` is `src/test/scala/distantlands/`.
 
 - Modify `M/model/ActionValues.scala`: add `ShufflePile`.
 - Modify `M/model/CoreOperations.scala`: change `Shuffle` to take `ShufflePile` and `CardId`; add `Location.SetAsideEdifices`; send `Discard.RuinedEdifice` to the set-aside list.
@@ -81,11 +81,11 @@ Paths below are relative to the repo root. `M/` is `src/main/scala/oathdigital/`
 - [ ] **Step 1: Create the worktree off the release branch**
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 git worktree add .worktrees/chronicle-sun-throne -b chronicle-sun-throne 0.2.0-alpha
 cd .worktrees/chronicle-sun-throne
-ln -s /Users/roman/projects/oathdigital/.tooling .tooling
-ln -s /Users/roman/projects/oathdigital/node_modules node_modules
+ln -s /Users/roman/projects/distantlands/.tooling .tooling
+ln -s /Users/roman/projects/distantlands/node_modules node_modules
 git status --short
 ```
 
@@ -93,7 +93,7 @@ Expected: clean tree apart from the two symlinks.
 
 - [ ] **Step 2: Confirm the build runs**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleBeginSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ChronicleBeginSuite"`
 Expected: PASS (5 tests). The first run is slow because of the Scala.js link.
 
 ---
@@ -114,11 +114,11 @@ Build Edifice draws a random edifice per suit, and Scatter Relics shuffles the d
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** `Shuffle` reorders the edifice deck and the set-aside relics as it does
   * a Search pile (Chronicle Sun and Throne plan, Task 1). */
@@ -154,7 +154,7 @@ Before writing the test, check how existing operation suites apply one operation
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.ShufflePileSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.ShufflePileSuite"`
 Expected: compile failure, because `ShufflePile` is not defined.
 
 - [ ] **Step 3: Add `ShufflePile` to `M/model/ActionValues.scala`**
@@ -255,13 +255,13 @@ In `WalkerOperationCodec.scala`, encode the pile with a new helper, and the orde
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.ShufflePileSuite oathdigital.serialization.* oathdigital.gameplay.powers.action.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.ShufflePileSuite distantlands.serialization.* distantlands.gameplay.powers.action.*"`
 Expected: PASS. Fix any wire round-trip suite that builds a `Shuffle` (the compiler names them) by wrapping its source in `ShufflePile.Search`. Add one round-trip case for `Shuffle(ShufflePile.EdificeDeck, Some(Vector(<an edifice id>)))` to the suite that round-trips walker operations (`WalkerOperationWireSuite`).
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ActionValues.scala src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/PileOperations.scala src/main/scala/oathdigital/gameplay/walker/WalkerShuffles.scala src/main/scala/oathdigital/gameplay/powers/action/ClayRattle.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/test/scala/oathdigital/gameplay/operations/ShufflePileSuite.scala
+git add src/main/scala/distantlands/model/ActionValues.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/PileOperations.scala src/main/scala/distantlands/gameplay/walker/WalkerShuffles.scala src/main/scala/distantlands/gameplay/powers/action/ClayRattle.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/gameplay/operations/ShufflePileSuite.scala
 # plus every other file this task touched, by path
 git commit -m "feat(walker): shuffle the edifice deck and set-aside relics with a recorded order
 
@@ -286,12 +286,12 @@ Ruling 9: edifices discarded during play or in Shape Empire go to an ordered set
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Ruling 9: a discarded ruined edifice joins the set-aside list, in
   * discard order, and not the edifice deck. */
@@ -324,7 +324,7 @@ Check the `Table.edifice` step's name argument (`Table.scala:168`) and the `Card
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.SetAsideEdificesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.SetAsideEdificesSuite"`
 Expected: compile failure on `setAsideEdifices` and `CardContainer.SetAsideEdifices`.
 
 - [ ] **Step 3: Add the field, location and container**
@@ -359,7 +359,7 @@ Update its doc comment: "A discarded ruined edifice is set aside in discard orde
 - [ ] **Step 5: Run the full suite and fix expectations**
 
 Run: `./sbtw test`
-Expected: the new suite passes. Suites that expected a discarded ruined edifice at the bottom of `edificeDeck` (homeland powers, Game Log goldens) fail. Change those expectations to `setAsideEdifices`. If a log line said "to the bottom of the edifice deck", change it to "aside" wording, and regenerate the golden with `GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.*"`, then read the diff. Do not change behaviour to make an old expectation pass.
+Expected: the new suite passes. Suites that expected a discarded ruined edifice at the bottom of `edificeDeck` (homeland powers, Game Log goldens) fail. Change those expectations to `setAsideEdifices`. If a log line said "to the bottom of the edifice deck", change it to "aside" wording, and regenerate the golden with `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.*"`, then read the diff. Do not change behaviour to make an old expectation pass.
 
 - [ ] **Step 6: Commit**
 
@@ -380,7 +380,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Test: `T/gameplay/operations/ChronicleStateOperationsSuite.scala` (create), `T/serialization/WalkerOperationWireSuite.scala`, `T/serialization/GameEventFactsWireSuite.scala`
 
 **Interfaces:**
-- Produces, in `oathdigital.model`:
+- Produces, in `distantlands.model`:
   ```scala
   enum ChronicleTask(val key: String):
     case Throne extends ChronicleTask("throne")
@@ -399,13 +399,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** The Chronicle's own primitives (Chronicle Sun and Throne plan, Task 3). */
 class ChronicleStateOperationsSuite extends munit.FunSuite:
@@ -490,7 +490,7 @@ Also add `lineagePointsScored` with `points = 0` to the refused cases (`require`
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.ChronicleStateOperationsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.ChronicleStateOperationsSuite"`
 Expected: compile failure on the new operations.
 
 - [ ] **Step 3: Model**
@@ -498,7 +498,7 @@ Expected: compile failure on the new operations.
 Create `M/model/ChronicleOperations.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /** The three task cards a player can hold in the Chronicle (CR p. 36). The
   * Sun and the Stars are resolved by no holder. */
@@ -561,9 +561,9 @@ In `GameState.scala`:
 Create `M/gameplay/operations/ChronicleStateOperations.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Writes of the Chronicle's own primitives (Chronicle steps design, "Live
   * state extended"). */
@@ -664,13 +664,13 @@ In `OperationApplication.scala`, add one case per primitive next to `ChronicleUp
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.ChronicleStateOperationsSuite oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.ChronicleStateOperationsSuite distantlands.serialization.*"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ChronicleOperations.scala src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/gameplay/operations/ChronicleStateOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala src/test/scala/oathdigital/gameplay/operations/ChronicleStateOperationsSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala src/test/scala/oathdigital/serialization/GameEventFactsWireSuite.scala
+git add src/main/scala/distantlands/model/ChronicleOperations.scala src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/gameplay/operations/ChronicleStateOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/serialization/GameEventJsonSupport.scala src/test/scala/distantlands/gameplay/operations/ChronicleStateOperationsSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala src/test/scala/distantlands/serialization/GameEventFactsWireSuite.scala
 # plus every other file the compiler made you touch
 git commit -m "feat(chronicle): journal roles, tasks, the Scepter, Imperial supply, lineage points and built edifices
 
@@ -716,16 +716,16 @@ Both procedures exist, are chained, and run every step as an empty window. A fak
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Every Sun and Throne step runs inside its own power window, so a later
   * legacy power can add to it (Chronicle steps design, "Windows, not
@@ -768,7 +768,7 @@ This test only passes while every window is empty. Tasks 5-9 add decisions that 
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleWindowsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ChronicleWindowsSuite"`
 Expected: compile failure on `ChronicleWindows`.
 
 - [ ] **Step 3: Windows and refs**
@@ -786,9 +786,9 @@ Expected: compile failure on `ChronicleWindows`.
 - [ ] **Step 4: `ChronicleWindows` and the two skeletons**
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The power window each Chronicle step runs in, in step order (Chronicle
   * steps design, "Windows, not hardcoded actors"). A step is its window's
@@ -808,10 +808,10 @@ object ChronicleWindows:
 ```
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** The Sun task (CR p. 36, `docs/rules/chronicle.md` task 1). Steps 2-5
   * resolve legacies, which arrive with the Legacies slice: they are empty
@@ -843,13 +843,13 @@ object ChronicleSunProcedure:
 
 - [ ] **Step 6: Run the Chronicle and Game Log suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* oathdigital.application.gamelog.* oathdigital.model.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.application.gamelog.* distantlands.model.*"`
 Expected: PASS. `ChronicleBeginSuite` still passes, because empty windows ask nothing. `GameLogPropertiesSuite` requires a script to complete every `ProcedureRef`. The existing `chronicle-started` script now runs Sun and Throne, so it covers both. If a golden changes, regenerate it and read the diff: it should change only where the new procedures appear.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala src/main/scala/oathdigital/model/ProcedureRef.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleWindows.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleSunProcedure.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleThroneProcedure.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleSequence.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleWindowsSuite.scala
+git add src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/model/ProcedureRef.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleWindows.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleSunProcedure.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleThroneProcedure.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleSequence.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleWindowsSuite.scala
 # plus the updated ref and golden files, by path
 git commit -m "feat(chronicle): chain the Sun and Throne tasks with one power window per step
 
@@ -913,17 +913,17 @@ Write the answer helper once: `answerPlayer(state, owner, decisionId, player)` c
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleSunSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ChronicleSunSuite"`
 Expected: FAIL. The Sun's windows are empty, so no role, task or relic changes.
 
 - [ ] **Step 3: `ChronicleTasks`**
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Who acts in the Chronicle, and the questions its steps share. */
 object ChronicleTasks:
@@ -1055,7 +1055,7 @@ case TriggeredProcedureRef.ChronicleSun => ProcedureLog(tag = None,
 
 - [ ] **Step 7: Run the tests, then fix the suites the new decisions break**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* oathdigital.application.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.application.*"`
 
 Expected:
 - `ChronicleSunSuite` passes.
@@ -1103,7 +1103,7 @@ Tests:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ShapeEmpireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ShapeEmpireSuite"`
 Expected: FAIL (the step is empty).
 
 - [ ] **Step 3: Implement `ShapeEmpire`**
@@ -1139,13 +1139,13 @@ Replace the Throne's `ChronicleShapeEmpire` empty step with `ChronicleWindows.st
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.*"`
 Expected: PASS. The shared `ChronicleWalk` helper and the windows suite now answer `chronicle.shape-empire.remove` whenever it parks. On `Table.start` it does not: p1 has one Imperial warband or none after Crown.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/ShapeEmpire.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/oathdigital/gameplay/chronicle/ShapeEmpireSuite.scala
+git add src/main/scala/distantlands/gameplay/chronicle/ShapeEmpire.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/distantlands/gameplay/chronicle/ShapeEmpireSuite.scala
 git commit -m "feat(chronicle): Shape Empire removes the Chancellor's warbands and discards unruled denizens
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1181,7 +1181,7 @@ Fixture: as in Task 6, with Imperial at Ancient City. `WalkerDiceFixture.reversi
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.BuildEdificeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.BuildEdificeSuite"`
 Expected: FAIL.
 
 - [ ] **Step 3: Implement**
@@ -1224,13 +1224,13 @@ Replace the Throne's `ChronicleBuildEdifice` empty step with this one.
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.*"`
 Expected: PASS. Extend `ChronicleWalk` so it answers any `chronicle.build-edifice.*` with the empty selection.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/BuildEdifice.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/oathdigital/gameplay/chronicle/BuildEdificeSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleWalk.scala
+git add src/main/scala/distantlands/gameplay/chronicle/BuildEdifice.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/distantlands/gameplay/chronicle/BuildEdificeSuite.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleWalk.scala
 git commit -m "feat(chronicle): Build Edifice offers a random edifice per suit and falls back to set-aside ones
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1262,7 +1262,7 @@ Rules (CR p. 37):
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ReliquaryAndRelicsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ReliquaryAndRelicsSuite"`
 Expected: FAIL.
 
 - [ ] **Step 3: Implement**
@@ -1283,13 +1283,13 @@ Expected: FAIL.
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.*"`
 Expected: PASS. Extend `ChronicleWalk` to answer `chronicle.stock-reliquary.discard` with the first `n - 5` options.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/ReliquaryAndRelics.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/oathdigital/gameplay/chronicle/ReliquaryAndRelicsSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleWalk.scala
+git add src/main/scala/distantlands/gameplay/chronicle/ReliquaryAndRelics.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleThroneProcedure.scala src/test/scala/distantlands/gameplay/chronicle/ReliquaryAndRelicsSuite.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleWalk.scala
 git commit -m "feat(chronicle): stock the Reliquary and scatter relics Hinterward
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1330,7 +1330,7 @@ Find the Vision of Conquest's id with `CatalogNames` or `Table`'s Vision lookup.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.LineageScoringSuite oathdigital.gameplay.chronicle.SwearOathSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.LineageScoringSuite distantlands.gameplay.chronicle.SwearOathSuite"`
 Expected: FAIL.
 
 - [ ] **Step 3: Implement `LineageScoring`**
@@ -1370,7 +1370,7 @@ In both branches, follow with a `Note` writing `swore` when `states.previous` sh
 
 - [ ] **Step 6: Run the Chronicle and log suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.application.gamelog.*"`
 Expected: PASS after regenerating the `chronicle-started` goldens. Read the diff: it should show the Throne's lines.
 
 - [ ] **Step 7: Commit**
@@ -1415,15 +1415,15 @@ End-to-end:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleRecordSuite oathdigital.gameplay.chronicle.ChronicleSunThroneEndToEndSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ChronicleRecordSuite distantlands.gameplay.chronicle.ChronicleSunThroneEndToEndSuite"`
 Expected: FAIL.
 
 - [ ] **Step 3: Implement**
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The Chronicle as the tasks so far leave it (Chronicle steps design,
   * "Exit and extraction"). Roles, era scores and the Oathkeeper goal come
@@ -1474,7 +1474,7 @@ Expected: all pass, and the coverage ratchet holds. If coverage drops, add tests
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/ChronicleRecord.scala src/main/scala/oathdigital/gameplay/chronicle/ChronicleFinishProcedure.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleRecordSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleSunThroneEndToEndSuite.scala docs/rules/chronicle.md docs/rules/implementation-traceability.md docs/architecture/game-setup.md CONTEXT.md docs/ROADMAP.md
+git add src/main/scala/distantlands/gameplay/chronicle/ChronicleRecord.scala src/main/scala/distantlands/gameplay/chronicle/ChronicleFinishProcedure.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleRecordSuite.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleSunThroneEndToEndSuite.scala docs/rules/chronicle.md docs/rules/implementation-traceability.md docs/architecture/game-setup.md CONTEXT.md docs/ROADMAP.md
 git commit -m "feat(chronicle): the journaled Chronicle carries the Sun and Throne's roles, scores and Oath
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"

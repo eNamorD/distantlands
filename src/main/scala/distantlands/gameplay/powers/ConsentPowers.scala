@@ -1,0 +1,54 @@
+package distantlands.gameplay.powers
+
+import distantlands.gameplay.operations.{OperationRestrictions, WaivableRule}
+import distantlands.gameplay.powerresolver.{ContributingPower,
+  OptionRestriction, Restriction, Waiver}
+import distantlands.gameplay.powers.travel.TollRoads
+import distantlands.model.{PlayerId, PowerId, PowerSourceRef, ReadyGame}
+
+/** The waivable powers (consent design, "Powers declare waivability"): every
+  * power with a contribution, of either restriction kind, that declares a
+  * `Waiver`, the power-use restrictions that declare one (catalog batch 8,
+  * slice 10), and the operation restrictions in `operations` (the Hall of
+  * Ministers, slice 3; Ancient Bloodline, catalog batch 8, slice 11), which
+  * `default` takes from the waivable `OperationRestrictions.printedRules`. The
+  * grid, the stale-preference check and the log all look a power up here. */
+final class ConsentPowers(powers: Vector[ContributingPower],
+    operations: Vector[(PowerId, Waiver)] = Vector.empty,
+    payments: Vector[(PowerId, Waiver)] = Vector.empty):
+  private val waivers: Map[PowerId, Waiver] = (for
+    power <- powers
+    waiver <- power.contributions.values.flatten.collectFirst {
+      case Restriction(_, _, Some(waiver)) => waiver
+      case OptionRestriction(_, _, Some(waiver)) => waiver }
+      .orElse(power.powerUseRestrictions.iterator.map(_.waiver)
+        .collectFirst { case Some(waiver) => waiver })
+  yield power.id -> waiver).toMap ++ operations ++ payments
+  private val paid: Set[PowerId] = payments.map(_._1).toSet
+
+  /** Whether `power` is a player's agreement to pay rather than a ruler's
+    * waiver (catalog batch 8, slice 15): its prompt and log line say
+    * "pay". A payment has no granter, so no grid lists it and no
+    * preference is set on it. */
+  def paying(power: PowerId): Boolean = paid(power)
+
+  def waiver(power: PowerId): Option[Waiver] = waivers.get(power)
+
+  def granter(ready: ReadyGame, power: PowerId): Option[PlayerId] =
+    waiver(power).flatMap { _.granter(ready) }
+
+  def source(power: PowerId): Option[PowerSourceRef] =
+    waiver(power).map(_.source)
+
+  /** The waivable powers `player` rules now, by id (ruling 16). */
+  def ruledBy(ready: ReadyGame, player: PlayerId): Vector[PowerId] =
+    waivers.keys.toVector.sortBy(_.value)
+      .filter(granter(ready, _).contains(player))
+
+object ConsentPowers:
+  val default: ConsentPowers =
+    new ConsentPowers(WalkerPowerCatalog.contributing,
+      OperationRestrictions.printedRules.collect { case rule: WaivableRule =>
+        rule.id -> Waiver(rule.granter, rule.source,
+          (_, _) => rule.consentNote(rule.source)) },
+      payments = Vector(TollRoads.payerWaiver))

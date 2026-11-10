@@ -1,5 +1,5 @@
 ---
-name: Oath Digital
+name: Distant Lands
 description: A dark table for the painted world of Oath, built for players who know the board.
 colors:
   brass: "#d2a85e"
@@ -183,7 +183,7 @@ components:
     height: "44px"
 ---
 
-# Design System: Oath Digital
+# Design System: Distant Lands
 
 ## Overview
 
@@ -194,7 +194,7 @@ place with its own light, the Cradle green, the Provinces teal-blue, the
 Hinterland orange-red, with chalk-brush titles, thick white card frames, gold
 favor coins, blue secret books, and bright player colors laid on top. It is
 colorful and playful, and at the same time evocative of place and history.
-Oath Digital's job is to put that world on a screen for players who already
+Distant Lands' job is to put that world on a screen for players who already
 know it, so every piece should be recognized before it is read.
 
 The implementation today is that world seen on a dark table. Surfaces are warm

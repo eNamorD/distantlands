@@ -54,7 +54,7 @@ This is the ninth of 14 slice plans, written against `0.2.0-alpha` at `0b419ab6`
   - `./sbtw clean coverage test coverageReport`, with statement coverage of at least 92%
   - `python3 scripts/check-architecture.py`, which caps files at 800 lines and enforces the layer import rules
   - `python3 scripts/check-markdown-links.py`
-- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains. The files are `src/test/resources/notes/declared-keys.txt` and `src/test/resources/powers/unimplemented.txt`.
+- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains. The files are `src/test/resources/notes/declared-keys.txt` and `src/test/resources/powers/unimplemented.txt`.
 - **Log lines:** a line names only non-actors (memory: "Log lines omit actor"). Pile names read "the Cradle discard pile" (spec, "Readings").
 - **Test helpers:** a helper's name states what it builds (memory: "Descriptive helper names").
 - **Modifier icon:** each card's printed power gains `modifier = Some(ModifierMark.Action(MajorActionType.Search))` (spec, "Catalog corrections").
@@ -65,10 +65,10 @@ This is the ninth of 14 slice plans, written against `0.2.0-alpha` at `0b419ab6`
 ### Task 1: A discard's pile position
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`Discard.Denizen`, `Discard.Vision`, `discardWorld`; about lines 124 to 190)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (encode at about line 90, decode at about line 342)
-- Test: `src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`Discard.Denizen`, `Discard.Vision`, `discardWorld`; about lines 124 to 190)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (encode at about line 90, decode at about line 342)
+- Test: `src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -141,7 +141,7 @@ In `WalkerOperationWireSuite.scala`, add after the test "an actorless discard sa
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoreOperationsSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CoreOperationsSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: compile error, `position` is not a parameter of `Discard.Denizen`.
 
 - [ ] **Step 3: Add the field**
@@ -259,7 +259,7 @@ If `InvalidValue` is not imported unqualified in that file, write `WireError.Inv
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoreOperationsSuite oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CoreOperationsSuite distantlands.serialization.*"`
 Expected: PASS, including the existing test "every CoreOperation variant round-trips through the walker codec".
 
 - [ ] **Step 6: Run the whole suite**
@@ -270,10 +270,10 @@ Expected: PASS. Every builder relies on the default, so no behaviour changes. Th
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala \
-  src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala \
-  src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala \
-  src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala \
+  src/main/scala/distantlands/serialization/WalkerOperationCodec.scala \
+  src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala \
+  src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(model): a denizen or Vision discard names the end of its pile
 
@@ -287,13 +287,13 @@ EOF
 ### Task 2: The shared rewrite and Ring of Devotion
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/RingOfDevotion.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `RingOfDevotionCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/RingOfDevotion.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `RingOfDevotionCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
-- Create: `src/test/scala/oathdigital/gameplay/powers/search/SearchDiscardFixture.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/RingOfDevotionSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/search/SearchDiscardFixture.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/RingOfDevotionSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `position` on `Discard.Denizen` and `Discard.Vision`.
@@ -308,14 +308,14 @@ EOF
 Create `SearchDiscardFixture.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** The Search discards that Bracken, Cracked Horn and Ring of Devotion
   * redirect (catalog batch 10, slice 9, ruling 2): the cards not kept, an
@@ -397,14 +397,14 @@ If `Table.from(ready)` or `Table.adviser(..., facedown = ...)` has another name,
 Create `RingOfDevotionSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.whenplayed.DazzleCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.whenplayed.DazzleCard
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Ring of Devotion (relic R12), a free selected Search modifier: "You may
   * discard cards to your region's discard pile instead of the next region
@@ -431,7 +431,7 @@ class RingOfDevotionSuite extends munit.FunSuite:
     assertEquals(RingOfDevotionCard.power.id,
       PowerId("relic.ring-of-devotion"))
     assertEquals(RingOfDevotionCard.power.modifier,
-      Some(oathdigital.catalog.ModifierMark.Action(MajorActionType.Search)))
+      Some(distantlands.catalog.ModifierMark.Action(MajorActionType.Search)))
 
   test("unpicked, the cards not kept go to the next region out"):
     val done = keptFacedown(searched(
@@ -475,7 +475,7 @@ Notes for the implementer:
 
 - [ ] **Step 3: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.RingOfDevotionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.RingOfDevotionSuite"`
 Expected: compile error, `RingOfDevotion` not found.
 
 - [ ] **Step 4: Write the shared trait**
@@ -483,12 +483,12 @@ Expected: compile error, `RingOfDevotion` not found.
 Create `SearchDiscards.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, OperationRewrite, PowerCtx, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 /** What Bracken, Cracked Horn and Ring of Devotion share (catalog batch 10,
   * slice 9): a selected Search modifier that changes where the user's own
@@ -565,11 +565,11 @@ The trait and the object share a name in one file, so they are companions, and t
 Remove `RingOfDevotionCard` from `HoldingRelics.scala`. Create `RingOfDevotion.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.model._
 
 object RingOfDevotionCard extends Relic(RelicId("R12"), "Ring of Devotion", value = 90, defense = 1):
   val power = PrintedPower(PowerId("relic.ring-of-devotion"),
@@ -612,25 +612,25 @@ In `ActionModifiers.scala`, add `RingOfDevotion` to the `powers.search` import (
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.*"`
 Expected: PASS, the existing Search suites included.
 
 - [ ] **Step 7: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`
 
 Then `git diff src/test/resources`. Expected: `unimplemented.txt` loses `relic.king-of-devotion`, and nothing else. `declared-keys.txt` is unchanged.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/RingOfDevotion.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
+git add src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala \
+  src/main/scala/distantlands/gameplay/powers/search/RingOfDevotion.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingRelics.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/search/SearchDiscardFixture.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/RingOfDevotionSuite.scala
+  src/test/scala/distantlands/gameplay/powers/search/SearchDiscardFixture.scala \
+  src/test/scala/distantlands/gameplay/powers/search/RingOfDevotionSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Ring of Devotion keeps a Search's discards in the pawn's region
 
@@ -646,12 +646,12 @@ EOF
 ### Task 3: Cracked Horn
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/CrackedHorn.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala` (`cards`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `CrackedHornCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/CrackedHorn.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala` (`cards`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `CrackedHornCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/CrackedHornSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/CrackedHornSuite.scala`
 
 **Interfaces:**
 - Consumes: `SearchDiscards`, `SearchDiscardFixture` (Task 2).
@@ -662,13 +662,13 @@ EOF
 Create `CrackedHornSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Cracked Horn (relic R10), a free selected Search modifier: "You may put
   * all of the cards you discard on the bottom of the world deck." (catalog
@@ -693,7 +693,7 @@ class CrackedHornSuite extends munit.FunSuite:
 
   test("it carries the Search icon"):
     assertEquals(CrackedHornCard.power.modifier,
-      Some(oathdigital.catalog.ModifierMark.Action(MajorActionType.Search)))
+      Some(distantlands.catalog.ModifierMark.Action(MajorActionType.Search)))
 
   test("picked, the cards not kept go to the bottom of the world deck, in " +
       "the order discarded"):
@@ -731,7 +731,7 @@ Note for the implementer: the temporary hand holds the cards in draw order, and 
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.CrackedHornSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.CrackedHornSuite"`
 Expected: compile error, `CrackedHorn` not found.
 
 - [ ] **Step 3: Write Cracked Horn**
@@ -741,10 +741,10 @@ Remove `CrackedHornCard` from `HoldingRelics.scala`. If no relic is left there t
 Create `CrackedHorn.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.model._
 
 object CrackedHornCard extends Relic(RelicId("R10"), "Cracked Horn", value = 21, defense = 1):
   val power = PrintedPower(PowerId("relic.cracked-horn"),
@@ -800,24 +800,24 @@ In `ActionModifiers.scala`, add `CrackedHorn` to the `powers.search` import (alp
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`
 
 Then `git diff src/test/resources`. Expected: `unimplemented.txt` loses `relic.cracked-horn`, and nothing else.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/CrackedHorn.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
+git add src/main/scala/distantlands/gameplay/powers/search/CrackedHorn.scala \
+  src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingRelics.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/search/CrackedHornSuite.scala
+  src/test/scala/distantlands/gameplay/powers/search/CrackedHornSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): Cracked Horn buries a Search's discards under the world deck
 
@@ -831,13 +831,13 @@ EOF
 ### Task 4: Bracken, exclusivity, docs and gates
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/Bracken.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala` (`cards`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `BrackenCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/Bracken.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala` (`cards`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `BrackenCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/BrackenSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/SearchDiscardsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/BrackenSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/SearchDiscardsSuite.scala`
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`
 - Modify: `docs/ROADMAP.md`
 
@@ -854,18 +854,18 @@ EOF
 Create `BrackenSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.{ModifierPlay, SearchPlay}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.{ModifierPlay, SearchPlay}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 /** Bracken (card 197), a selected Search modifier for 1 secret: "You may
   * put all of the cards you discard on the top or bottom of any one
@@ -916,7 +916,7 @@ class BrackenSuite extends munit.FunSuite:
 
   test("it carries the Search icon"):
     assertEquals(BrackenCard.power.modifier,
-      Some(oathdigital.catalog.ModifierMark.Action(MajorActionType.Search)))
+      Some(distantlands.catalog.ModifierMark.Action(MajorActionType.Search)))
 
   test("picked, it pays its secret onto the card and asks a pile, then an " +
       "end, before the Search starts"):
@@ -975,15 +975,15 @@ Notes for the implementer:
 Create `SearchDiscardsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.Unwrap.accepted
 
 /** Bracken, Cracked Horn and Ring of Devotion exclude each other: once one
   * is picked, the other two show unavailable (catalog batch 10, slice 9,
@@ -1043,7 +1043,7 @@ If `ShownOptions.atParkedDecision` reads only `p1` and `PowerFixture.actor` is n
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.BrackenSuite oathdigital.gameplay.powers.search.SearchDiscardsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.BrackenSuite distantlands.gameplay.powers.search.SearchDiscardsSuite"`
 Expected: compile error, `Bracken` and `BrackenCard` not found in `powers.search`.
 
 - [ ] **Step 3: Write Bracken**
@@ -1053,14 +1053,14 @@ Remove `BrackenCard` from `HoldingBeastDenizens.scala`. Autumn Wind stays there,
 Create `Bracken.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+import distantlands.catalog.{Denizen, ExecutableCatalog, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.AsksOnSelection
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.AsksOnSelection
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object BrackenCard extends Denizen(DenizenId("197"), "Bracken", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.bracken"),
@@ -1179,12 +1179,12 @@ In `ActionModifiers.scala`, add `Bracken` to the `powers.search` import (alphabe
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`
 
 Then `git diff src/test/resources`. Expected:
 - `unimplemented.txt` loses `denizen.bracken`, and nothing else.
@@ -1246,14 +1246,14 @@ Expected: both pass.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/Bracken.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/SearchDiscards.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
+git add src/main/scala/distantlands/gameplay/powers/search/Bracken.scala \
+  src/main/scala/distantlands/gameplay/powers/search/SearchDiscards.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
   src/test/resources/powers/unimplemented.txt \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/powers/search/BrackenSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/SearchDiscardsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/search/BrackenSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/search/SearchDiscardsSuite.scala \
   docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md \
   docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'

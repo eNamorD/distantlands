@@ -1,0 +1,230 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.catalog.Denizen
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
+import distantlands.gameplay.CampaignFixture.Board
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
+  RollPayload, WalkerDice, WalkerPowers, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.model.DecisionAnswer._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.RecordedOps
+import distantlands.testkit.Unwrap.present
+
+/** Drives a Campaign through the rules with the production battle plans, for
+  * the suites that test one plan through a whole Campaign. Every attack die
+  * is a sword (`winningDice`) or half a sword (`losingDice`) and every
+  * defense die is blank, whatever the pool holds, so a suite chooses who
+  * wins by the force it commits: a Conquest against two bandit or player
+  * warbands is won by four swords and lost by four hollow ones.
+  */
+object PlanDriver:
+  /** Stub of WalkerDice, the shared WalkerDiceFixture.raid: every attack die
+    * is a sword and every defense die blank. */
+  val winningDice: WalkerDice = WalkerDiceFixture.raid
+
+  /** Stub of WalkerDice, the shared WalkerDiceFixture.blanks: every attack die
+    * is half a sword and every defense die blank. */
+  val losingDice: WalkerDice = WalkerDiceFixture.blanks
+
+  /** These denizens, after checking that no power of theirs is a battle
+    * plan: held as advisers, they offer no battle plan of their own. */
+  def planless(cards: Denizen*): Vector[DenizenId] =
+    val plans = WalkerPowerCatalog.contributing.collect {
+      case plan: BattlePlan => plan.id }.toSet
+    cards.toVector.map { card =>
+      assert(card.powers.forall(power => !plans(power.id)),
+        s"${card.name} has a battle plan")
+      card.id
+    }
+
+  /** One planless denizen. */
+  def planlessCard(card: Denizen): DenizenId =
+    planless(card).head
+
+  export distantlands.testkit.Outcomes.ready
+
+  /** The notes `power` journaled in `events`, in order, as plain sentences. */
+  def said(power: ContributingPower, events: Vector[OathEvent])
+      : Vector[NoteText.Said] =
+    NoteText.said(power.id, power.noteKeys, events)
+
+  /** The parked decision, as this file's suites rebuild it: the same catalog
+    * and walker power catalog `CampaignFixture.rules(dice)`
+    * builds `OathRules` with.
+    */
+  val parked = new ParkedDecisionAssertions(catalog, WalkerPowerCatalog.default(catalog))
+
+  /** Whether the run is parked on `id`, awaiting `who`. */
+  def awaits(run: Run, who: PlayerId, id: String): Boolean =
+    run.parkedHere.parkedDecision(run.state).exists(facts =>
+      facts.decision == id && facts.awaiting == who)
+
+  /** Whether `kill` was recorded in `events` before the defense pool was
+    * rolled there. */
+  def killedBeforeTheDefenseRoll(events: Vector[OathEvent],
+      kill: CoreOperation): Boolean =
+    val steps = events.collect { case step: WalkerStepRecorded => step }
+    val killed = steps.indexWhere(RecordedOps.of(_).contains(kill))
+    val rolled = steps.indexWhere(_.payload match
+      case RollPayload(pool, _, _) => pool == CampaignIds.defensePool
+      case _ => false)
+    killed >= 0 && rolled > killed
+
+  /** A Campaign in progress: the transition it reached and every event so far.
+    * `powers` are the walker powers `game` was built with, which the parked
+    * decision is rebuilt with: the production catalog unless a suite runs its
+    * own. */
+  final case class Run(game: OathRules, transition: OathTransition,
+      events: Vector[OathEvent],
+      powers: WalkerPowers = WalkerPowerCatalog.default(catalog)):
+    def state: OathState = transition.state
+
+    /** The parked decision, rebuilt with the run's own powers. */
+    def parkedHere: ParkedDecisionAssertions =
+      new ParkedDecisionAssertions(catalog, powers)
+
+    /** The Campaign's recorded result; fails before the Campaign ends. */
+    def result(using munit.Location): CampaignResult =
+      present(ready(state).game.current.lastCampaignResult, "a Campaign result")
+
+    /** Whether the attacker won, once the Campaign has ended. */
+    def winner(using munit.Location): Option[Boolean] =
+      ready(state).game.current.lastCampaignResult.map(_.attackerWins)
+
+    /** The operations recorded so far, in order. */
+    def ops: Vector[CoreOperation] = RecordedOps.all(events)
+
+    /** The operations recorded since `earlier`. */
+    def since(earlier: Run): Vector[CoreOperation] = ops.drop(earlier.ops.size)
+
+    def answer(who: PlayerId, id: String, answer: DecisionAnswer): Run =
+      game.resolveWalker(state, who, id, answer).fold(
+        error => throw new IllegalStateException(s"$id was refused: $error"),
+        next => copy(transition = next, events = events ++ next.events))
+
+    def pick(who: PlayerId, id: String, ref: DecisionOptionRef): Run =
+      answer(who, id, ChooseOneAnswer(ref))
+
+    /** `attacker` sacrifices no warband. */
+    def declineSacrifice(attacker: PlayerId): Run =
+      answer(attacker, CampaignIds.sacrifice, ChooseAmountAnswer(0))
+
+    /** `attacker` chooses no more plans: Finish in the attacker's window, when
+      * it is still open (a plan chosen last can close it). */
+    def finishAttackerPlans(attacker: PlayerId): Run =
+      if awaits(this, attacker, CampaignIds.attackerPlan) then
+        pick(attacker, CampaignIds.attackerPlan, CampaignIds.finish)
+      else this
+
+    /** `defender` chooses no more plans: Finish in the defender's window. */
+    def finishDefenderPlans(defender: PlayerId): Run =
+      pick(defender, CampaignIds.defenderPlan, CampaignIds.finish)
+
+    /** The parked decision's query, as `actor`'s Campaign builds it with
+      * `catalogPowers`: the production catalog unless a suite runs its own.
+      */
+    def query(actor: PlayerId,
+        catalogPowers: WalkerPowers = WalkerPowerCatalog.default(catalog))
+        : DecisionQuery =
+      val current = ready(state)
+      val tree = CampaignProcedure.rebuild(catalog, current, actor, Vector.empty)
+        .toOption.get
+      // The run's own powers: a selected modifier folds only when chosen.
+      ProcedureWalker.openDecisions(current, tree,
+        current.game.current.walkerPending.get,
+        WalkerPowers.selected(catalogPowers, Vector.empty)).head.query
+
+    /** The options the parked choice shows. */
+    def options(actor: PlayerId,
+        catalogPowers: WalkerPowers = WalkerPowerCatalog.default(catalog))
+        : Vector[DecisionOption] = query(actor, catalogPowers) match
+      case one: DecisionQuery.ChooseOne => one.options
+      case _ => Vector.empty
+
+    /** The options the parked choice offers that may be chosen. */
+    def offered(actor: PlayerId,
+        catalogPowers: WalkerPowers = WalkerPowerCatalog.default(catalog))
+        : Vector[DecisionOptionRef] =
+      options(actor, catalogPowers).filter(_.available).map(_.ref)
+
+    /** Why the parked choice shows `ref` without offering it. */
+    def withheld(actor: PlayerId, ref: DecisionOptionRef,
+        catalogPowers: WalkerPowers = WalkerPowerCatalog.default(catalog))
+        : Option[OptionReason] =
+      options(actor, catalogPowers).collectFirst {
+        case shown: DecisionOption.Unavailable if shown.ref == ref =>
+          shown.reason
+      }
+
+    /** Whether the run is parked on the plan decision `id`, awaiting `who`,
+      * with `ref` among its options. `actor` is the Campaign's actor, which
+      * the parked decision is rebuilt with. */
+    def offers(actor: PlayerId, who: PlayerId, id: String,
+        ref: DecisionOptionRef): Boolean =
+      awaits(this, who, id) && offered(actor).contains(ref)
+
+    def refused(who: PlayerId, id: String, answer: DecisionAnswer)
+        : Option[OathViolation] =
+      game.resolveWalker(state, who, id, answer).left.toOption
+
+    /** Answers the questions before `id` as `committed` does: a Raid at the
+      * kind question, the first player offered at the defender question and
+      * no extra targets, until `id` is parked. */
+    def answeredUntil(id: String): Run = parkedHere.parkedDecision(state) match
+      case Some(facts) if facts.decision != id => facts.decision match
+        case CampaignIds.kind => pick(facts.awaiting, facts.decision,
+          DecisionOptionRef.Button("raid")).answeredUntil(id)
+        case CampaignIds.defender => pick(facts.awaiting, facts.decision,
+          offered(facts.awaiting).head).answeredUntil(id)
+        case CampaignIds.targets => answer(facts.awaiting, facts.decision,
+          ChooseManyAnswer(Vector.empty)).answeredUntil(id)
+        case _ => this
+      case _ => this
+
+    /** Finishes every plan window, sacrifices nothing and places nothing, until
+      * the Campaign ends or asks something else.
+      */
+    def finishPlanWindows: Run = parkedHere.parkedDecision(state) match
+      case Some(facts) => facts.decision match
+        case CampaignIds.attackerPlan | CampaignIds.defenderPlan =>
+          answer(facts.awaiting, facts.decision,
+            ChooseOneAnswer(CampaignIds.finish)).finishPlanWindows
+        case CampaignIds.sacrifice | CampaignIds.placement =>
+          answer(facts.awaiting, facts.decision, ChooseAmountAnswer(0))
+            .finishPlanWindows
+        case _ => this
+      case None => this
+
+  /** Starts a Campaign, chooses a Raid when asked and `raid` is set, answers the
+    * optional targets (when asked) and the force.
+    */
+  def commit(game: OathRules, b: Board, force: Int,
+      targets: Vector[DecisionOptionRef] = Vector.empty,
+      raid: Boolean = false,
+      powers: WalkerPowers = WalkerPowerCatalog.default(catalog)): Run =
+    val started = game.startWalker(Ready(b.ready), ActionRef.Campaign, b.actor)
+      .fold(error => throw new IllegalStateException(s"no start: $error"),
+        identity)
+    committed(game, started, b, force, targets, raid, powers)
+
+  /** The same, for a Campaign `started` some other way: a taken follow-up
+    * offer, say. */
+  def committed(game: OathRules, started: OathTransition, b: Board,
+      force: Int, targets: Vector[DecisionOptionRef] = Vector.empty,
+      raid: Boolean = false,
+      powers: WalkerPowers = WalkerPowerCatalog.default(catalog)): Run =
+    val run = Run(game, started, started.events, powers)
+    val kind =
+      if awaits(run, b.actor, CampaignIds.kind) then run.pick(b.actor,
+        CampaignIds.kind, DecisionOptionRef.Button(if raid then "raid" else "conquest"))
+      else run
+    val asked =
+      if awaits(kind, b.actor, CampaignIds.targets) then
+        kind.answer(b.actor, CampaignIds.targets, ChooseManyAnswer(targets))
+      else kind
+    asked.answer(b.actor, CampaignIds.force, ChooseAmountAnswer(force))

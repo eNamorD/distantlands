@@ -30,7 +30,7 @@
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
 - Scala 3 syntax: never write `case X => for` with its generators and `yield` below. It does not parse ("yield or do expected"). Put the `for` in a helper method, as the code below does.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -93,7 +93,7 @@ These settle what the spec and rulings leave open. Each one names what it costs 
 
 ## File Structure
 
-All paths are under `src/main/scala/oathdigital/gameplay/powers/` or `src/test/scala/oathdigital/gameplay/powers/` unless given in full.
+All paths are under `src/main/scala/distantlands/gameplay/powers/` or `src/test/scala/distantlands/gameplay/powers/` unless given in full.
 
 | File | Responsibility | Task |
 |---|---|---|
@@ -111,7 +111,7 @@ All paths are under `src/main/scala/oathdigital/gameplay/powers/` or `src/test/s
 | `PowerAnswers.scala` (modify) | `many`: a `ChooseMany` answer | 5 |
 | `whenplayed/BanditPrince.scala` (create) | Bandit Prince | 5 |
 | `whenplayed/SaladDays.scala` (create) | Salad Days | 6 |
-| `frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala` (modify) | A choose-many of favor banks | 6 |
+| `frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala` (modify) | A choose-many of favor banks | 6 |
 | `whenplayed/FabledFeast.scala` (create) | Fabled Feast | 7 |
 | `whenplayed/TownMeeting.scala` (create) | Town Meeting | 7 |
 | `whenplayed/GreatHerd.scala` (create) | Great Herd | 8 |
@@ -131,14 +131,14 @@ Suit order is `Suit.all`: Discord, Arcane, Order, Hearth, Beast, Nomad. `NoteTex
 ### Task 1: `RegionDiscard` (P7), Dazzle's `none` line, Threatening Roar, and `WhenPlayedPowers`
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedHarness.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/RegionDiscard.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/ThreateningRoar.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/ThreateningRoarSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedHarness.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/RegionDiscard.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/ThreateningRoar.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/ThreateningRoarSuite.scala`
 
 **Interfaces:**
 - Consumes: `WhenPlayedPower` (`cardId`, `effect`, `WhenPlayedPower.cardOf`), `catalog.suitOf`, `Discard.Denizen`, `Discard.RuinedEdifice`.
@@ -151,21 +151,21 @@ Suit order is `Suit.all`: Discord, Arcane, Order, Hearth, Beast, Nomad. `NoteTex
 
 - [ ] **Step 1: Extend the harness**
 
-Replace `src/test/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedHarness.scala` with:
+Replace `src/test/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedHarness.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
 import scala.reflect.ClassTag
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy, OperationRestrictions}
-import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.gameplay.powers.{PowerFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.PowerFixture.{actor, base}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy, OperationRestrictions}
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powers.{PowerFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.PowerFixture.{actor, base}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.model._
 
 /** Drives a When Played power through its `CardPlayed` hook, the way the
   * Dazzle and Conspiracy suites do. The actor is `PowerFixture.actor`, p1.
@@ -250,15 +250,15 @@ object WhenPlayedHarness:
 
 - [ ] **Step 2: Write the failing suite, and the Dazzle `none` assertion**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/ThreateningRoarSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/ThreateningRoarSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, SearchFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, SearchFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
 
 class ThreateningRoarSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -317,7 +317,7 @@ Then change `DazzleSuite`'s last assertion (rulings, 5):
 ```bash
 python3 - <<'PY'
 from pathlib import Path
-p = Path("src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala")
+p = Path("src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala")
 s = p.read_text()
 old = """    // A second Dazzle finds nothing left to discard, and writes nothing.
     val again = ProcedureWalker.advance(finished.treeless, hook, None,
@@ -340,18 +340,18 @@ PY
 
 - [ ] **Step 3: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.ThreateningRoarSuite oathdigital.gameplay.powers.whenplayed.DazzleSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.ThreateningRoarSuite distantlands.gameplay.powers.whenplayed.DazzleSuite"`
 Expected: compile error, `ThreateningRoar` not found.
 
 - [ ] **Step 4: Extract `RegionDiscard` and move Dazzle onto it**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/RegionDiscard.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/RegionDiscard.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** The region discard of Dazzle, Threatening Roar and Riots (catalog batch
   * 3, refactor P7): every site denizen and ruined edifice of a kept suit at
@@ -462,14 +462,14 @@ private[whenplayed] object RegionDiscard:
       else none(source))
 ```
 
-Replace `src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala` with:
+Replace `src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** Dazzle (card 35), WHEN PLAYED: discard all Hearth and Order cards at
   * sites in your region.
@@ -502,14 +502,14 @@ object Dazzle:
 
 - [ ] **Step 5: Write Threatening Roar and register it**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/ThreateningRoar.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/ThreateningRoar.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** Threatening Roar (card 179), WHEN PLAYED: discard all Nomad and Beast
   * cards at sites in your region.
@@ -538,13 +538,13 @@ object ThreateningRoar:
     WhenPlayedPower.cardOf(catalog, id).map(new ThreateningRoar(_, catalog))
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The When Played powers of catalog batch 3, which `WalkerPowerCatalog`
   * wires in. A power whose card is absent from `catalog` is left out. */
@@ -559,7 +559,7 @@ Register it in `WalkerPowerCatalog`:
 ```bash
 python3 - <<'PY'
 from pathlib import Path
-p = Path("src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala")
+p = Path("src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala")
 s = p.read_text()
 old_import = "Garrison, ShiftingFog, TwinBrother}"
 new_import = "Garrison, ShiftingFog, TwinBrother, WhenPlayedPowers}"
@@ -572,29 +572,29 @@ PY
 
 - [ ] **Step 6: Run them to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.*"`
 Expected: PASS. `ThreateningRoarSuite` runs 3 tests, and every other suite in the package, Dazzle's included, passes.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedHarness.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/RegionDiscard.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/Dazzle.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/ThreateningRoar.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/ThreateningRoarSuite.scala
+git add src/test/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedHarness.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/RegionDiscard.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/Dazzle.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/ThreateningRoar.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/ThreateningRoarSuite.scala
 git commit -m "feat(powers): add Threatening Roar on a shared region discard"
 ```
 
 ### Task 2: Riots
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/Riots.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/RiotsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/Riots.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/RiotsSuite.scala`
 
 **Interfaces:**
 - Consumes: `RegionDiscard` (`targets`, `discards`, `RegionDiscard.said`, `RegionDiscard.gone`, `RegionDiscard.discarded`, `RegionDiscard.none`), `WhenPlayedPowers.forCatalog` (Task 1).
@@ -602,15 +602,15 @@ git commit -m "feat(powers): add Threatening Roar on a shared region discard"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/RiotsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/RiotsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, SearchFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.{NoteText, SearchFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 class RiotsSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -694,19 +694,19 @@ class RiotsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.RiotsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.RiotsSuite"`
 Expected: compile error, `Riots` not found.
 
 - [ ] **Step 3: Write Riots and register it**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/Riots.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/Riots.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** Riots (card 91), WHEN PLAYED: discard all denizens at sites in this
   * region. Burn the same number of favor from the People's Favor.
@@ -787,26 +787,26 @@ In `WhenPlayedPowers.scala`, replace the body of `forCatalog` with:
 
 - [ ] **Step 4: Run it to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.RiotsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.RiotsSuite"`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/Riots.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/RiotsSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/Riots.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/RiotsSuite.scala
 git commit -m "feat(powers): add Riots"
 ```
 
 ### Task 3: Animal Host and Charlatan
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/AnimalHost.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/Charlatan.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/AnimalHostSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/CharlatanSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/AnimalHost.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/Charlatan.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/AnimalHostSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/CharlatanSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlayerFacts.forceKind`, `NoteSupport.warbands`, `NoteSupport.gainedKey`, `WhenPlayedPowers.forCatalog` (Task 2).
@@ -816,15 +816,15 @@ Both powers are one `BuildOps` and one note, so neither needs a `Branch`: the st
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/AnimalHostSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/AnimalHostSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, PlayerFacts, SearchFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.{NoteText, PlayerFacts, SearchFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 class AnimalHostSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -887,15 +887,15 @@ class AnimalHostSuite extends munit.FunSuite:
       s"${p1.value} gained no warbands.", covers = false)))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/CharlatanSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/CharlatanSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.NoteText
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 class CharlatanSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -938,20 +938,20 @@ class CharlatanSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.AnimalHostSuite oathdigital.gameplay.powers.whenplayed.CharlatanSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.AnimalHostSuite distantlands.gameplay.powers.whenplayed.CharlatanSuite"`
 Expected: compile errors, `AnimalHost` and `Charlatan` not found.
 
 - [ ] **Step 3: Write both powers and register them**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/AnimalHost.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/AnimalHost.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{NoteSupport, PlayerFacts}
+import distantlands.model._
 
 /** Animal Host (card 190), WHEN PLAYED: gain warbands equal to the total
   * number of Beast cards (including Animal Host) at any sites (regardless of
@@ -1016,14 +1016,14 @@ object AnimalHost:
     WhenPlayedPower.cardOf(catalog, id).map(new AnimalHost(_, catalog))
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/Charlatan.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/Charlatan.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** Charlatan (card 79), WHEN PLAYED: burn all secrets but one from the
   * Darkest Secret.
@@ -1090,26 +1090,26 @@ In `WhenPlayedPowers.scala`, replace the body of `forCatalog` with:
 
 - [ ] **Step 4: Run them to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.AnimalHostSuite oathdigital.gameplay.powers.whenplayed.CharlatanSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.AnimalHostSuite distantlands.gameplay.powers.whenplayed.CharlatanSuite"`
 Expected: PASS, 4 and 3 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/AnimalHost.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/Charlatan.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/AnimalHostSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/CharlatanSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/AnimalHost.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/Charlatan.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/AnimalHostSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/CharlatanSuite.scala
 git commit -m "feat(powers): add Animal Host and Charlatan"
 ```
 
 ### Task 4: Key to the City
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/KeyToTheCity.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/KeyToTheCitySuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/KeyToTheCity.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/KeyToTheCitySuite.scala`
 
 **Interfaces:**
 - Consumes: `SiteRulers.siteOf`, `SiteRulers.rulerOf`, `PlayerFacts.forceKind`, `PlayerForceKind.of`, `WhenPlayedPowers.forCatalog` (Task 3).
@@ -1117,15 +1117,15 @@ git commit -m "feat(powers): add Animal Host and Charlatan"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/KeyToTheCitySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/KeyToTheCitySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, PlayerFacts}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.{NoteText, PlayerFacts}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 class KeyToTheCitySuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -1199,21 +1199,21 @@ class KeyToTheCitySuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.KeyToTheCitySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.KeyToTheCitySuite"`
 Expected: compile error, `KeyToTheCity` not found.
 
 - [ ] **Step 3: Write Key to the City and register it**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/KeyToTheCity.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/KeyToTheCity.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 /** Key to the City (card 18, site-only), WHEN PLAYED: if the ruler's pawn
   * is not at this site, kill any warbands at this site, then gain a warband
@@ -1352,25 +1352,25 @@ In `WhenPlayedPowers.scala`, replace the body of `forCatalog` with:
 
 - [ ] **Step 4: Run it to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.KeyToTheCitySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.KeyToTheCitySuite"`
 Expected: PASS, 6 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/KeyToTheCity.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/KeyToTheCitySuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/KeyToTheCity.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/KeyToTheCitySuite.scala
 git commit -m "feat(powers): add Key to the City"
 ```
 
 ### Task 5: Bandit Prince
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/BanditPrince.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/BanditPrinceSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/BanditPrince.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/BanditPrinceSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlayerFacts.forceKind`, `PlayerFacts.banked`, `Replace`, `WhenPlayedPowers.forCatalog` (Task 4).
@@ -1382,15 +1382,15 @@ This task pins the spec's "Verify at plan time" item for Bandit Prince: a `Build
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/BanditPrinceSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/BanditPrinceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, PlayerFacts}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, PlayerFacts}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
 
 class BanditPrinceSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -1480,7 +1480,7 @@ class BanditPrinceSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.BanditPrinceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.BanditPrinceSuite"`
 Expected: compile error, `BanditPrince` not found.
 
 - [ ] **Step 3: Add `PowerAnswers.many`**
@@ -1488,7 +1488,7 @@ Expected: compile error, `BanditPrince` not found.
 ```bash
 python3 - <<'PY'
 from pathlib import Path
-p = Path("src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala")
+p = Path("src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala")
 s = p.read_text()
 old = "  def distribution(pending: PendingTree, decision: String)\n"
 new = """  /** The options a power's `ChooseMany` was answered with. */
@@ -1504,15 +1504,15 @@ PY
 
 - [ ] **Step 4: Write Bandit Prince and register it**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/BanditPrince.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/BanditPrince.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 /** Bandit Prince (card 226, adviser-only, locked), WHEN PLAYED: you may
   * replace all bandits at any sites you choose with your warbands.
@@ -1628,7 +1628,7 @@ In `WhenPlayedPowers.scala`, replace the body of `forCatalog` with:
 
 - [ ] **Step 5: Run it to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.BanditPrinceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.BanditPrinceSuite"`
 Expected: PASS, 6 tests.
 
 If "with an empty bank ... nothing is asked" parks instead, the search does not narrow a `ChooseMany` here. Stop and report: rulings 8 relies on it.
@@ -1636,20 +1636,20 @@ If "with an empty bank ... nothing is asked" parks instead, the search does not 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/PowerAnswers.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/BanditPrince.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/BanditPrinceSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/BanditPrince.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/BanditPrinceSuite.scala
 git commit -m "feat(powers): add Bandit Prince"
 ```
 
 ### Task 6: Salad Days
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/SaladDays.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/SaladDaysSuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/SaladDays.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/SaladDaysSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerAnswers.many` (Task 5), `WhenPlayedPowers.forCatalog` (Task 5).
@@ -1659,15 +1659,15 @@ This task tests a seam for the first time: a `ChooseMany` whose options are favo
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/SaladDaysSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/SaladDaysSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.NoteText
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
 
 class SaladDaysSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -1737,12 +1737,12 @@ class SaladDaysSuite extends munit.FunSuite:
       choose(Suit.Discord, Suit.Arcane, Suit.Beast)).isLeft)
 ```
 
-Append the frontend test to `frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala`:
+Append the frontend test to `frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala`:
 
 ```bash
 python3 - <<'PY'
 from pathlib import Path
-p = Path("frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala")
+p = Path("frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala")
 s = p.read_text()
 test = '''
   test("choose-many offers favor banks as toggles and submits the banks " +
@@ -1777,20 +1777,20 @@ PY
 
 - [ ] **Step 2: Run them to verify the server suite fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.SaladDaysSuite" "frontend/testOnly oathdigital.frontend.WalkerSelectionPanelsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.SaladDaysSuite" "frontend/testOnly distantlands.frontend.WalkerSelectionPanelsSuite"`
 Expected: the server suite fails to compile, `SaladDays` not found. The frontend suite passes as it is (rulings, 15). If the frontend test fails, the panel needs a production change: stop and report, since the spec drops the card under the bar.
 
 - [ ] **Step 3: Write Salad Days and register it**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/SaladDays.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/SaladDays.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Salad Days (card 147), WHEN PLAYED: gain 3 favor, one each from three
   * different favor banks.
@@ -1876,27 +1876,27 @@ In `WhenPlayedPowers.scala`, replace the body of `forCatalog` with:
 
 - [ ] **Step 4: Run them to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.SaladDaysSuite" "frontend/testOnly oathdigital.frontend.WalkerSelectionPanelsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.SaladDaysSuite" "frontend/testOnly distantlands.frontend.WalkerSelectionPanelsSuite"`
 Expected: PASS, 5 server tests, and the frontend suite with its new test.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/SaladDays.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/SaladDaysSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/SaladDays.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/SaladDaysSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala
 git commit -m "feat(powers): add Salad Days"
 ```
 
 ### Task 7: Fabled Feast and Town Meeting
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/FabledFeast.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/TownMeeting.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/FabledFeastSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/TownMeetingSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/FabledFeast.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/TownMeeting.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/FabledFeastSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/TownMeetingSuite.scala`
 
 **Interfaces:**
 - Consumes: `RuledCards.of(catalog, ready, ruler: SiteRuler, suit): Vector[CardId]` (P1), `FavorSplit` (`stocked`, `ask`, `split`, P8), `NoteSupport.gainedFromNote`, `NoteSupport.gainedNote`, `NoteSupport.gainedKey`, `PowerAnswers.one`, `WhenPlayedPowers.forCatalog` (Task 6).
@@ -1906,15 +1906,15 @@ Both count X the same way: the Hearth cards the actor rules, read live with `Rul
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/FabledFeastSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/FabledFeastSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, SearchFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, SearchFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
 
 class FabledFeastSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -1996,15 +1996,15 @@ class FabledFeastSuite extends munit.FunSuite:
       "Every favor bank was empty.", covers = false)))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/TownMeetingSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/TownMeetingSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, SearchFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, SearchFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
 
 class TownMeetingSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -2067,20 +2067,20 @@ class TownMeetingSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.FabledFeastSuite oathdigital.gameplay.powers.whenplayed.TownMeetingSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.FabledFeastSuite distantlands.gameplay.powers.whenplayed.TownMeetingSuite"`
 Expected: compile errors, `FabledFeast` and `TownMeeting` not found.
 
 - [ ] **Step 3: Write both powers and register them**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/FabledFeast.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/FabledFeast.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers, RuledCards}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers, RuledCards}
+import distantlands.model._
 
 /** Fabled Feast (card 136), WHEN PLAYED: take X favor equal to the number of
   * Hearth cards you rule (including Fabled Feast) from any one favor bank.
@@ -2161,16 +2161,16 @@ object FabledFeast:
     bank.map(suit => Vector(Gain.Favor(actor, suit, count)))
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/TownMeeting.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/TownMeeting.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{NoteSupport, RuledCards}
-import oathdigital.gameplay.powers.action.FavorSplit
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{NoteSupport, RuledCards}
+import distantlands.gameplay.powers.action.FavorSplit
+import distantlands.model._
 
 /** Town Meeting (card 236), WHEN PLAYED: gain favor from any favor bank for
   * each Hearth card you rule. This includes your advisers, even Town
@@ -2242,26 +2242,26 @@ In `WhenPlayedPowers.scala`, replace the body of `forCatalog` with:
 
 - [ ] **Step 4: Run them to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.FabledFeastSuite oathdigital.gameplay.powers.whenplayed.TownMeetingSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.FabledFeastSuite distantlands.gameplay.powers.whenplayed.TownMeetingSuite"`
 Expected: PASS, 6 and 4 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/FabledFeast.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/TownMeeting.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/FabledFeastSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/TownMeetingSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/FabledFeast.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/TownMeeting.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/FabledFeastSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/TownMeetingSuite.scala
 git commit -m "feat(powers): add Fabled Feast and Town Meeting"
 ```
 
 ### Task 8: Great Herd
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/GreatHerd.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/GreatHerdSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/GreatHerd.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/GreatHerdSuite.scala`
 
 **Interfaces:**
 - Consumes: `SiteRulers.siteOf`, `Swap`, `PowerAnswers.one`, `NoteSupport.answer`, `WhenPlayedPowers.forCatalog` (Task 7).
@@ -2271,15 +2271,15 @@ This task tests a seam for the first time: a `Swap` of two site cards (rulings, 
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/GreatHerdSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/GreatHerdSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, SearchFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, SearchFixture}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
 
 class GreatHerdSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -2359,21 +2359,21 @@ class GreatHerdSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.GreatHerdSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.GreatHerdSuite"`
 Expected: compile error, `GreatHerd` not found.
 
 - [ ] **Step 3: Write Great Herd and register it**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/GreatHerd.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/GreatHerd.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 /** Great Herd (card 30, site-only), WHEN PLAYED: you may swap Great Herd
   * with a Nomad card at any site.
@@ -2491,24 +2491,24 @@ In `WhenPlayedPowers.scala`, replace the body of `forCatalog` with:
 
 - [ ] **Step 4: Run it to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.GreatHerdSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.GreatHerdSuite"`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/GreatHerd.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/GreatHerdSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/GreatHerd.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/GreatHerdSuite.scala
 git commit -m "feat(powers): add Great Herd"
 ```
 
 ### Task 9: Royal Tax
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/RoyalTax.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/RoyalTaxSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/RoyalTax.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/RoyalTaxSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerAccess.ruledSites(ready, actor): Set[SiteId]`, `Take`, `NoteSupport.favor`, `WhenPlayedPowers.forCatalog` (Task 8).
@@ -2516,15 +2516,15 @@ git commit -m "feat(powers): add Great Herd"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/RoyalTaxSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/RoyalTaxSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.NoteText
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class RoyalTaxSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -2575,21 +2575,21 @@ class RoyalTaxSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.RoyalTaxSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.RoyalTaxSuite"`
 Expected: compile error, `RoyalTax` not found.
 
 - [ ] **Step 3: Write Royal Tax and register it**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/RoyalTax.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/RoyalTax.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Royal Tax (card 117), WHEN PLAYED: take 2 favor from each player whose
   * pawn is at a site you rule in your pawn's region.
@@ -2682,22 +2682,22 @@ In `WhenPlayedPowers.scala`, replace the body of `forCatalog` with:
 
 - [ ] **Step 4: Run it to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.RoyalTaxSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.RoyalTaxSuite"`
 Expected: PASS, 3 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/RoyalTax.scala \
-  src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/whenplayed/RoyalTaxSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/RoyalTax.scala \
+  src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/whenplayed/RoyalTaxSuite.scala
 git commit -m "feat(powers): add Royal Tax"
 ```
 
 ### Task 10: Flip the reviewed stubs, record the batch, and run the gates
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionPowers.scala`
 - Modify: `docs/ROADMAP.md`
 
 - [ ] **Step 1: Flip the eleven reviewed stubs to implemented**
@@ -2705,7 +2705,7 @@ git commit -m "feat(powers): add Royal Tax"
 ```bash
 python3 - <<'PY'
 from pathlib import Path
-p = Path("src/main/scala/oathdigital/gameplay/powers/ActionPowers.scala")
+p = Path("src/main/scala/distantlands/gameplay/powers/ActionPowers.scala")
 s = p.read_text()
 for name in ["ThreateningRoar", "AnimalHost", "KeyToTheCity", "Charlatan",
              "FabledFeast", "SaladDays", "GreatHerd", "RoyalTax", "Riots",
@@ -2717,7 +2717,7 @@ for name in ["ThreateningRoar", "AnimalHost", "KeyToTheCity", "Charlatan",
     s = s[:start] + line[:-len("played)")] + "playedDone)" + s[end:]
 p.write_text(s)
 PY
-grep -c "playedDone)" src/main/scala/oathdigital/gameplay/powers/ActionPowers.scala
+grep -c "playedDone)" src/main/scala/distantlands/gameplay/powers/ActionPowers.scala
 ```
 
 Expected: `15` (the eleven new ones, plus A Small Favor, Family Heirloom, Faithful Friend and Garrison).
@@ -2774,6 +2774,6 @@ Expected: both pass.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/ActionPowers.scala docs/ROADMAP.md
+git add src/main/scala/distantlands/gameplay/powers/ActionPowers.scala docs/ROADMAP.md
 git commit -m "docs: record catalog batch 3 slice 4"
 ```

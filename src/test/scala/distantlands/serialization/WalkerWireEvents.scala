@@ -1,0 +1,37 @@
+package distantlands.serialization
+
+import distantlands.engine.RecordedEvent
+import distantlands.gameplay.walker.{DeltaPayload, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.testkit.Unwrap.accepted
+
+/** The recorded walker events and event streams the wire suites write and
+  * read back. */
+object WalkerWireEvents:
+  /** The walker step at path "0" that records `operation` as applied. */
+  def recordedOperation(operation: CoreOperation): OathEvent =
+    WalkerStepRecorded("0", DeltaPayload(Vector(operation)), Vector.empty)
+
+  /** `events` written as one stream of game `label`, numbered from 0. Fails
+    * with the WireError if the codec refuses to write it. */
+  def encodedStream(label: String, events: Vector[OathEvent])(
+      using munit.Location): String =
+    accepted(GameEventWire.encodeStream(label,
+      events.zipWithIndex.map { case (event, index) =>
+        RecordedEvent(index.toLong, event) }))
+
+  /** Asserts that writing `events` as a stream of game `label` and decoding
+    * the stream gives `events` back. */
+  def assertStreamRoundTrips(label: String, events: Vector[OathEvent])(
+      using munit.Location): Unit =
+    encodedStreamThatRoundTrips(label, events)
+
+  /** [[encodedStream]] of `events`, which also asserts that decoding the
+    * stream gives `events` back. Returns the written JSON for further
+    * checks. */
+  def encodedStreamThatRoundTrips(label: String, events: Vector[OathEvent])(
+      using munit.Location): String =
+    val encoded = encodedStream(label, events)
+    munit.Assertions.assertEquals(
+      accepted(GameEventWire.decodeStream(encoded)).map(_.event), events)
+    encoded

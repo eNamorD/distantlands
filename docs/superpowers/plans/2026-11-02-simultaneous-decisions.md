@@ -77,21 +77,21 @@ These change the spec. Each says why, and what it costs if wrong.
 ## File map
 
 - Create:
-  - `src/main/scala/oathdigital/gameplay/walker/ParkedQueries.scala`: the park queries moved out of `ProcedureWalker`.
-  - `src/main/scala/oathdigital/gameplay/walker/SimultaneousChildren.scala`: well-formedness, open children, the entry cursor.
-  - `src/test/scala/oathdigital/gameplay/SimultaneousDecideSuite.scala`.
+  - `src/main/scala/distantlands/gameplay/walker/ParkedQueries.scala`: the park queries moved out of `ProcedureWalker`.
+  - `src/main/scala/distantlands/gameplay/walker/SimultaneousChildren.scala`: well-formedness, open children, the entry cursor.
+  - `src/test/scala/distantlands/gameplay/SimultaneousDecideSuite.scala`.
 - Modify:
-  - `src/main/scala/oathdigital/model/Operation.scala`: the node.
-  - `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`: forwarders, `walkSimultaneous`.
-  - `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`: `leavesAt`.
-  - `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala`: the parked-step check.
-  - `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`: lookups by id.
-  - `src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala`: lookup by id.
-  - `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`, `ConsentProjector.scala` and `gamelog/ChoiceWords.scala`.
-  - `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala` and `ActionProjectionCodec.scala`.
-  - `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala` and `ActionDecisionRenderer.scala`.
-  - `src/main/scala/oathdigital/gameplay/chronicle/OfferCitizenship.scala`.
-  - `src/test/scala/oathdigital/testkit/ParkedNode.scala`.
+  - `src/main/scala/distantlands/model/Operation.scala`: the node.
+  - `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`: forwarders, `walkSimultaneous`.
+  - `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`: `leavesAt`.
+  - `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`: the parked-step check.
+  - `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`: lookups by id.
+  - `src/main/scala/distantlands/gameplay/walker/PricedOptions.scala`: lookup by id.
+  - `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`, `ConsentProjector.scala` and `gamelog/ChoiceWords.scala`.
+  - `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala` and `ActionProjectionCodec.scala`.
+  - `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala` and `ActionDecisionRenderer.scala`.
+  - `src/main/scala/distantlands/gameplay/chronicle/OfferCitizenship.scala`.
+  - `src/test/scala/distantlands/testkit/ParkedNode.scala`.
   - Docs: the spec, `docs/rules/ambiguities.md`, `docs/rules/chronicle.md`, the negotiation walker design, `implementation-traceability.md`, `docs/ROADMAP.md`.
 
 ---
@@ -101,10 +101,10 @@ These change the spec. Each says why, and what it costs if wrong.
 A refactor with no behaviour change, except that `awaitedPlayer` goes and `awaitedInSeatOrder` arrives. It frees room in `ProcedureWalker.scala` for Task 2.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/walker/ParkedQueries.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (the block from `parkedRoll` to `awaitedPlayers`, about lines 162-240)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:71-75`
-- Modify: `src/test/scala/oathdigital/testkit/ParkedNode.scala:69`, `src/test/scala/oathdigital/gameplay/CoOwnedDecideSuite.scala`, `src/test/scala/oathdigital/gameplay/OathRulesWalkerPowerSuite.scala` (every `awaitedPlayer(` call)
+- Create: `src/main/scala/distantlands/gameplay/walker/ParkedQueries.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (the block from `parkedRoll` to `awaitedPlayers`, about lines 162-240)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:71-75`
+- Modify: `src/test/scala/distantlands/testkit/ParkedNode.scala:69`, `src/test/scala/distantlands/gameplay/CoOwnedDecideSuite.scala`, `src/test/scala/distantlands/gameplay/OathRulesWalkerPowerSuite.scala` (every `awaitedPlayer(` call)
 
 **Interfaces:**
 - Produces:
@@ -122,7 +122,7 @@ A refactor with no behaviour change, except that `awaitedPlayer` goes and `await
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoOwnedDecideSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CoOwnedDecideSuite"`
 Expected: compile error, `awaitedInSeatOrder` is not a member of `ProcedureWalker`.
 
 - [ ] **Step 3: Create `ParkedQueries.scala`.** Move the bodies and full doc comments of `parkedRoll`, `openDecisions`, `parkedDecide` and `awaitedPlayers` out of `ProcedureWalker` unchanged, except:
@@ -130,9 +130,9 @@ Expected: compile error, `awaitedInSeatOrder` is not a member of `ProcedureWalke
   - `awaitedInSeatOrder` is new.
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model._
+import distantlands.model._
 
 /** What a parked walk waits on, read off the rebuilt tree: the open
   * decisions, a parked roll, and who may answer. Split out of
@@ -194,7 +194,7 @@ In `ProcedureWalker`, replace the moved block with one-line-doc forwarders:
 
 - [ ] **Step 5: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.*Walker* oathdigital.gameplay.CoOwnedDecideSuite oathdigital.application.WalkerDecisionProjectorSuite oathdigital.application.Negotiation*"`
+Run: `./sbtw "testOnly distantlands.gameplay.*Walker* distantlands.gameplay.CoOwnedDecideSuite distantlands.application.WalkerDecisionProjectorSuite distantlands.application.Negotiation*"`
 Expected: PASS.
 
 Run: `python3 scripts/check-architecture.py`
@@ -203,12 +203,12 @@ Expected: no findings. `ProcedureWalker.scala` is under 750 lines.
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/ParkedQueries.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/test/scala/oathdigital/testkit/ParkedNode.scala \
-  src/test/scala/oathdigital/gameplay/CoOwnedDecideSuite.scala \
-  src/test/scala/oathdigital/gameplay/OathRulesWalkerPowerSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/ParkedQueries.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/test/scala/distantlands/testkit/ParkedNode.scala \
+  src/test/scala/distantlands/gameplay/CoOwnedDecideSuite.scala \
+  src/test/scala/distantlands/gameplay/OathRulesWalkerPowerSuite.scala
 git commit -m "refactor(walker): move the park queries out of ProcedureWalker
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -219,18 +219,18 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: The `Simultaneous` node
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Operation.scala` (after `Branch`)
-- Create: `src/main/scala/oathdigital/gameplay/walker/SimultaneousChildren.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`walk` dispatch at about line 293; a new `walkSimultaneous`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala` (`leafAt`, about line 526; a new `leavesAt`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ParkedQueries.scala` (`openDecisions`, `parkedDecide`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala:72-76`
-- Test: `src/test/scala/oathdigital/gameplay/SimultaneousDecideSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Operation.scala` (after `Branch`)
+- Create: `src/main/scala/distantlands/gameplay/walker/SimultaneousChildren.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`walk` dispatch at about line 293; a new `walkSimultaneous`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala` (`leafAt`, about line 526; a new `leavesAt`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ParkedQueries.scala` (`openDecisions`, `parkedDecide`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala:72-76`
+- Test: `src/test/scala/distantlands/gameplay/SimultaneousDecideSuite.scala`
 
 **Interfaces:**
 - Consumes: the Task 1 forwarders and `awaitedInSeatOrder`.
 - Produces:
-  - `final case class Simultaneous(children: Vector[Operation]) extends Operation`, in package `oathdigital.model`;
+  - `final case class Simultaneous(children: Vector[Operation]) extends Operation`, in package `distantlands.model`;
   - `SimultaneousChildren.decideOf(child: Operation): Option[Decide]`;
   - `SimultaneousChildren.open(node: Simultaneous, answered: Vector[Answered]): Vector[(Int, Decide)]`;
   - `WalkerPowerGather.leavesAt(state, action, pending, powers): Vector[Operation]`;
@@ -240,12 +240,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the failing tests.** Create `SimultaneousDecideSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.TestGameFixtures._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.TestGameFixtures._
 
 /** Two decisions open at once, answered in any order: the `Simultaneous`
   * node (simultaneous decisions design), exercised with a synthetic tree.
@@ -382,11 +382,11 @@ class SimultaneousDecideSuite extends munit.FunSuite:
 
   Check these names against the code before you run the suite:
   - `ProcedureWalker.applyRecorded`, `OathState.Ready`, `ReadyGame.banks.warbandSupply` and `OathViolation.WrongPlayer`.
-  - Fix import paths if the compiler disagrees: `WalkerOutcome` and `ProcedureWalker` are in `oathdigital.gameplay.walker`.
+  - Fix import paths if the compiler disagrees: `WalkerOutcome` and `ProcedureWalker` are in `distantlands.gameplay.walker`.
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SimultaneousDecideSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SimultaneousDecideSuite"`
 Expected: compile error, `Simultaneous` not found.
 
 - [ ] **Step 3: Add the node to `Operation.scala`**, after `Branch`:
@@ -408,9 +408,9 @@ final case class Simultaneous(override val children: Vector[Operation])
 - [ ] **Step 4: Create `SimultaneousChildren.scala`.**
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The children of a [[Simultaneous]] node: each is a `Decide`, or a
   * `Sequence` that starts with one, and a child is open until the walk's
@@ -586,7 +586,7 @@ Update `parkedDecide`'s doc comment: "The one open decision, or `None` at a Roll
 
 - [ ] **Step 8: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SimultaneousDecideSuite oathdigital.gameplay.CoOwnedDecideSuite oathdigital.gameplay.ProcedureWalker*"`
+Run: `./sbtw "testOnly distantlands.gameplay.SimultaneousDecideSuite distantlands.gameplay.CoOwnedDecideSuite distantlands.gameplay.ProcedureWalker*"`
 Expected: PASS.
 
 Run: `python3 scripts/check-architecture.py`
@@ -595,13 +595,13 @@ Expected: no findings.
 - [ ] **Step 9: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/model/Operation.scala \
-  src/main/scala/oathdigital/gameplay/walker/SimultaneousChildren.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/main/scala/oathdigital/gameplay/walker/ParkedQueries.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala \
-  src/test/scala/oathdigital/gameplay/SimultaneousDecideSuite.scala
+git add src/main/scala/distantlands/model/Operation.scala \
+  src/main/scala/distantlands/gameplay/walker/SimultaneousChildren.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/main/scala/distantlands/gameplay/walker/ParkedQueries.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala \
+  src/test/scala/distantlands/gameplay/SimultaneousDecideSuite.scala
 git commit -m "feat(walker): add the Simultaneous node
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -612,14 +612,14 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: Callers look up the decision they need
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ParkedQueries.scala` and the `ProcedureWalker` forwarders (add `openDecision`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`consentAsk` at about line 189, `grantAnswers` at about 209, `checkAnswerable` at about 479)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala:30`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (`parkedDecide(ready)` at about line 83)
-- Modify: `src/main/scala/oathdigital/application/ConsentProjector.scala:88`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ChoiceWords.scala:60`
-- Modify: `src/test/scala/oathdigital/testkit/ParkedNode.scala`
-- Test: `src/test/scala/oathdigital/gameplay/SimultaneousDecideSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ParkedQueries.scala` and the `ProcedureWalker` forwarders (add `openDecision`)
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`consentAsk` at about line 189, `grantAnswers` at about 209, `checkAnswerable` at about 479)
+- Modify: `src/main/scala/distantlands/gameplay/walker/PricedOptions.scala:30`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (`parkedDecide(ready)` at about line 83)
+- Modify: `src/main/scala/distantlands/application/ConsentProjector.scala:88`
+- Modify: `src/main/scala/distantlands/application/gamelog/ChoiceWords.scala:60`
+- Modify: `src/test/scala/distantlands/testkit/ParkedNode.scala`
+- Test: `src/test/scala/distantlands/gameplay/SimultaneousDecideSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's `openDecisions` and `parkedDecide`.
@@ -642,7 +642,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SimultaneousDecideSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SimultaneousDecideSuite"`
 Expected: compile error, `openDecision` is not a member.
 
 - [ ] **Step 3: Add `openDecision`.** In `ParkedQueries`:
@@ -680,21 +680,21 @@ In `ProcedureWalker`, add a forwarder in the Task 1 style.
 
 - [ ] **Step 5: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.* oathdigital.application.*Consent* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.* distantlands.application.*Consent* distantlands.application.gamelog.*"`
 Expected: PASS. The golden logs are unchanged.
 
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/ParkedQueries.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/application/ConsentProjector.scala \
-  src/main/scala/oathdigital/application/gamelog/ChoiceWords.scala \
-  src/test/scala/oathdigital/testkit/ParkedNode.scala \
-  src/test/scala/oathdigital/gameplay/SimultaneousDecideSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/ParkedQueries.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/PricedOptions.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/application/ConsentProjector.scala \
+  src/main/scala/distantlands/application/gamelog/ChoiceWords.scala \
+  src/test/scala/distantlands/testkit/ParkedNode.scala \
+  src/test/scala/distantlands/gameplay/SimultaneousDecideSuite.scala
 git commit -m "feat(walker): look up open decisions by id where several may be open
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -705,14 +705,14 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 4: Project several open decisions, and name every awaited player
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:291-301`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala:60-75`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (`parkedPosition`, `project`, `waiting`, `parked`, and `Parked` at about line 770)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:272-320`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:5-52`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:291-301`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala:60-75`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (`parkedPosition`, `project`, `waiting`, `parked`, and `Parked` at about line 770)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:272-320`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:5-52`
 - Modify every test that builds or reads `WalkerWaitingProjection` or `ViewerPresentation`. Find them with:
   - `grep -rn "WalkerWaitingProjection(\|WalkerWaitingState(\|coOwnerPlayerIds\|walkerWaiting.map(_.playerId)\|waitingForPlayerId\|waitingForDisplayName" src/test shared/src/test frontend/src/test`
-- Test: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`, `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/ViewerPresentationSuite.scala`
+- Test: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`, `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`, `frontend/src/test/scala/distantlands/frontend/ViewerPresentationSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `awaitedInSeatOrder`; Task 2's `openDecisions`.
@@ -862,11 +862,11 @@ Expected: PASS.
 - [ ] **Step 8: Commit.** Add the main files listed in **Files**, plus each test file the grep found, by name:
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala \
-  frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala
+git add shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala \
+  frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala
 # then: git add <each converted test file>
 git commit -m "feat(projection): name every awaited player while decisions are open
 
@@ -878,8 +878,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 5: The Throne's offered Exiles answer at once, and docs
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/OfferCitizenship.scala` (the object comment and `answers`)
-- Test: `src/test/scala/oathdigital/gameplay/chronicle/OfferCitizenshipSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/OfferCitizenship.scala` (the object comment and `answers`)
+- Test: `src/test/scala/distantlands/gameplay/chronicle/OfferCitizenshipSuite.scala`
 - Modify docs:
   - `docs/superpowers/specs/2026-11-02-simultaneous-decisions-design.md`
   - `docs/rules/ambiguities.md` (Chronicle ruling 21)
@@ -930,7 +930,7 @@ Add the helper:
       .startsWith("chronicle.throne.citizenship"))
 ```
 
-Add `ParkedNode.openDecisions` to `src/test/scala/oathdigital/testkit/ParkedNode.scala`. It rebuilds the tree as `of` does, and returns the open decisions sorted by their owners' seat order. If no walker is pending, it returns `Vector.empty`:
+Add `ParkedNode.openDecisions` to `src/test/scala/distantlands/testkit/ParkedNode.scala`. It rebuilds the tree as `of` does, and returns the open decisions sorted by their owners' seat order. If no walker is pending, it returns `Vector.empty`:
 
 ```scala
   /** Every open decision at the park, in their owners' seat order. */
@@ -957,7 +957,7 @@ Add the `ParkedNode` import to the suite.
 
 - [ ] **Step 2: Run them to see them fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.OfferCitizenshipSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.OfferCitizenshipSuite"`
 Expected: FAIL. Only p2's decision is open, and p3's answer is rejected as not matching the parked Decide.
 
 - [ ] **Step 3: Wrap the answers.** In `OfferCitizenship.answers`:
@@ -979,7 +979,7 @@ In the object's doc comment, replace "each offered Exile answers in seat order, 
 
 - [ ] **Step 4: Run the Chronicle and log suites.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.application.gamelog.*"`
 Expected: PASS, and the `throne-offered` golden log is unchanged (ruling P6).
 
 - [ ] **Step 5: Update the docs.**
@@ -1013,9 +1013,9 @@ Expected: no findings.
 - [ ] **Step 7: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/OfferCitizenship.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/OfferCitizenshipSuite.scala \
-  src/test/scala/oathdigital/testkit/ParkedNode.scala \
+git add src/main/scala/distantlands/gameplay/chronicle/OfferCitizenship.scala \
+  src/test/scala/distantlands/gameplay/chronicle/OfferCitizenshipSuite.scala \
+  src/test/scala/distantlands/testkit/ParkedNode.scala \
   docs/superpowers/specs/2026-11-02-simultaneous-decisions-design.md \
   docs/rules/ambiguities.md docs/rules/chronicle.md \
   docs/superpowers/specs/2026-09-19-negotiation-walker-design.md \

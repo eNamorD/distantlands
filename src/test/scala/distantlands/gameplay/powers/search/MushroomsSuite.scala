@@ -1,0 +1,94 @@
+package distantlands.gameplay.powers.search
+
+import distantlands.gameplay.{ModifierPlay, SearchPlay}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.{PayOrAsk, SearchFixture}
+import distantlands.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
+  SecondChanceCard}
+import distantlands.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
+
+/** Mushrooms (card 183): for 1 secret, the Search spends no Supply and
+  * draws one card from the bottom of a discard pile; the world deck is
+  * unavailable (catalog batch 6, slice 3). */
+class MushroomsSuite extends munit.FunSuite:
+  import SearchFixture.rules
+
+  private val mushrooms = MushroomsCard.id
+  private val modifiers = Vector(Mushrooms.id)
+  /** The Cradle pile, first named at the bottom. */
+  private val cradle = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+    SecondChanceCard.id)
+  private val provinces = Vector(WrestlersCard.id, MercenariesCard.id,
+    HomesteadersCard.id)
+
+  /** p1 at Ancient City (Cradle), which holds Mushrooms, with 5 Supply,
+    * the start's 1 faceup secret, and three cards in the Cradle and
+    * Provinces discard piles. */
+  private def besideMushrooms: Table = Table.start
+    .pawn(p1, AncientCitySite).denizen(mushrooms, at = AncientCitySite)
+    .supply(p1, 5).discarded(Region.Cradle, cradle*)
+    .discarded(Region.Provinces, provinces*)
+
+  private def searched(table: Table, pile: Region,
+      picked: Vector[PowerId]): ReadyGame =
+    SearchFixture.after(accepted(SearchPlay.searched(rules,
+      Ready(table.ready), p1, SearchSource.RegionalDiscard(pile), picked)))
+
+  test("picked, the world deck is unavailable and the pile costs no " +
+      "Supply"):
+    val shown = ShownOptions.sourcesAfterPicking(besideMushrooms.ready,
+      modifiers)
+    assertEquals(ShownOptions.optionFor(shown,
+      SearchSource.ref(SearchSource.WorldDeck)).map(option =>
+      (option.state, option.reason)),
+      Some(("unavailable", Some(Mushrooms.worldDeck))))
+    assertEquals(ShownOptions.optionFor(shown, SearchSource.ref(
+      SearchSource.RegionalDiscard(Region.Cradle))).map(option =>
+      (option.state, option.badge)), Some(("available", Some("0 Supply"))))
+
+  test("a Search of p1's pile pays a secret onto it and draws the bottom " +
+      "card"):
+    val after = searched(besideMushrooms, Region.Cradle, modifiers)
+    assertEquals(after.game.current.temporaryHands(p1), Vector(cradle(0)))
+    assertEquals(Look(after).supply(p1), 5)
+    assertEquals(Look(after).tokensOn(mushrooms), Tokens(0, 1))
+    assertEquals(Look(after).player(p1).board.faceUpSecrets, 0)
+
+  test("a ruler's toll is still paid: only the Supply is waived"):
+    val home = AncientCitySite.id
+    val peaks = BrokenPeaksSite.id
+    val table = besideMushrooms.denizen(ForcedLaborCard, at = BrokenPeaksSite)
+      .warbandsAt(peaks, p2, 1).warbandsAt(home, p2, 1)
+    val before = Look(table.ready)
+    val started = accepted(ModifierPlay.started(rules, Ready(table.ready),
+      ActionRef.Search, p1, PowerWindow.SearchModifierSelection, modifiers))
+    val picked = accepted(rules.resolveWalker(started.state, p1,
+      SearchProcedure.sourceDecisionId, SearchPlay.source(
+        SearchSource.RegionalDiscard(Region.Cradle))))
+    val paid = accepted(rules.resolveWalker(picked.state, p1,
+      ForcedLabor.decisionId, DecisionAnswer.ChooseOneAnswer(PayOrAsk.pay)))
+    val after = Look(SearchFixture.after(paid))
+    assertEquals(after.favor(p1), before.favor(p1) - 1)
+    assertEquals(after.favor(p2), before.favor(p2) + 1)
+    assertEquals(after.supply(p1), 5)
+
+  test("with Augury it draws two cards from the bottom"):
+    val table = besideMushrooms.denizen(AuguryCard, at = AncientCitySite)
+    val after = searched(table, Region.Cradle,
+      Vector(Mushrooms.id, Augury.id))
+    assertEquals(after.game.current.temporaryHands(p1), cradle.take(2))
+
+  test("with Observatory it draws the bottom card of another region's " +
+      "pile"):
+    val table = besideMushrooms.denizen(ObservatoryCard, at = AncientCitySite)
+    val after = searched(table, Region.Provinces,
+      Vector(Mushrooms.id, Observatory.id))
+    assertEquals(after.game.current.temporaryHands(p1),
+      Vector(provinces(0)))

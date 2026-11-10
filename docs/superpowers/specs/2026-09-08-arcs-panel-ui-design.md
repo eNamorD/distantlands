@@ -1,4 +1,4 @@
-# Arcs-inspired Oath Digital panel UI
+# Arcs-inspired Distant Lands panel UI
 
 Date: 2026-09-08
 
@@ -6,7 +6,7 @@ Status: Approved in conversation and implemented on `feat/arcs-panel-ui`. See th
 
 ## Objective
 
-Replace Oath Digital's vertically stacked game page with a viewport-filling, responsive table inspired by Arcs. World Map, Players, Action Selection, and Game Log remain simultaneously present. Preserve existing game interactions while making overflow navigable within each panel.
+Replace Distant Lands' vertically stacked game page with a viewport-filling, responsive table inspired by Arcs. World Map, Players, Action Selection, and Game Log remain simultaneously present. Preserve existing game interactions while making overflow navigable within each panel.
 
 ## Approved layout
 
@@ -74,7 +74,7 @@ Player-facing game-log implementation; new game artwork; backend/protocol change
 
 ## Source references
 
-- Oath: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala`, `WorldBoardRenderer.scala`, `ActionDecisionRenderer.scala`, `DevelopmentRenderer.scala`, and `frontend/styles.css`.
+- Oath: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala`, `WorldBoardRenderer.scala`, `ActionDecisionRenderer.scala`, `DevelopmentRenderer.scala`, and `frontend/styles.css`.
 - Arcs: `/Users/roman/projects/haunt-roll-fail/haunt-roll-fail/arcs/ui.scala` for panel priorities, layout variants, and map bounds.
 - HRF: `haunt-roll-fail/grey.scala` for navigation and resize lifecycle; `haunt-roll-fail/panes-again.scala` for fitting concepts; repository `LICENSE` for MIT attribution.
 - Visual companion: workspace `.superpowers/brainstorm/26189-1788884218/content/panel-layout.html`.

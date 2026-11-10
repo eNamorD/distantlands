@@ -1,0 +1,69 @@
+package distantlands.gameplay.powers.action
+
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
+
+/** Reads and writes shared by the powers that relocate or target a pawn:
+  * the movement relics (Whistle, Brass Horse, Magic Carpet), the portals
+  * and paths (Shattered Portal, Stone Portal, Giant's Path, Giant's
+  * Rampage, Quick Exit), Palanquin, Ward of Silence, the Wandering Flame's
+  * place and move, and the wake powers Passages and the River sites. A
+  * pawn relocation that is not Travel is a plain `Move`, and nothing here
+  * runs a Travel window.
+  */
+object PawnMoves:
+  def pawnSite(ready: ReadyGame, player: PlayerId)
+      : Either[OathViolation, SiteId] =
+    ready.game.current.pawnSite(player).toRight(OathViolation.InvalidEventOrder(
+      s"${player.value} has no pawn on the map"))
+
+  /** The menu's reason when no other player at the site is a valid target
+    * (catalog batch 8, slice 15): Palanquin and Ward of Silence. */
+  val noValidEnemyPawn: String = "No valid enemy pawn"
+
+  /** Every site in play except `site`, in map order. */
+  def sitesOtherThan(ready: ReadyGame, site: SiteId): Vector[SiteId] =
+    ready.game.current.map.inPlay.filter(_ != site)
+
+  /** Other players whose pawn is at a site other than `player`'s. */
+  def atOtherSites(ready: ReadyGame, player: PlayerId): Vector[PlayerId] =
+    ready.game.current.pawnSite(player).toVector.flatMap(here =>
+      ready.game.current.players.collect {
+        case other if other.player != player &&
+            other.pawnSite.exists(_ != here) => other.player
+      })
+
+  def siteChoice(decisionId: String, owner: PlayerId, sites: Vector[SiteId],
+      heading: String): Decide = Decide(decisionId, owner,
+    DecisionQuery.ChooseOne(sites.map(site =>
+      DecisionOption.Site(DecisionOptionRef.Site(site))),
+      heading = Some(heading)))
+
+  /** The `Move` that puts `player`'s pawn at `to`. Nothing when the pawn is
+    * already there, because a `Move` must change location.
+    */
+  def relocate(ready: ReadyGame, player: PlayerId, to: SiteId)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    pawnSite(ready, player).map(from =>
+      if from == to then Vector.empty
+      else Vector(Move(Piece.Pawn(player),
+        PositionedLocation(Location.Site(from)),
+        PositionedLocation(Location.Site(to)))))
+
+  def chosenSite(pending: PendingTree, decisionId: String)
+      : Either[OathViolation, SiteId] = PowerAnswers.one(pending, decisionId)
+    .collect { case DecisionOptionRef.Site(site) => site }
+    .toRight(PowerAnswers.missing(decisionId))
+
+  /** "{player} placed at {site}.": a pawn a power places does not travel or
+    * move. */
+  def placedKey(notes: NoteSet, name: String): NoteKey =
+    notes.key(name, Vector(NotePart.Arg(0),
+    NotePart.Text(" placed at "), NotePart.Arg(1), NotePart.Text(".")))
+
+  /** Where `player`'s pawn stands after the power placed it. */
+  def placedNote(key: NoteKey, source: DecisionOptionRef, player: PlayerId)(
+      states: NoteStates): Option[LogNote] = for
+    card <- PowerSourceRef.of(source)
+    site <- states.now.game.current.pawnSite(player)
+  yield key(card, NoteArg.Player(player), NoteArg.Site(site))

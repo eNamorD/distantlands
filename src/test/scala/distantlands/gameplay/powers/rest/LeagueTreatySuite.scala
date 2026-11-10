@@ -1,0 +1,194 @@
+package distantlands.gameplay.powers.rest
+
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.action.{ConvoysCard, HomesteadersCard}
+import distantlands.gameplay.powers.campaign.RainBootsCard
+import distantlands.gameplay.powers.search.DisciplesCard
+import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.gameplay.powers.whenplayed.BanditChiefCard
+import distantlands.model.OathState.Ready
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.NoteText
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Outcomes, PowerRules}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
+
+class LeagueTreatySuite extends munit.FunSuite:
+  import LeagueTreatyFixture._
+
+  private val rules = PowerRules.withWalkerPowers
+  private val walkerParked = PowerRules.parkedUnderWalkerPowers
+
+  private def bank(suit: Suit) = DecisionOptionRef.FavorBank(suit)
+  private def banks(state: OathState) = Outcomes.ready(state).banks.favor
+  /** The worked example: 2 favor each on an Arcane (Disciples), a Discord
+    * (Bandit Chief) and a Hearth (Homesteaders) card in the Cradle. */
+  private def withExample(table: Table): Table =
+    table.withFavoredCard(DisciplesCard, at = AncientCitySite, favor = 2)
+      .withFavoredCard(BanditChiefCard, at = BrokenPeaksSite, favor = 2)
+      .withFavoredCard(HomesteadersCard, at = AncientCitySite, favor = 2)
+  /** The worked example's favor, by suit. */
+  private val exampleFavorBySuit = Vector(Suit.Arcane -> 2, Suit.Discord -> 2,
+    Suit.Hearth -> 2)
+  /** Of the worked example's 2 Arcane, 2 Discord and 2 Hearth favor, Arcane
+    * keeps 0, Discord 1 and Hearth 2, and Nomad takes the other 3. */
+  private val workedDistribution = Vector(Suit.Arcane -> 0, Suit.Discord -> 1,
+    Suit.Hearth -> 2, Suit.Nomad -> 3)
+
+  /** Nothing is parked, the game is in Wake, and (since a completed Rest
+    * always passes the turn) the active player is not `resting`.
+    */
+  private def assertWake(state: OathState, resting: PlayerId): Unit =
+    val ready = Outcomes.ready(state)
+    val next = ready.game.current.turn.activePlayer
+    assertNotEquals(next, resting)
+    walkerParked.assertMenuParked(state, PhaseMenu.Menu.Wake, next)
+
+  private val power = LeagueTreatyContribution
+
+  private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
+    NoteText.said(power.id, power.noteKeys, events)
+
+  test("a bandit-ruled treaty site, or a region without card favor, asks " +
+      "nothing"):
+    Vector(withExample(leagueTreatyAct(None)).ready,
+      leagueTreatyAct(Some(p2)).ready)
+      .foreach { ready =>
+      val rested = accepted(
+        rules.startWalker(Ready(ready), PhaseTransitionRef.BeginRest, p1))
+      assertWake(rested.state, p1)
+    }
+
+  test("the off-turn ruler alone answers the destination, and declining " +
+      "leaves cleanup to printed banks"):
+    val owner = p2 // off p1's turn
+    val ready = withExample(leagueTreatyAct(Some(owner))).ready
+    val destination = LeagueTreatyContribution.destinationDecisionId(ready,
+      p1, treatySite, treatyCard)
+    val parked = accepted(
+      rules.startWalker(Ready(ready), PhaseTransitionRef.BeginRest, p1))
+    walkerParked.assertParked(parked.state, PhaseTransitionRef.FinishRest,
+      destination, owner)
+    val decline = DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Button("decline"))
+    assertEquals(
+      rules.resolveWalker(parked.state, p1, destination, decline).left.toOption,
+      Some(OathViolation.WrongPlayer(owner, p1)))
+    val declined = accepted(
+      rules.resolveWalker(parked.state, owner, destination, decline))
+    assertWake(declined.state, p1)
+    exampleFavorBySuit.foreach { case (suit, amount) =>
+      assertEquals(banks(declined.state)(suit), ready.banks.favor(suit) + amount)
+    }
+
+  test("a destination that is the only source suit moves nothing and asks " +
+      "no distribution"):
+    val owner = p2 // off p1's turn
+    // Two Nomad cards: Rain Boots with 2 favor, Convoys with 1.
+    val ready = leagueTreatyAct(Some(owner))
+      .withFavoredCard(RainBootsCard, at = AncientCitySite, favor = 2)
+      .withFavoredCard(ConvoysCard, at = BrokenPeaksSite, favor = 1).ready
+    val destination = LeagueTreatyContribution.destinationDecisionId(ready,
+      p1, treatySite, treatyCard)
+    val parked = accepted(
+      rules.startWalker(Ready(ready), PhaseTransitionRef.BeginRest, p1))
+    val chosen = accepted(
+      rules.resolveWalker(parked.state, owner, destination,
+      DecisionAnswer.ChooseOneAnswer(bank(Suit.Nomad))))
+    assertWake(chosen.state, p1)
+    assertEquals(banks(chosen.state)(Suit.Nomad), ready.banks.favor(Suit.Nomad) + 3)
+
+  test("the worked example moves 2 Arcane and 1 Discord favor to Nomad, " +
+      "and a replayed park resumes to the same decision"):
+    val owner = p2 // off p1's turn
+    val ready = withExample(leagueTreatyAct(Some(owner))).ready
+    val destination = LeagueTreatyContribution.destinationDecisionId(ready,
+      p1, treatySite, treatyCard)
+    val distribution = LeagueTreatyContribution.distributionDecisionId(ready,
+      p1, treatySite, treatyCard)
+    val parked = accepted(
+      rules.startWalker(Ready(ready), PhaseTransitionRef.BeginRest, p1))
+    val chosen = accepted(
+      rules.resolveWalker(parked.state, owner, destination,
+      DecisionAnswer.ChooseOneAnswer(bank(Suit.Nomad))))
+    walkerParked.assertParked(chosen.state, PhaseTransitionRef.FinishRest,
+      distribution, owner)
+
+    val replayed = ActPowerHarness.replayed(rules, ready,
+      parked.events ++ chosen.events)
+    assertEquals(Ready(replayed), chosen.state)
+
+    val answer = DecisionAnswer.DistributeAnswer(workedDistribution.map {
+      case (suit, n) => DistributeAmount(bank(suit), n) })
+    val done = accepted(
+      rules.resolveWalker(Ready(replayed), owner, distribution, answer))
+    assertWake(done.state, p1)
+    workedDistribution.foreach { case (suit, delta) =>
+      assertEquals(banks(done.state)(suit), ready.banks.favor(suit) + delta,
+        suit.toString)
+    }
+
+  test("favor on an edifice in the region moves with the rest, on either face"):
+    Vector(EdificeSide.Intact, EdificeSide.Ruined).foreach { side =>
+      val owner = p2 // off p1's turn
+      val edifice = HallOfDebateCard.id
+      val edificeSuit = Suit.Discord // Hall of Debate's printed suit
+      val ready = leagueTreatyAct(Some(owner))
+        .withFavoredCard(DisciplesCard, at = AncientCitySite, favor = 1)
+        .edifice(edifice, side, at = treatySite).tokens(edifice, favor = 2)
+        .ready
+      // A suit that is neither Arcane nor Discord.
+      val destinationBank = Suit.Order
+      val destination = LeagueTreatyContribution.destinationDecisionId(ready,
+        p1, treatySite, treatyCard)
+      val distribution = LeagueTreatyContribution.distributionDecisionId(ready,
+        p1, treatySite, treatyCard)
+      val parked = accepted(
+        rules.startWalker(Ready(ready), PhaseTransitionRef.BeginRest, p1))
+      val chosen = accepted(
+        rules.resolveWalker(parked.state, owner, destination,
+        DecisionAnswer.ChooseOneAnswer(bank(destinationBank))))
+      val sources = (Set(Suit.Arcane, edificeSuit) - destinationBank).toVector
+      val answer = DecisionAnswer.DistributeAnswer(
+        (sources.map(_ -> 0) :+ (destinationBank -> 3)).map {
+          case (suit, n) => DistributeAmount(bank(suit), n) })
+      val done = accepted(
+        rules.resolveWalker(chosen.state, owner, distribution, answer))
+      // 1 Arcane favor and the edifice's 2 move to the destination.
+      assertEquals(banks(done.state)(destinationBank),
+        ready.banks.favor(destinationBank) + 3, side.toString)
+    }
+
+  // ---- Lines ----
+
+  test("the treaty's line says how much favor the ruler sent to one bank"):
+    val owner = p2 // off p1's turn
+    val ready = withExample(leagueTreatyAct(Some(owner))).ready
+    val destination = LeagueTreatyContribution.destinationDecisionId(ready,
+      p1, treatySite, treatyCard)
+    val distribution = LeagueTreatyContribution.distributionDecisionId(ready,
+      p1, treatySite, treatyCard)
+    val parked = accepted(
+      rules.startWalker(Ready(ready), PhaseTransitionRef.BeginRest, p1))
+    val chosen = accepted(
+      rules.resolveWalker(parked.state, owner, destination,
+      DecisionAnswer.ChooseOneAnswer(bank(Suit.Nomad))))
+    val done = accepted(rules.resolveWalker(chosen.state, owner, distribution,
+      DecisionAnswer.DistributeAnswer(workedDistribution.map {
+        case (suit, n) => DistributeAmount(bank(suit), n) })))
+    assertEquals(said(parked.events ++ chosen.events), Vector.empty)
+    assertEquals(said(done.events), Vector(NoteText.Said("sent",
+      s"${owner.value} sent 3 favor to the Nomad bank.", covers = false)))
+
+  test("a ruler who declines sends nothing, and writes nothing"):
+    val owner = p2 // off p1's turn
+    val ready = withExample(leagueTreatyAct(Some(owner))).ready
+    val destination = LeagueTreatyContribution.destinationDecisionId(ready,
+      p1, treatySite, treatyCard)
+    val parked = accepted(
+      rules.startWalker(Ready(ready), PhaseTransitionRef.BeginRest, p1))
+    val declined = accepted(
+      rules.resolveWalker(parked.state, owner, destination,
+      DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Button("decline"))))
+    assertEquals(said(parked.events ++ declined.events), Vector.empty)

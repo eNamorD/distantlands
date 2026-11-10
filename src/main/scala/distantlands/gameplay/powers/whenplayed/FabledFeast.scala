@@ -1,0 +1,85 @@
+package distantlands.gameplay.powers.whenplayed
+
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PowerAnswers, RuledCards}
+import distantlands.gameplay.powers.cardplay.FavorBankChoice
+import distantlands.model._
+
+object FabledFeastCard extends Denizen(DenizenId("136"), "Fabled Feast", Suit.Hearth):
+  val power = PrintedPower(PowerId("denizen.fabled-feast"),
+    persistent = false, cost = Cost.free,
+    text = "**WHEN PLAYED:** take X [favor] equal to the number of " +
+      "[suit-hearth] cards you rule _(including Fabled Feast)_ " +
+      "from any one favor bank.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Fabled Feast (card 136), WHEN PLAYED: take X favor equal to the number of
+  * Hearth cards you rule (including Fabled Feast) from any one favor bank.
+  *
+  * X is read live with `RuledCards.count`, so Fabled Feast counts itself as
+  * a faceup adviser or at a site the actor rules, and not at a site the
+  * actor does not rule. The actor chooses one bank that holds favor; with
+  * only one it is taken unasked. The gain is best effort, so a short bank
+  * gives what it holds. Its line names the bank, so the choice is narrated, and it
+  * covers the Gain line.
+  */
+case object FabledFeast extends WhenPlayedPower:
+  val id: PowerId = FabledFeastCard.power.id
+  val decisionId: String = "cardplay.fabled-feast.bank"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Red} took {n favor} from {the Hearth bank}." */
+  val took: NoteKey = notes.key("took", Vector(NotePart.Arg(0),
+    NotePart.Text(" took "), NotePart.Arg(1), NotePart.Text(" from "),
+    NotePart.Arg(2), NotePart.Text(".")))
+  /** "Every favor bank was empty." */
+  val empty: NoteKey = notes.key("empty", Vector(
+    NotePart.Text("Every favor bank was empty.")))
+  /** "{Red} ruled no Hearth card." */
+  val none: NoteKey = notes.key("none", Vector(NotePart.Arg(0),
+    NotePart.Text(" ruled no Hearth card.")))
+
+  /** The question, when two or more banks hold favor. */
+  private def ask(actor: PlayerId, banks: Vector[Suit], count: Int)
+      : Vector[Operation] =
+    if banks.size < 2 then Vector.empty
+    else Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(
+      banks.map(suit => DecisionOption.FavorBank(
+        DecisionOptionRef.FavorBank(suit))),
+      heading = Some(s"Fabled Feast: take $count favor from one bank"))))
+
+  /** The gain from the only stocked bank, or from the bank answered. */
+  private def take(ready: ReadyGame, actor: PlayerId, pending: PendingTree,
+      count: Int): Either[OathViolation, Vector[CoreOperation]] =
+    val banks = FavorBankChoice.stocked(ready)
+    val bank = banks match
+      case Vector(only) => Right(only)
+      case _ => PowerAnswers.one(pending, decisionId)
+        .toRight(PowerAnswers.missing(decisionId)).flatMap {
+          case DecisionOptionRef.FavorBank(suit) if banks.contains(suit) =>
+            Right(suit)
+          case other => Left(OathViolation.InvalidEventOrder(
+            s"${other.wireId} is not a bank that holds favor"))
+        }
+    bank.map(suit => Vector(Gain.Favor(actor, suit, count)))
+
+  val cardId: DenizenId = FabledFeastCard.id
+
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  def effect(ctx: PowerCtx): Vector[Operation] =
+    val source = PowerSourceRef.Card(cardId)
+    Vector(Branch((live, _) =>
+      val count = RuledCards.count(ctx.catalog, live,
+        SiteRuler.Player(ctx.actor),
+        Suit.Hearth)
+      val banks = FavorBankChoice.stocked(live)
+      if count == 0 then Vector(Note(id, _ =>
+        Some(none(source, NoteArg.Player(ctx.actor)))))
+      else if banks.isEmpty then Vector(Note(id, _ => Some(empty(source))))
+      else ask(ctx.actor, banks, count) ++ Vector(
+        BuildOps((ready, pending) => take(ready, ctx.actor, pending, count)),
+        Note(id, NoteSupport.gainedFromNote(took, source, ctx.actor),
+          covers = true))))

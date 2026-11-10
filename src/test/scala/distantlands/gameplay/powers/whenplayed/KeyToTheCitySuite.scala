@@ -1,0 +1,90 @@
+package distantlands.gameplay.powers.whenplayed
+
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.economy.VowOfWanderingCard
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+
+class KeyToTheCitySuite extends munit.FunSuite:
+  private val vow = VowOfWanderingCard.id
+  private val forbidden = NoteText.Said("vow-of-wandering",
+    "Vow of Wandering forbids placing warbands on sites.", covers = false)
+  import WhenPlayedHarness._
+
+  private val power = registered[KeyToTheCity.type]
+  private val key = power.cardId
+  private val played = hookAt(key, homeSite)
+  /** Key to the City is site-only: it stands at `homeSite`, where p1's pawn
+    * stands too, and p1's board holds 3 warbands. p2's pawn stands at
+    * `awaySite`, so p2 is absent from `homeSite` unless a test moves it. */
+  private val start = Table.start.denizen(key, at = homeSite)
+    .pawn(p1, homeSite).pawn(p2, awaySite).boardWarbands(p1, 3)
+  private val mine = Look(start.ready).forceKind(p1)
+
+  private val killedTwo = NoteText.Said("killed",
+    s"Killed 2 ${p2.value} warbands at ${homeSite.value}.", covers = false)
+  private val placed = NoteText.Said("placed",
+    s"${p1.value} placed 1 warband at ${homeSite.value}.", covers = true)
+
+  test("an absent ruler's warbands are killed, and the actor gains and " +
+      "places one"):
+    val ready = start.warbandsAt(homeSite, p2, 2).ready
+    val done = Outcomes.finished(fire(ready, power, played))
+    val after = Look(done.treeless)
+    assertEquals(after.forces(homeSite), SiteForces.Occupied(mine, 1))
+    assertEquals(after.boardWarbands(p1), 3)
+    assertJournalRebuilds(ready, done.events, done.treeless)
+    assertEquals(said(power, done.events), Vector(killedTwo, placed))
+
+  test("bandits are killed too"):
+    val done = Outcomes.finished(
+      fire(start.bandits(homeSite, 3).ready, power, played))
+    assertEquals(Look(done.treeless).forces(homeSite),
+      SiteForces.Occupied(mine, 1))
+    assertEquals(said(power, done.events), Vector(NoteText.Said("bandits",
+      s"Killed 3 bandit warbands at ${homeSite.value}.", covers = false),
+      placed))
+
+  test("an empty site only receives the warband"):
+    val done = Outcomes.finished(fire(start.ready, power, played))
+    assertEquals(Look(done.treeless).forces(homeSite),
+      SiteForces.Occupied(mine, 1))
+    assertEquals(said(power, done.events), Vector(placed))
+
+  test("the actor rules the site and stands there, so nothing happens"):
+    val ready = start.warbandsAt(homeSite, p1, 2).ready
+    val done = Outcomes.finished(fire(ready, power, played))
+    assertEquals(ops(done.events), Vector.empty)
+    assertEquals(said(power, done.events), Vector(NoteText.Said("guarded",
+      s"${p1.value} was at ${homeSite.value}.", covers = false)))
+
+  test("a ruler whose pawn stands at the site keeps it"):
+    val ready = start.warbandsAt(homeSite, p2, 2).pawn(p2, homeSite).ready
+    val theirs = Look(ready).forceKind(p2)
+    val done = Outcomes.finished(fire(ready, power, played))
+    assertEquals(Look(done.treeless).forces(homeSite),
+      SiteForces.Occupied(theirs, 2))
+    assertEquals(said(power, done.events), Vector(NoteText.Said("guarded",
+      s"${p2.value} was at ${homeSite.value}.", covers = false)))
+
+  test("with no warband on the board or in the bank nothing is placed"):
+    // Every one of p1's warbands stands at a site in another region.
+    val supply = start.ready.banks.warbandSupply(mine)
+    val ready = start.warbandsAt(homeSite, p2, 2).boardWarbands(p1, 0)
+      .warbandsAt(awaySite, p1, supply).ready
+    val done = Outcomes.finished(fire(ready, power, played))
+    assertEquals(Look(done.treeless).forces(homeSite), SiteForces.Empty)
+    assertEquals(said(power, done.events), Vector(killedTwo,
+      NoteText.Said("unplaced", s"${p1.value} had no warband to place.",
+        covers = true)))
+
+  test("a holder of Vow of Wandering kills and gains, but places nothing"):
+    val ready = start.adviser(p1, vow).warbandsAt(homeSite, p2, 2).ready
+    val done = Outcomes.finished(fire(ready, power, played))
+    val after = Look(done.treeless)
+    assertEquals(after.forces(homeSite), SiteForces.Empty)
+    // 3 on the board and 1 gained.
+    assertEquals(after.boardWarbands(p1), 4)
+    assertEquals(said(power, done.events), Vector(killedTwo, forbidden))
+    assertJournalRebuilds(ready, done.events, done.treeless)

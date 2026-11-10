@@ -26,13 +26,13 @@
 
 Created:
 
-- `src/main/scala/oathdigital/gameplay/operations/OperationStateWrites.scala` — shared state writers, `CardTransfer`, `sequence`.
-- `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala` — supply, tracks, dice, phase/turn/title: guards and mutations.
-- `src/main/scala/oathdigital/gameplay/operations/CardFaceOperations.scala` — `Flip`/`Reveal`/`Peek`: guards and mutations.
-- `src/main/scala/oathdigital/gameplay/operations/BoardControlOperations.scala` — pawn and banner moves: guards and mutations.
-- `src/main/scala/oathdigital/gameplay/operations/ResourceOperations.scala` — favor/secrets/warbands, `FlipSecrets`, discard descriptions: guards and mutations.
-- `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala` — `validate` and `mutate` dispatchers, `RunningBoards`, reason classification.
-- `src/test/scala/oathdigital/gameplay/walker/WalkerReplayGuardSuite.scala` — the replay behaviour change.
+- `src/main/scala/distantlands/gameplay/operations/OperationStateWrites.scala` — shared state writers, `CardTransfer`, `sequence`.
+- `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala` — supply, tracks, dice, phase/turn/title: guards and mutations.
+- `src/main/scala/distantlands/gameplay/operations/CardFaceOperations.scala` — `Flip`/`Reveal`/`Peek`: guards and mutations.
+- `src/main/scala/distantlands/gameplay/operations/BoardControlOperations.scala` — pawn and banner moves: guards and mutations.
+- `src/main/scala/distantlands/gameplay/operations/ResourceOperations.scala` — favor/secrets/warbands, `FlipSecrets`, discard descriptions: guards and mutations.
+- `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala` — `validate` and `mutate` dispatchers, `RunningBoards`, reason classification.
+- `src/test/scala/distantlands/gameplay/walker/WalkerReplayGuardSuite.scala` — the replay behaviour change.
 
 Renamed:
 
@@ -58,10 +58,10 @@ Modified:
 ### Task 1: Delete the production-dead batch validation
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationExecutor.scala` (`OperationPolicy.all`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala` (`report`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala` (`OperationValidator.validateBatch`, `OperationShape.validateBatch`, `OperationShape.first`)
-- Test: `src/test/scala/oathdigital/gameplay/OperationValidatorSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationExecutor.scala` (`OperationPolicy.all`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala` (`report`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationValidator.scala` (`OperationValidator.validateBatch`, `OperationShape.validateBatch`, `OperationShape.first`)
+- Test: `src/test/scala/distantlands/gameplay/OperationValidatorSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing new.
@@ -93,7 +93,7 @@ In the same suite delete these lines exactly (each is a two-line `assertEquals`)
 
 - [ ] **Step 3: Run the suite to confirm it still compiles and passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite"`
 Expected: PASS, 14 tests.
 
 - [ ] **Step 4: Delete `OperationPolicy.all`**
@@ -137,13 +137,13 @@ In `OperationValidator.scala`:
 
 - [ ] **Step 7: Compile and run the operation suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationResolutionSuite oathdigital.gameplay.PowerOperationsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationResolutionSuite distantlands.gameplay.PowerOperationsSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add -A src/main/scala/oathdigital/gameplay/operations src/test/scala/oathdigital/gameplay/OperationValidatorSuite.scala
+git add -A src/main/scala/distantlands/gameplay/operations src/test/scala/distantlands/gameplay/OperationValidatorSuite.scala
 git commit -m "refactor(operations): delete the batch validation nothing in production reaches
 
 OperationPipeline.report, OperationShape.validateBatch, OperationShape.first and
@@ -159,9 +159,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 2: Delete `ClearDicePool`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
-- Test: `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
+- Test: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
 
 **Interfaces:**
 - Produces: nothing. `ClearDicePool` has no emitter in `src/main` (verified by grep before this plan was written); no journal written by this codebase carries one.
@@ -196,13 +196,13 @@ and the decode arm:
 
 - [ ] **Step 4: Compile everything and run the wire suite**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventWireSuite"`
 Expected: PASS. The encode match is exhaustiveness-checked, so a leftover reference fails compilation loudly.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/test/scala/oathdigital/serialization/GameEventWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/serialization/GameEventWireSuite.scala
 git commit -m "refactor(operations): delete ClearDicePool, an operation nothing applied
 
 It was encodable and recordable but no mutation arm existed and no production
@@ -216,10 +216,10 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 3: Shared state writers and one `CardTransfer`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/OperationStateWrites.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationCardMutation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/OperationStateWrites.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationCardMutation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationValidator.scala`
 
 **Interfaces:**
 - Produces: `OperationStateWrites.{CardTransfer, cardTransfers, sequence, updateCommonCards, updatePlayer, updateSite, updateCardTokens, updateCardState, updateAtlasCardState, semanticLocation}` — all package-visible, signatures unchanged from their `OperationStateMutation` originals.
@@ -229,9 +229,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 Write `OperationStateWrites.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** State writers shared by every operation family, and the one collector of
   * card transfers that both a guard and a mutation read. Nothing here decides
@@ -331,13 +331,13 @@ In `OperationValidator.scala`, inside `object OperationShape`:
 
 - [ ] **Step 5: Compile and run the operation suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations
+git add src/main/scala/distantlands/gameplay/operations
 git commit -m "refactor(operations): share the state writers and one CardTransfer
 
 The guard's Transfer and the mutation's CardTransfer were the same collect
@@ -352,7 +352,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 4: `TurnStateOperations`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala`
 - Modify: `OperationValidator.scala` (`nonMoveViolations` arms; delete `adjustSupplyViolation`)
 - Modify: `OperationStateMutation.scala` (`applyNonMoveLeaves` arms; delete the moved mutations)
 
@@ -367,9 +367,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Create the file**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Supply, the Visions Drawn track, dice pools and roll outcomes, and the
   * turn, phase and title writes.
@@ -504,13 +504,13 @@ In `OperationStateMutation.scala`, `applyNonMoveLeaves`, replace the arms from `
 
 - [ ] **Step 4: Compile and run the suites that exercise these operations**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.SupplyAdjustSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.SupplyAdjustSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations
+git add src/main/scala/distantlands/gameplay/operations
 git commit -m "refactor(operations): move turn-state guards beside their mutations
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
@@ -521,7 +521,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 5: `CardFaceOperations`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/CardFaceOperations.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/CardFaceOperations.scala`
 - Modify: `OperationValidator.scala` (`nonMoveViolations` arms; delete `flipViolation`, `peekViolation`)
 - Modify: `OperationStateMutation.scala` (`applyNonMoveLeaves` arms; delete `flipCard`, `peek`, `appendDistinct`, `recordSiteRelicKnowledge`)
 
@@ -531,9 +531,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Create the file**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** `Flip`, `Reveal` and `Peek`: what a card shows and who knows it. */
 private[operations] object CardFaceOperations {
@@ -581,13 +581,13 @@ In `OperationStateMutation.scala`, `applyNonMoveLeaves`:
 
 - [ ] **Step 3: Compile and test**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.RevealDiscardSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.RevealDiscardSuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations
+git add src/main/scala/distantlands/gameplay/operations
 git commit -m "refactor(operations): move card-face guards beside their mutations
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
@@ -598,7 +598,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 6: `BoardControlOperations`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/BoardControlOperations.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/BoardControlOperations.scala`
 - Modify: `OperationValidator.scala` (`violations` call; delete section 4)
 - Modify: `OperationStateMutation.scala` (`mutate` call; delete pawn/banner members and `requireFinite`)
 
@@ -608,9 +608,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Create the file**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Pawn and banner moves. The guard threads the pawns' sites and the
   * banners' holders through one operation's leaves so two moves of one piece
@@ -640,13 +640,13 @@ In `OperationStateMutation.mutate` replace `pieces <- applyPawnAndBannerMoves(re
 
 - [ ] **Step 3: Compile and test**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations
+git add src/main/scala/distantlands/gameplay/operations
 git commit -m "refactor(operations): move pawn and banner guards beside their mutations
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
@@ -657,7 +657,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 7: `ResourceOperations`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/ResourceOperations.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/ResourceOperations.scala`
 - Modify: `OperationValidator.scala` (`violations` calls and the `FlipSecrets` arm; delete sections 3 and the resource-description guard)
 - Modify: `OperationStateMutation.scala` (`mutate` call and the `FlipSecrets` arm; delete the counted members)
 
@@ -670,9 +670,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Create the file**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Favor, secrets and warbands: counted moves, secret flips, and the
   * resource descriptions a discard carries. The mutation debits every source
@@ -782,13 +782,13 @@ In `OperationStateMutation.mutate`: `resources <- ResourceOperations.applyCounte
 
 - [ ] **Step 3: Compile and test**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationResolutionSuite oathdigital.gameplay.PowerOperationsSuite oathdigital.gameplay.PayCostSuite oathdigital.gameplay.PayCostSettlementSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationResolutionSuite distantlands.gameplay.PowerOperationsSuite distantlands.gameplay.PayCostSuite distantlands.gameplay.PayCostSettlementSuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations
+git add src/main/scala/distantlands/gameplay/operations
 git commit -m "refactor(operations): move resource guards beside their mutations
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
@@ -799,7 +799,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 8: `CardMovementOperations`
 
 **Files:**
-- Rename: `OperationCardMutation.scala` → `src/main/scala/oathdigital/gameplay/operations/CardMovementOperations.scala`
+- Rename: `OperationCardMutation.scala` → `src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala`
 - Modify: `OperationValidator.scala` (`violations` calls; delete sections 1 and 2)
 - Modify: `OperationStateMutation.scala` (`mutate` call)
 
@@ -809,7 +809,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Rename the file and object**
 
 ```bash
-git mv src/main/scala/oathdigital/gameplay/operations/OperationCardMutation.scala src/main/scala/oathdigital/gameplay/operations/CardMovementOperations.scala
+git mv src/main/scala/distantlands/gameplay/operations/OperationCardMutation.scala src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala
 ```
 
 In the renamed file change `private[operations] object OperationCardMutation {` to `private[operations] object CardMovementOperations {`, replace the doc `/** Internal card-storage mutation boundary used by [[OperationStateMutation]]. */` with
@@ -842,16 +842,16 @@ In `OperationStateMutation.mutate`: `cards <- CardMovementOperations.applyCardMo
 
 - [ ] **Step 4: Compile and test, and check the line count**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationVocabularySuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationVocabularySuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
-Run: `wc -l src/main/scala/oathdigital/gameplay/operations/CardMovementOperations.scala`
+Run: `wc -l src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala`
 Expected: under 500.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add -A src/main/scala/oathdigital/gameplay/operations
+git add -A src/main/scala/distantlands/gameplay/operations
 git commit -m "refactor(operations): move card-movement guards beside their mutations
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
@@ -862,10 +862,10 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 9: `OperationApplication` — one guard, both entries
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`
 - Delete: `OperationValidator.scala`, `OperationStateMutation.scala`
 - Modify: `OperationResolution.scala`, `OperationPipeline.scala`, `OperationExecutor.scala`, `OperationStateAdapter.scala`
-- Test: create `src/test/scala/oathdigital/gameplay/walker/WalkerReplayGuardSuite.scala`
+- Test: create `src/test/scala/distantlands/gameplay/walker/WalkerReplayGuardSuite.scala`
 - Test: rename `OperationValidatorSuite.scala` → `OperationApplicationSuite.scala` (rewritten below)
 - Test: modify `OperationResolutionSuite.scala`
 - Test: rename `gameplay/operations/OperationStateMutationSuite.scala` → `OperationMutationSuite.scala`
@@ -880,14 +880,14 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing replay test**
 
-Create `src/test/scala/oathdigital/gameplay/walker/WalkerReplayGuardSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/WalkerReplayGuardSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.walker.WalkerStepPayload.DeltaRecorded
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
+import distantlands.gameplay.walker.WalkerStepPayload.DeltaRecorded
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
 
 /** Replay applies recorded operations through the executor. The executor
   * runs the shape guard as the mutation's precondition, so a recorded
@@ -931,15 +931,15 @@ class WalkerReplayGuardSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to see the second test fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerReplayGuardSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerReplayGuardSuite"`
 Expected: first test PASS; second test FAIL — replay returns `Right(...)` because `insertStack` treats `Unspecified` as a no-op and the card is silently dropped.
 
 - [ ] **Step 3: Create `OperationApplication.scala`**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The two dispatchers over the operation families.
   *
@@ -1230,7 +1230,7 @@ In `OperationStateAdapter.scala` delete:
 Then:
 
 ```bash
-git rm src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala
+git rm src/main/scala/distantlands/gameplay/operations/OperationValidator.scala src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala
 ```
 
 Before deleting, confirm each holds nothing but what this task has already re-homed: `OperationValidator.scala` should contain only the `OperationValidator` class, `OperationShape.validate`, `reason`, `violations`, `RunningBoards` and `nonMoveViolations`; `OperationStateMutation.scala` only `applyOperation`, `mutate` and `applyNonMoveLeaves`. Anything else still there belongs to an earlier task and must be moved first.
@@ -1238,17 +1238,17 @@ Before deleting, confirm each holds nothing but what this task has already re-ho
 - [ ] **Step 8: Rewrite the validator suite as `OperationApplicationSuite`**
 
 ```bash
-git mv src/test/scala/oathdigital/gameplay/OperationValidatorSuite.scala src/test/scala/oathdigital/gameplay/OperationApplicationSuite.scala
+git mv src/test/scala/distantlands/gameplay/OperationValidatorSuite.scala src/test/scala/distantlands/gameplay/OperationApplicationSuite.scala
 ```
 
 Replace its contents with:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
+import distantlands.gameplay.operations._
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
 
 /** The shape guard through the two interfaces that cross it: the resolver's
   * `OperationApplication.validate`, which reports every reason, and
@@ -1483,7 +1483,7 @@ class OperationApplicationSuite extends munit.FunSuite {
 
 - [ ] **Step 9: Re-point `OperationResolutionSuite`**
 
-Apply these edits in `src/test/scala/oathdigital/gameplay/OperationResolutionSuite.scala`:
+Apply these edits in `src/test/scala/distantlands/gameplay/OperationResolutionSuite.scala`:
 
 1. Delete the two-line field
    ```scala
@@ -1492,7 +1492,7 @@ Apply these edits in `src/test/scala/oathdigital/gameplay/OperationResolutionSui
    ```
 2. Every call of the form `OperationResolution.resolve(<state>, <operation>, validator)` becomes `OperationResolution.resolve(<state>, <operation>, OperationPolicy.Permissive, Vector.empty)`. Mechanically:
    ```bash
-   sed -i '' 's/, validator)/, OperationPolicy.Permissive, Vector.empty)/g' src/test/scala/oathdigital/gameplay/OperationResolutionSuite.scala
+   sed -i '' 's/, validator)/, OperationPolicy.Permissive, Vector.empty)/g' src/test/scala/distantlands/gameplay/OperationResolutionSuite.scala
    ```
 3. In the test that builds `mixedValidator`: replace
    ```scala
@@ -1528,32 +1528,32 @@ Apply these edits in `src/test/scala/oathdigital/gameplay/OperationResolutionSui
    ```
 5. In the last test: replace `validator.validateOne(ready, stale)` with `OperationResolution.reasons(ready, stale, OperationPolicy.Permissive, Vector.empty)` and `validator.validateOne(ready, understated)` with `OperationResolution.reasons(ready, understated, OperationPolicy.Permissive, Vector.empty)`.
 
-Then `grep -n 'validator\|OperationValidator' src/test/scala/oathdigital/gameplay/OperationResolutionSuite.scala` must print nothing.
+Then `grep -n 'validator\|OperationValidator' src/test/scala/distantlands/gameplay/OperationResolutionSuite.scala` must print nothing.
 
 - [ ] **Step 10: Rename `OperationStateMutationSuite`**
 
 ```bash
-git mv src/test/scala/oathdigital/gameplay/operations/OperationStateMutationSuite.scala src/test/scala/oathdigital/gameplay/operations/OperationMutationSuite.scala
-sed -i '' 's/class OperationStateMutationSuite/class OperationMutationSuite/' src/test/scala/oathdigital/gameplay/operations/OperationMutationSuite.scala
+git mv src/test/scala/distantlands/gameplay/operations/OperationStateMutationSuite.scala src/test/scala/distantlands/gameplay/operations/OperationMutationSuite.scala
+sed -i '' 's/class OperationStateMutationSuite/class OperationMutationSuite/' src/test/scala/distantlands/gameplay/operations/OperationMutationSuite.scala
 ```
 
 - [ ] **Step 11: Compile, run the replay test green, run the operation and walker suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerReplayGuardSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerReplayGuardSuite"`
 Expected: PASS, 2 tests.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationApplicationSuite oathdigital.gameplay.OperationResolutionSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationVocabularySuite oathdigital.gameplay.PowerOperationsSuite oathdigital.gameplay.SupplyAdjustSuite oathdigital.gameplay.operations.* oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.WalkerReplayDriftSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationApplicationSuite distantlands.gameplay.OperationResolutionSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationVocabularySuite distantlands.gameplay.PowerOperationsSuite distantlands.gameplay.SupplyAdjustSuite distantlands.gameplay.operations.* distantlands.gameplay.ProcedureWalkerSuite distantlands.gameplay.WalkerReplayDriftSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. `BackendArchitectureSuite` in particular confirms no new file names a power.
 
 - [ ] **Step 12: Run the whole backend suite**
 
 Run: `./sbtw test`
-Expected: PASS. If a suite outside `operations` fails on a rejection code, the guard order in `OperationApplication.violations` or a family's moved body differs from the original; diff against `git show 8ba502d:src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala`.
+Expected: PASS. If a suite outside `operations` fails on a rejection code, the guard order in `OperationApplication.violations` or a family's moved body differs from the original; diff against `git show 8ba502d:src/main/scala/distantlands/gameplay/operations/OperationValidator.scala`.
 
 - [ ] **Step 13: Commit**
 
 ```bash
-git add -A src/main/scala/oathdigital/gameplay/operations src/test/scala/oathdigital/gameplay
+git add -A src/main/scala/distantlands/gameplay/operations src/test/scala/distantlands/gameplay
 git commit -m "refactor(operations): one guard set for the pipeline and replay
 
 OperationApplication owns the two dispatchers. mutate runs the aggregated
@@ -1814,7 +1814,7 @@ Replace the body with
 
 - [ ] **Step 8: Compile and run every suite that exercises these operations**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationApplicationSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationResolutionSuite oathdigital.gameplay.SupplyAdjustSuite oathdigital.gameplay.operations.* oathdigital.gameplay.walker.WalkerReplayGuardSuite oathdigital.gameplay.ProcedureWalkerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationApplicationSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationResolutionSuite distantlands.gameplay.SupplyAdjustSuite distantlands.gameplay.operations.* distantlands.gameplay.walker.WalkerReplayGuardSuite distantlands.gameplay.ProcedureWalkerSuite"`
 Expected: PASS. `OperationExecutorSuite` "Visions Drawn advances once and rejects integer overflow", "later failure returns no partial execution result", "a held banner cannot be claimed from the shared bank" and `OperationMutationSuite` "a pawn already on a site cannot move from the player area again" are the ones that would catch a deleted check the guard does not cover.
 
 - [ ] **Step 9: Run the whole backend suite**
@@ -1825,7 +1825,7 @@ Expected: PASS.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations
+git add src/main/scala/distantlands/gameplay/operations
 git commit -m "refactor(operations): drop the mutation re-checks the guard makes unreachable
 
 Seven explicit sufficiency and placement checks duplicated a shape guard that
@@ -1841,7 +1841,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 11: Docs, the deferred item, and the full gate
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala` (doc comment)
+- Modify: `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala` (doc comment)
 - Modify: `docs/ROADMAP.md`
 
 - [ ] **Step 1: Fix the stale comment**
@@ -1882,7 +1882,7 @@ Expected: PASS (nothing in `frontend/` changed; this is the repository gate).
 Run: `python3 scripts/check-architecture.py`
 Expected: `architecture check passed: N production Scala files`.
 
-Run: `wc -l src/main/scala/oathdigital/gameplay/operations/*.scala`
+Run: `wc -l src/main/scala/distantlands/gameplay/operations/*.scala`
 Expected: every file under 500 lines.
 
 Optional, because no CI workflow runs it but `build.sbt` pins
@@ -1897,7 +1897,7 @@ longer reaches anything.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala docs/ROADMAP.md
+git add src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala docs/ROADMAP.md
 git commit -m "docs: record the deferred OperationPolicy seam merge and fix a stale comment
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"

@@ -25,7 +25,7 @@ and they run in about 11 s.
 ## Profile some suites
 
 ```bash
-scripts/profile-tests.py 'oathdigital.gameplay.powers.campaign.*'
+scripts/profile-tests.py 'distantlands.gameplay.powers.campaign.*'
 ```
 
 The arguments are root `testOnly` filters. The script runs them under Java
@@ -40,7 +40,7 @@ All count only samples that ran project code:
   on the stack: the card index, the state invariant, domain validation,
   `gather`, the walker's `breaches` and `ClassValue`. The list is `WATCHED` in the script. Edit it to follow a
   different hot spot.
-- **Inclusive frames** are the `oathdigital` frames anywhere on the stack. A
+- **Inclusive frames** are the `distantlands` frames anywhere on the stack. A
   frame at 26% was on the stack in a quarter of the samples, so removing its
   work saves up to a quarter of the time. The walker's own wrapper frames fill
   the top of this list; look for the first frame that does real work.
@@ -58,7 +58,7 @@ time in `ProcedureWalker`.
 budget. Run it alongside a profile when a change touches the walker:
 
 ```bash
-./sbtw "Test/runMain oathdigital.gameplay.SearchBudget"
+./sbtw "Test/runMain distantlands.gameplay.SearchBudget"
 ```
 
 ## Reading numbers

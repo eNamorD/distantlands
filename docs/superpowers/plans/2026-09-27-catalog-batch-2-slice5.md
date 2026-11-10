@@ -56,7 +56,7 @@
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A power under `gameplay/powers` never imports `gameplay.walker`.
   - No walker source (`gameplay/walker`) names a power.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree branched from local `main`, with the main checkout's `.tooling` symlinked in before the first `./sbtw`.
 - Commit trailer: the committing model's own `Co-Authored-By` line.
@@ -96,26 +96,26 @@
 
 | File | Responsibility |
 |---|---|
-| Modify `src/main/scala/oathdigital/model/Decisions.scala` | `DecisionOptionRef.AdviserSlot`, its wire parse, `DecisionOption.AdviserSlot`. |
-| Modify `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` | Presents an adviser slot; threads phase powers to `ForcedWake`. |
-| Modify `src/main/scala/oathdigital/application/gamelog/ChoiceWords.scala` | Names a chosen adviser slot. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/action/IvoryEye.scala` | Offers `AdviserSlot`s. |
-| Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/ShiftingFog.scala` | Rotates the favor banks. |
-| Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/TwinBrother.scala` | Optional swap with another player's nomad adviser. |
-| Modify `src/main/scala/oathdigital/model/PowerWindow.scala` | `OathkeeperTitleChange`. |
-| Modify `src/main/scala/oathdigital/gameplay/oathkeeper/OathkeeperProcedure.scala` | Wraps its trees in the window. |
-| Create `src/main/scala/oathdigital/gameplay/powers/title/ChaosCult.scala` | Takes 1 favor from a new Oathkeeper. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` | Registers Shifting Fog, Twin Brother, Chaos Cult. |
-| Modify `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala` | `forced`. |
-| Modify `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala` | Never offers or accepts a forced power. |
-| Create `src/main/scala/oathdigital/gameplay/phases/wake/ForcedWakeProcedure.scala` | The forced step's tree. |
-| Modify `src/main/scala/oathdigital/model/ProcedureRef.scala` | `TriggeredProcedureRef.ForcedWake`. |
-| Modify `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` | Registers `ForcedWake` with the phase powers. |
-| Modify `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` | Builds `ForcedWake` with the phase powers. |
-| Modify `src/main/scala/oathdigital/gameplay/OathRules.scala` | Starts the forced step at Wake. |
-| Modify `src/main/scala/oathdigital/application/gamelog/ActionLines.scala` | No action line for `ForcedWake`. |
-| Create `src/main/scala/oathdigital/gameplay/powers/wake/Hunger.scala` | Buries an adviser at the site. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala` | Registers Hunger. |
+| Modify `src/main/scala/distantlands/model/Decisions.scala` | `DecisionOptionRef.AdviserSlot`, its wire parse, `DecisionOption.AdviserSlot`. |
+| Modify `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` | Presents an adviser slot; threads phase powers to `ForcedWake`. |
+| Modify `src/main/scala/distantlands/application/gamelog/ChoiceWords.scala` | Names a chosen adviser slot. |
+| Modify `src/main/scala/distantlands/gameplay/powers/action/IvoryEye.scala` | Offers `AdviserSlot`s. |
+| Create `src/main/scala/distantlands/gameplay/powers/whenplayed/ShiftingFog.scala` | Rotates the favor banks. |
+| Create `src/main/scala/distantlands/gameplay/powers/whenplayed/TwinBrother.scala` | Optional swap with another player's nomad adviser. |
+| Modify `src/main/scala/distantlands/model/PowerWindow.scala` | `OathkeeperTitleChange`. |
+| Modify `src/main/scala/distantlands/gameplay/oathkeeper/OathkeeperProcedure.scala` | Wraps its trees in the window. |
+| Create `src/main/scala/distantlands/gameplay/powers/title/ChaosCult.scala` | Takes 1 favor from a new Oathkeeper. |
+| Modify `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` | Registers Shifting Fog, Twin Brother, Chaos Cult. |
+| Modify `src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala` | `forced`. |
+| Modify `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala` | Never offers or accepts a forced power. |
+| Create `src/main/scala/distantlands/gameplay/phases/wake/ForcedWakeProcedure.scala` | The forced step's tree. |
+| Modify `src/main/scala/distantlands/model/ProcedureRef.scala` | `TriggeredProcedureRef.ForcedWake`. |
+| Modify `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` | Registers `ForcedWake` with the phase powers. |
+| Modify `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` | Builds `ForcedWake` with the phase powers. |
+| Modify `src/main/scala/distantlands/gameplay/OathRules.scala` | Starts the forced step at Wake. |
+| Modify `src/main/scala/distantlands/application/gamelog/ActionLines.scala` | No action line for `ForcedWake`. |
+| Create `src/main/scala/distantlands/gameplay/powers/wake/Hunger.scala` | Buries an adviser at the site. |
+| Modify `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala` | Registers Hunger. |
 | Tests | One suite per card; codec, projector and log additions for the slot; `EnumShapeSuite`, `PowerKindsCatalogSuite`, `PowerImplementationStatusSuite`; a `hunger` log script with golden logs. |
 | Modify `docs/ROADMAP.md` | Slice 5 and batch 2 done; adviser-slot item done. |
 
@@ -124,15 +124,15 @@
 ### Task 1: The adviser-slot option, and Ivory Eye on it
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ChoiceWords.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/IvoryEye.scala`
-- Test: `src/test/scala/oathdigital/model/DecisionOptionRefSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`
-- Test: `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogRareLinesSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/IvoryEyeSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ChoiceWords.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/IvoryEye.scala`
+- Test: `src/test/scala/distantlands/model/DecisionOptionRefSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
+- Test: `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogRareLinesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/IvoryEyeSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -220,7 +220,7 @@ Expected: compilation failure, because `AdviserSlot` is not a member of `Decisio
 
 - [ ] **Step 3: Add the reference and the option**
 
-In `src/main/scala/oathdigital/model/Decisions.scala`, add after `RelicSlot`:
+In `src/main/scala/distantlands/model/Decisions.scala`, add after `RelicSlot`:
 
 ```scala
   /** One adviser of a player, named by its position in their advisers
@@ -335,7 +335,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Decisions.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/main/scala/oathdigital/application/gamelog/ChoiceWords.scala src/main/scala/oathdigital/gameplay/powers/action/IvoryEye.scala src/test/scala/oathdigital/model/DecisionOptionRefSuite.scala src/test/scala/oathdigital/serialization/GameEventWireSuite.scala src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala src/test/scala/oathdigital/application/gamelog/GameLogRareLinesSuite.scala src/test/scala/oathdigital/gameplay/powers/action/IvoryEyeSuite.scala
+git add src/main/scala/distantlands/model/Decisions.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/main/scala/distantlands/application/gamelog/ChoiceWords.scala src/main/scala/distantlands/gameplay/powers/action/IvoryEye.scala src/test/scala/distantlands/model/DecisionOptionRefSuite.scala src/test/scala/distantlands/serialization/GameEventWireSuite.scala src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala src/test/scala/distantlands/application/gamelog/GameLogRareLinesSuite.scala src/test/scala/distantlands/gameplay/powers/action/IvoryEyeSuite.scala
 git commit -m "feat(decisions): an adviser-slot option offers a facedown adviser unnamed"
 ```
 
@@ -346,11 +346,11 @@ Add any file the compiler made you touch in Step 4 to the `git add`.
 ### Task 2: Shifting Fog and Twin Brother
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/ShiftingFog.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/TwinBrother.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/ShiftingFogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/whenplayed/TwinBrotherSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/ShiftingFog.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/TwinBrother.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/ShiftingFogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/TwinBrotherSuite.scala`
 
 **Interfaces:**
 - Consumes: `WhenPlayedPower`, `WhenPlayedHarness`, `PowerFixture`, `TargetsFixture.giveAdviser`, `NoteText`, `NoteSupport.answer`.
@@ -363,11 +363,11 @@ Add any file the compiler made you touch in Step 4 to the `git add`.
 Create `ShiftingFogSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteText, PowerFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class ShiftingFogSuite extends munit.FunSuite:
   import PowerFixture._
@@ -414,13 +414,13 @@ class ShiftingFogSuite extends munit.FunSuite:
 Create `TwinBrotherSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, TargetsFixture,
+import distantlands.gameplay.powers.{NoteText, PowerFixture, TargetsFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ProcedureWalker
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ProcedureWalker
+import distantlands.model._
 
 class TwinBrotherSuite extends munit.FunSuite:
   import PowerFixture._
@@ -502,14 +502,14 @@ Expected: compilation failure, because `ShiftingFog` and `TwinBrother` are not f
 
 - [ ] **Step 3: Write Shifting Fog**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/ShiftingFog.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/ShiftingFog.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 /** Shifting Fog (card 214), WHEN PLAYED: move all favor in each favor bank
   * to the next bank to the right. Nomad's moves to Discord's.
@@ -556,15 +556,15 @@ object ShiftingFog:
 
 - [ ] **Step 4: Write Twin Brother**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/TwinBrother.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/TwinBrother.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{CardRestrictions, ExecutableCatalog}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.catalog.{CardRestrictions, ExecutableCatalog}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Twin Brother (card 170, adviser-only), WHEN PLAYED: you may swap this
   * card with a faceup nomad adviser of another player.
@@ -683,7 +683,7 @@ If `Swap` is refused when it moves an adviser between play areas, read `CardMove
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/ShiftingFog.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/TwinBrother.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/ShiftingFogSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/TwinBrotherSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/ShiftingFog.scala src/main/scala/distantlands/gameplay/powers/whenplayed/TwinBrother.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/powers/whenplayed/ShiftingFogSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/TwinBrotherSuite.scala
 git commit -m "feat(powers): Shifting Fog rotates the favor banks; Twin Brother swaps with a nomad adviser"
 ```
 
@@ -692,12 +692,12 @@ git commit -m "feat(powers): Shifting Fog rotates the favor banks; Twin Brother 
 ### Task 3: The title-change window (N7) and Chaos Cult
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/oathkeeper/OathkeeperProcedure.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/title/ChaosCult.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/title/ChaosCultSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala`
+- Modify: `src/main/scala/distantlands/gameplay/oathkeeper/OathkeeperProcedure.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/title/ChaosCult.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/title/ChaosCultSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -706,18 +706,18 @@ git commit -m "feat(powers): Shifting Fog rotates the favor banks; Twin Brother 
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/title/ChaosCultSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/title/ChaosCultSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.title
+package distantlands.gameplay.powers.title
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.oathkeeper.OathkeeperFixture._
-import oathdigital.gameplay.powers.{NoteText, TargetsFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.oathkeeper.OathkeeperFixture._
+import distantlands.gameplay.powers.{NoteText, TargetsFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{WalkerPowers, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 class ChaosCultSuite extends munit.FunSuite:
   import TargetsFixture.{giveAdviser, updatePlayer}
@@ -799,7 +799,7 @@ class ChaosCultSuite extends munit.FunSuite:
     val ready = staged(Vector(Some(active), Some(leader)), holder = Some(cultist))
     val parked = travel(ready).toOption.get
     val done = rules.resolveWalker(parked.state, cultist,
-      oathdigital.gameplay.oathkeeper.OathkeeperProcedure.recipientDecisionId,
+      distantlands.gameplay.oathkeeper.OathkeeperProcedure.recipientDecisionId,
       DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(leader)))
       .toOption.get
     val Ready(after) = done.state: @unchecked
@@ -813,7 +813,7 @@ In `PowerKindsCatalogSuite`, add after the Vow of Obedience test:
 ```scala
   test("Chaos Cult is a persistent rule and fires on every title change"):
     assertEquals(flag("denizen.chaos-cult"), Some(true))
-    assertEquals(oathdigital.gameplay.powers.title.ChaosCult
+    assertEquals(distantlands.gameplay.powers.title.ChaosCult
       .forCatalog(catalog).get.resolution, PowerResolution.Automatic)
 ```
 
@@ -824,7 +824,7 @@ Expected: compilation failure, because `ChaosCult` is not found.
 
 - [ ] **Step 3: Add the window and put the procedure in it**
 
-In `src/main/scala/oathdigital/model/PowerWindow.scala`, add after `ConspiracyTargetSelection`:
+In `src/main/scala/distantlands/model/PowerWindow.scala`, add after `ConspiracyTargetSelection`:
 
 ```scala
   /** The Oathkeeper title changing hands (catalog batch 2, N7). A power
@@ -857,16 +857,16 @@ Replace the doc's tree and its last sentence:
 
 - [ ] **Step 4: Write Chaos Cult**
 
-Create `src/main/scala/oathdigital/gameplay/powers/title/ChaosCult.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/title/ChaosCult.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.title
+package distantlands.gameplay.powers.title
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, NoteSupport}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogCards, NoteSupport}
+import distantlands.model._
 
 /** Chaos Cult (card 101, adviser-only), a rule of a faceup adviser: "After
   * another player takes the Oathkeeper title, you take [favor] from them."
@@ -933,7 +933,7 @@ object ChaosCult:
     CatalogCards.denizen(catalog, id).map(new ChaosCult(_))
 ```
 
-In `WalkerPowerCatalog.default`, add `ChaosCult.forCatalog(catalog).toVector ++` after the Twin Brother line. Import `oathdigital.gameplay.powers.title.ChaosCult`.
+In `WalkerPowerCatalog.default`, add `ChaosCult.forCatalog(catalog).toVector ++` after the Twin Brother line. Import `distantlands.gameplay.powers.title.ChaosCult`.
 
 - [ ] **Step 5: Run the suites to verify they pass**
 
@@ -945,7 +945,7 @@ If `ruled`'s single leader does not produce `Transfer(leader)` from a `None` hol
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala src/main/scala/oathdigital/gameplay/oathkeeper/OathkeeperProcedure.scala src/main/scala/oathdigital/gameplay/powers/title/ChaosCult.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/title/ChaosCultSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/gameplay/oathkeeper/OathkeeperProcedure.scala src/main/scala/distantlands/gameplay/powers/title/ChaosCult.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/powers/title/ChaosCultSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(powers): a title-change window, where Chaos Cult takes favor from a new Oathkeeper"
 ```
 
@@ -954,19 +954,19 @@ git commit -m "feat(powers): a title-change window, where Chaos Cult takes favor
 ### Task 4: Forced Wake steps (N8) and Hunger
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala`
-- Create: `src/main/scala/oathdigital/gameplay/phases/wake/ForcedWakeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/wake/Hunger.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/wake/HungerSuite.scala`
-- Test: `src/test/scala/oathdigital/model/EnumShapeSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala`
+- Create: `src/main/scala/distantlands/gameplay/phases/wake/ForcedWakeProcedure.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/wake/Hunger.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/wake/HungerSuite.scala`
+- Test: `src/test/scala/distantlands/model/EnumShapeSuite.scala`
 
 **Interfaces:**
 - Consumes: `DecisionOptionRef.AdviserSlot` (Task 1), `Bury.standard`, `PhasePowerProcedure.sources`, `OathRulesWalker.startTriggered`.
@@ -978,23 +978,23 @@ git commit -m "feat(powers): a title-change window, where Chaos Cult takes favor
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/wake/HungerSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/wake/HungerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.application.{GameCommand, ParkedServiceFixture}
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.application.{GameCommand, ParkedServiceFixture}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.Situation
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.Situation
 
 class HungerSuite extends munit.FunSuite:
   import PowerFixture.{actor, base, player}
@@ -1182,15 +1182,15 @@ In `ProcedureRef.scala`, add to `TriggeredProcedureRef`:
 
 Add `ForcedWake` to `TriggeredProcedureRef.all`.
 
-Create `src/main/scala/oathdigital/gameplay/phases/wake/ForcedWakeProcedure.scala`:
+Create `src/main/scala/distantlands/gameplay/phases/wake/ForcedWakeProcedure.scala`:
 
 ```scala
-package oathdigital.gameplay.phases.wake
+package distantlands.gameplay.phases.wake
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
+import distantlands.model._
 
 /** Forced Wake steps (catalog batch 2, N8).
   *
@@ -1235,7 +1235,7 @@ object ForcedWakeProcedure:
 
 In `WalkerProcedureRegistry`:
 
-1. Import `oathdigital.gameplay.phases.wake.ForcedWakeProcedure` (extend the existing `phases.wake` import).
+1. Import `distantlands.gameplay.phases.wake.ForcedWakeProcedure` (extend the existing `phases.wake` import).
 2. In `lookup`, add after the `UsePower` case:
 
 ```scala
@@ -1273,7 +1273,7 @@ In `WalkerDecisionProjector.tree`, change `case _: ActionRef.UsePower =>` to `ca
 
 In `OathRules`:
 
-1. Import `oathdigital.gameplay.phases.wake.ForcedWakeProcedure`.
+1. Import `distantlands.gameplay.phases.wake.ForcedWakeProcedure`.
 2. At the end of `enterWake`, append `.flatMap(forcedWake)` to the `prepared.flatMap(...)` expression.
 3. Add:
 
@@ -1325,16 +1325,16 @@ For any other non-exhaustive match over `TriggeredProcedureRef` or `ProcedureRef
 
 - [ ] **Step 5: Write Hunger**
 
-Create `src/main/scala/oathdigital/gameplay/powers/wake/Hunger.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/wake/Hunger.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.powers.{CatalogCards, NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powers.{CatalogCards, NoteSupport, PowerAnswers}
+import distantlands.model._
 
 /** Hunger (card 216, adviser-only, locked), WAKE: you must bury an adviser
   * held by a player whose pawn is at your site, even yourself, but cannot
@@ -1452,7 +1452,7 @@ If `rested` does not reach `next`'s Wake because Begin Rest stops for a usable R
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala src/main/scala/oathdigital/gameplay/phases/PhasePowerProcedure.scala src/main/scala/oathdigital/gameplay/phases/wake/ForcedWakeProcedure.scala src/main/scala/oathdigital/model/ProcedureRef.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/gameplay/OathRulesWalker.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/main/scala/oathdigital/gameplay/OathRules.scala src/main/scala/oathdigital/application/gamelog/ActionLines.scala src/main/scala/oathdigital/gameplay/powers/wake/Hunger.scala src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala src/test/scala/oathdigital/gameplay/powers/wake/HungerSuite.scala src/test/scala/oathdigital/model/EnumShapeSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala src/main/scala/distantlands/gameplay/phases/PhasePowerProcedure.scala src/main/scala/distantlands/gameplay/phases/wake/ForcedWakeProcedure.scala src/main/scala/distantlands/model/ProcedureRef.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/gameplay/OathRulesWalker.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/main/scala/distantlands/gameplay/OathRules.scala src/main/scala/distantlands/application/gamelog/ActionLines.scala src/main/scala/distantlands/gameplay/powers/wake/Hunger.scala src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala src/test/scala/distantlands/gameplay/powers/wake/HungerSuite.scala src/test/scala/distantlands/model/EnumShapeSuite.scala
 git commit -m "feat(powers): forced Wake steps, where Hunger buries an adviser at its holder's site"
 ```
 
@@ -1461,17 +1461,17 @@ git commit -m "feat(powers): forced Wake steps, where Hunger buries an adviser a
 ### Task 5: Hunger's log, the status pin and the roadmap
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
 - Create: `src/test/resources/gamelog/hunger.actor.log`, `src/test/resources/gamelog/hunger.other.log`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala`
 - Modify: `docs/ROADMAP.md`
 
 - [ ] **Step 1: Add the script and the tests**
 
 In `LogScripts.scala`:
 
-1. Import `oathdigital.gameplay.phases.rest.FinishRestProcedure` and `oathdigital.gameplay.powers.wake.Hunger`.
+1. Import `distantlands.gameplay.phases.rest.FinishRestProcedure` and `distantlands.gameplay.powers.wake.Hunger`.
 2. Add after `barbedNet`:
 
 ```scala
@@ -1562,6 +1562,6 @@ Match the wording and form of the slice 4 entry.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/gamelog/LogScripts.scala src/test/resources/gamelog/hunger.actor.log src/test/resources/gamelog/hunger.other.log src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala docs/ROADMAP.md
+git add src/test/scala/distantlands/application/gamelog/LogScripts.scala src/test/resources/gamelog/hunger.actor.log src/test/resources/gamelog/hunger.other.log src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala docs/ROADMAP.md
 git commit -m "docs: record catalog batch 2 slice 5"
 ```

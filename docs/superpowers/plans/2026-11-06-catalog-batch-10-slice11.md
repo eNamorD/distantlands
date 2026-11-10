@@ -124,17 +124,17 @@ spec, so the review at the end checks them.
 ### Task 1: The reach seam, School of Vines and the Sigils
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReachCards.scala`
-- Create: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/challenge/ChallengeReachSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/model/Imperials.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (the Challenge entry's comment)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/setup/RuinedSiteSetupRules.scala` (School of Vines moves out)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (both Sigils move out)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
+- Create: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReachCards.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/challenge/ChallengeReachSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala`
+- Modify: `src/main/scala/distantlands/model/Imperials.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (the Challenge entry's comment)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala` (School of Vines moves out)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (both Sigils move out)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
 - Modify (imports): `AnimalPlaymatesSuite`, `AnimalHostSuite`, `ThreateningRoarSuite`, `DazzleSuite`, `ForestHornSuite`, `ShapeEmpireSuite`, `RuinedSetupRulesSuite`, `ChronicleTtsCodecSuite`
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
 
@@ -146,7 +146,7 @@ spec, so the review at the end checks them.
   - `ChallengeReach.noNewBanner: String`
   - `Imperials.enemies(ready: ReadyGame, player: PlayerId, other: PlayerId): Boolean`
   - `ChallengeModifiers.all: Vector[ContributingPower]`, holding `SchoolOfVines`, `SigilOfTheEye`, `SigilOfTheHeart`
-  - The card objects `SchoolOfVinesCard`, `SigilOfTheEyeCard`, `SigilOfTheHeartCard` in `oathdigital.gameplay.actions.challenge`
+  - The card objects `SchoolOfVinesCard`, `SigilOfTheEyeCard`, `SigilOfTheHeartCard` in `distantlands.gameplay.actions.challenge`
 
 - [ ] **Step 1: Check that slice 10 has merged, and rebase**
 
@@ -154,27 +154,27 @@ Follow the "Slice 10 first" constraint above.
 
 - [ ] **Step 2: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/challenge/ChallengeReachSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/challenge/ChallengeReachSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.challenge
+package distantlands.gameplay.powers.challenge
 
-import oathdigital.catalog.ModifierMark
-import oathdigital.gameplay.{ModifierPlay, OathRules}
-import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
+import distantlands.catalog.ModifierMark
+import distantlands.gameplay.{ModifierPlay, OathRules}
+import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   ChallengeReach, SchoolOfVinesCard, SigilOfTheEyeCard, SigilOfTheHeartCard}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ModifierChoice
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ModifierChoice
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   ParkedNode, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** School of Vines (E27, intact), Sigil of the Eye (R43) and Sigil of the
   * Heart (R44): free Challenge modifiers that lift the pawn-site
@@ -313,24 +313,24 @@ class ChallengeReachSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.challenge.ChallengeReachSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.challenge.ChallengeReachSuite"`
 Expected: compile errors: `SchoolOfVinesCard`, `ChallengeReach`,
 `SigilOfTheEye` and the other new names are not found in
-`oathdigital.gameplay.actions.challenge` or this package.
+`distantlands.gameplay.actions.challenge` or this package.
 
 - [ ] **Step 4: Move the cards beside the Challenge**
 
-Create `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReachCards.scala`.
+Create `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReachCards.scala`.
 School of Vines' two faces are copied from `RuinedSiteSetupRules.scala`
 unchanged, except that the intact power gains its Challenge icon. The
 Sigils are copied from `HoldingRelics.scala` and gain theirs:
 
 ```scala
-package oathdigital.gameplay.actions.challenge
+package distantlands.gameplay.actions.challenge
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.model._
 
 /** The cards whose picks widen a Challenge (catalog batch 10, slice 11).
   * They live beside the Challenge, which reads their picks
@@ -371,43 +371,43 @@ Then:
 
 1. In `RuinedSiteSetupRules.scala`, delete the `object SchoolOfVinesCard`
    block (the first card in the file) and add
-   `import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard` above
-   `import oathdigital.gameplay.powers.DispossessedDraws`. The file still
+   `import distantlands.gameplay.actions.challenge.SchoolOfVinesCard` above
+   `import distantlands.gameplay.powers.DispossessedDraws`. The file still
    uses `Edifice`, `EdificeFace`, `Locked` and `PrintedPower` for its
    other cards.
 2. In `HoldingRelics.scala`, delete `object SigilOfTheEyeCard` and
    `object SigilOfTheHeartCard`. Its imports stay in use.
 3. In `NewFoundations.scala`, add
-   `import oathdigital.gameplay.actions.challenge.{SchoolOfVinesCard, SigilOfTheEyeCard, SigilOfTheHeartCard}`
-   above `import oathdigital.gameplay.actions.recover.UndergroundLibraryCard`,
+   `import distantlands.gameplay.actions.challenge.{SchoolOfVinesCard, SigilOfTheEyeCard, SigilOfTheHeartCard}`
+   above `import distantlands.gameplay.actions.recover.UndergroundLibraryCard`,
    wrapped at 80 columns as the file's other imports are.
 4. Rewrite the test imports:
 
 ```bash
-perl -pi -e 's/^import oathdigital\.gameplay\.powers\.setup\.SchoolOfVinesCard$/import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard/' src/test/scala/oathdigital/gameplay/powers/economy/AnimalPlaymatesSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/AnimalHostSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/ThreateningRoarSuite.scala
+perl -pi -e 's/^import distantlands\.gameplay\.powers\.setup\.SchoolOfVinesCard$/import distantlands.gameplay.actions.challenge.SchoolOfVinesCard/' src/test/scala/distantlands/gameplay/powers/economy/AnimalPlaymatesSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/AnimalHostSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/ThreateningRoarSuite.scala
 ```
 
 ```bash
-perl -pi -e 's/^import oathdigital\.gameplay\.powers\.setup\.\{(\w+), SchoolOfVinesCard\}$/import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard\nimport oathdigital.gameplay.powers.setup.$1/' src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala src/test/scala/oathdigital/gameplay/powers/action/ForestHornSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ShapeEmpireSuite.scala
+perl -pi -e 's/^import distantlands\.gameplay\.powers\.setup\.\{(\w+), SchoolOfVinesCard\}$/import distantlands.gameplay.actions.challenge.SchoolOfVinesCard\nimport distantlands.gameplay.powers.setup.$1/' src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala src/test/scala/distantlands/gameplay/powers/action/ForestHornSuite.scala src/test/scala/distantlands/gameplay/chronicle/ShapeEmpireSuite.scala
 ```
 
-5. In `src/test/scala/oathdigital/gameplay/powers/setup/RuinedSetupRulesSuite.scala`,
+5. In `src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala`,
    which shares the old package and so imported nothing, add
-   `import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard` above
-   `import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure,`.
-6. In `src/test/scala/oathdigital/application/chronicle/ChronicleTtsCodecSuite.scala`,
+   `import distantlands.gameplay.actions.challenge.SchoolOfVinesCard` above
+   `import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure,`.
+6. In `src/test/scala/distantlands/application/chronicle/ChronicleTtsCodecSuite.scala`,
    replace
 
 ```scala
-import oathdigital.catalog.holding.{ArbiterCard, LightFingersCard,
+import distantlands.catalog.holding.{ArbiterCard, LightFingersCard,
   SigilOfTheEyeCard}
 ```
 
    with
 
 ```scala
-import oathdigital.catalog.holding.{ArbiterCard, LightFingersCard}
-import oathdigital.gameplay.actions.challenge.SigilOfTheEyeCard
+import distantlands.catalog.holding.{ArbiterCard, LightFingersCard}
+import distantlands.gameplay.actions.challenge.SigilOfTheEyeCard
 ```
 
 7. Check that nothing names the old homes:
@@ -420,7 +420,7 @@ git grep -nE 'setup\.SchoolOfVinesCard|setup\.\{[^}]*SchoolOfVinesCard|holding\.
 
 - [ ] **Step 5: Add `Imperials.enemies`**
 
-In `src/main/scala/oathdigital/model/Imperials.scala`, after `isImperial`:
+In `src/main/scala/distantlands/model/Imperials.scala`, after `isImperial`:
 
 ```scala
   /** Whether `player` and `other` are enemies (rules glossary, "Enemy"):
@@ -433,13 +433,13 @@ In `src/main/scala/oathdigital/model/Imperials.scala`, after `isImperial`:
 
 - [ ] **Step 6: Add `ChallengeReach`**
 
-Create `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.challenge
+package distantlands.gameplay.actions.challenge
 
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.model._
 
 /** What the Challenge modifiers change about a Challenge (catalog batch
   * 10, slice 11), read from the walk's picks, which a park keeps and
@@ -478,7 +478,7 @@ object ChallengeReach:
 
 In `ChallengeProcedure.scala`:
 
-1. Add `import oathdigital.gameplay.powerresolver.ModifierPicks`.
+1. Add `import distantlands.gameplay.powerresolver.ModifierPicks`.
 2. Replace `build` and delete `afterModifiers`:
 
 ```scala
@@ -571,18 +571,18 @@ with:
 
 - [ ] **Step 8: Add the reach modifiers**
 
-Create `src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.challenge
+package distantlands.gameplay.powers.challenge
 
-import oathdigital.catalog.Relic
-import oathdigital.gameplay.actions.challenge.{ChallengeReach,
+import distantlands.catalog.Relic
+import distantlands.gameplay.actions.challenge.{ChallengeReach,
   SchoolOfVinesCard, SigilOfTheEyeCard, SigilOfTheHeartCard}
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   OfferReason, OnEdificeFace, PowerCtx, PowerUse}
-import oathdigital.gameplay.powers.{CatalogResolution, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, SelectedModifier}
+import distantlands.model._
 
 /** The Challenge modifiers (catalog batch 10, slice 11). A pick is the
   * whole effect: the Challenge reads it ([[ChallengeReach]]), so none hooks
@@ -658,7 +658,7 @@ case object SchoolOfVines extends OnEdificeFace:
 
 In `ActionModifiers.scala`:
 
-1. Add `import oathdigital.gameplay.powers.challenge.ChallengeModifiers`.
+1. Add `import distantlands.gameplay.powers.challenge.ChallengeModifiers`.
 2. Change the doc comment's first line to "The Search, Trade, Muster,
    Recover and Challenge modifiers, registered together with".
 3. Change the closing `VowOfWandering, VowOfPoverty, RelicWorship, SilverCharm)`
@@ -668,7 +668,7 @@ In `ActionModifiers.scala`:
 - [ ] **Step 9: Regenerate the snapshots and run the suites**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"
+NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"
 ```
 
 ```bash
@@ -679,7 +679,7 @@ Expected: `unimplemented.txt` loses exactly `edifice.e27.intact`,
 `relic.sigil-of-the-eye` and `relic.sigil-of-the-heart`;
 `declared-keys.txt` is unchanged.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.challenge.* oathdigital.gameplay.ChallengeProcedureSuite oathdigital.application.gamelog.ProcedureNoteLinesSuite oathdigital.application.chronicle.* oathdigital.gameplay.powers.setup.* oathdigital.gameplay.chronicle.ShapeEmpireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.challenge.* distantlands.gameplay.ChallengeProcedureSuite distantlands.application.gamelog.ProcedureNoteLinesSuite distantlands.application.chronicle.* distantlands.gameplay.powers.setup.* distantlands.gameplay.chronicle.ShapeEmpireSuite"`
 Expected: PASS, including `ChallengeProcedureSuite`'s two "no legal
 banner" tests unchanged.
 
@@ -691,7 +691,7 @@ Exile and p2 away from p1.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReachCards.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/main/scala/oathdigital/model/Imperials.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/gameplay/powers/setup/RuinedSiteSetupRules.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/challenge/ChallengeReachSuite.scala src/test/scala/oathdigital/gameplay/powers/economy/AnimalPlaymatesSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/AnimalHostSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/ThreateningRoarSuite.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/DazzleSuite.scala src/test/scala/oathdigital/gameplay/powers/action/ForestHornSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ShapeEmpireSuite.scala src/test/scala/oathdigital/gameplay/powers/setup/RuinedSetupRulesSuite.scala src/test/scala/oathdigital/application/chronicle/ChronicleTtsCodecSuite.scala src/test/resources/powers/unimplemented.txt
+git add src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReachCards.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/main/scala/distantlands/model/Imperials.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/challenge/ChallengeReachSuite.scala src/test/scala/distantlands/gameplay/powers/economy/AnimalPlaymatesSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/AnimalHostSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/ThreateningRoarSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/DazzleSuite.scala src/test/scala/distantlands/gameplay/powers/action/ForestHornSuite.scala src/test/scala/distantlands/gameplay/chronicle/ShapeEmpireSuite.scala src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala src/test/scala/distantlands/application/chronicle/ChronicleTtsCodecSuite.scala src/test/resources/powers/unimplemented.txt
 git commit -m "$(cat <<'EOF'
 feat(powers): School of Vines and the Sigils widen a Challenge's reach
 
@@ -712,21 +712,21 @@ to 4 and 10) before Task 2.
 ### Task 2: Magician's Code
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/powers/challenge/MagiciansCodeSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReachCards.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (the card moves out)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Modify (imports): every test file importing `oathdigital.catalog.holding.MagiciansCodeCard`, and `RivalKhanSuite`
+- Create: `src/test/scala/distantlands/gameplay/powers/challenge/MagiciansCodeSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReachCards.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (the card moves out)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Modify (imports): every test file importing `distantlands.catalog.holding.MagiciansCodeCard`, and `RivalKhanSuite`
 - Modify: `src/test/resources/powers/unimplemented.txt` (regenerated)
 
 **Interfaces:**
 - Consumes: Task 1's `ChallengeReach`, `ChallengeModifiers`,
   `ChallengeProcedure.legalBanners(state, actor, picks)`.
 - Produces:
-  - `MagiciansCodeCard` in `oathdigital.gameplay.actions.challenge`
+  - `MagiciansCodeCard` in `distantlands.gameplay.actions.challenge`
   - `ChallengeReach.CodeSecrets: Int` (2), `ChallengeReach.codeTooFew: String`
   - `ChallengeReach.bonus(picks: Vector[CardId], banner: Banner): Int`
   - `ChallengeReach.codeReaches(ready: ReadyGame, actor: PlayerId, answered: Vector[Answered]): Boolean`
@@ -734,27 +734,27 @@ to 4 and 10) before Task 2.
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/challenge/MagiciansCodeSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/challenge/MagiciansCodeSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.challenge
+package distantlands.gameplay.powers.challenge
 
-import oathdigital.catalog.ModifierMark
-import oathdigital.gameplay.{ModifierPlay, OathRules}
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
+import distantlands.catalog.ModifierMark
+import distantlands.gameplay.{ModifierPlay, OathRules}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   ChallengeReach, MagiciansCodeCard, SigilOfTheHeartCard}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   ParkedNode, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Magician's Code (card 32), a Challenge modifier for 2 favor: a
   * Challenge of the Darkest Secret gains 2 secrets and places them with
@@ -882,15 +882,15 @@ class MagiciansCodeSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.challenge.MagiciansCodeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.challenge.MagiciansCodeSuite"`
 Expected: compile errors: `MagiciansCodeCard` is not in
-`oathdigital.gameplay.actions.challenge`, and `MagiciansCode`,
+`distantlands.gameplay.actions.challenge`, and `MagiciansCode`,
 `ChallengeReach.codeTooFew` are not found.
 
 - [ ] **Step 3: Move the card beside the Challenge**
 
 1. Append to `ChallengeReachCards.scala`, and add `Denizen` to its
-   `oathdigital.catalog` import:
+   `distantlands.catalog` import:
 
 ```scala
 object MagiciansCodeCard extends Denizen(DenizenId("32"), "Magician's Code", Suit.Arcane):
@@ -906,15 +906,15 @@ object MagiciansCodeCard extends Denizen(DenizenId("32"), "Magician's Code", Sui
 2. In `HoldingArcaneDenizens.scala`, delete `object MagiciansCodeCard`. Its
    imports stay in use.
 3. In `NewFoundations.scala`, add `MagiciansCodeCard` to the
-   `oathdigital.gameplay.actions.challenge` import.
+   `distantlands.gameplay.actions.challenge` import.
 4. Rewrite the test imports:
 
 ```bash
-git grep -l '^import oathdigital.catalog.holding.MagiciansCodeCard$' -- src | xargs perl -pi -e 's/^import oathdigital\.catalog\.holding\.MagiciansCodeCard$/import oathdigital.gameplay.actions.challenge.MagiciansCodeCard/'
+git grep -l '^import distantlands.catalog.holding.MagiciansCodeCard$' -- src | xargs perl -pi -e 's/^import distantlands\.catalog\.holding\.MagiciansCodeCard$/import distantlands.gameplay.actions.challenge.MagiciansCodeCard/'
 ```
 
 ```bash
-perl -pi -e 's/^import oathdigital\.catalog\.holding\.\{MagiciansCodeCard, SearchPartyCard\}$/import oathdigital.catalog.holding.SearchPartyCard\nimport oathdigital.gameplay.actions.challenge.MagiciansCodeCard/' src/test/scala/oathdigital/gameplay/powers/campaign/RivalKhanSuite.scala
+perl -pi -e 's/^import distantlands\.catalog\.holding\.\{MagiciansCodeCard, SearchPartyCard\}$/import distantlands.catalog.holding.SearchPartyCard\nimport distantlands.gameplay.actions.challenge.MagiciansCodeCard/' src/test/scala/distantlands/gameplay/powers/campaign/RivalKhanSuite.scala
 ```
 
 ```bash
@@ -1030,7 +1030,7 @@ In `ChallengeProcedure.scala`:
 
 In `ChallengeModifiers.scala`:
 
-1. Add `Denizen` to the `oathdigital.catalog` import and
+1. Add `Denizen` to the `distantlands.catalog` import and
    `MagiciansCodeCard` to the `gameplay.actions.challenge` import.
 2. Add `MagiciansCode` to `all`:
    `Vector(SchoolOfVines, SigilOfTheEye, SigilOfTheHeart, MagiciansCode)`.
@@ -1061,13 +1061,13 @@ case object MagiciansCode extends SelectedModifier:
 - [ ] **Step 7: Regenerate the snapshots and run the suites**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"
+NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"
 ```
 
 Expected: `unimplemented.txt` loses exactly `denizen.magicians-code`;
 `declared-keys.txt` is unchanged.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.challenge.* oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.PhasePowerSuite oathdigital.gameplay.EconomyWalkerSuite oathdigital.gameplay.MusterProcedureSuite oathdigital.gameplay.TradeProcedureSuite oathdigital.gameplay.MinorActionsSuite oathdigital.testkit.TableSuite oathdigital.application.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.challenge.* distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.PhasePowerSuite distantlands.gameplay.EconomyWalkerSuite distantlands.gameplay.MusterProcedureSuite distantlands.gameplay.TradeProcedureSuite distantlands.gameplay.MinorActionsSuite distantlands.testkit.TableSuite distantlands.application.*"`
 Expected: PASS.
 
 `PhasePowerFixture` uses Magician's Code's printed power as the stand-in
@@ -1079,7 +1079,7 @@ stand-in card changes what those suites assert.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReachCards.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeReach.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/oathdigital/gameplay/powers/challenge/ChallengeModifiers.scala src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/challenge/MagiciansCodeSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/RivalKhanSuite.scala src/test/resources/powers/unimplemented.txt
+git add src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReachCards.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeReach.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala src/main/scala/distantlands/gameplay/powers/challenge/ChallengeModifiers.scala src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/challenge/MagiciansCodeSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/RivalKhanSuite.scala src/test/resources/powers/unimplemented.txt
 ```
 
 Then add, by name, each test file the import rewrite in Step 3 changed
@@ -1103,11 +1103,11 @@ EOF
 ### Task 3: Favored Son, docs and gates
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/whenplayed/FavoredSon.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/whenplayed/FavoredSonSuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeRibbon.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala` (the card moves out)
+- Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/FavoredSon.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/whenplayed/FavoredSonSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeRibbon.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` (the card moves out)
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/notes/declared-keys.txt` (regenerated)
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`
 - Modify: `docs/ROADMAP.md`
@@ -1118,24 +1118,24 @@ EOF
   - `ChallengeRibbon` widened to `private[gameplay]`, with
     `peoplesFavorReturns(ready: ReadyGame): Vector[CoreOperation]`
   - `FavoredSonCard` and `case object FavoredSon extends WhenPlayedPower`
-    in `oathdigital.gameplay.powers.whenplayed`, with note keys `took`,
+    in `distantlands.gameplay.powers.whenplayed`, with note keys `took`,
     `held` and `none`
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/whenplayed/FavoredSonSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/whenplayed/FavoredSonSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.banner.SecretTestamentCard
-import oathdigital.gameplay.powers.targeting.{LostTongue, LostTongueCard}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.banner.SecretTestamentCard
+import distantlands.gameplay.powers.targeting.{LostTongue, LostTongueCard}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
 
 /** Favored Son (card 235), WHEN PLAYED: take the People's Favor, and
   * return its favor by its left ribbon (catalog batch 10, slice 11). */
@@ -1208,7 +1208,7 @@ class FavoredSonSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.FavoredSonSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.FavoredSonSuite"`
 Expected: compile error: `FavoredSon` is not found.
 
 - [ ] **Step 3: Give the ribbon one source**
@@ -1229,17 +1229,17 @@ In `ChallengeRibbon.scala`:
 
 - [ ] **Step 4: Implement Favored Son**
 
-Create `src/main/scala/oathdigital/gameplay/powers/whenplayed/FavoredSon.scala`.
+Create `src/main/scala/distantlands/gameplay/powers/whenplayed/FavoredSon.scala`.
 The card is copied from `HoldingHearthDenizens.scala` unchanged:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.challenge.ChallengeRibbon
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.challenge.ChallengeRibbon
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
 
 object FavoredSonCard extends Denizen(DenizenId("235"), "Favored Son", Suit.Hearth) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.favored-son"),
@@ -1307,7 +1307,7 @@ Then:
 
 1. In `HoldingHearthDenizens.scala`, delete `object FavoredSonCard` and
    narrow the catalog import to
-   `import oathdigital.catalog.{Denizen, PrintedPower}`: Deed Writer, the
+   `import distantlands.catalog.{Denizen, PrintedPower}`: Deed Writer, the
    card left, is neither locked nor adviser-only.
 2. In `WhenPlayedPowers.scala`, change `Pilgrimage, AutumnWind)` to
    `Pilgrimage, AutumnWind, FavoredSon)`.
@@ -1315,7 +1315,7 @@ Then:
 - [ ] **Step 5: Regenerate the snapshots and run the suites**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"
+NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"
 ```
 
 ```bash
@@ -1331,7 +1331,7 @@ denizen.favored-son none = The {0} did not move.
 denizen.favored-son took = Took the {0}.
 ```
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.banner.* oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.powers.challenge.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.banner.* distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.powers.challenge.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Update the spec**
@@ -1430,7 +1430,7 @@ Expected: every test passes, and statement coverage is at least 92%.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/FavoredSon.scala src/test/scala/oathdigital/gameplay/powers/whenplayed/FavoredSonSuite.scala src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeRibbon.scala src/main/scala/oathdigital/gameplay/powers/whenplayed/WhenPlayedPowers.scala src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/FavoredSon.scala src/test/scala/distantlands/gameplay/powers/whenplayed/FavoredSonSuite.scala src/main/scala/distantlands/gameplay/actions/challenge/ChallengeRibbon.scala src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'
 feat(powers): implement Favored Son
 

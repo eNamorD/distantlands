@@ -1,0 +1,95 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+
+/** The Rampart edifice: two more defense dice for its ruler when their pawn is
+  * at its site or the site is targeted (intact), one more when it is targeted
+  * (ruined). It is a plan of the site's ruler, and a bandit ruler applies it
+  * without choosing.
+  */
+class RampartSuite extends munit.FunSuite:
+  // Towering Rampart intact, Cracked Rampart ruined.
+  private val edifice = ToweringRampartCard.id
+  private val defensePool = CampaignIds.defensePool
+
+  /** The other player rules the origin, which the Campaign targets. */
+  private def targeted(face: EdificeSide): Board =
+    val base = rivalRulesOriginAndHoldsOathkeeper(
+      board(warbands = 5, supply = 7))
+    withEdifice(base, base.origin, edifice, face)
+
+  /** The other player also rules a second site, which is not targeted. */
+  private def untargeted(face: EdificeSide, pawnThere: Boolean): Board =
+    val two = rivalRulesOriginAndHoldsOathkeeper(
+      board(extras = 1, warbands = 5, supply = 7))
+    val extra = two.extras.head
+    // The rival rules the untargeted extra site too, with 2 warbands.
+    val ruled = on(two)(_.warbandsAt(extra, two.rival, 2))
+    val staged = withEdifice(ruled, extra, edifice, face)
+    if !pawnThere then staged
+    else on(staged)(_.pawn(staged.rival, at = extra))
+
+  private val edificeRef: DecisionOptionRef =
+    DecisionOptionRef.Edifice(edifice)
+
+  test("Towering Rampart at a targeted site adds two defense dice"):
+    val b = targeted(EdificeSide.Intact)
+    val run = commit(rules(losingDice), b, 4)
+    assert(awaits(run, b.rival, CampaignIds.defenderPlan))
+    val picked = run.pick(b.rival, CampaignIds.defenderPlan, edificeRef)
+    assertEquals(picked.since(run), Vector[CoreOperation](
+      OpenPick(CampaignIds.defenderPlan, edificeRef),
+      ModifyDicePool(defensePool, 2), ClosePick()))
+
+  test("Towering Rampart at a site that is neither targeted nor the ruler's " +
+      "pawn's is not offered"):
+    val b = untargeted(EdificeSide.Intact, pawnThere = false)
+    val run = commit(rules(losingDice), b, 4)
+    // Only the title's plan is left to choose.
+    assertEquals(run.offered(b.actor), Vector[DecisionOptionRef](
+      DecisionOptionRef.Button("title"), CampaignIds.finish))
+
+  test("Towering Rampart is offered where the ruler's pawn stands, though " +
+      "the site is not targeted"):
+    val b = untargeted(EdificeSide.Intact, pawnThere = true)
+    val run = commit(rules(losingDice), b, 4)
+    val picked = run.pick(b.rival, CampaignIds.defenderPlan, edificeRef)
+    assertEquals(picked.since(run), Vector[CoreOperation](
+      OpenPick(CampaignIds.defenderPlan, edificeRef),
+      ModifyDicePool(defensePool, 2), ClosePick()))
+
+  test("Cracked Rampart adds one defense die at a targeted site"):
+    val b = targeted(EdificeSide.Ruined)
+    val run = commit(rules(losingDice), b, 4)
+    val picked = run.pick(b.rival, CampaignIds.defenderPlan, edificeRef)
+    assertEquals(picked.since(run), Vector[CoreOperation](
+      OpenPick(CampaignIds.defenderPlan, edificeRef),
+      ModifyDicePool(defensePool, 1), ClosePick()))
+
+  test("Cracked Rampart is not offered where the site is not targeted, " +
+      "whatever the pawn does"):
+    val b = untargeted(EdificeSide.Ruined, pawnThere = true)
+    assertEquals(commit(rules(losingDice), b, 4).offered(b.actor),
+      Vector[DecisionOptionRef](DecisionOptionRef.Button("title"),
+        CampaignIds.finish))
+
+  test("a chosen Rampart plan is not offered again"):
+    val b = targeted(EdificeSide.Intact)
+    val picked = commit(rules(losingDice), b, 4)
+      .pick(b.rival, CampaignIds.defenderPlan, edificeRef)
+    assertEquals(picked.offered(b.actor), Vector[DecisionOptionRef](
+      DecisionOptionRef.Button("title"), CampaignIds.finish))
+
+  test("a bandit ruler applies it without choosing, at a targeted site"):
+    val base = board(warbands = 5, supply = 7)
+    val b = withEdifice(base, base.origin, edifice, EdificeSide.Intact)
+    def defensePoolChanges(run: Run): Int = run.ops.count:
+      case ModifyDicePool(`defensePool`, _, _) => true
+      case _ => false
+    val before = commit(rules(losingDice), board(warbands = 5, supply = 7), 2)
+    val run = commit(rules(losingDice), b, 2)
+    assert(awaits(run, b.actor, CampaignIds.sacrifice))
+    assertEquals(defensePoolChanges(run), defensePoolChanges(before) + 1)

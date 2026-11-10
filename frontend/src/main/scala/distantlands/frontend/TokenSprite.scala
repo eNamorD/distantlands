@@ -1,0 +1,110 @@
+package distantlands.frontend
+
+import org.scalajs.dom
+
+/** The seventeen catalog icon tokens, and the warband the Supply track
+  * draws, as one inline SVG sprite.
+  *
+  * Inline SVG rather than Unicode because colour-emoji glyphs ignore CSS
+  * `color` entirely, and non-emoji Unicode has no character resembling a
+  * cracked coin or a torn book -- which is exactly what the two burnt tokens
+  * need. `currentColor` inside a `<symbol>` resolves against the referencing
+  * `<use>`, so a class on the `<use>`'s owner colours the glyph.
+  *
+  * Each token has its own shape (DESIGN.md, Shape First Rule): a secret is a
+  * solid book with a spine notch and the defense die a shield with two pips,
+  * so the two never blur into one another at a glance. Every path is filled
+  * even-odd, which is what cuts the notch and the pips out.
+  */
+private[frontend] object TokenSprite:
+  private val Svg = "http://www.w3.org/2000/svg"
+
+  /** token name -> (accessible name, path data). Order is the sprite order. */
+  private val glyphs: Vector[(String, String, String)] = Vector(
+    ("favor", "favor",
+      "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"),
+    ("favor-burnt", "burnt favor",
+      "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12z" +
+        "M11.2 2.1l2 .2-1.4 4.6 2.6 2.4-2.9 3.3 2.1 9.3-1.9.2-1.8-9.7 2.8-3.2-2.5-2.3z"),
+    ("secret", "secret",
+      "M4 3h13a2 2 0 0 1 2 2v16H7a3 3 0 0 1-3-3zM8 6v12h1.6V6z"),
+    ("secret-burnt", "burnt secret",
+      "M4 3h13a2 2 0 0 1 2 2v16H7a3 3 0 0 1-3-3zM8 6v12h1.6V6z" +
+        "M11.4 3l1.9.4-1.7 4.3 2.7 2.6-2.6 3 1.6 7.6-1.9.4-1.8-8.2 2.5-2.9-2.4-2.3z"),
+    ("suit-arcane", "arcane suit",
+      "M12 2 22 21H2zm0 6-1.2 3.6H7l3 2.3-1.2 3.6L12 15.2l3.2 2.3L14 13.9l3-2.3h-3.8z"),
+    ("suit-beast", "beast suit",
+      "M2 2l5 6h10l5-6-2 9-8 11-8-11zm7 9h2v2H9zm4 0h2v2h-2z"),
+    ("suit-discord", "discord suit",
+      "M3 2l4 6a8 8 0 0 1 10 0l4-6-2 8a8 8 0 1 1-14 0zM9 12h2v2H9zm4 0h2v2h-2z"),
+    ("suit-hearth", "hearth suit",
+      "M12 2 2 12h3v9h14v-9h3zm-2 12h4v7h-4z"),
+    ("suit-nomad", "nomad suit",
+      "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" +
+        "M7.4 10.3A1.3 1.3 0 0 0 10 10.3L9.45 10.3A.75 .75 0 0 1 7.95 10.3Z" +
+        "M14 10.3A1.3 1.3 0 0 0 16.6 10.3L16.05 10.3A.75 .75 0 0 1 14.55 10.3Z" +
+        "M10 15h4v1h-4z"),
+    ("suit-order", "order suit",
+      "M3 3h18v18H3zm2 2v14h14V5zm3 3h2v2H8zm6 0h2v2h-2zm-6 6h2v2H8zm6 0h2v2h-2z" +
+        "m-3-3h2v2h-2z"),
+    ("attack-die", "attack die",
+      "M4 4h16v16H4zm2 2v12h12V6zm2 2h2.5v2.5H8zm2.75 2.75h2.5v2.5h-2.5z" +
+        "M13.5 13.5H16V16h-2.5z"),
+    ("defense-die", "defense die",
+      "M12 1.5 20.5 4.8v6.4c0 5.2-3.6 9.4-8.5 11.3-4.9-1.9-8.5-6.1-8.5-11.3V4.8z" +
+        "M9 8h2.6v2.6H9zm3.4 4.2H15v2.6h-2.6z"),
+    ("round-die", "round die",
+      "M6 3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" +
+        "m0 2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z" +
+        "m4.5 5.5h3v3h-3z"),
+    ("skull", "skull",
+      "M12 2a8 8 0 0 0-8 8v4l2 2v4h3v-3h6v3h3v-4l2-2v-4a8 8 0 0 0-8-8z" +
+        "M8.5 9.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm7 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"),
+    ("shield", "shield",
+      "M12 2 3 5v7c0 5.2 3.8 9.4 9 11 5.2-1.6 9-5.8 9-11V5z" +
+        "m0 2.3 7 2.3V12c0 4-2.8 7.4-7 8.9-4.2-1.5-7-4.9-7-8.9V6.6z"),
+    ("sword", "sword",
+      "M12 1 16 6v8H8V6zM5 14h14v3H5zm5.5 3h3v6h-3z"),
+    // The same sword in outline: blade, guard and grip are each a ring, so
+    // the hollow reads at log size where a sliver of a hollow did not.
+    ("hollow-sword", "hollow sword",
+      "M12 1 16 6v8H8V6zm0 3.4L10 7v5h4V7zM4.5 14h15v4h-15z" +
+        "m1.8 1.4v1.2h11.4v-1.2zM10 18h4v5h-4zm1.4 1.2v2.6h1.2v-2.6z"),
+    // Not a catalog token: the Supply track prints it under each band, as
+    // the physical board does. The warband's banner: a cloth hung from its
+    // top edge, flaring a little, its foot cut in an uneven swallowtail, and
+    // the ring of its device cut out of it.
+    ("warband", "warband",
+      "M6 2h12l1.6 19.5-7-5.5-7.2 5.5z" +
+        "M12 5.7a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8z")
+  )
+
+  val ids: Vector[String] = glyphs.map(_._1)
+
+  private val labels: Map[String, String] =
+    glyphs.map { case (id, label, _) => id -> label }.toMap
+
+  def label(token: String): String = labels.getOrElse(token, token)
+
+  def isToken(value: String): Boolean = labels.contains(value)
+
+  /** Appends the hidden sprite once. A second call on the same root is inert,
+    * so callers need not track whether the document already has it.
+    */
+  def mount(root: dom.Element): Unit =
+    if root.querySelector("svg.token-sprite") == null then
+      val sprite = dom.document.createElementNS(Svg, "svg")
+      sprite.setAttribute("class", "token-sprite")
+      sprite.setAttribute("aria-hidden", "true")
+      glyphs.foreach { case (id, _, path) =>
+        val symbol = dom.document.createElementNS(Svg, "symbol")
+        symbol.setAttribute("id", s"token-$id")
+        symbol.setAttribute("viewBox", "0 0 24 24")
+        val shape = dom.document.createElementNS(Svg, "path")
+        shape.setAttribute("d", path)
+        shape.setAttribute("fill", "currentColor")
+        shape.setAttribute("fill-rule", "evenodd")
+        symbol.appendChild(shape)
+        sprite.appendChild(symbol)
+      }
+      root.appendChild(sprite)

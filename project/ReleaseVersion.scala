@@ -6,7 +6,7 @@ object ReleaseVersion {
     case None => "0.1.0-SNAPSHOT"
     case Some(value) if prerelease.pattern.matcher(value).matches() => value
     case Some(_) => sys.error(
-      "OATH_RELEASE_VERSION must be X.Y.Z-(alpha|beta|rc).N without leading zeros"
+      "DLQ_RELEASE_VERSION must be X.Y.Z-(alpha|beta|rc).N without leading zeros"
     )
   }
 }

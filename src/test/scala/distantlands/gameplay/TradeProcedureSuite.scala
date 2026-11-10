@@ -1,0 +1,107 @@
+package distantlands.gameplay
+
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powers.action.AlchemistCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.StartPreview
+
+class TradeProcedureSuite extends munit.FunSuite:
+  private val favor = Vector[DecisionOptionRef](DecisionOptionRef.Button("favor"))
+  private val secret = Vector[DecisionOptionRef](DecisionOptionRef.Button("secret"))
+  private val alchemist = AlchemistCard.id
+
+  /** p1 stands at Ancient City, which holds the token-free Alchemist
+    * (Arcane) and nothing else. p1 has 4 favor and 2 faceup secrets, and
+    * the Arcane bank holds 5. */
+  private def atAlchemist: Table = Table.start
+    .pawn(p1, at = AncientCitySite)
+    .denizen(alchemist, at = AncientCitySite)
+    .favor(p1, 4).secrets(p1, faceUp = 2)
+    .bankFavor(Suit.Arcane, 5)
+
+  private def trade(ready: ReadyGame, args: Vector[DecisionOptionRef])
+      : ReadyGame =
+    val tree = accepted(TradeProcedure.build(catalog, ready, p1, args))
+    val pending = Outcomes.parked(
+      ProcedureWalker.advance(ready, tree, None, WalkerPowers.empty)).tree
+    val answer = Answered(TradeProcedure.decisionId,
+      DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Denizen(alchemist)), p1)
+    Outcomes.finished(ProcedureWalker.resolve(ready, tree, pending, answer,
+      WalkerPowers.empty)).treeless
+
+  test("Trade for favor moves a secret and its yield is capped by the bank"):
+    val ready = atAlchemist
+      .adviser(p1, MagiciansCodeCard)       // Arcane, like Alchemist
+      .bankFavor(Suit.Arcane, 1)
+      .ready
+    val after = trade(ready, favor)
+    assertEquals(Look(after).faceUpSecrets(p1), 1)
+    assertEquals(Look(after).favor(p1), 5)
+    assertEquals(after.banks.favor(Suit.Arcane), 0)
+
+  test("Trade for favor without a matching adviser yields one favor"):
+    val after = trade(atAlchemist.ready, favor)
+    assertEquals(Look(after).favor(p1), 5)
+    assertEquals(after.banks.favor(Suit.Arcane), 4)
+
+  test("Trade for secrets places one favor, burns one and yields the matches"):
+    val ready = atAlchemist.adviser(p1, MagiciansCodeCard).ready  // Arcane too
+    val after = Look(trade(ready, secret))
+    assertEquals(after.favor(p1), 2)
+    assertEquals(after.faceUpSecrets(p1), 3)
+    assertEquals(after.tokensOn(alchemist), Tokens(1, 0))
+
+  test("Trade for secrets with no matching adviser yields nothing and still pays"):
+    val after = Look(trade(atAlchemist.ready, secret))
+    assertEquals(after.favor(p1), 2)
+    assertEquals(after.faceUpSecrets(p1), 2)
+
+  test("a Trade the actor cannot pay for offers no source"):
+    assertEquals(StartPreview.firstDecisionOptions(catalog,
+      atAlchemist.favor(p1, 1).ready, p1, ActionRef.Trade, WalkerPowers.empty,
+      TradeProcedure.selection(TradeResource.Secret)), Vector.empty)
+    assertEquals(StartPreview.firstDecisionOptions(catalog,
+      atAlchemist.secrets(p1, faceUp = 0).ready, p1, ActionRef.Trade,
+      WalkerPowers.empty, TradeProcedure.selection(TradeResource.Favor)),
+      Vector.empty)
+
+  test("the start selection must be exactly one resource button"):
+    val ready = atAlchemist.ready
+    assertEquals(TradeProcedure.resourceOf(favor), Right(TradeResource.Favor))
+    assertEquals(TradeProcedure.resourceOf(secret), Right(TradeResource.Secret))
+    Vector(
+      Vector.empty[DecisionOptionRef] -> "",
+      Vector[DecisionOptionRef](DecisionOptionRef.Button("gold")) ->
+        "button/gold",
+      Vector[DecisionOptionRef](DecisionOptionRef.Denizen(alchemist)) ->
+        s"denizen/${alchemist.value}",
+      (favor ++ secret) -> "button/favor, button/secret"
+    ).foreach { (args, got) =>
+      val refusal = OathViolation.InvalidEventOrder("trade takes exactly one " +
+        s"resource button, favor or secret, as its start selection, got $got")
+      assertEquals(TradeProcedure.build(catalog, ready, p1, args).left.toOption,
+        Some(refusal), args.toString)
+      assertEquals(
+        TradeProcedure.rebuild(catalog, ready, p1, args).left.toOption,
+        Some(refusal), args.toString)
+    }
+
+  test("an intact edifice is a legal Trade source"):
+    val ready = Table.start.pawn(p1, at = AncientCitySite)
+      .favor(p1, 4).secrets(p1, faceUp = 2)
+      .edifice(HallowedSpringCard, EdificeSide.Intact, at = AncientCitySite)
+      .ready
+    val options = StartPreview.firstDecisionOptions(catalog, ready, p1,
+        ActionRef.Trade, WalkerPowers.empty,
+        TradeProcedure.selection(TradeResource.Secret))
+    assertEquals(options.map(_.option.ref), Vector(DecisionOptionRef.Edifice(
+      HallowedSpringCard.id)))
+    accepted(options.head.outcome)

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Bring `src/main/scala/oathdigital/model/CoreOperations.scala`
+**Goal:** Bring `src/main/scala/distantlands/model/CoreOperations.scala`
 from 787 lines to at most 720, with no change in behaviour, so that
 slices 3 and 7 have room for their operations under the 800-line cap.
 
@@ -12,7 +12,7 @@ helpers that build composites' children move to a new
 `private[model] object OperationChildren`. The two card-play hooks, which
 extend the unsealed `Operation`, move to `CardPlayHooks.scala`. A stale
 16-line banner comment is rewritten in 7 lines. Everything stays in package
-`oathdigital.model`, so no import anywhere changes.
+`distantlands.model`, so no import anywhere changes.
 
 **Tech Stack:** Scala 3, munit, `./sbtw` (sbt wrapper), `-Werror`.
 
@@ -36,7 +36,7 @@ read "Goal and scope" and "Slice 0: Room in CoreOperations".
    `returnedSecrets` in `RestCleanup` and `ChallengeRibbon` are unrelated
    names.)
 3. **The hooks need no import changes.** The 28 files that name
-   `CardPlayedFaceup` or `CardPlayedFacedown` import `oathdigital.model._`
+   `CardPlayedFaceup` or `CardPlayedFacedown` import `distantlands.model._`
    or sit in the package, and the classes stay in that package.
 4. **The banner at lines 481-496 is stale.** It says power windows are "not
    wired in this slice", but `Roll` and `ModifyDicePool` now take a
@@ -76,11 +76,11 @@ read "Goal and scope" and "Slice 0: Room in CoreOperations".
 ### Task 1: Move the child builders to OperationChildren
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/OperationChildren.scala`
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala`
+- Create: `src/main/scala/distantlands/model/OperationChildren.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala`
   (`object Bury` 109-122, `object Discard` 125-251, `RemoveFromMap`
   260-268, `PayCost` 370-378)
-- Test: `src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala`
 
 **Interfaces:**
 - Produces: `private[model] object OperationChildren` with
@@ -98,7 +98,7 @@ read "Goal and scope" and "Slice 0: Room in CoreOperations".
 
 Add this test to `CoreOperationsSuite`, after the test "Discard routes
 cards and their resources by glossary rules". The suite already defines
-`red`, `redArea` and `site`, and imports `oathdigital.model._`.
+`red`, `redArea` and `site`, and imports `distantlands.model._`.
 
 ```scala
   test("a payment, a buried discard and a relic discard keep their leaves"):
@@ -143,7 +143,7 @@ cards and their resources by glossary rules". The suite already defines
 
 - [ ] **Step 2: Run it on today's code**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoreOperationsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CoreOperationsSuite"`
 Expected: PASS. If it fails, the expected leaves above misread today's
 code: fix the test to match today's leaves, never the code, and say so in
 the commit message.
@@ -151,7 +151,7 @@ the commit message.
 - [ ] **Step 3: Create `OperationChildren.scala`**
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /** Builds the children of the composite operations in
   * `CoreOperations.scala`: a world card's discard move, the favor and
@@ -297,13 +297,13 @@ nothing is shadowed.
 
 - [ ] **Step 5: Run the operation suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoreOperationsSuite oathdigital.gameplay.OperationVocabularySuite oathdigital.gameplay.operations.* oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CoreOperationsSuite distantlands.gameplay.OperationVocabularySuite distantlands.gameplay.operations.* distantlands.serialization.*"`
 Expected: PASS, with no compiler warning (`-Werror`).
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/OperationChildren.scala src/main/scala/oathdigital/model/CoreOperations.scala src/test/scala/oathdigital/gameplay/CoreOperationsSuite.scala
+git add src/main/scala/distantlands/model/OperationChildren.scala src/main/scala/distantlands/model/CoreOperations.scala src/test/scala/distantlands/gameplay/CoreOperationsSuite.scala
 git commit -m "$(cat <<'EOF'
 refactor(model): build composite operations' children in OperationChildren
 
@@ -319,8 +319,8 @@ EOF
 ### Task 2: Move the card-play hooks, trim the banner, close the item
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/CardPlayHooks.scala`
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (the
+- Create: `src/main/scala/distantlands/model/CardPlayHooks.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (the
   walker banner at 481-496, the hooks at the end of the file)
 - Modify: `docs/ROADMAP.md`, `docs/superpowers/specs/2026-11-07-catalog-batch-11-design.md`
 
@@ -334,7 +334,7 @@ EOF
 Move the two classes verbatim, doc comments included:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 // The card-play hooks are power windows, not Oath operations: they extend
 // the unsealed [[Operation]], so they live outside `CoreOperations.scala`
@@ -386,7 +386,7 @@ land.") with:
 - [ ] **Step 3: Check the line count and the gates**
 
 ```bash
-wc -l src/main/scala/oathdigital/model/CoreOperations.scala
+wc -l src/main/scala/distantlands/model/CoreOperations.scala
 ```
 
 Expected: at most 720 (about 717).
@@ -440,7 +440,7 @@ statement coverage is at least 92%.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CardPlayHooks.scala src/main/scala/oathdigital/model/CoreOperations.scala docs/ROADMAP.md docs/superpowers/specs/2026-11-07-catalog-batch-11-design.md
+git add src/main/scala/distantlands/model/CardPlayHooks.scala src/main/scala/distantlands/model/CoreOperations.scala docs/ROADMAP.md docs/superpowers/specs/2026-11-07-catalog-batch-11-design.md
 git commit -m "$(cat <<'EOF'
 refactor(model): move the card-play hooks out of CoreOperations.scala
 

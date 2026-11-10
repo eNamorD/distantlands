@@ -1,0 +1,82 @@
+package distantlands.application.gamelog
+
+import distantlands.application.WalkerDecisionProjector
+import distantlands.model._
+import distantlands.protocol.projection.LogSpan
+import LogSpan.Text
+
+/** A chosen option as the log names it: a player, site, card or banner as
+  * its typed reference (a card following the visibility rule), a button as
+  * the label its chooser was shown. */
+private[gamelog] final class ChoiceWords(words: LogWords,
+    decisions: WalkerDecisionProjector):
+  def options(refs: Vector[DecisionOptionRef], before: ReadyGame,
+      after: ReadyGame, viewer: Option[PlayerId]): Vector[LogSpan] =
+    LogWords.join(refs.map(option(_, before, after, viewer)))
+
+  def option(ref: DecisionOptionRef, before: ReadyGame, after: ReadyGame,
+      viewer: Option[PlayerId]): Vector[LogSpan] = ref match
+    case DecisionOptionRef.Button(key) =>
+      Vector(Text(shown(before, ref).getOrElse(words.label(key))))
+    case DecisionOptionRef.Player(id) => Vector(words.player(id))
+    case DecisionOptionRef.Site(id) => Vector(words.site(id))
+    case DecisionOptionRef.Denizen(id) => card(id, before, after, viewer)
+    case DecisionOptionRef.Relic(id) => card(id, before, after, viewer)
+    case DecisionOptionRef.Vision(id) => card(id, before, after, viewer)
+    case DecisionOptionRef.Edifice(id) => card(id, before, after, viewer)
+    case DecisionOptionRef.RelicSlot(owner, slot) =>
+      Vector(words.player(owner), Text(s"'s facedown relic (slot ${slot + 1})"))
+    case DecisionOptionRef.AdviserSlot(owner, slot) =>
+      before.game.current.player(owner)
+        .flatMap(_.advisers.lift(slot)).fold(Vector[LogSpan](
+          words.player(owner), Text(s"'s adviser (slot ${slot + 1})")))(held =>
+          // A card the viewer may not identify is counted, never placed:
+          // its slot is a position its holder may not have shown.
+          words.card(held.id, before, after, viewer) match
+            case CardWord.Named(span) =>
+              Vector(words.player(owner), Text("'s "), span)
+            case back: CardWord.Back =>
+              words.one(back) ++ Vector(Text(" from "), words.player(owner),
+                Text("'s advisers")))
+    case DecisionOptionRef.Banner(banner) => Vector(words.banner(banner))
+    case DecisionOptionRef.Deck(deck) => Vector(Text(words.label(deck.key)))
+    case DecisionOptionRef.FavorBank(suit) => Vector(Text(s"the $suit bank"))
+    case DecisionOptionRef.SiteSlot(site, slot) =>
+      Vector(Text(s"slot ${slot + 1} at "), words.site(site))
+    case DecisionOptionRef.SiteRelicSlot(site, slot) =>
+      before.game.current.map.sites.get(site).flatMap(_.relics.lift(slot))
+        .fold(Vector[LogSpan](Text(s"relic ${slot + 1}")))(held =>
+          card(held.id, before, after, viewer)) ++
+        Vector(Text(" at "), words.site(site))
+    case DecisionOptionRef.AdviserPlay(owner, slot, faceup) =>
+      Vector(words.player(owner), Text(s"'s adviser slot ${slot + 1}, " +
+        (if faceup then "faceup" else "facedown")))
+    case DecisionOptionRef.RevealedVision(owner) =>
+      Vector(words.player(owner), Text("'s revealed Vision"))
+    case DecisionOptionRef.DiscardPile(region) =>
+      Vector(Text(s"the ${region.key.capitalize} discard"))
+
+  private def card(id: CardId, before: ReadyGame, after: ReadyGame,
+      viewer: Option[PlayerId]): Vector[LogSpan] =
+    words.one(words.card(id, before, after, viewer))
+
+  /** The label the parked decision gave `ref`. */
+  private def shown(before: ReadyGame, ref: DecisionOptionRef)
+      : Option[String] =
+    decisions.openDecisions(before).flatMap(_.query match
+      case one: DecisionQuery.ChooseOne => one.options
+      case many: DecisionQuery.ChooseMany => many.options
+      case _ => Vector.empty).flatMap(labelled(ref)).headOption
+
+  private def labelled(ref: DecisionOptionRef)(option: DecisionOption)
+      : Option[String] = option match
+    case DecisionOption.Button(button, label) if button == ref => Some(label)
+    case DecisionOption.Priced(inner, _) => labelled(ref)(inner)
+    case DecisionOption.Badged(inner, _) => labelled(ref)(inner)
+    case DecisionOption.Lent(inner, _) => labelled(ref)(inner)
+    case DecisionOption.Grouped(inner, _) => labelled(ref)(inner)
+    case DecisionOption.Warned(inner, _) => labelled(ref)(inner)
+    case DecisionOption.Unavailable(inner, _) => labelled(ref)(inner)
+    case DecisionOption.Replacing(inner, _) => labelled(ref)(inner)
+    case DecisionOption.Burying(inner, _) => labelled(ref)(inner)
+    case _ => None

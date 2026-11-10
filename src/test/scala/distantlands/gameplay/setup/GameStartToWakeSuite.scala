@@ -1,0 +1,28 @@
+package distantlands.gameplay.setup
+
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
+import distantlands.testkit.Unwrap.accepted
+
+class GameStartToWakeSuite extends munit.FunSuite:
+  private val catalog = FirstGameSetupFixture.catalog
+  private val rules = new OathRules(catalog)
+  private val parked = new ParkedDecisionAssertions(catalog)
+  private val chronicle = FirstGameSetupFixture.chronicle
+  private val orders = FirstGameSetupFixture.orders
+
+  test("beginGame parks on the first player's pawn-placement decision"):
+    val transition =
+      accepted(rules.beginGame(OathState.NoGame, chronicle, orders))
+    parked.assertParked(transition.state, TriggeredProcedureRef.Setup,
+      SetupProcedure.pawnDecisionId(orders.firstPlayer), orders.firstPlayer)
+
+  test("replaying the recorded events reproduces the same Ready state with no RNG"):
+    val transition =
+      accepted(rules.beginGame(OathState.NoGame, chronicle, orders))
+    val replayed = transition.events.foldLeft[Either[OathViolation, OathState]](
+      Right(OathState.NoGame)):
+      case (Right(state), event) => rules.evolve(state, event)
+      case (left, _) => left
+    assertEquals(replayed, Right(transition.state))

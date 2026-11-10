@@ -1,0 +1,49 @@
+package distantlands.gameplay.powers.wake
+
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, RiverbankSite, TidalMarshesSite}
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.model._
+import distantlands.testkit.Table
+
+/** Staging for the River. The first game has one River in play, Ancient
+  * City, where the actor's pawn stands. `withRivers` puts more in play.
+  */
+object RiverFixture:
+  import PowerFixture._
+
+  val ancientCity: SiteId = AncientCitySite.id
+  val riverbank: SiteId = RiverbankSite.id
+  val tidalMarshes: SiteId = TidalMarshesSite.id
+
+  /** Ancient City's River. */
+  lazy val river: RiverSitePower = RiverSitePower.all
+    .find(_.site == ancientCity).get
+
+  /** `rivers` take the places of the first in-play sites, in map order, that
+    * are not a River and hold no pawn. Each keeps the replaced site's state,
+    * so every card and piece stays in the game.
+    */
+  def withRivers(ready: ReadyGame, rivers: Vector[SiteId]): ReadyGame =
+    val current = ready.game.current
+    require(rivers.forall(!current.map.inPlay.contains(_)),
+      s"already in play: $rivers")
+    val pawns = current.players.flatMap(_.pawnSite).toSet
+    val replaced = current.map.inPlay.filter(site =>
+      !RiverSitePower.isRiver(site) && !pawns.contains(site))
+      .take(rivers.size)
+    val swaps = replaced.zip(rivers).toMap
+    def swap(ids: Vector[SiteId]) = ids.map(id => swaps.getOrElse(id, id))
+    // No Table step puts a River in play.
+    ready.updateCurrent(c => c.copy(map = c.map.copy(
+      cradle = swap(c.map.cradle), provinces = swap(c.map.provinces),
+      hinterland = swap(c.map.hinterland),
+      sites = swaps.foldLeft(c.map.sites) { case (sites, (from, to)) =>
+        sites.removed(from).updated(to, sites(from)) })))
+
+  /** The quiet table in `phase` with `rivers` put in play: p1's pawn at
+    * Ancient City, p2's at Broken Peaks and p3's at Buried Giant. */
+  def staged(rivers: Vector[SiteId], phase: Phase): ReadyGame =
+    val pawns = Table.from(quietTable).pawn(Table.p2, BrokenPeaksSite)
+      .pawn(Table.p3, BuriedGiantSite).ready
+    inPhase(withRivers(pawns, rivers), phase)

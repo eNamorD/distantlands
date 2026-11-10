@@ -19,12 +19,12 @@
 
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn` on both projects. An unused import or private member fails the build.
 - Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`).
-- `shared/src/main` may import only `oathdigital.protocol`. `application` must not import `persistence`, `serialization` or `server`. This slice touches none of them.
-- Never touch the live database `var/oathdigital`. Browser checks use a scratch copy only.
+- `shared/src/main` may import only `distantlands.protocol`. `application` must not import `persistence`, `serialization` or `server`. This slice touches none of them.
+- Never touch the live database `var/distantlands`. Browser checks use a scratch copy only.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Never commit `node_modules`, `.tooling` or `target`.
 - Work in a git worktree. `EnterWorktree` branches from `origin`, which lags local `main`, so fast-forward the new branch to local `main` first. Then symlink the main checkout's `.tooling` into the worktree before the first `./sbtw`.
 - Commit trailer: the committing model's own `Co-Authored-By` line.
-- The marker key is exactly `oath.log.seen.{gameId}.{seatId}`, and its value is a journal sequence written as decimal digits. The divider's text is exactly "Since you last looked". The chip's text is exactly "New".
+- The marker key is exactly `distantlands.log.seen.{gameId}.{seatId}`, and its value is a journal sequence written as decimal digits. The divider's text is exactly "Since you last looked". The chip's text is exactly "New".
 - `TestBrowser` keeps throwing on `localStorage` and `sessionStorage`. Suites that need a store supply a fake `LogStore`; nothing lifts the trap.
 - Entries are never re-rendered or reordered by this slice. The divider and the chip are client-only nodes and are never sent anywhere.
 - DESIGN.md forbids `transition`, `animation` and resting shadows, and keeps saturated color for pieces only. Functional text holds the 11px floor.
@@ -48,7 +48,7 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
 
 ### Facts this plan relies on (verified against the code on 2026-09-26, at `3f9448fe`)
 
-- **The pane.** `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala` (67 lines) is `final class GameLogPane(content: dom.html.Element)`.
+- **The pane.** `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala` (67 lines) is `final class GameLogPane(content: dom.html.Element)`.
   - `show(sessionKey, entries, colors)` appends when the new entries extend the ones shown, and otherwise redraws the list in full.
   - It follows the end only when the reader was at the end, where `GameLogPane.atEnd` allows 4px of slack.
   - `GameLogPane.item(entry, colors)` builds an `li` with the classes `log-entry log-headline|log-line log-{kind}` and a `title` of `"{sequence}.{ordinal}"`.
@@ -59,7 +59,7 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
   - `dispose()` tears the shell down. The development panel's dialog pattern (hidden attribute, Escape, focus return) lives in the same file.
 - **The card overlay.** `CardInspectionOverlay(root)` is an `aside.card-overlay` with `role="dialog"` and `aria-modal="true"`, appended to the mount. It uses the hidden attribute, and a click on the scrim or on Close dismisses it. Escape closes it, and focus returns to the opener when the opener is still in the document. Its suite dispatches `KeyboardEvent("keydown", {key, bubbles: true})` and `MouseEvent("click", {bubbles: true})`.
 - **The seat.** `ServerModeUi.start` builds `new GameTableShell(mount, !trusted)`. On a trusted table the first player id is `""`, and `TableSession` fills it in when the server names the seat. The development table always has a seat, and a seat switch or session change resets the log (`TableSession.resetLog`).
-- **The test browser.** `TestBrowser` (`frontend/src/test/scala/oathdigital/frontend/TestBrowser.scala`) makes `window.localStorage` and `window.sessionStorage` throw "Unexpected credential storage". It queues `window.setTimeout` callbacks, which `tick()` runs, and stubs `ResizeObserver`, which `MapViewport` and therefore `GameTableShell` need. `ServerModeUiSuite` drives the whole table through it and calls `tick()` for the poll timer. A new timer in that queue would change which callback `tick()` runs, and that is why a blocked store must schedule nothing.
+- **The test browser.** `TestBrowser` (`frontend/src/test/scala/distantlands/frontend/TestBrowser.scala`) makes `window.localStorage` and `window.sessionStorage` throw "Unexpected credential storage". It queues `window.setTimeout` callbacks, which `tick()` runs, and stubs `ResizeObserver`, which `MapViewport` and therefore `GameTableShell` need. `ServerModeUiSuite` drives the whole table through it and calls `tick()` for the poll timer. A new timer in that queue would change which callback `tick()` runs, and that is why a blocked store must schedule nothing.
 - **Helpers.** `ServerUiSupport` has `element(tag, className)`, `text(tag, className, value)` and `button(label, className)`.
 - **Styles.** `frontend/styles.css`:
   - The log rules are at lines 845–858. `.pane-content` has 12px padding, 8px in the narrowest layout, and `overflow: auto`. The pane fill is `#211f1b`.
@@ -70,11 +70,11 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
 
 ## File Structure
 
-- Create `frontend/src/main/scala/oathdigital/frontend/LogMarker.scala`: `LogStore`, the seam over `localStorage`, and its `browser` constructor. Also `LogMarker`, which reads the marker per seat and writes it after one second at the end or on flush.
-- Modify `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`. It gains the divider, the chip, headings mode, the reading position, a scroll callback, `last` and `dispose`.
-- Create `frontend/src/main/scala/oathdigital/frontend/GameLogOverlay.scala`, the full-height dialog around a headings-mode `GameLogPane`.
-- Modify `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala`. The heading becomes a button, and the shell gains the overlay, the marker, the `pagehide` flush and the new `showLog(gameId, seatId, entries, colors)`.
-- Modify `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala`, the one `showLog` call.
+- Create `frontend/src/main/scala/distantlands/frontend/LogMarker.scala`: `LogStore`, the seam over `localStorage`, and its `browser` constructor. Also `LogMarker`, which reads the marker per seat and writes it after one second at the end or on flush.
+- Modify `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`. It gains the divider, the chip, headings mode, the reading position, a scroll callback, `last` and `dispose`.
+- Create `frontend/src/main/scala/distantlands/frontend/GameLogOverlay.scala`, the full-height dialog around a headings-mode `GameLogPane`.
+- Modify `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala`. The heading becomes a button, and the shell gains the overlay, the marker, the `pagehide` flush and the new `showLog(gameId, seatId, entries, colors)`.
+- Modify `frontend/src/main/scala/distantlands/frontend/TableScreen.scala`, the one `showLog` call.
 - Modify `frontend/styles.css`: sticky headlines, divider, chip, overlay and the heading's affordance.
 - Tests:
   - Create `LogMarkerSuite`.
@@ -90,8 +90,8 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
 ### Task 1: The marker and its store
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/LogMarker.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/LogMarkerSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/LogMarker.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/LogMarkerSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -106,7 +106,7 @@ These were settled while planning (2026-09-26). Task 5 records each one in the s
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 class LogMarkerSuite extends munit.FunSuite:
   private final class FakeStore(initial: Map[String, String] = Map.empty) extends LogStore:
@@ -128,15 +128,15 @@ class LogMarkerSuite extends munit.FunSuite:
       due.foreach(_())
 
   test("the key names the game and the seat"):
-    assertEquals(LogMarker.key("g1", "red-exile"), "oath.log.seen.g1.red-exile")
+    assertEquals(LogMarker.key("g1", "red-exile"), "distantlands.log.seen.g1.red-exile")
 
   test("opening a seat reads its stored sequence"):
-    val store = FakeStore(Map("oath.log.seen.g1.red" -> "42"))
+    val store = FakeStore(Map("distantlands.log.seen.g1.red" -> "42"))
     assertEquals(new LogMarker(Some(store)).open("g1", "red"), Some(42L))
     assertEquals(new LogMarker(Some(store)).open("g1", "blue"), None)
 
   test("a stored value that is not a sequence reads as no marker"):
-    val store = FakeStore(Map("oath.log.seen.g1.red" -> "soon"))
+    val store = FakeStore(Map("distantlands.log.seen.g1.red" -> "soon"))
     assertEquals(new LogMarker(Some(store)).open("g1", "red"), None)
 
   test("a second at the end writes the last sequence; leaving first writes nothing"):
@@ -153,7 +153,7 @@ class LogMarkerSuite extends munit.FunSuite:
     assertEquals(store.values, Map.empty[String, String])
     marker.observe(atEnd = true, last = Some(9))
     timer.fire()
-    assertEquals(store.values, Map("oath.log.seen.g1.red" -> "9"))
+    assertEquals(store.values, Map("distantlands.log.seen.g1.red" -> "9"))
 
   test("the write takes the newest sequence seen while waiting"):
     val store = FakeStore()
@@ -163,7 +163,7 @@ class LogMarkerSuite extends munit.FunSuite:
     marker.observe(atEnd = true, last = Some(7))
     marker.observe(atEnd = true, last = Some(12))
     timer.fire()
-    assertEquals(store.values, Map("oath.log.seen.g1.red" -> "12"))
+    assertEquals(store.values, Map("distantlands.log.seen.g1.red" -> "12"))
 
   test("flush writes a pending mark at once, and nothing when none is pending"):
     val store = FakeStore()
@@ -174,7 +174,7 @@ class LogMarkerSuite extends munit.FunSuite:
     assertEquals(store.values, Map.empty[String, String])
     marker.observe(atEnd = true, last = Some(5))
     marker.flush()
-    assertEquals(store.values, Map("oath.log.seen.g1.red" -> "5"))
+    assertEquals(store.values, Map("distantlands.log.seen.g1.red" -> "5"))
     assertEquals(timer.live, 0)
 
   test("opening another seat drops the first seat's pending mark"):
@@ -188,7 +188,7 @@ class LogMarkerSuite extends munit.FunSuite:
     assertEquals(store.values, Map.empty[String, String])
 
   test("an observer, with no seat, reads nothing and schedules nothing"):
-    val store = FakeStore(Map("oath.log.seen.g1." -> "3"))
+    val store = FakeStore(Map("distantlands.log.seen.g1." -> "3"))
     val timer = FakeTimer()
     val marker = new LogMarker(Some(store), timer.schedule)
     assertEquals(marker.open("g1", ""), None)
@@ -210,13 +210,13 @@ class LogMarkerSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.LogMarkerSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.LogMarkerSuite"`
 Expected: FAIL. The compiler reports `Not found: type LogStore` and `Not found: LogMarker`.
 
 - [ ] **Step 3: Write the implementation**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.util.Try
@@ -286,7 +286,7 @@ private[frontend] final class LogMarker(store: Option[LogStore],
       target.write(name, sequence.toString)
 
 private[frontend] object LogMarker:
-  def key(gameId: String, seatId: String): String = s"oath.log.seen.$gameId.$seatId"
+  def key(gameId: String, seatId: String): String = s"distantlands.log.seen.$gameId.$seatId"
 
   def afterASecond(run: () => Unit): () => Unit =
     val handle = dom.window.setTimeout(() => run(), 1000)
@@ -295,7 +295,7 @@ private[frontend] object LogMarker:
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.LogMarkerSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.LogMarkerSuite"`
 Expected: PASS, 10 tests.
 
 If `Try(dom.window.localStorage)` does not catch the harness's throw, that is because the getter throws a JavaScript `Error`. Scala.js wraps it as `js.JavaScriptException`, which is `NonFatal`, so `Try` does catch it. Check that the harness is the one in use before changing the code.
@@ -303,7 +303,7 @@ If `Try(dom.window.localStorage)` does not catch the harness's throw, that is be
 - [ ] **Step 5: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/LogMarker.scala frontend/src/test/scala/oathdigital/frontend/LogMarkerSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/LogMarker.scala frontend/src/test/scala/distantlands/frontend/LogMarkerSuite.scala
 git commit -m "feat(log): keep each seat's last-looked place in the browser"
 ```
 
@@ -312,8 +312,8 @@ git commit -m "feat(log): keep each seat's last-looked place in the browser"
 ### Task 2: The pane's divider, chip, headings and reading position
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala` (the whole file)
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala` (the whole file)
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from Task 1. The shell connects the two in Task 3.
@@ -473,16 +473,16 @@ The `items` helper returns only `li` elements, and the chip is a `button`, so th
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.GameLogPaneSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.GameLogPaneSuite"`
 Expected: FAIL to compile, because `show` does not take `since`, and `last`, `position` and `restore` do not exist.
 
 - [ ] **Step 3: Rewrite `GameLogPane.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.projection.{LogEntryWire, LogSpanWire}
+import distantlands.protocol.projection.{LogEntryWire, LogSpanWire}
 import ServerUiSupport._
 
 /** One reading of the game log (spec, "Pane" and "Overlay"). The pane and the
@@ -633,7 +633,7 @@ Keep the existing redraw rule: the list is drawn in full on a new session key, o
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.GameLogPaneSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.GameLogPaneSuite"`
 Expected: PASS. That is the 6 existing tests and the 12 new ones.
 
 If the "reading position" test finds index 1, the sticky skip is not working: check that `sticky` is `log-turn` when `headings` is false. If the restore test is off by 18, the cover lookup did not find the round headline: `reveal` must search the children before `node`, not the ones after it.
@@ -646,7 +646,7 @@ Expected: all pass. `GameTableShell` still calls `show(sessionKey, entries, colo
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/GameLogPane.scala frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala
 git commit -m "feat(log): the pane marks where the reader left off and offers new entries"
 ```
 
@@ -657,10 +657,10 @@ git commit -m "feat(log): the pane marks where the reader left off and offers ne
 ### Task 3: The overlay, and the shell that wires the reading aids
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/GameLogOverlay.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala`: the constructor, the log pane lines 30–31, `showLog`, and `dispose`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala:114-117`
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogOverlaySuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/GameLogOverlay.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala`: the constructor, the log pane lines 30–31, `showLog`, and `dispose`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala:114-117`
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogOverlaySuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -683,11 +683,11 @@ git commit -m "feat(log): the pane marks where the reader left off and offers ne
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.scalajs.js
-import oathdigital.protocol.projection.{LogEntryWire, LogSpanWire}
+import distantlands.protocol.projection.{LogEntryWire, LogSpanWire}
 
 /** The Log pane's heading opens the whole log over the table (spec,
   * "Overlay"), and the shell keeps each seat's place (spec, "Divider").
@@ -795,7 +795,7 @@ class GameLogOverlaySuite extends munit.FunSuite:
     }
 
   test("the stored marker places the divider in the pane and the overlay alike"):
-    val store = FakeStore(Map("oath.log.seen.g.red" -> "3"))
+    val store = FakeStore(Map("distantlands.log.seen.g.red" -> "3"))
     withShell(Some(store)) { (browser, shell) =>
       shell.showLog("g", "red", Vector.empty, Map.empty)
       shell.showLog("g", "red", entries, Map.empty)
@@ -812,36 +812,36 @@ class GameLogOverlaySuite extends munit.FunSuite:
       shell.showLog("g", "red", entries, Map.empty)
       // jsdom lays nothing out, so every list is at its end.
       browser.tick()
-      assertEquals(store.values, Map("oath.log.seen.g.red" -> "5"))
+      assertEquals(store.values, Map("distantlands.log.seen.g.red" -> "5"))
       shell.showLog("g", "red", entries :+ entry(8, "action", 1, "Started Search"),
         Map.empty)
       dom.window.dispatchEvent(new dom.Event("pagehide"))
-      assertEquals(store.values, Map("oath.log.seen.g.red" -> "8"))
+      assertEquals(store.values, Map("distantlands.log.seen.g.red" -> "8"))
     }
 
   test("an observer seat keeps no marker and sees no divider"):
-    val store = FakeStore(Map("oath.log.seen.g." -> "3"))
+    val store = FakeStore(Map("distantlands.log.seen.g." -> "3"))
     withShell(Some(store)) { (browser, shell) =>
       shell.showLog("g", "", Vector.empty, Map.empty)
       shell.showLog("g", "", entries, Map.empty)
       assertEquals(browser.mount.querySelectorAll(".log-divider").length, 0)
       browser.tick()
-      assertEquals(store.values, Map("oath.log.seen.g." -> "3"))
+      assertEquals(store.values, Map("distantlands.log.seen.g." -> "3"))
     }
 ```
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.GameLogOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.GameLogOverlaySuite"`
 Expected: FAIL to compile, because `GameTableShell` takes no `logStore` and `showLog` takes a session key.
 
 - [ ] **Step 3: Write `GameLogOverlay.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.projection.LogEntryWire
+import distantlands.protocol.projection.LogEntryWire
 import ServerUiSupport._
 
 /** The whole log, full height over the table (spec, "Overlay"). The card
@@ -967,7 +967,7 @@ Replace `showLog` with:
     * is read once per seat, so the pane and the overlay divide at the same
     * entry. */
   def showLog(gameId: String, seatId: String,
-      entries: Vector[oathdigital.protocol.projection.LogEntryWire],
+      entries: Vector[distantlands.protocol.projection.LogEntryWire],
       colors: Map[String, String]): Unit =
     val sessionKey = s"$gameId|$seatId"
     if !logSeat.contains(sessionKey) then
@@ -999,7 +999,7 @@ The Pane class's `heading` is already a `dom.html.Element`. Setting the log head
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.GameLogOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.GameLogOverlaySuite"`
 Expected: PASS, 9 tests.
 
 If "a second at the end" fails because `tick()` ran nothing, the marker's timer was not queued. Check that the store passed in is `Some` and the seat is not empty. If `ServerModeUiSuite` fails in the next step on a `tick()`, a timer has leaked into its queue. That suite's shell uses `LogStore.browser`, which must be `None` under `TestBrowser`, and a `LogMarker` without a store never schedules.
@@ -1012,7 +1012,7 @@ Expected: all pass. The count is the baseline plus 10 from Task 1, 12 from Task 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/GameLogOverlay.scala frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala frontend/src/main/scala/oathdigital/frontend/TableScreen.scala frontend/src/test/scala/oathdigital/frontend/GameLogOverlaySuite.scala
+git add frontend/src/main/scala/distantlands/frontend/GameLogOverlay.scala frontend/src/main/scala/distantlands/frontend/GameTableShell.scala frontend/src/main/scala/distantlands/frontend/TableScreen.scala frontend/src/test/scala/distantlands/frontend/GameLogOverlaySuite.scala
 git commit -m "feat(log): the pane heading opens the whole log, and each seat keeps its place"
 ```
 
@@ -1028,13 +1028,13 @@ git commit -m "feat(log): the pane heading opens the whole log, and each seat ke
 
 **Files:**
 - Modify: `frontend/styles.css`: the log block after line 858, the Control face lists at lines 687 and 692–693, and a new overlay block after the card overlay's rules
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`, only if this task adds a class
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`, only if this task adds a class
 
 This task follows Impeccable's `craft` discipline for a bounded styling change.
 
 - [ ] **Step 1: Load the Impeccable playbook**
 
-From the worktree root, run `~/.claude/skills/impeccable/scripts/impeccable context --target frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala`, unless this session has already run it. Read DESIGN.md's Panes, Buttons (Control), Shadow Vocabulary and Named Rules sections. Immediately before the first CSS edit, read `reference/craft-floor.md`.
+From the worktree root, run `~/.claude/skills/impeccable/scripts/impeccable context --target frontend/src/main/scala/distantlands/frontend/GameLogPane.scala`, unless this session has already run it. Read DESIGN.md's Panes, Buttons (Control), Shadow Vocabulary and Named Rules sections. Immediately before the first CSS edit, read `reference/craft-floor.md`.
 
 - [ ] **Step 2: Add the rules**
 
@@ -1081,15 +1081,15 @@ After the card overlay's rules at the end of the file, add:
 
 - [ ] **Step 3: Serve the worktree's build against a scratch database, and look once**
 
-Copy `var/oathdigital` to a scratch directory, and never open the live one. Serve this worktree's build on port 8093:
+Copy `var/distantlands` to a scratch directory, and never open the live one. Serve this worktree's build on port 8093:
 
 ```bash
-./sbtw "runMain oathdigital.server.OathServer --database-path <scratch copy> --catalog-path docs/catalog/new-foundations-component-catalog.json --port 8093"
+./sbtw "runMain distantlands.server.DistantLandsServer --database-path <scratch copy> --catalog-path docs/catalog/new-foundations-component-catalog.json --port 8093"
 ```
 
 Run it in the background, and stop it at the end of this task. Open a seat on the six-player game `manual-1790205747051-112090`. In one batch, at the table's normal size, capture four views:
 - The pane scrolled into the middle of a turn: the turn's headline is stuck at the top, and nothing shows above or through it.
-- The pane after `localStorage.setItem('oath.log.seen.manual-1790205747051-112090.<seat>', '<a sequence halfway through>')` and a reload: the divider sits at the top, under the stuck headline.
+- The pane after `localStorage.setItem('distantlands.log.seen.manual-1790205747051-112090.<seat>', '<a sequence halfway through>')` and a reload: the divider sits at the top, under the stuck headline.
 - The pane scrolled up while new entries arrive: the chip shows at the bottom edge, and clicking it returns to the end. To produce entries, open the active seat in a second tab and take an action there. The first tab gets the entries at its next poll.
 - The overlay open from the heading: the scrim, the panel, the stuck round headlines, and the same position as the pane.
 
@@ -1186,7 +1186,7 @@ Commit any Step 1 fixes before this, as `fix(log): …` or `style(log): …`, st
 - **Spec coverage (Slice 3):** each item and the task that delivers it.
   - The overlay opens on a click or Enter on the heading. It has a dim scrim, a pane-fill panel and `role="dialog"`. Escape closes it and returns focus. It holds the whole log with sticky round headlines, opens at the pane's position with the divider included, and the heading carries `role="button"` and `aria-expanded`. Tasks 2 and 3 build it, and Task 4 styles it.
   - Divider:
-    - Reads `oath.log.seen.{gameId}.{seatId}`, inserts before the first newer entry, and scrolls it to the top; otherwise opens at the bottom: Tasks 1 and 2.
+    - Reads `distantlands.log.seen.{gameId}.{seatId}`, inserts before the first newer entry, and scrolls it to the top; otherwise opens at the bottom: Tasks 1 and 2.
     - Writes after one second at the end, in the pane or the overlay, and on unload: Tasks 1 and 3.
     - Observer: Decision 2, tested in Tasks 1 and 3.
     - A blocked store degrades to no divider: Task 1's `LogStore.browser` test.

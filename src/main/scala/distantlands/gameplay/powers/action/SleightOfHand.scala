@@ -1,0 +1,90 @@
+package distantlands.gameplay.powers.action
+
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+  PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
+
+object SleightOfHandCard extends Denizen(DenizenId("17"), "Sleight of Hand", Suit.Discord) with AdviserOnly:
+  val power = PrintedPower(PowerId("denizen.sleight-of-hand"),
+    persistent = false, cost = Cost(favor = 1),
+    text = "**ACTION:** Take [secret] from a player whose pawn is at " +
+      "your site. You cannot take their last [secret].")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Sleight of Hand (card 17), ACTION: place 1 favor on this card, then take
+  * one secret from a player whose pawn is at your site and who holds two or
+  * more secrets, so their last secret is never taken. Faceup first,
+  * otherwise facedown, arriving with the same orientation.
+  *
+  * The targets are read live, after the cost is paid. With none, the cost
+  * stays paid and nothing else happens.
+  *
+  * The take is one `Take`, faceup first ([[SecretMoves]]).
+  */
+case object SleightOfHand extends PaidAction(SleightOfHandCard.power):
+  val decisionId: String = "power.sleight-of-hand.target"
+  val MinimumSecrets: Int = 2
+  private val notes = NoteSet(id)
+  /** Its line when no player at the site holds two secrets. */
+  val nobody: NoteKey = notes.key("used.none", Vector(
+    NotePart.Text("No player could be robbed.")))
+  notes.include(NoteSupport.notes)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
+    Branch((live, _) => ask(live, player)),
+    BuildOps((live, pending) => steal(live, player, pending)),
+    Note(id, stealNote(_, player, source)))))
+
+  /** The question is asked whenever there is a target, so no answer means
+    * nobody could be robbed. */
+  private def stealNote(states: NoteStates, actor: PlayerId,
+      source: DecisionOptionRef): Option[LogNote] =
+    PowerSourceRef.of(source).flatMap(card =>
+      NoteSupport.answer(states, decisionId) match
+        case Some(DecisionOptionRef.Player(target)) =>
+          for
+            step <- states.previous
+            amount = NoteSupport.secrets(step, actor)
+            if amount > 0
+          yield NoteSupport.took(card, NoteArg.Player(actor),
+            NoteArg.Amount(amount, NoteUnit.Secret), NoteArg.Player(target))
+        case _ => Some(nobody(card)))
+
+  private def secretsOf(player: PlayerState): Int =
+    player.board.faceUpSecrets + player.board.faceDownSecrets
+
+  private def targets(ready: ReadyGame, actor: PlayerId): Vector[PlayerState] =
+    ready.game.current.pawnSite(actor).toVector.flatMap(site =>
+      ready.game.current.players.filter(p => p.player != actor &&
+        p.pawnSite.contains(site) && secretsOf(p) >= MinimumSecrets))
+
+  private def ask(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
+    val found = targets(ready, actor)
+    if found.isEmpty then Vector.empty
+    else Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(
+      found.map(p => DecisionOption.Player(DecisionOptionRef.Player(p.player))),
+      heading = Some(
+        "Sleight of Hand: take a secret from a player at your site"))))
+
+  private def steal(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    val found = targets(ready, actor)
+    if found.isEmpty then Right(Vector.empty)
+    else for
+      ref <- PowerAnswers.one(pending, decisionId)
+        .toRight(PowerAnswers.missing(decisionId))
+      target <- found.find(p => DecisionOptionRef.Player(p.player) == ref)
+        .toRight(OathViolation.InvalidEventOrder(
+          s"${ref.wireId} is not a legal Sleight of Hand target"))
+    yield take(actor, target)
+
+  private def take(actor: PlayerId, target: PlayerState)
+      : Vector[CoreOperation] =
+    SecretMoves.faceupFirst(target, Take(Piece.Secrets(1), actor,
+      Location.PlayArea(target.player), Location.PlayArea(actor)))

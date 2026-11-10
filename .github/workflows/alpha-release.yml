@@ -115,7 +115,7 @@ jobs:
         run: |
           mkdir docker-context image-artifact
           tar -xzf context-artifact/docker-context.tgz -C docker-context
-          image="oathdigital:$RELEASE_VERSION-$ARCH"
+          image="distantlands:$RELEASE_VERSION-$ARCH"
           docker buildx build --platform "linux/$ARCH" --load --provenance=false \
             --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
             --label "org.opencontainers.image.revision=$SOURCE_COMMIT" \
@@ -182,26 +182,26 @@ jobs:
       - name: Build the bundled archive from the tested all-platform archive
         run: |
           mkdir universal "extracted app"
-          tar -xzf "release-bundle/oathdigital-$RELEASE_VERSION.tgz" -C universal
-          sh scripts/package-bundled-runtime.sh "universal/oathdigital-$RELEASE_VERSION" "$TARGET" bundled
-          archive="bundled/oathdigital-$RELEASE_VERSION-$TARGET.$EXTENSION"
+          tar -xzf "release-bundle/distantlands-$RELEASE_VERSION.tgz" -C universal
+          sh scripts/package-bundled-runtime.sh "universal/distantlands-$RELEASE_VERSION" "$TARGET" bundled
+          archive="bundled/distantlands-$RELEASE_VERSION-$TARGET.$EXTENSION"
           if [ "$EXTENSION" = zip ]; then
             python -m zipfile -e "$archive" "extracted app"
           else
             tar -xzf "$archive" -C "extracted app"
           fi
-          [ "$(ls -A "extracted app")" = "oathdigital-$RELEASE_VERSION" ]
+          [ "$(ls -A "extracted app")" = "distantlands-$RELEASE_VERSION" ]
       - name: Smoke the extracted bundled archive
         if: runner.os != 'Windows'
-        run: sh scripts/smoke-bundled-distribution.sh "extracted app/oathdigital-$RELEASE_VERSION" 18080
+        run: sh scripts/smoke-bundled-distribution.sh "extracted app/distantlands-$RELEASE_VERSION" 18080
       - name: Smoke the extracted bundled archive
         if: runner.os == 'Windows'
         shell: pwsh
-        run: ./scripts/smoke-bundled-distribution.ps1 -AppDirectory "extracted app/oathdigital-$env:RELEASE_VERSION" -Port 18080
+        run: ./scripts/smoke-bundled-distribution.ps1 -AppDirectory "extracted app/distantlands-$env:RELEASE_VERSION" -Port 18080
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: bundled-${{ matrix.target }}
-          path: bundled/oathdigital-*-${{ matrix.target }}.${{ matrix.extension }}
+          path: bundled/distantlands-*-${{ matrix.target }}.${{ matrix.extension }}
           if-no-files-found: error
           retention-days: 14
 
@@ -241,7 +241,7 @@ jobs:
           for arch in amd64 arm64; do
             (cd images && sha256sum --check "$arch.sha256")
             docker load --input "images/$arch.tar.gz"
-            image="oathdigital:$RELEASE_VERSION-$arch"
+            image="distantlands:$RELEASE_VERSION-$arch"
             test "$(docker image inspect --format '{{.Id}}' "$image")" = "$(cat "images/$arch.id")"
             test "$(docker image inspect --format '{{.Os}}/{{.Architecture}}' "$image")" = "linux/$arch"
             test "$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$image")" = "$SOURCE_COMMIT"
@@ -275,7 +275,7 @@ jobs:
           printf '%s' "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
           trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
           for arch in amd64 arm64; do
-            docker tag "oathdigital:$RELEASE_VERSION-$arch" "$REGISTRY_IMAGE:$RELEASE_TAG-$arch"
+            docker tag "distantlands:$RELEASE_VERSION-$arch" "$REGISTRY_IMAGE:$RELEASE_TAG-$arch"
             docker push "$REGISTRY_IMAGE:$RELEASE_TAG-$arch"
             docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' \
               "$REGISTRY_IMAGE:$RELEASE_TAG-$arch" | grep -F "$REGISTRY_IMAGE@sha256:" > "$arch.digest"
@@ -296,14 +296,14 @@ jobs:
           # downloading the game needs. Publish only the three bundled
           # per-OS archives, plus a checksum file that covers exactly those.
           mkdir player-assets
-          cp "release-bundle/oathdigital-$RELEASE_VERSION-macos-arm64.tgz" \
-            "release-bundle/oathdigital-$RELEASE_VERSION-linux-x64.tgz" \
-            "release-bundle/oathdigital-$RELEASE_VERSION-windows-x64.zip" \
+          cp "release-bundle/distantlands-$RELEASE_VERSION-macos-arm64.tgz" \
+            "release-bundle/distantlands-$RELEASE_VERSION-linux-x64.tgz" \
+            "release-bundle/distantlands-$RELEASE_VERSION-windows-x64.zip" \
             player-assets/
           (cd player-assets && sha256sum \
-            "oathdigital-$RELEASE_VERSION-macos-arm64.tgz" \
-            "oathdigital-$RELEASE_VERSION-linux-x64.tgz" \
-            "oathdigital-$RELEASE_VERSION-windows-x64.zip" >SHA256SUMS)
+            "distantlands-$RELEASE_VERSION-macos-arm64.tgz" \
+            "distantlands-$RELEASE_VERSION-linux-x64.tgz" \
+            "distantlands-$RELEASE_VERSION-windows-x64.zip" >SHA256SUMS)
           gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
-            --verify-tag --prerelease --latest=false --title "Oath Digital $RELEASE_TAG" \
+            --verify-tag --prerelease --latest=false --title "Distant Lands $RELEASE_TAG" \
             --notes-file release-bundle/release-notes.md player-assets/*

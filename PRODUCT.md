@@ -22,7 +22,7 @@ The same group plays in two ways, and the client must serve both:
 
 ## Product Purpose
 
-Oath Digital is a Scala/Scala.js implementation of Oath: New Foundations. The
+Distant Lands is a Scala/Scala.js implementation of Oath: New Foundations. The
 server stores a database of games and enforces the rules. Players connect with
 a web browser and play at a digital table.
 
@@ -72,7 +72,7 @@ is heavily inspired by the HRF (haunt-roll-fail) implementation of Arcs.
 
 ## Brand Commitments
 
-- Name: **Oath Digital**.
+- Name: **Distant Lands**.
 - Unofficial and fan-made. Oath: New Foundations is designed by Cole Wehrle
   and published by Buried Giant Studios; this project is not affiliated with
   or endorsed by them. The MIT license covers the software only, not Buried
@@ -86,7 +86,7 @@ is heavily inspired by the HRF (haunt-roll-fail) implementation of Arcs.
 
 - Rules reference, glossary, rule index and traceability: `docs/rules/`.
 - Component catalog: the Scala card catalog, listed in
-  `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`; the old JSON
+  `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`; the old JSON
   is kept as reference data in `docs/catalog/reference/`.
 - Operations and release docs: `docs/operations/`; acceptance records:
   `docs/testing/`.

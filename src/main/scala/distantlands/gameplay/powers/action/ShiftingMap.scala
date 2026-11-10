@@ -1,0 +1,28 @@
+package distantlands.gameplay.powers.action
+
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.NoteSupport
+import distantlands.model._
+
+object ShiftingMapCard extends Relic(RelicId("R17"), "Shifting Map", value = 15, defense = 1):
+  val power = PrintedPower(PowerId("relic.shifting-map"),
+    persistent = false, cost = Cost(secret = 1),
+    text = "**ACTION:** Gain 1 Supply.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Shifting Map (relic R17), ACTION: place 1 secret on this relic, then gain
+  * 1 Supply, up to the track's maximum. Its own line reads the Supply the
+  * track allowed, as Wayside Inn's does.
+  */
+case object ShiftingMap extends PaidAction(ShiftingMapCard.power):
+  val Supply: Int = 1
+  private val notes = NoteSet(id)
+  val gained: NoteKey = NoteSupport.gainedKey(notes, NoteKey.Used)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] = Right(Sequence(Vector(
+    GainSupply(player, Supply),
+    Note(id, NoteSupport.gainNote(gained, source, player, NoteUnit.Supply,
+      NoteSupport.supply)))))

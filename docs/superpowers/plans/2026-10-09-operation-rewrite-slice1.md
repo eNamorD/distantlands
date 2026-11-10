@@ -40,7 +40,7 @@
   - No power name appears in walker sources.
   - `gameplay/powerresolver` imports only `model` and its own package.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -84,30 +84,30 @@ Task 1 writes these into the spec.
 | File | Change | Task |
 |---|---|---|
 | `docs/superpowers/specs/2026-10-09-operation-rewrite-design.md` | modify | 1, 6 |
-| `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala` | modify | 1, 3, 5 |
-| `src/test/scala/oathdigital/gameplay/ContributionCollectorSuite.scala` | modify | 1 |
-| `src/test/scala/oathdigital/gameplay/powers/campaign/WildMountsSuite.scala` | modify | 1, 5 |
-| `src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala` | create | 2 |
-| `src/test/scala/oathdigital/gameplay/powerresolver/OperationRewriteSuite.scala` | create | 2 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/LossRewrite.scala` | modify | 3 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/{Hospital,CursedCauldron,SparedForce,BillowingFog,TravelingDoctor,VictoriousNow,PeaceEnvoy,StickyFire,MountedPatrol,ShieldWall}.scala` | modify | 3 |
-| `src/main/scala/oathdigital/model/CoreOperations.scala` | modify | 4 |
-| `src/main/scala/oathdigital/model/GameState.scala` | modify | 4 |
-| `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala` | modify | 4 |
-| `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala` | modify | 4 |
-| `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala` | modify | 4 |
-| `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` | modify | 4 |
-| `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` | modify | 4 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala` | modify | 4 |
-| `src/main/scala/oathdigital/gameplay/powerresolver/Deferred.scala` | create | 4 |
-| `src/test/scala/oathdigital/gameplay/DeferralSuite.scala` | create | 4 |
-| `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala` | modify | 4 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/WildMounts.scala` | modify | 5 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala` | modify | 5 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala` | modify | 5 |
-| `src/main/scala/oathdigital/gameplay/powers/campaign/WarningSignals.scala` | modify (doc) | 5 |
+| `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala` | modify | 1, 3, 5 |
+| `src/test/scala/distantlands/gameplay/ContributionCollectorSuite.scala` | modify | 1 |
+| `src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala` | modify | 1, 5 |
+| `src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala` | create | 2 |
+| `src/test/scala/distantlands/gameplay/powerresolver/OperationRewriteSuite.scala` | create | 2 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/LossRewrite.scala` | modify | 3 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/{Hospital,CursedCauldron,SparedForce,BillowingFog,TravelingDoctor,VictoriousNow,PeaceEnvoy,StickyFire,MountedPatrol,ShieldWall}.scala` | modify | 3 |
+| `src/main/scala/distantlands/model/CoreOperations.scala` | modify | 4 |
+| `src/main/scala/distantlands/model/GameState.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala` | modify | 4 |
+| `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/powerresolver/Deferred.scala` | create | 4 |
+| `src/test/scala/distantlands/gameplay/DeferralSuite.scala` | create | 4 |
+| `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/WildMounts.scala` | modify | 5 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala` | modify | 5 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala` | modify | 5 |
+| `src/main/scala/distantlands/gameplay/powers/campaign/WarningSignals.scala` | modify (doc) | 5 |
 | `docs/ROADMAP.md` | modify | 6 |
 
 ---
@@ -116,14 +116,14 @@ Task 1 writes these into the spec.
 
 **Files:**
 - Modify: `docs/superpowers/specs/2026-10-09-operation-rewrite-design.md`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`
-- Test: `src/test/scala/oathdigital/gameplay/ContributionCollectorSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/WildMountsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`
+- Test: `src/test/scala/distantlands/gameplay/ContributionCollectorSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala`
 
 **Interfaces:**
-- Produces: `enum FoldPhase { case Normal, Late }` in `oathdigital.gameplay.powerresolver`. `Transform(fn, phase: FoldPhase = FoldPhase.Normal)`. A battle plan's `rewrites` entries fold `Late`.
+- Produces: `enum FoldPhase { case Normal, Late }` in `distantlands.gameplay.powerresolver`. `Transform(fn, phase: FoldPhase = FoldPhase.Normal)`. A battle plan's `rewrites` entries fold `Late`.
 
 - [ ] **Step 1: Amend the spec**
 
@@ -204,7 +204,7 @@ Expected: pass for this file.
 
 - [ ] **Step 2: Write the failing collector test**
 
-In `src/test/scala/oathdigital/gameplay/ContributionCollectorSuite.scala`, add this test at the end of the class. `powerresolver._` is already imported.
+In `src/test/scala/distantlands/gameplay/ContributionCollectorSuite.scala`, add this test at the end of the class. `powerresolver._` is already imported.
 
 ```scala
   test("a Late transform folds after a Normal one of higher priority, and " +
@@ -229,11 +229,11 @@ In `src/test/scala/oathdigital/gameplay/ContributionCollectorSuite.scala`, add t
 
 - [ ] **Step 3: Write the failing Wild Mounts phase test**
 
-In `src/test/scala/oathdigital/gameplay/powers/campaign/WildMountsSuite.scala`, add these imports:
+In `src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala`, add these imports:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.powerresolver.{FoldPhase, Transform}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 ```
 
 and add this test at the end of the class:
@@ -248,12 +248,12 @@ and add this test at the end of the class:
 
 - [ ] **Step 4: Run both tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ContributionCollectorSuite oathdigital.gameplay.powers.campaign.WildMountsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.ContributionCollectorSuite distantlands.gameplay.powers.campaign.WildMountsSuite"`
 Expected: compile failure, `Not found: FoldPhase`.
 
 - [ ] **Step 5: Add `FoldPhase` and `Transform.phase`**
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala`, replace the `Transform` case class and its doc with:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace the `Transform` case class and its doc with:
 
 ```scala
 /** Rewrites the hooked node's children. Covers must-effects (insert ops),
@@ -283,7 +283,7 @@ enum FoldPhase:
 
 - [ ] **Step 6: Order the gather by phase**
 
-In `src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala`:
+In `src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala`:
 
 Replace
 
@@ -323,12 +323,12 @@ Add this member at the end of `object ContributionCollector`:
 
 - [ ] **Step 7: Fold a plan's rewrites `Late`**
 
-In `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`:
+In `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`:
 
 Add `FoldPhase` to the `powerresolver` import:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   FoldPhase, Offer, OptionRestriction, Transform}
 ```
 
@@ -360,13 +360,13 @@ In `contributions`, replace `        rewrites.get(window).toVector ++` with:
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ContributionCollectorSuite oathdigital.gameplay.ContributionIgnoresSuite oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.ContributionCollectorSuite distantlands.gameplay.ContributionIgnoresSuite distantlands.gameplay.powers.campaign.*"`
 Expected: pass. Wild Mounts still has `Priority = 10`, and it folds last either way.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add docs/superpowers/specs/2026-10-09-operation-rewrite-design.md src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala src/main/scala/oathdigital/gameplay/powerresolver/ContributionCollector.scala src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala src/test/scala/oathdigital/gameplay/ContributionCollectorSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/WildMountsSuite.scala
+git add docs/superpowers/specs/2026-10-09-operation-rewrite-design.md src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala src/main/scala/distantlands/gameplay/powerresolver/ContributionCollector.scala src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala src/test/scala/distantlands/gameplay/ContributionCollectorSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala
 git commit -m "feat(powers): a transform folds Normal or Late, and plan rewrites fold Late"
 ```
 
@@ -375,8 +375,8 @@ git commit -m "feat(powers): a transform folds Normal or Late, and plan rewrites
 ### Task 2: `OperationRewrite`
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powerresolver/OperationRewriteSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powerresolver/OperationRewriteSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerCtx` (`state`, `nodePath`, `answered`, `operation`).
@@ -394,14 +394,14 @@ git commit -m "feat(powers): a transform folds Normal or Late, and plan rewrites
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powerresolver/OperationRewriteSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powerresolver/OperationRewriteSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Unwrap.as
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Unwrap.as
 
 /** A composite that is not the walker's own and carries no window, as a
   * custom composite inside its window's subtree does. */
@@ -568,17 +568,17 @@ class OperationRewriteSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powerresolver.OperationRewriteSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powerresolver.OperationRewriteSuite"`
 Expected: compile failure, `Not found: OperationRewrite`.
 
 - [ ] **Step 3: Write `OperationRewrite`**
 
-Create `src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala`:
+Create `src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{Branch, BuildOps, CoreOperation, Operation,
+import distantlands.model.{Branch, BuildOps, CoreOperation, Operation,
   PendingTree, PrimitiveOperation, ReadyGame, Repeat, Sequence}
 
 /** Finds the operations a window's children hold by what they are, and
@@ -685,13 +685,13 @@ object OperationRewrite:
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powerresolver.OperationRewriteSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powerresolver.OperationRewriteSuite"`
 Expected: 12 tests pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/OperationRewrite.scala src/test/scala/oathdigital/gameplay/powerresolver/OperationRewriteSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala src/test/scala/distantlands/gameplay/powerresolver/OperationRewriteSuite.scala
 git commit -m "feat(powers): OperationRewrite finds a window's ops by what they are"
 ```
 
@@ -707,9 +707,9 @@ This is a refactor: no test changes, and the campaign suites must pass unchanged
 No Campaign window that `LossRewrite` touches holds a kill inside either, so no test should notice. If a test does fail, stop and report (Global Constraints).
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/LossRewrite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala`
-- Modify: `Hospital.scala`, `CursedCauldron.scala`, `SparedForce.scala`, `BillowingFog.scala`, `TravelingDoctor.scala`, `VictoriousNow.scala`, `PeaceEnvoy.scala`, `StickyFire.scala`, `MountedPatrol.scala` and `ShieldWall.scala`, all in `src/main/scala/oathdigital/gameplay/powers/campaign/`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/LossRewrite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala`
+- Modify: `Hospital.scala`, `CursedCauldron.scala`, `SparedForce.scala`, `BillowingFog.scala`, `TravelingDoctor.scala`, `VictoriousNow.scala`, `PeaceEnvoy.scala`, `StickyFire.scala`, `MountedPatrol.scala` and `ShieldWall.scala`, all in `src/main/scala/distantlands/gameplay/powers/campaign/`
 
 **Interfaces:**
 - Consumes: `OperationRewrite.ops` (Task 2).
@@ -720,7 +720,7 @@ No Campaign window that `LossRewrite` touches holds a kill inside either, so no 
 
 - [ ] **Step 1: Record the baseline**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.actions.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.actions.campaign.*"`
 Expected: pass. Note the test count.
 
 - [ ] **Step 2: Hand `wrapping` the fold's context**
@@ -730,7 +730,7 @@ In `BattlePlan.scala`:
 Add `PowerCtx` to the `powerresolver` import:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   FoldPhase, Offer, OptionRestriction, PowerCtx, Transform}
 ```
 
@@ -766,10 +766,10 @@ In `object BattlePlan`, add before `windowOf`:
 Replace the whole of `LossRewrite.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.model._
 
 /** The core operations a Campaign window's children produce, rewritten one
   * at a time (R3, from Hospital's private tally) through
@@ -858,7 +858,7 @@ with `  override def wrapping: Map[PowerWindow, BattlePlan.Wrap] = Map(`. Then m
           atTargets)) :+ line
     ```
 
-- **`Hospital.scala`:** add `import oathdigital.gameplay.powerresolver.PowerCtx`. Replace the `counted` method with:
+- **`Hospital.scala`:** add `import distantlands.gameplay.powerresolver.PowerCtx`. Replace the `counted` method with:
 
   ```scala
     private def counted(returns: Boolean)(ctx: PowerCtx, use: PlanUse,
@@ -870,7 +870,7 @@ with `  override def wrapping: Map[PowerWindow, BattlePlan.Wrap] = Map(`. Then m
   ```
 
   The map entries `counted(returns = false)` and `counted(returns = true)` stay as they are.
-- **`CursedCauldron.scala`:** add `import oathdigital.gameplay.powerresolver.PowerCtx`.
+- **`CursedCauldron.scala`:** add `import distantlands.gameplay.powerresolver.PowerCtx`.
   - Replace the two entries in `wrapping` with:
 
     ```scala
@@ -900,8 +900,8 @@ with `  override def wrapping: Map[PowerWindow, BattlePlan.Wrap] = Map(`. Then m
 - **`VictoriousNow.scala`:** replace the import line with:
 
   ```scala
-  import oathdigital.gameplay.powerresolver.PowerCtx
-  import oathdigital.model._
+  import distantlands.gameplay.powerresolver.PowerCtx
+  import distantlands.model._
   ```
 
   Replace everything from `  def wrapping(line: PlanUse => Note)` to the end of the object with:
@@ -944,13 +944,13 @@ Expected: no match.
 
 - [ ] **Step 5: Run the campaign suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.actions.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.actions.campaign.*"`
 Expected: pass, with the same count as Step 1. If a test fails, stop and report the failure. Do not change the test.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/LossRewrite.scala src/main/scala/oathdigital/gameplay/powers/campaign/BattlePlan.scala src/main/scala/oathdigital/gameplay/powers/campaign/Hospital.scala src/main/scala/oathdigital/gameplay/powers/campaign/CursedCauldron.scala src/main/scala/oathdigital/gameplay/powers/campaign/SparedForce.scala src/main/scala/oathdigital/gameplay/powers/campaign/BillowingFog.scala src/main/scala/oathdigital/gameplay/powers/campaign/TravelingDoctor.scala src/main/scala/oathdigital/gameplay/powers/campaign/VictoriousNow.scala src/main/scala/oathdigital/gameplay/powers/campaign/PeaceEnvoy.scala src/main/scala/oathdigital/gameplay/powers/campaign/StickyFire.scala src/main/scala/oathdigital/gameplay/powers/campaign/MountedPatrol.scala src/main/scala/oathdigital/gameplay/powers/campaign/ShieldWall.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/LossRewrite.scala src/main/scala/distantlands/gameplay/powers/campaign/BattlePlan.scala src/main/scala/distantlands/gameplay/powers/campaign/Hospital.scala src/main/scala/distantlands/gameplay/powers/campaign/CursedCauldron.scala src/main/scala/distantlands/gameplay/powers/campaign/SparedForce.scala src/main/scala/distantlands/gameplay/powers/campaign/BillowingFog.scala src/main/scala/distantlands/gameplay/powers/campaign/TravelingDoctor.scala src/main/scala/distantlands/gameplay/powers/campaign/VictoriousNow.scala src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala src/main/scala/distantlands/gameplay/powers/campaign/StickyFire.scala src/main/scala/distantlands/gameplay/powers/campaign/MountedPatrol.scala src/main/scala/distantlands/gameplay/powers/campaign/ShieldWall.scala
 git commit -m "refactor(powers): LossRewrite is a call to OperationRewrite.ops"
 ```
 
@@ -959,17 +959,17 @@ git commit -m "refactor(powers): LossRewrite is a call to OperationRewrite.ops"
 ### Task 4: Deferral
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala`
-- Modify: `src/main/scala/oathdigital/model/GameState.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/Deferred.scala`
-- Test: `src/test/scala/oathdigital/gameplay/DeferralSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/Deferred.scala`
+- Test: `src/test/scala/distantlands/gameplay/DeferralSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -979,21 +979,21 @@ git commit -m "refactor(powers): LossRewrite is a call to OperationRewrite.ops"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/DeferralSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/DeferralSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.powerresolver.Deferred
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerCompleted}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.Outcomes
-import oathdigital.testkit.Outcomes.{finished, parked, recorded}
-import oathdigital.testkit.ProcedureWalkerFixture._
-import oathdigital.testkit.Unwrap.accepted
-import oathdigital.testkit.WalkerStubs.continueOption
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.powerresolver.Deferred
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerCompleted}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.Outcomes
+import distantlands.testkit.Outcomes.{finished, parked, recorded}
+import distantlands.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.WalkerStubs.continueOption
 
 /** Deferral (operation rewrite design): `Defer` and `TakeDeferred` through
   * the pipeline, the walker dropping what is held when the action ends, and
@@ -1062,7 +1062,7 @@ class DeferralSuite extends munit.FunSuite:
       Vector(Vector[CoreOperation](spendOneSupply)))
 ```
 
-In `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`, add at the end of the class:
+In `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`, add at the end of the class:
 
 ```scala
   test("a deferral and its take round trip, with the held ops"):
@@ -1082,12 +1082,12 @@ In `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`, ad
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.DeferralSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.DeferralSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: compile failure, `Not found: DeferralKey`.
 
 - [ ] **Step 3: Add the key, the ops and the state field**
 
-In `src/main/scala/oathdigital/model/CoreOperations.scala`, insert after the `ModifyRollOutcome` case class:
+In `src/main/scala/distantlands/model/CoreOperations.scala`, insert after the `ModifyRollOutcome` case class:
 
 ```scala
 /** The name [[Defer]] holds ops under, until a later step of the same
@@ -1110,7 +1110,7 @@ final case class Defer(key: DeferralKey, ops: Vector[CoreOperation])
 final case class TakeDeferred(key: DeferralKey) extends PrimitiveOperation
 ```
 
-In `src/main/scala/oathdigital/model/GameState.scala`, replace the last field of `CurrentGameState`:
+In `src/main/scala/distantlands/model/GameState.scala`, replace the last field of `CurrentGameState`:
 
 ```scala
     walkerFollowUp: Option[FollowUp] = None
@@ -1131,7 +1131,7 @@ with
 
 - [ ] **Step 4: Apply them**
 
-In `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala`, add after `recordPowerUse`:
+In `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala`, add after `recordPowerUse`:
 
 ```scala
   /** Appends `ops` under `key`, as the journal records them, so a game
@@ -1149,7 +1149,7 @@ In `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala`, a
       current.copy(walkerDeferred = current.walkerDeferred - key))
 ```
 
-In `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`, in `applyNonMoveLeaves`, insert before `      case (result, EnterPhase(phase)) =>`:
+In `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`, in `applyNonMoveLeaves`, insert before `      case (result, EnterPhase(phase)) =>`:
 
 ```scala
       case (result, Defer(key, ops)) =>
@@ -1158,7 +1158,7 @@ In `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`, 
         result.map(TurnStateOperations.takeDeferred(_, key))
 ```
 
-In `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala`, in `OperationRun.canonical`, insert before `    case other => other`:
+In `src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala`, in `OperationRun.canonical`, insert before `    case other => other`:
 
 ```scala
     case value: Defer => value.copy(ops = value.ops.map(canonical))
@@ -1166,7 +1166,7 @@ In `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala`, in 
 
 - [ ] **Step 5: Spell them on the wire**
 
-In `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`:
+In `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`:
 
 Replace the `TurnOperation` type with:
 
@@ -1198,12 +1198,12 @@ In `decodeTurnOperation`, add after the `"modify-roll-outcome"` case:
       Right(TakeDeferred(DeferralKey(value("key").str)))
 ```
 
-Run: `wc -l src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
+Run: `wc -l src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
 Expected: 800 or fewer.
 
 - [ ] **Step 6: Clear the field when an action ends**
 
-In `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, in `finish`, replace
+In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, in `finish`, replace
 
 ```scala
       ctx.state.game.current.copy(walkerPending = None,
@@ -1218,7 +1218,7 @@ with
         walkerProcedure = None)))
 ```
 
-In `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala`, in the `WalkerCompleted` case, replace
+In `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`, in the `WalkerCompleted` case, replace
 
 ```scala
             rollPools = Map.empty,
@@ -1235,12 +1235,12 @@ with
 
 - [ ] **Step 7: Write `Deferred`**
 
-Create `src/main/scala/oathdigital/gameplay/powerresolver/Deferred.scala`:
+Create `src/main/scala/distantlands/gameplay/powerresolver/Deferred.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{Branch, CoreOperation, DeferralKey, Operation,
+import distantlands.model.{Branch, CoreOperation, DeferralKey, Operation,
   PendingTree, ReadyGame, TakeDeferred}
 
 /** Reads and resolves the ops a power holds with `Defer` (operation rewrite
@@ -1272,13 +1272,13 @@ object Deferred:
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.DeferralSuite oathdigital.serialization.* oathdigital.gameplay.Walker* oathdigital.gameplay.ProcedureWalker* oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.DeferralSuite distantlands.serialization.* distantlands.gameplay.Walker* distantlands.gameplay.ProcedureWalker* distantlands.gameplay.walker.*"`
 Expected: pass. `DeferralSuite` has 5 tests, and `WalkerOperationWireSuite` has one more than before.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala src/main/scala/oathdigital/gameplay/powerresolver/Deferred.scala src/test/scala/oathdigital/gameplay/DeferralSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala src/main/scala/distantlands/gameplay/powerresolver/Deferred.scala src/test/scala/distantlands/gameplay/DeferralSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "feat(walker): a power holds ops with Defer and resolves them later in the action"
 ```
 
@@ -1289,11 +1289,11 @@ git commit -m "feat(walker): a power holds ops with Defer and resolves them late
 Every existing `WildMountsSuite` test must pass unchanged. One test is new: a Nomad plan whose discard is a bare `PlanDiscard.denizen` is still replaced.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/WildMounts.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/WarningSignals.scala` (doc)
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/WildMountsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/WildMounts.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/WarningSignals.scala` (doc)
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -1310,8 +1310,8 @@ Every existing `WildMountsSuite` test must pass unchanged. One test is new: a No
 In `WildMountsSuite.scala`, add these imports:
 
 ```scala
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.powers.WalkerPowerCatalog
 ```
 
 Add this member after `attackerChoosesMountsThen`, and make `attackerChoosesMountsThen` delegate to it:
@@ -1338,7 +1338,7 @@ Add, after the class, at the end of the file:
   * the Campaign is a bare `PlanDiscard.denizen`, with no helper and no
   * line, as a plan that forgets `afterCampaign` would build it. */
 private final case class BareDiscardNomadPlan(
-    catalog: oathdigital.catalog.ExecutableCatalog) extends BattlePlan:
+    catalog: distantlands.catalog.ExecutableCatalog) extends BattlePlan:
   val cardId: DenizenId = HorseArchersCard.id
   def id: PowerId = PowerId("test.bare-discard-nomad-plan")
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
@@ -1371,7 +1371,7 @@ Add this test at the end of the class:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.WildMountsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.WildMountsSuite"`
 Expected: the new test fails. No question is parked, so `pick` fails, or Horse Archers is in the discard. The other tests pass.
 
 - [ ] **Step 3: Name the plans used on a side**
@@ -1438,7 +1438,7 @@ In `WildMounts.scala`:
 Replace the `powerresolver` import with:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{Deferred, OperationRewrite,
+import distantlands.gameplay.powerresolver.{Deferred, OperationRewrite,
   Transform}
 ```
 
@@ -1575,13 +1575,13 @@ Expected: no match.
 
 - [ ] **Step 7: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.actions.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.actions.campaign.*"`
 Expected: pass. `WildMountsSuite` has 11 tests: 9 from before this plan, Task 1's phase test, and Step 1's test. If an existing test fails, stop and report (Global Constraints).
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/WildMounts.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanDiscard.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala src/main/scala/oathdigital/gameplay/powers/campaign/WarningSignals.scala src/test/scala/oathdigital/gameplay/powers/campaign/WildMountsSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/WildMounts.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanDiscard.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala src/main/scala/distantlands/gameplay/powers/campaign/WarningSignals.scala src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala
 git commit -m "refactor(powers): Wild Mounts holds the Nomad plan discards it replaces"
 ```
 

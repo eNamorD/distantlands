@@ -1,0 +1,54 @@
+package distantlands.protocol
+
+import scala.util.control.NonFatal
+import ProtocolDecodeFailure._
+
+object FirstGameBootstrapCodec:
+  private val MaxSafeInteger = 9007199254740991d
+
+  def encode(request: FirstGameBootstrapRequest): String = ujson.write(ujson.Obj(
+    "expectedNextSequence" -> ujson.Num(request.expectedNextSequence.toDouble),
+    "participants" -> ujson.Arr.from(request.participants.map(participant => ujson.Obj(
+      "playerId" -> participant.playerId, "color" -> participant.color.key))),
+    "firstPlayer" -> request.firstPlayer))
+
+  def decode(json: String): Either[ProtocolDecodeFailure, FirstGameBootstrapRequest] =
+    try decodeValue(ujson.read(json))
+    catch { case NonFatal(error) => Left(MalformedJson.of(error)) }
+
+  private def decodeValue(raw: ujson.Value)
+      : Either[ProtocolDecodeFailure, FirstGameBootstrapRequest] = raw match
+    case root: ujson.Obj =>
+      for
+        _ <- exact(root, Set("expectedNextSequence", "participants", "firstPlayer"), "$")
+        sequenceRaw <- CommandJsonSupport.field(root, "expectedNextSequence", "$")
+        sequence <- sequenceRaw match
+          case ujson.Num(number) if number.isWhole && number >= 0 &&
+              number <= MaxSafeInteger => Right(number.toLong)
+          case _ => Left(InvalidValue("$.expectedNextSequence",
+            "expected a non-negative safe integer"))
+        participantsRaw <- CommandJsonSupport.field(root, "participants", "$")
+        participantValues <- participantsRaw match
+          case array: ujson.Arr => Right(array.value.toVector)
+          case _ => Left(InvalidValue("$.participants", "expected array"))
+        participants <- participantValues.zipWithIndex.foldLeft[
+          Either[ProtocolDecodeFailure, Vector[BootstrapParticipantRequest]]](
+            Right(Vector.empty)):
+          case (Right(done), (value: ujson.Obj, index)) =>
+            val path = s"$$.participants[$index]"
+            (for
+              _ <- exact(value, Set("playerId", "color"), path)
+              player <- CommandJsonSupport.string(value, "playerId", path)
+              color <- CommandJsonSupport.string(value, "color", path).flatMap(key =>
+                distantlands.model.PlayerColor.fromKey(key).toRight(
+                  InvalidValue(s"$path.color", s"unknown player color '$key'")))
+            yield done :+ BootstrapParticipantRequest(player, color))
+          case (Right(_), (_, index)) => Left(ExpectedObject(s"$$.participants[$index]"))
+          case (failure @ Left(_), _) => failure
+        first <- CommandJsonSupport.string(root, "firstPlayer", "$")
+      yield FirstGameBootstrapRequest(sequence, participants, first)
+    case _ => Left(ExpectedObject("$"))
+
+  private def exact(value: ujson.Obj, fields: Set[String], path: String) =
+    value.value.keys.find(!fields.contains(_))
+      .map(key => Left(UnexpectedField(s"$path.$key"))).getOrElse(Right(()))

@@ -1,0 +1,121 @@
+package distantlands.gameplay.powers.economy
+
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog,
+  WalkerPowerCatalog}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look, Outcomes,
+  PowerRules, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.PhasePowerHarness
+import distantlands.testkit.StartPreview
+
+class VowOfPovertySuite extends munit.FunSuite:
+  private val vow = VowOfPovertyCard.id
+  private val home = AncientCitySite.id
+  private val giant = BuriedGiantSite.id
+  /** A plain Order denizen to Trade with. */
+  private val wrestlers = WrestlersCard.id
+  private val market = MovingMarketCard.id
+  private val rules = PowerRules.withWalkerAndPhasePowers
+  private val parked = PowerRules.parkedUnderWalkerAndPhasePowers
+  private val automatic = WalkerPowers.selected(
+    WalkerPowerCatalog.default(catalog), Vector.empty)
+
+  /** The cards p1 could Trade with for `resource` now, by the preview a
+    * start runs. */
+  private def tradeableCards(ready: ReadyGame, resource: TradeResource)
+      : Vector[DecisionOptionRef] = StartPreview.firstDecisionOptions(catalog,
+      ready, p1, ActionRef.Trade, automatic, TradeProcedure.selection(resource))
+      .filter(_.outcome.isRight).map(_.option.ref)
+
+  private val use = ActionRef.UsePower(VowOfPoverty.id)
+
+  private val source = DecisionOptionRef.Denizen(vow)
+
+  /** p1's Rest with no favor, holding a faceup Vow, with exactly these banks
+    * holding favor. */
+  private def restingWithNoFavor(stocked: (Suit, Int)*): Table =
+    Table.start.turn(p1, Phase.Rest).adviser(p1, vow).favor(p1, 0)
+      .banksHoldingOnly(stocked*)
+
+  private def usedRest(ready: ReadyGame): OathTransition = accepted(
+    rules.startWalker(Ready(ready), use, p1, Vector(source)))
+
+  private def usable(ready: ReadyGame): Boolean =
+    PhasePowerHarness.menuPowers(catalog, ready, p1,
+      PhasePowerCatalog.default, WalkerPowers.empty)
+      .exists(_.power.id == VowOfPoverty.id)
+
+  test("its holder is not offered Trade for favor, and may still Trade for " +
+      "secrets"):
+    // 2 favor pays a Trade for secrets; the 1 faceup secret pays one for
+    // favor.
+    val withoutVow = Table.start.pawn(p1, at = home)
+      .denizen(wrestlers, at = home).favor(p1, 2).secrets(p1, faceUp = 1)
+      .bankFavor(Suit.Order, 3)
+    val held = withoutVow.adviser(p1, vow).ready
+    val wrestlersCard = DecisionOptionRef.Denizen(wrestlers)
+    assertEquals(tradeableCards(withoutVow.ready, TradeResource.Favor),
+      Vector(wrestlersCard))
+    assertEquals(tradeableCards(held, TradeResource.Favor), Vector.empty)
+    assertEquals(tradeableCards(held, TradeResource.Secret),
+      Vector(wrestlersCard))
+    assertEquals(EconomyActions.attemptTrade(rules, held, p1, Vector.empty,
+      "favor", wrestlersCard).left.toOption,
+      Some(OathViolation.NoPlayableOption("trade")))
+
+  test("Moving Market's favor is not from Trade, so its holder still gains " +
+      "it"):
+    val ready = Table.start.pawn(p1, at = home).denizen(market, at = home)
+      .adviser(p1, vow).favor(p1, 2).bankFavor(Suit.Nomad, 3).ready
+    val started = accepted(ModifierPlay.started(rules, Ready(ready),
+      ActionRef.Trade, p1,
+      PowerWindow.TradeModifierSelection, Vector(MovingMarket.id),
+      startArgs = Vector(DecisionOptionRef.Button("secret"))))
+    val asked = accepted(rules.resolveWalker(started.state, p1,
+      TradeProcedure.decisionId,
+      ChooseOneAnswer(DecisionOptionRef.Denizen(market))))
+    val moved = accepted(rules.resolveWalker(asked.state, p1,
+      MovingMarket.decisionId,
+      ChooseOneAnswer(DecisionOptionRef.SiteSlot(giant, 0))))
+    // The Trade spent the 2 favor, and Moving Market gave 1.
+    assertEquals(Look(Outcomes.ready(moved.state)).favor(p1), 1)
+
+  // ---- REST: with no favor, take 2 favor from any one favor bank ----
+
+  test("REST: with no favor, its holder takes 2 favor from the bank they " +
+      "choose, in a line covering the generic one"):
+    val ready = restingWithNoFavor(Suit.Arcane -> 3, Suit.Order -> 3).ready
+    val choice = VowOfPoverty.choiceDecisionId(ready, p1)
+    val started = usedRest(ready)
+    parked.assertParked(started.state, use, choice, p1)
+    val taken = accepted(rules.resolveWalker(started.state, p1, choice,
+      ChooseOneAnswer(DecisionOptionRef.FavorBank(Suit.Order))))
+    val after = Outcomes.ready(taken.state)
+    assertEquals(Look(after).bankFavor(Suit.Order), 3 - 2)
+    assertEquals(Look(after).bankFavor(Suit.Arcane), 3)
+    assertEquals(Look(after).favor(p1), 2)
+    assertEquals(NoteText.said(VowOfPoverty, taken.events),
+      Vector(NoteText.Said(NoteKey.Used, "Took 2 favor from the Order bank.",
+        covers = true)))
+    assertEquals(ActPowerHarness.replayed(rules, ready,
+      started.events ++ taken.events), after)
+
+  test("REST: a bank holding 1 gives 1 without asking, and a holder with " +
+      "favor is not offered it"):
+    val after = Outcomes.ready(usedRest(
+      restingWithNoFavor(Suit.Hearth -> 1).ready).state)
+    assertEquals(Look(after).favor(p1), 1)
+    assertEquals(Look(after).bankFavor(Suit.Hearth), 0)
+    val stocked = restingWithNoFavor(Suit.Hearth -> 3)
+    assert(usable(stocked.ready))
+    assert(!usable(stocked.favor(p1, 1).ready))

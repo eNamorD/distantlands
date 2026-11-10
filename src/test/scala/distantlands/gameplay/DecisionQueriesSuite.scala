@@ -1,0 +1,49 @@
+package distantlands.gameplay
+
+import munit.FunSuite
+import distantlands.gameplay.walker.DecisionQueries
+import distantlands.model._
+
+class DecisionQueriesSuite extends FunSuite:
+  private val first = DecisionOption.Button(DecisionOptionRef.Button("first"), "First")
+  private val second = DecisionOption.Button(DecisionOptionRef.Button("second"), "Second")
+  private val options = Vector(first, second)
+
+  test("partition rejects placements above a section maximum"):
+    val query = DecisionQuery.Partition(Vector(
+      DecisionSection("keep", "Keep", 1, Some(1)),
+      DecisionSection("discard", "Discard", 0)), options)
+    val answer = DecisionAnswer.PartitionAnswer(Vector(
+      DecisionPlacement(first.ref, "keep"),
+      DecisionPlacement(second.ref, "keep")))
+    assertEquals(DecisionQueries.accepts("cards", query, answer,
+      PlayerId("player-red")).left.toOption, Some(OathViolation.InvalidEventOrder(
+      "decision cards puts section 'keep' above its maximum of 1")))
+
+  test("partition rejects a declared maximum below minimum"):
+    val query = DecisionQuery.Partition(Vector(
+      DecisionSection("keep", "Keep", 1, Some(0)),
+      DecisionSection("discard", "Discard", 0)), options)
+    assertEquals(DecisionQueries.wellFormed("cards", query).left.toOption,
+      Some(OathViolation.InvalidEventOrder(
+      "decision cards declares section 'keep' with a maximum below its minimum")))
+
+  test("partition rejects maxima that leave only one possible section"):
+    val query = DecisionQuery.Partition(Vector(
+      DecisionSection("blocked", "Blocked", 0, Some(0)),
+      DecisionSection("only", "Only", 0, Some(2))), options)
+    assertEquals(DecisionQueries.wellFormed("cards", query).left.toOption,
+      Some(OathViolation.InvalidEventOrder(
+      "decision cards declares fewer than two sections that can take " +
+        "options, leaving nothing to decide")))
+
+  test("unbounded partition still accepts existing allocations"):
+    val query = DecisionQuery.Partition(Vector(
+      DecisionSection("favor", "Favor", 1),
+      DecisionSection("secret", "Secret", 0)), options)
+    val answer = DecisionAnswer.PartitionAnswer(Vector(
+      DecisionPlacement(first.ref, "favor"),
+      DecisionPlacement(second.ref, "secret")))
+    assertEquals(DecisionQueries.wellFormed("forge", query), Right(()))
+    assertEquals(DecisionQueries.accepts("forge", query, answer,
+      PlayerId("player-red")), Right(()))

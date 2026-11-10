@@ -1,0 +1,55 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignBattle
+import distantlands.model._
+
+object EncirclementCard extends Denizen(DenizenId("124"), "Encirclement", Suit.Order):
+  val power = PrintedPower(PowerId("denizen.encirclement"),
+    persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
+    text = "±2 [attack-die] if your force is larger than your enemy's.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Encirclement (card 124), a battle plan for either side: "[favor] ±2
+  * [attack-die] if your force is larger than your enemy's."
+  *
+  * A favor is placed onto the card. An attacker adds two attack dice; a
+  * defender removes two. It is offered only while its user's force is strictly
+  * larger than the enemy's; otherwise it is shown withheld, with that rule as
+  * the reason. The attacker's force is the warbands committed:
+  * dice from a plan such as Brass Army are not force. The defender's force is
+  * what the defense adds (`CampaignBattle.defenderForce`): the warbands at
+  * every target in a Conquest, bandits included, or the defender's board in a
+  * Raid. Both are read when the plan is offered, so a plan chosen earlier in
+  * the same window, such as a Wrestlers sacrifice, counts. Bandits pay nothing,
+  * so a bandit defender never applies it.
+  */
+case object Encirclement extends DenizenPlan(EncirclementCard,
+    EncirclementCard.power):
+  val Dice: Int = 2
+
+  /** Why the plan is shown but not offered. */
+  val SmallerForce: String = "Your force must be larger than your enemy's"
+
+  def sides: Set[CampaignPlanSide] =
+    Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
+
+  def plan(context: PlanContext): Option[CampaignPlanOffer] =
+    context.denizen(cardId).map { source =>
+      val offer = CampaignPlanOffer(source,
+        PlanDice.label("Encirclement", context.side, Encirclement.Dice),
+        Vector(CampaignPlanCost.Favor(1)),
+        Vector(PlanDice.effect(context.side, Encirclement.Dice)))
+      if larger(context) then offer
+      else offer.copy(withheld =
+        Some(OptionReason.Written(Encirclement.SmallerForce)))
+    }
+
+  /** Whether the user's force is strictly larger than the enemy's. */
+  private def larger(context: PlanContext): Boolean =
+    val attacker = context.setup.force
+    val defender = CampaignBattle.defenderForce(context.ready, context.setup)
+    context.side match
+      case CampaignPlanSide.Attacker => attacker > defender
+      case CampaignPlanSide.Defender => defender > attacker

@@ -79,18 +79,18 @@ section "Slice 8: Nested follow-ups". Read "Slice 7" too, and the
 
 ## File structure
 
-- Modify `src/main/scala/oathdigital/gameplay/walker/ExecutedTriggers.scala`:
+- Modify `src/main/scala/distantlands/gameplay/walker/ExecutedTriggers.scala`:
   `keyAt`, `MaxDepth`, level-aware `batch`, `holds` and `held`.
-- Modify `src/main/scala/oathdigital/gameplay/walker/WalkState.scala`:
+- Modify `src/main/scala/distantlands/gameplay/walker/WalkState.scala`:
   `triggersOff`, `followUps`, `depth`, `restrictionRoot`.
-- Modify `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`:
+- Modify `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`:
   the burn/cost case, `narrowParked`, `runNarrowed`, `triggered`,
   `walkTriggered`.
-- Modify `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala`:
+- Modify `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`:
   `leafAt`, `leavesAt`, `narrowedAt`, `nodeAt`, `resolveAt`, `followUpAt`.
-- Modify `src/main/scala/oathdigital/gameplay/powerresolver/ExecutedTrigger.scala`:
+- Modify `src/main/scala/distantlands/gameplay/powerresolver/ExecutedTrigger.scala`:
   the doc.
-- Modify `src/main/scala/oathdigital/gameplay/powers/whenplayed/FalseProphetClaim.scala`:
+- Modify `src/main/scala/distantlands/gameplay/powers/whenplayed/FalseProphetClaim.scala`:
   the doc.
 - Tests: `walker/ExecutedTriggersSuite.scala`,
   `gameplay/FalseProphetClaimSuite.scala`,
@@ -102,12 +102,12 @@ section "Slice 8: Nested follow-ups". Read "Slice 7" too, and the
 ### Task 1: A held key per follow-up level
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ExecutedTriggers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkState.scala:33-45`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:283-295, 462-472, 496-500, 609-655`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala:529-614`
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ExecutedTrigger.scala`
-- Test: `src/test/scala/oathdigital/gameplay/walker/ExecutedTriggersSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ExecutedTriggers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkState.scala:33-45`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:283-295, 462-472, 496-500, 609-655`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala:529-614`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ExecutedTrigger.scala`
+- Test: `src/test/scala/distantlands/gameplay/walker/ExecutedTriggersSuite.scala`
 
 **Interfaces:**
 - Produces: `ExecutedTriggers.keyAt(depth: Int): DeferralKey`,
@@ -123,9 +123,9 @@ section "Slice 8: Nested follow-ups". Read "Slice 7" too, and the
 
 - [ ] **Step 1: Write the failing tests**
 
-In `ExecutedTriggersSuite.scala`, add `import oathdigital.model.TestGameFixtures.sites`
+In `ExecutedTriggersSuite.scala`, add `import distantlands.model.TestGameFixtures.sites`
 (check that `ProcedureWalkerFixture` takes `sites` from there:
-`grep -n "import" src/test/scala/oathdigital/testkit/ProcedureWalkerFixture.scala`).
+`grep -n "import" src/test/scala/distantlands/testkit/ProcedureWalkerFixture.scala`).
 
 Replace `MovesThePawnBack` (lines 33-42) with a trigger that stops:
 
@@ -254,13 +254,13 @@ Add:
 ```
 
 `ExecutedTriggers` is `private[walker]`; the suite is in package
-`oathdigital.gameplay.walker`, so it reaches it. If the event list for the
+`distantlands.gameplay.walker`, so it reaches it. If the event list for the
 cap test is not a `Left` because a batch below the cap fails first, read
 the actual result and keep the assertion on the cap's message.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.ExecutedTriggersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.ExecutedTriggersSuite"`
 Expected: compile errors: `keyAt`, `MaxDepth` and `holds(_, _)` do not
 exist.
 
@@ -476,7 +476,7 @@ follow-up case:
 
 `nodeAt` keeps `.map(_._1)`.
 
-Run: `grep -rn "following\|followUp\b\|followUp =\|ExecutedTriggers.key\b" src/main/scala/oathdigital/gameplay/walker`
+Run: `grep -rn "following\|followUp\b\|followUp =\|ExecutedTriggers.key\b" src/main/scala/distantlands/gameplay/walker`
 and confirm nothing is left. (`PricedOptions`, `QueuedStart` and
 `WalkerSimulation` have an unrelated `followUp: Boolean` for priced
 follow-up options; leave them.)
@@ -498,7 +498,7 @@ Keep the rest of the doc as it is.
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.*"`
 Expected: PASS.
 
 Run the whole backend suite, since every trigger now answers nested
@@ -511,12 +511,12 @@ text puts it ("after", "whenever"); otherwise stop and report.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/ExecutedTriggers.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkState.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala \
-  src/main/scala/oathdigital/gameplay/powerresolver/ExecutedTrigger.scala \
-  src/test/scala/oathdigital/gameplay/walker/ExecutedTriggersSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/ExecutedTriggers.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkState.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
+  src/main/scala/distantlands/gameplay/powerresolver/ExecutedTrigger.scala \
+  src/test/scala/distantlands/gameplay/walker/ExecutedTriggersSuite.scala
 git commit -m "feat(walker): a follow-up's batches may start follow-ups one level down" \
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
@@ -531,9 +531,9 @@ levels, the take's `triggersOff`, and `resolveAt`'s level count.
 ### Task 2: False Prophet's nested claim
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/whenplayed/FalseProphetClaim.scala` (doc)
-- Test: `src/test/scala/oathdigital/gameplay/FalseProphetClaimSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/FalseProphetLogSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/FalseProphetClaim.scala` (doc)
+- Test: `src/test/scala/distantlands/gameplay/FalseProphetClaimSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/FalseProphetLogSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's nested follow-ups. No new production names.
@@ -648,7 +648,7 @@ the log and read the walk before changing the expected order.
 
 - [ ] **Step 3: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FalseProphetClaimSuite oathdigital.application.gamelog.FalseProphetLogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.FalseProphetClaimSuite distantlands.application.gamelog.FalseProphetLogSuite"`
 Expected: PASS, with Task 1 in place. To see that the tests prove the
 nesting, check out Task 1's parent commit's walker files in a scratch
 copy only if a test passes suspiciously; do not revert committed work.
@@ -668,9 +668,9 @@ copy only if a test passes suspiciously; do not revert committed work.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/whenplayed/FalseProphetClaim.scala \
-  src/test/scala/oathdigital/gameplay/FalseProphetClaimSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/FalseProphetLogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/whenplayed/FalseProphetClaim.scala \
+  src/test/scala/distantlands/gameplay/FalseProphetClaimSuite.scala \
+  src/test/scala/distantlands/application/gamelog/FalseProphetLogSuite.scala
 git commit -m "test(powers): a Vision discarded inside False Prophet's claim is claimed in turn" \
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```

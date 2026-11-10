@@ -1,6 +1,6 @@
 # Codebase structure
 
-Oath Digital is a modular monolith. Packages are ownership boundaries inside
+Distant Lands is a modular monolith. Packages are ownership boundaries inside
 one JVM/Scala.js repository, not deployment units.
 
 ## Ownership and dependency direction
@@ -15,27 +15,27 @@ catalog -> model
 model/engine -> no outer adapter packages
 ```
 
-- `oathdigital.model` owns immutable domain values and structural invariants:
+- `distantlands.model` owns immutable domain values and structural invariants:
   identities, cards, world and campaign state, first-game setup data,
   `ReadyGame`/`OathState`, the `OathEvent` and `OathViolation` vocabularies,
   the operation algebra (`CoreOperation`, `Location`, `Piece`), power windows,
   and rule-source identities. It holds data only, never rules.
-- `oathdigital.catalog` owns the typed card classes (`Cards.scala`) and the
+- `distantlands.catalog` owns the typed card classes (`Cards.scala`) and the
   not-yet-implemented card objects in `holding/`; the full list and the
   production `ExecutableCatalog` are in `gameplay/cards/NewFoundations.scala`.
-- `oathdigital.engine` owns generic event evolution and replay machinery.
-- `oathdigital.gameplay` owns legality, procedures, and deterministic
+- `distantlands.engine` owns generic event evolution and replay machinery.
+- `distantlands.gameplay` owns legality, procedures, and deterministic
   evolution over the model's events and operations. `walker` runs every
   procedure's `Operation` tree. `actions`, `phases` and `setup` hold the
   procedures, and `powers` holds the card powers that contribute to them.
-- `oathdigital.application` owns orchestration and ports. It loads/replays,
+- `distantlands.application` owns orchestration and ports. It loads/replays,
   obtains server-owned random outcomes, appends events, authorizes scopes, maps
   intents, and builds redacted projections.
-- `oathdigital.persistence`, `serialization`, and `server` are outward
+- `distantlands.persistence`, `serialization`, and `server` are outward
   adapters. Inner packages never import them.
-- `shared/oathdigital.protocol` owns actorless transport intents, bootstrap
+- `shared/distantlands.protocol` owns actorless transport intents, bootstrap
   requests, projection DTOs, and their codecs. It compiles on JVM and Scala.js.
-- `frontend/oathdigital.frontend` renders server projections and submits
+- `frontend/distantlands.frontend` renders server projections and submits
   actorless intents. It never imports gameplay, application, or server rules.
 
 ## Grouping and size

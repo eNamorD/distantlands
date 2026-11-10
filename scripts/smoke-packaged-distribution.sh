@@ -79,14 +79,14 @@ trap 'exit 143' TERM
 
 stage_directory=$(cd "$stage_directory" && pwd -P)
 temporary_root=${TMPDIR:-/tmp}
-temporary_directory=$(mktemp -d "$temporary_root/oathdigital-packaged-smoke.XXXXXX")
+temporary_directory=$(mktemp -d "$temporary_root/distantlands-packaged-smoke.XXXXXX")
 package_directory=$temporary_directory/package
 database_directory=$temporary_directory/database
 mkdir "$package_directory" "$database_directory"
 cp -R "$stage_directory"/. "$package_directory"/
 
 base_url=http://127.0.0.1:$port
-database_path=$database_directory/oathdigital
+database_path=$database_directory/distantlands
 index_file=$temporary_directory/index.html
 game_path=
 creation_response=$temporary_directory/creation.json
@@ -108,12 +108,12 @@ start_server() {
   log_file=$temporary_directory/server-$run_label.log
   log_files="$log_files $log_file"
   env \
-    OATH_MODE=trusted-alpha \
-    OATH_HOST=127.0.0.1 \
-    OATH_PORT="$port" \
-    OATH_PUBLIC_BASE_URL="$base_url" \
-    OATH_DATABASE_PATH="$database_path" \
-    ./bin/oathdigital >"$log_file" 2>&1 &
+    DLQ_MODE=trusted-alpha \
+    DLQ_HOST=127.0.0.1 \
+    DLQ_PORT="$port" \
+    DLQ_PUBLIC_BASE_URL="$base_url" \
+    DLQ_DATABASE_PATH="$database_path" \
+    ./bin/distantlands >"$log_file" 2>&1 &
   child_pid=$!
 }
 
@@ -213,7 +213,7 @@ exchange_seat() {
   fi
   [ "$exchange_status" = 303 ] ||
     fail "$player_id seat exchange returned HTTP $exchange_status instead of 303 on run $run_label"
-  grep -F 'oath_seat' "$cookie_jar" >/dev/null ||
+  grep -F 'distantlands_seat' "$cookie_jar" >/dev/null ||
     fail "$player_id seat exchange did not store a cookie on run $run_label"
 }
 
@@ -331,7 +331,7 @@ stop_server() {
       ;;
   esac
 
-  grep -F 'Oath Digital database closed' "$log_file" >/dev/null ||
+  grep -F 'Distant Lands database closed' "$log_file" >/dev/null ||
     fail "server did not log database close evidence on run $run_label"
 }
 

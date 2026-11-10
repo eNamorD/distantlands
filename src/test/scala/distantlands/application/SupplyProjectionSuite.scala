@@ -1,0 +1,103 @@
+package distantlands.application
+
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.{GameProjection, SupplyBandProjection}
+import distantlands.testkit.{Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+
+/** What the Supply track promises the client.
+  *
+  * The maximum lets the client print "5/7" without knowing the rules, and
+  * the Act menu's ending says what ending the Act returns. The preview is
+  * the return BEFORE the track's ceiling takes its cut, so a
+  * player pricing this Act's spending can read it as the Supply they may
+  * still spend for free; it is checked here against what Rest pays once the
+  * ceiling has applied.
+  */
+class SupplyProjectionSuite extends munit.FunSuite:
+  private val rules = new OathRules(catalog)
+  private val projector = new GameProjector(catalog)
+  private val presentation = new GamePresentationProjector(catalog)
+
+  private def project(ready: ReadyGame, viewer: PlayerId): GameProjection =
+    projector.project("supply", LoadedGame(Ready(ready), 4), viewer)
+
+  /** The Supply the resting player holds once Rest has run. */
+  private def rested(board: ReadyGame, actor: PlayerId): Int =
+    val completed = rules
+      .startWalker(Ready(board), PhaseTransitionRef.BeginRest, actor)
+      .getOrElse(fail("Rest must run"))
+    val after = Outcomes.ready(completed.state)
+    Look(after).supply(actor)
+
+  /** What the Act menu's ending says Rest returns. */
+  private def preview(board: ReadyGame, actor: PlayerId): Int =
+    val label = MenuPlay.menuOptionFor(catalog, board,
+      PhaseTransitionRef.BeginRest) match
+      case DecisionOption.Button(_, label) => label
+      case DecisionOption.Priced(DecisionOption.Button(_, label), _) => label
+      case DecisionOption.Badged(DecisionOption.Button(_, label), _) => label
+      case other => fail(s"the ending is not a plain button: $other")
+    """\(\+(\d+) Supply\)""".r.findFirstMatchIn(label)
+      .map(_.group(1).toInt)
+      .getOrElse(fail(s"an Act that can Rest must preview the return: $label"))
+
+  test("the preview is the Supply Rest returns, capped by the track"):
+    val board = Table.start.supply(p1, 1).ready
+    val projected = project(board, p1)
+    assertEquals(projected.supplyMaximum, 7)
+    val gain = preview(board, p1)
+    assertEquals(rested(board, p1), math.min(7, 1 + gain))
+
+  test("a full track is still promised its whole band"):
+    val empty = Table.start.supply(p1, 0).ready
+    val full = Table.start.supply(p1, 7).ready
+    // The band is read off banked warbands, not off the track, so a player
+    // sitting at 7/7 is told the same number as one sitting at 0/7 -- which
+    // is what makes it a spending budget rather than the room left.
+    val gain = preview(full, p1)
+    assert(gain > 0, "an Exile band returns Supply")
+    assertEquals(gain, preview(empty, p1))
+    assertEquals(rested(full, p1), 7)
+
+  test("a board carries its bag and the band the bag falls in"):
+    val board = Table.start.boardWarbands(p1, 3).ready
+    val projected = project(board, p1)
+    val mine = projected.playerBoards.find(_.playerId == p1.value)
+      .getOrElse(fail("no board for p1"))
+    assertEquals(mine.printedWarbands, MaterialBankState.ExileWarbandsPerLineage)
+    assertEquals(mine.bankedWarbands,
+      mine.printedWarbands - mine.warbands - mine.siteWarbands)
+    // The same number the Act menu's ending promises, read from the same bag.
+    assertEquals(mine.restSupplyBase, preview(board, p1))
+
+  test("the band table is the engine's, in the engine's order"):
+    // 9 or more banked warbands return 6 Supply, 4 to 8 return 5, and 0 to 3
+    // return 4.
+    assertEquals(project(Table.start.ready, p1).supplyBands, Vector(
+      SupplyBandProjection(9, None, 6), SupplyBandProjection(4, Some(8), 5),
+      SupplyBandProjection(0, Some(3), 4)))
+
+  private val chancellorBands = Vector(
+    SupplyBandProjection(18, None, 6), SupplyBandProjection(11, Some(17), 5),
+    SupplyBandProjection(4, Some(10), 4), SupplyBandProjection(0, Some(3), 3))
+
+  test("each seat shows its lineage's role"):
+    val ready = Table.start.imperial(p1, p2).ready
+    assertEquals(presentation.readyPlayers(ready).map(_.role),
+      Vector("chancellor", "citizen", "exile"))
+
+  test("each board carries its own Supply bands"):
+    val ready = Table.start.imperial(p1, p2).ready
+    val boards = presentation.playerBoards(ready, Some(p1))
+      .map(board => board.playerId -> board).toMap
+    assertEquals(boards(p1.value).supplyBands, chancellorBands)
+    assertEquals(boards(p2.value).supplyBands, Vector.empty)
+    assertEquals(boards(p3.value).supplyBands, Vector(
+      SupplyBandProjection(9, None, 6), SupplyBandProjection(4, Some(8), 5),
+      SupplyBandProjection(0, Some(3), 4)))
+    // The Chancellor's gain reads the purple bank, not an Exile's bag.
+    assertEquals(boards(p1.value).restSupplyBase, 6)

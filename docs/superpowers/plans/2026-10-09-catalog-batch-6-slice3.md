@@ -57,7 +57,7 @@ Task 1 amends the first two with the plan-time rulings, so read them again after
   - No power name appears in walker sources.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work. Modifier walker slice 2 (Travel) is in flight.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -104,27 +104,27 @@ The product owner settled rulings 1 to 4 on 2026-10-09. Task 1 writes all of the
 ## File map
 
 **Engine (Task 2):**
-- `src/main/scala/oathdigital/model/CoreOperations.scala`: `Draw.position`.
-- `src/main/scala/oathdigital/model/PowerWindow.scala`: `SearchSourceSelection`.
-- `src/main/scala/oathdigital/gameplay/actions/Search.scala`: `SearchRules`, total, with a position.
-- `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala`: the window on `search.source`, and the new rule calls.
-- `src/main/scala/oathdigital/gameplay/actions/search/SearchOptions.scala`: the empty-pile reason without a region.
-- `src/main/scala/oathdigital/gameplay/powers/search/DrawExtension.scala`: keeps the draw's position, and shares `sourceOf` and `redrawn`.
-- `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`: `Draw.position` on the wire.
-- `src/main/scala/oathdigital/application/GameRandomPorts.scala`: `SearchDrawPort.prepare(ready, source)`.
-- `src/main/scala/oathdigital/application/GameApplicationService.scala`: the draw-port check without a region.
-- `src/main/scala/oathdigital/application/gamelog/ActionLines.scala` and `DetailLines.scala`: the `Draw` patterns.
+- `src/main/scala/distantlands/model/CoreOperations.scala`: `Draw.position`.
+- `src/main/scala/distantlands/model/PowerWindow.scala`: `SearchSourceSelection`.
+- `src/main/scala/distantlands/gameplay/actions/Search.scala`: `SearchRules`, total, with a position.
+- `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala`: the window on `search.source`, and the new rule calls.
+- `src/main/scala/distantlands/gameplay/actions/search/SearchOptions.scala`: the empty-pile reason without a region.
+- `src/main/scala/distantlands/gameplay/powers/search/DrawExtension.scala`: keeps the draw's position, and shares `sourceOf` and `redrawn`.
+- `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`: `Draw.position` on the wire.
+- `src/main/scala/distantlands/application/GameRandomPorts.scala`: `SearchDrawPort.prepare(ready, source)`.
+- `src/main/scala/distantlands/application/GameApplicationService.scala`: the draw-port check without a region.
+- `src/main/scala/distantlands/application/gamelog/ActionLines.scala` and `DetailLines.scala`: the `Draw` patterns.
 - Tests:
   - Rewritten: `SearchSuite`, `SearchDrawPortContract` and the stub port in `GameApplicationServiceActionsSuite`.
   - Extended: `OperationApplicationSuite` and `WalkerOperationWireSuite`.
   - Testkit: `Table.worldDeckBottom`.
 
-**Powers (Tasks 3 to 5)**, all in `src/main/scala/oathdigital/gameplay/powers/search/`:
+**Powers (Tasks 3 to 5)**, all in `src/main/scala/distantlands/gameplay/powers/search/`:
 - `SearchSources.scala`: adds, warns and withholds source options.
 - `BottomDraw.scala`: redraws from the bottom.
 - `Observatory.scala`, `ErrandBoy.scala`, `Mushrooms.scala`, `WineOfWelcome.scala` and `PaintedTrumpet.scala`. Each card object moves out of `catalog/holding`.
 - Registration: `ActionModifiers.scala`, plus the imports in `NewFoundations.scala`.
-- Tests in `src/test/scala/oathdigital/gameplay/powers/search/`:
+- Tests in `src/test/scala/distantlands/gameplay/powers/search/`:
   - `ShownOptions.scala`, the test helper.
   - One suite per card.
 
@@ -273,19 +273,19 @@ git commit -m "docs: record catalog batch 6 slice 3 plan-time rulings"
 ### Task 2: Any pile, either end
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (`Draw`, near line 248)
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala` (after `SearchPlayAdviser`, near line 67)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/Search.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/search/SearchOptions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/DrawExtension.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (encode near line 119, decode near line 324)
-- Modify: `src/main/scala/oathdigital/application/GameRandomPorts.scala` (`SearchDrawPort`)
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala` (the `search.source` case, near line 512)
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala` (the `Draw` pattern in `search`)
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala` (the `Draw` pattern, near line 114)
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala` (after `worldDeckTop`)
-- Test: `src/test/scala/oathdigital/gameplay/SearchSuite.scala`, `src/test/scala/oathdigital/gameplay/OperationApplicationSuite.scala`, `src/test/scala/oathdigital/application/SearchDrawPortContract.scala`, `src/test/scala/oathdigital/application/GameApplicationServiceActionsSuite.scala`, `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (`Draw`, near line 248)
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala` (after `SearchPlayAdviser`, near line 67)
+- Modify: `src/main/scala/distantlands/gameplay/actions/Search.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/search/SearchOptions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/DrawExtension.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (encode near line 119, decode near line 324)
+- Modify: `src/main/scala/distantlands/application/GameRandomPorts.scala` (`SearchDrawPort`)
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala` (the `search.source` case, near line 512)
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala` (the `Draw` pattern in `search`)
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala` (the `Draw` pattern, near line 114)
+- Modify: `src/test/scala/distantlands/testkit/Table.scala` (after `worldDeckTop`)
+- Test: `src/test/scala/distantlands/gameplay/SearchSuite.scala`, `src/test/scala/distantlands/gameplay/OperationApplicationSuite.scala`, `src/test/scala/distantlands/application/SearchDrawPortContract.scala`, `src/test/scala/distantlands/application/GameApplicationServiceActionsSuite.scala`, `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -303,9 +303,9 @@ git commit -m "docs: record catalog batch 6 slice 3 plan-time rulings"
 Replace the body of `SearchSuite` (keep its package line). The imports and class become:
 
 ```scala
-import oathdigital.gameplay.actions.{SearchRules, VisionRules}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import distantlands.gameplay.actions.{SearchRules, VisionRules}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
 
 class SearchSuite extends munit.FunSuite:
 
@@ -352,7 +352,7 @@ class SearchSuite extends munit.FunSuite:
       position = StackPosition.Bottom), Vector(bottom, VisionRules.Faith))
 ```
 
-In `OperationApplicationSuite`, change the testkit import to `import oathdigital.testkit.{CatalogNames, Table}`. Then add at the end of the class:
+In `OperationApplicationSuite`, change the testkit import to `import distantlands.testkit.{CatalogNames, Table}`. Then add at the end of the class:
 
 ```scala
   /** Three denizens in the Cradle discard: the first named at the bottom. */
@@ -383,12 +383,12 @@ In `OperationApplicationSuite`, change the testkit import to `import oathdigital
 Replace `SearchDrawPortContract.scala` whole:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.{Region, SearchSource}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.*
+import distantlands.model.{Region, SearchSource}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.*
 
 /** What every `SearchDrawPort` promises (the trait's doc): a draw takes its
   * cards from the pile of the source it was asked for, in the pile's own
@@ -461,7 +461,7 @@ In `Table.scala`, after `worldDeckTop`, add:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SearchSuite oathdigital.gameplay.OperationApplicationSuite oathdigital.application.AuthoritativeSearchDrawPortSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SearchSuite distantlands.gameplay.OperationApplicationSuite distantlands.application.AuthoritativeSearchDrawPortSuite"`
 Expected: the test sources fail to compile. `SearchRules.cost` still takes a region, `Draw` has no `position`, and `prepare` takes three arguments.
 
 - [ ] **Step 3: Give `Draw` a position**
@@ -505,9 +505,9 @@ In `PowerWindow.scala`, after `SearchPlayAdviser`, add:
 Replace `Search.scala` whole:
 
 ```scala
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Pure Search source and cost rules shared by the walker and projections.
   * Which piles a Search may pick is the source decision's business: a power
@@ -682,13 +682,13 @@ In `GameRandomPorts.scala`, replace `SearchDrawPort` and its companion with:
 ```scala
 trait SearchDrawPort:
   def prepare(
-      ready: oathdigital.model.ReadyGame,
+      ready: distantlands.model.ReadyGame,
       source: SearchSource
   ): Either[OathViolation, Vector[WorldCardId]]
 
 object SearchDrawPort:
   val authoritative: SearchDrawPort = new SearchDrawPort:
-    def prepare(ready: oathdigital.model.ReadyGame, source: SearchSource) =
+    def prepare(ready: distantlands.model.ReadyGame, source: SearchSource) =
       Right(SearchRules.draw(ready, source))
 ```
 
@@ -698,7 +698,7 @@ In `GameApplicationService.scala`, in the `search.source` case, replace the `for
             for
               source <- SearchProcedure.sourceOf(answer)
               prepared <- searchDrawPort.prepare(ready, source)
-              authoritative = oathdigital.gameplay.actions.SearchRules.draw(
+              authoritative = distantlands.gameplay.actions.SearchRules.draw(
                 ready, source)
               _ <- Either.cond(prepared == authoritative, (),
                 OathViolation.SearchDrawMismatch(
@@ -715,7 +715,7 @@ In `GameApplicationService.scala`, in the `search.source` case, replace the `for
 
 - [ ] **Step 11: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SearchSuite oathdigital.gameplay.OperationApplicationSuite oathdigital.application.AuthoritativeSearchDrawPortSuite oathdigital.application.GameApplicationServiceActionsSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SearchSuite distantlands.gameplay.OperationApplicationSuite distantlands.application.AuthoritativeSearchDrawPortSuite distantlands.application.GameApplicationServiceActionsSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: PASS.
 
 Then run: `./sbtw test`
@@ -724,7 +724,7 @@ Expected: PASS, with 5 tests more than the baseline.
 - [ ] **Step 12: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/model/PowerWindow.scala src/main/scala/oathdigital/gameplay/actions/Search.scala src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala src/main/scala/oathdigital/gameplay/actions/search/SearchOptions.scala src/main/scala/oathdigital/gameplay/powers/search/DrawExtension.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/application/GameRandomPorts.scala src/main/scala/oathdigital/application/GameApplicationService.scala src/main/scala/oathdigital/application/gamelog/ActionLines.scala src/main/scala/oathdigital/application/gamelog/DetailLines.scala src/test/scala/oathdigital/testkit/Table.scala src/test/scala/oathdigital/gameplay/SearchSuite.scala src/test/scala/oathdigital/gameplay/OperationApplicationSuite.scala src/test/scala/oathdigital/application/SearchDrawPortContract.scala src/test/scala/oathdigital/application/GameApplicationServiceActionsSuite.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/gameplay/actions/Search.scala src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala src/main/scala/distantlands/gameplay/actions/search/SearchOptions.scala src/main/scala/distantlands/gameplay/powers/search/DrawExtension.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/application/GameRandomPorts.scala src/main/scala/distantlands/application/GameApplicationService.scala src/main/scala/distantlands/application/gamelog/ActionLines.scala src/main/scala/distantlands/application/gamelog/DetailLines.scala src/test/scala/distantlands/testkit/Table.scala src/test/scala/distantlands/gameplay/SearchSuite.scala src/test/scala/distantlands/gameplay/OperationApplicationSuite.scala src/test/scala/distantlands/application/SearchDrawPortContract.scala src/test/scala/distantlands/application/GameApplicationServiceActionsSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "feat(search): price and draw any pile from either end, and window the source decision"
 ```
 
@@ -733,15 +733,15 @@ git commit -m "feat(search): price and draw any pile from either end, and window
 ### Task 3: Observatory and Errand Boy
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/SearchSources.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/Observatory.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/ErrandBoy.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `ObservatoryCard` and the `SiteOnly` import)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `ErrandBoyCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (the `powers.search` import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/search/ShownOptions.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/ObservatorySuite.scala`, `src/test/scala/oathdigital/gameplay/powers/search/ErrandBoySuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/SearchSources.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/Observatory.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/ErrandBoy.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `ObservatoryCard` and the `SiteOnly` import)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `ErrandBoyCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (the `powers.search` import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/search/ShownOptions.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/ObservatorySuite.scala`, `src/test/scala/distantlands/gameplay/powers/search/ErrandBoySuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerWindow.SearchSourceSelection` and `SearchRules` from Task 2.
@@ -750,25 +750,25 @@ git commit -m "feat(search): price and draw any pile from either end, and window
   - `SearchSources.warned(operations: Vector[Operation], warns: DecisionOptionRef => Boolean, reason: String): Vector[Operation]`
   - `SearchSources.withheld(operations: Vector[Operation], withholds: DecisionOptionRef => Boolean, reason: String): Vector[Operation]`
   - The test helpers `ShownOptions.atParkedDecision(state)`, `ShownOptions.sourcesAfterPicking(ready, modifiers)` and `ShownOptions.optionFor(shown, ref)`.
-  - `Observatory.id` and `ErrandBoy.id`, plus the cards `ObservatoryCard` and `ErrandBoyCard` in `oathdigital.gameplay.powers.search`.
+  - `Observatory.id` and `ErrandBoy.id`, plus the cards `ObservatoryCard` and `ErrandBoyCard` in `distantlands.gameplay.powers.search`.
 
 - [ ] **Step 1: Write the test helper**
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/ShownOptions.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/ShownOptions.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.{DecisionOptionProjection,
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.{DecisionOptionProjection,
   DecisionQueryProjection}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** A parked Search decision's options as p1 is shown them: each option's
   * state, badge and reason, after the procedure's pricing and the powers'
@@ -798,18 +798,18 @@ object ShownOptions:
 
 - [ ] **Step 2: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/ObservatorySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/ObservatorySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.SearchPlay
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.SearchPlay
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Observatory (card 64): while the actor's pawn is at its site, every
   * region's discard pile is offered, each at 2 Supply (catalog batch 6,
@@ -864,18 +864,18 @@ class ObservatorySuite extends munit.FunSuite:
       .contains(Observatory.id))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/ErrandBoySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/ErrandBoySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.{ModifierPlay, SearchPlay}
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.{ModifierPlay, SearchPlay}
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Errand Boy (card 11): for 1 favor, the other regions' discard piles are
   * offered, each at 2 Supply. The actor's own pile and the world deck stay
@@ -945,18 +945,18 @@ class ErrandBoySuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.ObservatorySuite oathdigital.gameplay.powers.search.ErrandBoySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.ObservatorySuite distantlands.gameplay.powers.search.ErrandBoySuite"`
 Expected: the test sources fail to compile: `not found: Observatory` and `not found: ErrandBoy`.
 
 - [ ] **Step 4: Write the shared source helper**
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/SearchSources.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/SearchSources.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.model._
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.model._
 
 /** What the Search source powers share (catalog batch 6, slice 3). Each
   * rewrites the source decision, which its window (`SearchSourceSelection`)
@@ -1008,18 +1008,18 @@ private[search] object SearchSources:
 
 - [ ] **Step 5: Write Observatory**
 
-Delete the whole `ObservatoryCard` object from `HoldingArcaneDenizens.scala`. Then change that file's catalog import to `import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}`, because Observatory was its only `SiteOnly` card.
+Delete the whole `ObservatoryCard` object from `HoldingArcaneDenizens.scala`. Then change that file's catalog import to `import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}`, because Observatory was its only `SiteOnly` card.
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/Observatory.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/Observatory.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object ObservatoryCard extends Denizen(DenizenId("64"), "Observatory", Suit.Arcane) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.observatory"),
@@ -1056,16 +1056,16 @@ object Observatory:
 
 Delete the whole `ErrandBoyCard` object from `HoldingBeastDenizens.scala`. That file's imports stay as they are.
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/ErrandBoy.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/ErrandBoy.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object ErrandBoyCard extends Denizen(DenizenId("11"), "Errand Boy", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.errand-boy"),
@@ -1121,7 +1121,7 @@ object ErrandBoy:
 In `NewFoundations.scala`, change the `powers.search` import to:
 
 ```scala
-import oathdigital.gameplay.powers.search.{AuguryCard, CropRotationCard,
+import distantlands.gameplay.powers.search.{AuguryCard, CropRotationCard,
   DisciplesCard, ErrandBoyCard, ForcedLaborCard, HuntingPartyCard,
   NewsFromAfarCard, ObservatoryCard, TruthfulHarpCard}
 ```
@@ -1131,7 +1131,7 @@ The card lists keep `ErrandBoyCard` and `ObservatoryCard` where they stand.
 In `ActionModifiers.scala`, change the search import to:
 
 ```scala
-import oathdigital.gameplay.powers.search.{Augury, CropRotation, Disciples,
+import distantlands.gameplay.powers.search.{Augury, CropRotation, Disciples,
   ErrandBoy, ForcedLabor, HuntingParty, NewsFromAfar, Observatory,
   TruthfulHarp}
 ```
@@ -1145,7 +1145,7 @@ Then add after `Vector(HuntingParty.forCatalog(catalog)) ++`:
 
 - [ ] **Step 8: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.*"`
 Expected: PASS.
 
 Then run: `./sbtw test`
@@ -1156,7 +1156,7 @@ Errand Boy and Observatory are now Search modifiers. A suite that holds one of t
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/SearchSources.scala src/main/scala/oathdigital/gameplay/powers/search/Observatory.scala src/main/scala/oathdigital/gameplay/powers/search/ErrandBoy.scala src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/search/ShownOptions.scala src/test/scala/oathdigital/gameplay/powers/search/ObservatorySuite.scala src/test/scala/oathdigital/gameplay/powers/search/ErrandBoySuite.scala
+git add src/main/scala/distantlands/gameplay/powers/search/SearchSources.scala src/main/scala/distantlands/gameplay/powers/search/Observatory.scala src/main/scala/distantlands/gameplay/powers/search/ErrandBoy.scala src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/search/ShownOptions.scala src/test/scala/distantlands/gameplay/powers/search/ObservatorySuite.scala src/test/scala/distantlands/gameplay/powers/search/ErrandBoySuite.scala
 git commit -m "feat(powers): Observatory and Errand Boy offer other regions' discard piles"
 ```
 
@@ -1165,14 +1165,14 @@ git commit -m "feat(powers): Observatory and Errand Boy offer other regions' dis
 ### Task 4: Mushrooms and Wine of Welcome
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/BottomDraw.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/Mushrooms.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/WineOfWelcome.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `MushroomsCard`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `WineOfWelcomeCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (the `powers.search` import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/MushroomsSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/search/WineOfWelcomeSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/BottomDraw.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/Mushrooms.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/WineOfWelcome.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `MushroomsCard`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `WineOfWelcomeCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (the `powers.search` import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/MushroomsSuite.scala`, `src/test/scala/distantlands/gameplay/powers/search/WineOfWelcomeSuite.scala`
 
 **Interfaces:**
 - Consumes:
@@ -1186,18 +1186,18 @@ git commit -m "feat(powers): Observatory and Errand Boy offer other regions' dis
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/MushroomsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/MushroomsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.SearchPlay
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.SearchPlay
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Mushrooms (card 183): for 1 secret, the Search spends no Supply and
   * draws one card from the bottom of a discard pile; the world deck is
@@ -1261,20 +1261,20 @@ class MushroomsSuite extends munit.FunSuite:
       Vector(provinces(0)))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/WineOfWelcomeSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/WineOfWelcomeSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Wine of Welcome (relic R33): a Search of the world deck draws from its
   * bottom, stopping after a Vision as usual (catalog batch 6, slice 3). */
@@ -1341,18 +1341,18 @@ class WineOfWelcomeSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.MushroomsSuite oathdigital.gameplay.powers.search.WineOfWelcomeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.MushroomsSuite distantlands.gameplay.powers.search.WineOfWelcomeSuite"`
 Expected: the test sources fail to compile: `not found: Mushrooms` and `not found: WineOfWelcome`.
 
 - [ ] **Step 3: Write the bottom draw**
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/BottomDraw.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/BottomDraw.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.actions.SearchRules
-import oathdigital.model._
+import distantlands.gameplay.actions.SearchRules
+import distantlands.model._
 
 /** How a Search modifier makes the draw take cards from the bottom of its
   * pile (Wine of Welcome, Mushrooms).
@@ -1394,18 +1394,18 @@ private[search] object BottomDraw:
 
 Delete the whole `MushroomsCard` object from `HoldingBeastDenizens.scala`. `SiteOnly` stays imported there, because Giant Python and Forest Council use it.
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/Mushrooms.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/Mushrooms.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.operations.SupplyStrip
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.gameplay.operations.SupplyStrip
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, PowerCtx, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object MushroomsCard extends Denizen(DenizenId("183"), "Mushrooms", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.mushrooms"),
@@ -1468,18 +1468,18 @@ object Mushrooms:
 
 Delete the whole `WineOfWelcomeCard` object from `HoldingRelics.scala`. That file's imports stay as they are.
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/WineOfWelcome.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/WineOfWelcome.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.actions.SearchRules
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.actions.SearchRules
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, PowerCtx, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object WineOfWelcomeCard extends Relic(RelicId("R33"), "Wine of Welcome", value = 7, defense = 1):
   val power = PrintedPower(PowerId("relic.wine-of-welcome"),
@@ -1536,7 +1536,7 @@ object WineOfWelcome:
 In `NewFoundations.scala`, change the `powers.search` import to:
 
 ```scala
-import oathdigital.gameplay.powers.search.{AuguryCard, CropRotationCard,
+import distantlands.gameplay.powers.search.{AuguryCard, CropRotationCard,
   DisciplesCard, ErrandBoyCard, ForcedLaborCard, HuntingPartyCard,
   MushroomsCard, NewsFromAfarCard, ObservatoryCard, TruthfulHarpCard,
   WineOfWelcomeCard}
@@ -1551,7 +1551,7 @@ In `ActionModifiers.scala`, add `Mushrooms` and `WineOfWelcome` to the search im
 
 - [ ] **Step 7: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.*"`
 Expected: PASS. This includes `AugurySuite` and `TruthfulHarpSuite`, whose draws now keep their position.
 
 Then run: `./sbtw test`
@@ -1560,7 +1560,7 @@ Expected: PASS, with 20 tests more than the baseline. Apply Task 3 Step 8's fill
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/BottomDraw.scala src/main/scala/oathdigital/gameplay/powers/search/Mushrooms.scala src/main/scala/oathdigital/gameplay/powers/search/WineOfWelcome.scala src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/search/MushroomsSuite.scala src/test/scala/oathdigital/gameplay/powers/search/WineOfWelcomeSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/search/BottomDraw.scala src/main/scala/distantlands/gameplay/powers/search/Mushrooms.scala src/main/scala/distantlands/gameplay/powers/search/WineOfWelcome.scala src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/search/MushroomsSuite.scala src/test/scala/distantlands/gameplay/powers/search/WineOfWelcomeSuite.scala
 git commit -m "feat(powers): Mushrooms and Wine of Welcome draw from the bottom"
 ```
 
@@ -1569,12 +1569,12 @@ git commit -m "feat(powers): Mushrooms and Wine of Welcome draw from the bottom"
 ### Task 5: Painted Trumpet
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/PaintedTrumpet.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/Mushrooms.scala` (`offerReason` and its doc)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `PaintedTrumpetCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (the `powers.search` import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/search/PaintedTrumpetSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/PaintedTrumpet.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/Mushrooms.scala` (`offerReason` and its doc)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `PaintedTrumpetCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (the `powers.search` import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/search/PaintedTrumpetSuite.scala`
 
 **Interfaces:**
 - Consumes: `ShownOptions` (Task 3), plus `MushroomsCard` and `Mushrooms.id` (Task 4).
@@ -1582,19 +1582,19 @@ git commit -m "feat(powers): Mushrooms and Wine of Welcome draw from the bottom"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/PaintedTrumpetSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/PaintedTrumpetSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.{ModifierPlay, SearchPlay}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.{ModifierPlay, SearchPlay}
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Painted Trumpet (relic R23): a Search of a discard pile draws the top
   * card of each discard pile instead, and nothing modifies that draw
@@ -1687,24 +1687,24 @@ class PaintedTrumpetSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.PaintedTrumpetSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.PaintedTrumpetSuite"`
 Expected: the test sources fail to compile: `not found: PaintedTrumpet`.
 
 - [ ] **Step 3: Write Painted Trumpet**
 
 Delete the whole `PaintedTrumpetCard` object from `HoldingRelics.scala`.
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/PaintedTrumpet.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/PaintedTrumpet.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 object PaintedTrumpetCard extends Relic(RelicId("R23"), "Painted Trumpet", value = 46, defense = 1):
   val power = PrintedPower(PowerId("relic.painted-trumpet"),
@@ -1823,7 +1823,7 @@ In `ActionModifiers.scala`, add `PaintedTrumpet` to the search import, in alphab
 
 - [ ] **Step 6: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.*"`
 Expected: PASS.
 
 Then run: `./sbtw test`
@@ -1832,7 +1832,7 @@ Expected: PASS, with 25 tests more than the baseline.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/PaintedTrumpet.scala src/main/scala/oathdigital/gameplay/powers/search/Mushrooms.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/search/PaintedTrumpetSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/search/PaintedTrumpet.scala src/main/scala/distantlands/gameplay/powers/search/Mushrooms.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/search/PaintedTrumpetSuite.scala
 git commit -m "feat(powers): Painted Trumpet draws the top card of each discard pile"
 ```
 
@@ -1841,28 +1841,28 @@ git commit -m "feat(powers): Painted Trumpet draws the top card of each discard 
 ### Task 6: The Search line names the new draws
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala` (`search`, near line 187)
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogSearchDrawSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala` (`search`, near line 187)
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogSearchDrawSuite.scala`
 
 **Interfaces:**
 - Consumes: `Draw.position` (Task 2), plus `Mushrooms.id`, `WineOfWelcome.id` and `PaintedTrumpet.id` (Tasks 4 and 5).
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogSearchDrawSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogSearchDrawSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameCommand, StartPayload}
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powers.search.{Mushrooms, PaintedTrumpet,
+import distantlands.application.{GameCommand, StartPayload}
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powers.search.{Mushrooms, PaintedTrumpet,
   WineOfWelcome}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Answers, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Answers, Table}
+import distantlands.testkit.Table.p1
 import LogScripts._
 
 /** The Search line for the draws catalog batch 6 adds: from the bottom of
@@ -1914,7 +1914,7 @@ class GameLogSearchDrawSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogSearchDrawSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogSearchDrawSuite"`
 Expected: FAIL. The lines read " from the World Deck …" and " from the Cradle discard …".
 
 - [ ] **Step 3: Read every draw of the run**
@@ -1969,13 +1969,13 @@ In `ActionLines.scala`, replace the `search` method and its doc with:
 
 - [ ] **Step 4: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS. The golden logs are unchanged, since a single top draw still reads "from the World Deck".
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ActionLines.scala src/test/scala/oathdigital/application/gamelog/GameLogSearchDrawSuite.scala
+git add src/main/scala/distantlands/application/gamelog/ActionLines.scala src/test/scala/distantlands/application/gamelog/GameLogSearchDrawSuite.scala
 git commit -m "feat(gamelog): name a Search drawn from the bottom or from each discard pile"
 ```
 

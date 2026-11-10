@@ -1,0 +1,32 @@
+package distantlands.gameplay.powers.banner
+
+import distantlands.gameplay.powerresolver.{ContributingPower, PhasePower}
+import distantlands.model.PowerId
+
+/** The powers printed on the banner faces, registered through this one object
+  * by [[distantlands.gameplay.powers.PhasePowerCatalog]], like
+  * [[distantlands.gameplay.powers.action.MovementPowers]] and the other groups.
+  *
+  * A banner face has no catalog entry, so the name and text a player sees for
+  * each of its phase powers are declared here. The texts are the printed ones.
+  * The place power covers the printed "on your site" half; the "on the banner"
+  * half is the generic Place Banner Resource action.
+  */
+object BannerFacePowers:
+  val phasePowers: Vector[PhasePower] =
+    Vector[PhasePower](WanderingFlameMove, WanderingFlamePlace)
+
+  /** The banner faces' rules that change how the engine plans an action. */
+  val contributions: Vector[ContributingPower] =
+    Vector[ContributingPower](PeoplesFavorMob)
+
+  private val texts: Vector[(PowerId, String, String)] = Vector(
+    (WanderingFlameMove.id, "Wandering Flame: move",
+      "ACTION: Place your pawn at a site with a secret on it. You may do this " +
+        "multiple times per turn."),
+    (WanderingFlamePlace.id, "Wandering Flame: place a secret on your site",
+      "ACTION: Place a secret on the banner or on your site."))
+
+  /** The name and the text of a banner face's phase power. */
+  def printed(id: PowerId): Option[(String, String)] =
+    texts.collectFirst { case (`id`, name, text) => (name, text) }

@@ -17,7 +17,7 @@
 - Branch and worktree off local `0.2.0-alpha`, never `main`. Merge back into `0.2.0-alpha`. Symlink the main checkout's `.tooling` and `node_modules` into the worktree before running `./sbtw`.
 - Scalac runs with `-Werror`. A new enum case breaks every exhaustive match; fix each one the compiler names. Unused imports fail the build.
 - Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`, `BackendArchitectureSuite`). `model` must not import `gameplay`, `application` or `serialization`. `gameplay` must not import `application` or `serialization`. `gameplay/walker/ProcedureWalker.scala` is at 797 lines: add nothing to it.
-- Tests run with `oathdigital.notes.strict=true`: a log note key not declared by its writer throws.
+- Tests run with `distantlands.notes.strict=true`: a log note key not declared by its writer throws.
 - Tests never spell catalog ids (`BackendArchitectureSuite`). Use `CatalogNames`, `Table` helpers, or ids read from the table.
 - Old journals need not decode. New fields and operations are required on the wire.
 - Test helper names state what they build. A doc comment does not excuse a vague name.
@@ -57,7 +57,7 @@ Edifices in the edifice deck and denizens in the suited reserves are derived vie
 
 ## File Structure
 
-`M/` is `src/main/scala/oathdigital/` and `T/` is `src/test/scala/oathdigital/`.
+`M/` is `src/main/scala/distantlands/` and `T/` is `src/test/scala/distantlands/`.
 
 - Create `M/gameplay/setup/ChronicleAccounting.scala`: `knownAndUnique` and `conserves`.
 - Modify `M/gameplay/setup/GameStartRules.scala`: `validateIds` delegates to `ChronicleAccounting.knownAndUnique`.
@@ -76,9 +76,9 @@ Edifices in the edifice deck and denizens in the suited reserves are derived vie
 ### Task 1: Chronicle accounting shared with game start
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/setup/ChronicleAccounting.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala:90-121`
-- Test: `src/test/scala/oathdigital/gameplay/setup/ChronicleAccountingSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/setup/ChronicleAccounting.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala:90-121`
+- Test: `src/test/scala/distantlands/gameplay/setup/ChronicleAccountingSuite.scala`
 
 **Interfaces:**
 - Produces: `ChronicleAccounting.knownAndUnique(catalog: ExecutableCatalog, chronicle: Chronicle): Either[String, Unit]` and `ChronicleAccounting.conserves(baseline: Chronicle, evolved: Chronicle): Either[String, Unit]`.
@@ -86,12 +86,12 @@ Edifices in the edifice deck and denizens in the suited reserves are derived vie
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
-import oathdigital.testkit.CatalogNames
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
+import distantlands.testkit.CatalogNames
 
 /** The card accounting a Chronicle passes before game start reads it, and
   * before the Chronicle Phase journals it (Chronicle steps design, "Exit
@@ -171,17 +171,17 @@ Check before writing: the Grand Scepter must be in `catalog.relics` (the first-g
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.ChronicleAccountingSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.ChronicleAccountingSuite"`
 Expected: compile error, `ChronicleAccounting` not found.
 
 - [ ] **Step 3: Write `ChronicleAccounting`**
 
 ```scala
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
 
 /** The card accounting every Chronicle passes (Chronicle steps design, "Exit
   * and extraction"). Game start checks `knownAndUnique` before it deals;
@@ -272,15 +272,15 @@ Update the object's doc comment sentence "known and unique ids" to "known and un
 
 - [ ] **Step 5: Run the new suite and the start suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.*"`
 Expected: all pass. The four existing messages in `GameStartRulesSuite` are unchanged. If another fixture now fails, the fixture stores a card twice: stop and report it rather than weakening the check.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/setup/ChronicleAccounting.scala \
-  src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala \
-  src/test/scala/oathdigital/gameplay/setup/ChronicleAccountingSuite.scala
+git add src/main/scala/distantlands/gameplay/setup/ChronicleAccounting.scala \
+  src/main/scala/distantlands/gameplay/setup/GameStartRules.scala \
+  src/test/scala/distantlands/gameplay/setup/ChronicleAccountingSuite.scala
 git commit -m "feat(chronicle): check every Chronicle field for known, unique cards and conserved sites and relics
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -291,13 +291,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: Extract the table into the journaled Chronicle
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Chronicle.scala`
-- Modify: `src/main/scala/oathdigital/model/World.scala:85-91`
-- Create: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleExtraction.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleRecord.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleFinishProcedure.scala`
-- Test: `src/test/scala/oathdigital/gameplay/chronicle/ChronicleExtractionSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/chronicle/ChronicleRecordSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Chronicle.scala`
+- Modify: `src/main/scala/distantlands/model/World.scala:85-91`
+- Create: `src/main/scala/distantlands/gameplay/chronicle/ChronicleExtraction.scala`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleRecord.scala`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleFinishProcedure.scala`
+- Test: `src/test/scala/distantlands/gameplay/chronicle/ChronicleExtractionSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/chronicle/ChronicleRecordSuite.scala`
 
 **Interfaces:**
 - Consumes: `ChronicleAccounting.knownAndUnique`, `ChronicleAccounting.conserves` (Task 1); `ChronicleTasks.rules(ready, player, site): Boolean`.
@@ -312,11 +312,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the failing extraction tests**
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** Reading the finished table into the Chronicle's table fields (Chronicle
   * steps design, "Exit and extraction"; Chronicle rulings 17 and 18). */
@@ -362,7 +362,7 @@ class ChronicleExtractionSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleExtractionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ChronicleExtractionSuite"`
 Expected: compile error, `ChronicleExtraction` not found.
 
 - [ ] **Step 3: Add the stored-site capacity**
@@ -394,10 +394,10 @@ Run `git grep -n "cradleward" src` and confirm nothing else uses it.
 - [ ] **Step 5: Write `ChronicleExtraction`**
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
 
 /** The table as the Stars task stores it (CR pp. 40-41, Chronicle rulings
   * 17 and 18). The Stars steps change nothing on the table; this reads it
@@ -489,7 +489,7 @@ If the compiler reports the `CardContainer` match as non-exhaustive, the default
 
 - [ ] **Step 6: Run the extraction tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleExtractionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ChronicleExtractionSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Write the failing record tests**
@@ -524,7 +524,7 @@ Replace the doc comment on the class with: "What the journaled Chronicle carries
 
 - [ ] **Step 8: Run them to see the new expectations fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleRecordSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ChronicleRecordSuite"`
 Expected: the two changed tests FAIL (`previousPlayer` is `None`, the starting advisers are the baseline's).
 
 - [ ] **Step 9: Update `ChronicleRecord`**
@@ -532,11 +532,11 @@ Expected: the two changed tests FAIL (`previousPlayer` is `None`, the starting a
 Replace the file body with:
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.setup.ChronicleAccounting
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.setup.ChronicleAccounting
+import distantlands.model._
 
 /** The Chronicle the Chronicle Phase journals (Chronicle steps design,
   * "Exit and extraction"). Roles, era scores, the Oathkeeper goal and
@@ -602,7 +602,7 @@ object ChronicleFinishProcedure:
 
 - [ ] **Step 11: Run the Chronicle suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* oathdigital.gameplay.setup.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.gameplay.setup.*"`
 Expected: PASS, including `ChronicleEndToEndSuite`: its Finish now reads the table. If a suite fails with "the Chronicle cannot store …", read the named container. A card left by an earlier task is a bug in that task or in this table mapping: stop and report it with the message.
 
 - [ ] **Step 12: Run the full suite**
@@ -613,13 +613,13 @@ Expected: PASS. `GameApplicationServiceStreamSuite`, the log goldens and `Chroni
 - [ ] **Step 13: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Chronicle.scala \
-  src/main/scala/oathdigital/model/World.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleExtraction.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleRecord.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleFinishProcedure.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/ChronicleExtractionSuite.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/ChronicleRecordSuite.scala
+git add src/main/scala/distantlands/model/Chronicle.scala \
+  src/main/scala/distantlands/model/World.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleExtraction.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleRecord.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleFinishProcedure.scala \
+  src/test/scala/distantlands/gameplay/chronicle/ChronicleExtractionSuite.scala \
+  src/test/scala/distantlands/gameplay/chronicle/ChronicleRecordSuite.scala
 git commit -m "feat(chronicle): journal the table's sites, decks, Dispossessed, Reliquary and starting advisers
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -630,15 +630,15 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: The Stars task
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleStarsProcedure.scala`
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala:91-94,145-149`
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala:225`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleWindows.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/chronicle/ChronicleSequence.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala:357-366`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala:101-103`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:346-351`
-- Test: `src/test/scala/oathdigital/gameplay/chronicle/StarsTaskSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/chronicle/ChronicleStarsProcedure.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala:91-94,145-149`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala:225`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleWindows.scala`
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleSequence.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala:357-366`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala:101-103`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:346-351`
+- Test: `src/test/scala/distantlands/gameplay/chronicle/StarsTaskSuite.scala`
 - Test: `ChronicleWindowsSuite`, `ProcedureRefSuite`, `EnumWireKeySuite`, the note-key snapshot, the `chronicle-started` goldens
 
 **Interfaces:**
@@ -648,16 +648,16 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Outcomes, RecordedOps, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Outcomes, RecordedOps, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** The Stars task (CR pp. 40-41, Chronicle rulings 7, 8, 17 and 18): rival
   * sites are archived with their cards, the Empire's sites are kept, and
@@ -773,7 +773,7 @@ Edit `ProcedureRefSuite.scala:35`: add `TriggeredProcedureRef.ChronicleStars,` a
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.StarsTaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.StarsTaskSuite"`
 Expected: compile error, `ChronicleStars` not found.
 
 - [ ] **Step 3: Add the procedure reference and windows**
@@ -812,11 +812,11 @@ and in `TriggeredProcedureRef.all`, `ChronicleBeacon, ChronicleStars, ChronicleF
 - [ ] **Step 4: Write `ChronicleStarsProcedure`**
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.model._
 
 /** The Stars task (CR pp. 40-41, `docs/rules/chronicle.md` task 5). No step
   * has an actor, and none changes the table (Chronicle ruling 18): the
@@ -869,7 +869,7 @@ object ChronicleStarsProcedure:
       rebuild = ChronicleStarsProcedure.build),
 ```
 
-and add `ChronicleStarsProcedure` to the `oathdigital.gameplay.chronicle` import on line 4.
+and add `ChronicleStarsProcedure` to the `distantlands.gameplay.chronicle` import on line 4.
 
 `ProcedureNotes.scala`, after the Beacon case (and add `ChronicleStarsProcedure` to its import on line 6):
 
@@ -890,7 +890,7 @@ and add `ChronicleStarsProcedure` to the `oathdigital.gameplay.chronicle` import
 
 - [ ] **Step 6: Run the Stars and wiring suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* oathdigital.model.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.model.*"`
 Expected: PASS.
 
 - [ ] **Step 7: Regenerate the note snapshot and log goldens, then read the diffs**
@@ -908,18 +908,18 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/chronicle/ChronicleStarsProcedure.scala \
-  src/main/scala/oathdigital/model/ProcedureRef.scala \
-  src/main/scala/oathdigital/model/PowerWindow.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleWindows.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleSequence.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala \
-  src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/StarsTaskSuite.scala \
-  src/test/scala/oathdigital/gameplay/chronicle/ChronicleWindowsSuite.scala \
-  src/test/scala/oathdigital/model/ProcedureRefSuite.scala \
-  src/test/scala/oathdigital/model/EnumWireKeySuite.scala
+git add src/main/scala/distantlands/gameplay/chronicle/ChronicleStarsProcedure.scala \
+  src/main/scala/distantlands/model/ProcedureRef.scala \
+  src/main/scala/distantlands/model/PowerWindow.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleWindows.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleSequence.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala \
+  src/main/scala/distantlands/application/gamelog/ProcedureLog.scala \
+  src/test/scala/distantlands/gameplay/chronicle/StarsTaskSuite.scala \
+  src/test/scala/distantlands/gameplay/chronicle/ChronicleWindowsSuite.scala \
+  src/test/scala/distantlands/model/ProcedureRefSuite.scala \
+  src/test/scala/distantlands/model/EnumWireKeySuite.scala
 git add $(git diff --name-only -- '*declared-keys.txt' '*chronicle-started*')
 git commit -m "feat(chronicle): the Stars archive rival sites and keep the Empire's sites
 
@@ -931,7 +931,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 4: The round trip end to end, and the docs
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/chronicle/ChronicleEndToEndSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/chronicle/ChronicleEndToEndSuite.scala`
 - Modify: `docs/rules/ambiguities.md`, `docs/rules/chronicle.md`, `docs/rules/implementation-traceability.md`, `docs/ROADMAP.md`, `CONTEXT.md`
 
 **Interfaces:**
@@ -957,11 +957,11 @@ In `ChronicleEndToEndSuite`, rename the test to "the winner's Chronicle runs eve
         "a non-empty world requires the Empire")))
 ```
 
-Add imports `oathdigital.gameplay.setup.{ChronicleAccounting, FirstGameSetupFixture, GameStartRules}` (merge with the existing `FirstGameSetupFixture.catalog` import). `accepted` works on `Either[OathViolation, A]`; if it does not accept this type, use `.toOption.get`.
+Add imports `distantlands.gameplay.setup.{ChronicleAccounting, FirstGameSetupFixture, GameStartRules}` (merge with the existing `FirstGameSetupFixture.catalog` import). `accepted` works on `Either[OathViolation, A]`; if it does not accept this type, use `.toOption.get`.
 
 - [ ] **Step 2: Run it**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleEndToEndSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ChronicleEndToEndSuite"`
 Expected: PASS.
 
 - [ ] **Step 3: Record rulings 17 and 18**
@@ -1018,7 +1018,7 @@ Expected: all pass; statement coverage at least 92%.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/chronicle/ChronicleEndToEndSuite.scala \
+git add src/test/scala/distantlands/gameplay/chronicle/ChronicleEndToEndSuite.scala \
   docs/rules/ambiguities.md docs/rules/chronicle.md \
   docs/rules/implementation-traceability.md docs/ROADMAP.md CONTEXT.md
 git commit -m "test(chronicle): the journaled Chronicle passes game start's accounting; document the Stars and rulings 17-18

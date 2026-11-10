@@ -1,0 +1,131 @@
+package distantlands.server
+
+import java.net.URI
+import java.nio.file.{Files, Paths}
+
+class DesktopLaunchProfileSuite extends munit.FunSuite:
+  private val appData = Paths.get("/data/distantlands")
+  private val lan: () => Option[String] = () => Some("192.168.1.20")
+  private val noDetection: () => Option[String] =
+    () => fail("LAN detection must not run")
+
+  private def resolve(
+      arguments: Array[String] = Array.empty,
+      environment: Map[String, String] = Map.empty,
+      settings: Map[String, String] = Map.empty,
+      detect: () => Option[String] = lan
+  ): DesktopLaunch =
+    DesktopLaunchProfile.resolve(arguments, environment, settings, appData, detect)
+      .fold(error => fail(error), identity)
+
+  private def parse(arguments: Array[String], launch: DesktopLaunch): ServerConfig =
+    ServerConfig.parse(arguments, launch.environment + ("DLQ_MODE" -> "trusted-alpha"), "0.1.0-alpha.1")
+      .fold(errors => fail(errors.mkString("; ")), identity)
+
+  test("desktop defaults bind all interfaces with the detected address"):
+    val launch = resolve()
+    assertEquals(launch.environment.get("DLQ_HOST"), Some("0.0.0.0"))
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("http://192.168.1.20:8080"))
+    assertEquals(launch.environment.get("DLQ_DATABASE_PATH"), Some(appData.resolve("data/database").toString))
+    assertEquals(launch.settingsFile, appData.resolve("distantlands.properties"))
+    assert(launch.openBrowser)
+    assert(!launch.lanDetectionFailed)
+    val config = parse(Array.empty, launch)
+    assertEquals(config.publicBaseUrl, Some(new URI("http://192.168.1.20:8080")))
+
+  test("the settings file overrides desktop defaults"):
+    val launch = resolve(settings = Map("DLQ_PORT" -> "9000"))
+    assertEquals(launch.environment.get("DLQ_PORT"), Some("9000"))
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("http://192.168.1.20:9000"))
+
+  test("environment variables override the settings file"):
+    val launch = resolve(environment = Map("DLQ_PORT" -> "9100"), settings = Map("DLQ_PORT" -> "9000"))
+    assertEquals(launch.environment.get("DLQ_PORT"), Some("9100"))
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("http://192.168.1.20:9100"))
+
+  test("command-line flags override environment variables"):
+    val arguments = Array("--port", "9200")
+    val launch = resolve(arguments = arguments, environment = Map("DLQ_PORT" -> "9100"))
+    val config = parse(arguments, launch)
+    assertEquals(config.port, 9200)
+    assertEquals(config.publicBaseUrl, Some(new URI("http://192.168.1.20:9200")))
+
+  test("a --database-path flag stops the desktop default from being set"):
+    val arguments = Array("--database-path", "/elsewhere/database")
+    val launch = resolve(arguments = arguments)
+    assertEquals(launch.environment.get("DLQ_DATABASE_PATH"), None)
+    assertEquals(parse(arguments, launch).databasePath, Paths.get("/elsewhere/database"))
+
+  test("an explicit public base URL skips detection"):
+    val launch = resolve(settings = Map("DLQ_PUBLIC_BASE_URL" -> "https://oath.example.test"), detect = noDetection)
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("https://oath.example.test"))
+
+  test("a loopback host skips detection and sets no public base URL"):
+    val launch = resolve(environment = Map("DLQ_HOST" -> "127.0.0.1"), detect = noDetection)
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), None)
+    assert(!launch.lanDetectionFailed)
+    assertEquals(parse(Array.empty, launch).publicBaseUrl, None)
+
+  test("a specific non-loopback host becomes the public base URL"):
+    val launch = resolve(settings = Map("DLQ_HOST" -> "192.168.5.5"), detect = noDetection)
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("http://192.168.5.5:8080"))
+
+  test("no LAN address falls back to this computer only"):
+    val launch = resolve(detect = () => None)
+    assertEquals(launch.environment.get("DLQ_HOST"), Some("127.0.0.1"))
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), None)
+    assert(launch.lanDetectionFailed)
+    assertEquals(parse(Array.empty, launch).host, "127.0.0.1")
+
+  test("browser opening follows settings and environment precedence"):
+    assert(!resolve(settings = Map("DLQ_OPEN_BROWSER" -> "false")).openBrowser)
+    assert(resolve(environment = Map("DLQ_OPEN_BROWSER" -> "TRUE"), settings = Map("DLQ_OPEN_BROWSER" -> "false")).openBrowser)
+
+  test("an invalid DLQ_OPEN_BROWSER is refused"):
+    assertEquals(
+      DesktopLaunchProfile.resolve(Array.empty, Map("DLQ_OPEN_BROWSER" -> "yes"), Map.empty, appData, lan),
+      Left("DLQ_OPEN_BROWSER: must be true or false")
+    )
+
+  test("unrelated environment variables pass through"):
+    val launch = resolve(environment = Map("DLQ_UNRELATED" -> "/unrelated", "PATH" -> "/usr/bin"))
+    assertEquals(launch.environment.get("DLQ_UNRELATED"), Some("/unrelated"))
+    assertEquals(launch.environment.get("PATH"), Some("/usr/bin"))
+
+  test("prepare leaves the environment untouched and writes nothing without DLQ_LAUNCH"):
+    val home = Files.createTempDirectory("distantlands-home")
+    val environment = Map("HOME" -> home.toString, "DLQ_PORT" -> "9300")
+    assertEquals(
+      DesktopLaunchProfile.prepare(Array.empty, environment, "Linux", home.toString, noDetection),
+      Right(None)
+    )
+    assert(!Files.exists(home.resolve(".local")))
+    Files.delete(home)
+
+  test("prepare rejects an unknown launch profile"):
+    assertEquals(
+      DesktopLaunchProfile.prepare(Array.empty, Map("DLQ_LAUNCH" -> "tray"), "Linux", "/tmp", noDetection),
+      Left("DLQ_LAUNCH: must be desktop when set")
+    )
+
+  test("prepare reads settings and creates the data folder"):
+    val home = Files.createTempDirectory("distantlands-home")
+    val environment = Map("HOME" -> home.toString, "DLQ_LAUNCH" -> "desktop")
+    val appData = home.resolve(".local/share/distantlands")
+    Files.createDirectories(appData)
+    Files.write(appData.resolve("distantlands.properties"), "DLQ_PORT=9400\n".getBytes("UTF-8"))
+    val launch = DesktopLaunchProfile.prepare(Array.empty, environment, "Linux", home.toString, lan)
+      .fold(error => fail(error), _.getOrElse(fail("expected a desktop launch")))
+    assertEquals(launch.environment.get("DLQ_PORT"), Some("9400"))
+    assert(Files.isDirectory(appData.resolve("data")))
+    assertEquals(launch.warnings, Vector.empty)
+
+  test("prepare reports an unknown settings key"):
+    val home = Files.createTempDirectory("distantlands-home")
+    val appData = home.resolve(".local/share/distantlands")
+    Files.createDirectories(appData)
+    val file = Files.write(appData.resolve("distantlands.properties"), "DLQ_PROT=1\n".getBytes("UTF-8"))
+    assertEquals(
+      DesktopLaunchProfile.prepare(Array.empty, Map("HOME" -> home.toString, "DLQ_LAUNCH" -> "desktop"), "Linux", home.toString, lan),
+      Left(s"$file: unknown setting DLQ_PROT")
+    )

@@ -47,9 +47,9 @@ stray line by being forgotten.
 settled and which this plan does not touch.
 
 **Starts from:** `main`. Check that
-`src/main/scala/oathdigital/application/gamelog/LogSections.scala` is 18 lines
+`src/main/scala/distantlands/application/gamelog/LogSections.scala` is 18 lines
 and still defines `of` and `forRun`, and that
-`src/main/scala/oathdigital/application/gamelog/DetailLines.scala` is 236
+`src/main/scala/distantlands/application/gamelog/DetailLines.scala` is 236
 lines and still defines `NarratedIds`.
 
 ## Global Constraints
@@ -63,7 +63,7 @@ lines and still defines `NarratedIds`.
   every import left behind by a deletion must go.
 - **File size.** Production and test Scala files stay at or under 800 lines
   (`scripts/check-architecture.py:19`,
-  `src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala`).
+  `src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala`).
   Current sizes: `ActionLines.scala` 452, `DetailLines.scala` 236,
   `GameLogFormatter.scala` 271, `StartLines.scala` 187, `LogSections.scala`
   18. `LogScripts.scala` is **exactly 800** — the test cap. No task in this
@@ -82,8 +82,8 @@ lines and still defines `NarratedIds`.
   **not** authorized here.
 - **Full gate.** `./sbtw "test" "frontend/test" "frontend/fastLinkJS"` exit 0,
   and `git diff --check` clean, before each commit. While iterating, the
-  faster `./sbtw "testOnly oathdigital.application.gamelog.*"` is enough.
-- **Never touch the live database `var/oathdigital`.**
+  faster `./sbtw "testOnly distantlands.application.gamelog.*"` is enough.
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -176,10 +176,10 @@ tag, the anchor, the opening, the continued line, the section and
 action line.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala:45-47,196-200,207-230`
-- Delete: `src/main/scala/oathdigital/application/gamelog/LogSections.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala:45-47,196-200,207-230`
+- Delete: `src/main/scala/distantlands/application/gamelog/LogSections.scala`
 - Test: no new test. `GameLogGoldenSuite`, `GameLogStartLineSuite`,
   `GameLogSectionSuite` and `GameLogPropertiesSuite` stand unchanged and are
   the proof.
@@ -217,10 +217,10 @@ The table names no action line yet, so `ProcedureLogs` takes only `starts`;
 Task 2 adds `actions`.
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
-import oathdigital.protocol.projection.LogSpan
+import distantlands.model._
+import distantlands.protocol.projection.LogSpan
 
 /** Whether the tag posts at this event: the anchor each procedure declares
   * (log action sections design, "The tag entry"). */
@@ -415,7 +415,7 @@ change. `campaign` and `modifiers` do not change, beyond `campaignWords`
 inside `campaign` becoming `campaignLine`.
 
 Drop the now-unused imports from `StartLines.scala`:
-`oathdigital.gameplay.walker.WalkerCompleted` **stays** (used by
+`distantlands.gameplay.walker.WalkerCompleted` **stays** (used by
 `completing`), `ChoicePayload` and `WalkerStepRecorded` **stay** (used by
 `adviserPicked` and `queuedBy`), `ProcedureDequeued` **stays**. Nothing is
 dropped; check with `./sbtw compile` rather than by eye.
@@ -467,13 +467,13 @@ In `GameLogFormatter.scala`:
         (posted, next)
 ```
 
-5. Delete `src/main/scala/oathdigital/application/gamelog/LogSections.scala`.
+5. Delete `src/main/scala/distantlands/application/gamelog/LogSections.scala`.
 
-Run: `git rm src/main/scala/oathdigital/application/gamelog/LogSections.scala`
+Run: `git rm src/main/scala/distantlands/application/gamelog/LogSections.scala`
 
 - [ ] **Step 5: Run the gamelog suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS, every suite, with no test file edited.
 
 - [ ] **Step 6: Prove the golden logs did not move**
@@ -491,7 +491,7 @@ and layering check.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala src/main/scala/oathdigital/application/gamelog/StartLines.scala src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala src/main/scala/oathdigital/application/gamelog/LogSections.scala
+git add src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/main/scala/distantlands/application/gamelog/StartLines.scala src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala src/main/scala/distantlands/application/gamelog/LogSections.scala
 git commit -m "$(cat <<'EOF'
 refactor(gamelog): declare each procedure's tag and section in one table
 
@@ -520,9 +520,9 @@ branch body moves verbatim into a def whose signature is `ActionLine`, with
 only the locals it uses declared at the top.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:28-206`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:28-206`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`
 - Test: no new test. The golden logs are the proof.
 
 **Interfaces:**
@@ -866,7 +866,7 @@ field.
 
 - [ ] **Step 5: Run the gamelog suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS, every suite, with no test file edited.
 
 - [ ] **Step 6: Prove the golden logs did not move**
@@ -882,7 +882,7 @@ Expected: exit 0.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ActionLines.scala src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala
+git add src/main/scala/distantlands/application/gamelog/ActionLines.scala src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala
 git commit -m "$(cat <<'EOF'
 refactor(gamelog): read each procedure's action line from the table
 
@@ -912,11 +912,11 @@ scripts before anything moves, and the table below is the starting point the
 derivation corrects.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala:29-34,53-56,204-236`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala:29-34,53-56,204-236`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`
 - Test (temporary, deleted in Step 6):
-  `src/test/scala/oathdigital/application/gamelog/NarrationDerivationSuite.scala`
+  `src/test/scala/distantlands/application/gamelog/NarrationDerivationSuite.scala`
 
 **Interfaces:**
 - Consumes: `ProcedureLog`, `ProcedureLogs` from Tasks 1 and 2.
@@ -939,11 +939,11 @@ decision id that today's global list suppresses, beside the procedure whose
 run asked it. It asserts nothing.
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.walker.{ChoicePayload, WalkerCompleted,
+import distantlands.gameplay.walker.{ChoicePayload, WalkerCompleted,
   WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.model._
 import LogScripts._
 
 /** Temporary: prints the procedure that asks each decision today's global
@@ -972,7 +972,7 @@ class NarrationDerivationSuite extends munit.FunSuite:
       .mkString("\n"))
 ```
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.NarrationDerivationSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.NarrationDerivationSuite"`
 Expected: PASS, with one `[narration]` line per pair. Keep the output: it is
 the input to Step 2.
 
@@ -1049,16 +1049,16 @@ decision is silent; it must not be deleted with the list.
 `ProcedureLog.scala` gains these imports:
 
 ```scala
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.walker.FollowUpOffer
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.forge.ForgeProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.walker.FollowUpOffer
 ```
 
 - [ ] **Step 3: Make `DetailLines` ask the entry**
@@ -1117,7 +1117,7 @@ private[gamelog] final class DetailLines(words: LogWords,
 
 - [ ] **Step 4: Run the gamelog suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS. A failure here names the script and the line: a stray
 "Chose …" means a pair Step 1 printed is missing from the table; a missing
 line means a declaration is on the wrong row.
@@ -1130,7 +1130,7 @@ narration on the wrong row shows up here as a line gained or lost.
 
 - [ ] **Step 6: Delete the derivation suite**
 
-Run: `git rm src/test/scala/oathdigital/application/gamelog/NarrationDerivationSuite.scala`
+Run: `git rm src/test/scala/distantlands/application/gamelog/NarrationDerivationSuite.scala`
 
 It referenced `DetailLines.narrated`, which no longer exists; it has served
 its purpose and Task 4 replaces it with a standing property.
@@ -1143,7 +1143,7 @@ Expected: exit 0.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala src/main/scala/oathdigital/application/gamelog/DetailLines.scala src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala
+git add src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/main/scala/distantlands/application/gamelog/DetailLines.scala src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala
 git commit -m "$(cat <<'EOF'
 refactor(gamelog): each procedure declares the decisions its lines tell
 
@@ -1175,7 +1175,7 @@ diagnostic — it names the procedure and the decision id, where a golden diff
 names a line in a log — and the report of declarations no script exercises.
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
   (141 lines, grows by about 55; the 800-line cap is far off)
 
 **Interfaces:**
@@ -1187,10 +1187,10 @@ names a line in a log — and the report of declarations no script exercises.
 
 Append to `GameLogPropertiesSuite`, beside its sibling "every `ProcedureRef`
 key the formatter handles appears in some script". Add
-`import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog`,
-`import oathdigital.gameplay.walker.{ChoicePayload, WalkerStepRecorded}` to
+`import distantlands.gameplay.setup.FirstGameSetupFixture.catalog`,
+`import distantlands.gameplay.walker.{ChoicePayload, WalkerStepRecorded}` to
 the existing walker import, and
-`import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}`.
+`import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}`.
 
 ```scala
   /** Every decision a script asks, with the procedure whose run asked it and
@@ -1261,7 +1261,7 @@ the existing walker import, and
 
 - [ ] **Step 2: Run it to see it pass, and read the report**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPropertiesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPropertiesSuite"`
 Expected: PASS. Read the `[narration]` lines: each is a declaration no script
 reaches. Do **not** delete a declaration to silence one — the list is a note
 about script coverage, not about the table. If a line names a decision that
@@ -1273,7 +1273,7 @@ that *is* a dead declaration: delete it and say so in the commit body.
 Temporarily remove `MusterProcedure.decisionId` from the Muster row of
 `ProcedureLog.rules`.
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPropertiesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPropertiesSuite"`
 Expected: FAIL, naming `muster asks muster.source` (or the decision's actual
 id). Restore the declaration and re-run; expected PASS. A property that
 cannot fail is not a test.
@@ -1286,7 +1286,7 @@ Expected: exit 0.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala
+git add src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala
 git commit -m "$(cat <<'EOF'
 test(gamelog): every decision a script asks is told by some line
 
@@ -1312,10 +1312,10 @@ callers use it. The journal fallback stays in the log: it reads a recorded
 operation, and `gameplay` may not see `LogJournal`.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala:137-168,196-203`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala:193-200`
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala`
-- Test: `src/test/scala/oathdigital/gameplay/CampaignSetupSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala:137-168,196-203`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala:193-200`
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala`
+- Test: `src/test/scala/distantlands/gameplay/CampaignSetupSuite.scala`
   (76 lines)
 
 **Interfaces:**
@@ -1350,7 +1350,7 @@ helper are already there.
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignSetupSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignSetupSuite"`
 Expected: FAIL with "value declaredAt is not a member of object
 CampaignSetup".
 
@@ -1425,7 +1425,7 @@ CampaignDefender)]` does not infer, write it as
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignSetupSuite oathdigital.gameplay.Campaign* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignSetupSuite distantlands.gameplay.Campaign* distantlands.application.gamelog.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Prove the golden logs did not move**
@@ -1441,7 +1441,7 @@ Expected: exit 0.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala src/main/scala/oathdigital/application/gamelog/StartLines.scala src/test/scala/oathdigital/gameplay/CampaignSetupSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala src/main/scala/distantlands/application/gamelog/StartLines.scala src/test/scala/distantlands/gameplay/CampaignSetupSuite.scala
 git commit -m "$(cat <<'EOF'
 refactor(campaign): read a Campaign's declared kind and defender by name
 

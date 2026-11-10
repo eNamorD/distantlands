@@ -1,0 +1,60 @@
+package distantlands.gameplay.powers.rest
+
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+  PrintedPower}
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
+
+object InsomniaCard extends Denizen(DenizenId("97"), "Insomnia", Suit.Discord) with Locked with AdviserOnly:
+  val power = PrintedPower(PowerId("denizen.insomnia"),
+    persistent = false, cost = Cost.free,
+    text = "You can only have two advisers. **REST:** Gain [secret].")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Insomnia (card 97, adviser-only, locked): "You can only have two advisers.
+  * REST: Gain [secret]."
+  *
+  * The limit is a [[HolderAdviserLimit]], exactly as Silver Tongue's is, so
+  * playing Insomnia faceup needs room under the limit, and with Silver Tongue
+  * as well the limit stays 2. The limit writes no line, as for Silver Tongue.
+  *
+  * The REST power is an optional
+  * [[distantlands.gameplay.powerresolver.PhasePower]], once per turn, which the
+  * engine enforces. Its line, "{Red} gained 1 secret.", restates the gain in
+  * place of the generic gain line, as Tutor's does.
+  */
+case object Insomnia extends PhasePower with ContributingPower:
+  val cardId: DenizenId = InsomniaCard.id
+  val id: PowerId = InsomniaCard.power.id
+  /** How many advisers the holder may have, in either orientation. */
+  val HolderLimit: Int = 2
+  val Secrets: Int = 1
+  private val notes = NoteSet(id)
+  val gained: NoteKey = NoteSupport.gainedKey(notes, NoteKey.Used)
+
+  private val limit = HolderAdviserLimit(cardId, Insomnia.HolderLimit)
+
+  def timing: PowerTiming = PowerTiming.Rest
+  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    true
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] = Right(Sequence(Vector(
+    Gain.Secrets(player, Insomnia.Secrets),
+    Note(id, NoteSupport.gainNote(Insomnia.gained, source, player,
+      NoteUnit.Secret, NoteSupport.secrets), covers = true))))
+
+  def contributions: Map[PowerWindow, Vector[Contribution]] =
+    Map(PowerWindow.SearchPlayAdviser -> Vector(limit.contribution))
+
+  /** The adviser limit Insomnia sets on `player`: its holder, and only while
+    * it is faceup.
+    */
+  def limitFor(ready: ReadyGame, player: PlayerId): Option[Int] =
+    limit.limitFor(ready, player)

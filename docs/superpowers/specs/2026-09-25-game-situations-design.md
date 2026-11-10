@@ -12,7 +12,7 @@ This design gives the concept a module. `CONTEXT.md` names it: a **Situation** i
 
 ## Ownership and interface
 
-A new test-only package, `oathdigital.testkit`, owns `Situation`. It serves gameplay, application and server suites, which share one `src/test` tree.
+A new test-only package, `distantlands.testkit`, owns `Situation`. It serves gameplay, application and server suites, which share one `src/test` tree.
 
 `Situation` is one immutable value:
 

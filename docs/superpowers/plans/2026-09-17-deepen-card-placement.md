@@ -20,20 +20,20 @@
 
 ## File map and interfaces
 
-- `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`: add `Choice` and `legalChoices`; keep `plannedOperations` and all semantic validation here.
-- `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`: map domain choices to existing walker buttons and replacement options; remove local legality and replacement-candidate probes.
-- `src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala`: characterize domain choice order and end-to-end decision behavior.
-- `src/test/scala/oathdigital/gameplay/powers/rest/SilverTongueSuite.scala`: existing power-window tests are preservation gates; edit only if a missing behavior assertion is needed.
+- `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`: add `Choice` and `legalChoices`; keep `plannedOperations` and all semantic validation here.
+- `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`: map domain choices to existing walker buttons and replacement options; remove local legality and replacement-candidate probes.
+- `src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala`: characterize domain choice order and end-to-end decision behavior.
+- `src/test/scala/distantlands/gameplay/powers/rest/SilverTongueSuite.scala`: existing power-window tests are preservation gates; edit only if a missing behavior assertion is needed.
 
 ---
 
 ### Task 1: Expose ordered legal choices from CardPlay
 
-**Files:** Modify `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala:15-48`; test `src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala:20-135`.
+**Files:** Modify `src/main/scala/distantlands/gameplay/actions/CardPlay.scala:15-48`; test `src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala:20-135`.
 
 **Interfaces:** Produce `CardPlay.Choice(placement: SearchPlacement, replacements: Vector[CardId])` and `CardPlay.legalChoices(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId, card: WorldCardId, origin: CardPlay.Origin, faceupLimit: Int, facedownLimit: Int): Vector[CardPlay.Choice]`. `placement` is the base intent with `replace = None`.
 
-- [ ] **Step 1: Baseline.** Run `./sbtw 'testOnly oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.powers.rest.SilverTongueSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.VisionsSuite'`; require pass before edits. Record existing placement-button order and full-area replacement order from the tests.
+- [ ] **Step 1: Baseline.** Run `./sbtw 'testOnly distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.powers.rest.SilverTongueSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.VisionsSuite'`; require pass before edits. Record existing placement-button order and full-area replacement order from the tests.
 
 - [ ] **Step 2: Write a failing public-seam test.** In `CardPlayProcedureSuite`, add this test. In the existing full-adviser test, assert the faceup choice's replacement IDs equal the current advisers' IDs filtered by `CardPlay.plannedOperations(catalog, full, actor, card, SearchPlacement.Adviser(Orientation.FaceUp, Some(id)), CardPlay.Origin.TemporaryHand).isRight`, preserving their order. In the locked-adviser test, assert no faceup choice. Run the focused suite and require compilation failure because `legalChoices` does not exist.
 
@@ -101,7 +101,7 @@ def legalChoices(catalog: ExecutableCatalog, ready: ReadyGame,
 
 ### Task 2: Consume choices in walker adapter
 
-**Files:** Modify `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala:78-169`; test `src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala:20-225`.
+**Files:** Modify `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala:78-169`; test `src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala:20-225`.
 
 **Interfaces:** Consume `CardPlay.legalChoices` from Task 1. Keep `CardPlayProcedure.build`, `buildFacedown`, `rebuildFacedown`, and `PlacementTree.withAdviserLimit`/`withFaceupAdviserLimit` signatures unchanged.
 
@@ -140,7 +140,7 @@ val candidates = CardPlay.legalChoices(catalog, ready, actor, card,
 
   Leave decision construction, selected-answer lookup, selected replacement conversion, `BuildOps` revalidation, and `CardPlayed` hook in place. Remove now-unused local `player` and `VisionId`-specific candidate logic. Do not move presentation labels into `CardPlay`.
 
-- [ ] **Step 3: Focused gate.** Run `./sbtw 'testOnly oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.powers.rest.SilverTongueSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.VisionsSuite oathdigital.application.GameApplicationServiceSuite'`; require pass. Confirm tests cover full/locked adviser areas, full site, Vision replacement, Conspiracy, facedown start, Silver Tongue, and persisted Search replay. Commit Task 2 files as `refactor(cardplay): render walker choices from placement rules`.
+- [ ] **Step 3: Focused gate.** Run `./sbtw 'testOnly distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.powers.rest.SilverTongueSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.VisionsSuite distantlands.application.GameApplicationServiceSuite'`; require pass. Confirm tests cover full/locked adviser areas, full site, Vision replacement, Conspiracy, facedown start, Silver Tongue, and persisted Search replay. Commit Task 2 files as `refactor(cardplay): render walker choices from placement rules`.
 
 ### Task 3: Final behavior and architecture gate
 
@@ -149,7 +149,7 @@ val candidates = CardPlay.legalChoices(catalog, ready, actor, card,
 **Interfaces:** No additional interface.
 
 - [ ] **Step 1: Full verification.** Run `./sbtw 'test' 'frontend/test' 'frontend/fastLinkJS'`, `python3 scripts/check-architecture.py`, `python3 scripts/check-markdown-links.py`, and `git diff --check`; require all pass.
-- [ ] **Step 2: Review the branch diff.** Use `git diff <pre-task-commit>..HEAD -- src/main/scala/oathdigital/gameplay/actions/CardPlay.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala` and `git status --short`. Verify Search, Silver Tongue, protocol, and frontend production files did not change. Verify decision strings, option order, limit transform, Conspiracy path, and execution-time `plannedOperations` call remain intact.
+- [ ] **Step 2: Review the branch diff.** Use `git diff <pre-task-commit>..HEAD -- src/main/scala/distantlands/gameplay/actions/CardPlay.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala` and `git status --short`. Verify Search, Silver Tongue, protocol, and frontend production files did not change. Verify decision strings, option order, limit transform, Conspiracy path, and execution-time `plannedOperations` call remain intact.
 - [ ] **Step 3: Report.** Summarize exact files and tests, preserve the existing untracked projection documents, and ask the user how to integrate the branch. Do not merge or push without their choice.
 
 ## Self-review gate

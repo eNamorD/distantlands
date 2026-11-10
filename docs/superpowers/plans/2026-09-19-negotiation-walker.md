@@ -35,11 +35,11 @@ Found while reading the code for this plan. Task 12 folds each into the spec.
 ## File structure
 
 New:
-- `src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationDeal.scala`: `DealState`, `fold`, `participants`, `eligible`, `snapshot`, `settle`. The deal rules, pure and with no walker types beyond `Answered`.
-- `src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationProcedure.scala`: the tree, `build`, `rebuild`, `startable`, the decision ids.
-- `src/main/scala/oathdigital/model/NegotiationTerms.scala`: the terms types moved out of `PendingProcedures.scala`, plus `NegotiationBounds`.
-- `src/main/scala/oathdigital/serialization/NegotiationTermsCodec.scala`: the journal encoding of terms, shared by `DecisionAnswerCodec` and (until Task 10) the legacy event codec.
-- `frontend/src/main/scala/oathdigital/frontend/NegotiationDealPanel.scala`, `NegotiationControls.scala`.
+- `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationDeal.scala`: `DealState`, `fold`, `participants`, `eligible`, `snapshot`, `settle`. The deal rules, pure and with no walker types beyond `Answered`.
+- `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationProcedure.scala`: the tree, `build`, `rebuild`, `startable`, the decision ids.
+- `src/main/scala/distantlands/model/NegotiationTerms.scala`: the terms types moved out of `PendingProcedures.scala`, plus `NegotiationBounds`.
+- `src/main/scala/distantlands/serialization/NegotiationTermsCodec.scala`: the journal encoding of terms, shared by `DecisionAnswerCodec` and (until Task 10) the legacy event codec.
+- `frontend/src/main/scala/distantlands/frontend/NegotiationDealPanel.scala`, `NegotiationControls.scala`.
 - Tests: `NegotiationFixture.scala`, `NegotiationDealSuite.scala`, `NegotiationProcedureSuite.scala`, `NegotiationParitySuite.scala`, `CoOwnedDecideSuite.scala`, `NegotiationWindowsSuite.scala`, `ActionKindSuite.scala`, frontend `NegotiationControlsSuite.scala`, `NegotiationDealPanelSuite.scala`.
 
 Modified throughout: `Decisions.scala`, `DecisionQueries.scala`, `ProcedureWalker.scala`, `CoreOperations.scala`, `WalkerProcedureRegistry.scala`, `ProcedureRef.scala`, `RuleFallbackProtocol.scala`, `PowerRuntime.scala`, `PowerWindow.scala`, `GameProcedureProtocol.scala`, `WalkerDecisionProjector.scala`, `ActionProjectionDtos.scala`, `ActionProjectionCodec.scala`, `CommandIntents.scala`, `CommandNestedCodecs.scala`, `GameIntentMapper.scala`, `DecisionAnswerCodec.scala`, `LegalActionProjector.scala`, frontend files.
@@ -50,15 +50,15 @@ Modified throughout: `Decisions.scala`, `DecisionQueries.scala`, `ProcedureWalke
 
 **Files:**
 - Modify (mechanical): every file under `src`, `frontend`, `shared` that names `MajorActionKind` (27 files including docs; source and tests are about 20).
-- Create: `src/test/scala/oathdigital/model/ActionKindSuite.scala`
+- Create: `src/test/scala/distantlands/model/ActionKindSuite.scala`
 
 **Interfaces:**
-- Produces: `oathdigital.model.ActionKind` (sealed trait, `key: String`) with the same members and keys as `MajorActionKind`, and `ActionKind.values`, `ActionKind.fromKey`. `IgnoredRuleDiagnostic.action`, `IgnoredRulesRecorded.action`, `WalkerProcedureRegistry.Entry.fallbackKind: Option[ActionKind]` and `PowerRuntime` signatures use it. Task 5 adds `ActionKind.Negotiation`.
+- Produces: `distantlands.model.ActionKind` (sealed trait, `key: String`) with the same members and keys as `MajorActionKind`, and `ActionKind.values`, `ActionKind.fromKey`. `IgnoredRuleDiagnostic.action`, `IgnoredRulesRecorded.action`, `WalkerProcedureRegistry.Entry.fallbackKind: Option[ActionKind]` and `PowerRuntime` signatures use it. Task 5 adds `ActionKind.Negotiation`.
 
 - [ ] **Step 1: Write the wire-safety test**
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class ActionKindSuite extends munit.FunSuite {
   test("keys are the stable wire spellings") {
@@ -77,7 +77,7 @@ class ActionKindSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to confirm it fails**
 
-Run: `./sbtw "testOnly oathdigital.model.ActionKindSuite"`
+Run: `./sbtw "testOnly distantlands.model.ActionKindSuite"`
 Expected: FAIL to compile, `not found: value ActionKind`.
 
 - [ ] **Step 3: Rename**
@@ -90,7 +90,7 @@ Expected: the second command prints nothing. Frozen plans and specs under `docs/
 
 - [ ] **Step 4: Compile and run the affected suites**
 
-Run: `./sbtw "Test/compile" "frontend/Test/compile" "testOnly oathdigital.model.ActionKindSuite oathdigital.serialization.GameEventWireSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite oathdigital.gameplay.MinorActionsSuite oathdigital.gameplay.OathRulesWalkerPowerSuite"`
+Run: `./sbtw "Test/compile" "frontend/Test/compile" "testOnly distantlands.model.ActionKindSuite distantlands.serialization.GameEventWireSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite distantlands.gameplay.MinorActionsSuite distantlands.gameplay.OathRulesWalkerPowerSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -111,8 +111,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 2: Widen `ChooseMany` to a range
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala:254`, `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala:74,193`, `src/main/scala/oathdigital/gameplay/actions/challenge/ChallengeRibbon.scala:64`, `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:209`, `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:138`, `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala:214-262`, `frontend/src/main/scala/oathdigital/frontend/WalkerSelectionDraft.scala:23`, `frontend/src/main/scala/oathdigital/frontend/WalkerSelectionPanels.scala:29`
-- Modify tests: `src/test/scala/oathdigital/gameplay/walker/DecisionQuerySuite.scala:415-445`, `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala:149`, frontend `WalkerSelectionDraftSuite`, shared `ProjectionProtocolSuite` if they read `count`.
+- Modify: `src/main/scala/distantlands/model/Decisions.scala:254`, `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala:74,193`, `src/main/scala/distantlands/gameplay/actions/challenge/ChallengeRibbon.scala:64`, `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:209`, `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:138`, `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala:214-262`, `frontend/src/main/scala/distantlands/frontend/WalkerSelectionDraft.scala:23`, `frontend/src/main/scala/distantlands/frontend/WalkerSelectionPanels.scala:29`
+- Modify tests: `src/test/scala/distantlands/gameplay/walker/DecisionQuerySuite.scala:415-445`, `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala:149`, frontend `WalkerSelectionDraftSuite`, shared `ProjectionProtocolSuite` if they read `count`.
 
 **Interfaces:**
 - Produces: `DecisionQuery.ChooseMany(min: Int, max: Int, options: Vector[DecisionOption], heading: Option[String] = None)`. `wellFormed` requires `1 <= min <= max <= options.size` and rejects `min == max == options.size`. `accepts` requires a distinct offered subset whose size is in `[min, max]`. `DecisionQueryProjection.count` is removed, and a ChooseMany projects `minimum` and `maximum`.
@@ -169,7 +169,7 @@ In `DecisionQuerySuite.scala` replace the `many` helper and the two ChooseMany t
   }
 ```
 
-In `WalkerDecisionProjectorSuite.scala` line 149 change `DecisionQuery.ChooseMany(<n>, ` to `DecisionQuery.ChooseMany(<n>, <n>, ` (the count becomes both bounds). Read the line first: `sed -n 145,155p src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`.
+In `WalkerDecisionProjectorSuite.scala` line 149 change `DecisionQuery.ChooseMany(<n>, ` to `DecisionQuery.ChooseMany(<n>, <n>, ` (the count becomes both bounds). Read the line first: `sed -n 145,155p src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`.
 
 - [ ] **Step 2: Model**
 
@@ -269,14 +269,14 @@ In `DecisionQueries.scala`, `wellFormed`:
       else s"Choose ${query.minimum.getOrElse(0)} to ${query.maximum.getOrElse(0)}."
 ```
 Migrate the test sites that read or build a ChooseMany `count`:
-- `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala:127`: `count = Some(2)` becomes `minimum = Some(2), maximum = Some(2)` (and the test title's "counts" stays accurate).
-- `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala:149-155`: `DecisionQuery.ChooseMany(2,` becomes `DecisionQuery.ChooseMany(2, 2,`, and `assertEquals(query.count, Some(2))` becomes `assertEquals((query.minimum, query.maximum), (Some(2), Some(2)))`.
-- `frontend/src/test/scala/oathdigital/frontend/WalkerSelectionDraftSuite.scala:8` and `WalkerSelectionPanelsSuite.scala:9`: the `DecisionQueryState("choose-many", ..., count = Some(n))` fixtures become `minimum = Some(n), maximum = Some(n)`.
+- `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala:127`: `count = Some(2)` becomes `minimum = Some(2), maximum = Some(2)` (and the test title's "counts" stays accurate).
+- `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala:149-155`: `DecisionQuery.ChooseMany(2,` becomes `DecisionQuery.ChooseMany(2, 2,`, and `assertEquals(query.count, Some(2))` becomes `assertEquals((query.minimum, query.maximum), (Some(2), Some(2)))`.
+- `frontend/src/test/scala/distantlands/frontend/WalkerSelectionDraftSuite.scala:8` and `WalkerSelectionPanelsSuite.scala:9`: the `DecisionQueryState("choose-many", ..., count = Some(n))` fixtures become `minimum = Some(n), maximum = Some(n)`.
 Then confirm nothing else uses it: `git grep -n "count = Some" -- frontend/src shared/src src | grep -v "pool ="` must show no ChooseMany fixture.
 
 - [ ] **Step 6: Run**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.application.WalkerDecisionProjectorSuite oathdigital.gameplay.ChallengeProcedureSuite oathdigital.protocol.ProjectionProtocolSuite" "frontend/testOnly oathdigital.frontend.WalkerSelectionDraftSuite oathdigital.frontend.WalkerSelectionPanelsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.DecisionQuerySuite distantlands.application.WalkerDecisionProjectorSuite distantlands.gameplay.ChallengeProcedureSuite distantlands.protocol.ProjectionProtocolSuite" "frontend/testOnly distantlands.frontend.WalkerSelectionDraftSuite distantlands.frontend.WalkerSelectionPanelsSuite"`
 Expected: PASS. Also add one frontend assertion in `WalkerSelectionDraftSuite` that a `minimum = 1, maximum = 3` query confirms with one or three selections and not with zero.
 
 - [ ] **Step 7: Commit**
@@ -298,9 +298,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 This is the spike the spec puts first. It proves a `Repeat` around a `Branch` around a co-owned `Decide` parks, resumes on answers from different owners across passes, exits on its guard, and rejects an outsider. If a test here fails for a reason that is not a typo, **stop**: fix the walker if the fix is local and comes with tests, and otherwise bring the failure back for a decision (spec, Verification).
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala:563` (`Decide`), `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:217-233,584-610`, `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala:183`, `src/main/scala/oathdigital/model/PendingTree.scala` (doc only)
-- Modify tests: `src/test/scala/oathdigital/gameplay/walker/DecisionQuerySuite.scala:57`, `src/test/scala/oathdigital/gameplay/DecisionQueriesSuite.scala:19,44`
-- Create: `src/test/scala/oathdigital/gameplay/CoOwnedDecideSuite.scala`
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala:563` (`Decide`), `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:217-233,584-610`, `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala:183`, `src/main/scala/distantlands/model/PendingTree.scala` (doc only)
+- Modify tests: `src/test/scala/distantlands/gameplay/walker/DecisionQuerySuite.scala:57`, `src/test/scala/distantlands/gameplay/DecisionQueriesSuite.scala:19,44`
+- Create: `src/test/scala/distantlands/gameplay/CoOwnedDecideSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -313,12 +313,12 @@ This is the spike the spec puts first. It proves a `Repeat` around a `Branch` ar
 - [ ] **Step 1: Write the failing spike suite**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.TestGameFixtures._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.TestGameFixtures._
 
 /** A `Repeat` around a `Branch` around a decision two players may answer: the
   * shape Negotiation's deal loop takes, exercised with a synthetic tree.
@@ -410,7 +410,7 @@ class CoOwnedDecideSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to confirm it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoOwnedDecideSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CoOwnedDecideSuite"`
 Expected: FAIL to compile (`coOwners`, `owners`, `openDecisions`, `awaitedPlayers` do not exist).
 
 - [ ] **Step 3: `Decide`**
@@ -501,8 +501,8 @@ Fix the test call sites:
 
 - [ ] **Step 6: Run**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoOwnedDecideSuite oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.gameplay.DecisionQueriesSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.RecoverProcedureSuite"`
-Expected: PASS. Then `wc -l src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` stays under 800.
+Run: `./sbtw "testOnly distantlands.gameplay.CoOwnedDecideSuite distantlands.gameplay.walker.DecisionQuerySuite distantlands.gameplay.DecisionQueriesSuite distantlands.gameplay.ProcedureWalkerSuite distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.RecoverProcedureSuite"`
+Expected: PASS. Then `wc -l src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` stays under 800.
 
 - [ ] **Step 7: Commit**
 
@@ -522,9 +522,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 4: The negotiation decision vocabulary and its codecs
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/NegotiationTerms.scala`, `src/main/scala/oathdigital/serialization/NegotiationTermsCodec.scala`, `src/test/scala/oathdigital/application/GameIntentMapperNegotiationSuite.scala`
-- Modify: `src/main/scala/oathdigital/model/PendingProcedures.scala:231-262` (move the terms types out), `src/main/scala/oathdigital/model/Decisions.scala`, `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala`, `src/main/scala/oathdigital/serialization/DecisionAnswerCodec.scala`, `src/main/scala/oathdigital/serialization/GameEventJsonSupport.scala:14-58`, `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala:120-141`, `shared/src/main/scala/oathdigital/protocol/CommandNestedCodecs.scala:64-121`, `src/main/scala/oathdigital/application/GameIntentMapper.scala:139-155`
-- Modify tests: `src/test/scala/oathdigital/gameplay/walker/DecisionQuerySuite.scala`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`, `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala:47-49`
+- Create: `src/main/scala/distantlands/model/NegotiationTerms.scala`, `src/main/scala/distantlands/serialization/NegotiationTermsCodec.scala`, `src/test/scala/distantlands/application/GameIntentMapperNegotiationSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PendingProcedures.scala:231-262` (move the terms types out), `src/main/scala/distantlands/model/Decisions.scala`, `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala`, `src/main/scala/distantlands/serialization/DecisionAnswerCodec.scala`, `src/main/scala/distantlands/serialization/GameEventJsonSupport.scala:14-58`, `shared/src/main/scala/distantlands/protocol/CommandIntents.scala:120-141`, `shared/src/main/scala/distantlands/protocol/CommandNestedCodecs.scala:64-121`, `src/main/scala/distantlands/application/GameIntentMapper.scala:139-155`
+- Modify tests: `src/test/scala/distantlands/gameplay/walker/DecisionQuerySuite.scala`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala:47-49`
 
 **Interfaces:**
 - Consumes: `DecisionQueries.accepts(..., by)` from Task 3.
@@ -661,10 +661,10 @@ In `CommandProtocolSuite.scala` add to `examples` (after the `challenge.amount` 
 Create `GameIntentMapperNegotiationSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.protocol.{GameIntent => Intent, DecisionAnswerWire => Wire}
+import distantlands.model._
+import distantlands.protocol.{GameIntent => Intent, DecisionAnswerWire => Wire}
 
 class GameIntentMapperNegotiationSuite extends munit.FunSuite {
   private val red = PlayerId("red")
@@ -673,10 +673,10 @@ class GameIntentMapperNegotiationSuite extends munit.FunSuite {
     GameIntentMapper.bind(red, Intent.ResolveWalker("negotiation.deal", answer))
 
   test("a proposed terms wire answer maps to the engine's terms") {
-    val wire = Wire.ProposeTermsWire(oathdigital.protocol.NegotiationTerms(
-      Vector(oathdigital.protocol.NegotiationTransfer("blue", 2, Vector("r1"))),
-      Vector(oathdigital.protocol.NegotiationDisclosure("blue",
-        oathdigital.protocol.NegotiationInformation.HeldRelic("red", "r2")))))
+    val wire = Wire.ProposeTermsWire(distantlands.protocol.NegotiationTerms(
+      Vector(distantlands.protocol.NegotiationTransfer("blue", 2, Vector("r1"))),
+      Vector(distantlands.protocol.NegotiationDisclosure("blue",
+        distantlands.protocol.NegotiationInformation.HeldRelic("red", "r2")))))
     assertEquals(bound(wire), Right(GameCommand.ResolveWalker(red,
       TreeDecision("negotiation.deal", DecisionAnswer.ProposeTerms(
         NegotiationTerms(Vector(NegotiationTransfer(PlayerId("blue"), 2,
@@ -695,22 +695,22 @@ class GameIntentMapperNegotiationSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to confirm they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.serialization.GameEventWireSuite oathdigital.protocol.CommandProtocolSuite oathdigital.application.GameIntentMapperNegotiationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.DecisionQuerySuite distantlands.serialization.GameEventWireSuite distantlands.protocol.CommandProtocolSuite distantlands.application.GameIntentMapperNegotiationSuite"`
 Expected: FAIL to compile (`NegotiationBounds`, `Negotiate`, `ProposeTerms`, `ProposeTermsWire` do not exist).
 
 - [ ] **Step 3: Move the terms types and add the bounds**
 
 ```bash
 python3 - <<'PY'
-p = 'src/main/scala/oathdigital/model/PendingProcedures.scala'
+p = 'src/main/scala/distantlands/model/PendingProcedures.scala'
 s = open(p).read()
 i = s.index('final case class NegotiationTransfer(')
 moved = s[i:]
 open(p, 'w').write(s[:i].rstrip() + "\n")
-open('src/main/scala/oathdigital/model/NegotiationTerms.scala', 'w').write(
-    "package oathdigital.model\n\n" + moved)
+open('src/main/scala/distantlands/model/NegotiationTerms.scala', 'w').write(
+    "package distantlands.model\n\n" + moved)
 PY
-cat >> src/main/scala/oathdigital/model/NegotiationTerms.scala <<'SCALA'
+cat >> src/main/scala/distantlands/model/NegotiationTerms.scala <<'SCALA'
 
 /** What one author may still put into a deal, computed from live state each
   * time the deal is asked: the other participants they may offer to, the
@@ -727,7 +727,7 @@ final case class NegotiationBounds(
   require(maxFavor >= 0, "negotiation favor bound must be non-negative")
 }
 SCALA
-tail -5 src/main/scala/oathdigital/model/PendingProcedures.scala
+tail -5 src/main/scala/distantlands/model/PendingProcedures.scala
 ```
 `PendingProcedures.scala` must still end with the closing brace of `object PendingProcedure`.
 
@@ -827,18 +827,18 @@ and a helper next to `acceptsPartition`:
         } yield ()
     }
 ```
-Check `wc -l src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala` stays under 800.
+Check `wc -l src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala` stays under 800.
 
 - [ ] **Step 6: Journal codec**
 
-Create `src/main/scala/oathdigital/serialization/NegotiationTermsCodec.scala`, the legacy encoding lifted out of `GameEventJsonSupport` so the answer codec can reach it:
+Create `src/main/scala/distantlands/serialization/NegotiationTermsCodec.scala`, the legacy encoding lifted out of `GameEventJsonSupport` so the answer codec can reach it:
 
 ```scala
-package oathdigital.serialization
+package distantlands.serialization
 
 import scala.util.control.NonFatal
-import oathdigital.model._
-import oathdigital.serialization.WireError.InvalidValue
+import distantlands.model._
+import distantlands.serialization.WireError.InvalidValue
 
 /** Journal wire form of negotiation terms, shared by the walker's answer
   * codec and (until it is deleted) the legacy Negotiation event codec, so the
@@ -1000,7 +1000,7 @@ In `GameIntentMapper.scala` `decisionAnswer` add (the `negotiation` helper alrea
 
 `DecisionQuery` and `DecisionAnswer` are sealed, so the compiler now flags every match that does not cover the new cases. Run `./sbtw "Test/compile" "frontend/Test/compile" 2>&1 | grep -i "may not be exhaustive"` and add the missing case wherever a warning names `Negotiate`, `ProposeTerms`, `AcceptDeal` or `DeclineDeal`. The one expected site is `WalkerDecisionProjector.queryProjection`, which Task 6 completes; until then add a placeholder `case _: DecisionQuery.Negotiate => None` there so this task compiles, with a one-line comment `// Task 6 projects the deal.`. Remove that comment when Task 6 replaces the case.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.serialization.GameEventWireSuite oathdigital.protocol.CommandProtocolSuite oathdigital.application.GameIntentMapperNegotiationSuite oathdigital.gameplay.NegotiationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.DecisionQuerySuite distantlands.serialization.GameEventWireSuite distantlands.protocol.CommandProtocolSuite distantlands.application.GameIntentMapperNegotiationSuite distantlands.gameplay.NegotiationSuite"`
 Expected: PASS (the legacy `NegotiationSuite` proves the moved terms types and the delegated legacy codec still work).
 
 - [ ] **Step 9: Commit**
@@ -1022,10 +1022,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 5: The Negotiation procedure
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationDeal.scala`, `src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationProcedure.scala`
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala` (`ActionRef.Negotiation`), `src/main/scala/oathdigital/model/RuleFallbackProtocol.scala` (`ActionKind.Negotiation`), `src/main/scala/oathdigital/gameplay/PowerRuntime.scala:49-62`, `src/main/scala/oathdigital/model/PowerWindow.scala` (two windows), `src/main/scala/oathdigital/model/GameProcedureProtocol.scala` (`AwaitingNegotiation`), `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (entry)
-- Create tests: `src/test/scala/oathdigital/gameplay/NegotiationFixture.scala`, `src/test/scala/oathdigital/gameplay/NegotiationDealSuite.scala`, `src/test/scala/oathdigital/gameplay/NegotiationProcedureSuite.scala`, `src/test/scala/oathdigital/model/NegotiationWindowsSuite.scala`
-- Modify tests: `src/test/scala/oathdigital/model/ActionKindSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationDeal.scala`, `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationProcedure.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala` (`ActionRef.Negotiation`), `src/main/scala/distantlands/model/RuleFallbackProtocol.scala` (`ActionKind.Negotiation`), `src/main/scala/distantlands/gameplay/PowerRuntime.scala:49-62`, `src/main/scala/distantlands/model/PowerWindow.scala` (two windows), `src/main/scala/distantlands/model/GameProcedureProtocol.scala` (`AwaitingNegotiation`), `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (entry)
+- Create tests: `src/test/scala/distantlands/gameplay/NegotiationFixture.scala`, `src/test/scala/distantlands/gameplay/NegotiationDealSuite.scala`, `src/test/scala/distantlands/gameplay/NegotiationProcedureSuite.scala`, `src/test/scala/distantlands/model/NegotiationWindowsSuite.scala`
+- Modify tests: `src/test/scala/distantlands/model/ActionKindSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 3 (`Decide.coOwners`), Task 4 (`DecisionQuery.Negotiate`, `ProposeTerms`, `AcceptDeal`, `DeclineDeal`, `NegotiationBounds`), Task 2 (`ChooseMany(min, max, ...)`).
@@ -1038,15 +1038,15 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: The shared test fixture**
 
-Create `src/test/scala/oathdigital/gameplay/NegotiationFixture.scala` (the board is the legacy `NegotiationSuite.ready()` lifted so several suites share it):
+Create `src/test/scala/distantlands/gameplay/NegotiationFixture.scala` (the board is the legacy `NegotiationSuite.ready()` lifted so several suites share it):
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.setup._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.setup._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** The board the Negotiation suites share: every player at one site holding 5
   * favor and one facedown relic each, the first player (the actor) in the Act
@@ -1108,16 +1108,16 @@ object NegotiationFixture {
 
 - [ ] **Step 2: Write the failing deal-rule tests**
 
-Create `src/test/scala/oathdigital/gameplay/NegotiationDealSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/NegotiationDealSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.negotiation.{DealState, NegotiationDeal}
-import oathdigital.gameplay.NegotiationFixture.Board
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
-import oathdigital.model.OathViolation.InsufficientFavor
+import distantlands.gameplay.actions.negotiation.{DealState, NegotiationDeal}
+import distantlands.gameplay.NegotiationFixture.Board
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
+import distantlands.model.OathViolation.InsufficientFavor
 
 /** The deal as a pure function of the answers recorded so far. */
 class NegotiationDealSuite extends munit.FunSuite {
@@ -1245,21 +1245,21 @@ class NegotiationDealSuite extends munit.FunSuite {
 
 - [ ] **Step 3: Write the failing procedure tests**
 
-Create `src/test/scala/oathdigital/gameplay/NegotiationProcedureSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/NegotiationProcedureSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.engine.{EventReplayEngine, RecordedEvent}
-import oathdigital.gameplay.NegotiationFixture.{Board, player}
-import oathdigital.gameplay.actions.negotiation.{NegotiationDeal, NegotiationProcedure}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
-import oathdigital.model.OathEvent.IgnoredRulesRecorded
-import oathdigital.model.OathState.Ready
+import distantlands.engine.{EventReplayEngine, RecordedEvent}
+import distantlands.gameplay.NegotiationFixture.{Board, player}
+import distantlands.gameplay.actions.negotiation.{NegotiationDeal, NegotiationProcedure}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
+import distantlands.model.OathEvent.IgnoredRulesRecorded
+import distantlands.model.OathState.Ready
 
 /** Negotiation through the rules, as a client drives it: start, choose the
   * negotiators, then answer the deal in any order until it closes.
@@ -1513,10 +1513,10 @@ class NegotiationProcedureSuite extends munit.FunSuite {
 ```
 (The last test filters `chosen.events` because when the negotiator choice is skipped `chosen` is `started`. If the fixture's first-game table always offers two candidates after Travel, simplify the branch to the `choose` call.)
 
-Create `src/test/scala/oathdigital/model/NegotiationWindowsSuite.scala`:
+Create `src/test/scala/distantlands/model/NegotiationWindowsSuite.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class NegotiationWindowsSuite extends munit.FunSuite {
   test("Negotiation windows have stable keys and no major action") {
@@ -1535,7 +1535,7 @@ Update `ActionKindSuite`'s expected keys to end `..., "when-played", "action-bou
 
 - [ ] **Step 4: Run to confirm they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.NegotiationDealSuite oathdigital.gameplay.NegotiationProcedureSuite oathdigital.model.NegotiationWindowsSuite oathdigital.model.ActionKindSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.NegotiationDealSuite distantlands.gameplay.NegotiationProcedureSuite distantlands.model.NegotiationWindowsSuite distantlands.model.ActionKindSuite"`
 Expected: FAIL to compile (`NegotiationDeal`, `ActionRef.Negotiation`, `ActionKind.Negotiation`, `AwaitingNegotiation` and the windows do not exist).
 
 - [ ] **Step 5: References, kinds, windows, continuation**
@@ -1563,13 +1563,13 @@ Expected: FAIL to compile (`NegotiationDeal`, `ActionRef.Negotiation`, `ActionKi
 
 - [ ] **Step 6: The deal rules**
 
-Create `src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationDeal.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationDeal.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.negotiation
+package distantlands.gameplay.actions.negotiation
 
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 
 /** One deal, derived from the answers recorded so far. */
 final case class DealState(participants: Vector[PlayerId],
@@ -1737,15 +1737,15 @@ object NegotiationDeal {
 
 - [ ] **Step 7: The procedure**
 
-Create `src/main/scala/oathdigital/gameplay/actions/negotiation/NegotiationProcedure.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationProcedure.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.negotiation
+package distantlands.gameplay.actions.negotiation
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathLifecycle, PowerRuntime}
-import oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathLifecycle, PowerRuntime}
+import distantlands.gameplay.walker.{WalkerPowers, WalkerSimulation}
+import distantlands.model._
 
 /** Negotiation on the walker: choose who to negotiate with, then loop one
   * deal decision that every participant may answer until the deal closes,
@@ -1825,7 +1825,7 @@ The settle `BuildOps` closes over `deal` folded before the walk reaches it. That
 
 - [ ] **Step 8: Register**
 
-In `WalkerProcedureRegistry.scala` add the import `import oathdigital.gameplay.actions.negotiation.NegotiationProcedure` and this entry after `PlaceBannerResource`:
+In `WalkerProcedureRegistry.scala` add the import `import distantlands.gameplay.actions.negotiation.NegotiationProcedure` and this entry after `PlaceBannerResource`:
 
 ```scala
     /** Negotiation is a minor action: no modifier window (none of its powers
@@ -1845,7 +1845,7 @@ In `WalkerProcedureRegistry.scala` add the import `import oathdigital.gameplay.a
 
 - [ ] **Step 9: Run**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.NegotiationDealSuite oathdigital.gameplay.NegotiationProcedureSuite oathdigital.model.NegotiationWindowsSuite oathdigital.model.ActionKindSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite oathdigital.gameplay.NegotiationSuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.NegotiationDealSuite distantlands.gameplay.NegotiationProcedureSuite distantlands.model.NegotiationWindowsSuite distantlands.model.ActionKindSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite distantlands.gameplay.NegotiationSuite distantlands.serialization.GameEventWireSuite"`
 Expected: PASS. If `WalkerProcedureRegistrySuite` or a wire suite enumerates every `ProcedureRef`/`ActionRef` with a fixed count, update the count. The legacy `NegotiationSuite` must still pass, since both paths coexist until Task 10.
 
 If a `NegotiationProcedureSuite` test fails on the deal loop (the guard, resume paths or `Repeat` re-parks) and not on a typo, that is the Task 3 spike failing in a real tree: stop and follow the spike rule.
@@ -1876,9 +1876,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 The walker decision projection learns about co-owners and the `Negotiate` query. The legacy `negotiation` field and its projector stay until Task 10, so both paths project during the parity work.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/NegotiationDealProjector.scala`, `src/test/scala/oathdigital/application/NegotiationDealProjectionSuite.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala` (new DTOs, `DecisionQueryProjection.deal`, `WalkerWaitingProjection`), `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala`, `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`, `src/main/scala/oathdigital/application/LegalActionProjector.scala:167`
-- Modify tests: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala` (round trips), `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala:457,491` only if the `WalkerWaitingProjection` constructor calls need the new defaults (they should not)
+- Create: `src/main/scala/distantlands/application/NegotiationDealProjector.scala`, `src/test/scala/distantlands/application/NegotiationDealProjectionSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala` (new DTOs, `DecisionQueryProjection.deal`, `WalkerWaitingProjection`), `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala`, `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`, `src/main/scala/distantlands/application/LegalActionProjector.scala:167`
+- Modify tests: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala` (round trips), `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala:457,491` only if the `WalkerWaitingProjection` constructor calls need the new defaults (they should not)
 
 **Interfaces:**
 - Consumes: Task 4 (`DecisionQuery.Negotiate`), Task 3 (`ProcedureWalker.awaitedPlayers`, `openDecisions`), Task 5 (`NegotiationProcedure.startable`).
@@ -1892,20 +1892,20 @@ The walker decision projection learns about co-owners and the `Negotiate` query.
 
 - [ ] **Step 1: Write the failing projection tests**
 
-Create `src/test/scala/oathdigital/application/NegotiationDealProjectionSuite.scala`:
+Create `src/test/scala/distantlands/application/NegotiationDealProjectionSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.NegotiationFixture
-import oathdigital.gameplay.NegotiationFixture.Board
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, ProposeTerms}
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.{GameProjection, NegotiationDealProjection}
+import distantlands.gameplay.NegotiationFixture
+import distantlands.gameplay.NegotiationFixture.Board
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, ProposeTerms}
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.{GameProjection, NegotiationDealProjection}
 
 /** What each viewer of a parked deal is shown. */
 class NegotiationDealProjectionSuite extends munit.FunSuite {
@@ -2041,7 +2041,7 @@ Add to `ProjectionProtocolSuite.scala` a round-trip test:
 
 - [ ] **Step 2: Run to confirm they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.NegotiationDealProjectionSuite oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.application.NegotiationDealProjectionSuite distantlands.protocol.ProjectionProtocolSuite"`
 Expected: FAIL to compile (`NegotiationDealProjection`, `deal`, `coOwnerPlayerIds` do not exist).
 
 - [ ] **Step 3: DTOs and codecs**
@@ -2147,13 +2147,13 @@ with `decodeTransfer`, `decodeDisclosure` and `decodeSiteRelic` lifted from the 
 
 - [ ] **Step 4: The deal projector**
 
-Create `src/main/scala/oathdigital/application/NegotiationDealProjector.scala`:
+Create `src/main/scala/distantlands/application/NegotiationDealProjector.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.protocol.projection._
+import distantlands.model._
+import distantlands.protocol.projection._
 
 /** Projects a [[DecisionQuery.Negotiate]] for one viewer.
   *
@@ -2302,7 +2302,7 @@ In `LegalActionProjector.scala` add next to `challengeStartable`:
     NegotiationProcedure.startable(catalog, context.ready,
       context.active.player, WalkerPowers.selected(walkerPowerCatalog, Vector.empty))
 ```
-import `oathdigital.gameplay.actions.negotiation.NegotiationProcedure`, and replace the `beginNegotiation` entry (line ~167):
+import `distantlands.gameplay.actions.negotiation.NegotiationProcedure`, and replace the `beginNegotiation` entry (line ~167):
 
 ```scala
           Option.when(negotiationStartable(context))("beginNegotiation")
@@ -2311,7 +2311,7 @@ The legacy board-target selection `"negotiation"` in `boardTargetActions` stays 
 
 - [ ] **Step 7: Run**
 
-Run: `./sbtw "testOnly oathdigital.application.NegotiationDealProjectionSuite oathdigital.protocol.ProjectionProtocolSuite oathdigital.application.WalkerDecisionProjectorSuite oathdigital.application.WalkerDecisionProjectionSuite oathdigital.application.WalkerDecisionQueryPowerSuite oathdigital.gameplay.NegotiationSuite oathdigital.application.GameApplicationServiceSuite"`
+Run: `./sbtw "testOnly distantlands.application.NegotiationDealProjectionSuite distantlands.protocol.ProjectionProtocolSuite distantlands.application.WalkerDecisionProjectorSuite distantlands.application.WalkerDecisionProjectionSuite distantlands.application.WalkerDecisionQueryPowerSuite distantlands.gameplay.NegotiationSuite distantlands.application.GameApplicationServiceSuite"`
 Expected: PASS. The legacy suites must still pass: the legacy `negotiation` field is untouched, and the `beginNegotiation` control still appears wherever a candidate exists (`legalParticipants` and `eligible` are the same rule).
 
 - [ ] **Step 8: Commit**
@@ -2333,8 +2333,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 7: The frontend start control and deal panel
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/NegotiationControls.scala`, `frontend/src/main/scala/oathdigital/frontend/NegotiationDealPanel.scala`, `frontend/src/test/scala/oathdigital/frontend/NegotiationControlsSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/NegotiationDealPanelSuite.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/package.scala` (two aliases), `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala` (two call sites)
+- Create: `frontend/src/main/scala/distantlands/frontend/NegotiationControls.scala`, `frontend/src/main/scala/distantlands/frontend/NegotiationDealPanel.scala`, `frontend/src/test/scala/distantlands/frontend/NegotiationControlsSuite.scala`, `frontend/src/test/scala/distantlands/frontend/NegotiationDealPanelSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/package.scala` (two aliases), `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala` (two call sites)
 
 **Interfaces:**
 - Consumes: Task 6 (`NegotiationDealProjection`, `NegotiationEditingProjection`, `DecisionQueryProjection.deal`, `WalkerWaitingProjection.deal`), Task 4 (`DecisionAnswerWire.ProposeTermsWire`, `AcceptDealWire`, `DeclineDealWire`).
@@ -2348,9 +2348,9 @@ The legacy `NegotiationState` panel in `ActionDecisionRenderer` stays until Task
 - [ ] **Step 1: Write the failing controls test**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.GameIntent
+import distantlands.protocol.GameIntent
 import org.scalajs.dom
 
 /** The Negotiation start control at the DOM. */
@@ -2394,9 +2394,9 @@ class NegotiationControlsSuite extends munit.FunSuite {
 - [ ] **Step 2: Write the failing panel test**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent => Intent,
+import distantlands.protocol.{DecisionAnswerWire, GameIntent => Intent,
   NegotiationTerms, NegotiationTransfer}
 import org.scalajs.dom
 
@@ -2493,11 +2493,11 @@ class NegotiationDealPanelSuite extends munit.FunSuite {
   }
 }
 ```
-(`protocol.NegotiationTerms/NegotiationTransfer` are the wire types in `oathdigital.protocol`; `NegotiationTransferState`/`NegotiationDisclosureState` are the projection aliases already in `package.scala`.)
+(`protocol.NegotiationTerms/NegotiationTransfer` are the wire types in `distantlands.protocol`; `NegotiationTransferState`/`NegotiationDisclosureState` are the projection aliases already in `package.scala`.)
 
 - [ ] **Step 3: Run to confirm they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.NegotiationControlsSuite oathdigital.frontend.NegotiationDealPanelSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.NegotiationControlsSuite distantlands.frontend.NegotiationDealPanelSuite"`
 Expected: FAIL to compile (`NegotiationControls`, `NegotiationDealPanel`, `NegotiationDealState` do not exist).
 
 - [ ] **Step 4: Aliases**
@@ -2516,9 +2516,9 @@ In `package.scala`, after `NegotiationState`:
 Create `NegotiationControls.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand}
+import distantlands.protocol.{GameIntent => GameCommand}
 import ServerUiSupport._
 
 /** The Act-phase start control for Negotiation. The engine offers it only
@@ -2543,9 +2543,9 @@ In `ActionDecisionRenderer.scala`, after `BannerControls.render(value, canContro
 Create `NegotiationDealPanel.scala`. It renders the summary for everyone, and the editor only for an owner. The editor is the legacy inline editor, with its helpers moved here and its three commands turned into `ResolveWalker` answers:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent => GameCommand}
+import distantlands.protocol.{DecisionAnswerWire, GameIntent => GameCommand}
 import org.scalajs.dom
 
 /** The deal panel for a parked negotiation. Every viewer sees who is in the
@@ -2679,7 +2679,7 @@ In `ActionDecisionRenderer.scala`, after `DistributePanelRenderer.render(value, 
 
 - [ ] **Step 7: Run**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.NegotiationControlsSuite oathdigital.frontend.NegotiationDealPanelSuite oathdigital.frontend.ServerModeUiSuite oathdigital.frontend.WalkerChoicePanelRenderSuite" "frontend/fastLinkJS"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.NegotiationControlsSuite distantlands.frontend.NegotiationDealPanelSuite distantlands.frontend.ServerModeUiSuite distantlands.frontend.WalkerChoicePanelRenderSuite" "frontend/fastLinkJS"`
 Expected: PASS. `ServerModeUiSuite` still exercises the legacy panel, which is unchanged.
 
 - [ ] **Step 8: Commit**
@@ -2703,7 +2703,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 The differential parity test the spec requires before any deletion. It runs the same scripted deals through the legacy commands and the walker on the same fixture, and compares what they leave behind and, for participants, what each is shown mid-deal. Blocked-deal cases are out (that behaviour changed) and non-participant visibility is out (it is new and has its own test in Task 6). This suite is deleted with the legacy rules in Task 11.
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/NegotiationParitySuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/NegotiationParitySuite.scala`
 
 **Interfaces:**
 - Consumes: legacy `NegotiationCommand.{Begin, ReplaceTerms, Accept, Decline}` through `OathRules.handle` (still present), the walker through `OathRules.startWalker`/`resolveWalker`, `NegotiationFixture` (Task 5), `GameProjector.project`.
@@ -2712,16 +2712,16 @@ The differential parity test the spec requires before any deletion. It runs the 
 - [ ] **Step 1: Write the suite**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.NegotiationFixture.Board
-import oathdigital.gameplay.actions.NegotiationCommand
-import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
-import oathdigital.model.OathState.Ready
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.NegotiationFixture.Board
+import distantlands.gameplay.actions.NegotiationCommand
+import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
+import distantlands.model.OathState.Ready
 
 /** The legacy Negotiation and the walker Negotiation, run on the same board
   * and compared on the state they leave and on what each participant is shown
@@ -2900,7 +2900,7 @@ class NegotiationParitySuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.NegotiationParitySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.NegotiationParitySuite"`
 Expected: PASS. A failure here means the walker and legacy disagree, so decide which one is wrong before touching either. Two things to check first if the outcome comparison fails: the order in which transfers execute (legacy iterates `terms.toVector`, the walker iterates participants in table order, and the results agree unless one author's transfer depends on another's), and the boundary events (legacy `completeAction` versus the walker's `runsActionBoundary`).
 
 - [ ] **Step 3: Full gate and commit**
@@ -2909,7 +2909,7 @@ Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`
 Expected: PASS.
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/NegotiationParitySuite.scala
+git add src/test/scala/distantlands/gameplay/NegotiationParitySuite.scala
 git commit -m "test(negotiation): prove legacy and walker Negotiation agree
 
 Scripted deals through both paths on the same board: transfers, replaced terms
@@ -2926,9 +2926,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 The parity suite proved the walker path, so the ways a client reached the legacy one go, top layer first so every commit builds: (1) the server stops offering the legacy start, (2) the frontend drops its legacy panel and start, (3) the commands, intents and mapper go. The legacy projection is Task 10 and the legacy rules are Task 11.
 
 **Files (by step):**
-- 9.1: `src/main/scala/oathdigital/application/LegalActionProjector.scala:257-275`, `src/test/scala/oathdigital/application/NegotiationDealProjectionSuite.scala`
-- 9.2: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala`, `ServerUiSupport.scala`, `package.scala`; tests `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala`, `HttpGameClientSuite.scala`, `ProtocolTestCommands.scala`, `NegotiationDealPanelSuite.scala`
-- 9.3: `src/main/scala/oathdigital/application/GameCommands.scala:35-42`, `Authorization.scala:79-87`, `GameApplicationService.scala:12,401-409`, `GameIntentMapper.scala:28-31`, `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala:18-22`, `CommandIntentCodec.scala:17-20,59`, `CommandIntentDecoders.scala:32-43`; tests `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala`, `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala`, `PendingWalkerInvariantSuite.scala`, `src/test/scala/oathdigital/server/AuthenticatedGameRoutesSuite.scala`
+- 9.1: `src/main/scala/distantlands/application/LegalActionProjector.scala:257-275`, `src/test/scala/distantlands/application/NegotiationDealProjectionSuite.scala`
+- 9.2: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala`, `ServerUiSupport.scala`, `package.scala`; tests `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala`, `HttpGameClientSuite.scala`, `ProtocolTestCommands.scala`, `NegotiationDealPanelSuite.scala`
+- 9.3: `src/main/scala/distantlands/application/GameCommands.scala:35-42`, `Authorization.scala:79-87`, `GameApplicationService.scala:12,401-409`, `GameIntentMapper.scala:28-31`, `shared/src/main/scala/distantlands/protocol/CommandIntents.scala:18-22`, `CommandIntentCodec.scala:17-20,59`, `CommandIntentDecoders.scala:32-43`; tests `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`, `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala`, `PendingWalkerInvariantSuite.scala`, `src/test/scala/distantlands/server/AuthenticatedGameRoutesSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 4-7.
@@ -2951,7 +2951,7 @@ Add to `NegotiationDealProjectionSuite`:
 
 - [ ] **Step 2: Run to confirm it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.NegotiationDealProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.application.NegotiationDealProjectionSuite"`
 Expected: FAIL, the projection still carries a `negotiation` board-target action.
 
 - [ ] **Step 3: Remove the selection**
@@ -2961,8 +2961,8 @@ In `LegalActionProjector.boardTargetActions` delete the four-line `val negotiato
 ```scala
       selection("campaign-raid", "Choose Raid targets", raid,
         Option.when(raid.nonEmpty)(BoardTargetFormationProjection(
-          oathdigital.gameplay.actions.Campaign.MinimumForce, player.board.warbands,
-          player.board.warbands, oathdigital.gameplay.actions.Campaign.SupplyCost)),
+          distantlands.gameplay.actions.Campaign.MinimumForce, player.board.warbands,
+          player.board.warbands, distantlands.gameplay.actions.Campaign.SupplyCost)),
         Option.when(raid.nonEmpty)(1).getOrElse(0), raid.size,
         raid.headOption.map(_.target).toVector)).flatten
 ```
@@ -2970,7 +2970,7 @@ The `Player` target kind in `BoardTargetRefProjection` stays: Campaign or other 
 
 - [ ] **Step 4: Run and commit**
 
-Run: `./sbtw "testOnly oathdigital.application.NegotiationDealProjectionSuite oathdigital.application.GameApplicationServiceSuite oathdigital.gameplay.NegotiationSuite"`
+Run: `./sbtw "testOnly distantlands.application.NegotiationDealProjectionSuite distantlands.application.GameApplicationServiceSuite distantlands.gameplay.NegotiationSuite"`
 Expected: PASS.
 
 ```bash
@@ -3050,8 +3050,8 @@ Add to `NegotiationDealPanelSuite` (they replace the two `ServerModeUiSuite` tes
     assertEquals(ui.submitted, Vector[Intent](Intent.ResolveWalker(
       "negotiation.deal", DecisionAnswerWire.ProposeTermsWire(NegotiationTerms(
         Vector(NegotiationTransfer("blue", 0, Vector.empty)),
-        Vector(oathdigital.protocol.NegotiationDisclosure("blue",
-          oathdigital.protocol.NegotiationInformation.SiteRelic(
+        Vector(distantlands.protocol.NegotiationDisclosure("blue",
+          distantlands.protocol.NegotiationInformation.SiteRelic(
             "site:broken-peaks", "R3"))))))))
   }
 ```
@@ -3086,7 +3086,7 @@ In `HttpGameClientSuite` replace the legacy test `"Negotiation projection decode
 
 - [ ] **Step 2: Run the new tests (they pass against the new panel)**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.NegotiationDealPanelSuite oathdigital.frontend.HttpGameClientSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.NegotiationDealPanelSuite distantlands.frontend.HttpGameClientSuite"`
 Expected: the new tests PASS. The legacy test in `HttpGameClientSuite` is gone in the same edit.
 
 - [ ] **Step 3: Delete the legacy frontend code and its tests**
@@ -3117,7 +3117,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Migrate the tests that use the four commands (they fail to compile once the commands go, so migrate first and see the old ones pass)**
 
-`shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala`: delete the five `examples` entries (`BeginNegotiation`, `ReplaceNegotiationTerms`, `AcceptNegotiation`, `DeclineNegotiation`) and replace the duplicate-participants assertion (the `beginNegotiation` JSON near line 111) with a duplicate-recipient check on the new answer:
+`shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`: delete the five `examples` entries (`BeginNegotiation`, `ReplaceNegotiationTerms`, `AcceptNegotiation`, `DeclineNegotiation`) and replace the duplicate-participants assertion (the `beginNegotiation` JSON near line 111) with a duplicate-recipient check on the new answer:
 
 ```scala
     val duplicateRecipient = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker","decisionId":"negotiation.deal","payload":{"kind":"propose-terms","terms":{"transfers":[{"recipientPlayerId":"p2","favor":1,"relicIds":[]},{"recipientPlayerId":"p2","favor":2,"relicIds":[]}],"disclosures":[]}}}}"""
@@ -3125,9 +3125,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ```
 (Use the same `decode` call and `duplicate` variable style the neighbouring assertion uses; the point is that terms with two rows for one recipient still fail to decode.)
 
-`src/test/scala/oathdigital/application/PendingWalkerInvariantSuite.scala`: delete the four `GameCommand.*Negotiation` entries from `everyCommand`, and the `decision` binding if nothing else uses it.
+`src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala`: delete the four `GameCommand.*Negotiation` entries from `everyCommand`, and the `decision` binding if nothing else uses it.
 
-`src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala`: replace the test `"HSQL reopen preserves completed Negotiation disclosure knowledge"` with the two walker tests below (add `oathdigital.gameplay.actions.negotiation.NegotiationDeal` and `oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, ProposeTerms}` to the imports):
+`src/test/scala/distantlands/application/GameApplicationServiceSuite.scala`: replace the test `"HSQL reopen preserves completed Negotiation disclosure knowledge"` with the two walker tests below (add `distantlands.gameplay.actions.negotiation.NegotiationDeal` and `distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, ProposeTerms}` to the imports):
 
 ```scala
   private def negotiationOpened(service: GameApplicationService, gameId: String)
@@ -3164,7 +3164,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
       TreeDecision(NegotiationDeal.dealDecisionId, answer)))
 
   test("HSQL reopen preserves a parked Negotiation deal") {
-    val path = Files.createTempDirectory("oathdigital-negotiation-parked-")
+    val path = Files.createTempDirectory("distantlands-negotiation-parked-")
       .resolve("journal")
     val gameId = "game-hsql-negotiation-parked"
     val first = OwnedHsqldbEventStreamRepository.open(path).toOption.get
@@ -3191,7 +3191,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
   }
 
   test("HSQL reopen preserves completed Negotiation disclosure knowledge") {
-    val path = Files.createTempDirectory("oathdigital-negotiation-reopen-")
+    val path = Files.createTempDirectory("distantlands-negotiation-reopen-")
       .resolve("journal")
     val gameId = "game-hsql-negotiation"
     val first = OwnedHsqldbEventStreamRepository.open(path).toOption.get
@@ -3233,7 +3233,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ```
 (`LoadedGame` here is the service's `load` result, and `handle` returns a value with `state` and `nextSequence`. If `handle`'s result type is not `LoadedGame`, type `from` as whatever `handle` returns; the suite's other tests show the exact name. Leave the `assert(!view.negotiationWaiting)` near line 664 alone: the field goes in Task 10, which deletes that assertion.)
 
-`src/test/scala/oathdigital/server/AuthenticatedGameRoutesSuite.scala`: rewrite the Negotiation route test's command block. Each command's next expected sequence comes from the previous response, since a walker command appends several events:
+`src/test/scala/distantlands/server/AuthenticatedGameRoutesSuite.scala`: rewrite the Negotiation route test's command block. Each command's next expected sequence comes from the previous response, since a walker command appends several events:
 
 ```scala
     try {
@@ -3277,21 +3277,21 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 2: Run the migrated tests against the old code**
 
-Run: `./sbtw "testOnly oathdigital.application.GameApplicationServiceSuite oathdigital.server.AuthenticatedGameRoutesSuite oathdigital.protocol.CommandProtocolSuite oathdigital.application.PendingWalkerInvariantSuite"`
+Run: `./sbtw "testOnly distantlands.application.GameApplicationServiceSuite distantlands.server.AuthenticatedGameRoutesSuite distantlands.protocol.CommandProtocolSuite distantlands.application.PendingWalkerInvariantSuite"`
 Expected: PASS. `PendingWalkerInvariantSuite`'s "the sample holds every GameCommand constructor" test fails until the commands are gone, which is the next step's proof.
 
 - [ ] **Step 3: Delete the commands, intents and mapper entries**
 
 - `GameCommands.scala`: delete `BeginNegotiation`, `ReplaceNegotiationTerms`, `AcceptNegotiation` and `DeclineNegotiation`.
 - `Authorization.scala`: delete `beginNegotiation`, `replaceNegotiationTerms`, `acceptNegotiation` and `declineNegotiation`.
-- `GameApplicationService.scala`: delete the four `case GameCommand.*Negotiation` arms and `import oathdigital.gameplay.actions.NegotiationCommand`.
+- `GameApplicationService.scala`: delete the four `case GameCommand.*Negotiation` arms and `import distantlands.gameplay.actions.NegotiationCommand`.
 - `GameIntentMapper.scala`: delete the four `Intent.*Negotiation` arms (the private `negotiation` and `disclosure` helpers stay, `decisionAnswer` uses them).
 - `CommandIntents.scala`: delete the four intents. Keep the `NegotiationTerms`, `NegotiationTransfer`, `NegotiationDisclosure` and `NegotiationInformation` wire types.
 - `CommandIntentCodec.scala`: delete the four `tagged(...)` cases and the private `negotiation` helper. `CommandIntentDecoders.scala`: delete the four `case "beginNegotiation"`, `"replaceNegotiationTerms"`, `"acceptNegotiation"` and `"declineNegotiation"` decoders. `CommandNestedCodecs.encodeNegotiation`/`decodeNegotiation` stay (the propose-terms answer uses them).
 
 - [ ] **Step 4: Run and commit**
 
-Run: `./sbtw "Test/compile" "frontend/Test/compile" "testOnly oathdigital.application.GameApplicationServiceSuite oathdigital.server.AuthenticatedGameRoutesSuite oathdigital.protocol.CommandProtocolSuite oathdigital.application.PendingWalkerInvariantSuite oathdigital.server.GameHttpWireSuite"`
+Run: `./sbtw "Test/compile" "frontend/Test/compile" "testOnly distantlands.application.GameApplicationServiceSuite distantlands.server.AuthenticatedGameRoutesSuite distantlands.protocol.CommandProtocolSuite distantlands.application.PendingWalkerInvariantSuite distantlands.server.GameHttpWireSuite"`
 Expected: PASS. `NegotiationSuite` and the parity suite compile and pass, since the rules layer is untouched.
 
 ```bash
@@ -3311,8 +3311,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 10: Retire the legacy Negotiation projection
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/LegalActionProjector.scala:127-132`, `PendingProcedureProjector.scala:22-28,129-178`, `ScopedProjectionContext.scala:30-31`, `GameProjection.scala:155-156`, `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala:31-32`, `GameProjectionCodec.scala:20,71-72,120-121,147`, `ActionProjectionCodec.scala` (`encodeNegotiation`/`decodeNegotiation`), `ActionProjectionDtos.scala` (`NegotiationProjection`)
-- Modify tests: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala:56-61`, `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala:664`, `src/test/scala/oathdigital/gameplay/NegotiationSuite.scala` (the projection tests), `src/test/scala/oathdigital/gameplay/NegotiationParitySuite.scala` (the mid-deal visibility test)
+- Modify: `src/main/scala/distantlands/application/LegalActionProjector.scala:127-132`, `PendingProcedureProjector.scala:22-28,129-178`, `ScopedProjectionContext.scala:30-31`, `GameProjection.scala:155-156`, `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala:31-32`, `GameProjectionCodec.scala:20,71-72,120-121,147`, `ActionProjectionCodec.scala` (`encodeNegotiation`/`decodeNegotiation`), `ActionProjectionDtos.scala` (`NegotiationProjection`)
+- Modify tests: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala:56-61`, `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala:664`, `src/test/scala/distantlands/gameplay/NegotiationSuite.scala` (the projection tests), `src/test/scala/distantlands/gameplay/NegotiationParitySuite.scala` (the mid-deal visibility test)
 
 **Interfaces:**
 - Consumes: Task 6's walker projection (which now carries every case the legacy `negotiation` and `negotiationWaiting` fields did).
@@ -3339,7 +3339,7 @@ Expected: PASS (the fields still exist).
 
 - [ ] **Step 4: Run and commit**
 
-Run: `./sbtw "Test/compile" "frontend/Test/compile" "testOnly oathdigital.protocol.ProjectionProtocolSuite oathdigital.application.NegotiationDealProjectionSuite oathdigital.application.GameApplicationServiceSuite oathdigital.gameplay.NegotiationParitySuite" "frontend/test"`
+Run: `./sbtw "Test/compile" "frontend/Test/compile" "testOnly distantlands.protocol.ProjectionProtocolSuite distantlands.application.NegotiationDealProjectionSuite distantlands.application.GameApplicationServiceSuite distantlands.gameplay.NegotiationParitySuite" "frontend/test"`
 Expected: PASS.
 
 ```bash
@@ -3357,9 +3357,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 11: Retire the legacy rules, events, pending state and rule block
 
 **Files:**
-- Delete: `src/main/scala/oathdigital/gameplay/actions/Negotiation.scala` (holds `NegotiationCommand`, `Negotiation` and `NegotiationPowerSupport`), `src/main/scala/oathdigital/server/NegotiationHttpCodec.scala`, `src/test/scala/oathdigital/gameplay/NegotiationSuite.scala`, `src/test/scala/oathdigital/gameplay/NegotiationParitySuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala:8,68-77,130-134`, `src/main/scala/oathdigital/model/PendingProcedures.scala` (the `Negotiation` case), `src/main/scala/oathdigital/model/GameEventProtocol.scala:40-52`, `src/main/scala/oathdigital/serialization/ActionEventCodec.scala`, `GameEventWire.scala:36-40`, `GameEventJsonSupport.scala` (the two terms delegates), `src/main/scala/oathdigital/gameplay/setup/FirstGameSetup.scala:200-201`, `src/main/scala/oathdigital/gameplay/RuleResolution.scala:44-53`, `src/main/scala/oathdigital/model/RuleSources.scala:107-109`, `src/main/scala/oathdigital/model/GameViolation.scala:73-78`, `src/main/scala/oathdigital/server/GameRoutes.scala:32-38`
-- Modify tests: `src/test/scala/oathdigital/gameplay/PendingWalkerRulesSuite.scala:5,59`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala` (the v11 Negotiation events test and any stream test naming the events), `src/test/scala/oathdigital/gameplay/RuleResolutionSuite.scala:42`, `src/test/scala/oathdigital/server/CommandRejectionMessageSuite.scala`, `src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala` only if it names a deleted file
+- Delete: `src/main/scala/distantlands/gameplay/actions/Negotiation.scala` (holds `NegotiationCommand`, `Negotiation` and `NegotiationPowerSupport`), `src/main/scala/distantlands/server/NegotiationHttpCodec.scala`, `src/test/scala/distantlands/gameplay/NegotiationSuite.scala`, `src/test/scala/distantlands/gameplay/NegotiationParitySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala:8,68-77,130-134`, `src/main/scala/distantlands/model/PendingProcedures.scala` (the `Negotiation` case), `src/main/scala/distantlands/model/GameEventProtocol.scala:40-52`, `src/main/scala/distantlands/serialization/ActionEventCodec.scala`, `GameEventWire.scala:36-40`, `GameEventJsonSupport.scala` (the two terms delegates), `src/main/scala/distantlands/gameplay/setup/FirstGameSetup.scala:200-201`, `src/main/scala/distantlands/gameplay/RuleResolution.scala:44-53`, `src/main/scala/distantlands/model/RuleSources.scala:107-109`, `src/main/scala/distantlands/model/GameViolation.scala:73-78`, `src/main/scala/distantlands/server/GameRoutes.scala:32-38`
+- Modify tests: `src/test/scala/distantlands/gameplay/PendingWalkerRulesSuite.scala:5,59`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala` (the v11 Negotiation events test and any stream test naming the events), `src/test/scala/distantlands/gameplay/RuleResolutionSuite.scala:42`, `src/test/scala/distantlands/server/CommandRejectionMessageSuite.scala`, `src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala` only if it names a deleted file
 
 **Interfaces:**
 - Consumes: everything above.
@@ -3368,11 +3368,11 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - [ ] **Step 1: Delete the legacy suites and the rule-stub tests**
 
 ```bash
-git rm src/test/scala/oathdigital/gameplay/NegotiationSuite.scala src/test/scala/oathdigital/gameplay/NegotiationParitySuite.scala
+git rm src/test/scala/distantlands/gameplay/NegotiationSuite.scala src/test/scala/distantlands/gameplay/NegotiationParitySuite.scala
 ```
-`NegotiationSuite` held the legacy rules tests; their walker equivalents are `NegotiationDealSuite`, `NegotiationProcedureSuite` and `NegotiationDealProjectionSuite`. The parity suite has served its purpose (Task 8). Before deleting, skim `NegotiationSuite` once more for a behaviour with no walker test (`git show HEAD:src/test/scala/oathdigital/gameplay/NegotiationSuite.scala`); the blocked-handler test is deliberately gone, since that behaviour changed.
+`NegotiationSuite` held the legacy rules tests; their walker equivalents are `NegotiationDealSuite`, `NegotiationProcedureSuite` and `NegotiationDealProjectionSuite`. The parity suite has served its purpose (Task 8). Before deleting, skim `NegotiationSuite` once more for a behaviour with no walker test (`git show HEAD:src/test/scala/distantlands/gameplay/NegotiationSuite.scala`); the blocked-handler test is deliberately gone, since that behaviour changed.
 
-In `PendingWalkerRulesSuite.scala` delete `NegotiationCommand` from the import and the `"negotiation" -> rules.handle(state, NegotiationCommand.Decline(...))` entry. In `GameEventWireSuite.scala` delete the test `"v11 Negotiation events preserve authored terms and disclosures"` and any other case that constructs `NegotiationStarted`, `NegotiationTermsReplaced`, `NegotiationAccepted`, `NegotiationDeclined` or `NegotiationCompleted` (`git grep -n "Negotiation" -- src/test/scala/oathdigital/serialization`).
+In `PendingWalkerRulesSuite.scala` delete `NegotiationCommand` from the import and the `"negotiation" -> rules.handle(state, NegotiationCommand.Decline(...))` entry. In `GameEventWireSuite.scala` delete the test `"v11 Negotiation events preserve authored terms and disclosures"` and any other case that constructs `NegotiationStarted`, `NegotiationTermsReplaced`, `NegotiationAccepted`, `NegotiationDeclined` or `NegotiationCompleted` (`git grep -n "Negotiation" -- src/test/scala/distantlands/serialization`).
 
 - [ ] **Step 2: Delete the events and the rules**
 

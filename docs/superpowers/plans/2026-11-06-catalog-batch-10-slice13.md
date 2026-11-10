@@ -110,13 +110,13 @@ Campaign actions. ... Bandits always enforce them."
 ### Task 1: The Patrols' waiver and the askable Act menu
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/recover/RelicPatrols.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala:495-501`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala:363-382`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/recover/RelicPatrolsSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/recover/RelicPatrols.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/QueuedStart.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala:495-501`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala:363-382`
+- Modify: `src/test/scala/distantlands/gameplay/powers/recover/RelicPatrolsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
 
 **Interfaces:**
@@ -130,11 +130,11 @@ Campaign actions. ... Bandits always enforce them."
 
 - [ ] **Step 1: Write the failing menu-pick tests**
 
-In `src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala`, add
+In `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala`, add
 `QueuedStart` to the walker import and add `WalkerProcedureRegistry` too:
 
 ```scala
-import oathdigital.gameplay.walker.{ProcedureDequeued, QueuedStart,
+import distantlands.gameplay.walker.{ProcedureDequeued, QueuedStart,
   WalkerCompleted, WalkerPowers, WalkerProcedureRegistry}
 ```
 
@@ -168,12 +168,12 @@ Then add these tests at the end of the class:
 ```
 
 `WrestlersCard` and `Table` are already imported by the suite; if `Table`
-is not, add it to the `oathdigital.testkit` import.
+is not, add it to the `distantlands.testkit` import.
 
 - [ ] **Step 2: Run them to verify they fail**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.PhaseMenuSuite"
+./sbtw "testOnly distantlands.gameplay.PhaseMenuSuite"
 ```
 
 Expected: compile error, `value menuPick is not a member of object
@@ -235,7 +235,7 @@ does the menu pick that queued it" after "that reads them".
 - [ ] **Step 4: Run the menu-pick tests to verify they pass**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.PhaseMenuSuite"
+./sbtw "testOnly distantlands.gameplay.PhaseMenuSuite"
 ```
 
 Expected: PASS, every test.
@@ -247,16 +247,16 @@ In `RelicPatrolsSuite.scala`:
 1. Replace the imports with:
 
 ```scala
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ProcedureDequeued
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{MenuPlay, PowerRules, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ProcedureDequeued
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{MenuPlay, PowerRules, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 ```
 
 2. Replace the class doc comment with:
@@ -367,7 +367,7 @@ askable.
 - [ ] **Step 6: Run them to verify they fail**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.recover.RelicPatrolsSuite"
+./sbtw "testOnly distantlands.gameplay.powers.recover.RelicPatrolsSuite"
 ```
 
 Expected: compile error, `value askedConsent is not a member of object
@@ -378,7 +378,7 @@ RelicPatrols`.
 In `RelicPatrols.scala`, change the powerresolver import to:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Restriction, Waiver}
 ```
 
@@ -518,7 +518,7 @@ Palanquin and the phase powers see the same key as before.
 In `PhaseMenu.scala`, change the powerresolver import to:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{PhasePowers, QueuedStarts}
+import distantlands.gameplay.powerresolver.{PhasePowers, QueuedStarts}
 ```
 
 In `offers`, inside `offered`, replace the `Left` arm:
@@ -579,7 +579,7 @@ with:
 - [ ] **Step 10: Regenerate the note-key snapshot**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"
 ```
 
 ```bash
@@ -598,7 +598,7 @@ If the diff shows anything else, stop and report.
 - [ ] **Step 11: Run the touched suites to verify they pass**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.recover.* oathdigital.gameplay.PhaseMenuSuite oathdigital.gameplay.powers.action.Palanquin* oathdigital.application.*Consent*"
+./sbtw "testOnly distantlands.gameplay.powers.recover.* distantlands.gameplay.PhaseMenuSuite distantlands.gameplay.powers.action.Palanquin* distantlands.application.*Consent*"
 ```
 
 Expected: PASS, every test. Palanquin and the consent service suites prove
@@ -607,7 +607,7 @@ Expected: PASS, every test. Palanquin and the consent service suites prove
 - [ ] **Step 12: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/recover/RelicPatrols.scala src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala src/test/scala/oathdigital/gameplay/powers/recover/RelicPatrolsSuite.scala src/test/scala/oathdigital/gameplay/PhaseMenuSuite.scala src/test/resources/notes/declared-keys.txt
+git add src/main/scala/distantlands/gameplay/powers/recover/RelicPatrols.scala src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala src/main/scala/distantlands/gameplay/walker/QueuedStart.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala src/test/scala/distantlands/gameplay/powers/recover/RelicPatrolsSuite.scala src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala src/test/resources/notes/declared-keys.txt
 git commit -m "$(cat <<'EOF'
 feat(powers): the Patrols' ruler may let an enemy recover
 
@@ -629,7 +629,7 @@ EOF
 ### Task 2: Consent through the service, docs and gates
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/PatrolsConsentServiceSuite.scala`
+- Create: `src/test/scala/distantlands/application/PatrolsConsentServiceSuite.scala`
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`
 - Modify: `docs/ROADMAP.md`
 
@@ -648,25 +648,25 @@ git log --oneline 0.2.0-alpha | grep "feat(powers): implement Search Party"
 
 If that prints a line, run `git rebase 0.2.0-alpha`. Resolve a conflict in
 `declared-keys.txt` by keeping both sides' lines in sorted order. Then
-create `src/test/scala/oathdigital/application/PatrolsConsentServiceSuite.scala`:
+create `src/test/scala/distantlands/application/PatrolsConsentServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   NarrowPassSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ProcedureDequeued
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentRequested}
-import oathdigital.testkit.{Commands, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.action.DowsingSticksCard
+import distantlands.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ProcedureDequeued
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentRequested}
+import distantlands.testkit.{Commands, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Asking the Patrols' ruler from the Act menu through the service
   * (catalog batch 10, slice 13): a grant starts the Recover, a refusal
@@ -763,7 +763,7 @@ The refused request's text is `OathRulesWalker.consentAsk`'s, as
 - [ ] **Step 2: Run it**
 
 ```bash
-./sbtw "testOnly oathdigital.application.PatrolsConsentServiceSuite"
+./sbtw "testOnly distantlands.application.PatrolsConsentServiceSuite"
 ```
 
 Expected: PASS, every test. Task 1 holds the behaviour, so this suite
@@ -885,7 +885,7 @@ Expected: every test passes, and statement coverage is at least 92%.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/PatrolsConsentServiceSuite.scala docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
+git add src/test/scala/distantlands/application/PatrolsConsentServiceSuite.scala docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'
 test(consent): ask the Patrols' ruler from the Act menu
 

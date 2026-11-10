@@ -135,9 +135,9 @@ Task 8 records the user's rulings in `docs/rules/ambiguities.md`.
 | `gameplay/powers/PhasePowerCatalog.scala` | registers it |
 | `gameplay/actions/minor/SelfExile.scala` (new) | the minor action |
 | `model/ProcedureRef.scala`, `gameplay/phases/ActOffers.scala`, `gameplay/walker/WalkerProcedureRegistry.scala`, `gameplay/actions/ProcedureNotes.scala`, `application/gamelog/ProcedureLog.scala` | wire self-exile in |
-| `src/test/scala/oathdigital/testkit/Table.scala` | `imperial` sets the starter; new `allowingCitizenshipPowers` and `roundStarter` |
+| `src/test/scala/distantlands/testkit/Table.scala` | `imperial` sets the starter; new `allowingCitizenshipPowers` and `roundStarter` |
 
-Paths without a prefix are under `src/main/scala/oathdigital/`.
+Paths without a prefix are under `src/main/scala/distantlands/`.
 
 ## Checkpoints
 
@@ -151,11 +151,11 @@ Dispatch a reviewer after Task 3 (state and operations), after Task 6
 **Files:**
 - Modify: `model/GameState.scala` (`GameTracks`, line ~159)
 - Modify: `gameplay/setup/FirstGameSetupMaterializer.scala:46`
-- Modify: `src/test/scala/oathdigital/model/TestGameFixtures.scala:148`
+- Modify: `src/test/scala/distantlands/model/TestGameFixtures.scala:148`
 - Modify: `gameplay/TurnOrder.scala`
 - Modify: `gameplay/StateBasedEvaluation.scala` (`RoundEnded` case, ~145-165)
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala` (`imperial`, ~285)
-- Test: `src/test/scala/oathdigital/gameplay/TurnOrderSuite.scala` (create
+- Modify: `src/test/scala/distantlands/testkit/Table.scala` (`imperial`, ~285)
+- Test: `src/test/scala/distantlands/gameplay/TurnOrderSuite.scala` (create
   it if it does not exist; otherwise add to it)
 
 **Interfaces:**
@@ -168,11 +168,11 @@ Dispatch a reviewer after Task 3 (state and operations), after Task 6
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The order of a round (CR p. 17) and a Chancellor who appears mid-round
   * (ruling R4). */
@@ -213,11 +213,11 @@ directly:
 
 Check the real name of the evolve entry point in `StateBasedEvaluation`
 (`evolve` handles `RoundEnded` at ~line 145) and the import of `Outcomes`
-from `oathdigital.testkit`.
+from `distantlands.testkit`.
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.TurnOrderSuite oathdigital.gameplay.StateBasedEvaluationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.TurnOrderSuite distantlands.gameplay.StateBasedEvaluationSuite"`
 Expected: compile failure, since `roundStarter` and `nextRoundStart` do not exist.
 
 - [ ] **Step 3: Add the field**
@@ -307,7 +307,7 @@ Add the step:
 
 - [ ] **Step 7: Run the suites, then the full backend tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.TurnOrderSuite oathdigital.gameplay.StateBasedEvaluationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.TurnOrderSuite distantlands.gameplay.StateBasedEvaluationSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`
@@ -317,14 +317,14 @@ and expects turn order from them fails here; give it `.roundStarter(...)`.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/gameplay/setup/FirstGameSetupMaterializer.scala \
-  src/main/scala/oathdigital/gameplay/TurnOrder.scala \
-  src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala \
-  src/test/scala/oathdigital/model/TestGameFixtures.scala \
-  src/test/scala/oathdigital/testkit/Table.scala \
-  src/test/scala/oathdigital/gameplay/TurnOrderSuite.scala \
-  src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala \
+  src/main/scala/distantlands/gameplay/TurnOrder.scala \
+  src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala \
+  src/test/scala/distantlands/model/TestGameFixtures.scala \
+  src/test/scala/distantlands/testkit/Table.scala \
+  src/test/scala/distantlands/gameplay/TurnOrderSuite.scala \
+  src/test/scala/distantlands/gameplay/StateBasedEvaluationSuite.scala
 git commit -m "feat(empire): a round runs from its recorded starter (R4)"
 ```
 
@@ -338,8 +338,8 @@ git commit -m "feat(empire): a round runs from its recorded starter (R4)"
 - Modify: `gameplay/operations/OperationApplication.scala` (beside `AdvanceVisionsDrawn`, ~194)
 - Modify: `serialization/WalkerOperationCodec.scala` (`TurnOperation` type
   at :41, encoder at :232, decoder at :578)
-- Test: `src/test/scala/oathdigital/gameplay/operations/TurnStateOperationsSuite.scala`
-  (create it if missing), `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/operations/TurnStateOperationsSuite.scala`
+  (create it if missing), `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -350,12 +350,12 @@ git commit -m "feat(empire): a round runs from its recorded starter (R4)"
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** The title's side and the Usurper Limiter (Empire slice 3a). */
 class TurnStateOperationsSuite extends munit.FunSuite:
@@ -387,7 +387,7 @@ operations that round-trip, after `ImperialWarbandsTaken(8),` (~line 432).
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.TurnStateOperationsSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.TurnStateOperationsSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: compile failure on `UsurperLimiterRemoved`.
 
 - [ ] **Step 3: Add the operation**
@@ -452,7 +452,7 @@ In `WalkerOperationCodec.scala`:
 
 - [ ] **Step 5: Run the suites, then the full backend tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.TurnStateOperationsSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.TurnStateOperationsSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`
@@ -463,12 +463,12 @@ so change the test's expectation.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/CoreOperations.scala \
-  src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala \
-  src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala \
-  src/test/scala/oathdigital/gameplay/operations/TurnStateOperationsSuite.scala \
-  src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala
+git add src/main/scala/distantlands/model/CoreOperations.scala \
+  src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationApplication.scala \
+  src/main/scala/distantlands/serialization/WalkerOperationCodec.scala \
+  src/test/scala/distantlands/gameplay/operations/TurnStateOperationsSuite.scala \
+  src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git commit -m "feat(empire): remove the Usurper Limiter and turn a Usurper title back"
 ```
 
@@ -481,7 +481,7 @@ git commit -m "feat(empire): remove the Usurper Limiter and turn a Usurper title
 - Modify: `gameplay/chronicle/ChronicleCrown.scala` (use it; delete its
   private `scepter`)
 - Create: `gameplay/roles/RoleChanges.scala`
-- Test: `src/test/scala/oathdigital/gameplay/roles/RoleChangesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/roles/RoleChangesSuite.scala`
 
 **Interfaces:**
 - Consumes: `UsurperLimiterRemoved`, the relaxed `SetOathkeeper` (Task 2).
@@ -526,19 +526,19 @@ object GrandScepterSource:
 
 In `ChronicleCrown.operations`, replace `scepter(ready, winner)` with
 `GrandScepterSource.take(ready, winner)` and change the import to
-`import oathdigital.gameplay.operations.GrandScepterSource`. Run
-`./sbtw "testOnly oathdigital.gameplay.chronicle.*"`; expected PASS.
+`import distantlands.gameplay.operations.GrandScepterSource`. Run
+`./sbtw "testOnly distantlands.gameplay.chronicle.*"`; expected PASS.
 
 - [ ] **Step 2: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.gameplay.operations.{OperationExecutor, TheGrandScepterCard}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.operations.{OperationExecutor, TheGrandScepterCard}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Becoming a Citizen or the Chancellor, and exile (CR p. 34; Empire phase
   * design, "Slice 3"). */
@@ -691,19 +691,19 @@ does, pick an empty in-play site.
 
 - [ ] **Step 3: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.roles.RoleChangesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.roles.RoleChangesSuite"`
 Expected: compile failure, since `RoleChanges` does not exist.
 
 - [ ] **Step 4: Write `RoleChanges`**
 
 ```scala
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.operations.GrandScepterSource
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
-import oathdigital.model.OathViolation.InvalidEventOrder
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.operations.GrandScepterSource
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
+import distantlands.model.OathViolation.InvalidEventOrder
 
 /** A role change in play as operations (CR p. 34; Empire phase design,
   * "Slice 3"): becoming a Citizen, becoming the Chancellor in a game with
@@ -857,7 +857,7 @@ If `Replace` takes its location as a plain `Location`, pass
 
 - [ ] **Step 5: Run the suite until it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.roles.RoleChangesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.roles.RoleChangesSuite"`
 Expected: PASS. If the executor refuses a batch, the refusal names the
 step: check the batch order against "Order of steps" above, never by
 splitting the change into two batches.
@@ -865,10 +865,10 @@ splitting the change into two batches.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/operations/GrandScepter.scala \
-  src/main/scala/oathdigital/gameplay/chronicle/ChronicleCrown.scala \
-  src/main/scala/oathdigital/gameplay/roles/RoleChanges.scala \
-  src/test/scala/oathdigital/gameplay/roles/RoleChangesSuite.scala
+git add src/main/scala/distantlands/gameplay/operations/GrandScepter.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleCrown.scala \
+  src/main/scala/distantlands/gameplay/roles/RoleChanges.scala \
+  src/test/scala/distantlands/gameplay/roles/RoleChangesSuite.scala
 git commit -m "feat(empire): the operations of becoming a Citizen, the Chancellor, or an Exile"
 ```
 
@@ -881,8 +881,8 @@ git commit -m "feat(empire): the operations of becoming a Citizen, the Chancello
 **Files:**
 - Modify: `model/Setup.scala` (`FirstGameSupportState`)
 - Create: `gameplay/roles/Citizenship.scala`
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala` (new step)
-- Test: `src/test/scala/oathdigital/gameplay/roles/CitizenshipSuite.scala`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala` (new step)
+- Test: `src/test/scala/distantlands/gameplay/roles/CitizenshipSuite.scala`
 
 **Interfaces:**
 - Consumes: `RoleChanges` (Task 3).
@@ -900,18 +900,18 @@ git commit -m "feat(empire): the operations of becoming a Citizen, the Chancello
 The tree is driven through a power in Tasks 5-7. This suite checks the
 query the tree asks and what an answer does, through the walker harness
 the Scepter suite will use. Read
-`src/test/scala/oathdigital/testkit/PhasePowerHarness.scala` first. If it
+`src/test/scala/distantlands/testkit/PhasePowerHarness.scala` first. If it
 runs an arbitrary `Operation` tree, use it. If not, test the two private
 pieces through package-private access instead:
 - the query, `Citizenship.query(ready, actor): Option[DecisionQuery]`;
 - the kept counts, `Citizenship.kept(ready, actor, rows): Either[OathViolation, RoleChanges.Kept]`.
 
 ```scala
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p3}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.{p1, p3}
 
 /** The question a short purple bank asks (ruling R18) and the first-game
   * option (ambiguity F8). */
@@ -949,7 +949,7 @@ class CitizenshipSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.roles.CitizenshipSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.roles.CitizenshipSuite"`
 Expected: compile failure.
 
 - [ ] **Step 3: Add the option**
@@ -979,11 +979,11 @@ In `Table.scala`, beside `imperial`:
 - [ ] **Step 4: Write `Citizenship`**
 
 ```scala
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
-import oathdigital.model.OathViolation.InvalidEventOrder
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
+import distantlands.model.OathViolation.InvalidEventOrder
 
 /** Role changes as walker trees, shared by every source (Empire phase
   * design, "Slice 3"). Becoming Imperial asks the player which warbands
@@ -1051,16 +1051,16 @@ and this one agree.
 
 - [ ] **Step 5: Run it until it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.roles.CitizenshipSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.roles.CitizenshipSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Setup.scala \
-  src/main/scala/oathdigital/gameplay/roles/Citizenship.scala \
-  src/test/scala/oathdigital/testkit/Table.scala \
-  src/test/scala/oathdigital/gameplay/roles/CitizenshipSuite.scala
+git add src/main/scala/distantlands/model/Setup.scala \
+  src/main/scala/distantlands/gameplay/roles/Citizenship.scala \
+  src/test/scala/distantlands/testkit/Table.scala \
+  src/test/scala/distantlands/gameplay/roles/CitizenshipSuite.scala
 git commit -m "feat(empire): Citizenship trees and the first-game option"
 ```
 
@@ -1075,7 +1075,7 @@ git commit -m "feat(empire): Citizenship trees and the first-game option"
 - Modify: `gameplay/powers/PhasePowerCatalog.scala` (register it)
 - Modify: `src/test/resources/powers/unimplemented.txt` (delete
   `relic.the-grand-scepter.action`)
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/GrandScepterActionSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/GrandScepterActionSuite.scala`
 
 **Interfaces:**
 - Consumes: `Citizenship.become`, `Citizenship.ignored`,
@@ -1091,16 +1091,16 @@ Follow `WhistleSuite`'s harness (`PowerFixture.use`, `choose`,
 Read `WhistleSuite` and `PowerFixture` for exact signatures before writing.
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.model._
-import oathdigital.testkit.{PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.ready
-import oathdigital.testkit.Table.{p1, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.roles.Citizenship
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.model._
+import distantlands.testkit.{PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.ready
+import distantlands.testkit.Table.{p1, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** The Grand Scepter's Action: "You may become a Citizen if an Exile"
   * (CR p. 34; Empire slice 3a). */
@@ -1158,7 +1158,7 @@ reason. If there are none, add them to this suite as private helpers over
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GrandScepterActionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GrandScepterActionSuite"`
 Expected: compile failure.
 
 - [ ] **Step 3: Add the `listed` hook**
@@ -1182,12 +1182,12 @@ In `PhaseMenu.offers`, extend the guard of the `sourced` for:
 - [ ] **Step 4: Write the power**
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.model._
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.roles.Citizenship
+import distantlands.model._
 
 /** The Grand Scepter's ACTION: "You may become a Citizen if an Exile"
   * (CR p. 34). In a game with no Empire the holder becomes the Chancellor
@@ -1246,19 +1246,19 @@ In `PhasePowerCatalog`, add `GrandScepterAction` to the
 
 - [ ] **Step 6: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GrandScepterActionSuite oathdigital.gameplay.powers.UnimplementedPowersSuite oathdigital.gameplay.PhaseMenuSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GrandScepterActionSuite distantlands.gameplay.powers.UnimplementedPowersSuite distantlands.gameplay.PhaseMenuSuite"`
 Expected: PASS. `UnimplementedPowersSuite` may live in another package;
 find it by name.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/PhasePower.scala \
-  src/main/scala/oathdigital/gameplay/phases/PhaseMenu.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/GrandScepterAction.scala \
-  src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala \
+git add src/main/scala/distantlands/gameplay/powerresolver/PhasePower.scala \
+  src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala \
+  src/main/scala/distantlands/gameplay/powers/action/GrandScepterAction.scala \
+  src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala \
   src/test/resources/powers/unimplemented.txt \
-  src/test/scala/oathdigital/gameplay/powers/action/GrandScepterActionSuite.scala
+  src/test/scala/distantlands/gameplay/powers/action/GrandScepterActionSuite.scala
 git commit -m "feat(empire): the Grand Scepter's Action makes its Exile holder a Citizen"
 ```
 
@@ -1273,7 +1273,7 @@ git commit -m "feat(empire): the Grand Scepter's Action makes its Exile holder a
 - Modify: `gameplay/walker/WalkerProcedureRegistry.scala` (~275)
 - Modify: `gameplay/actions/ProcedureNotes.scala` (~94)
 - Modify: `application/gamelog/ProcedureLog.scala` (~274)
-- Test: `src/test/scala/oathdigital/gameplay/SelfExileSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/SelfExileSuite.scala`
 
 **Interfaces:**
 - Consumes: `Citizenship.exile` (Task 4).
@@ -1289,16 +1289,16 @@ git commit -m "feat(empire): the Grand Scepter's Action makes its Exile holder a
 Follow `WarbandTransfersSuite` for the service and menu helpers.
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.application._
-import oathdigital.gameplay.actions.minor.SelfExile
-import oathdigital.gameplay.phases.ActOffers
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.application._
+import distantlands.gameplay.actions.minor.SelfExile
+import distantlands.gameplay.phases.ActOffers
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Self-exile (CR p. 34): as a minor action a Citizen gives the Chancellor
   * 1 favor per Imperial warband on their board, at least 3, and becomes an
@@ -1350,7 +1350,7 @@ default) before running.
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SelfExileSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SelfExileSuite"`
 Expected: compile failure.
 
 - [ ] **Step 3: Add the reference and the offer**
@@ -1386,13 +1386,13 @@ In `reason`, after the `TransferWarbands` case:
 - [ ] **Step 4: Write the action**
 
 ```scala
-package oathdigital.gameplay.actions.minor
+package distantlands.gameplay.actions.minor
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.model._
-import oathdigital.model.OathViolation._
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.gameplay.roles.Citizenship
+import distantlands.model._
+import distantlands.model.OathViolation._
 
 /** Self-exile (CR p. 34): as a minor action a Citizen gives the Chancellor
   * 1 favor per Imperial warband on their board, but no less than 3, and is
@@ -1471,7 +1471,7 @@ call, since it is in the same package.
 
 - [ ] **Step 6: Run the suites, then the full backend tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SelfExileSuite oathdigital.gameplay.PhaseMenuSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SelfExileSuite distantlands.gameplay.PhaseMenuSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`
@@ -1481,13 +1481,13 @@ needs the new one added; update its expected list.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/minor/SelfExile.scala \
-  src/main/scala/oathdigital/model/ProcedureRef.scala \
-  src/main/scala/oathdigital/gameplay/phases/ActOffers.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala \
-  src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala \
-  src/test/scala/oathdigital/gameplay/SelfExileSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/minor/SelfExile.scala \
+  src/main/scala/distantlands/model/ProcedureRef.scala \
+  src/main/scala/distantlands/gameplay/phases/ActOffers.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala \
+  src/main/scala/distantlands/application/gamelog/ProcedureLog.scala \
+  src/test/scala/distantlands/gameplay/SelfExileSuite.scala
 git commit -m "feat(empire): a Citizen may exile themself as a minor action"
 ```
 
@@ -1500,7 +1500,7 @@ Add any suite updated in Step 6 to the `git add` by name.
 ### Task 7: Scenario, projection and log
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/RoleChangesScenarioSuite.scala`
+- Create: `src/test/scala/distantlands/application/RoleChangesScenarioSuite.scala`
 
 **Interfaces:**
 - Consumes: everything above.
@@ -1513,17 +1513,17 @@ version.
 - [ ] **Step 1: Write the scenario**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.action.GrandScepterAction
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.model._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.testkit.{MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.action.GrandScepterAction
+import distantlands.gameplay.roles.Citizenship
+import distantlands.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.testkit.{MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** An Exile holding the Grand Scepter becomes a Citizen, and on a later
   * turn exiles themself (CR p. 34; Empire slice 3a), played through the
@@ -1603,7 +1603,7 @@ Match the helpers to the codebase before running:
 
 - [ ] **Step 2: Run it until it passes**
 
-Run: `./sbtw "testOnly oathdigital.application.RoleChangesScenarioSuite"`
+Run: `./sbtw "testOnly distantlands.application.RoleChangesScenarioSuite"`
 Expected: PASS. A failure on the Rest phase means Rest's own procedures
 did not start after `EnterPhase(Phase.Rest)`. Compare with
 `MurkyFountainSuite`, which ends the Act the same way, before changing
@@ -1612,7 +1612,7 @@ any production code.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/RoleChangesScenarioSuite.scala
+git add src/test/scala/distantlands/application/RoleChangesScenarioSuite.scala
 git commit -m "test(empire): an Exile becomes a Citizen by the Scepter and exiles themself"
 ```
 

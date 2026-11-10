@@ -1,0 +1,214 @@
+package distantlands.application
+
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.setup.GreatForgeCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.protocol.projection.{CardDetailsProjection, DecisionOptionProjection, DecisionQueryProjection}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.present
+
+/** How a card slot option reads in the Action panel. Plan 1 shows the slots
+  * as labelled rows; plan 2's board summary reuses the same words.
+  */
+class SlotOptionRowsSuite extends munit.FunSuite:
+  private val presentation = new GamePresentationProjector(catalog)
+  private val rows = new DecisionOptionRows(catalog, presentation)
+  /** The walker projector words a card play's confirm button over the
+    * rows (`replacing`); it is built over the same rows the tests read. */
+  private val projector = new WalkerDecisionProjector(catalog, presentation,
+    WalkerPowers(Vector.empty), WalkerDecisionProjector.declaredTree,
+    PhasePowers.empty, rows)
+  /** Cradle, room for three, no Homeland. */
+  private val home = AncientCitySite.id
+  private val wrestlers = WrestlersCard.id
+  private val roar = ThreateningRoarCard.id
+
+  /** Wrestlers lies at Ancient City; p1 holds Threatening Roar facedown and
+    * Conquest as their revealed Vision. */
+  private lazy val board: ReadyGame = Table.start.denizen(wrestlers, at = home)
+    .adviser(p1, roar, facedown = true)
+    .revealedVision(p1, VisionRules.Conquest).ready
+
+  private def rowOf(option: DecisionOption, viewer: PlayerId = p1)(
+      using munit.Location): DecisionOptionProjection =
+    present(rows.project(board, Some(viewer),
+      CardIndex.from(board.game).toOption, option), "a projected row")
+
+  private def site: String = presentation.siteLabel(home)
+
+  test("an empty site slot names the site"):
+    val row = rowOf(DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 1)))
+    assertEquals((row.kind, row.label, row.replaces),
+      ("site-slot", s"Empty slot at $site", Vector.empty))
+
+  test("a Replace site slot names the card it discards and carries it"):
+    val row = rowOf(DecisionOption.Replacing(
+      DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 0)), wrestlers))
+    assertEquals(row.label, s"Replace Wrestlers at $site")
+    assertEquals(row.replaces.map(_.cardId), Vector(wrestlers.value))
+
+  test("a bury names the card it buries and is marked a bury"):
+    val row = rowOf(DecisionOption.Burying(
+      DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 0)), wrestlers))
+    assertEquals(row.label, s"Bury Wrestlers at $site")
+    assertEquals((row.replaces.map(_.cardId), row.buries),
+      (Vector(wrestlers.value), true))
+
+  test("a site slot past the site's capacity is not presentable"):
+    assertEquals(rows.project(board, Some(p1), None,
+      DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 3))), None)
+
+  private val horn = CrackedHornCard.id
+  private val peaks = BrokenPeaksSite.id
+
+  /** Cracked Horn lies at Broken Peaks, where p2 stands and p1 does not. */
+  private lazy val relicBoard: ReadyGame =
+    Table.start.relicAt(horn, at = peaks).ready
+
+  test("a site relic slot shows its relic to a viewer at the site, and a " +
+      "back to anyone else"):
+    val option = DecisionOption.SiteRelicSlot(
+      DecisionOptionRef.SiteRelicSlot(peaks, 0))
+    val index = CardIndex.from(relicBoard.game).toOption
+    val near = present(rows.project(relicBoard, Some(p2),
+      index, option), "p2's row")
+    assertEquals(near.card.map(_.cardId), Some(horn.value))
+    val far = present(rows.project(relicBoard, Some(p1),
+      index, option), "p1's row")
+    assert(far.card.exists(_.hidden), far.toString)
+    assertEquals(far.label,
+      s"Facedown relic at ${presentation.siteLabel(peaks)}")
+    assert(!far.label.contains("Horn"), far.label)
+
+  test("a site relic slot past the site's relics is not presentable"):
+    assertEquals(rows.project(relicBoard, Some(p1), None,
+      DecisionOption.SiteRelicSlot(DecisionOptionRef.SiteRelicSlot(peaks,
+        1))), None)
+
+  test("an adviser play names its slot and its facing"):
+    assertEquals(rowOf(DecisionOption.AdviserPlay(
+      DecisionOptionRef.AdviserPlay(p1, 1, faceup = true))).label,
+      "Adviser slot 2, faceup")
+    assertEquals(rowOf(DecisionOption.AdviserPlay(
+      DecisionOptionRef.AdviserPlay(p1, 1, faceup = false))).label,
+      "Adviser slot 2, facedown")
+
+  test("a Replace adviser play names a facedown adviser to its owner only"):
+    val option = DecisionOption.Replacing(DecisionOption.AdviserPlay(
+      DecisionOptionRef.AdviserPlay(p1, 0, faceup = false)), roar)
+    assertEquals(rowOf(option).label, "Replace Threatening Roar, facedown")
+    val seenByOther = rowOf(option, viewer = p2)
+    assert(seenByOther.replaces.exists(_.hidden))
+    assert(!seenByOther.label.contains("Threatening Roar"))
+
+  test("the revealed Vision spot, and Replace naming the Vision there"):
+    val spot = DecisionOption.RevealedVision(
+      DecisionOptionRef.RevealedVision(p1))
+    assertEquals(rowOf(spot).label, "Revealed Vision")
+    assertEquals(rowOf(DecisionOption.Replacing(spot, VisionRules.Conquest))
+      .label, s"Replace ${presentation.cardLabel(board, VisionRules.Conquest)}" +
+        " as revealed Vision")
+
+  test("a Vision option, as Swear an Oath asks it, names the card"):
+    val row = rowOf(DecisionOption.Vision(
+      DecisionOptionRef.Vision(VisionRules.Conquest)))
+    assertEquals(row.label, presentation.cardLabel(board, VisionRules.Conquest))
+    assertEquals(row.card.map(_.cardId), Some(VisionRules.Conquest.value))
+
+  test("a spot that replaces two Visions names and carries both"):
+    val spot = DecisionOption.RevealedVision(
+      DecisionOptionRef.RevealedVision(p1))
+    val twoVisions = Table.from(board).revealedVision(p1, VisionRules.Faith)
+      .ready
+    val row = present(rows.project(twoVisions, Some(p1),
+      CardIndex.from(twoVisions.game).toOption,
+      DecisionOption.Replacing(DecisionOption.Replacing(spot,
+        VisionRules.Conquest), VisionRules.Faith)), "a projected row")
+    def name(vision: VisionId) = presentation.cardLabel(twoVisions, vision)
+    assertEquals(row.label, s"Replace ${name(VisionRules.Conquest)} and " +
+      s"${name(VisionRules.Faith)} as revealed Vision")
+    assertEquals(row.replaces.map(_.cardId),
+      Vector(VisionRules.Conquest.value, VisionRules.Faith.value))
+
+  test("the discard pile and the world deck name themselves, for a card " +
+      "play and a Search alike"):
+    assertEquals(rowOf(DecisionOption.DiscardPile(
+      DecisionOptionRef.DiscardPile(Region.Provinces))).label,
+      "Provinces discard pile")
+    assertEquals(rowOf(DecisionOption.Deck(
+      DecisionOptionRef.Deck(CardDeck.World))).label, "World deck")
+
+  test("an adviser play carries its facing as the word its toggle shows"):
+    assertEquals(Vector(true, false).map(faceup => rowOf(
+      DecisionOption.AdviserPlay(DecisionOptionRef.AdviserPlay(p1, 1,
+        faceup))).variant), Vector(Some("Faceup"), Some("Facedown")))
+    assertEquals(rowOf(DecisionOption.SiteSlot(
+      DecisionOptionRef.SiteSlot(home, 1))).variant, None)
+
+  test("a card play's Replace options read as the board's summary, and " +
+      "every other option keeps its label"):
+    val played = CardDetailsProjection("denizen:spirit", "denizen",
+      "Wayward Spirit")
+    val site = rowOf(DecisionOption.Replacing(DecisionOption.SiteSlot(
+      DecisionOptionRef.SiteSlot(home, 0)), wrestlers))
+    val adviser = rowOf(DecisionOption.Replacing(DecisionOption.AdviserPlay(
+      DecisionOptionRef.AdviserPlay(p1, 0, faceup = false)), roar))
+    val empty = rowOf(DecisionOption.SiteSlot(
+      DecisionOptionRef.SiteSlot(home, 1)))
+    assertEquals(projector.replacing(DecisionQueryProjection.ChooseOne(
+      Vector(site, adviser, empty)), played),
+      DecisionQueryProjection.ChooseOne(Vector(
+        site.copy(label = "Discard Wrestlers; replace it with Wayward Spirit"),
+        adviser.copy(label = "Discard Threatening Roar; replace it with " +
+          "Wayward Spirit, facedown"),
+        empty)))
+
+  test("a reveal that displaces two Visions reads as discarding both on " +
+      "the confirm button"):
+    val twoVisions = Table.from(board).revealedVision(p1, VisionRules.Faith)
+      .ready
+    val spot = DecisionOption.RevealedVision(
+      DecisionOptionRef.RevealedVision(p1))
+    val row = present(rows.project(twoVisions, Some(p1),
+      CardIndex.from(twoVisions.game).toOption,
+      DecisionOption.Replacing(DecisionOption.Replacing(spot,
+        VisionRules.Conquest), VisionRules.Faith)), "a projected row")
+    val played = CardDetailsProjection("vision:vision-of-sanctuary",
+      "vision", "Vision of Sanctuary")
+    def name(vision: VisionId) = presentation.cardLabel(twoVisions, vision)
+    assertEquals(projector.replacing(DecisionQueryProjection.ChooseOne(
+      Vector(row)), played), DecisionQueryProjection.ChooseOne(Vector(
+        row.copy(label = s"Discard ${name(VisionRules.Conquest)} and " +
+          s"${name(VisionRules.Faith)}; replace them with Vision of " +
+          "Sanctuary"))))
+
+  test("a Replace option whose card the viewer may not identify keeps " +
+      "its label"):
+    val played = CardDetailsProjection("denizen:spirit", "denizen",
+      "Wayward Spirit")
+    val unseen = rowOf(DecisionOption.Replacing(DecisionOption.AdviserPlay(
+      DecisionOptionRef.AdviserPlay(p1, 0, faceup = false)), roar),
+      viewer = p2)
+    val query = DecisionQueryProjection.ChooseOne(Vector(unseen))
+    assertEquals(projector.replacing(query, played), query)
+
+  test("a Replace option naming an edifice reads the face's name, not the " +
+      "card's id"):
+    val forge = GreatForgeCard.id
+    val withEdifice = Table.start.edifice(forge, EdificeSide.Ruined, at = home)
+      .ready
+    val row = present(rows.project(withEdifice, Some(p1),
+      CardIndex.from(withEdifice.game).toOption, DecisionOption.Replacing(
+        DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 0)), forge)),
+      "a projected row")
+    assertEquals(row.label, s"Replace Broken Forge at $site")
+    assertEquals(row.replaces.map(card => (card.name, card.cardKind)),
+      Vector(("Broken Forge", "edifice")))

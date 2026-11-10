@@ -78,7 +78,7 @@ Two independent read-only audits of the migrated gameplay modules established:
 
 ### 1. Migrate League Treaty favor movement to operations
 
-`src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyPower.scala`
+`src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyPower.scala`
 
 Replace `moveFavor` with an operation-backed resolution:
 
@@ -106,7 +106,7 @@ Replace `moveFavor` with an operation-backed resolution:
 
 ### 3. Always-key `temporaryHands` invariant (setup `InProgress`)
 
-`src/main/scala/oathdigital/gameplay/setup/FirstGameSetup.scala`
+`src/main/scala/distantlands/gameplay/setup/FirstGameSetup.scala`
 
 - `StartingAdviserChosen`: keep the player's key and empty it instead of
   removing it.
@@ -115,7 +115,7 @@ Replace `moveFavor` with an operation-backed resolution:
 
 ### 4. Box Search-kept Conspiracy at resolution
 
-`src/main/scala/oathdigital/gameplay/actions/Visions.scala`
+`src/main/scala/distantlands/gameplay/actions/Visions.scala`
 
 Extend `applyCompletion` so the Conspiracy source card is boxed from whichever
 zone holds it at `ConspiracyCompleted` — the actor's temporary hand (Search
@@ -126,7 +126,7 @@ the same sentinel wording.
 
 ### 5. Architecture check (strict sentinel scan)
 
-`src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala`
+`src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala`
 
 Add a test walking the migrated module set and flagging each occurrence of a
 curated material-write marker list (adviser-vector removals, hand-key drops,
@@ -138,7 +138,7 @@ boxing removals.
 
 ### 6. Refactor CardPlay's validation local
 
-`src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`
+`src/main/scala/distantlands/gameplay/actions/CardPlay.scala`
 
 Replace the local `player.copy(advisers = player.advisers.filterNot(...))`
 planning value (a validation-only copy shaped like a material write) with a

@@ -43,7 +43,7 @@ Task 4 records these in the design.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
   - Engine files under `gameplay/walker` and `gameplay/operations` never name a power, in code or comments. This plan changes none of them.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase. Leave the untracked `HiddenScopeProbeSuite.scala` alone.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -74,20 +74,20 @@ Task 4 records these in the design.
 ### Task 1: The three kills at their moments
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala` (after `CampaignAttackResult`)
-- Modify: `src/main/scala/oathdigital/model/CampaignTypes.scala:177-178` (the `originForce` doc)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala` (`CampaignIds`, `CampaignSetup.originForce` doc, `CampaignAnswers.originDeaths`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala:104-225`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala:8-22, 81-115`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/CarefulPlans.scala:15-35`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/SparedForce.scala:12-16` (doc only)
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala` (one helper)
-- Test: `src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/campaign/CampaignOriginSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/CarefulPlansSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/WeepingBannerSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/BillowingFogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/TravelingDoctorSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala` (after `CampaignAttackResult`)
+- Modify: `src/main/scala/distantlands/model/CampaignTypes.scala:177-178` (the `originForce` doc)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala` (`CampaignIds`, `CampaignSetup.originForce` doc, `CampaignAnswers.originDeaths`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala:104-225`
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala:8-22, 81-115`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/CarefulPlans.scala:15-35`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/SparedForce.scala:12-16` (doc only)
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala` (one helper)
+- Test: `src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/campaign/CampaignOriginSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/CarefulPlansSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/WeepingBannerSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/BillowingFogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/TravelingDoctorSuite.scala`
 
 **Interfaces:**
 - Consumes: `CampaignSetup.originForce(ready, actor): Option[OriginForce]`, `CampaignAnswers.sacrificed(pending): Int`, `OriginForce(site, atSite, onBoard)`.
@@ -95,7 +95,7 @@ Task 4 records these in the design.
 
 - [ ] **Step 1: Add the event-order helper to `PlanDriver`**
 
-Add `RollPayload` to the `oathdigital.gameplay.walker` import of `PlanDriver.scala`, then add inside `object PlanDriver`, after `awaits`:
+Add `RollPayload` to the `distantlands.gameplay.walker` import of `PlanDriver.scala`, then add inside `object PlanDriver`, after `awaits`:
 
 ```scala
   /** Whether `kill` was recorded in `events` before the defense pool was
@@ -112,7 +112,7 @@ Add `RollPayload` to the `oathdigital.gameplay.walker` import of `PlanDriver.sca
 
 - [ ] **Step 2: Write the failing moment tests in `CampaignProcedureSuite`**
 
-Add `import oathdigital.gameplay.powers.campaign.PlanDriver.killedBeforeTheDefenseRoll`. In the "battle" section, after the `committed` helper, add:
+Add `import distantlands.gameplay.powers.campaign.PlanDriver.killedBeforeTheDefenseRoll`. In the "battle" section, after the `committed` helper, add:
 
 ```scala
   /** The size of each kill of `player`'s board warbands in `events`. */
@@ -338,7 +338,7 @@ Rewrite "under Billowing Fog the origin split asks over the sacrifices only" as:
       Look(done.state).forceKind(b.actor), 2))
 ```
 
-In `TravelingDoctorSuite`, add `import oathdigital.model.DecisionAnswer.ChooseAmountAnswer` and, after the first test:
+In `TravelingDoctorSuite`, add `import distantlands.model.DecisionAnswer.ChooseAmountAnswer` and, after the first test:
 
 ```scala
   test("a defeated attacker loses its skull and its sacrifice, and only " +
@@ -363,7 +363,7 @@ The two "only the half is spared" tests pass before and after this task, since t
 
 - [ ] **Step 6: Run the new tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.campaign.CampaignOriginSuite oathdigital.gameplay.powers.campaign.CarefulPlansSuite oathdigital.gameplay.powers.campaign.WeepingBannerSuite oathdigital.gameplay.powers.campaign.BillowingFogSuite oathdigital.gameplay.powers.campaign.TravelingDoctorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.campaign.CampaignOriginSuite distantlands.gameplay.powers.campaign.CarefulPlansSuite distantlands.gameplay.powers.campaign.WeepingBannerSuite distantlands.gameplay.powers.campaign.BillowingFogSuite distantlands.gameplay.powers.campaign.TravelingDoctorSuite"`
 Expected: compile errors for `CampaignIds.skullOriginDeaths` and `CampaignIds.sacrificeOriginDeaths`. Comment those two tests out for one run to confirm the others fail on their boards: the skull test sees 5 warbands, the sacrifice and Weeping Banner tests find the kill after the defense roll, and the Careful Plans test sees 5. Restore them.
 
 - [ ] **Step 7: Add the two windows**
@@ -572,7 +572,7 @@ In `CampaignSetup.scala`, reword the `attackerSpared` doc's last sentence to "th
 
 - [ ] **Step 13: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.campaign.CampaignOriginSuite oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.campaign.CampaignOriginSuite distantlands.gameplay.powers.campaign.*"`
 Expected: PASS.
 
 Run: `./sbtw "test"`
@@ -581,20 +581,20 @@ Expected: PASS. A suite that fails here pins the batched kill: it reads the atta
 - [ ] **Step 14: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala \
-  src/main/scala/oathdigital/model/CampaignTypes.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignBattle.scala \
-  src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/CarefulPlans.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/SparedForce.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/PlanDriver.scala \
-  src/test/scala/oathdigital/gameplay/CampaignProcedureSuite.scala \
-  src/test/scala/oathdigital/gameplay/campaign/CampaignOriginSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/CarefulPlansSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/WeepingBannerSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/BillowingFogSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/TravelingDoctorSuite.scala
+git add src/main/scala/distantlands/model/PowerWindow.scala \
+  src/main/scala/distantlands/model/CampaignTypes.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignBattle.scala \
+  src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/CarefulPlans.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/SparedForce.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala \
+  src/test/scala/distantlands/gameplay/CampaignProcedureSuite.scala \
+  src/test/scala/distantlands/gameplay/campaign/CampaignOriginSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/CarefulPlansSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/WeepingBannerSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/BillowingFogSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/TravelingDoctorSuite.scala
 git commit -m "feat(batch8): a Campaign kills its skulls and sacrifices at their moment
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -605,10 +605,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: Hospital and Cursed Cauldron count the early kills
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/Hospital.scala:23-34, 83-85`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/CursedCauldron.scala:15-22, 62-71`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/HospitalSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/CursedCauldronSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/Hospital.scala:23-34, 83-85`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/CursedCauldron.scala:15-22, 62-71`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/HospitalSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/CursedCauldronSuite.scala`
 
 **Interfaces:**
 - Consumes: `PowerWindow.CampaignSkullLosses`, `PowerWindow.CampaignSacrificeLosses` (Task 1); `LossRewrite.counted(pool, kind, owner, returns)`.
@@ -616,7 +616,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing Hospital test**
 
-In `HospitalSuite`, add `import oathdigital.model.DecisionAnswer.ChooseAmountAnswer`, and after "a defeated attacker's dead are placed on Hospital's site at the end":
+In `HospitalSuite`, add `import distantlands.model.DecisionAnswer.ChooseAmountAnswer`, and after "a defeated attacker's dead are placed on Hospital's site at the end":
 
 ```scala
   test("a defeated attacker's skull and sacrifice are saved with the half"):
@@ -643,7 +643,7 @@ In `HospitalSuite`, add `import oathdigital.model.DecisionAnswer.ChooseAmountAns
 
 - [ ] **Step 2: Write the failing Cursed Cauldron test**
 
-In `CursedCauldronSuite`, add `import oathdigital.model.DecisionAnswer.ChooseAmountAnswer`, and after "a victorious defender gains a warband per attacker warband killed":
+In `CursedCauldronSuite`, add `import distantlands.model.DecisionAnswer.ChooseAmountAnswer`, and after "a victorious defender gains a warband per attacker warband killed":
 
 ```scala
   test("a victorious defender gains for the attacker's skull and sacrifice " +
@@ -675,7 +675,7 @@ In `CursedCauldronSuite`, add `import oathdigital.model.DecisionAnswer.ChooseAmo
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.HospitalSuite oathdigital.gameplay.powers.campaign.CursedCauldronSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.HospitalSuite distantlands.gameplay.powers.campaign.CursedCauldronSuite"`
 Expected: the two new tests FAIL. Hospital places 1 warband, not 3; the Cauldron gains 1, not 3. Every other test passes.
 
 - [ ] **Step 4: Wrap the new windows**
@@ -713,16 +713,16 @@ In its doc, replace "in the plans applied after it and in the losses" with "in t
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/Hospital.scala \
-  src/main/scala/oathdigital/gameplay/powers/campaign/CursedCauldron.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/HospitalSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/CursedCauldronSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/Hospital.scala \
+  src/main/scala/distantlands/gameplay/powers/campaign/CursedCauldron.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/HospitalSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/CursedCauldronSuite.scala
 git commit -m "feat(batch8): Hospital and Cursed Cauldron count the early Campaign kills
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -733,11 +733,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: The attack line counts skull faces and kills
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/AttackScore.scala:44-67`
-- Modify: `src/main/scala/oathdigital/application/gamelog/CampaignLines.scala:1-21, 71-107`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/AttackScoreSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogCampaignSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogRareLinesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/AttackScore.scala:44-67`
+- Modify: `src/main/scala/distantlands/application/gamelog/CampaignLines.scala:1-21, 71-107`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/AttackScoreSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogCampaignSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogRareLinesSuite.scala`
 
 **Interfaces:**
 - Consumes: `AttackScore.rules(ready, pending, actor)`, `CampaignBattle.attackFacesOf(ready)`, `LogJournal.answers(run, at)`.
@@ -823,7 +823,7 @@ The loss-line test passes at once: the closing line already reads only the opera
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.AttackScoreSuite oathdigital.application.gamelog.GameLogCampaignSuite oathdigital.application.gamelog.GameLogRareLinesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.AttackScoreSuite distantlands.application.gamelog.GameLogCampaignSuite distantlands.application.gamelog.GameLogRareLinesSuite"`
 Expected: compile errors for `AttackScore.skullFaces` and `CampaignLines.attack`.
 
 - [ ] **Step 3: Add `skullFaces`**
@@ -842,7 +842,7 @@ In `of`, replace `val skulls = count(AttackDieFace.TwoSwordsSkull)` with `val sk
 
 - [ ] **Step 4: Word the attack line**
 
-In `CampaignLines.scala`, add `import oathdigital.gameplay.powers.campaign.AttackScore`. Pass the run to `recorded`: in `lines`, call `recorded(journal, run, at, viewer)`, and change its signature to `private def recorded(journal: LogJournal, run: Run, at: Int, viewer: Option[PlayerId]): Vector[Posted]`. Replace the attack case with:
+In `CampaignLines.scala`, add `import distantlands.gameplay.powers.campaign.AttackScore`. Pass the run to `recorded`: in `lines`, call `recorded(journal, run, at, viewer)`, and change its signature to `private def recorded(journal: LogJournal, run: Run, at: Int, viewer: Option[PlayerId]): Vector[Posted]`. Replace the attack case with:
 
 ```scala
       case (OpStep(ModifyRollOutcome(CampaignIds.attackPool, _,
@@ -878,17 +878,17 @@ Reword the class doc's first sentence to "Every Campaign line after the start li
 
 - [ ] **Step 5: Run the log and scoring suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.AttackScoreSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.AttackScoreSuite distantlands.application.gamelog.*"`
 Expected: PASS. The `raid.actor.log` and `raid.other.log` fixtures and the Captains scripts roll no skull, so they stay as they are. If a fixture differs, regenerate it the way its suite's failure message says and check that the only change is an attack line's skull count.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/AttackScore.scala \
-  src/main/scala/oathdigital/application/gamelog/CampaignLines.scala \
-  src/test/scala/oathdigital/gameplay/powers/campaign/AttackScoreSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogCampaignSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogRareLinesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/AttackScore.scala \
+  src/main/scala/distantlands/application/gamelog/CampaignLines.scala \
+  src/test/scala/distantlands/gameplay/powers/campaign/AttackScoreSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogCampaignSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogRareLinesSuite.scala
 git commit -m "feat(batch8): the attack line counts skull faces and the warbands they kill
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"

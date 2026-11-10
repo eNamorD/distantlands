@@ -1,0 +1,99 @@
+package distantlands.gameplay.powers.whenplayed
+
+import distantlands.catalog.Denizen
+import distantlands.catalog.holding.DeedWriterCard
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.{MountainGiantCard, SecondWindCard,
+  UnstableSummonCard, WildMountsCard, ZealotsCard}
+import distantlands.gameplay.powers.economy.{DefameCard, OldSongsCard}
+import distantlands.gameplay.powers.search.{LandWardenCard, SpinningBeeCard}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+
+class CallForHelpSuite extends munit.FunSuite:
+  import WhenPlayedHarness._
+
+  private val power = registered[CallForHelp.type]
+  private val help = power.cardId
+  private val played = hook(help)
+  /** p1's pawn stands in the Cradle. */
+  private val cradle = Region.Cradle
+  private val next = CardPlay.nextRegion(cradle)
+
+  /** Call for Help as p1's adviser with 3 warbands on the board, and `cards`
+    * in the Cradle discard pile, the last named on top. */
+  private def cradlePile(cards: Denizen*): Table =
+    p1AtHomeSite.adviser(p1, help).boardWarbands(p1, 3)
+      .discarded(cradle, cards*)
+
+  private def amount(count: Int): DecisionAnswer =
+    DecisionAnswer.ChooseAmountAnswer(count)
+
+  private def named(cards: Denizen*): Vector[WorldCardId] =
+    cards.toVector.map(_.id)
+
+  private val nothingLine = NoteText.Said("none", "Nothing was revealed.",
+    covers = false)
+
+  test("draws off the top one at a time to the next region's pile, first " +
+      "drawn deepest, shows each to every player, and gains 2 warbands per " +
+      "Nomad card"):
+    // Wild Mounts and Mountain Giant are Nomad; Mountain Giant is on top.
+    val ready = cradlePile(OldSongsCard, SpinningBeeCard, WildMountsCard,
+      MountainGiantCard).ready
+    val walked = walkAnswering(ready, power, played, amount(3),
+      chooseOne(CallForHelp.stop))
+    val drawn = named(MountainGiantCard, WildMountsCard, SpinningBeeCard)
+    assertEquals(amountMaximaAsked(walked), Vector(4))
+    // A pile stores its top last, so the first drawn is deepest.
+    assertEquals(Look(walked.end).discardPile(next), drawn)
+    assertEquals(Look(walked.end).discardPile(cradle), named(OldSongsCard))
+    // The quiet table's 3 warbands, and 2 for each of the two Nomad cards.
+    assertEquals(Look(walked.end).boardWarbands(p1), 3 + 4)
+    for card <- drawn; viewer <- Vector(p1, p2, p3) do
+      assert(Look(walked.end).knowsAdviser(viewer, card), s"$viewer does not know $card")
+    assertEquals(said(power, walked.events), Vector(NoteText.Said("revealed",
+      s"Revealed and discarded ${drawn.map(_.value).mkString(", ")}, and " +
+        "gained 4 warbands.", covers = true)))
+    assertJournalRebuilds(ready, walked.events, walked.end)
+    assertWireRoundTrips(walked.events)
+
+  test("keeping on drawing asks again, for no more than what is left of six"):
+    val ready = cradlePile(OldSongsCard, SpinningBeeCard, DeedWriterCard,
+      LandWardenCard, DefameCard, SecondWindCard, ZealotsCard,
+      UnstableSummonCard)
+      .ready
+    val walked = walkAnswering(ready, power, played, amount(5),
+      chooseOne(CallForHelp.keep), amount(1))
+    // Six drawn, so no third question.
+    assertEquals(amountMaximaAsked(walked), Vector(6, 1))
+    assertEquals(Look(walked.end).discardPile(cradle), named(OldSongsCard,
+      SpinningBeeCard))
+    assertEquals(said(power, walked.events).map(_.key),
+      Vector("discarded", "discarded"))
+    assertEquals(Look(walked.end).boardWarbands(p1), 3)
+
+  test("the warbands gained stop at what p1's bank holds"):
+    val ready = cradlePile(WildMountsCard).warbandsInBank(p1, 1).ready
+    val walked = walkAnswering(ready, power, played, amount(1))
+    assertEquals(Look(walked.end).boardWarbands(p1),
+      Look(ready).boardWarbands(p1) + 1)
+    assertEquals(said(power, walked.events), Vector(NoteText.Said("revealed",
+      s"Revealed and discarded ${named(WildMountsCard).head.value}, and " +
+        "gained 1 warband.", covers = true)))
+
+  test("an amount of 0 reveals nothing and asks nothing more"):
+    val ready = cradlePile(OldSongsCard, SpinningBeeCard).ready
+    val walked = walkAnswering(ready, power, played, amount(0))
+    assertEquals(ops(walked.events), Vector.empty)
+    assertEquals(Look(walked.end).discardPile(cradle), named(OldSongsCard,
+      SpinningBeeCard))
+    assertEquals(said(power, walked.events), Vector(nothingLine))
+
+  test("with the region's pile empty nothing is asked, and the line says so"):
+    val done = Outcomes.finished(play(p1AtHomeSite.adviser(p1, help).ready,
+      power, help))
+    assertEquals(said(power, done.events), Vector(nothingLine))

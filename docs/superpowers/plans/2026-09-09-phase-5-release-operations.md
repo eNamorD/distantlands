@@ -54,7 +54,7 @@
   broad suites: `./sbtw verifyReleaseVersion test frontend/test
   verifyPackageMappings Universal/packageBin Universal/packageZipTarball
   Docker/stage` exited 0 on macOS arm64 with Temurin `21.0.12.1+1-LTS`,
-  `OATH_RELEASE_VERSION=0.1.0-alpha.1`, 563 JVM tests, 137 frontend tests, and
+  `DLQ_RELEASE_VERSION=0.1.0-alpha.1`, 563 JVM tests, 137 frontend tests, and
   two separately extracted Universal smokes. Source:
   `.superpowers/sdd/2026-09-09-phase-5-release-operations/task-2-report.md`,
   commit `5b817f6`.

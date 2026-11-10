@@ -1,4 +1,4 @@
-# Oath Digital Roadmap
+# Distant Lands Roadmap
 
 This is the forward-looking project-level source of truth for planned work.
 When a task is done, it should be deleted from this file.
@@ -105,8 +105,8 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
   [follow-ups](operations/phase-5-follow-ups.md#deferred-defects): bracketed
   `[::1]` rejected as loopback, the frontend linker on the test classpath,
   the test `index.html` fixture shadowing the generated one, the hardcoded
-  `oathdigital:root` assertion, and no Docker `HEALTHCHECK`. Also document
-  host bind mounts at `/var/lib/oathdigital` in the configuration guide.
+  `distantlands:root` assertion, and no Docker `HEALTHCHECK`. Also document
+  host bind mounts at `/var/lib/distantlands` in the configuration guide.
 - [ ] **Several seats in one browser.** Opening a second seat's link for the
   same game in one browser profile silently replaces the first seat, because
   `/s/{seat-code}` sets one cookie name scoped to `/games/{game-id}` and

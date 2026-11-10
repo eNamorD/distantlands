@@ -28,7 +28,7 @@
 - "Testing"
 - "Out of scope"
 
-Card text: `GiantsPathCard.intact` in `src/main/scala/oathdigital/gameplay/powers/action/GiantsRampage.scala`, which reads "**ACTION:** Move this card to another site, then place your pawn there."
+Card text: `GiantsPathCard.intact` in `src/main/scala/distantlands/gameplay/powers/action/GiantsRampage.scala`, which reads "**ACTION:** Move this card to another site, then place your pawn there."
 
 This is the fourth of 14 slice plans, written against `0.2.0-alpha` at `ec4cab5f`.
 
@@ -58,14 +58,14 @@ This is the fourth of 14 slice plans, written against `0.2.0-alpha` at `ec4cab5f
 ### Task 1: The own-power lock exemption
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/IgnoresOwnLock.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala:26-31` (`active`) and its companion
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala` (field, `operationRestrictions`, `restrictionsDuring`, doc)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkState.scala` (`WalkCtx.operationRestrictions`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:315`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala:66`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/AdviserArrivalPass.scala:43`
-- Test: `src/test/scala/oathdigital/gameplay/walker/WalkerPowersLockExemptionSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/IgnoresOwnLock.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala:26-31` (`active`) and its companion
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala` (field, `operationRestrictions`, `restrictionsDuring`, doc)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkState.scala` (`WalkCtx.operationRestrictions`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:315`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala:66`
+- Modify: `src/main/scala/distantlands/gameplay/walker/AdviserArrivalPass.scala:43`
+- Test: `src/test/scala/distantlands/gameplay/walker/WalkerPowersLockExemptionSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -81,15 +81,15 @@ This is the fourth of 14 slice plans, written against `0.2.0-alpha` at `ec4cab5f
 Create `WalkerPowersLockExemptionSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.operations.{HallOfMinistersCard,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.operations.{HallOfMinistersCard,
   OperationRestrictions}
-import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** The own-power lock exemption (catalog batch 10, slice 4): while a power
   * that ignores its own lock is used, its card's lock does not bind; every
@@ -145,7 +145,7 @@ class WalkerPowersLockExemptionSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerPowersLockExemptionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerPowersLockExemptionSuite"`
 Expected: compile failure, because `lockExemptions` and `restrictionsDuring` do not exist.
 
 - [ ] **Step 3: Add the trait**
@@ -153,9 +153,9 @@ Expected: compile failure, because `lockExemptions` and `restrictionsDuring` do 
 Create `IgnoresOwnLock.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{CardId, PowerId}
+import distantlands.model.{CardId, PowerId}
 
 /** A phase power whose use may move or flip its own lock-icon card (catalog
   * batch 10, slice 4). While the walker runs the power's use
@@ -199,7 +199,7 @@ Add to the class doc, after the sentence about `active` adding the `ActiveModifi
 ```
   * `unlocked` are the cards whose lock does not bind for this walk: the
   * own card of a power whose use ignores its lock
-  * ([[oathdigital.gameplay.powerresolver.IgnoresOwnLock]]).
+  * ([[distantlands.gameplay.powerresolver.IgnoresOwnLock]]).
 ```
 
 Add to the companion `object OperationRestrictions`, after `inPlay`:
@@ -219,13 +219,13 @@ Add to the companion `object OperationRestrictions`, after `inPlay`:
 
 In `WalkerPowers.scala`:
 
-1. Import `ActionRef`, `CardId` and `ProcedureRef` from `oathdigital.model`, beside the existing model imports.
+1. Import `ActionRef`, `CardId` and `ProcedureRef` from `distantlands.model`, beside the existing model imports.
 2. Add a constructor field after `catalog`:
 
 ```scala
     catalog: ExecutableCatalog = NewFoundations.catalog,
     /** The card each power that ignores its own lock may move, by power
-      * ([[oathdigital.gameplay.powerresolver.IgnoresOwnLock]]).
+      * ([[distantlands.gameplay.powerresolver.IgnoresOwnLock]]).
       * `WalkerPowerCatalog.default` fills it from the phase powers; a
       * `WalkerPowers` assembled by hand exempts nothing. */
     lockExemptions: Map[PowerId, CardId] = Map.empty):
@@ -268,7 +268,7 @@ In `WalkerPowers.scala`:
 
 - [ ] **Step 6: Route the walker through `WalkCtx`**
 
-In `WalkState.scala`, import `OperationRestriction` from `oathdigital.model` and add a method to `WalkCtx`, after the last field's closing parenthesis turns the case class body into a block:
+In `WalkState.scala`, import `OperationRestriction` from `distantlands.model` and add a method to `WalkCtx`, after the last field's closing parenthesis turns the case class body into a block:
 
 ```scala
 ):
@@ -290,23 +290,23 @@ Leave `ModifierOffers.scala:46` on `powers.operationRestrictions`. That check pr
 
 - [ ] **Step 7: Run the suite and the walker suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.gameplay.OperationRestrictionsSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.gameplay.OperationRestrictionsSuite distantlands.gameplay.operations.*"`
 Expected: PASS, with the four new tests among them.
 
-Run: `wc -l src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
+Run: `wc -l src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
 Expected: `797`.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/IgnoresOwnLock.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationRestrictions.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerPowers.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkState.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala \
-  src/main/scala/oathdigital/gameplay/walker/AdviserArrivalPass.scala \
-  src/test/scala/oathdigital/gameplay/walker/WalkerPowersLockExemptionSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/IgnoresOwnLock.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerPowers.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkState.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala \
+  src/main/scala/distantlands/gameplay/walker/AdviserArrivalPass.scala \
+  src/test/scala/distantlands/gameplay/walker/WalkerPowersLockExemptionSuite.scala
 git commit -m "feat(walker): let a power's own use ignore its card's lock
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -319,12 +319,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 2: Giant's Path
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/GiantsPath.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/GiantsRampage.scala:26-42` (doc)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala:19`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala` (`lockExemptions`, `default`)
-- Modify: `src/test/scala/oathdigital/testkit/PhasePowerHarness.scala:90-93` (`usableNow`)
-- Create: `src/test/scala/oathdigital/gameplay/powers/action/GiantsPathSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/GiantsPath.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/GiantsRampage.scala:26-42` (doc)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala:19`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala` (`lockExemptions`, `default`)
+- Modify: `src/test/scala/distantlands/testkit/PhasePowerHarness.scala:90-93` (`usableNow`)
+- Create: `src/test/scala/distantlands/gameplay/powers/action/GiantsPathSuite.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt`, `src/test/resources/powers/unimplemented.txt` (snapshots)
 - Modify: `docs/ROADMAP.md:71`, `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md:3`
 
@@ -339,20 +339,20 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 Create `GiantsPathSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.AdviserOnly
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.operations.HallOfMinistersCard
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog,
+import distantlands.catalog.AdviserOnly
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog,
   PowerFixture, SiteRoom, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay,
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay,
   PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 /** Giant's Path (catalog batch 10, slice 4): move the locked Path to
   * another site with room, tokens and all, then place the user's pawn
@@ -478,7 +478,7 @@ class GiantsPathSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GiantsPathSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GiantsPathSuite"`
 Expected: compile failure, because `GiantsPath` and `WalkerPowerCatalog.lockExemptions` do not exist.
 
 - [ ] **Step 3: Write the power**
@@ -486,14 +486,14 @@ Expected: compile failure, because `GiantsPath` and `WalkerPowerCatalog.lockExem
 Create `GiantsPath.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.{IgnoresOwnLock, QueuedStarts}
-import oathdigital.gameplay.powers.{PowerAnswers, SiteRoom}
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.{IgnoresOwnLock, QueuedStarts}
+import distantlands.gameplay.powers.{PowerAnswers, SiteRoom}
+import distantlands.gameplay.powers.setup.EdificeSetupSupport
+import distantlands.model._
 
 /** Giant's Path (E09, intact), ACTION: place 1 secret on this card, move it
   * to another site, then place the user's pawn there (catalog batch 10,
@@ -573,7 +573,7 @@ case object GiantsPath extends PaidAction(GiantsPathCard.intact.power)
 - [ ] **Step 4: Register it**
 
 1. In `OtherActionPowers.scala`, add `GiantsPath` before `GiantsRampage`.
-2. In `WalkerPowerCatalog.scala`, import `IgnoresOwnLock` from `oathdigital.gameplay.powerresolver` and `CardId` and `PowerId` from `oathdigital.model`. Add, before `default`:
+2. In `WalkerPowerCatalog.scala`, import `IgnoresOwnLock` from `distantlands.gameplay.powerresolver` and `CardId` and `PowerId` from `distantlands.model`. Add, before `default`:
 
 ```scala
   /** The card each phase power that ignores its own lock may move, by
@@ -601,7 +601,7 @@ case object GiantsPath extends PaidAction(GiantsPathCard.intact.power)
 
 - [ ] **Step 5: Run the suites to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GiantsPathSuite oathdigital.gameplay.powers.action.GiantsRampageSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GiantsPathSuite distantlands.gameplay.powers.action.GiantsRampageSuite"`
 Expected: PASS. The Rampage's test "the intact Giant's Path offers no action" still passes: it checks only `GiantsRampage.id`.
 
 - [ ] **Step 6: Check that the exemption carries the suite**
@@ -610,11 +610,11 @@ Remove `with IgnoresOwnLock` from `GiantsPath`, and turn `ownCard` into a plain 
 
 Expected: the first three tests fail. The lock refuses the Path's move, so the search hides every destination and the start or the answer is refused. The fifth test fails on `lockExemptions`.
 
-Restore the file with `git checkout -- src/main/scala/oathdigital/gameplay/powers/action/GiantsPath.scala` if it is committed, or else undo the edit by hand. Rerun the suite and confirm it passes.
+Restore the file with `git checkout -- src/main/scala/distantlands/gameplay/powers/action/GiantsPath.scala` if it is committed, or else undo the edit by hand. Rerun the suite and confirm it passes.
 
 - [ ] **Step 7: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`
 Then `git diff src/test/resources`. Expected:
 - `declared-keys.txt` gains `edifice.e09.intact used = Giant's Path and {0} now stand at {1}.`
 - `unimplemented.txt` drops `edifice.e09.intact`.
@@ -637,12 +637,12 @@ Expected: both pass.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/GiantsPath.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/GiantsRampage.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OtherActionPowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/test/scala/oathdigital/testkit/PhasePowerHarness.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/GiantsPathSuite.scala \
+git add src/main/scala/distantlands/gameplay/powers/action/GiantsPath.scala \
+  src/main/scala/distantlands/gameplay/powers/action/GiantsRampage.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/test/scala/distantlands/testkit/PhasePowerHarness.scala \
+  src/test/scala/distantlands/gameplay/powers/action/GiantsPathSuite.scala \
   src/test/resources/notes/declared-keys.txt \
   src/test/resources/powers/unimplemented.txt \
   docs/ROADMAP.md docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md

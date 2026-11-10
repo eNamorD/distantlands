@@ -4,7 +4,7 @@ These are not claimed errors in the rulebook. They are places where an implement
 
 ## Component-data dependencies
 
-1. **Card powers and exact costs.** The catalog contains stable printed IDs, reviewed text, and handler keys. Most denizens and relics now have executable Scala behavior; the cards still without it are kept in `src/main/scala/oathdigital/catalog/holding/`: 26 denizens, 10 relics, 11 sites, 22 edifices, and all 36 legacies. Many actions can be modified or replaced by these powers (CR pp. 28-30, 42).
+1. **Card powers and exact costs.** The catalog contains stable printed IDs, reviewed text, and handler keys. Most denizens and relics now have executable Scala behavior; the cards still without it are kept in `src/main/scala/distantlands/catalog/holding/`: 26 denizens, 10 relics, 11 sites, 22 edifices, and all 36 legacies. Many actions can be modified or replaced by these powers (CR pp. 28-30, 42).
 2. **Foundation faces.** The catalog contains the six normal/altered records, but their setup effects still require typed handlers verified against CR pp. 10-11.
 3. **Player-board tables/icons.** Supply refresh thresholds and some costs are
    graphically encoded on player boards. Trade yield is resolved by the current

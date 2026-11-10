@@ -151,17 +151,17 @@ Inventoried at `b59dbac4`, with slice 1's plan read for what it changes.
 ### Task 1: The card ruler and the wearer's access
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/GrandMask.scala`
-- Create: `src/main/scala/oathdigital/gameplay/CardRule.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/poweruse/GrandMask.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala` (remove `GrandMaskCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (import)
-- Modify: `src/main/scala/oathdigital/gameplay/PowerAccess.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/ActingSite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
+- Create: `src/main/scala/distantlands/gameplay/GrandMask.scala`
+- Create: `src/main/scala/distantlands/gameplay/CardRule.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/poweruse/GrandMask.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` (remove `GrandMaskCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import)
+- Modify: `src/main/scala/distantlands/gameplay/PowerAccess.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/ActingSite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt`
 - Modify (import only): the six test files of finding 9
-- Test: `src/test/scala/oathdigital/gameplay/GrandMaskSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/GrandMaskSuite.scala`
 
 **Interfaces:**
 - Consumes: `BanditCrownRule.sitesFor` (slice 1),
@@ -178,13 +178,13 @@ Inventoried at `b59dbac4`, with slice 1's plan read for what it changes.
 - [ ] **Step 1: Move the card and write the rule**
 
 Delete the `GrandMaskCard` object from `catalog/holding/HoldingRelics.scala`.
-Create `src/main/scala/oathdigital/gameplay/GrandMask.scala`:
+Create `src/main/scala/distantlands/gameplay/GrandMask.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.model._
 
 object GrandMaskCard extends Relic(RelicId("R05"), "Grand Mask", value = 36, defense = 1):
   val power = PrintedPower(PowerId("relic.grand-mask"),
@@ -233,14 +233,14 @@ private[gameplay] object GrandMaskRule:
     else Set.empty
 ```
 
-Create `src/main/scala/oathdigital/gameplay/CardRule.scala`:
+Create `src/main/scala/distantlands/gameplay/CardRule.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{ModifierMark, PrintedPower}
-import oathdigital.gameplay.cards.NewFoundations
-import oathdigital.model._
+import distantlands.catalog.{ModifierMark, PrintedPower}
+import distantlands.gameplay.cards.NewFoundations
+import distantlands.model._
 
 /** Who rules a card at a site (catalog batch 11, slice 2): the site's
   * ruling player (`SiteRule.rulingPlayer`), except that while the Grand
@@ -296,23 +296,23 @@ private[gameplay] object CardRule:
 ```
 
 In `NewFoundations.scala`, add `GrandMaskCard` to the
-`oathdigital.gameplay.{...}` import (alphabetical: `ActingTroupeCard,
+`distantlands.gameplay.{...}` import (alphabetical: `ActingTroupeCard,
 BanditCrownCard, GrandMaskCard, MarriageCard, PledgeToDiscordCard,
 SpitefulMirrorCard`). In the six files of finding 9, replace
-`oathdigital.catalog.holding.GrandMaskCard` with
-`oathdigital.gameplay.GrandMaskCard`. In `NegotiationProcedureSuite`, split
+`distantlands.catalog.holding.GrandMaskCard` with
+`distantlands.gameplay.GrandMaskCard`. In `NegotiationProcedureSuite`, split
 the brace import so `CouncilArbiterCard` keeps `catalog.holding`.
 
 - [ ] **Step 2: Register the power**
 
-Create `src/main/scala/oathdigital/gameplay/powers/poweruse/GrandMask.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/poweruse/GrandMask.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.GrandMaskCard
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.gameplay.GrandMaskCard
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 /** Grand Mask (R05): "If you're an Exile, during your turn you rule cards
   * except battle plans at Imperial sites, and Imperial players do not."
@@ -335,19 +335,19 @@ GrandMask) ++`. Delete the line `relic.grand-mask` from
 
 - [ ] **Step 3: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/GrandMaskSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/GrandMaskSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Grand Mask (R05): its wearer, an Exile in their own turn, rules the
   * cards at Imperial sites except battle plans, and the Imperials do not;
@@ -443,7 +443,7 @@ denizens of its own, so the tests assert membership, not whole sets.
 - [ ] **Step 4: Run the suite to see it fail**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.GrandMaskSuite"
+./sbtw "testOnly distantlands.gameplay.GrandMaskSuite"
 ```
 
 Expected: it fails to compile on `PowerAccess.rulingSites`, which Step 5
@@ -495,7 +495,7 @@ use as a ruler (`PowerAccess.rulingSites`)".
 - [ ] **Step 6: Run the suites**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.GrandMaskSuite oathdigital.gameplay.powers.poweruse.BanditCrownSuite oathdigital.gameplay.powers.UnimplementedPowersSuite oathdigital.gameplay.powers.PowerImplementationStatusSuite oathdigital.gameplay.powers.PowerCatalogUniquenessSuite oathdigital.gameplay.powers.economy.* oathdigital.gameplay.NegotiationDealSuite oathdigital.gameplay.NegotiationProcedureSuite oathdigital.gameplay.chronicle.ChronicleSunSuite oathdigital.gameplay.powers.campaign.RelicHunterSuite"
+./sbtw "testOnly distantlands.gameplay.GrandMaskSuite distantlands.gameplay.powers.poweruse.BanditCrownSuite distantlands.gameplay.powers.UnimplementedPowersSuite distantlands.gameplay.powers.PowerImplementationStatusSuite distantlands.gameplay.powers.PowerCatalogUniquenessSuite distantlands.gameplay.powers.economy.* distantlands.gameplay.NegotiationDealSuite distantlands.gameplay.NegotiationProcedureSuite distantlands.gameplay.chronicle.ChronicleSunSuite distantlands.gameplay.powers.campaign.RelicHunterSuite"
 ```
 
 Expected: all pass.
@@ -503,7 +503,7 @@ Expected: all pass.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/GrandMask.scala src/main/scala/oathdigital/gameplay/CardRule.scala src/main/scala/oathdigital/gameplay/powers/poweruse/GrandMask.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/PowerAccess.scala src/main/scala/oathdigital/gameplay/powers/economy/ActingSite.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/resources/powers/unimplemented.txt src/test/scala/oathdigital/gameplay/GrandMaskSuite.scala src/test/scala/oathdigital/application/NegotiationDealProjectionSuite.scala src/test/scala/oathdigital/application/gamelog/CampaignLogScripts.scala src/test/scala/oathdigital/gameplay/NegotiationDealSuite.scala src/test/scala/oathdigital/gameplay/NegotiationProcedureSuite.scala src/test/scala/oathdigital/gameplay/chronicle/ChronicleSunSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/RelicHunterSuite.scala
+git add src/main/scala/distantlands/gameplay/GrandMask.scala src/main/scala/distantlands/gameplay/CardRule.scala src/main/scala/distantlands/gameplay/powers/poweruse/GrandMask.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/PowerAccess.scala src/main/scala/distantlands/gameplay/powers/economy/ActingSite.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/resources/powers/unimplemented.txt src/test/scala/distantlands/gameplay/GrandMaskSuite.scala src/test/scala/distantlands/application/NegotiationDealProjectionSuite.scala src/test/scala/distantlands/application/gamelog/CampaignLogScripts.scala src/test/scala/distantlands/gameplay/NegotiationDealSuite.scala src/test/scala/distantlands/gameplay/NegotiationProcedureSuite.scala src/test/scala/distantlands/gameplay/chronicle/ChronicleSunSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/RelicHunterSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): the Grand Mask's wearer rules an Imperial site's cards
 
@@ -523,24 +523,24 @@ EOF
 ### Task 2: The card readers move to `CardRule`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/SiteRulers.scala` (delete `rulerOfCard`, `protectedAt` becomes `protectedBy`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RuledCards.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/RulerToll.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/poweruse/RulerBans.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/dice/Jinx.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/BannerGuardians.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/recover/RelicPatrols.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/ForbiddenForest.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/BoilingLake.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyContribution.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/GrandMaskRulesSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/SiteRulers.scala` (delete `rulerOfCard`, `protectedAt` becomes `protectedBy`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/RuledCards.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/RulerToll.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/poweruse/RulerBans.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/dice/Jinx.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/BannerGuardians.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/recover/RelicPatrols.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/ForbiddenForest.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/BoilingLake.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyContribution.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/GrandMaskRulesSuite.scala`
 
 **Interfaces:**
 - Consumes: `CardRule.rulerAt`, `CardRule.rulerOf`, `GrandMaskRule.maskingAt`
@@ -551,24 +551,24 @@ EOF
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/GrandMaskRulesSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/GrandMaskRulesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.{GrandMaskCard, OathRules, SiteRulers}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.action.RovingTerrorCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.dice.{Jinx, JinxCard}
-import oathdigital.gameplay.powers.economy.{Curfew, CurfewCard}
-import oathdigital.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
-import oathdigital.gameplay.powers.targeting.ForgottenVaultCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{EconomyActions, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.{GrandMaskCard, OathRules, SiteRulers}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.gameplay.powers.action.RovingTerrorCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.dice.{Jinx, JinxCard}
+import distantlands.gameplay.powers.economy.{Curfew, CurfewCard}
+import distantlands.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
+import distantlands.gameplay.powers.targeting.ForgottenVaultCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{EconomyActions, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The rules that read a card's ruler, under the Grand Mask (catalog batch
   * 11, ruling 7): during the wearer's turn they read the wearer for every
@@ -667,7 +667,7 @@ sites, so the counts assert membership, not whole vectors.
 - [ ] **Step 2: Run the suite to see it fail**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.GrandMaskRulesSuite"
+./sbtw "testOnly distantlands.gameplay.powers.GrandMaskRulesSuite"
 ```
 
 Expected: it fails to compile on `SiteRulers.protectedBy`. Comment that
@@ -728,10 +728,10 @@ In `FortressRules.scala:183`, change
 - [ ] **Step 4: Point the card readers at `CardRule`**
 
 Each change replaces the reading of a card's ruler. Add `CardRule` to the
-file's `oathdigital.gameplay` import, and drop `SiteRulers` where
+file's `distantlands.gameplay` import, and drop `SiteRulers` where
 `-Werror` reports it unused. The imports should end as the table says.
 
-| File | Change | `oathdigital.gameplay` import |
+| File | Change | `distantlands.gameplay` import |
 |---|---|---|
 | `RuledCards.scala` | see below | `{CardRule, EffectiveSuit}` |
 | `RulerToll.scala` | `enemyRuler`: `SiteRulers.rulerOfCard(ready, card)` to `CardRule.rulerOf(ready, card)` | `{CardRule, NoteSupport}` |
@@ -745,7 +745,7 @@ file's `oathdigital.gameplay` import, and drop `SiteRulers` where
 | `RelicPatrols.scala` | `blocked`: `patrolsRuler <- SiteRulers.rulerOf(ctx.state, patrolsSite)` to `patrolsRuler <- CardRule.rulerAt(ctx.state, patrolsSite, edifice)`; `recoverSite`'s `rulerOf` stays | `{CardRule, SiteRulers}` |
 | `ForbiddenForest.scala` | `blocked`: `ruler <- SiteRulers.rulerOf(ctx.state, site)` to `ruler <- CardRule.rulerAt(ctx.state, site, ForbiddenForestCard.id)` | `{CardRule, EffectiveSuit, SiteRulers}` |
 | `BoilingLake.scala` | `applicable`: `!SiteRulers.rulerOf(ctx.state, site)` to `!CardRule.rulerAt(ctx.state, site, edifice)` | `CardRule` |
-| `LeagueTreatyContribution.scala` | `treaty`: `ruler <- SiteRule.rulingPlayer(ready, site)` to `ruler <- CardRule.rulerAt(ready, site, cardId)` | add `import oathdigital.gameplay.CardRule` |
+| `LeagueTreatyContribution.scala` | `treaty`: `ruler <- SiteRule.rulingPlayer(ready, site)` to `ruler <- CardRule.rulerAt(ready, site, cardId)` | add `import distantlands.gameplay.CardRule` |
 | `HallOfMinisters.scala` | `hallRuler`: `.flatMap(siteRuler(ready, _))` to `.flatMap(CardRule.rulerAt(ready, _, HallOfMinistersCard.id))`; `siteRuler` stays for the discard's site | `{CardRule, SiteRulers}` |
 
 In `BannerGuardians.scala` and `BoilingLake.scala`, `edifice` is the
@@ -796,7 +796,7 @@ Expected: no output.
 - [ ] **Step 5: Run the suites**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.GrandMaskRulesSuite oathdigital.gameplay.GrandMaskSuite oathdigital.gameplay.powers.economy.* oathdigital.gameplay.powers.poweruse.* oathdigital.gameplay.powers.travel.* oathdigital.gameplay.powers.targeting.* oathdigital.gameplay.powers.recover.* oathdigital.gameplay.powers.dice.* oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.powers.rest.* oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.search.* oathdigital.gameplay.operations.*"
+./sbtw "testOnly distantlands.gameplay.powers.GrandMaskRulesSuite distantlands.gameplay.GrandMaskSuite distantlands.gameplay.powers.economy.* distantlands.gameplay.powers.poweruse.* distantlands.gameplay.powers.travel.* distantlands.gameplay.powers.targeting.* distantlands.gameplay.powers.recover.* distantlands.gameplay.powers.dice.* distantlands.gameplay.powers.cardplay.* distantlands.gameplay.powers.rest.* distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.search.* distantlands.gameplay.operations.*"
 ```
 
 Expected: all pass. Without a faceup Mask, `CardRule.rulerAt` is
@@ -805,7 +805,7 @@ Expected: all pass. Without a faceup Mask, `CardRule.rulerAt` is
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/SiteRulers.scala src/main/scala/oathdigital/gameplay/powers/RuledCards.scala src/main/scala/oathdigital/gameplay/powers/RulerToll.scala src/main/scala/oathdigital/gameplay/powers/poweruse/RulerBans.scala src/main/scala/oathdigital/gameplay/powers/dice/Jinx.scala src/main/scala/oathdigital/gameplay/powers/cardplay/SecretPolice.scala src/main/scala/oathdigital/gameplay/powers/travel/WayStation.scala src/main/scala/oathdigital/gameplay/powers/travel/GraspingVines.scala src/main/scala/oathdigital/gameplay/powers/travel/TollRoads.scala src/main/scala/oathdigital/gameplay/powers/targeting/BannerGuardians.scala src/main/scala/oathdigital/gameplay/powers/recover/RelicPatrols.scala src/main/scala/oathdigital/gameplay/powers/travel/ForbiddenForest.scala src/main/scala/oathdigital/gameplay/powers/travel/BoilingLake.scala src/main/scala/oathdigital/gameplay/powers/rest/LeagueTreatyContribution.scala src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala src/main/scala/oathdigital/gameplay/powers/targeting/ForgottenVault.scala src/main/scala/oathdigital/gameplay/powers/targeting/FortressRules.scala src/test/scala/oathdigital/gameplay/powers/GrandMaskRulesSuite.scala
+git add src/main/scala/distantlands/gameplay/SiteRulers.scala src/main/scala/distantlands/gameplay/powers/RuledCards.scala src/main/scala/distantlands/gameplay/powers/RulerToll.scala src/main/scala/distantlands/gameplay/powers/poweruse/RulerBans.scala src/main/scala/distantlands/gameplay/powers/dice/Jinx.scala src/main/scala/distantlands/gameplay/powers/cardplay/SecretPolice.scala src/main/scala/distantlands/gameplay/powers/travel/WayStation.scala src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala src/main/scala/distantlands/gameplay/powers/targeting/BannerGuardians.scala src/main/scala/distantlands/gameplay/powers/recover/RelicPatrols.scala src/main/scala/distantlands/gameplay/powers/travel/ForbiddenForest.scala src/main/scala/distantlands/gameplay/powers/travel/BoilingLake.scala src/main/scala/distantlands/gameplay/powers/rest/LeagueTreatyContribution.scala src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala src/test/scala/distantlands/gameplay/powers/GrandMaskRulesSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): read a card's ruler through CardRule
 
@@ -825,12 +825,12 @@ EOF
 ### Task 3: The wearer's consent
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/SiteRulers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/recover/RelicPatrols.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/ForbiddenForest.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala`
-- Modify (doc comment only): `src/main/scala/oathdigital/gameplay/powers/wake/Passages.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/GrandMaskConsentSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/SiteRulers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/recover/RelicPatrols.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/ForbiddenForest.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala`
+- Modify (doc comment only): `src/main/scala/distantlands/gameplay/powers/wake/Passages.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/GrandMaskConsentSuite.scala`
 
 **Interfaces:**
 - Consumes: `CardRule.rulerAt`, `CardRule.rulerOf` (Task 1);
@@ -843,24 +843,24 @@ EOF
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/GrandMaskConsentSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/GrandMaskConsentSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.{GrandMaskCard, SiteRulers}
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.operations.{HallOfMinisters,
+import distantlands.gameplay.{GrandMaskCard, SiteRulers}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.operations.{HallOfMinisters,
   HallOfMinistersCard}
-import oathdigital.gameplay.powers.economy.CurfewCard
-import oathdigital.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
-import oathdigital.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
-import oathdigital.gameplay.powers.travel.{ForbiddenForest,
+import distantlands.gameplay.powers.economy.CurfewCard
+import distantlands.gameplay.powers.poweruse.{SpellBreaker, SpellBreakerCard}
+import distantlands.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
+import distantlands.gameplay.powers.travel.{ForbiddenForest,
   ForbiddenForestCard}
-import oathdigital.gameplay.powers.wake.{HiddenPassages, HiddenPassagesCard}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.wake.{HiddenPassages, HiddenPassagesCard}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Who consents for a masked card (catalog batch 11, rulings 7 and 15):
   * the wearer, during their turn, for every card at an Imperial site but a
@@ -910,7 +910,7 @@ wearer, and the Passages read the site instead.
 - [ ] **Step 2: Run the suite to see it fail**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.GrandMaskConsentSuite"
+./sbtw "testOnly distantlands.gameplay.powers.GrandMaskConsentSuite"
 ```
 
 Expected: it fails to compile on `consentGranterOf`. With that line
@@ -994,7 +994,7 @@ the Passages' doc comment, add "Its ruler is the site's (catalog batch
 - [ ] **Step 4: Run the suites**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.GrandMaskConsentSuite oathdigital.gameplay.powers.GrandMaskRulesSuite oathdigital.gameplay.powers.ConsentPowersSuite oathdigital.gameplay.powers.poweruse.* oathdigital.gameplay.powers.recover.* oathdigital.gameplay.powers.travel.* oathdigital.gameplay.powers.wake.* oathdigital.gameplay.operations.* oathdigital.gameplay.powers.economy.*"
+./sbtw "testOnly distantlands.gameplay.powers.GrandMaskConsentSuite distantlands.gameplay.powers.GrandMaskRulesSuite distantlands.gameplay.powers.ConsentPowersSuite distantlands.gameplay.powers.poweruse.* distantlands.gameplay.powers.recover.* distantlands.gameplay.powers.travel.* distantlands.gameplay.powers.wake.* distantlands.gameplay.operations.* distantlands.gameplay.powers.economy.*"
 ```
 
 Expected: all pass.
@@ -1002,7 +1002,7 @@ Expected: all pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/SiteRulers.scala src/main/scala/oathdigital/gameplay/powers/recover/RelicPatrols.scala src/main/scala/oathdigital/gameplay/powers/travel/ForbiddenForest.scala src/main/scala/oathdigital/gameplay/operations/HallOfMinisters.scala src/main/scala/oathdigital/gameplay/powers/wake/Passages.scala src/test/scala/oathdigital/gameplay/powers/GrandMaskConsentSuite.scala
+git add src/main/scala/distantlands/gameplay/SiteRulers.scala src/main/scala/distantlands/gameplay/powers/recover/RelicPatrols.scala src/main/scala/distantlands/gameplay/powers/travel/ForbiddenForest.scala src/main/scala/distantlands/gameplay/operations/HallOfMinisters.scala src/main/scala/distantlands/gameplay/powers/wake/Passages.scala src/test/scala/distantlands/gameplay/powers/GrandMaskConsentSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): the Grand Mask's wearer consents for the masked cards
 

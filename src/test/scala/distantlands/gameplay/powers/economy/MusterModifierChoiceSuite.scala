@@ -1,0 +1,82 @@
+package distantlands.gameplay.powers.economy
+
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{EconomyActions, Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.StartPreview
+
+/** Muster asks for its modifiers inside the walk (modifier walker design,
+  * slice 3). */
+class MusterModifierChoiceSuite extends munit.FunSuite:
+  import EconomyActions.parkedDecision
+  import SearchFixture.rules
+
+  private val playmates = AnimalPlaymatesCard.id
+  /** A plain Beast denizen to muster on: it has no Muster or Trade power. */
+  private val errandBoy = ErrandBoyCard.id
+  private val home = AncientCitySite
+  private val modifierDecisionId =
+    ModifierPicks.decisionId(PowerWindow.MusterModifierSelection)
+  private val startMuster: DecisionOption =
+    DecisionOption.Button(ModifierPicks.start, "Start Muster with no modifiers")
+
+  /** p1 at Ancient City beside Errand Boy, with 4 favor and `supply`
+    * Supply, holding Animal Playmates faceup when `withPlaymates`. */
+  private def besideErrandBoy(supply: Int, withPlaymates: Boolean = true)
+      : ReadyGame =
+    val table = Table.start.pawn(p1, at = home).denizen(errandBoy, at = home)
+      .favor(p1, 4).supply(p1, supply)
+    (if withPlaymates then table.adviser(p1, playmates) else table).ready
+
+  private def started(ready: ReadyGame): OathTransition =
+    accepted(rules.startWalker(Ready(ready), ActionRef.Muster, p1))
+
+  private def options(state: OathState)(using munit.Location)
+      : Vector[DecisionOption] = parkedDecision(state).query match
+    case one: DecisionQuery.ChooseOne => one.options
+    case other => fail(s"expected a choose-one, got $other")
+
+  test("a Muster starts on the modifier decision when a modifier can be " +
+      "picked"):
+    val begun = started(besideErrandBoy(supply = 7))
+    assertEquals(parkedDecision(begun.state).decisionId, modifierDecisionId)
+    assertEquals(options(begun.state), Vector(startMuster,
+      DecisionOption.Denizen(DecisionOptionRef.Denizen(playmates))))
+
+  test("with no modifier to pick, a Muster starts on its source"):
+    val begun = started(besideErrandBoy(supply = 7, withPlaymates = false))
+    assertEquals(parkedDecision(begun.state).decisionId,
+      MusterProcedure.decisionId)
+
+  test("Start says why the Muster cannot go on, until a pick waives the " +
+      "Supply"):
+    val begun = started(besideErrandBoy(supply = 0))
+    assertEquals(options(begun.state).head, DecisionOption.Unavailable(
+      startMuster, OptionReason.Written("Needs 1 Supply; you have 0")))
+    val picked = accepted(rules.resolveWalker(begun.state, p1,
+      modifierDecisionId, ModifierPlay.pick(AnimalPlaymates.id)))
+    assertEquals(parkedDecision(picked.state).decisionId,
+      MusterProcedure.decisionId)
+    val done = accepted(rules.resolveWalker(picked.state, p1,
+      MusterProcedure.decisionId, DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.Denizen(errandBoy))))
+    assertEquals(Look(Outcomes.ready(done.state)).tokensOn(errandBoy),
+      Tokens(1, 0))
+
+  test("the start previews the sources past the modifier decision"):
+    val powers = WalkerPowers.selected(WalkerPowerCatalog.default(catalog),
+      Vector.empty)
+    assertEquals(StartPreview.firstDecisionOptions(catalog,
+      besideErrandBoy(supply = 7), p1, ActionRef.Muster, powers)
+      .map(_.option.ref),
+      Vector[DecisionOptionRef](DecisionOptionRef.Denizen(errandBoy)))

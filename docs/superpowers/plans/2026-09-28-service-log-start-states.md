@@ -24,7 +24,7 @@
 
 ## Facts every task needs
 
-**The quiet table** (`src/test/scala/oathdigital/testkit/Table.scala`, `Table.start`): p1, p2 and p3 sit in that turn order. `setup.firstPlayer` is p1. It is p1's Act. Pawns stand at Ancient City (p1), Broken Peaks (p2) and Buried Giant (p3). No site holds a card, bandit or wealth. Nobody holds an adviser. Every board has 1 favor, 1 faceup secret, 3 warbands and 7 Supply. Nobody holds the Oathkeeper title.
+**The quiet table** (`src/test/scala/distantlands/testkit/Table.scala`, `Table.start`): p1, p2 and p3 sit in that turn order. `setup.firstPlayer` is p1. It is p1's Act. Pawns stand at Ancient City (p1), Broken Peaks (p2) and Buried Giant (p3). No site holds a card, bandit or wealth. Nobody holds an adviser. Every board has 1 favor, 1 faceup secret, 3 warbands and 7 Supply. Nobody holds the Oathkeeper title.
 
 **The replayed setup these tests leave behind** (`FirstGameSetupFixture`, `Situation.wake`): p2 goes first, so the order is p2, p3, p1. Pawns stand at Ancient City (p2), Broken Peaks (p3) and Buried Giant (p1). p2 keeps Wizard's Conclave facedown, and the others keep a facedown denizen. Sites carry bandits, dealt relics (Sticky Fire and Cursed Cauldron at Broken Peaks) and ruined homeland edifices (Hiding Place, the ruined face of E26, at Deep Woods). Broken Peaks has 2 secrets and Fair Isle 3 favor. p2's first Wake at Ancient City has no option and ends by itself, so setup rests in p2's Act at sequence 29.
 
@@ -39,13 +39,13 @@
 ### Task 1: The seam
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala` (constructor at :79-87, `replay` at :99, `load` at :124-131, `handle` at :240-278)
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala` (`format` at :35-45, headline helpers at :137-149)
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala` (class docstring :85-104, `situation` at :290-298)
-- Modify: `src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala`
-- Modify: `src/test/scala/oathdigital/testkit/SituationSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala`
-- Create: `src/test/scala/oathdigital/application/GenesisServiceSuite.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala` (constructor at :79-87, `replay` at :99, `load` at :124-131, `handle` at :240-278)
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala` (`format` at :35-45, headline helpers at :137-149)
+- Modify: `src/test/scala/distantlands/testkit/Table.scala` (class docstring :85-104, `situation` at :290-298)
+- Modify: `src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala`
+- Modify: `src/test/scala/distantlands/testkit/SituationSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala`
+- Create: `src/test/scala/distantlands/application/GenesisServiceSuite.scala`
 - Modify: `CONTEXT.md` (the **Situation** entry)
 
 **Interfaces:**
@@ -75,15 +75,15 @@ Keep the file. Task 7 reads it.
 
 - [ ] **Step 1: Write the failing service tests**
 
-Create `src/test/scala/oathdigital/application/GenesisServiceSuite.scala`:
+Create `src/test/scala/distantlands/application/GenesisServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** A service seeded with a start state: its streams begin there instead of
   * at `GameStarted`. Tests only; see the service and log start-states
@@ -110,8 +110,8 @@ class GenesisServiceSuite extends munit.FunSuite:
   test("a started genesis refuses Begin"):
     val (service, _) = Table.start.service()
     assert(service.handle("g", 0L, GameCommand.Begin(
-      oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle,
-      oathdigital.gameplay.setup.FirstGameSetupFixture.orders)).isLeft)
+      distantlands.gameplay.setup.FirstGameSetupFixture.chronicle,
+      distantlands.gameplay.setup.FirstGameSetupFixture.orders)).isLeft)
 
   test("without a genesis, a missing stream still accepts only Begin"):
     val service = new GameApplicationService(catalog,
@@ -151,7 +151,7 @@ In `GameApplicationService.scala`:
           : Either[OathViolation, OathState] = rules.evolve(state, event))
 ```
 
-  Add `EventEvolution` to the existing `oathdigital.engine` import.
+  Add `EventEvolution` to the existing `distantlands.engine` import.
 
 - In `load`, replace `case None => Right(None)` with:
 
@@ -182,9 +182,9 @@ In `GameApplicationService.scala`:
 In `Table.scala`, add these imports:
 
 ```scala
-import oathdigital.application.{CampaignDicePort, DefenseDicePort,
+import distantlands.application.{CampaignDicePort, DefenseDicePort,
   GameApplicationService, InMemoryEventStreamRepository}
-import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
+import distantlands.gameplay.phases.rest.WarExhaustionRandomPort
 ```
 
 Then replace `situation` with:
@@ -240,10 +240,10 @@ Expected: 4 passed.
 In `GameLogHeadlineSuite.scala`, add these imports:
 
 ```scala
-import oathdigital.application.GameCommand
-import oathdigital.testkit.{Situation, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.application.GameCommand
+import distantlands.testkit.{Situation, Table}
+import distantlands.testkit.Table.p1
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 ```
 
 Then add:
@@ -299,7 +299,7 @@ Expected: PASS.
 
 - [ ] **Step 8: Adapters agree from a table; a mismatched service is refused**
 
-In `SituationSuite.scala`, add `import oathdigital.testkit.Table.p1` and these tests:
+In `SituationSuite.scala`, add `import distantlands.testkit.Table.p1` and these tests:
 
 ```scala
   test("the rules and journaled adapters agree from a table"):
@@ -353,7 +353,7 @@ In `BackendArchitectureSuite.scala`, add:
     // at GameStarted until an arranged-start event exists (docs/ROADMAP.md).
     val root = Paths.get("src/main/scala")
     val owner = Paths.get(
-      "src/main/scala/oathdigital/application/GameApplicationService.scala")
+      "src/main/scala/distantlands/application/GameApplicationService.scala")
     val offenders = Files.walk(root).iterator.asScala.filter(path =>
       path.toString.endsWith(".scala") && path != owner &&
         Files.readString(path).contains("genesis")).map(_.toString).toVector
@@ -372,13 +372,13 @@ In the **Situation** entry, replace `Driven by the rules adapter, a situation ma
 Run: `./sbtw root/test` and `./sbtw frontend/test`. Both are green.
 
 ```bash
-git add src/main/scala/oathdigital/application/GameApplicationService.scala \
-  src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala \
-  src/test/scala/oathdigital/testkit/Table.scala \
-  src/test/scala/oathdigital/testkit/SituationSuite.scala \
-  src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala \
-  src/test/scala/oathdigital/application/GenesisServiceSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogHeadlineSuite.scala \
+git add src/main/scala/distantlands/application/GameApplicationService.scala \
+  src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala \
+  src/test/scala/distantlands/testkit/Table.scala \
+  src/test/scala/distantlands/testkit/SituationSuite.scala \
+  src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala \
+  src/test/scala/distantlands/application/GenesisServiceSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.scala \
   CONTEXT.md
 git commit -m "test: let a service stream begin at a Table"
 ```
@@ -390,12 +390,12 @@ git commit -m "test: let a service stream begin at a Table"
 This moves `ParkedServiceFixture`'s four parks and `WalkerDecisionProjectionSuite.startedRolling`. They go onto tables, and so does every caller of those five builders. The `oathkeeper` and `use-power` log scripts reuse two of the parks, so their goldens change here.
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/application/ParkedServiceFixture.scala`
-- Modify: `PhasePowerProjectorSuite.scala`, `WalkerDecisionProjectionSuite.scala` and `PendingWalkerInvariantSuite.scala` (all in `src/test/scala/oathdigital/application/`)
+- Modify: `src/test/scala/distantlands/application/ParkedServiceFixture.scala`
+- Modify: `PhasePowerProjectorSuite.scala`, `WalkerDecisionProjectionSuite.scala` and `PendingWalkerInvariantSuite.scala` (all in `src/test/scala/distantlands/application/`)
 - Modify: `GameApplicationServiceSuite.scala`, the callers of the parks only: `:59-80` (League Treaty) and `:1127-1160` (Oathkeeper tie)
-- Modify: `src/test/scala/oathdigital/testkit/SituationSuite.scala:114-127`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (`oathkeeper` :139-147, `usePower` :404-412, a new `atTable` helper)
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala` (:255-264, :348-363)
+- Modify: `src/test/scala/distantlands/testkit/SituationSuite.scala:114-127`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (`oathkeeper` :139-147, `usePower` :404-412, a new `atTable` helper)
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala` (:255-264, :348-363)
 - Modify: `src/test/resources/gamelog/{oathkeeper,use-power}.{actor,other}.log`
 
 **Interfaces:**
@@ -490,8 +490,8 @@ Run: `./sbtw root/test` and `./sbtw frontend/test`. Commit every file listed abo
 ### Task 3: GameApplicationServiceSuite on tables
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/ParkedServiceFixture.scala` (delete `setUp`, `woken`, `endingWake` once unused)
+- Modify: `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala`
+- Modify: `src/test/scala/distantlands/application/ParkedServiceFixture.scala` (delete `setUp`, `woken`, `endingWake` once unused)
 
 **Interfaces:**
 - Consumes: `Table#service` and `Table#situation` (Task 1), `ParkedGame` (Task 2).
@@ -520,7 +520,7 @@ Each moved test builds its table in its own body. It drives the table through `t
 
 - [ ] **Step 1:** Move the tests in table order, running `./sbtw "root/testOnly *GameApplicationServiceSuite"` after each group of rows.
 - [ ] **Step 2:** Delete `execute`, `withSiteInPlay`, `catacombsSetup` and `prepareCatacombs`, and any import left unused. `-Werror` flags unused imports. In `ParkedServiceFixture`, delete `setUp`, `woken` and `endingWake` if `grep -rn` shows no callers.
-- [ ] **Step 3:** Run the mutation check on this suite. In `OathRules.scala:141`, make `wakeOptionOpen` return `true`. Then run `./sbtw "root/testOnly *GameApplicationServiceSuite"`. Only 582, 996, 318 and the Begin tests may fail. Restore the file with `git checkout src/main/scala/oathdigital/gameplay/OathRules.scala`.
+- [ ] **Step 3:** Run the mutation check on this suite. In `OathRules.scala:141`, make `wakeOptionOpen` return `true`. Then run `./sbtw "root/testOnly *GameApplicationServiceSuite"`. Only 582, 996, 318 and the Begin tests may fail. Restore the file with `git checkout src/main/scala/distantlands/gameplay/OathRules.scala`.
 - [ ] **Step 4:** Run the gate and commit with the message `test: start the service suite's tests from tables`.
 
 ---
@@ -528,11 +528,11 @@ Each moved test builds its table in its own body. It drives the table through `t
 ### Task 4: The Forge on a table
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala` (a new `relicDeckTop` step)
-- Modify: `src/test/scala/oathdigital/testkit/TableSuite.scala` (a test for the step)
-- Modify: `src/test/scala/oathdigital/application/ForgeWalkerFixture.scala`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala` (a new `relicDeckTop` step)
+- Modify: `src/test/scala/distantlands/testkit/TableSuite.scala` (a test for the step)
+- Modify: `src/test/scala/distantlands/application/ForgeWalkerFixture.scala`
 - Modify: `GameApplicationServiceSuite.scala:776-800, :937-960`, `WalkerDecisionProjectionSuite.scala:352`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (`forge` :293-301), `GameLogActionLineSuite.scala:81-88`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (`forge` :293-301), `GameLogActionLineSuite.scala:81-88`
 - Modify: `src/test/resources/gamelog/forge.{actor,other}.log`
 
 **Interfaces:**
@@ -598,7 +598,7 @@ Run the `TableSuite` again. Expected: PASS.
 **Scripts:** `round`, `search`, `facedown-adviser`, `muster`, `trade`, `take-wealth`, `recover-failed`, `recover-succeeded`, `reveal-relic`, `banners`.
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
 - Modify: `GameLogHeadlineSuite.scala`, `GameLogStartLineSuite.scala`, `GameLogDetailSuite.scala`, and any other suite whose assertion names a setup fact these scripts dropped
 - Modify: the goldens of these ten scripts
 
@@ -622,7 +622,7 @@ Suite fixes:
 - `GameLogHeadlineSuite:24` expected `"Setup", "Round 1"` from `round`. It now expects the opening `"Round 1", "<p1>'s turn", "Wake"`.
 - `GameLogStartLineSuite` follows `round` and `augury` unchanged. Only its expectations of seats change.
 
-- [ ] **Step 1:** Move the scripts one row at a time. After each one, run `./sbtw "root/testOnly oathdigital.application.gamelog.*"`. The golden suite fails until Step 2.
+- [ ] **Step 1:** Move the scripts one row at a time. After each one, run `./sbtw "root/testOnly distantlands.application.gamelog.*"`. The golden suite fails until Step 2.
 - [ ] **Step 2:** Rewrite and review the ten scripts' goldens.
 - [ ] **Step 3:** Run the gate and commit with the message `test: start the action log scripts from tables`.
 
@@ -664,7 +664,7 @@ Suite fixes:
 - Modify: `docs/superpowers/specs/2026-09-28-service-log-start-states-design.md` (the Result section)
 
 - [ ] **Step 1: Delete unused code.** For each of `Step.Arrange`, `SituationDriver.arranging`, `ParkedServiceFixture.withWorldDeckTop`, `ForgeWalkerFixture.blankCampaignDice`, `Situation.pawnsAt` and `LogScripts.steadyDice`, run `grep -rn "<name>" src/test`. Delete it if it has no users. `Step.Arrange` stays if `trade` still uses it.
-- [ ] **Step 2: Run the brittleness check.** Make `OathRules.wakeOptionOpen` (`OathRules.scala:141`) return `true`, run `./sbtw root/test`, and record the failing tests. Every failure must be a test about the auto-end itself, or one that stays on replay (`woken`, `SituationSuite`'s replay checks, HungerSuite's Setup test, `GameApplicationServiceSuite` 582, 996 and 318). Restore with `git checkout src/main/scala/oathdigital/gameplay/OathRules.scala`.
+- [ ] **Step 2: Run the brittleness check.** Make `OathRules.wakeOptionOpen` (`OathRules.scala:141`) return `true`, run `./sbtw root/test`, and record the failing tests. Every failure must be a test about the auto-end itself, or one that stays on replay (`woken`, `SituationSuite`'s replay checks, HungerSuite's Setup test, `GameApplicationServiceSuite` 582, 996 and 318). Restore with `git checkout src/main/scala/distantlands/gameplay/OathRules.scala`.
 - [ ] **Step 3: Run the sequence check.** In `OathRules.beginGame` (`OathRules.scala:111-119`), append one extra `IgnoredRulesRecorded` diagnostic event after `GameStarted`. Use the smallest well-formed one the codec accepts: find its constructor in `model/GameEventProtocol.scala`. Run `./sbtw root/test`, and record the failures. Only tests that stay on replay may fail. Restore the file.
 - [ ] **Step 4: Record speed.** Rerun the Step 0 script from Task 1 into `/private/tmp/start-states-after.txt`, and put both columns in the Result.
 - [ ] **Step 5: Write the Result.** Append a `## Result` section to the spec with:

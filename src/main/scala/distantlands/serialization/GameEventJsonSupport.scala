@@ -1,0 +1,495 @@
+package distantlands.serialization
+
+import scala.util.control.NonFatal
+import distantlands.model._
+
+/** Shared primitive and nested-model JSON vocabulary for v1 event families. */
+private[serialization] trait GameEventJsonSupport:
+  import WireError._
+
+  protected final def decodeBanner(value: String, path: String): Either[WireError, Banner] =
+    Banner.fromKey(value).toRight(InvalidValue(path, s"unknown banner '$value'"))
+
+  /** The one `{"kind","id"}` card spelling; see the companion. */
+  protected final def encodeCardId(id: CardId): ujson.Value =
+    GameEventJsonSupport.encodeCardId(id)
+
+  protected final def decodeCardId(value: ujson.Value, path: String)
+      : Either[WireError, CardId] = GameEventJsonSupport.decodeCardId(value, path)
+
+  protected final def decodeWorldCardId(value: ujson.Value, path: String)
+      : Either[WireError, WorldCardId] =
+    GameEventJsonSupport.decodeWorldCardId(value, path)
+
+  /** [[decodeCardId]] with a malformed object reported as a [[WireError]]
+    * rather than thrown, for the walker spellings that decode card by card.
+    */
+  protected final def decodeCardRef(value: ujson.Value, path: String)
+      : Either[WireError, CardId] =
+    try decodeCardId(value, path)
+    catch { case NonFatal(error) => Left(InvalidValue(path,
+      Option(error.getMessage).getOrElse("invalid card reference"))) }
+
+  protected final def encodeStoredSite(site: StoredSite): ujson.Value =
+    ujson.Obj("site" -> site.site.value,
+      "items" -> ujson.Arr.from(site.items.map(encodeCardId)))
+
+  protected final def decodeStoredSite(value: ujson.Value, path: String)
+      : Either[WireError, StoredSite] = for
+    items <- traverse(value("items").arr.zipWithIndex.toVector):
+      case (item, index) => decodeCardId(item, s"$path.items[$index]")
+  yield StoredSite(SiteId(value("site").str), items)
+
+  protected final def encodeFoundationState(
+      number: FoundationNumber, state: FoundationState): ujson.Value =
+    ujson.Obj("number" -> number.value,
+      "face" -> (state.face match {
+        case FoundationFace.Normal => "normal"
+        case FoundationFace.Altered => "altered"
+      }),
+      "alterationSources" -> stringArray(
+        state.alterationSources.toVector.map(_.value).sorted))
+
+  protected final def decodeFoundationState(value: ujson.Value, path: String)
+      : Either[WireError, (FoundationNumber, FoundationState)] = for
+    number <- FoundationNumber.all.find(_.value == value("number").num.toInt)
+      .toRight(InvalidValue(s"$path.number",
+        s"unknown Foundation number ${value("number")}"))
+    face <- value("face").str match
+      case "normal" => Right(FoundationFace.Normal)
+      case "altered" => Right(FoundationFace.Altered)
+      case other => Left(InvalidValue(s"$path.face",
+        s"unknown Foundation face '$other'"))
+  yield number -> FoundationState(face,
+    value("alterationSources").arr.toVector.map(v => LegacyId(v.str)).toSet)
+
+  protected final def encodeAdviserState(adviser: AdviserState): ujson.Value =
+    adviser match
+      case DenizenState(id, orientation, tokens) => ujson.Obj(
+        "kind" -> "denizen", "id" -> id.value,
+        "orientation" -> encodeOrientation(orientation),
+        "tokens" -> encodeTokens(tokens))
+      case VisionState(id, orientation) => ujson.Obj(
+        "kind" -> "vision", "id" -> id.value,
+        "orientation" -> encodeOrientation(orientation))
+
+  protected final def decodeAdviserState(value: ujson.Value, path: String)
+      : Either[WireError, AdviserState] = value("kind").str match
+    case "denizen" =>
+      for
+        orientation <- decodeOrientation(value("orientation"), s"$path.orientation")
+        tokens <- decodeTokens(value("tokens"), s"$path.tokens")
+      yield DenizenState(DenizenId(value("id").str), orientation, tokens)
+    case "vision" => decodeOrientation(value("orientation"), s"$path.orientation")
+      .map(orientation => VisionState(VisionId(value("id").str), orientation))
+    case kind => Left(InvalidValue(s"$path.kind", s"unknown adviser kind '$kind'"))
+
+  protected final def encodeOrientation(orientation: Orientation): ujson.Value =
+    orientation match
+      case Orientation.FaceUp => "face-up"
+      case Orientation.FaceDown => "face-down"
+
+  protected final def decodeOrientation(value: ujson.Value, path: String)
+      : Either[WireError, Orientation] = value.str match
+    case "face-up" => Right(Orientation.FaceUp)
+    case "face-down" => Right(Orientation.FaceDown)
+    case other => Left(InvalidValue(path, s"unknown orientation '$other'"))
+
+  protected final def encodeTokens(tokens: Tokens): ujson.Value =
+    ujson.Obj("favor" -> tokens.favor, "secrets" -> tokens.secrets)
+
+  protected final def decodeTokens(value: ujson.Value, path: String)
+      : Either[WireError, Tokens] =
+    Right(Tokens(value("favor").num.toInt, value("secrets").num.toInt))
+
+  protected final def encodeRole(role: Role): String = role match
+    case Role.Exile => "exile"
+    case Role.Citizen => "citizen"
+    case Role.Chancellor => "chancellor"
+
+  protected final def decodeRole(value: String, path: String)
+      : Either[WireError, Role] = value match
+    case "exile" => Right(Role.Exile)
+    case "citizen" => Right(Role.Citizen)
+    case "chancellor" => Right(Role.Chancellor)
+    case other => Left(InvalidValue(path, s"unknown role '$other'"))
+
+  protected final def encodeLineageState(lineage: LineageState): ujson.Value =
+    ujson.Obj("id" -> lineage.id.value,
+      "previousPlayer" -> lineage.previousPlayer.fold[ujson.Value](
+        ujson.Null)(id => ujson.Str(id.value)),
+      "role" -> encodeRole(lineage.role),
+      "legacies" -> ujson.Arr.from(lineage.legacies.map(legacy =>
+        ujson.Obj("id" -> legacy.id.value, "active" -> legacy.active))),
+      "startingAdvisers" -> ujson.Arr.from(
+        lineage.startingAdvisers.map(encodeAdviserState)),
+      "startingRelics" -> stringArray(lineage.startingRelics.map(_.value)))
+
+  protected final def decodeLineageState(value: ujson.Value, path: String)
+      : Either[WireError, LineageState] = for
+    role <- decodeRole(value("role").str, s"$path.role")
+    legacies = value("legacies").arr.toVector.map(legacy =>
+      LegacyState(LegacyId(legacy("id").str), legacy("active").bool))
+    startingAdvisers <- traverse(value("startingAdvisers").arr.zipWithIndex.toVector):
+      case (adviser, index) =>
+        decodeAdviserState(adviser, s"$path.startingAdvisers[$index]")
+    startingRelics = value("startingRelics").arr.toVector.map(r => RelicId(r.str))
+  yield LineageState(LineageId(value("id").str),
+    value("previousPlayer") match {
+      case ujson.Null => None
+      case id => Some(PlayerId(id.str))
+    }, role, legacies, startingAdvisers, startingRelics)
+
+  protected final def encodeChronicle(chronicle: Chronicle): ujson.Value =
+    ujson.Obj(
+      "name" -> chronicle.name,
+      "atlasBox" -> ujson.Arr.from(chronicle.atlasBox.map(encodeStoredSite)),
+      "world" -> ujson.Arr.from(chronicle.world.map(encodeStoredSite)),
+      "worldDeck" -> stringArray(chronicle.worldDeck.map(_.value)),
+      "relicDeck" -> stringArray(chronicle.relicDeck.map(_.value)),
+      "era" -> ujson.Obj(
+        "targetScore" -> chronicle.era.targetScore,
+        "games" -> ujson.Arr.from(chronicle.era.games.map(game => ujson.Obj(
+          "entries" -> ujson.Arr.from(game.entries.map(entry => ujson.Obj(
+            "lineage" -> entry.lineage.value,
+            "totalScore" -> entry.totalScore,
+            "endingRole" -> encodeRole(entry.endingRole)))))))),
+      "oathkeeperGoal" -> chronicle.oathkeeperGoal.key,
+      "dispossessed" -> stringArray(chronicle.dispossessed.map(_.value)),
+      "reliquary" -> stringArray(chronicle.reliquary.map(_.value)),
+      "foundations" -> ujson.Arr.from(chronicle.foundations.toVector
+        .sortBy(_._1.value)
+        .map { case (number, state) => encodeFoundationState(number, state) }),
+      "lineages" -> ujson.Arr.from(chronicle.lineages.map(encodeLineageState))
+    )
+
+  protected final def decodeChronicle(value: ujson.Value, path: String)
+      : Either[WireError, Chronicle] = for
+    atlasBox <- traverse(value("atlasBox").arr.zipWithIndex.toVector):
+      case (site, index) => decodeStoredSite(site, s"$path.atlasBox[$index]")
+    world <- traverse(value("world").arr.zipWithIndex.toVector):
+      case (site, index) => decodeStoredSite(site, s"$path.world[$index]")
+    foundations <- traverse(value("foundations").arr.zipWithIndex.toVector):
+      case (entry, index) => decodeFoundationState(entry, s"$path.foundations[$index]")
+    lineages <- traverse(value("lineages").arr.zipWithIndex.toVector):
+      case (lineage, index) => decodeLineageState(lineage, s"$path.lineages[$index]")
+    name <- stringField(value.obj, "name", path)
+    _ <- Chronicle.nameProblem(name).toLeft(()).left.map(problem =>
+      InvalidValue(s"$path.name", problem))
+    era <- requiredField(value.obj, "era", path)
+      .flatMap(decodeEra(_, s"$path.era"))
+    goal <- requiredField(value.obj, "oathkeeperGoal", path)
+      .flatMap(decodeOathkeeperGoal(_, s"$path.oathkeeperGoal"))
+  yield Chronicle(name = name, atlasBox = atlasBox, world = world,
+    worldDeck = value("worldDeck").arr.toVector.map(v => DenizenId(v.str)),
+    relicDeck = value("relicDeck").arr.toVector.map(v => RelicId(v.str)),
+    era = era, oathkeeperGoal = goal,
+    dispossessed = value("dispossessed").arr.toVector.map(v => DenizenId(v.str)),
+    reliquary = value("reliquary").arr.toVector.map(v => RelicId(v.str)),
+    foundations = foundations.toMap, lineages = lineages)
+
+  private def decodeEra(value: ujson.Value, path: String)
+      : Either[WireError, EraState] = for
+    target <- safeIntField(value.obj, "targetScore", path)
+    games <- traverse(value("games").arr.zipWithIndex.toVector):
+      case (game, gameIndex) =>
+        val gamePath = s"$path.games[$gameIndex]"
+        for
+          entries <- traverse(game("entries").arr.zipWithIndex.toVector):
+            case (row, index) =>
+              val rowPath = s"$gamePath.entries[$index]"
+              for
+                id <- stringField(row.obj, "lineage", rowPath)
+                total <- safeIntField(row.obj, "totalScore", rowPath)
+                _ <- Either.cond(total >= 0, (),
+                  InvalidValue(s"$rowPath.totalScore", "must not be negative"))
+                role <- decodeRole(row("endingRole").str, s"$rowPath.endingRole")
+              yield EraEntry(LineageId(id), total, role)
+          _ <- duplicate(entries.map(_.lineage)).toLeft(()).left.map(id =>
+            InvalidValue(s"$gamePath.entries",
+              s"duplicate lineage '${id.value}'"))
+        yield EraGame(entries)
+    era <- Either.cond(target > 0, EraState(target, games),
+      InvalidValue(s"$path.targetScore", "must be positive"))
+  yield era
+
+  private def duplicate[A](values: Vector[A]): Option[A] =
+    values.diff(values.distinct).headOption
+
+  private def decodeOathkeeperGoal(value: ujson.Value, path: String)
+      : Either[WireError, OathkeeperGoal] =
+    value.strOpt.toRight(WrongType(path, "expected a string")).flatMap(key =>
+      OathkeeperGoal.fromKey(key).toRight(
+        InvalidValue(path, s"unknown Oathkeeper goal '$key'")))
+
+  protected final def encodeSetupOrders(orders: SetupOrders): ujson.Value =
+    ujson.Obj(
+      "participants" -> ujson.Arr.from(orders.participants.map { participant =>
+        ujson.Obj(
+          "playerId" -> participant.playerId.value,
+          "lineageId" -> participant.lineageId.value,
+          "color" -> participant.color.key
+        )
+      }),
+      "firstPlayer" -> orders.firstPlayer.value,
+      "denizenOrder" -> stringArray(orders.denizenOrder.map(_.value)),
+      "worldDeckOrder" -> ujson.Arr.from(orders.worldDeckOrder.map(encodeCardId)),
+      "relicOrder" -> stringArray(orders.relicOrder.map(_.value))
+    )
+
+  protected final def decodeSetupOrders(value: ujson.Value, path: String)
+      : Either[WireError, SetupOrders] = try
+    val obj = value.obj
+    for
+      participants <- traverse(obj("participants").arr.zipWithIndex.toVector):
+        case (participant, index) =>
+          val color = participant("color").str
+          PlayerColor.fromKey(color).toRight(InvalidValue(
+            s"$path.participants[$index].color",
+            s"unknown player color '$color'")).map(FirstGameParticipant(
+            PlayerId(participant("playerId").str),
+            LineageId(participant("lineageId").str), _))
+      worldDeckOrder <- traverse(obj("worldDeckOrder").arr.zipWithIndex.toVector):
+        case (item, index) => decodeWorldCardId(item, s"$path.worldDeckOrder[$index]")
+    yield SetupOrders(participants, PlayerId(obj("firstPlayer").str),
+      obj("denizenOrder").arr.toVector.map(v => DenizenId(v.str)),
+      worldDeckOrder, obj("relicOrder").arr.toVector.map(v => RelicId(v.str)))
+  catch
+    case NonFatal(error) =>
+      Left(InvalidValue(path,
+        Option(error.getMessage).getOrElse("invalid setup orders")))
+
+  protected final def requiredField(
+      obj: ujson.Obj,
+      name: String,
+      path: String
+  ): Either[WireError, ujson.Value] =
+    obj.value.get(name).toRight(
+      MissingField(s"$path.$name", "field is required")
+    )
+
+  protected final def stringField(
+      obj: ujson.Obj,
+      name: String,
+      path: String
+  ): Either[WireError, String] =
+    requiredField(obj, name, path).flatMap:
+      case ujson.Str(value) => Right(value)
+      case _ => Left(WrongType(s"$path.$name", "expected a string"))
+
+  protected final def formatVersionField(
+      obj: ujson.Obj,
+      path: String
+  ): Either[WireError, Int] =
+    requiredField(obj, "formatVersion", path)
+      .flatMap(value => safeInteger(value, s"$path.formatVersion"))
+      .flatMap { value =>
+        if value <= Int.MaxValue.toLong then Right(value.toInt)
+        else
+          Left(
+            InvalidValue(
+              s"$path.formatVersion",
+              s"must be between 0 and ${Int.MaxValue} inclusive"
+            )
+          )
+      }
+
+  protected final def safeIntegerField(
+      obj: ujson.Obj,
+      name: String,
+      path: String
+  ): Either[WireError, Long] =
+    requiredField(obj, name, path)
+      .flatMap(value => safeInteger(value, s"$path.$name"))
+
+  protected final def safeIntField(obj: ujson.Obj, name: String, path: String)
+      : Either[WireError, Int] =
+    requiredField(obj, name, path).flatMap(value =>
+      safeInt(value, s"$path.$name"))
+
+  protected final def safeInt(value: ujson.Value, path: String)
+      : Either[WireError, Int] =
+    safeInteger(value, path).flatMap { number =>
+      if number <= Int.MaxValue.toLong then Right(number.toInt)
+      else Left(InvalidValue(path,
+        s"must be between 0 and ${Int.MaxValue} inclusive"))
+    }
+
+  protected final def safeInteger(
+      value: ujson.Value,
+      path: String
+  ): Either[WireError, Long] =
+    value match
+      case ujson.Num(number)
+          if !number.isNaN &&
+            !number.isInfinity &&
+            number == math.rint(number) &&
+            number >= 0 &&
+            number <= GameEventWire.MaxSafeSequence.toDouble =>
+        Right(number.toLong)
+      case ujson.Num(number)
+          if !number.isNaN &&
+            !number.isInfinity &&
+            number == math.rint(number) =>
+        Left(
+          InvalidValue(
+            path,
+            s"must be between 0 and ${GameEventWire.MaxSafeSequence} inclusive"
+          )
+        )
+      case _ => Left(WrongType(path, "expected an integer"))
+
+  protected final def validateSequence(
+      sequence: Long,
+      path: String
+  ): Either[WireError, Unit] =
+    if sequence >= 0 && sequence <= GameEventWire.MaxSafeSequence then Right(())
+    else
+      Left(
+        InvalidValue(
+          path,
+          s"must be between 0 and ${GameEventWire.MaxSafeSequence} inclusive"
+        )
+      )
+
+  protected final def stringArray(values: Vector[String]): ujson.Value =
+    ujson.Arr.from(values.map(ujson.Str(_)))
+
+  protected final def encodeForceKind(force: ForceKind): ujson.Value = force match
+    case ForceKind.Bandit => ujson.Obj("kind" -> "bandit")
+    case ForceKind.Imperial => ujson.Obj("kind" -> "imperial")
+    case ForceKind.Exile(lineage) => ujson.Obj(
+      "kind" -> "exile", "lineageId" -> lineage.value)
+
+  protected final def decodeForceKind(value: ujson.Value, path: String)
+      : Either[WireError, ForceKind] = try value("kind").str match
+    case "bandit" => Right(ForceKind.Bandit)
+    case "imperial" => Right(ForceKind.Imperial)
+    case "exile" => Right(ForceKind.Exile(LineageId(value("lineageId").str)))
+    case other => Left(InvalidValue(s"$path.kind",
+      s"unknown force kind '$other'"))
+  catch { case NonFatal(error) => Left(InvalidValue(path,
+    Option(error.getMessage).getOrElse("invalid force kind"))) }
+
+  protected final def encodeDefenseFace(face: DefenseDieFace): String = face match
+    case DefenseDieFace.Blank => "blank"
+    case DefenseDieFace.OneShield => "one-shield"
+    case DefenseDieFace.TwoShields => "two-shields"
+    case DefenseDieFace.Doubler => "doubler"
+
+  protected final def encodeAttackFace(face: AttackDieFace): String = face match
+    case AttackDieFace.HollowSword => "hollow-sword"
+    case AttackDieFace.OneSword => "one-sword"
+    case AttackDieFace.TwoSwordsSkull => "two-swords-skull"
+
+  protected final def decodeAttackFace(value: String, path: String) = value match
+    case "hollow-sword" => Right(AttackDieFace.HollowSword)
+    case "one-sword" => Right(AttackDieFace.OneSword)
+    case "two-swords-skull" => Right(AttackDieFace.TwoSwordsSkull)
+    case other => Left(InvalidValue(path, s"unknown attack die face '$other'"))
+
+  protected final def decodeDefenseFace(value: String, path: String) = value match
+    case "blank" => Right(DefenseDieFace.Blank)
+    case "one-shield" => Right(DefenseDieFace.OneShield)
+    case "two-shields" => Right(DefenseDieFace.TwoShields)
+    case "doubler" => Right(DefenseDieFace.Doubler)
+    case other => Left(InvalidValue(path, s"unknown defense die face '$other'"))
+
+  protected final def decodeCampaignKind(value: ujson.Value, path: String)
+      : Either[WireError, CampaignKind] = value.str match
+    case "conquest" => Right(CampaignKind.Conquest)
+    case "raid" => Right(CampaignKind.Raid)
+    case other => Left(InvalidValue(path, s"unknown Campaign kind '$other'"))
+
+  protected final def encodeCampaignRaidTarget(target: CampaignRaidTarget): ujson.Value =
+    target match
+      case CampaignRaidTarget.Pawn(player) => ujson.Obj(
+        "kind" -> "pawn", "playerId" -> player.value)
+      case CampaignRaidTarget.Relic(player, relic) => ujson.Obj(
+        "kind" -> "relic", "playerId" -> player.value,
+        "relicId" -> relic.value)
+      case CampaignRaidTarget.Banner(player, banner) => ujson.Obj(
+        "kind" -> "banner", "playerId" -> player.value,
+        "banner" -> banner.key)
+
+  protected final def decodeCampaignRaidTarget(value: ujson.Value, path: String)
+      : Either[WireError, CampaignRaidTarget] = try value("kind").str match
+    case "pawn" => Right(CampaignRaidTarget.Pawn(
+      PlayerId(value("playerId").str)))
+    case "relic" => Right(CampaignRaidTarget.Relic(
+      PlayerId(value("playerId").str), RelicId(value("relicId").str)))
+    case "banner" => decodeBanner(value("banner").str, s"$path.banner")
+      .map(CampaignRaidTarget.Banner(PlayerId(value("playerId").str), _))
+    case other => Left(InvalidValue(s"$path.kind",
+      s"unknown Campaign Raid target '$other'"))
+  catch { case error: Exception => Left(InvalidValue(path,
+    Option(error.getMessage).getOrElse("invalid Campaign Raid target"))) }
+
+  protected final def encodeSearchSource(source: SearchSource): ujson.Value = source match
+    case SearchSource.WorldDeck => ujson.Obj("kind" -> "world")
+    case SearchSource.RegionalDiscard(region) =>
+      ujson.Obj("kind" -> "regional-discard", "region" -> region.key)
+
+  protected final def decodeSearchSource(value: ujson.Value, path: String)
+      : Either[WireError, SearchSource] = try value("kind").str match
+    case "world" => Right(SearchSource.WorldDeck)
+    case "regional-discard" => decodeRegion(value("region").str, s"$path.region")
+      .map(SearchSource.RegionalDiscard.apply)
+    case other => Left(InvalidValue(s"$path.kind", s"unknown Search source '$other'"))
+  catch { case NonFatal(error) => Left(InvalidValue(path,
+    Option(error.getMessage).getOrElse("invalid Search source"))) }
+
+  protected final def decodeRegion(value: String, path: String): Either[WireError, Region] =
+    Region.all.find(_.key == value).toRight(InvalidValue(path, s"unknown region '$value'"))
+
+  protected final def decodeSuit(value: String, path: String): Either[WireError, Suit] =
+    Suit.fromKey(value).toRight(InvalidValue(path, s"unknown suit '$value'"))
+
+  protected final def traverse[A, B](
+      values: Vector[A]
+  )(f: A => Either[WireError, B]): Either[WireError, Vector[B]] =
+    GameEventJsonSupport.traverse(values)(f)
+
+private[serialization] object GameEventJsonSupport:
+  import WireError.InvalidValue
+
+  /** A `CardId`, kind-tagged so a heterogeneous vector (a Chronicle's stored
+    * site items, a dealt world-deck order) round-trips through one shape
+    * instead of five ad hoc ones (2026-09-21 Chronicle design, slice 2).
+    * Every card spelling on the wire goes through this pair.
+    */
+  def encodeCardId(id: CardId): ujson.Value = id match
+    case id: DenizenId => ujson.Obj("kind" -> "denizen", "id" -> id.value)
+    case id: VisionId => ujson.Obj("kind" -> "vision", "id" -> id.value)
+    case id: RelicId => ujson.Obj("kind" -> "relic", "id" -> id.value)
+    case id: EdificeId => ujson.Obj("kind" -> "edifice", "id" -> id.value)
+    case id: LegacyId => ujson.Obj("kind" -> "legacy", "id" -> id.value)
+
+  def decodeCardId(value: ujson.Value, path: String): Either[WireError, CardId] =
+    cardIdOfKind(value("kind").str, value("id").str, s"$path.kind")
+
+  /** The kind table on its own, for spellings that carry `kind` and `id`
+    * under their own field names.
+    */
+  def cardIdOfKind(kind: String, id: String, path: String): Either[WireError, CardId] =
+    kind match
+      case "denizen" => Right(DenizenId(id))
+      case "vision" => Right(VisionId(id))
+      case "relic" => Right(RelicId(id))
+      case "edifice" => Right(EdificeId(id))
+      case "legacy" => Right(LegacyId(id))
+      case other => Left(InvalidValue(path, s"unknown card kind '$other'"))
+
+  /** [[decodeCardId]] narrowed to the cards a world deck holds. */
+  def decodeWorldCardId(value: ujson.Value, path: String): Either[WireError, WorldCardId] =
+    decodeCardId(value, path).flatMap:
+      case id: WorldCardId => Right(id)
+      case _ => Left(InvalidValue(s"$path.kind",
+        s"unknown world card kind '${value("kind").str}'"))
+
+  /** Decodes every element, stopping at the first failure. */
+  def traverse[A, B](values: Vector[A])(
+      f: A => Either[WireError, B]): Either[WireError, Vector[B]] =
+    values.foldLeft[Either[WireError, Vector[B]]](Right(Vector.empty)):
+      case (Right(acc), value) => f(value).map(acc :+ _)
+      case (failure @ Left(_), _) => failure

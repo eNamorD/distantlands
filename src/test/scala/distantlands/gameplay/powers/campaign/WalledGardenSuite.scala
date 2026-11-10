@@ -1,0 +1,82 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.gameplay.powers.economy.HallowedSpringCard
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.powers.search.BrackenCard
+import distantlands.gameplay.powers.whenplayed.AutumnWindCard
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
+  DeepWoodsSite, DesolateShoreSite}
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+
+/** Walled Garden: a free, site-only defender's plan for one defense die per
+  * beast card at any site, offered only when its site is a Conquest target. */
+class WalledGardenSuite extends munit.FunSuite:
+  private val card = WalledGardenCard.id
+  private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
+  private val beasts = planless(BrackenCard, AutumnWindCard)
+  private val beast = beasts.head
+  private val arcane = planlessCard(MagiciansCodeCard)
+  // Beast, on either face: Hallowed Spring intact, Hiding Place ruined.
+  private val beastEdifice = HallowedSpringCard.id
+
+  // Sites other than the origin, Ancient City, in map order.
+  private val brokenPeaks = BrokenPeaksSite.id
+  private val buriedGiant = BuriedGiantSite.id
+  private val deepWoods = DeepWoodsSite.id
+  private val desolateShore = DesolateShoreSite.id
+
+  /** What the bandits' application of Walled Garden recorded as its effect:
+    * the operation just before its marker. */
+  private def banditEffect(run: Run): Option[CoreOperation] =
+    val marker = ModifyDicePool(CampaignPlans.appliedMarker(ref), 1)
+    Option.when(run.ops.contains(marker))(run.ops.takeWhile(_ != marker).last)
+
+  test("a defender adds one defense die per beast card at any site, " +
+      "counting itself and cards nobody rules"):
+    val base = rivalRulesOriginAndHoldsOathkeeper(
+      board(warbands = 5, supply = 7))
+    // Walled Garden at the origin, a beast denizen and a ruined beast
+    // edifice count; a faceup non-beast card and a facedown beast card
+    // count nothing.
+    val atOrigin = withSiteCard(base, base.origin, card)
+    val beastsOut = withEdifice(withSiteCard(atOrigin, brokenPeaks, beast),
+      buriedGiant, beastEdifice, EdificeSide.Ruined)
+    val b = on(withSiteCard(beastsOut, deepWoods, arcane))(
+      _.denizen(beasts(1), at = desolateShore, facedown = true))
+    val run = commit(rules(winningDice), b, 3)
+    val picked = run.pick(b.rival, CampaignIds.defenderPlan, ref)
+    assert(
+      picked.since(run).contains(ModifyDicePool(CampaignIds.defensePool, 3)))
+    assert(!picked.since(run).exists(_.isInstanceOf[PayCost]))
+
+  test("a beast edifice counts on either face"):
+    val base = rivalRulesOriginAndHoldsOathkeeper(
+      board(warbands = 5, supply = 7))
+    val b = withEdifice(withSiteCard(base, base.origin, card),
+      brokenPeaks, beastEdifice, EdificeSide.Intact)
+    val run = commit(rules(winningDice), b, 3)
+    val picked = run.pick(b.rival, CampaignIds.defenderPlan, ref)
+    assert(
+      picked.since(run).contains(ModifyDicePool(CampaignIds.defensePool, 2)))
+
+  test("it is offered only when its site is a target"):
+    val base = rivalRulesOriginAndHoldsOathkeeper(
+      board(warbands = 5, supply = 7))
+    val site = brokenPeaks
+    val b = withSiteCard(on(base)(_.warbandsAt(site, base.rival, 2)), site,
+      card)
+    assert(!commit(rules(winningDice), b, 3).offers(b.actor, b.rival,
+      CampaignIds.defenderPlan, ref))
+    assert(commit(rules(winningDice), b, 5,
+      targets = Vector(DecisionOptionRef.Site(site))).offers(b.actor, b.rival,
+      CampaignIds.defenderPlan, ref))
+
+  test("a bandit defender applies it at a site it rules"):
+    val base = board(warbands = 5, supply = 7)
+    val b = withSiteCard(withSiteCard(base, base.origin, card),
+      brokenPeaks, beast)
+    assertEquals(banditEffect(commit(rules(winningDice), b, 2)),
+      Some(ModifyDicePool(CampaignIds.defensePool, 2)))

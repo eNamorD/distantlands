@@ -111,16 +111,16 @@ read "Slice 14: Memory across turns", ruling 6 and the "Tracker" reading.
 ### Task 1: The tracked-pawn record and its primitives
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/GameState.scala` (end of
+- Modify: `src/main/scala/distantlands/model/GameState.scala` (end of
   `CurrentGameState`'s fields)
-- Modify: `src/main/scala/oathdigital/model/CoreOperations.scala` (after
+- Modify: `src/main/scala/distantlands/model/CoreOperations.scala` (after
   `ActAsIf`, line 741)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala`
-- Modify: `src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/operations/TrackedPawnOperationsSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala`
+- Modify: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/operations/TrackedPawnOperationsSuite.scala`
 
 **Interfaces:**
 - Produces: `CurrentGameState.trackedPawns: Map[PlayerId, PlayerId]`
@@ -131,15 +131,15 @@ read "Slice 14: Memory across turns", ruling 6 and the "Tracker" reading.
 
 - [ ] **Step 1: Write the failing primitive tests**
 
-Create `src/test/scala/oathdigital/gameplay/operations/TrackedPawnOperationsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/operations/TrackedPawnOperationsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
-import oathdigital.testkit.{RawOperationBatch, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.model._
+import distantlands.testkit.{RawOperationBatch, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** The Tracker's record across turns (catalog batch 10, slice 14):
   * `TrackPawn` writes the holder's choice and `ClearTrackedPawn` removes
@@ -167,7 +167,7 @@ class TrackedPawnOperationsSuite extends munit.FunSuite:
     rejected(run(cleared, ClearTrackedPawn(p1)))
 ```
 
-In `src/test/scala/oathdigital/testkit/Table.scala`, add after
+In `src/test/scala/distantlands/testkit/Table.scala`, add after
 `warbandsOnCard` (line 194 onward):
 
 ```scala
@@ -188,7 +188,7 @@ vector, after `SuitedReserveFromBox(...)`:
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.TrackedPawnOperationsSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.TrackedPawnOperationsSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: compile failure, `Not found: TrackPawn` and `value trackedPawns
 is not a member of CurrentGameState`.
 
@@ -277,14 +277,14 @@ In `WalkerOperationCodec.scala`:
 
 - [ ] **Step 4: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.TrackedPawnOperationsSuite oathdigital.serialization.WalkerOperationWireSuite"`
-Expected: PASS. Then `wc -l src/main/scala/oathdigital/model/CoreOperations.scala`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.TrackedPawnOperationsSuite distantlands.serialization.WalkerOperationWireSuite"`
+Expected: PASS. Then `wc -l src/main/scala/distantlands/model/CoreOperations.scala`
 prints at most 800.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/GameState.scala src/main/scala/oathdigital/model/CoreOperations.scala src/main/scala/oathdigital/gameplay/operations/TurnStateOperations.scala src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/test/scala/oathdigital/testkit/Table.scala src/test/scala/oathdigital/serialization/WalkerOperationWireSuite.scala src/test/scala/oathdigital/gameplay/operations/TrackedPawnOperationsSuite.scala
+git add src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/gameplay/operations/TurnStateOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/testkit/Table.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala src/test/scala/distantlands/gameplay/operations/TrackedPawnOperationsSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(model): remember a tracked pawn across turns
 
@@ -299,20 +299,20 @@ EOF
 ### Task 2: Tracker's two powers and the clear at Act
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/wake/Tracker.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala:15-21`
+- Create: `src/main/scala/distantlands/gameplay/powers/wake/Tracker.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala:15-21`
   (remove `TrackerCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/phases/wake/EndWakeProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/phases/wake/EndWakeProcedure.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt` (remove
   `denizen.tracker`)
 - Modify: `src/test/resources/notes/declared-keys.txt` (snapshot)
-- Create: `src/test/scala/oathdigital/gameplay/powers/wake/TrackerSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/wake/TrackerSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `TrackPawn`, `ClearTrackedPawn`, `trackedPawns`,
   `Table.trackedPawn`.
-- Produces: `TrackerCard` (in `oathdigital.gameplay.powers.wake`, with
+- Produces: `TrackerCard` (in `distantlands.gameplay.powers.wake`, with
   `action` and `wake` printed powers); `TrackerAction` (`decisionId:
   String`, `tracked: NoteKey`, `targets(ready, player): Vector[PlayerId]`);
   `TrackerWake` (`placed: NoteKey`, `noPawnChosen: String`, `alreadyThere:
@@ -321,23 +321,23 @@ EOF
 
 - [ ] **Step 1: Write the failing power tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/wake/TrackerSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/wake/TrackerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.PawnMoves
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.PawnMoves
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   PhasePowerHarness, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Tracker (card 221, catalog batch 10, slice 14): ACTION, choose an enemy
   * pawn at your site and end your Act phase; WAKE, if you chose a pawn last
@@ -486,7 +486,7 @@ class TrackerSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.TrackerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.TrackerSuite"`
 Expected: compile failure, `Not found: TrackerCard`.
 
 - [ ] **Step 3: Write the card and its powers**
@@ -494,18 +494,18 @@ Expected: compile failure, `Not found: TrackerCard`.
 In `HoldingDiscordDenizens.scala`, delete the `TrackerCard` object (lines
 15 to 21). Its imports stay in use by the other cards.
 
-Create `src/main/scala/oathdigital/gameplay/powers/wake/Tracker.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/wake/Tracker.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.powerresolver.{PhasePower, QueuedStarts}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.action.{PaidAction, PawnMoves}
-import oathdigital.model._
+import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.powerresolver.{PhasePower, QueuedStarts}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.action.{PaidAction, PawnMoves}
+import distantlands.model._
 
 object TrackerCard extends Denizen(DenizenId("221"), "Tracker", Suit.Discord) with AdviserOnly:
   val action = PrintedPower(PowerId("denizen.tracker.action"),
@@ -622,7 +622,7 @@ write `card == (TrackerCard.id: CardId)`, as `OperationPipeline` writes
 `TheGrandScepterCard.id: CardId`.
 
 In `PhasePowerCatalog.scala`, change the import
-`import oathdigital.gameplay.powers.wake.{HiddenPassages, Hunger,
+`import distantlands.gameplay.powers.wake.{HiddenPassages, Hunger,
 MarbleFountains, Quartermaster, RiverSitePower, SinkingPassages}` to add
 `TrackerAction, TrackerWake`, and the vector line
 `Quartermaster, StonePortal, SinkingPassages, HiddenPassages) ++` to
@@ -664,7 +664,7 @@ declares at most two leaves". The yield becomes:
 
 - [ ] **Step 5: Run the power tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.TrackerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.TrackerSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Update the snapshots**
@@ -673,7 +673,7 @@ Delete the `denizen.tracker` line from
 `src/test/resources/powers/unimplemented.txt`. Then:
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"
+NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"
 git diff --stat src/test/resources
 ```
 
@@ -683,13 +683,13 @@ stop and report.
 
 - [ ] **Step 7: Run the touched procedures' suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.* oathdigital.gameplay.WakeAutoEndSuite oathdigital.gameplay.phases.* oathdigital.gameplay.MinorActionsSuite oathdigital.gameplay.StateBasedEvaluationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.* distantlands.gameplay.WakeAutoEndSuite distantlands.gameplay.phases.* distantlands.gameplay.MinorActionsSuite distantlands.gameplay.StateBasedEvaluationSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/wake/Tracker.scala src/main/scala/oathdigital/catalog/holding/HoldingDiscordDenizens.scala src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala src/main/scala/oathdigital/gameplay/phases/wake/EndWakeProcedure.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/oathdigital/gameplay/powers/wake/TrackerSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/wake/Tracker.scala src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala src/main/scala/distantlands/gameplay/phases/wake/EndWakeProcedure.scala src/test/resources/powers/unimplemented.txt src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/powers/wake/TrackerSuite.scala
 git commit -m "$(cat <<'EOF'
 feat(powers): implement Tracker
 
@@ -708,13 +708,13 @@ to 8 and 10).
 ### Task 3: The record on the table, docs and gates
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionDtos.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala`
-- Modify: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala`
-- Create: `src/test/scala/oathdigital/application/TrackerProjectionSuite.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardFace.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/CardFaceSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala`
+- Modify: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala`
+- Create: `src/test/scala/distantlands/application/TrackerProjectionSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardFace.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/CardFaceSuite.scala`
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`
 - Modify: `docs/ROADMAP.md`
 
@@ -727,18 +727,18 @@ to 8 and 10).
 
 - [ ] **Step 1: Write the failing projection tests**
 
-Create `src/test/scala/oathdigital/application/TrackerProjectionSuite.scala`:
+Create `src/test/scala/distantlands/application/TrackerProjectionSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.wake.TrackerCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.{PlayerId, ReadyGame}
-import oathdigital.protocol.projection.{CardDetailsProjection,
+import distantlands.gameplay.powers.wake.TrackerCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.{PlayerId, ReadyGame}
+import distantlands.protocol.projection.{CardDetailsProjection,
   TrackedPawnProjection}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The pawn a Tracker's holder chose reaches the table on the card, for
   * every viewer, since the choice was made openly (catalog batch 10, slice
@@ -788,7 +788,7 @@ counted warbands in their colour":
 ```scala
   test("a Tracker's chosen pawn shows on the card in its player's colour"):
     val tracker = knowable.copy(orientation = Some("face-up"), tracking =
-      Some(TrackedPawnProjection("p2", oathdigital.model.PlayerColor.Red,
+      Some(TrackedPawnProjection("p2", distantlands.model.PlayerColor.Red,
         "Tracking Red")))
     val marker = firstMatch(CardFace.render(tracker),
       ".card-tokens .card-tracking.force-red")
@@ -797,12 +797,12 @@ counted warbands in their colour":
       Some("Tracking Red"))
 ```
 
-with `import oathdigital.protocol.projection.TrackedPawnProjection` at the
+with `import distantlands.protocol.projection.TrackedPawnProjection` at the
 top.
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.application.TrackerProjectionSuite oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.application.TrackerProjectionSuite distantlands.protocol.ProjectionProtocolSuite"`
 Expected: compile failure, `Not found: TrackedPawnProjection`.
 
 - [ ] **Step 3: Add the DTO, its codec and the projector**
@@ -818,7 +818,7 @@ In `WorldProjectionDtos.scala`, add to `CardDetailsProjection`, after
 /** A Tracker's record, as its card shows it: the player whose pawn was
   * chosen, their colour, and the card's words ("Tracking Red"). */
 final case class TrackedPawnProjection(playerId: String,
-    color: oathdigital.model.PlayerColor, label: String)
+    color: distantlands.model.PlayerColor, label: String)
 ```
 
 In `WorldProjectionCodec.scala`:
@@ -845,7 +845,7 @@ In `WorldProjectionCodec.scala`:
   ```
 
 In `GamePresentationProjector.scala`, import
-`oathdigital.gameplay.powers.wake.TrackerWake`. In `playerBoards`, wrap the
+`distantlands.gameplay.powers.wake.TrackerWake`. In `playerBoards`, wrap the
 faceup adviser's details:
 
 ```scala
@@ -892,11 +892,11 @@ block:
 - [ ] **Step 5: Run the tests to see them pass**
 
 ```bash
-./sbtw "testOnly oathdigital.application.TrackerProjectionSuite oathdigital.application.CardWarbandsProjectionSuite oathdigital.protocol.ProjectionProtocolSuite"
+./sbtw "testOnly distantlands.application.TrackerProjectionSuite distantlands.application.CardWarbandsProjectionSuite distantlands.protocol.ProjectionProtocolSuite"
 ```
 
 ```bash
-./sbtw "frontend/testOnly oathdigital.frontend.CardFaceSuite"
+./sbtw "frontend/testOnly distantlands.frontend.CardFaceSuite"
 ```
 
 Expected: PASS.
@@ -986,7 +986,7 @@ Expected: every test passes, and statement coverage is at least 92%.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala src/main/scala/oathdigital/application/GamePresentationProjector.scala src/test/scala/oathdigital/application/TrackerProjectionSuite.scala frontend/src/main/scala/oathdigital/frontend/CardFace.scala frontend/src/test/scala/oathdigital/frontend/CardFaceSuite.scala docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
+git add shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala src/main/scala/distantlands/application/GamePresentationProjector.scala src/test/scala/distantlands/application/TrackerProjectionSuite.scala frontend/src/main/scala/distantlands/frontend/CardFace.scala frontend/src/test/scala/distantlands/frontend/CardFaceSuite.scala docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md docs/ROADMAP.md
 git commit -m "$(cat <<'EOF'
 feat(projection): show a Tracker's chosen pawn on the card
 

@@ -43,7 +43,7 @@
   - The source pick posts no "Chose" line.
   - Clay Rattle's piles carry no badge, and its empty piles stay pickable.
 - **No CSS change.** A pile's badge reuses `.target-detail-badge`, which is an inline-block pill outside a `.site` box. Impeccable is not needed.
-- **Never touch the live database `var/oathdigital`.** Never run `preview_start`.
+- **Never touch the live database `var/distantlands`.** Never run `preview_start`.
 - **Concurrent sessions.** Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -51,8 +51,8 @@
   - Copy `.superpowers/` from the main checkout if a ledger is in use.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Verification commands:**
-  - One server suite: `./sbtw "testOnly oathdigital.gameplay.SearchProcedureSuite"`.
-  - One frontend suite: `./sbtw "frontend/testOnly oathdigital.frontend.SearchLaunchSuite"`.
+  - One server suite: `./sbtw "testOnly distantlands.gameplay.SearchProcedureSuite"`.
+  - One frontend suite: `./sbtw "frontend/testOnly distantlands.frontend.SearchLaunchSuite"`.
   - Whole server or frontend: `./sbtw test` or `./sbtw frontend/test`.
   - Full gate (Task 6), in order:
     1. `./sbtw "test" "frontend/test"`
@@ -65,13 +65,13 @@
 ### Task 1: Pile refs, their labels, and Clay Rattle on the board
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ActionValues.scala` (`object SearchSource`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:398-417` (the `Deck` and `DiscardPile` rows)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/ClayRattle.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/Convoys.scala:19-22` (doc only)
-- Create: `src/test/scala/oathdigital/model/SearchSourceSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/SlotOptionRowsSuite.scala:76-79`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/action/ClayRattleSuite.scala:53-60`
+- Modify: `src/main/scala/distantlands/model/ActionValues.scala` (`object SearchSource`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:398-417` (the `Deck` and `DiscardPile` rows)
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/ClayRattle.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/Convoys.scala:19-22` (doc only)
+- Create: `src/test/scala/distantlands/model/SearchSourceSuite.scala`
+- Modify: `src/test/scala/distantlands/application/SlotOptionRowsSuite.scala:76-79`
+- Modify: `src/test/scala/distantlands/gameplay/powers/action/ClayRattleSuite.scala:53-60`
 
 **Interfaces:**
 - Produces:
@@ -82,10 +82,10 @@
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/model/SearchSourceSuite.scala`:
+Create `src/test/scala/distantlands/model/SearchSourceSuite.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /** A pile a Search draws from, as the board option that names it (search
   * source design, ruling 2). */
@@ -133,7 +133,7 @@ In `ClayRattleSuite`, extend "it places two secrets and asks which pile to shuff
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.model.SearchSourceSuite oathdigital.application.SlotOptionRowsSuite oathdigital.gameplay.powers.action.ClayRattleSuite"`
+Run: `./sbtw "testOnly distantlands.model.SearchSourceSuite distantlands.application.SlotOptionRowsSuite distantlands.gameplay.powers.action.ClayRattleSuite"`
 Expected: compile failure, because `ref`, `fromRef` and `option` are not members of `SearchSource`.
 
 - [ ] **Step 3: Add the pile refs**
@@ -177,7 +177,7 @@ In `WalkerDecisionProjector.optionProjection`, replace the `Deck` and `DiscardPi
         row(SearchSource.name(SearchSource.RegionalDiscard(pile.region)))
 ```
 
-`SearchSource.name` gives "Cradle discard pile". The file already imports `oathdigital.model._`.
+`SearchSource.name` gives "Cradle discard pile". The file already imports `distantlands.model._`.
 
 In `Convoys.scala`'s doc, replace "the `DiscardPile` option reads "Discard to the X discard", which asks something else" with "the `DiscardPile` option is the pile a card is discarded to or a Search draws from, which is not this card's question".
 
@@ -215,7 +215,7 @@ Replace `ref`, the `Decide` in `build`, and `chosen`:
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.model.SearchSourceSuite oathdigital.application.SlotOptionRowsSuite oathdigital.gameplay.powers.action.ClayRattleSuite oathdigital.gameplay.powers.action.RelicThiefSuite"`
+Run: `./sbtw "testOnly distantlands.model.SearchSourceSuite distantlands.application.SlotOptionRowsSuite distantlands.gameplay.powers.action.ClayRattleSuite distantlands.gameplay.powers.action.RelicThiefSuite"`
 Expected: PASS.
 
 Then run `./sbtw test`. Expected: PASS.
@@ -225,13 +225,13 @@ Then run `./sbtw test`. Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ActionValues.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/ClayRattle.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/Convoys.scala \
-  src/test/scala/oathdigital/model/SearchSourceSuite.scala \
-  src/test/scala/oathdigital/application/SlotOptionRowsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/ClayRattleSuite.scala
+git add src/main/scala/distantlands/model/ActionValues.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/gameplay/powers/action/ClayRattle.scala \
+  src/main/scala/distantlands/gameplay/powers/action/Convoys.scala \
+  src/test/scala/distantlands/model/SearchSourceSuite.scala \
+  src/test/scala/distantlands/application/SlotOptionRowsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/ClayRattleSuite.scala
 git commit -m "feat(search): name piles as board options; Clay Rattle offers them"
 ```
 
@@ -244,8 +244,8 @@ Stage any other test file Step 6 changed, by explicit path.
 A refactor: Travel's behaviour does not change, and its suites prove it.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/travel/TravelOptions.scala` (rewrite)
+- Create: `src/main/scala/distantlands/gameplay/walker/PricedOptions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/travel/TravelOptions.scala` (rewrite)
 
 **Interfaces:**
 - Produces:
@@ -256,17 +256,17 @@ A refactor: Travel's behaviour does not change, and its suites prove it.
 
 - [ ] **Step 1: Run Travel's pricing suites green first**
 
-Run: `./sbtw "testOnly oathdigital.application.TravelDestinationRowsSuite oathdigital.gameplay.TravelProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.application.TravelDestinationRowsSuite distantlands.gameplay.TravelProcedureSuite"`
 Expected: PASS. This is the baseline the refactor must keep.
 
 - [ ] **Step 2: Create `PricedOptions`**
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.walker.WalkerSimulation.{PreviewOutcome,
+import distantlands.gameplay.walker.WalkerSimulation.{PreviewOutcome,
   PreviewedOption}
-import oathdigital.model._
+import distantlands.model._
 
 /** A parked choose-one as its player is shown it, for a procedure whose
   * options each cost something different (travel destination design and
@@ -393,10 +393,10 @@ object PricedOptions:
 Replace the whole file with:
 
 ```scala
-package oathdigital.gameplay.actions.travel
+package distantlands.gameplay.actions.travel
 
-import oathdigital.gameplay.walker.{PricedOptions, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.walker.{PricedOptions, WalkerPowers}
+import distantlands.model._
 
 /** The destination decision as its player is shown it (travel destination
   * design, rulings 3 and 4), priced by [[PricedOptions]]. Every other
@@ -412,14 +412,14 @@ object TravelOptions:
 
 - [ ] **Step 4: Run Travel's suites to verify nothing changed**
 
-Run: `./sbtw "testOnly oathdigital.application.TravelDestinationRowsSuite oathdigital.gameplay.TravelProcedureSuite oathdigital.gameplay.powers.travel.*"`
+Run: `./sbtw "testOnly distantlands.application.TravelDestinationRowsSuite distantlands.gameplay.TravelProcedureSuite distantlands.gameplay.powers.travel.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/PricedOptions.scala \
-  src/main/scala/oathdigital/gameplay/actions/travel/TravelOptions.scala
+git add src/main/scala/distantlands/gameplay/walker/PricedOptions.scala \
+  src/main/scala/distantlands/gameplay/actions/travel/TravelOptions.scala
 git commit -m "refactor(walker): share Travel's option pricing as PricedOptions"
 ```
 
@@ -432,16 +432,16 @@ The engine change breaks every test that starts a Search with a source, so this 
 - Until Task 4 prices the sources, the projector shows them through the playable-option filter.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala` (rewrite)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala:86-91` (doc) and `:166-171` (entry)
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala:464-481`
-- Modify: `src/main/scala/oathdigital/application/gamelog/StartLines.scala:59-63`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala:190`
-- Create: `src/test/scala/oathdigital/gameplay/SearchPlay.scala`
-- Create: `src/test/scala/oathdigital/application/SearchSourceServiceSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/ParkedServiceFixture.scala` (add `startSearch`, `pickSearchSource`)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/SearchFixture.scala:60-63`
-- Modify: `src/test/scala/oathdigital/gameplay/SearchProcedureSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala` (rewrite)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala:86-91` (doc) and `:166-171` (entry)
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala:464-481`
+- Modify: `src/main/scala/distantlands/application/gamelog/StartLines.scala:59-63`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala:190`
+- Create: `src/test/scala/distantlands/gameplay/SearchPlay.scala`
+- Create: `src/test/scala/distantlands/application/SearchSourceServiceSuite.scala`
+- Modify: `src/test/scala/distantlands/application/ParkedServiceFixture.scala` (add `startSearch`, `pickSearchSource`)
+- Modify: `src/test/scala/distantlands/gameplay/powers/SearchFixture.scala:60-63`
+- Modify: `src/test/scala/distantlands/gameplay/SearchProcedureSuite.scala`
 - Modify: every other test that starts a Search with a source selection (Step 7 lists them)
 - Modify: `src/test/resources/gamelog/{search,augury}.{actor,other}.log` (regenerated)
 
@@ -454,20 +454,20 @@ The engine change breaks every test that starts a Search with a source, so this 
   - `SearchProcedure.actorRegion(ready: ReadyGame, actor: PlayerId): Either[OathViolation, Region]` (now public).
   - `SearchProcedure.legalSources` keeps its signature for now (Task 4 deletes it), reading the preview.
   - Test helpers:
-    - `oathdigital.gameplay.SearchPlay.searched(rules: OathRules, state: OathState, actor: PlayerId, pile: SearchSource = SearchSource.WorldDeck, modifiers: Vector[PowerId] = Vector.empty): Either[OathViolation, OathTransition]`
+    - `distantlands.gameplay.SearchPlay.searched(rules: OathRules, state: OathState, actor: PlayerId, pile: SearchSource = SearchSource.WorldDeck, modifiers: Vector[PowerId] = Vector.empty): Either[OathViolation, OathTransition]`
     - `SearchPlay.source(pile: SearchSource): DecisionAnswer`
     - `ParkedServiceFixture.startSearch(actor: PlayerId): GameCommand`
     - `ParkedServiceFixture.pickSearchSource(actor: PlayerId, pile: SearchSource): GameCommand`
 
 - [ ] **Step 1: Write the test helpers**
 
-Create `src/test/scala/oathdigital/gameplay/SearchPlay.scala`:
+Create `src/test/scala/distantlands/gameplay/SearchPlay.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.model._
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.model._
 
 /** A Search driven past its source pick, for the suites that test what a
   * Search does rather than the pick. */
@@ -488,7 +488,7 @@ object SearchPlay:
   yield picked.copy(events = started.events ++ picked.events)
 ```
 
-In `ParkedServiceFixture`, import `oathdigital.gameplay.SearchPlay` and `oathdigital.gameplay.actions.search.SearchProcedure`, then add after `pickTravelDestination`:
+In `ParkedServiceFixture`, import `distantlands.gameplay.SearchPlay` and `distantlands.gameplay.actions.search.SearchProcedure`, then add after `pickTravelDestination`:
 
 ```scala
   /** `actor` starts a Search; the walk parks on the source. */
@@ -502,7 +502,7 @@ In `ParkedServiceFixture`, import `oathdigital.gameplay.SearchPlay` and `oathdig
       SearchProcedure.sourceDecisionId, SearchPlay.source(pile)))
 ```
 
-In `SearchFixture`, import `oathdigital.gameplay.SearchPlay` and replace `start`:
+In `SearchFixture`, import `distantlands.gameplay.SearchPlay` and replace `start`:
 
 ```scala
   /** Starts a Search with `modifiers` and picks the world deck. */
@@ -514,7 +514,7 @@ In `SearchFixture`, import `oathdigital.gameplay.SearchPlay` and replace `start`
 
 - [ ] **Step 2: Write the failing engine and service tests**
 
-In `SearchProcedureSuite`, import `oathdigital.testkit.Unwrap.rejected` beside `accepted`, and add:
+In `SearchProcedureSuite`, import `distantlands.testkit.Unwrap.rejected` beside `accepted`, and add:
 
 ```scala
   private def searched(under: OathRules, ready: ReadyGame,
@@ -581,14 +581,14 @@ In the remaining tests, apply these rewrites:
 
 Here `X` is whichever rules the test uses: `rules`, `withPowers` or `withPower`.
 
-Create `src/test/scala/oathdigital/application/SearchSourceServiceSuite.scala`:
+Create `src/test/scala/distantlands/application/SearchSourceServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** The source decision through the service: Undo takes back the start, and
   * the answer draws, so nothing takes it back (search source design,
@@ -637,7 +637,7 @@ In `GameApplicationServiceActionsSuite`, rewrite "Search draw port cannot inject
 
 - [ ] **Step 3: Run the new tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SearchProcedureSuite oathdigital.application.SearchSourceServiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SearchProcedureSuite distantlands.application.SearchSourceServiceSuite"`
 Expected: compile failure, because `sourceDecisionId` is not a member of `SearchProcedure`.
 
 - [ ] **Step 4: Rewrite `SearchProcedure`**
@@ -645,15 +645,15 @@ Expected: compile failure, because `sourceDecisionId` is not a member of `Search
 Replace everything from the imports down to `rebuild` (inclusive), and the private `tree` and `actorRegion`, so the object reads as follows. Keep `option`, `card`, `answered`, `selectedCards`, `selected` and `fail` as they are.
 
 ```scala
-package oathdigital.gameplay.actions.search
+package distantlands.gameplay.actions.search
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.OathLifecycle
-import oathdigital.gameplay.actions.{CardPlay, SearchRules}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}
-import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.OathLifecycle
+import distantlands.gameplay.actions.{CardPlay, SearchRules}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.walker.{WalkerPowers, WalkerSimulation}
+import distantlands.gameplay.walker.WalkerSimulation.PreviewedOption
+import distantlands.model._
 
 /** Search on the walker (search source design).
   *
@@ -786,7 +786,7 @@ The body of `body` is the old `tree`'s body unchanged: `val cost`, `val draw`, `
               source <- SearchProcedure.sourceOf(answer)
               region <- SearchProcedure.actorRegion(ready, actor)
               prepared <- searchDrawPort.prepare(ready, source, region)
-              authoritative <- oathdigital.gameplay.actions.SearchRules.draw(
+              authoritative <- distantlands.gameplay.actions.SearchRules.draw(
                 ready, source, region)
               _ <- Either.cond(prepared == authoritative, (),
                 OathViolation.SearchDrawMismatch(
@@ -811,7 +811,7 @@ The body of `body` is the old `tree`'s body unchanged: `val cost`, `val draw`, `
 
 - [ ] **Step 6: Run the new tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SearchProcedureSuite oathdigital.application.SearchSourceServiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SearchProcedureSuite distantlands.application.SearchSourceServiceSuite"`
 Expected: PASS. `GameApplicationServiceActionsSuite` passes once Step 7 moves its other Search test.
 
 - [ ] **Step 7: Run the server suite and move the other Search starts**
@@ -833,11 +833,11 @@ Fix each with one rule: a Search start no longer names a source; the source is t
    - A start that no source can complete is refused with `NoPlayableOption(ActionRef.Search.key)`.
    - A pick of a source that cannot be completed is refused at the answer.
    Change an expected error only where the test is about that refusal, and say which in the diff.
-6. **Golden logs.** Regenerate with `GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`. Expect `search` and `augury` to change, plus any other script that searches. Read the diff line by line.
+6. **Golden logs.** Regenerate with `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`. Expect `search` and `augury` to change, plus any other script that searches. Read the diff line by line.
    - **Allowed:** the line numbers shift, because the start is its own batch that posts nothing and the "Search" section header moves to the pick's batch.
    - **Not allowed:** any other change, including a "Chose" line for the source.
 
-Files the grep found, all under `src/test/scala/oathdigital/`:
+Files the grep found, all under `src/test/scala/distantlands/`:
 - `application/{GameApplicationServiceActionsSuite, GameApplicationServiceProjectionSuite, ModifierStartControlsSuite}`
 - `application/gamelog/LogScripts`
 - `gameplay/VisionPlaySuite`
@@ -864,15 +864,15 @@ git commit -m "feat(search): ask the source inside the walker"
 ### Task 4: Priced sources and the Search control
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/search/SearchOptions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala` (add `startable`, delete `legalSources`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (Search entry)
-- Modify: `src/main/scala/oathdigital/application/LegalActionProjector.scala:113-127, 138-145, 189-200`
-- Modify: `src/main/scala/oathdigital/application/ScopedProjectionContext.scala:16-20`
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala:95`
-- Create: `src/test/scala/oathdigital/application/SearchSourceRowsSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/ModifierStartControlsSuite.scala` (Search section and class doc)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala:57-66`
+- Create: `src/main/scala/distantlands/gameplay/actions/search/SearchOptions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala` (add `startable`, delete `legalSources`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (Search entry)
+- Modify: `src/main/scala/distantlands/application/LegalActionProjector.scala:113-127, 138-145, 189-200`
+- Modify: `src/main/scala/distantlands/application/ScopedProjectionContext.scala:16-20`
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala:95`
+- Create: `src/test/scala/distantlands/application/SearchSourceRowsSuite.scala`
+- Modify: `src/test/scala/distantlands/application/ModifierStartControlsSuite.scala` (Search section and class doc)
+- Modify: `src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala:57-66`
 
 **Interfaces:**
 - Consumes:
@@ -886,20 +886,20 @@ git commit -m "feat(search): ask the source inside the walker"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/application/SearchSourceRowsSuite.scala`:
+Create `src/test/scala/distantlands/application/SearchSourceRowsSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.search.{Disciples, NewsFromAfar}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.DecisionOptionProjection
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.search.{Disciples, NewsFromAfar}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.DecisionOptionProjection
+import distantlands.testkit.{CatalogNames, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** What the parked source decision shows each pile as: its cost under the
   * selected modifiers, or why it cannot be searched (search source design,
@@ -1011,19 +1011,19 @@ In `ForcedLaborSuite`, replace the body of "a searcher who cannot pay is not off
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.SearchSourceRowsSuite oathdigital.application.ModifierStartControlsSuite oathdigital.gameplay.powers.search.ForcedLaborSuite"`
+Run: `./sbtw "testOnly distantlands.application.SearchSourceRowsSuite distantlands.application.ModifierStartControlsSuite distantlands.gameplay.powers.search.ForcedLaborSuite"`
 Expected: compile failure, because `startable` is not a member of `SearchProcedure`.
 
 - [ ] **Step 3: Price the sources**
 
-Create `src/main/scala/oathdigital/gameplay/actions/search/SearchOptions.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/search/SearchOptions.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.search
+package distantlands.gameplay.actions.search
 
-import oathdigital.gameplay.actions.SearchRules
-import oathdigital.gameplay.walker.{PricedOptions, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.actions.SearchRules
+import distantlands.gameplay.walker.{PricedOptions, WalkerPowers}
+import distantlands.model._
 
 /** The source decision as its player is shown it (search source design,
   * rulings 3 and 4), priced by [[PricedOptions]]. An empty pile says so
@@ -1091,7 +1091,7 @@ In `GameProjection.scala`, delete the line `legalSearchSources = legal.search,`.
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.SearchSourceRowsSuite oathdigital.application.ModifierStartControlsSuite oathdigital.gameplay.powers.search.ForcedLaborSuite oathdigital.gameplay.SearchProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.application.SearchSourceRowsSuite distantlands.application.ModifierStartControlsSuite distantlands.gameplay.powers.search.ForcedLaborSuite distantlands.gameplay.SearchProcedureSuite"`
 Expected: PASS.
 
 Then run `./sbtw test`. Expected: PASS.
@@ -1101,15 +1101,15 @@ Then run `./sbtw test`. Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/search/SearchOptions.scala \
-  src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala \
-  src/main/scala/oathdigital/application/LegalActionProjector.scala \
-  src/main/scala/oathdigital/application/ScopedProjectionContext.scala \
-  src/main/scala/oathdigital/application/GameProjection.scala \
-  src/test/scala/oathdigital/application/SearchSourceRowsSuite.scala \
-  src/test/scala/oathdigital/application/ModifierStartControlsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/ForcedLaborSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/search/SearchOptions.scala \
+  src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala \
+  src/main/scala/distantlands/application/LegalActionProjector.scala \
+  src/main/scala/distantlands/application/ScopedProjectionContext.scala \
+  src/main/scala/distantlands/application/GameProjection.scala \
+  src/test/scala/distantlands/application/SearchSourceRowsSuite.scala \
+  src/test/scala/distantlands/application/ModifierStartControlsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/search/ForcedLaborSuite.scala
 git commit -m "feat(search): price each source, and offer one Search control"
 ```
 
@@ -1120,17 +1120,17 @@ Stage any other test file Step 5 changed, by explicit path.
 ### Task 5: Frontend: start Search, draw the piles as options, retire the source list
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala:17`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionDtos.scala:90`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala:15, 47-48, 99-100, 146, 170-174`
-- Modify: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala:38`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/frontend.scala:30-31`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:159-172`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardHomes.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:145-185`
-- Create: `frontend/src/test/scala/oathdigital/frontend/SearchLaunchSuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/BoardHomesSuite.scala:44-50`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ViewerPresentationSuite.scala:103-104`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala:17`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala:90`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala:15, 47-48, 99-100, 146, 170-174`
+- Modify: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala:38`
+- Modify: `frontend/src/main/scala/distantlands/frontend/frontend.scala:30-31`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:159-172`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardHomes.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:145-185`
+- Create: `frontend/src/test/scala/distantlands/frontend/SearchLaunchSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/BoardHomesSuite.scala:44-50`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ViewerPresentationSuite.scala:103-104`
 
 **Interfaces:**
 - Consumes (Task 4): legal control `beginSearch`. The wire option kinds are `deck` / `world` and `discard-pile` / region key.
@@ -1140,15 +1140,15 @@ Stage any other test file Step 5 changed, by explicit path.
 
 - [ ] **Step 1: Write the failing frontend tests**
 
-Create `frontend/src/test/scala/oathdigital/frontend/SearchLaunchSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/SearchLaunchSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, one}
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => Intent}
-import oathdigital.testkit.Unwrap.as
+import distantlands.frontend.Dom.{all, one}
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent}
+import distantlands.testkit.Unwrap.as
 import org.scalajs.dom
 
 /** Search starts the walker with no source, and the parked source decision
@@ -1214,7 +1214,7 @@ In `ProjectionProtocolSuite`, delete the `legalSearchSources = …` line from th
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SearchLaunchSuite oathdigital.frontend.BoardHomesSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SearchLaunchSuite distantlands.frontend.BoardHomesSuite"`
 Expected: FAIL.
 - `.search-action` is not found, since the renderer still reads `legalSearchSources`.
 - `has("deck", "world")` is false.
@@ -1301,7 +1301,7 @@ Replace the site's inline badge (`options.view(siteKeys).flatMap(_.option.badge)
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SearchLaunchSuite oathdigital.frontend.BoardHomesSuite oathdigital.frontend.DiscardPileSuite oathdigital.frontend.TravelLaunchSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SearchLaunchSuite distantlands.frontend.BoardHomesSuite distantlands.frontend.DiscardPileSuite distantlands.frontend.TravelLaunchSuite"`
 Expected: PASS.
 
 Then run `./sbtw "test" "frontend/test"`. Expected: PASS.
@@ -1309,17 +1309,17 @@ Then run `./sbtw "test" "frontend/test"`. Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala \
-  shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala \
-  frontend/src/main/scala/oathdigital/frontend/frontend.scala \
-  frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala \
-  frontend/src/main/scala/oathdigital/frontend/BoardHomes.scala \
-  frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala \
-  frontend/src/test/scala/oathdigital/frontend/SearchLaunchSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/BoardHomesSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ViewerPresentationSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala \
+  shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala \
+  shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala \
+  frontend/src/main/scala/distantlands/frontend/frontend.scala \
+  frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala \
+  frontend/src/main/scala/distantlands/frontend/BoardHomes.scala \
+  frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala \
+  frontend/src/test/scala/distantlands/frontend/SearchLaunchSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/BoardHomesSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ViewerPresentationSuite.scala
 git commit -m "feat(frontend): start Search and pick its source on the board"
 ```
 

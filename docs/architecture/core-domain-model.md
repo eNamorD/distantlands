@@ -7,13 +7,13 @@ a gameplay-rules specification.
 
 ## Boundaries
 
-- `oathdigital.model` owns immutable game and campaign state, typed component
+- `distantlands.model` owns immutable game and campaign state, typed component
   identities, container-owned card state, derived card locations, and
   aggregate validation. That state includes the walker's durable position
   (`PendingTree`), dice pools and roll outcomes (`rollPools`,
   `rollOutcomes`), and used-power tracking (`usedPowers`). The event
   vocabulary (`OathEvent`, `GameEventProtocol.scala`) lives here too.
-- `oathdigital.engine` owns only generic replay abstractions
+- `distantlands.engine` owns only generic replay abstractions
   (`EventReplayEngine`). Commands live in `application` (`GameCommands.scala`:
   `Begin`, `ResolveWalker`, `Undo`, `Redo` and the consent commands), and
   rules live in `gameplay`.
@@ -81,7 +81,7 @@ game must use an explicit envelope containing:
 - either a versioned state payload or the authoritative action/event journal.
 
 Do not serialize `CardIndex`, presentation views, or Scala class names as
-external type discriminators. Oath Digital uses explicit versioned event
+external type discriminators. Distant Lands uses explicit versioned event
 envelopes and reconstructs state through deterministic replay; see
 [authoritative-events.md](authoritative-events.md).
 

@@ -37,20 +37,20 @@ for path in sources:
                       f"exceeds {MAX_SCALA_FILE_LINES} lines")
 
 forbidden_imports = {
-    "src/main/scala/oathdigital/model": (
+    "src/main/scala/distantlands/model": (
         "application", "gameplay", "persistence", "serialization", "server"
     ),
-    "src/main/scala/oathdigital/gameplay": (
+    "src/main/scala/distantlands/gameplay": (
         "application", "persistence", "presentation", "protocol",
         "serialization", "server"
     ),
-    "src/main/scala/oathdigital/application": (
+    "src/main/scala/distantlands/application": (
         "persistence", "serialization", "server"
     ),
     # Actions are the engine's procedures; powers contribute to them through
     # power windows (docs/architecture/gameplay-modules.md).
-    "src/main/scala/oathdigital/gameplay/actions": ("gameplay.powers",),
-    "src/main/scala/oathdigital/catalog": (
+    "src/main/scala/distantlands/gameplay/actions": ("gameplay.powers",),
+    "src/main/scala/distantlands/catalog": (
         "application", "gameplay", "persistence", "serialization", "server"
     ),
 }
@@ -58,12 +58,12 @@ forbidden_imports = {
 # line counts skull faces as the chosen plans score them, which only the
 # plan cards know (ROADMAP "Campaign notes read the attack rules").
 allowed_imports = {
-    "src/main/scala/oathdigital/gameplay/actions/campaign/CampaignNotes.scala":
-        "import oathdigital.gameplay.powers.campaign.AttackScore\n",
+    "src/main/scala/distantlands/gameplay/actions/campaign/CampaignNotes.scala":
+        "import distantlands.gameplay.powers.campaign.AttackScore\n",
 }
 for prefix, packages in forbidden_imports.items():
     root = ROOT / prefix
-    needles = tuple(f"import oathdigital.{package}" for package in packages)
+    needles = tuple(f"import distantlands.{package}" for package in packages)
     for path in scala_sources(root):
         text = path.read_text(encoding="utf-8")
         text = text.replace(allowed_imports.get(relative(path), "\0"), "")
@@ -75,9 +75,9 @@ for prefix, packages in forbidden_imports.items():
 # imports gameplay, application or server rules; the shared protocol
 # imports nothing but itself (docs/architecture/codebase-structure.md).
 # One exception: build.sbt grafts three `model` files into the Scala.js
-# build, and `oathdigital.model.PlayerColor` from them is the one model
+# build, and `distantlands.model.PlayerColor` from them is the one model
 # name the frontend and the shared protocol reference, by import or fully
-# qualified. Any other `oathdigital.<package>` reference, in an import or
+# qualified. Any other `distantlands.<package>` reference, in an import or
 # written out in full, is a violation.
 GRAFTED_MODEL_FILES = ("Identity.scala", "PlayerColor.scala", "Resources.scala")
 SHARED_MODEL_NAMES = {"PlayerColor"}
@@ -87,11 +87,12 @@ for grafted in GRAFTED_MODEL_FILES:
         errors.append(f"build.sbt: no longer grafts model/{grafted} into the "
                       "frontend; revisit the frontend gate's model exception")
 
+# `distantlands.chronicles`, `distantlands.log` and `distantlands.table` are browser storage keys, not packages.
 qualified_reference = re.compile(
-    r"\boathdigital\.([A-Za-z0-9_]+)(?:\.([A-Za-z0-9_]+))?")
-# `import oathdigital.{application, model => m}` names packages inside the
+    r"\bdistantlands\.(?!(?:chronicles|log|table)\b)([A-Za-z0-9_]+)(?:\.([A-Za-z0-9_]+))?")
+# `import distantlands.{application, model => m}` names packages inside the
 # braces, where the pattern above cannot see them.
-brace_group_import = re.compile(r"\bimport\s+oathdigital\.\{([^}]*)\}")
+brace_group_import = re.compile(r"\bimport\s+distantlands\.\{([^}]*)\}")
 
 
 def outward_references(path: Path, allowed_packages: tuple[str, ...]):
@@ -123,7 +124,7 @@ for path in scala_sources(ROOT / "shared/src/main/scala"):
         )
 
 printed_text = re.compile(r"\.text\b")
-for path in scala_sources(ROOT / "src/main/scala/oathdigital/gameplay"):
+for path in scala_sources(ROOT / "src/main/scala/distantlands/gameplay"):
     text = path.read_text(encoding="utf-8")
     if "rulesText" in text:
         errors.append(f"{relative(path)}: gameplay must not inspect catalog rulesText")
@@ -131,7 +132,7 @@ for path in scala_sources(ROOT / "src/main/scala/oathdigital/gameplay"):
         errors.append(f"{relative(path)}: gameplay must not read printed power text")
 
 legacy_patterns = {
-    r"\boathdigital\.setup\b": "legacy setup package",
+    r"\bdistantlands\.setup\b": "legacy setup package",
     r"\bSetupEventWire\b": "deleted setup wire",
     r"\bSetupState\b": "deleted bounded setup aggregate",
     r"\bBeginSetup\b": "deleted bounded setup command",
@@ -176,7 +177,7 @@ for path in sources:
 # ExecutableCatalog` constructor parameter or offers a `forCatalog`
 # constructor; the only files allowed one are the context records listed
 # here, each with its reason.
-POWERS_ROOT = "src/main/scala/oathdigital/gameplay/powers"
+POWERS_ROOT = "src/main/scala/distantlands/gameplay/powers"
 catalog_parameter = re.compile(
     r"(?:class|trait|object)\s+\w+[^\n(]*\(\s*catalog: ExecutableCatalog"
     r"|def forCatalog\b|def catalog: ExecutableCatalog")
