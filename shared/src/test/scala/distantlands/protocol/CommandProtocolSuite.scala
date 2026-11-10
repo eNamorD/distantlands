@@ -123,6 +123,12 @@ class CommandProtocolSuite extends munit.FunSuite:
     assertEquals(rejected(ActorlessCommandCodec.decode(repeated)).path,
       "$.intent.payload.terms.transfers[0].advisers")
 
+  test("a transfer row with no advisers key is refused"):
+    val missing = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker","decisionId":"negotiation.deal","payload":{"kind":"propose-terms","terms":{"transfers":[{"recipientPlayerId":"p2","favor":1,"relicIds":[]}],"disclosures":[]}}}}"""
+    assert(rejected(ActorlessCommandCodec.decode(missing)).path
+      .startsWith("$.intent.payload.terms.transfers[0]"),
+      rejected(ActorlessCommandCodec.decode(missing)))
+
   test("an unknown decision-payload kind decodes to a typed error, not an exception"):
     val json = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker",""" +
       """"decisionId":"recover.choice","payload":{"kind":"recover-teleport"}}}"""

@@ -23,7 +23,8 @@ class GameIntentMapperNegotiationSuite extends munit.FunSuite:
       Vector(distantlands.protocol.NegotiationTransfer("blue", 0,
         Vector.empty, Vector(distantlands.protocol.WorldCard("relic", "r1")))),
       Vector.empty))
-    assert(bound(unknown).isLeft, bound(unknown))
+    assertEquals(bound(unknown).left.map(_.path),
+      Left("$.intent.terms.transfers.advisers.kind"))
 
   test("a proposed terms wire answer maps to the engine's terms"):
     val wire = Wire.ProposeTermsWire(distantlands.protocol.NegotiationTerms(
