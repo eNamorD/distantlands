@@ -1,0 +1,404 @@
+package distantlands.gameplay
+
+import distantlands.gameplay.powers.search.CrackedHornCard
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
+  FairIsleSite}
+import distantlands.gameplay.powers.action.{BrassHorseCard, DowsingSticksCard}
+import distantlands.testkit.MenuPlay
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
+import distantlands.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model.OathEvent._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, RoundEndChoices, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, as}
+
+class StateBasedEvaluationSuite extends munit.FunSuite:
+  private val rules = new OathRules(catalog)
+
+  // War Exhaustion's random choice, fixed for each test.
+  private val pickFirstCandidate: Vector[PlayerId] => PlayerId = _.head
+  private val pickSecondCandidate: Vector[PlayerId] => PlayerId = _(1)
+  private val pickLastCandidate: Vector[PlayerId] => PlayerId = _.last
+
+  /** p1's Wake at Ancient City in `round`, with the Usurper limit as
+    * `limited` says. Each of `rulers` rules one site with a warband: the
+    * first Dunes, the second Fair Isle. `holder` holds the title on `side`. */
+  private def preparedTable(
+      rulers: Vector[PlayerId],
+      holder: Option[PlayerId] = None,
+      side: TitleSide = TitleSide.Oathkeeper,
+      round: Int = 1,
+      limited: Boolean = true
+  ): Table =
+    rulers.zip(Vector(DunesSite, FairIsleSite)).foldLeft(
+      Table.start.pawn(p1, at = AncientCitySite).turn(p1, Phase.Wake)
+        .oathkeeper(holder, side)) {
+        case (table, (ruler, site)) => table.warbandsAt(site, ruler, 1) }
+      // The round track is the subject here, and no other suite sets it.
+      .update(_.updateCurrent(current => current.copy(tracks =
+        current.tracks.copy(round = round, usurperLimited = limited))))
+
+  private def prepared(rulers: Vector[PlayerId],
+      holder: Option[PlayerId] = None, side: TitleSide = TitleSide.Oathkeeper,
+      round: Int = 1, limited: Boolean = true): ReadyGame =
+    preparedTable(rulers, holder, side, round, limited).ready
+
+  private def atRoundEnd(table: Table): ReadyGame =
+    table.turn(p1, Phase.RoundEnd).ready
+
+  /** The last event `endRound` journals for `table` at Round End. */
+  private def lastEventAtRoundEnd(table: Table,
+      pick: Vector[PlayerId] => PlayerId): OathEvent =
+    accepted(StateBasedEvaluation.endRound(Ready(atRoundEnd(table)),
+      RoundEndChoices.picking(pick))).last
+
+  private def withGoal(ready: ReadyGame, goal: OathkeeperGoal): ReadyGame =
+    // No Table step sets the campaign's Oathkeeper goal.
+    ready.updateCampaign(_.copy(oathkeeperGoal = goal))
+
+  test("the next round starts with a Chancellor who appeared mid-round"):
+    // p1 began round 1; p3 became the Chancellor during it (ruling R4).
+    val ready = atRoundEnd(Table.start.imperial(p3).roundStarter(p1))
+    val after = Outcomes.ready(accepted(rules.evolve(Ready(ready),
+      RoundEnded(1, Some(2)))))
+    assertEquals(after.game.current.tracks.roundStarter, p3)
+    assertEquals(after.game.current.turn.activePlayer, p3)
+    assertEquals(after.game.current.turn.phase, Phase.Wake)
+
+  test("after round 8 War Exhaustion runs from the round's own starter"):
+    // A Chancellor who appears in round 8 starts no round (ruling R4).
+    val ready = atRoundEnd(Table.start.imperial(p3).roundStarter(p1)
+      .update(_.updateCurrent(current => current.copy(tracks =
+        current.tracks.copy(round = 8)))))
+    val after = Outcomes.ready(accepted(rules.evolve(Ready(ready),
+      RoundEnded(8, None))))
+    assertEquals(after.game.current.tracks.roundStarter, p1)
+    assertEquals(after.game.current.turn.activePlayer, p1)
+    assertEquals(after.game.current.turn.phase, Phase.WarExhaustion)
+
+  test("all four printed goals qualify from their authoritative holdings"):
+    val cases = Vector(
+      // p1 rules Dunes.
+      OathkeeperGoal.Supremacy -> (preparedTable(Vector(p1)) -> p1),
+      // p2 holds a relic.
+      OathkeeperGoal.Protection -> (preparedTable(Vector.empty)
+        .relic(p2, BrassHorseCard, facedown = true) -> p2),
+      // p3 holds the People's Favor.
+      OathkeeperGoal.ThePeople -> (preparedTable(Vector.empty)
+        .peoplesFavor(Some(p3), favor = 1) -> p3),
+      // p1 holds the Darkest Secret.
+      OathkeeperGoal.Devotion -> (preparedTable(Vector.empty)
+        .darkestSecret(Some(p1), secrets = 1) -> p1)
+    )
+
+    cases.foreach { case (goal, (table, expected)) =>
+      val scoped = withGoal(table.ready, goal)
+      assertEquals(OathkeeperRules.outcome(scoped),
+        OathkeeperOutcome.Transfer(Some(expected)), clue(goal))
+      assertEquals(new GameProjector(catalog).projectPublic("goal",
+        LoadedGame(Ready(scoped), 0)).oathkeeper.map(_.goal),
+        Some(goal.key), clue(goal))
+    }
+
+  test("Protection requires at least one relic and preserves highest-count ties"):
+    val protection = withGoal(prepared(Vector.empty), OathkeeperGoal.Protection)
+    assertEquals(OathkeeperRules.outcome(protection), OathkeeperOutcome.NoChange)
+
+    // p1 holds the title, and p1 and p2 hold one relic each.
+    val tied = withGoal(preparedTable(Vector.empty, holder = Some(p1))
+      .relic(p1, BrassHorseCard, facedown = true)
+      .relic(p2, CrackedHornCard, facedown = true).ready,
+      OathkeeperGoal.Protection)
+    assertEquals(OathkeeperRules.outcome(tied), OathkeeperOutcome.NoChange)
+
+  test("round four releases limiter and retained Usurper wins next Wake"):
+    val holder = p1                                  // the first player
+    val initial = Ready(prepared(Vector(holder), Some(holder),
+      round = 3, limited = true))
+    // The quiet table's turn order starts with p1.
+    val turnOrder = Vector(p1, p2, p3)
+    var state: OathState = initial
+    var events = Vector.empty[OathEvent]
+
+    def accept(transition: Either[OathViolation, OathTransition]): Unit =
+      val done = accepted(transition)
+      state = done.state
+      events ++= done.events
+    // A Wake with nothing to decide has already ended by itself.
+    def endWake(player: PlayerId): Unit =
+      if Look(state).phase == Phase.Wake
+      then accept(MenuPlay.started(rules, state, player,
+        PhaseTransitionRef.EndWake))
+    def finishTurn(player: PlayerId): Unit =
+      endWake(player)
+      accept(MenuPlay.started(rules, state, player,
+        PhaseTransitionRef.BeginRest))
+
+    turnOrder.foreach(finishTurn)
+    val roundFour = Outcomes.ready(state)
+    assertEquals(roundFour.game.current.tracks.round, 4)
+    assert(!roundFour.game.current.tracks.usurperLimited)
+    assertEquals(roundFour.game.current.title,
+      OathkeeperState(Some(holder), TitleSide.Usurper))
+    assert(events.contains(UsurperFlipped(holder)))
+
+    endWake(holder)
+    // p1 travels from Ancient City to Broken Peaks.
+    val destination = BrokenPeaksSite.id
+    accept(TravelPlay.travelled(rules, state, holder, destination))
+    assertEquals(Outcomes.ready(state).game.current.title,
+      OathkeeperState(Some(holder), TitleSide.Usurper))
+    accept(MenuPlay.started(rules, state, holder,
+      PhaseTransitionRef.BeginRest))
+    turnOrder.tail.foreach(finishTurn)
+
+    val won = Outcomes.ready(state)
+    assertEquals(won.game.current.result, Some(GameResult(holder)))
+    // The win is the last table event; the winner's Start Chronicle
+    // decision parks after it.
+    assertEquals(events.collect { case won: UsurperVictory => won }.lastOption,
+      Some(UsurperVictory(holder)))
+    assertEquals(won.game.current.walkerProcedure,
+      Some(TriggeredProcedureRef.ChronicleBegin))
+    val replayed = events.foldLeft[Either[OathViolation, OathState]](
+      Right(initial))((next, event) => next.flatMap(rules.evolve(_, event)))
+    assertEquals(replayed, Right(state))
+
+  test("all four true Visions win only with three Visions drawn"):
+    // p1, the active player, qualifies for each Vision in turn.
+    val cases = Vector(
+      VisionRules.Conquest -> preparedTable(Vector(p1)),
+      VisionRules.Sanctuary -> preparedTable(Vector.empty)
+        .relic(p1, DowsingSticksCard, facedown = true),
+      VisionRules.Rebellion -> preparedTable(Vector.empty)
+        .peoplesFavor(Some(p1), favor = 1),
+      VisionRules.Faith -> preparedTable(Vector.empty)
+        .darkestSecret(Some(p1), secrets = 1)
+    )
+    cases.foreach { case (vision, table) =>
+      val revealed = table.revealedVision(p1, vision)
+      val state = revealed.visionsDrawn(3).ready
+      assertEquals(StateBasedEvaluation.visionAtWake(Ready(state)),
+        Right(Some(VisionVictory(p1, Vector(vision)))), clue(vision))
+      val below = revealed.visionsDrawn(2).ready
+      assertEquals(StateBasedEvaluation.visionAtWake(Ready(below)), Right(None),
+        clue(vision))
+    }
+
+  test("a Wake win names every revealed Vision whose goal is met, in " +
+      "reveal order"):
+    // Desecrated Ground let p1 keep Faith and Sanctuary; both are met.
+    val both = preparedTable(Vector.empty)
+      .revealedVisionMet(p1, VisionRules.Faith)
+      .revealedVisionMet(p1, VisionRules.Sanctuary).visionsDrawn(3).ready
+    assertEquals(StateBasedEvaluation.visionAtWake(Ready(both)),
+      Right(Some(VisionVictory(p1,
+        Vector(VisionRules.Faith, VisionRules.Sanctuary)))))
+
+  test("a Wake win leaves out a revealed Vision whose goal is not met"):
+    // p1 rules no site, so Conquest is unmet; Faith is met.
+    val second = preparedTable(Vector.empty)
+      .revealedVision(p1, VisionRules.Conquest)
+      .revealedVisionMet(p1, VisionRules.Faith).visionsDrawn(3).ready
+    assertEquals(StateBasedEvaluation.visionAtWake(Ready(second)),
+      Right(Some(VisionVictory(p1, Vector(VisionRules.Faith)))))
+
+  test("an Exile wins at Wake with a Vision they claim"):
+    // p2 claims p1's Faith with a warband and holds the Darkest Secret.
+    val ready = preparedTable(Vector.empty).turn(p2, Phase.Wake)
+      .revealedVision(p1, VisionRules.Faith)
+      .warbandsOnCard(VisionRules.Faith, p2, 1)
+      .darkestSecret(Some(p2), secrets = 1).visionsDrawn(3).ready
+    assertEquals(StateBasedEvaluation.visionAtWake(Ready(ready)),
+      Right(Some(VisionVictory(p2, Vector(VisionRules.Faith)))))
+
+  test("a Citizen cannot win with a Vision they claim"):
+    val ready = preparedTable(Vector.empty)
+      .revealedVision(p1, VisionRules.Faith)
+      .warbandsOnCard(VisionRules.Faith, p2, 1).imperial(p3, p2)
+      .turn(p2, Phase.Wake).darkestSecret(Some(p2), secrets = 1)
+      .visionsDrawn(3).ready
+    assertEquals(StateBasedEvaluation.visionAtWake(Ready(ready)), Right(None))
+
+  test("a newly flipped Oathkeeper can win by Vision but never immediately as Usurper"):
+    val qualifying = preparedTable(Vector(p1), holder = Some(p1),
+      limited = false)
+    val withVision = qualifying.revealedVision(p1, VisionRules.Conquest)
+      .visionsDrawn(3).ready
+    assertEquals(StateBasedEvaluation.atWake(Ready(withVision)),
+      Right(Some(UsurperFlipped(p1))))
+    val flipped = accepted(rules.evolve(Ready(withVision), UsurperFlipped(p1)))
+    assertEquals(StateBasedEvaluation.visionAtWake(flipped),
+      Right(Some(VisionVictory(p1, Vector(VisionRules.Conquest)))))
+    assertEquals(StateBasedEvaluation.atWake(flipped),
+      Right(Some(UsurperVictory(p1))))
+
+    val noVision = qualifying.visionsDrawn(3).ready
+    val afterFlip = accepted(rules.evolve(Ready(noVision), UsurperFlipped(p1)))
+    assertEquals(StateBasedEvaluation.visionAtWake(afterFlip), Right(None))
+
+  test("rounds one through seven advance without War Exhaustion"):
+    (1 to 7).foreach { round =>
+      val state = preparedTable(Vector.empty, round = round)
+      val events = accepted(StateBasedEvaluation.endRound(
+        Ready(atRoundEnd(state)), RoundEndChoices.firstCandidate))
+      assertEquals(events, Vector(RoundEnded(round, Some(round + 1))), clue(round))
+    }
+
+  test("round-eight War Exhaustion applies Usurper then Oathkeeper then random fallback"):
+    val usurper = preparedTable(Vector.empty, holder = Some(p2),
+      side = TitleSide.Usurper, round = 8)
+    assertEquals(lastEventAtRoundEnd(usurper, pickFirstCandidate),
+      WarExhaustionResolved(p2, VictoryKind.Usurper, Vector.empty, Vector.empty))
+
+    val keeper = preparedTable(Vector.empty, holder = Some(p3), round = 8)
+    assertEquals(lastEventAtRoundEnd(keeper, pickFirstCandidate),
+      WarExhaustionResolved(p3, VictoryKind.Oathkeeper, Vector.empty, Vector.empty))
+
+    val roundEight = preparedTable(Vector.empty, round = 8)
+    val base = atRoundEnd(roundEight)
+    val random = as[WarExhaustionResolved](
+      lastEventAtRoundEnd(roundEight, pickSecondCandidate))
+    assertEquals(random.kind, VictoryKind.RandomSelection)
+    assertEquals(random.winner, random.randomCandidates(1))
+    assertEquals(rules.evolve(Ready(base), random), Left(
+      OathViolation.InvalidEventOrder(
+        "War Exhaustion is only resolved after round eight")),
+      "War Exhaustion replay must include RoundEnded(8, None) first")
+    val afterRound = accepted(rules.evolve(Ready(base), RoundEnded(8, None)))
+    val reordered = random.copy(
+      randomCandidates = random.randomCandidates.reverse)
+    assertEquals(rules.evolve(afterRound, reordered), Left(
+      OathViolation.InvalidEventOrder("War Exhaustion mismatch: expected " +
+        s"LeftRandom(Vector(p1, p2, p3)), recorded $reordered")))
+    val result = rules.evolve(afterRound, random)
+      .map(Outcomes.ready(_).game.current.result)
+    assertEquals(result,
+      Right(Some(GameResult(random.winner, VictoryKind.RandomSelection))))
+
+  test("all printed Visionary outcomes resolve in printed priority order"):
+    val conquestTable = preparedTable(Vector(p1), round = 8)
+    val rebellionTable = preparedTable(Vector.empty, round = 8)
+      .peoplesFavor(Some(p1), favor = 1)
+    val cases = Vector(
+      VisionRules.Conquest -> conquestTable,
+      VisionRules.Rebellion -> rebellionTable,
+      VisionRules.Sanctuary -> preparedTable(Vector.empty, round = 8)
+        .relic(p1, DowsingSticksCard, facedown = true),
+      VisionRules.Faith -> preparedTable(Vector.empty, round = 8)
+        .darkestSecret(Some(p1), secrets = 1)
+    )
+    cases.foreach { case (vision, table) =>
+      val state = table.revealedVision(p1, vision).visionsDrawn(3)
+      assertEquals(lastEventAtRoundEnd(state, pickFirstCandidate),
+        WarExhaustionResolved(p1, VictoryKind.Visionary,
+          Vector(vision), Vector.empty), clue(vision))
+    }
+
+    // p1 qualifies for Conquest and Rebellion; p1 reveals Conquest and p2
+    // Rebellion. Conquest comes first in the printed order.
+    val combined = conquestTable.peoplesFavor(Some(p1), favor = 1)
+      .revealedVision(p1, VisionRules.Conquest)
+      .revealedVision(p2, VisionRules.Rebellion).visionsDrawn(3)
+    assertEquals(lastEventAtRoundEnd(combined, pickFirstCandidate),
+      WarExhaustionResolved(p1, VictoryKind.Visionary,
+        Vector(VisionRules.Conquest), Vector.empty))
+
+  test("tied War Exhaustion Visions go to Conquest, then Rebellion, " +
+      "Sanctuary and Faith"):
+    // p2 and p3 both meet their Visions. Each seat holds the earlier Vision
+    // in turn, so the printed order decides, not the seat.
+    val order = Vector(VisionRules.Conquest, VisionRules.Rebellion,
+      VisionRules.Sanctuary, VisionRules.Faith)
+    for
+      (earlier, i) <- order.zipWithIndex
+      later <- order.drop(i + 1)
+      (first, second) <- Vector(p2 -> p3, p3 -> p2)
+    do
+      val table = preparedTable(Vector.empty, round = 8)
+        .revealedVisionMet(first, earlier).revealedVisionMet(second, later)
+        .visionsDrawn(3)
+      assertEquals(lastEventAtRoundEnd(table, pickFirstCandidate),
+        WarExhaustionResolved(first, VictoryKind.Visionary, Vector(earlier),
+          Vector.empty), clue((earlier, later, first)))
+
+  test("War Exhaustion reads each Vision's own goal, not the player's"):
+    // p1 holds an unmet Conquest beside a met Faith; p2 a met Sanctuary.
+    // Conquest's priority finds no winner, so p2 wins at Sanctuary's,
+    // before p1's Faith.
+    val table = preparedTable(Vector.empty, round = 8)
+      .revealedVision(p1, VisionRules.Conquest)
+      .revealedVisionMet(p1, VisionRules.Faith)
+      .revealedVisionMet(p2, VisionRules.Sanctuary).visionsDrawn(3)
+    assertEquals(lastEventAtRoundEnd(table, pickFirstCandidate),
+      WarExhaustionResolved(p2, VictoryKind.Visionary,
+        Vector(VisionRules.Sanctuary), Vector.empty))
+
+  test("War Exhaustion records every Vision the winner meets"):
+    val table = preparedTable(Vector(p1), round = 8)
+      .revealedVision(p1, VisionRules.Faith)
+      .darkestSecret(Some(p1), secrets = 1)
+      .revealedVision(p1, VisionRules.Conquest).visionsDrawn(3)
+    assertEquals(lastEventAtRoundEnd(table, pickFirstCandidate),
+      WarExhaustionResolved(p1, VictoryKind.Visionary,
+        Vector(VisionRules.Faith, VisionRules.Conquest), Vector.empty))
+
+  test("round-eight Visionary eligibility still requires three Visions drawn"):
+    // p1 rules Dunes and reveals Conquest; `holder` holds the title.
+    def withCount(count: Int, holder: Option[PlayerId]) =
+      preparedTable(Vector(p1), holder = holder, round = 8)
+        .revealedVision(p1, VisionRules.Conquest).visionsDrawn(count)
+
+    Vector(0, 2).foreach { count =>
+      val event = lastEventAtRoundEnd(withCount(count, Some(p2)),
+        pickFirstCandidate)
+      assertEquals(event, WarExhaustionResolved(p2,
+        VictoryKind.Oathkeeper, Vector.empty, Vector.empty), clue(count))
+      val random = as[WarExhaustionResolved](
+        lastEventAtRoundEnd(withCount(count, None), pickLastCandidate))
+      assertEquals(random.kind, VictoryKind.RandomSelection, clue(count))
+    }
+    assertEquals(lastEventAtRoundEnd(withCount(3, None), pickFirstCandidate),
+      WarExhaustionResolved(p1, VictoryKind.Visionary,
+        Vector(VisionRules.Conquest), Vector.empty))
+
+    val below = atRoundEnd(withCount(2, None))
+    val afterRound = accepted(rules.evolve(Ready(below), RoundEnded(8, None)))
+    val premature = WarExhaustionResolved(p1, VictoryKind.Visionary,
+      Vector(VisionRules.Conquest), Vector.empty)
+    assertEquals(rules.evolve(afterRound, premature), Left(
+      OathViolation.InvalidEventOrder("War Exhaustion mismatch: expected " +
+        s"LeftRandom(Vector(p1, p2, p3)), recorded $premature")))
+
+  test("once the game has a result, every command is refused at the lifecycle gate"):
+    // No Table step ends the game.
+    def endedGame(phase: Phase) = preparedTable(Vector.empty).turn(p1, phase)
+      .ready.updateCurrent(_.copy(
+        result = Some(GameResult(p1, VictoryKind.Usurper))))
+    val act = endedGame(Phase.Act)
+    assertEquals(rules.startWalker(Ready(act), ActionRef.Travel, p1),
+      Left(OathViolation.GameEnded))
+    assertEquals(rules.startWalker(Ready(act), ActionRef.Forge, p1),
+      Left(OathViolation.GameEnded))
+    assertEquals(rules.startWalker(Ready(endedGame(Phase.Wake)),
+      PhaseTransitionRef.EndWake, p1), Left(OathViolation.GameEnded))
+
+  test("state-based operation policy permits only bandit-bank refills"):
+    // Ancient City, capacity 3, holds no forces on the quiet table.
+    val site = AncientCitySite.id
+    val empty = Table.start.bandits(site, 0).ready
+    val refill = Move(
+      Piece.Warbands(ForceKind.Bandit, 1),
+      PositionedLocation(Location.WarbandBank(ForceKind.Bandit)),
+      PositionedLocation(Location.Site(site)))
+    val wrongKind = refill.copy(piece = Piece.Warbands(
+      ForceKind.Exile(Look(empty).player(p1).lineage), 1))
+
+    assertEquals(StateBasedOperationPolicy.validate(empty, refill), Right(()))
+    assertEquals(StateBasedOperationPolicy.validate(empty, wrongKind),
+      Left(OperationError.RestrictedOperation(
+        "state-based semantic root is not permitted")))

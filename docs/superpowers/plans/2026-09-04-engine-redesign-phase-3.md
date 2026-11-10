@@ -63,9 +63,9 @@ final class OperationExecutor {
 ## Task 1: Extract the validator shape partition
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/operations/OperationValidator.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala`
-- Test: `src/test/scala/oathdigital/gameplay/OperationValidatorSuite.scala` (new)
+- Create: `src/main/scala/distantlands/gameplay/operations/OperationValidator.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala`
+- Test: `src/test/scala/distantlands/gameplay/OperationValidatorSuite.scala` (new)
 
 Move from `OperationStateMutation` into `OperationValidator.validateOne` (aggregated per operation): position/stack-convention checks (`validatePrimitivePositions`/`validatePositions`/source-destination conventions), card-source checks (duplicate same-card moves, per-location source presence, stack source order, destination legality incl. stateful materialization/orientation), counted-source sufficiency (`validateFavorSources`, `validateWarbandSources`), secret-planner feasibility, pawn/banner move preconditions, non-move guards (FlipSecrets availability, Flip/Peek legality, `AdjustSupply` bounds). Each produces `OperationReason` whose `code`/`detail` equal the old `OperationError`'s verbatim. Mutation keeps only the mutation sequence (internal guards remain as unreachable defensive `Left`s, documented).
 
@@ -78,8 +78,8 @@ Commit: `refactor(operations): extract OperationValidator shape partition`.
 ## Task 2: Slim executor + OperationPipeline + delete OperationTransaction
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationExecutor.scala`
-- Create: `src/main/scala/oathdigital/gameplay/operations/OperationPipeline.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationExecutor.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/OperationPipeline.scala`
 - Delete: `OperationTransaction` (locate: it lives inside `OperationExecutor.scala` today — the object moves to the pipeline file or is deleted; sites migrate)
 
 Executor constructor becomes parameterless and holds only raw mutation (`execute` = describe-guarded `OperationStateAdapter.applyOperation`; `executeAll` raw fold; empty → `EmptyOperationBatch`). `OperationPolicy`/`Permissive`/`exact`/`all` stay in the executor file.

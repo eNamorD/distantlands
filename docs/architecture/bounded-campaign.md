@@ -185,6 +185,36 @@ receives the durable recipient decision before normal Act controls resume.
   and, for what a used plan does later, a hook at a later window that reads the picks from
   `PowerCtx.answered`.
 
+## Imperial Tactics
+
+Imperial allies lend a plan's user battle plans, requirements and amounts
+of favor and secrets (Empire phase design, "1b-ii").
+
+- **Offers** are standing facts in `ReadyGame.planAid`, like consent
+  preferences. `GameCommand.SavePlanAid` goes to `PlanAidDesk`, which
+  checks the ally's whole offer against the parked plan decision
+  (`OathRules.planAidWindow` and `planAidOfferable`) and appends
+  `PlanAidSaved`. The fact opens no command batch, so offers are not
+  undoable; the desk's `stale` check appends `PlanAidCleared` once the
+  window's walk ends or another plan window parks.
+- **The window** is rebuilt from state at every fold, so it sees offers as
+  they are saved. `PlanContext` finds an ally's lent source after the
+  user's own, and meets a requirement with an ally's (`PlanAid.lentNeed`).
+  `BattlePlan.lent` asks the plan again with `PlanContext.fullAid`, which
+  supposes every ally lends everything: a plan that stands only then is
+  shown unavailable, awaiting an offer. The window's gate reads that view
+  and the allies' holdings, not their offers, so the parked decision keeps
+  its shape while allies offer and withdraw.
+- **Payments split** in `PlanAid.payments`: each ally in turn order after
+  the user pays what their offer has left of each part, and the user pays
+  the rest. The plan's cost, a surcharge on it, Peace Envoy's gift and an
+  amount's secrets all split this way. An option's price shows only the
+  user's share.
+- **Spending is pool markers.** What each ally paid, lent and met is a
+  `ModifyDicePool` marker under `campaign.aid.`, as a bandit's applied plan
+  is. The pools are walker scratch, so undoing the user's pick undoes the
+  spending, and the walk's end clears it.
+
 ## Unsupported Campaign rules
 
 Unsupported handlers are ignored, not blocking: the Mountain and Plains Campaign

@@ -1,0 +1,37 @@
+package distantlands.gameplay
+
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+
+/** A synthetic phase power on p1's faceup adviser, shared by the engine suite
+  * and the projection suite (Task 11).
+  */
+object PhasePowerFixture:
+  /** Stub of PhasePower: always usable, builds the tree it is given. */
+  final case class TestPower(id: PowerId, timing: PowerTiming,
+      tree: PlayerId => Operation = _ => BuildOps((_, _) => Right(Vector.empty)),
+      override val cost: Cost = Cost.free)
+      extends PhasePower:
+    def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+        player: PlayerId, source: DecisionOptionRef) = true
+    def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+        source: DecisionOptionRef): Either[OathViolation, Operation] =
+      Right(tree(player))
+
+  /** The card whose printed power the test powers stand in for, and that
+    * power's id. */
+  val card: DenizenId = MagiciansCodeCard.id
+  val powerId: PowerId = FirstGameSetupFixture.catalog.denizen(card)
+    .flatMap(_.powers.headOption).map(_.id)
+    .getOrElse(throw AssertionError("Magician's Code prints no power"))
+  val source: DecisionOptionRef = DecisionOptionRef.Denizen(card)
+
+  /** p1 holds Magician's Code faceup, in `phase` of p1's turn. No site holds
+    * forces, so an action boundary visibly refills bandits. */
+  def holding(phase: Phase): ReadyGame =
+    Table.start.adviser(p1, card).turn(p1, phase).ready

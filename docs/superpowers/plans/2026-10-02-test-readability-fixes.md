@@ -35,7 +35,7 @@
 
 - Create each task's worktree with the procedure's step 3 commands, not a tool that branches from the remote: the remote lags local `main`.
 - The worktree guard refuses git commands on the main checkout from inside a worktree session. Leave the worktree (keep it) before the fast-forward merge in the procedure's step 9.
-- `frozen.py` lives at `/Users/roman/projects/oathdigital/.superpowers/readability/frozen.py` (git-ignored). Pass the task reviewer its output with the review package.
+- `frozen.py` lives at `/Users/roman/projects/distantlands/.superpowers/readability/frozen.py` (git-ignored). Pass the task reviewer its output with the review package.
 - The task reviewer checks, beyond the usual review: the `frozen.py` lines (each must be a strengthening), that every row in the task's range has an Outcome, that each touched suite now passes the rubric, and that the mutations were caught.
 - HEAD on `main` moves under you (other sessions). Re-check it before any amend, reset or rebase.
 
@@ -76,21 +76,21 @@ R10 rows among these (00-014, 00-018, 00-043, 00-044, 00-047, 00-101) go to Task
 The accessors the R4 rows ask for, settled to one name per shape (ledger, "Foundation inputs", Overlaps). No suite migrates to them here.
 
 **Files:**
-- Create: `shared/src/test/scala/oathdigital/testkit/Unwrap.scala`
-- Create: `shared/src/test/scala/oathdigital/testkit/UnwrapSuite.scala`
-- Create: `src/test/scala/oathdigital/testkit/Outcomes.scala`
-- Create: `src/test/scala/oathdigital/testkit/OutcomesSuite.scala`
-- Modify: `src/test/scala/oathdigital/testkit/Look.scala`
-- Modify: `src/test/scala/oathdigital/testkit/TableSuite.scala` (Look read tests)
+- Create: `shared/src/test/scala/distantlands/testkit/Unwrap.scala`
+- Create: `shared/src/test/scala/distantlands/testkit/UnwrapSuite.scala`
+- Create: `src/test/scala/distantlands/testkit/Outcomes.scala`
+- Create: `src/test/scala/distantlands/testkit/OutcomesSuite.scala`
+- Modify: `src/test/scala/distantlands/testkit/Look.scala`
+- Modify: `src/test/scala/distantlands/testkit/TableSuite.scala` (Look read tests)
 - Modify: `docs/superpowers/specs/2026-10-02-test-readability-ledger.md` (the Mutations section and the accessor settlement)
 
 **Interfaces:**
-- Produces (shared, all three test trees), in `object oathdigital.testkit.Unwrap`:
+- Produces (shared, all three test trees), in `object distantlands.testkit.Unwrap`:
   - `def accepted[L, R](result: Either[L, R])(using munit.Location): R`
   - `def rejected[L, R](result: Either[L, R])(using munit.Location): L`
   - `def present[A](option: Option[A], what: String)(using munit.Location): A`
   - `def as[T](value: Any)(using ClassTag[T], munit.Location): T`
-- Produces (root), in `object oathdigital.testkit.Outcomes`:
+- Produces (root), in `object distantlands.testkit.Outcomes`:
   - `def ready(state: OathState)(using munit.Location): ReadyGame`
   - `def parked(outcome: Either[OathViolation, WalkerOutcome])(using munit.Location): WalkerOutcome.Parked`
   - `def finished(outcome: Either[OathViolation, WalkerOutcome])(using munit.Location): WalkerOutcome.Finished`
@@ -101,10 +101,10 @@ The accessors the R4 rows ask for, settled to one name per shape (ledger, "Found
 
 - [ ] **Step 2: Write the failing shared test**
 
-`shared/src/test/scala/oathdigital/testkit/UnwrapSuite.scala`:
+`shared/src/test/scala/distantlands/testkit/UnwrapSuite.scala`:
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
 import Unwrap.*
 
@@ -134,15 +134,15 @@ class UnwrapSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run it to verify it fails**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.UnwrapSuite"`
+Run: `./sbtw "root/testOnly distantlands.testkit.UnwrapSuite"`
 Expected: compile error, `Not found: Unwrap`.
 
 - [ ] **Step 4: Write `Unwrap`**
 
-`shared/src/test/scala/oathdigital/testkit/Unwrap.scala`:
+`shared/src/test/scala/distantlands/testkit/Unwrap.scala`:
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
 import scala.reflect.ClassTag
 
@@ -183,19 +183,19 @@ object Unwrap:
 
 - [ ] **Step 5: Run the shared test on both platforms**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.UnwrapSuite" "frontend/testOnly oathdigital.testkit.UnwrapSuite"`
+Run: `./sbtw "root/testOnly distantlands.testkit.UnwrapSuite" "frontend/testOnly distantlands.testkit.UnwrapSuite"`
 Expected: PASS, 4 tests each.
 
 - [ ] **Step 6: Write the failing root test**
 
-`src/test/scala/oathdigital/testkit/OutcomesSuite.scala`:
+`src/test/scala/distantlands/testkit/OutcomesSuite.scala`:
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.walker.WalkerOutcome
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.walker.WalkerOutcome
+import distantlands.model._
+import distantlands.model.OathState.Ready
 import Outcomes.*
 
 /** The rules-result reads return what a test expects and fail with what
@@ -224,24 +224,24 @@ class OutcomesSuite extends munit.FunSuite:
     assertWireRoundTrips(FirstGameSetupFixture.execute()._2.take(3))
 ```
 
-Import `oathdigital.gameplay.setup.FirstGameSetupFixture`. (Task 12 later renames `execute` to `setupThroughWake` and changes this caller with the others.)
+Import `distantlands.gameplay.setup.FirstGameSetupFixture`. (Task 12 later renames `execute` to `setupThroughWake` and changes this caller with the others.)
 
 - [ ] **Step 7: Run it to verify it fails**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.OutcomesSuite"`
+Run: `./sbtw "root/testOnly distantlands.testkit.OutcomesSuite"`
 Expected: compile error, `Not found: Outcomes`.
 
 - [ ] **Step 8: Write `Outcomes`**
 
-`src/test/scala/oathdigital/testkit/Outcomes.scala`:
+`src/test/scala/distantlands/testkit/Outcomes.scala`:
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.walker.WalkerOutcome
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.serialization.GameEventWire
+import distantlands.gameplay.walker.WalkerOutcome
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.serialization.GameEventWire
 
 /** Reads of rules results that [[Unwrap]] cannot name generically. Each
   * fails the test with the value it got. */
@@ -279,7 +279,7 @@ object Outcomes:
 
 - [ ] **Step 9: Run it to verify it passes**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.OutcomesSuite"`
+Run: `./sbtw "root/testOnly distantlands.testkit.OutcomesSuite"`
 Expected: PASS, 3 tests.
 
 - [ ] **Step 10: Write the failing Look tests** (append to `TableSuite.scala`)
@@ -300,12 +300,12 @@ Before running, check that Ancient City lies in the Cradle and that the region a
 
 - [ ] **Step 11: Run them to verify they fail**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.TableSuite"`
-Expected: compile error, `value discardAfter is not a member of oathdigital.testkit.Look`.
+Run: `./sbtw "root/testOnly distantlands.testkit.TableSuite"`
+Expected: compile error, `value discardAfter is not a member of distantlands.testkit.Look`.
 
 - [ ] **Step 12: Add the reads to `Look`**
 
-Add the imports `oathdigital.gameplay.actions.CardPlay` and `oathdigital.gameplay.powers.PlayerFacts`, and these members:
+Add the imports `distantlands.gameplay.actions.CardPlay` and `distantlands.gameplay.powers.PlayerFacts`, and these members:
 
 ```scala
   /** The discard pile of the region after `site`'s region: where a card a
@@ -326,7 +326,7 @@ Add the imports `oathdigital.gameplay.actions.CardPlay` and `oathdigital.gamepla
 
 - [ ] **Step 13: Run them to verify they pass**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.TableSuite"`
+Run: `./sbtw "root/testOnly distantlands.testkit.TableSuite"`
 Expected: PASS.
 
 - [ ] **Step 14: Record the settlement and the Mutations table in the ledger**
@@ -362,7 +362,7 @@ guard, one at a time, and records the result here.
 Run the procedure's step 6 gate (no `frozen.py` lines are expected: this task adds tests only). Then:
 
 ```bash
-git add shared/src/test/scala/oathdigital/testkit/Unwrap.scala shared/src/test/scala/oathdigital/testkit/UnwrapSuite.scala src/test/scala/oathdigital/testkit/Outcomes.scala src/test/scala/oathdigital/testkit/OutcomesSuite.scala src/test/scala/oathdigital/testkit/Look.scala src/test/scala/oathdigital/testkit/TableSuite.scala docs/superpowers/specs/2026-10-02-test-readability-ledger.md
+git add shared/src/test/scala/distantlands/testkit/Unwrap.scala shared/src/test/scala/distantlands/testkit/UnwrapSuite.scala src/test/scala/distantlands/testkit/Outcomes.scala src/test/scala/distantlands/testkit/OutcomesSuite.scala src/test/scala/distantlands/testkit/Look.scala src/test/scala/distantlands/testkit/TableSuite.scala docs/superpowers/specs/2026-10-02-test-readability-ledger.md
 git commit -m "test: add the testkit accessors that fail with the value they got" -m "Co-Authored-By: <your model's trailer>"
 ```
 
@@ -375,10 +375,10 @@ The root total grows by 9 (4 Unwrap, 3 Outcomes, 2 Look) and the frontend total 
 The new `Table` steps the ledger asks for (three or more suites need each), and the testkit renames from rows 00-153, 00-154, 00-157, 00-162 and 00-164. A rename touches every caller in one commit because the compiler must see them all; the call-site rewrites the rows ask for beyond the rename (stating a site a test depends on) belong to the area tasks.
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala`
-- Modify: `src/test/scala/oathdigital/testkit/Look.scala`
-- Modify: `src/test/scala/oathdigital/testkit/Situation.scala`
-- Modify: `src/test/scala/oathdigital/testkit/TableSuite.scala`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala`
+- Modify: `src/test/scala/distantlands/testkit/Look.scala`
+- Modify: `src/test/scala/distantlands/testkit/Situation.scala`
+- Modify: `src/test/scala/distantlands/testkit/TableSuite.scala`
 - Modify: every caller of `Table.warbands`, `Look.warbands`, `Table.homeOf`, `Look.denizens` and `Situation.serviceRules` under `src/test`
 - Modify: the ledger (Outcome cells of 00-152 to 00-165, except R10)
 
@@ -450,12 +450,12 @@ The new `Table` steps the ledger asks for (three or more suites need each), and 
     assertEquals(banners.darkestSecret.active, DarkestSecretFace.Festival)
 ```
 
-Add imports for `VisionRules` (`oathdigital.gameplay.actions.VisionRules`) and any model name the compiler asks for (`oathdigital.model._` covers most). `PowerSourceRef.Card` takes the card id as `PowerUseRef`'s callers in `src/test` pass it; match them. If the quiet-table banner test fails, the defaults below take the faces the quiet table really shows, and the test asserts those.
+Add imports for `VisionRules` (`distantlands.gameplay.actions.VisionRules`) and any model name the compiler asks for (`distantlands.model._` covers most). `PowerSourceRef.Card` takes the card id as `PowerUseRef`'s callers in `src/test` pass it; match them. If the quiet-table banner test fails, the defaults below take the faces the quiet table really shows, and the test asserts those.
 
 - [ ] **Step 3: Run them to verify they fail**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.TableSuite"`
-Expected: compile error, `value relicDeckEmptied is not a member of oathdigital.testkit.Table`.
+Run: `./sbtw "root/testOnly distantlands.testkit.TableSuite"`
+Expected: compile error, `value relicDeckEmptied is not a member of distantlands.testkit.Table`.
 
 - [ ] **Step 4: Add the steps to `Table`**
 
@@ -519,7 +519,7 @@ In the `Table` class doc, after "Nobody holds the Oathkeeper title or a banner",
 
 - [ ] **Step 5: Run them to verify they pass**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.TableSuite"`
+Run: `./sbtw "root/testOnly distantlands.testkit.TableSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Rename the testkit members and their callers**
@@ -569,7 +569,7 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 00-061 to 00-066 and 00-071 to 00-093 (NoteText, PowerFixture, TargetsFixture, MovementFixture, PaidActionHarness).
 
-**Files:** `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`, `PowerFixture.scala`, `TargetsFixture.scala`, `action/MovementFixture.scala`, `action/PaidActionHarness.scala` (all under `src/test/scala/oathdigital/gameplay/powers/`), and every caller of a helper these rows rename, inline or replace, in any area (`git grep -l -w <helper> -- src/test`).
+**Files:** `src/test/scala/distantlands/gameplay/powers/NoteText.scala`, `PowerFixture.scala`, `TargetsFixture.scala`, `action/MovementFixture.scala`, `action/PaidActionHarness.scala` (all under `src/test/scala/distantlands/gameplay/powers/`), and every caller of a helper these rows rename, inline or replace, in any area (`git grep -l -w <helper> -- src/test`).
 
 **Notes:**
 - 00-090: `wireRoundTrips` (74 callers) becomes `Outcomes.assertWireRoundTrips`. Replace `assert(wireRoundTrips(events))` with `assertWireRoundTrips(events)` at every caller and delete `wireRoundTrips`. This strengthens the assertion; `frozen.py` lists each such line.
@@ -579,7 +579,7 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 04-001 to 04-056, and area-wide rows 04-196 to 04-203 applied to this part's files only.
 
-**Files (16):** AlchemistSuite, AmberFlameSuite, ArcaneBrokersSuite, ArmedMobSuite, BallotBoxSuite, BanditPaymasterSuite, BarbedNetSuite, BedOfRootsSuite, BloodPactSuite, BogSuite, BoneDiceSuite, BookOfRecordsSuite, BrassHorseSuite, CharmingFriendSuite, ClayRattleSuite, CrystalVialSuite (in `src/test/scala/oathdigital/gameplay/powers/action/`).
+**Files (16):** AlchemistSuite, AmberFlameSuite, ArcaneBrokersSuite, ArmedMobSuite, BallotBoxSuite, BanditPaymasterSuite, BarbedNetSuite, BedOfRootsSuite, BloodPactSuite, BogSuite, BoneDiceSuite, BookOfRecordsSuite, BrassHorseSuite, CharmingFriendSuite, ClayRattleSuite, CrystalVialSuite (in `src/test/scala/distantlands/gameplay/powers/action/`).
 
 **Notes:** R10 row 04-049 goes to Task 38. Leave the area-wide rows' Outcome cells empty; Task 7 fills them.
 
@@ -587,7 +587,7 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 04-057 to 04-104, and the area-wide rows 04-196 to 04-203 applied to this part's files only.
 
-**Files (16):** DarkEnforcerSuite, DemonTailSuite, DowsingSticksSuite, DreamThiefSuite, ElderSuite, EnchantressSuite, FaeMerchantSuite, FirebrandSuite, GamblingHallSuite, GreatFeastSuite, HonorGuardSuite, IvoryEyeSuite, LevelersSuite, MagicCarpetSuite, MagicWaterskinSuite, MemoryOfHomeSuite (in `src/test/scala/oathdigital/gameplay/powers/action/`).
+**Files (16):** DarkEnforcerSuite, DemonTailSuite, DowsingSticksSuite, DreamThiefSuite, ElderSuite, EnchantressSuite, FaeMerchantSuite, FirebrandSuite, GamblingHallSuite, GreatFeastSuite, HonorGuardSuite, IvoryEyeSuite, LevelersSuite, MagicCarpetSuite, MagicWaterskinSuite, MemoryOfHomeSuite (in `src/test/scala/distantlands/gameplay/powers/action/`).
 
 **Notes:** 04-065 and 04-076 use `Table.relicDeckEmptied`. Leave the area-wide rows' Outcome cells empty.
 
@@ -595,7 +595,7 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 04-105 to 04-157, and the area-wide rows 04-196 to 04-203 applied to this part's files only.
 
-**Files (16):** MemoryOfNatureSuite, MessengerSuite, MurkyFountainSuite, OracleSuite, OracularPigSuite, PaidActionSuite, PlagueEnginesSuite, QuickExitSuite, RelicBreakerSuite, ScryerSuite, SecondChanceSuite, ShiftingMapSuite, SiegeEnginesSuite, SkeletonKeySuite, SleightOfHandSuite, SpiritSnareSuite (in `src/test/scala/oathdigital/gameplay/powers/action/`).
+**Files (16):** MemoryOfNatureSuite, MessengerSuite, MurkyFountainSuite, OracleSuite, OracularPigSuite, PaidActionSuite, PlagueEnginesSuite, QuickExitSuite, RelicBreakerSuite, ScryerSuite, SecondChanceSuite, ShiftingMapSuite, SiegeEnginesSuite, SkeletonKeySuite, SleightOfHandSuite, SpiritSnareSuite (in `src/test/scala/distantlands/gameplay/powers/action/`).
 
 **Notes:** R10 row 04-122 goes to Task 38. Leave the area-wide rows' Outcome cells empty.
 
@@ -603,15 +603,15 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 04-158 to 04-195, and the area-wide rows 04-196 to 04-203 applied to this part's files; then fill the area-wide rows' Outcome cells for all of area 04.
 
-**Files (11):** SpoiledSuppliesSuite, StorytellerSuite, TamingCharmSuite, TavernSongsSuite, TinkersFairSuite, TutorSuite, WaysideInnSuite, WhisperingLeavesSuite, WhistleSuite, WizardSchoolSuite, WolvesSuite (in `src/test/scala/oathdigital/gameplay/powers/action/`).
+**Files (11):** SpoiledSuppliesSuite, StorytellerSuite, TamingCharmSuite, TavernSongsSuite, TinkersFairSuite, TutorSuite, WaysideInnSuite, WhisperingLeavesSuite, WhistleSuite, WizardSchoolSuite, WolvesSuite (in `src/test/scala/distantlands/gameplay/powers/action/`).
 
-**Notes:** 04-172 uses `Table.relicDeckEmptied`. Before filling the area-wide outcomes, confirm with `git grep` over `src/test/scala/oathdigital/gameplay/powers/action/` that each area-wide problem is gone from every suite (for example no `toOption.get` left for 04-196).
+**Notes:** 04-172 uses `Table.relicDeckEmptied`. Before filling the area-wide outcomes, confirm with `git grep` over `src/test/scala/distantlands/gameplay/powers/action/` that each area-wide problem is gone from every suite (for example no `toOption.get` left for 04-196).
 
 ### Task 8: Area 06 shared fixtures
 
 **Rows:** 00-060, 00-094 to 00-100, 00-109 to 00-117, 00-125 to 00-134, 00-145 to 00-147 (CardStaging, BannerFixture, LeagueTreatyFixture, SilverTongueFixture, TravelFixture, RiverFixture, SetupWalkDriver).
 
-**Files:** those fixtures (`src/test/scala/oathdigital/gameplay/powers/CardStaging.scala`, `powers/banner/BannerFixture.scala`, `powers/rest/LeagueTreatyFixture.scala`, `powers/rest/SilverTongueFixture.scala`, `powers/travel/TravelFixture.scala`, `powers/wake/RiverFixture.scala`, `gameplay/setup/SetupWalkDriver.scala`) and every caller of a helper the rows inline or replace.
+**Files:** those fixtures (`src/test/scala/distantlands/gameplay/powers/CardStaging.scala`, `powers/banner/BannerFixture.scala`, `powers/rest/LeagueTreatyFixture.scala`, `powers/rest/SilverTongueFixture.scala`, `powers/travel/TravelFixture.scala`, `powers/wake/RiverFixture.scala`, `gameplay/setup/SetupWalkDriver.scala`) and every caller of a helper the rows inline or replace.
 
 **Notes:** 00-097 replaces `holdingFlame` and `holdingFavor` with the `face` argument of `Table.darkestSecret` and `Table.peoplesFavor` at every caller (the callers in areas 01, 03 and 10 included), and deletes both helpers.
 
@@ -643,7 +643,7 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 00-043 to 00-056, 00-059, 00-138 to 00-144, 00-148 (EconomyFixture, PhasePowerFixture, PlacementFixture, SearchBudget, WalkerRecordedOpsReducer, FirstGameSetupFixture, ParkedDecisionAssertions).
 
-**Files:** those fixtures, under `src/test/scala/oathdigital/gameplay/` (FirstGameSetupFixture in `gameplay/setup/`, ParkedDecisionAssertions in `gameplay/walker/`), and every caller of a helper the rows rename or reshape.
+**Files:** those fixtures, under `src/test/scala/distantlands/gameplay/` (FirstGameSetupFixture in `gameplay/setup/`, ParkedDecisionAssertions in `gameplay/walker/`), and every caller of a helper the rows rename or reshape.
 
 **Notes:**
 - 00-141 and 00-142: `execute` becomes `setupThroughWake` returning a named `SetupResult(state, events)`; change every caller (the ledger counted six: GameEventWireSuite, MinorActionsSuite, ChallengeProcedureSuite, NegotiationProcedureSuite, WalkerReplayDriftSuite, EndWakeProcedureSuite; Task 1 added OutcomesSuite).
@@ -700,7 +700,7 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 00-032 to 00-042 (CampaignFixture), 00-101 to 00-106 (PlanDriver), 00-118 to 00-124 (TargetingFixture).
 
-**Files:** `src/test/scala/oathdigital/gameplay/CampaignFixture.scala`, `gameplay/powers/campaign/PlanDriver.scala`, `gameplay/powers/targeting/TargetingFixture.scala`, and every caller of a helper the rows reshape (CampaignFixture has 57 callers).
+**Files:** `src/test/scala/distantlands/gameplay/CampaignFixture.scala`, `gameplay/powers/campaign/PlanDriver.scala`, `gameplay/powers/targeting/TargetingFixture.scala`, and every caller of a helper the rows reshape (CampaignFixture has 57 callers).
 
 **Notes:**
 - 00-040: rename `againstPlayer` to `rivalRulesOriginAndHoldsOathkeeper` at every caller (Review, decision 1).
@@ -778,7 +778,7 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 01-024 to 01-065.
 
-**Files:** `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala` (1829 lines, 39 `@unchecked`).
+**Files:** `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala` (1829 lines, 39 `@unchecked`).
 
 **Notes:**
 - 01-024 (R11): split into the six suites the row names (Recover, Forge, Actions, Stream, Projection, Reopen), each under 800 lines, sharing `execute`, `replayingSecond` and `parkedAssertions` through ParkedServiceFixture. The test total is unchanged; record the six files and their counts.
@@ -813,7 +813,7 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 00-016 to 00-031 (GoldenLog, LogScripts).
 
-**Files:** `src/test/scala/oathdigital/application/gamelog/GoldenLog.scala`, `LogScripts.scala`, and every caller of a helper the rows rename or replace.
+**Files:** `src/test/scala/distantlands/application/gamelog/GoldenLog.scala`, `LogScripts.scala`, and every caller of a helper the rows rename or replace.
 
 **Notes:**
 - 00-020 renames `board` to `recordedEventsBoard`; 00-023 `name` to `playerLabel`; 00-026 `usePower` to `silverTongue`; 00-027 `oathkeeper` to `oathkeeperTie`.
@@ -833,10 +833,10 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 11-001 to 11-057; 00-167 and 00-168 (TestBrowser).
 
-**Files (20, in `frontend/src/test/scala/oathdigital/frontend/`, plus `TestBrowser.scala`):** ActionOptionRowSuite, ActionPanePromptSuite, BannerControlsSuite, BoardSurfaceSuite, BoardTargetSelectionStateSuite, CampaignControlsSuite, CardFaceSuite, CardInspectionOverlaySuite, DieFaceSuite, DiscardPileSuite, DistributeDecisionStateSuite, DistributePanelRenderSuite, EconomyControlsSuite, GameLogOverlaySuite, GameLogPaneSuite, HttpGameClientSuite, LogMarkerSuite, MapViewStateSuite, ModifierFlowSuite, ModifierSelectionStateSuite.
+**Files (20, in `frontend/src/test/scala/distantlands/frontend/`, plus `TestBrowser.scala`):** ActionOptionRowSuite, ActionPanePromptSuite, BannerControlsSuite, BoardSurfaceSuite, BoardTargetSelectionStateSuite, CampaignControlsSuite, CardFaceSuite, CardInspectionOverlaySuite, DieFaceSuite, DiscardPileSuite, DistributeDecisionStateSuite, DistributePanelRenderSuite, EconomyControlsSuite, GameLogOverlaySuite, GameLogPaneSuite, HttpGameClientSuite, LogMarkerSuite, MapViewStateSuite, ModifierFlowSuite, ModifierSelectionStateSuite.
 
 **Notes:**
-- Frontend suites use frontend builders, never the root `Table`. The accessors are `oathdigital.testkit.Unwrap` (11-014's `updated` is `as[BoardSelectionResult.Updated]`; 11-037's `right` is `accepted`).
+- Frontend suites use frontend builders, never the root `Table`. The accessors are `distantlands.testkit.Unwrap` (11-014's `updated` is `as[BoardSelectionResult.Updated]`; 11-037's `right` is `accepted`).
 - Mutations break rules in `frontend/src/main`.
 - R10 rows 11-011, 11-031, 11-040, 11-041, 11-047 go to Task 39.
 
@@ -844,7 +844,7 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** 12-001 to 12-050.
 
-**Files (18, in `frontend/src/test/scala/oathdigital/frontend/`):** NegotiationControlsSuite, NegotiationDealPanelSuite, PanelPlacementSuite, PartitionDecisionStateSuite, PartitionPanelRenderSuite, PlayerBoardSuite, RecoverPanelSuite, RulesTextRendererSuite, ServerModeUiSuite, SessionDraftsSuite, SiteFaceSuite, SnapshotPollingCoordinatorSuite, SuitGlyphSuite, TableSessionSuite, TargetSelectionExitSuite, WalkerChoicePanelRenderSuite, WalkerSelectionDraftSuite, WalkerSelectionPanelsSuite.
+**Files (18, in `frontend/src/test/scala/distantlands/frontend/`):** NegotiationControlsSuite, NegotiationDealPanelSuite, PanelPlacementSuite, PartitionDecisionStateSuite, PartitionPanelRenderSuite, PlayerBoardSuite, RecoverPanelSuite, RulesTextRendererSuite, ServerModeUiSuite, SessionDraftsSuite, SiteFaceSuite, SnapshotPollingCoordinatorSuite, SuitGlyphSuite, TableSessionSuite, TargetSelectionExitSuite, WalkerChoicePanelRenderSuite, WalkerSelectionDraftSuite, WalkerSelectionPanelsSuite.
 
 **Notes:**
 - 12-025 (R11): split `ServerModeUiSuite` into the six suites the row lists, each under 800 lines. Split first, in its own commit; then fix the rows.
@@ -855,12 +855,12 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 **Rows:** every 08 row (08-002 to 08-049), except 08-020 (Task 24).
 
-**Files (18):** ActionValuesSuite, CardIndexSuite, DecisionOptionRefSuite, DomainValidationSuite, OpaqueIdSuite, PlayerForceKindSuite, PlayerSetupStateSuite, ProcedureRefSuite, ReadyGameSuite, CampaignResultCodecSuite, GameEventWireSuite, PayCostWireSuite, ExecutableCatalogSuite (root); CommandProtocolSuite, LogPageCodecSuite, OathkeeperPresentationSuite, ProjectionProtocolSuite, TrustedGameProtocolSuite (`shared/src/test/scala/oathdigital/protocol/`).
+**Files (18):** ActionValuesSuite, CardIndexSuite, DecisionOptionRefSuite, DomainValidationSuite, OpaqueIdSuite, PlayerForceKindSuite, PlayerSetupStateSuite, ProcedureRefSuite, ReadyGameSuite, CampaignResultCodecSuite, GameEventWireSuite, PayCostWireSuite, ExecutableCatalogSuite (root); CommandProtocolSuite, LogPageCodecSuite, OathkeeperPresentationSuite, ProjectionProtocolSuite, TrustedGameProtocolSuite (`shared/src/test/scala/distantlands/protocol/`).
 
 **Notes:**
 - 08-024 (R11): split `GameEventWireSuite` (931 lines) into the five suites the row names. Split first, in its own commit; then fix the rows.
 - Numeric ids stay where the id is the subject (R5 exemption for wire and catalog suites); record such rows `kept: the id is the subject`.
-- The shared protocol suites use `oathdigital.testkit.Unwrap` (08-037 and 08-045's `refusal` is `rejected`); they must still compile for Scala.js, so the gate's frontend run matters here.
+- The shared protocol suites use `distantlands.testkit.Unwrap` (08-037 and 08-045's `refusal` is `rejected`); they must still compile for Scala.js, so the gate's frontend run matters here.
 - R10 row 08-032 goes to Task 38.
 
 ---
@@ -868,9 +868,9 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 ### Task 37: Contract suite for EventStreamRepository
 
 **Files:**
-- Create: `src/test/scala/oathdigital/application/EventStreamRepositoryContract.scala`
-- Create: `src/test/scala/oathdigital/application/InMemoryEventStreamRepositorySuite.scala`
-- Modify: `src/test/scala/oathdigital/persistence/HsqldbEventStreamRepositorySuite.scala`
+- Create: `src/test/scala/distantlands/application/EventStreamRepositoryContract.scala`
+- Create: `src/test/scala/distantlands/application/InMemoryEventStreamRepositorySuite.scala`
+- Modify: `src/test/scala/distantlands/persistence/HsqldbEventStreamRepositorySuite.scala`
 - Modify: the ledger ("Test doubles and contracts" and the Result notes below)
 
 **Interfaces:**
@@ -880,17 +880,17 @@ The task entries give what differs: rows, files, owned fixtures, and notes.
 
 - [ ] **Step 2: Write the contract**
 
-`src/test/scala/oathdigital/application/EventStreamRepositoryContract.scala`:
+`src/test/scala/distantlands/application/EventStreamRepositoryContract.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
 import java.util.concurrent.CountDownLatch
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-import oathdigital.testkit.Unwrap.*
+import distantlands.testkit.Unwrap.*
 
 /** What every `EventStreamRepository` promises (the trait's doc): one stream
   * per game, appended atomically, with the expected position compared in
@@ -983,10 +983,10 @@ abstract class EventStreamRepositoryContract[R <: EventStreamRepository]
 
 - [ ] **Step 3: Run the contract against the fake**
 
-`src/test/scala/oathdigital/application/InMemoryEventStreamRepositorySuite.scala`:
+`src/test/scala/distantlands/application/InMemoryEventStreamRepositorySuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
 /** The in-memory repository, the fake every service test uses, held to
   * the repository contract. */
@@ -995,8 +995,8 @@ class InMemoryEventStreamRepositorySuite
   protected def make() = new InMemoryEventStreamRepository
 ```
 
-Run: `./sbtw "root/testOnly oathdigital.application.InMemoryEventStreamRepositorySuite"`
-Expected: PASS, 7 tests. A failure is a divergence of the fake: fix `InMemoryEventStreamRepository` (production, `src/main/scala/oathdigital/application/EventStreamRepository.scala`) to match what the Hsqldb store does, and record the divergence in the ledger's "Test doubles and contracts" section.
+Run: `./sbtw "root/testOnly distantlands.application.InMemoryEventStreamRepositorySuite"`
+Expected: PASS, 7 tests. A failure is a divergence of the fake: fix `InMemoryEventStreamRepository` (production, `src/main/scala/distantlands/application/EventStreamRepository.scala`) to match what the Hsqldb store does, and record the divergence in the ledger's "Test doubles and contracts" section.
 
 - [ ] **Step 4: Run the contract against the real store**
 
@@ -1012,7 +1012,7 @@ class HsqldbEventStreamRepositorySuite
 
 Keep its `given ExecutionContext` only if a remaining test needs it.
 
-Run: `./sbtw "root/testOnly oathdigital.persistence.HsqldbEventStreamRepositorySuite"`
+Run: `./sbtw "root/testOnly distantlands.persistence.HsqldbEventStreamRepositorySuite"`
 Expected: PASS, 7 contract tests and the store's 5 own tests.
 
 - [ ] **Step 5: Mutations.** Break the fake three ways, one at a time, and confirm the contract catches each in the in-memory suite: (1) `SequenceConflict` branch appends anyway; (2) `MustNotExist` on an existing stream returns `Appended`; (3) `load` returns the records reversed. Restore and record each (procedure steps 5 and 7, task name `contract-repository`).
@@ -1022,11 +1022,11 @@ Expected: PASS, 7 contract tests and the store's 5 own tests.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/application/EventStreamRepositoryContract.scala src/test/scala/oathdigital/application/InMemoryEventStreamRepositorySuite.scala src/test/scala/oathdigital/persistence/HsqldbEventStreamRepositorySuite.scala
+git add src/test/scala/distantlands/application/EventStreamRepositoryContract.scala src/test/scala/distantlands/application/InMemoryEventStreamRepositorySuite.scala src/test/scala/distantlands/persistence/HsqldbEventStreamRepositorySuite.scala
 git commit -m "test: hold the in-memory event stream repository to the Hsqldb store's contract" -m "Co-Authored-By: <your model's trailer>"
 ```
 
-If Step 3 changed the fake, add `src/main/scala/oathdigital/application/EventStreamRepository.scala` to that commit and say so in its message.
+If Step 3 changed the fake, add `src/main/scala/distantlands/application/EventStreamRepository.scala` to that commit and say so in its message.
 
 - [ ] **Step 8: Record.** In the ledger's "Test doubles and contracts" section, end the `InMemoryEventStreamRepository` entry with "Done in <commit>: both run `EventStreamRepositoryContract`." Append the mutations. Commit the ledger. Do not edit `docs/ROADMAP.md`: the report tells the controller the ROADMAP item "Contract suite for `EventStreamRepository`" is done, and the controller tells the user, who edits the ROADMAP.
 
@@ -1034,11 +1034,11 @@ If Step 3 changed the fake, add `src/main/scala/oathdigital/application/EventStr
 
 **Rows:** every R10 row with an ID in 00 (except 00-166) or 01 to 10: 00-014, 00-018, 00-043, 00-044, 00-047, 00-101, 00-165 (its doc line), 01-009, 01-019, 01-029, 01-038, 01-049, 01-057, 01-071, 01-078, 01-088, 01-104, 01-126, 01-127, 02-053, 03-001, 03-006, 03-007, 03-009, 03-014, 03-015, 03-020, 03-030, 03-035, 03-041, 03-048, 03-056, 03-063, 03-078, 03-086, 03-091, 03-092, 03-099, 03-102, 03-112, 04-049, 04-122, 05-109, 06-009, 07-004, 07-005, 07-017, 07-052, 07-057, 07-086, 07-092, 07-109, 08-032, 09-028, 09-034, 09-055, 09-072, 09-080, 09-081, 10-001, 10-025, 10-026, 10-064, 10-114, 10-162. Before starting, confirm with the ledger that this list equals every root R10 row (a `grep` of rows whose Rule cell is `R10`); add any missed row.
 
-**Files:** the files those rows name; new `src/test/scala/oathdigital/testkit/Dice.scala`; new `src/test/scala/oathdigital/engine/EventEvolutionContract.scala`.
+**Files:** the files those rows name; new `src/test/scala/distantlands/testkit/Dice.scala`; new `src/test/scala/distantlands/engine/EventEvolutionContract.scala`.
 
 **Notes:**
 - Follow each row's planned outcome: most are a doc line naming the kind of double ("Stub of …", "Spy of …", "Fake of …") and the trait. Mocks that hide an interaction are replaced by the real component or the fake; a spy over a fake stays (spec).
-- 00-014, 00-018 and the other CampaignDicePort stubs (01-029, 01-104, 01-126) move into one testkit object `oathdigital.testkit.Dice` holding named stubs (`blank`, `steady`, `raid`, …), each with a doc line saying what it rolls; every caller uses it.
+- 00-014, 00-018 and the other CampaignDicePort stubs (01-029, 01-104, 01-126) move into one testkit object `distantlands.testkit.Dice` holding named stubs (`blank`, `steady`, `raid`, …), each with a doc line saying what it rolls; every caller uses it.
 - 01-127: write `EventEvolutionContract[S, E, V]` with `protected def evolution: EventEvolution[S, E, V]`, `protected def events: Vector[E]` (a valid sequence from the initial state) and `protected def corrupt: E` (an event the initial state refuses). Its tests: the initial state reads the same twice; evolving `events` twice from the initial state gives equal results; `evolve(initialState, corrupt)` is a Left. Run it against `EventReplayEngineSuite`'s `Totals` (moved to a testkit object so both suites see it; events `2, 3, 5`, corrupt `-1`) and against `OathRules` (`new OathRules(FirstGameSetupFixture.catalog)`, events from `FirstGameSetupFixture.setupThroughWake().events`, corrupt the last of those events, which `NoGame` must refuse; if it does not, use the first event after `GameStarted`).
 - No mutations beyond the contract's: break `Totals` to accept a negative event and `OathRules.evolve` to accept an event on `NoGame`, one at a time; confirm the contract catches each.
 - Gate, record and commit as the procedure says (task name `doubles-root`).
@@ -1047,7 +1047,7 @@ If Step 3 changed the fake, add `src/main/scala/oathdigital/application/EventStr
 
 **Rows:** 00-166, and every R10 row with an ID in 11 or 12: 11-011, 11-031, 11-040, 11-041, 11-047, 12-026, 12-042, 12-044. Confirm the list against the ledger first.
 
-**Files:** the files those rows name; new `frontend/src/test/scala/oathdigital/frontend/FakeLogStore.scala`, `LogStoreContract.scala`, `FakePollClock.scala`, `PollClockContract.scala` (all in `frontend/src/test/scala/oathdigital/frontend/`).
+**Files:** the files those rows name; new `frontend/src/test/scala/distantlands/frontend/FakeLogStore.scala`, `LogStoreContract.scala`, `FakePollClock.scala`, `PollClockContract.scala` (all in `frontend/src/test/scala/distantlands/frontend/`).
 
 **Notes:**
 - `FakeLogStore`: one shared fake replacing the `FakeStore` classes in GameLogOverlaySuite and LogMarkerSuite (11-031, 11-041). `LogStoreContract`: a written key reads back its value; a second write replaces it; an unknown key reads `None`. Run it against `FakeLogStore` and against `LogStore.browser.get` over a working `localStorage`: in that suite, install a plain JavaScript object with `getItem` and `setItem` as `window.localStorage` (`Object.defineProperty`, configurable) before the test and remove it after. jsdom's own storage throws for this harness, which is why the trait exists.
@@ -1059,7 +1059,7 @@ If Step 3 changed the fake, add `src/main/scala/oathdigital/application/EventStr
 ### Task 40: Guards
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala`
 
 - [ ] **Step 1: Set up the worktree** (task name `guards`).
 
@@ -1084,7 +1084,7 @@ If Step 3 changed the fake, add `src/main/scala/oathdigital/application/EventStr
     // A numeric id hides which card a test means; CatalogNames names it. The
     // exempt suites test the ids themselves (spec, rubric R5).
     val exempt = Set(
-      "src/test/scala/oathdigital/catalog/ExecutableCatalogSuite.scala")
+      "src/test/scala/distantlands/catalog/ExecutableCatalogSuite.scala")
     val numericId =
       "(Denizen|Relic|Edifice|Vision|Card|Site|WorldCard)Id\\(\"[0-9]+\"\\)".r
     val roots = Vector(Paths.get("src/test/scala"),
@@ -1099,7 +1099,7 @@ If Step 3 changed the fake, add `src/main/scala/oathdigital/application/EventStr
 
 - [ ] **Step 4: Run them**
 
-Run: `./sbtw "root/testOnly oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "root/testOnly distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. If the numeric-id guard lists a file, decide per file: a wire or catalog suite whose rows were kept as "the id is the subject" joins `exempt` (one line each); any other file is a missed R5 fix, made here with `CatalogNames`, and recorded in the ledger against its row. The exempt list must name only suites the ledger kept as exempt.
 
 - [ ] **Step 5: Mutation.** Add a 900-line dummy test file and a `DenizenId("93")` to a power suite, one at a time; confirm each guard fails naming it; remove both.
@@ -1107,7 +1107,7 @@ Expected: PASS. If the numeric-id guard lists a file, decide per file: a wire or
 - [ ] **Step 6: Gate, commit and record** (task name `guards`): root total grows by 2.
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/BackendArchitectureSuite.scala
+git add src/test/scala/distantlands/gameplay/BackendArchitectureSuite.scala
 git commit -m "test: guard test file size and numeric card ids in tests" -m "Co-Authored-By: <your model's trailer>"
 ```
 
@@ -1134,9 +1134,9 @@ EOF
 
 Expected: no output. Any row listed goes back to the controller as a finding: name the task that owned it.
 
-- [ ] **Step 3: Metrics.** Run `sh /Users/roman/projects/oathdigital/.superpowers/readability/metrics.sh`. Expected: `@unchecked: 0`, `numeric card ids:` only in the exempt suites, `test files over 800 lines: 0`. Every remaining state patch (`git grep -n -E 'updateCurrent|copy\(current *=' -- src/test`) is the test's subject or has a comment saying why no step reaches the state: list any that is neither as a finding.
+- [ ] **Step 3: Metrics.** Run `sh /Users/roman/projects/distantlands/.superpowers/readability/metrics.sh`. Expected: `@unchecked: 0`, `numeric card ids:` only in the exempt suites, `test files over 800 lines: 0`. Every remaining state patch (`git grep -n -E 'updateCurrent|copy\(current *=' -- src/test`) is the test's subject or has a comment saying why no step reaches the state: list any that is neither as a finding.
 
-- [ ] **Step 4: Brittleness re-check.** In `src/main/scala/oathdigital/gameplay/OathRules.scala`, make `wakeOptionOpen` always return true (back the file up first). Run `./sbtw root/test 2>&1 | grep -E 'Passed: Total|Failed: Total'`. Expected: at most 21 failures. Restore the file and confirm `git status --short src/main` prints nothing.
+- [ ] **Step 4: Brittleness re-check.** In `src/main/scala/distantlands/gameplay/OathRules.scala`, make `wakeOptionOpen` always return true (back the file up first). Run `./sbtw root/test 2>&1 | grep -E 'Passed: Total|Failed: Total'`. Expected: at most 21 failures. Restore the file and confirm `git status --short src/main` prints nothing.
 
 - [ ] **Step 5: Write the Result.** In the ledger, set Status to "Status: fixed; see Result." and add a "## Result" section after Status: the metrics before (Baseline) and after, rows fixed, kept and struck (none were struck), splits and their test counts, contract suites and any fake divergence found, mutations run and caught (count from the Mutations table), the brittleness count, and the root and frontend test totals before Plan 2 and after. In the spec, set the Status line to "Status: done." and add a short "## Result" section pointing at the ledger's Result with the headline numbers.
 

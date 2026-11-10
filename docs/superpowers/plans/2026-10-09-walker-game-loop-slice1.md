@@ -15,7 +15,7 @@
 
 **Spec:** Read `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md` before starting. Task 1 writes this plan's rulings into it. Also read `docs/superpowers/specs/2026-10-08-follow-up-actions-design.md` and `docs/architecture/follow-up-actions.md`: they describe the mechanism this plan replaces.
 
-**Starts from:** `main`. Operation rewrite slice 2 (`docs/superpowers/plans/2026-10-09-operation-rewrite-slice2.md`) may be running at the same time. It rewrites `FollowUpSupplyWaiver.scala` and `SupplyStrip.scala`. Check `git log --oneline main -- src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala` before Task 1 and again before merging. Where both changed that file, keep slice 2's body and apply this plan's renames to it.
+**Starts from:** `main`. Operation rewrite slice 2 (`docs/superpowers/plans/2026-10-09-operation-rewrite-slice2.md`) may be running at the same time. It rewrites `FollowUpSupplyWaiver.scala` and `SupplyStrip.scala`. Check `git log --oneline main -- src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala` before Task 1 and again before merging. Where both changed that file, keep slice 2's body and apply this plan's renames to it.
 
 ## Global Constraints
 
@@ -30,7 +30,7 @@
   - No power name appears in walker or `gameplay/operations` sources.
 - **Line width.** Scala lines this plan writes stay at or under 80 characters, as in the files around them. Re-wrap any line that comes out longer.
 - **Indentation in lists.** A code block inside a list item is indented two extra spaces for the list. Drop those two when you copy it.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -79,38 +79,38 @@ Check each of these in the code before Task 1. If a name or signature differs, s
 | File | Change | Task |
 |---|---|---|
 | `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md` | modify | 1, 6 |
-| `src/main/scala/oathdigital/model/GameState.scala` | modify | 1, 3 |
-| `src/main/scala/oathdigital/model/CoreOperations.scala` | modify | 1 |
-| `src/main/scala/oathdigital/model/GameViolation.scala` | modify | 1, 4 |
-| `src/main/scala/oathdigital/model/ProcedureRef.scala` | modify | 4 |
-| `src/main/scala/oathdigital/model/PowerWindow.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/operations/{OperationApplication,TurnStateOperations}.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala` | modify | 1, 3 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala` | modify | 1, 3, 4 |
-| `src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala` | modify | 1, 2 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` | modify | 4 |
-| `src/main/scala/oathdigital/gameplay/walker/FollowUpOffer.scala` | create | 4 |
-| `src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala` | create | 4 |
-| `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala` | modify | 2 |
-| `src/main/scala/oathdigital/gameplay/OathDriver.scala` | create | 3, 4 |
-| `src/main/scala/oathdigital/gameplay/OathRules.scala` | modify | 1, 3 |
-| `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` | modify | 1, 3, 4 |
-| `src/main/scala/oathdigital/gameplay/OathLifecycle.scala` | modify | 1 |
-| `src/main/scala/oathdigital/gameplay/powers/{economy/KnightsErrant,search/HuntingParty,campaign/SecondWind}.scala` | modify | 1 |
-| `src/main/scala/oathdigital/serialization/{FollowUpWire,WalkerEventCodec,WalkerOperationCodec,GameEventWire}.scala` | modify | 1, 3 |
-| `src/main/scala/oathdigital/application/GameApplicationService.scala` | modify | 1, 4 |
-| `src/main/scala/oathdigital/application/{GameCommands,Authorization,GameIntentMapper}.scala` | modify | 4 |
-| `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` | modify | 4 |
-| `src/main/scala/oathdigital/application/{LegalActionProjector,PendingProjector,GameProjection,ScopedProjectionContext}.scala` | modify | 1, 5 |
-| `src/main/scala/oathdigital/application/gamelog/{GameLogFormatter,StartLines,ActionLines}.scala` | modify | 1, 4 |
-| `src/main/scala/oathdigital/server/GameRoutes.scala` | modify | 1, 4 |
-| `shared/src/main/scala/oathdigital/protocol/{CommandIntents,CommandIntentCodec,CommandIntentDecoders}.scala` | modify | 4 |
-| `shared/src/main/scala/oathdigital/protocol/projection/{GameProjectionDto,GameProjectionCodec}.scala` | modify | 5 |
-| `frontend/src/main/scala/oathdigital/frontend/FollowUpControls.scala` | delete | 4 |
-| `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala` | modify | 4, 5 |
-| `src/test/scala/oathdigital/gameplay/OathDriverSuite.scala` | create | 3, 4 |
-| `src/test/scala/oathdigital/gameplay/FollowUpPlay.scala` | create | 4 |
-| `src/test/scala/oathdigital/testkit/{Table,ParkedNode,SituationDriver}.scala` | modify | 4 |
+| `src/main/scala/distantlands/model/GameState.scala` | modify | 1, 3 |
+| `src/main/scala/distantlands/model/CoreOperations.scala` | modify | 1 |
+| `src/main/scala/distantlands/model/GameViolation.scala` | modify | 1, 4 |
+| `src/main/scala/distantlands/model/ProcedureRef.scala` | modify | 4 |
+| `src/main/scala/distantlands/model/PowerWindow.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/operations/{OperationApplication,TurnStateOperations}.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala` | modify | 1, 3 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala` | modify | 1, 3, 4 |
+| `src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala` | modify | 1, 2 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` | modify | 4 |
+| `src/main/scala/distantlands/gameplay/walker/FollowUpOffer.scala` | create | 4 |
+| `src/main/scala/distantlands/gameplay/walker/QueuedStart.scala` | create | 4 |
+| `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala` | modify | 2 |
+| `src/main/scala/distantlands/gameplay/OathDriver.scala` | create | 3, 4 |
+| `src/main/scala/distantlands/gameplay/OathRules.scala` | modify | 1, 3 |
+| `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` | modify | 1, 3, 4 |
+| `src/main/scala/distantlands/gameplay/OathLifecycle.scala` | modify | 1 |
+| `src/main/scala/distantlands/gameplay/powers/{economy/KnightsErrant,search/HuntingParty,campaign/SecondWind}.scala` | modify | 1 |
+| `src/main/scala/distantlands/serialization/{FollowUpWire,WalkerEventCodec,WalkerOperationCodec,GameEventWire}.scala` | modify | 1, 3 |
+| `src/main/scala/distantlands/application/GameApplicationService.scala` | modify | 1, 4 |
+| `src/main/scala/distantlands/application/{GameCommands,Authorization,GameIntentMapper}.scala` | modify | 4 |
+| `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` | modify | 4 |
+| `src/main/scala/distantlands/application/{LegalActionProjector,PendingProjector,GameProjection,ScopedProjectionContext}.scala` | modify | 1, 5 |
+| `src/main/scala/distantlands/application/gamelog/{GameLogFormatter,StartLines,ActionLines}.scala` | modify | 1, 4 |
+| `src/main/scala/distantlands/server/GameRoutes.scala` | modify | 1, 4 |
+| `shared/src/main/scala/distantlands/protocol/{CommandIntents,CommandIntentCodec,CommandIntentDecoders}.scala` | modify | 4 |
+| `shared/src/main/scala/distantlands/protocol/projection/{GameProjectionDto,GameProjectionCodec}.scala` | modify | 5 |
+| `frontend/src/main/scala/distantlands/frontend/FollowUpControls.scala` | delete | 4 |
+| `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala` | modify | 4, 5 |
+| `src/test/scala/distantlands/gameplay/OathDriverSuite.scala` | create | 3, 4 |
+| `src/test/scala/distantlands/gameplay/FollowUpPlay.scala` | create | 4 |
+| `src/test/scala/distantlands/testkit/{Table,ParkedNode,SituationDriver}.scala` | modify | 4 |
 | follow-up test suites (listed per task) | modify or delete | 1-5 |
 | `docs/superpowers/specs/2026-10-08-follow-up-actions-design.md` | modify | 6 |
 | `docs/superpowers/specs/2026-09-12-walker-ownership-and-phases-design.md` | modify | 6 |
@@ -126,19 +126,19 @@ A rename and retype. Behavior does not change: the queue still waits for `StartW
 
 **Files:**
 - Modify: `docs/superpowers/specs/2026-10-09-walker-game-loop-design.md`
-- Modify: `src/main/scala/oathdigital/model/GameState.scala`, `CoreOperations.scala`, `GameViolation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`, `TurnStateOperations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`, `WalkerReplay.scala`, `FollowUpSupplyWaiver.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`, `OathRulesWalker.scala`, `OathLifecycle.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/KnightsErrant.scala`, `powers/search/HuntingParty.scala`, `powers/campaign/SecondWind.scala`
-- Modify: `src/main/scala/oathdigital/serialization/FollowUpWire.scala`, `WalkerEventCodec.scala`, `WalkerOperationCodec.scala`, `GameEventWire.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala`, `LegalActionProjector.scala`, `PendingProjector.scala`, `GameProjection.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`, `StartLines.scala`, `ActionLines.scala`
-- Modify: `src/main/scala/oathdigital/server/GameRoutes.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala`, `CoreOperations.scala`, `GameViolation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`, `TurnStateOperations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`, `WalkerReplay.scala`, `FollowUpSupplyWaiver.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`, `OathRulesWalker.scala`, `OathLifecycle.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/KnightsErrant.scala`, `powers/search/HuntingParty.scala`, `powers/campaign/SecondWind.scala`
+- Modify: `src/main/scala/distantlands/serialization/FollowUpWire.scala`, `WalkerEventCodec.scala`, `WalkerOperationCodec.scala`, `GameEventWire.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala`, `LegalActionProjector.scala`, `PendingProjector.scala`, `GameProjection.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`, `StartLines.scala`, `ActionLines.scala`
+- Modify: `src/main/scala/distantlands/server/GameRoutes.scala`
 - Modify tests: `FollowUpRulesSuite`, `FollowUpSupplyWaiverSuite`, `FollowUpReplaySuite`, `KnightsErrantSuite`, `HuntingPartySuite`, `SecondWindSuite`, `FollowUpProjectionSuite`, `FollowUpServiceSuite`, `GameLogFollowUpSuite`, `LogScripts`, `WalkerDecisionWireSuite`, `WalkerOperationWireSuite`, `CommandRejectionMessageSuite`
 
 **Interfaces:**
-- Produces, in `oathdigital.model`:
+- Produces, in `distantlands.model`:
 
   ```scala
   final case class QueuedProcedure(actor: PlayerId, procedure: StartableRef,
@@ -151,7 +151,7 @@ A rename and retype. Behavior does not change: the queue still waits for `StartW
   ```
 
   `CurrentGameState.queue: Vector[QueuedProcedure]` and `walkerEntry: Option[QueuedProcedure]`. `OathViolation.FollowUpPending(entry: QueuedProcedure)` until Task 4 deletes it.
-- Produces, in `oathdigital.gameplay.walker`: `ProcedureDequeued(entry: QueuedProcedure)` and `FollowUpSkipped(entry: QueuedProcedure)`, both `WalkerEvent`s.
+- Produces, in `distantlands.gameplay.walker`: `ProcedureDequeued(entry: QueuedProcedure)` and `FollowUpSkipped(entry: QueuedProcedure)`, both `WalkerEvent`s.
 - Produces, in `TurnStateOperations`: `def queueProcedure(ready: ReadyGame, entry: QueuedProcedure, atFront: Boolean): ReadyGame`.
 - Produces, in `FollowUpSupplyWaiver`: `def costWindow(procedure: StartableRef): Option[PowerWindow]`.
 - Wire: event type `walker.procedure-dequeued` with key `entry`; `walker.follow-up-skipped` with key `entry`; op kind `queue-procedure` with keys `entry` and `atFront`. An entry is `{"actorId", "procedure", "startArgs", "source"?, "kind"}`, `kind` being `"run"` or `"offer"`.
@@ -205,7 +205,7 @@ In the "The queue" section, replace the bullet that begins "The op `QueueFollowU
 
 - [ ] **Step 3: Replace the model types**
 
-In `src/main/scala/oathdigital/model/GameState.scala`, replace the `FollowUp` class and its doc with:
+In `src/main/scala/distantlands/model/GameState.scala`, replace the `FollowUp` class and its doc with:
 
 ```scala
 /** A procedure the walker runs as its own walk once the current one ends
@@ -236,7 +236,7 @@ In `CurrentGameState`, replace the two follow-up fields and their comments with:
     walkerEntry: Option[QueuedProcedure] = None,
 ```
 
-In `src/main/scala/oathdigital/model/CoreOperations.scala`, replace `QueueFollowUp` with:
+In `src/main/scala/distantlands/model/CoreOperations.scala`, replace `QueueFollowUp` with:
 
 ```scala
 /** Puts `entry` on the queue (walker-driven game loop design, "The
@@ -246,7 +246,7 @@ final case class QueueProcedure(entry: QueuedProcedure,
     atFront: Boolean = false) extends PrimitiveOperation
 ```
 
-In `src/main/scala/oathdigital/model/GameViolation.scala`, change `FollowUpPending(followUp: FollowUp)` to `FollowUpPending(entry: QueuedProcedure)`.
+In `src/main/scala/distantlands/model/GameViolation.scala`, change `FollowUpPending(followUp: FollowUp)` to `FollowUpPending(entry: QueuedProcedure)`.
 
 - [ ] **Step 4: Apply the op**
 
@@ -410,11 +410,11 @@ Add one test to `FollowUpReplaySuite`:
       atFront = true).game.current.queue, Vector(first, waiting))
 ```
 
-Use the suite's own `knights` source and imports; add `oathdigital.gameplay.operations.TurnStateOperations` if it is not imported.
+Use the suite's own `knights` source and imports; add `distantlands.gameplay.operations.TurnStateOperations` if it is not imported.
 
 - [ ] **Step 10: Run the follow-up suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FollowUp* oathdigital.gameplay.walker.FollowUp* oathdigital.gameplay.powers.economy.KnightsErrantSuite oathdigital.gameplay.powers.search.HuntingPartySuite oathdigital.gameplay.powers.campaign.SecondWindSuite oathdigital.application.FollowUp* oathdigital.application.gamelog.GameLogFollowUpSuite oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.FollowUp* distantlands.gameplay.walker.FollowUp* distantlands.gameplay.powers.economy.KnightsErrantSuite distantlands.gameplay.powers.search.HuntingPartySuite distantlands.gameplay.powers.campaign.SecondWindSuite distantlands.application.FollowUp* distantlands.application.gamelog.GameLogFollowUpSuite distantlands.serialization.*"`
 Expected: PASS.
 
 - [ ] **Step 11: Run everything**
@@ -426,9 +426,9 @@ Expected: PASS, with the baseline counts plus the 2 new tests.
 
 ```bash
 git add docs/superpowers/specs/2026-10-09-walker-game-loop-design.md \
-  src/main/scala/oathdigital/model src/main/scala/oathdigital/gameplay \
-  src/main/scala/oathdigital/serialization \
-  src/main/scala/oathdigital/application src/main/scala/oathdigital/server \
+  src/main/scala/distantlands/model src/main/scala/distantlands/gameplay \
+  src/main/scala/distantlands/serialization \
+  src/main/scala/distantlands/application src/main/scala/distantlands/server \
   src/test/scala
 git status --short
 git commit -m "refactor(walker): QueuedProcedure replaces FollowUp"
@@ -441,10 +441,10 @@ Check `git status --short` before committing: only this task's files are staged.
 ### Task 2: Recover's cost window
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala`
-- Test: `src/test/scala/oathdigital/gameplay/FollowUpSupplyWaiverSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala`
+- Test: `src/test/scala/distantlands/gameplay/FollowUpSupplyWaiverSuite.scala`
 
 **Interfaces:**
 - Produces: `PowerWindow.RecoverCost`, key `"recover.cost"`, a `RecoverWindow`. `FollowUpSupplyWaiver.costWindow(ActionRef.Recover) == Some(PowerWindow.RecoverCost)`.
@@ -471,7 +471,7 @@ Use the suite's `rules`, `knights` and imports; add `Look`, `Outcomes`, `Table` 
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FollowUpSupplyWaiverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.FollowUpSupplyWaiverSuite"`
 Expected: FAIL: `RecoverCost` does not exist.
 
 - [ ] **Step 3: Add the window and wrap the payment**
@@ -501,7 +501,7 @@ In `FollowUpSupplyWaiver.scala`, add `case ActionRef.Recover => Some(PowerWindow
 
 - [ ] **Step 4: Run the Recover and waiver suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FollowUpSupplyWaiverSuite oathdigital.gameplay.RecoverProcedureSuite oathdigital.gameplay.powers.recover.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.FollowUpSupplyWaiverSuite distantlands.gameplay.RecoverProcedureSuite distantlands.gameplay.powers.recover.*"`
 Expected: PASS. A `RecoverProcedureSuite` test that lists the windows a Recover visits now also lists `RecoverCost`; update its expected list and report it. A test that reads a Recover step's `nodeId` may see the payment one level deeper; update it and report it.
 
 - [ ] **Step 5: Run everything and commit**
@@ -510,10 +510,10 @@ Run: `./sbtw "test" "frontend/test"`
 Expected: PASS.
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala \
-  src/main/scala/oathdigital/gameplay/actions/recover/RecoverProcedure.scala \
-  src/main/scala/oathdigital/gameplay/walker/FollowUpSupplyWaiver.scala \
-  src/test/scala/oathdigital/gameplay
+git add src/main/scala/distantlands/model/PowerWindow.scala \
+  src/main/scala/distantlands/gameplay/actions/recover/RecoverProcedure.scala \
+  src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala \
+  src/test/scala/distantlands/gameplay
 git commit -m "feat(recover): a cost window the follow-up waiver reaches"
 ```
 
@@ -524,17 +524,17 @@ git commit -m "feat(recover): a cost window the follow-up waiver reaches"
 `OathDriver` replaces the glue. While the queue is not empty, the driver does nothing: the head still waits for `StartWalker` or `SkipFollowUp`, which Task 4 replaces.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/OathDriver.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`, `OathRulesWalker.scala`
-- Modify: `src/main/scala/oathdigital/model/GameState.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`, `WalkerReplay.scala`
-- Modify: `src/main/scala/oathdigital/serialization/GameEventWire.scala`, `WalkerEventCodec.scala`
-- Create: `src/test/scala/oathdigital/gameplay/OathDriverSuite.scala`
-- Modify: `src/test/scala/oathdigital/serialization/WalkerDecisionWireSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/OathDriver.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`, `OathRulesWalker.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`, `WalkerReplay.scala`
+- Modify: `src/main/scala/distantlands/serialization/GameEventWire.scala`, `WalkerEventCodec.scala`
+- Create: `src/test/scala/distantlands/gameplay/OathDriverSuite.scala`
+- Modify: `src/test/scala/distantlands/serialization/WalkerDecisionWireSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `queue`, `walkerEntry`, `ProcedureDequeued`.
-- Produces, in `oathdigital.gameplay`:
+- Produces, in `distantlands.gameplay`:
 
   ```scala
   private[gameplay] enum Ended:
@@ -549,24 +549,24 @@ git commit -m "feat(recover): a cost window the follow-up waiver reaches"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/OathDriverSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/OathDriverSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ActionBoundaryRan, FollowUpSkipped,
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ActionBoundaryRan, FollowUpSkipped,
   WalkerCompleted}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Outcomes, TakeWealthFixture, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Outcomes, TakeWealthFixture, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** What runs between walks (walker-driven game loop design, "The
   * driver"). */
@@ -636,7 +636,7 @@ class OathDriverSuite extends munit.FunSuite:
   test("a minor action runs the boundary"):
     val start = table.relicAt("Brass Horse", at = ancientCity).state
     val peeked = accepted(rules.handle(start,
-      oathdigital.gameplay.actions.MinorActionCommand.PeekSiteRelics(p1)))
+      distantlands.gameplay.actions.MinorActionCommand.PeekSiteRelics(p1)))
     assertEquals(boundaries(peeked.events), 1)
 
   test("the title walk hands back to the driver: Wake ends once the holder " +
@@ -683,7 +683,7 @@ In "Setup's end runs the first Wake's checks", `replayed` starts from `NoGame`. 
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathDriverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathDriverSuite"`
 Expected: FAIL to compile: `ActionBoundaryRan` and `boundaryDue` do not exist.
 
 - [ ] **Step 3: The flag and its event**
@@ -718,25 +718,25 @@ Wire: in `GameEventWire.scala`, `val ActionBoundaryRanType = "walker.action-boun
 
 - [ ] **Step 4: Write the driver**
 
-Create `src/main/scala/oathdigital/gameplay/OathDriver.scala`:
+Create `src/main/scala/distantlands/gameplay/OathDriver.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.engine.EventEvolution
-import oathdigital.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.phases.rest.{TurnBoundary,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.engine.EventEvolution
+import distantlands.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.phases.rest.{TurnBoundary,
   WarExhaustionRandomPort}
-import oathdigital.gameplay.phases.wake.{ForcedWakeProcedure,
+import distantlands.gameplay.phases.wake.{ForcedWakeProcedure,
   TakeWealthProcedure}
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.walker.ActionBoundaryRan
-import oathdigital.model._
-import oathdigital.model.OathEvent._
-import oathdigital.model.OathState._
-import oathdigital.model.OathViolation._
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.walker.ActionBoundaryRan
+import distantlands.model._
+import distantlands.model.OathEvent._
+import distantlands.model.OathState._
+import distantlands.model.OathViolation._
 
 /** What the driver was handed. */
 private[gameplay] enum Ended:
@@ -957,7 +957,7 @@ In `OathRulesWalker.scala`:
 
 - [ ] **Step 6: Run the driver suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathDriverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathDriverSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Run everything and update the expected changes**
@@ -977,12 +977,12 @@ Any other failure: stop and report.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/OathDriver.scala \
-  src/main/scala/oathdigital/gameplay/OathRules.scala \
-  src/main/scala/oathdigital/gameplay/OathRulesWalker.scala \
-  src/main/scala/oathdigital/model/GameState.scala \
-  src/main/scala/oathdigital/gameplay/walker \
-  src/main/scala/oathdigital/serialization src/test/scala
+git add src/main/scala/distantlands/gameplay/OathDriver.scala \
+  src/main/scala/distantlands/gameplay/OathRules.scala \
+  src/main/scala/distantlands/gameplay/OathRulesWalker.scala \
+  src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/gameplay/walker \
+  src/main/scala/distantlands/serialization src/test/scala
 git status --short
 git commit -m "feat(walker): one driver runs what follows every walk"
 ```
@@ -994,24 +994,24 @@ git commit -m "feat(walker): one driver runs what follows every walk"
 The driver dequeues the head. An `Offer` parks a `FollowUpOffer` decision: the action, priced by its start's own checks, or Skip. `startFollowUp`, `skipFollowUp`, the service's gate and the Skip command go.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala`, `GameViolation.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/FollowUpOffer.scala`, `QueuedStart.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`, `WalkerReplay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathDriver.scala`, `OathRulesWalker.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala`, `GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala`, `WalkerDecisionProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/*.scala` where a match over `TriggeredProcedureRef` needs the new case
-- Modify: `src/main/scala/oathdigital/server/GameRoutes.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala`
-- Delete: `frontend/src/main/scala/oathdigital/frontend/FollowUpControls.scala`, `frontend/src/test/scala/oathdigital/frontend/FollowUpControlsSuite.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala`
-- Create: `src/test/scala/oathdigital/gameplay/FollowUpPlay.scala`
-- Modify: `src/test/scala/oathdigital/testkit/Table.scala`, `ParkedNode.scala`, `SituationDriver.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala`, `GameViolation.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/FollowUpOffer.scala`, `QueuedStart.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, `WalkerReplay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathDriver.scala`, `OathRulesWalker.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala`, `GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala`, `WalkerDecisionProjector.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/*.scala` where a match over `TriggeredProcedureRef` needs the new case
+- Modify: `src/main/scala/distantlands/server/GameRoutes.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`, `CommandIntentCodec.scala`, `CommandIntentDecoders.scala`
+- Delete: `frontend/src/main/scala/distantlands/frontend/FollowUpControls.scala`, `frontend/src/test/scala/distantlands/frontend/FollowUpControlsSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala`
+- Create: `src/test/scala/distantlands/gameplay/FollowUpPlay.scala`
+- Modify: `src/test/scala/distantlands/testkit/Table.scala`, `ParkedNode.scala`, `SituationDriver.scala`
 - Modify tests: `OathDriverSuite`, `FollowUpRulesSuite`, `FollowUpReplaySuite`, `FollowUpSupplyWaiverSuite`, `KnightsErrantSuite`, `HuntingPartySuite`, `SecondWindSuite`, `FollowUpServiceSuite`, `GameLogFollowUpSuite`, `LogScripts`, `PendingWalkerInvariantSuite`, `CommandRejectionMessageSuite`, `CommandProtocolSuite`, `WalkerProcedureRegistrySuite`
 
 **Interfaces:**
 - Consumes: Tasks 1 and 3.
-- Produces, in `oathdigital.model`: `TriggeredProcedureRef.FollowUpOffer`, key `"follow-up-offer"`.
-- Produces, in `oathdigital.gameplay.walker`:
+- Produces, in `distantlands.model`: `TriggeredProcedureRef.FollowUpOffer`, key `"follow-up-offer"`.
+- Produces, in `distantlands.gameplay.walker`:
 
   ```scala
   object FollowUpOffer:
@@ -1034,13 +1034,13 @@ The driver dequeues the head. An `Offer` parks a `FollowUpOffer` decision: the a
 
 - [ ] **Step 1: The test helpers**
 
-Create `src/test/scala/oathdigital/gameplay/FollowUpPlay.scala`:
+Create `src/test/scala/distantlands/gameplay/FollowUpPlay.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.FollowUpOffer
-import oathdigital.model._
+import distantlands.gameplay.walker.FollowUpOffer
+import distantlands.model._
 
 /** Answers a follow-up offer as its player does (walker-driven game loop
   * design, ruling 6). */
@@ -1073,7 +1073,7 @@ object FollowUpPlay:
       Ended.Walk(ActionRef.Travel))
 ```
 
-In `src/test/scala/oathdigital/testkit/Table.scala`, after `parkedWalker`:
+In `src/test/scala/distantlands/testkit/Table.scala`, after `parkedWalker`:
 
 ```scala
   /** A follow-up offer of `entry` parked, as the driver leaves it once it
@@ -1083,7 +1083,7 @@ In `src/test/scala/oathdigital/testkit/Table.scala`, after `parkedWalker`:
       .parkedWalker(TriggeredProcedureRef.FollowUpOffer)
 ```
 
-In `src/test/scala/oathdigital/testkit/ParkedNode.scala`, the `rebuild` call passes the powers too, so an offer's park can be read:
+In `src/test/scala/distantlands/testkit/ParkedNode.scala`, the `rebuild` call passes the powers too, so an offer's park can be read:
 
 ```scala
               tree <- WalkerProcedureRegistry.rebuild(procedure, catalog,
@@ -1094,7 +1094,7 @@ In `src/test/scala/oathdigital/testkit/ParkedNode.scala`, the `rebuild` call pas
 
 - [ ] **Step 2: Write the failing rules tests**
 
-Rewrite `src/test/scala/oathdigital/gameplay/FollowUpRulesSuite.scala`. Keep its class doc's first sentence's subject, its `rules`, `ancientCity`, `brokenPeaks`, `knights`, `table`, `current` and `replayed`, with `table` taking `QueuedProcedure*` and setting `queue`. Replace `owed` and every test with:
+Rewrite `src/test/scala/distantlands/gameplay/FollowUpRulesSuite.scala`. Keep its class doc's first sentence's subject, its `rules`, `ancientCity`, `brokenPeaks`, `knights`, `table`, `current` and `replayed`, with `table` taking `QueuedProcedure*` and setting `queue`. Replace `owed` and every test with:
 
 ```scala
   private def offer(action: StartableRef): QueuedProcedure =
@@ -1193,7 +1193,7 @@ Rewrite `src/test/scala/oathdigital/gameplay/FollowUpRulesSuite.scala`. Keep its
       Left(OathViolation.WrongPlayer(p1, p2)))
 ```
 
-Imports: `oathdigital.gameplay.walker.{FollowUpOffer, FollowUpSkipped, ProcedureDequeued, WalkerCompleted}` and `oathdigital.testkit.ParkedNode`; drop `TravelProcedure` and `ChooseOneAnswer` if nothing else uses them.
+Imports: `distantlands.gameplay.walker.{FollowUpOffer, FollowUpSkipped, ProcedureDequeued, WalkerCompleted}` and `distantlands.testkit.ParkedNode`; drop `TravelProcedure` and `ChooseOneAnswer` if nothing else uses them.
 
 Add to `OathDriverSuite`, replacing the test "a walk that leaves an entry queued holds the boundary until Skip":
 
@@ -1223,7 +1223,7 @@ Its imports drop `FollowUpSkipped` if unused.
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FollowUpRulesSuite oathdigital.gameplay.OathDriverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.FollowUpRulesSuite distantlands.gameplay.OathDriverSuite"`
 Expected: FAIL to compile: `FollowUpOffer` does not exist.
 
 - [ ] **Step 4: The procedure reference**
@@ -1241,14 +1241,14 @@ and add `FollowUpOffer` to `TriggeredProcedureRef.all`.
 
 - [ ] **Step 5: The start check**
 
-Create `src/main/scala/oathdigital/gameplay/walker/QueuedStart.scala`:
+Create `src/main/scala/distantlands/gameplay/walker/QueuedStart.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.model._
 
 /** Whether a queued entry would start now (walker-driven game loop design,
   * plan-time ruling 4): the checks the driver's start of it runs, on the
@@ -1294,15 +1294,15 @@ Check `WalkerSimulation.previewParked`'s parameter list; pass only the four argu
 
 - [ ] **Step 6: The offer**
 
-Create `src/main/scala/oathdigital/gameplay/walker/FollowUpOffer.scala`:
+Create `src/main/scala/distantlands/gameplay/walker/FollowUpOffer.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.model._
 
 /** A follow-up entry's question (walker-driven game loop design, ruling 6):
   * the action, for no Supply, or Skip. The driver starts it once it has
@@ -1500,7 +1500,7 @@ Delete `OathViolation.FollowUpPending` from `GameViolation.scala` and its messag
 
 - [ ] **Step 10: Run the rules tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FollowUpRulesSuite oathdigital.gameplay.OathDriverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.FollowUpRulesSuite distantlands.gameplay.OathDriverSuite"`
 Expected: the build fails in `application`, `shared` and `frontend` until Step 11. Do Step 11, then rerun: PASS.
 
 - [ ] **Step 11: The service, the commands and the panel**
@@ -1509,7 +1509,7 @@ Expected: the build fails in `application`, `shared` and `frontend` until Step 1
 - `GameCommands.scala`: delete `SkipFollowUp` and its `playerOf` arm. `Authorization.scala`: delete `skipFollowUp`. `GameIntentMapper.scala`: delete the `Intent.SkipFollowUp` arm.
 - `shared/.../CommandIntents.scala`: delete `case object SkipFollowUp`. `CommandIntentCodec.scala` and `CommandIntentDecoders.scala`: delete its arms.
 - Delete `frontend/.../FollowUpControls.scala` and `FollowUpControlsSuite.scala`. In `ActionDecisionRenderer.scala`, delete the `followUpPending` value and the `if followUpPending then FollowUpControls.render(...)` it guards. The offer is drawn as any parked choose-one is.
-- `src/test/scala/oathdigital/testkit/SituationDriver.scala`: delete the `SkipFollowUp` arm.
+- `src/test/scala/distantlands/testkit/SituationDriver.scala`: delete the `SkipFollowUp` arm.
 - `PendingWalkerInvariantSuite`: delete `GameCommand.SkipFollowUp(actor)` from its command list. `CommandRejectionMessageSuite`: delete its `FollowUpPending` case. `CommandProtocolSuite`: delete the `skipFollowUp` round trip.
 - Any match over `TriggeredProcedureRef` the compiler now reports as non-exhaustive gets `FollowUpOffer` in the arm that holds `ForcedWake`. In the Game Log, that means no name, no section and no line.
 
@@ -1600,11 +1600,11 @@ Expected: PASS. Expected count changes: `FollowUpControlsSuite` deleted, `Follow
 - [ ] **Step 14: Commit**
 
 ```bash
-git add src/main/scala/oathdigital src/test/scala \
-  shared/src/main/scala/oathdigital/protocol \
-  shared/src/test/scala/oathdigital/protocol \
-  frontend/src/main/scala/oathdigital/frontend \
-  frontend/src/test/scala/oathdigital/frontend
+git add src/main/scala/distantlands src/test/scala \
+  shared/src/main/scala/distantlands/protocol \
+  shared/src/test/scala/distantlands/protocol \
+  frontend/src/main/scala/distantlands/frontend \
+  frontend/src/test/scala/distantlands/frontend
 git status --short
 git commit -m "feat(walker): a follow-up is a queued offer the walker asks"
 ```
@@ -1618,11 +1618,11 @@ git commit -m "feat(walker): a follow-up is a queued offer the walker asks"
 Between commands the queue is now always empty, so the projection's follow-up parts never show. They go.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/LegalActionProjector.scala`, `PendingProjector.scala`, `GameProjection.scala`, `ScopedProjectionContext.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala`, `GameProjectionCodec.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala`
-- Delete: `src/test/scala/oathdigital/application/FollowUpProjectionSuite.scala`
-- Modify: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/ViewerPresentationSuite.scala`
+- Modify: `src/main/scala/distantlands/application/LegalActionProjector.scala`, `PendingProjector.scala`, `GameProjection.scala`, `ScopedProjectionContext.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala`, `GameProjectionCodec.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala`
+- Delete: `src/test/scala/distantlands/application/FollowUpProjectionSuite.scala`
+- Modify: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`, `frontend/src/test/scala/distantlands/frontend/ViewerPresentationSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 4 (no reader of `FollowUpProjection` is left in the frontend's panel).
@@ -1649,12 +1649,12 @@ Expected: PASS, with the deleted tests fewer. Report the counts.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application \
-  shared/src/main/scala/oathdigital/protocol/projection \
-  shared/src/test/scala/oathdigital/protocol \
-  frontend/src/main/scala/oathdigital/frontend \
-  frontend/src/test/scala/oathdigital/frontend \
-  src/test/scala/oathdigital/application/FollowUpProjectionSuite.scala
+git add src/main/scala/distantlands/application \
+  shared/src/main/scala/distantlands/protocol/projection \
+  shared/src/test/scala/distantlands/protocol \
+  frontend/src/main/scala/distantlands/frontend \
+  frontend/src/test/scala/distantlands/frontend \
+  src/test/scala/distantlands/application/FollowUpProjectionSuite.scala
 git status --short
 git commit -m "refactor(projection): drop the follow-up projection"
 ```

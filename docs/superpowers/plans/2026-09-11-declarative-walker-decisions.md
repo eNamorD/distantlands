@@ -20,7 +20,7 @@ Two neighbouring batch-1 amendments are deliberately **not** in scope here, beca
 
 The revised spec and the review settled the two layering questions the previous draft had to work around. Both are restated here as they now stand, because the *reasons* changed even where the answers did not.
 
-**R1 — the whole vocabulary lives in one model file** *(settled at review)*. Queries, options, references, sections, placements and both answers go together in `oathdigital.model`, in one file. Splitting `DecisionOption` into a persisted `DecisionOptionRef` and a display-carrying `DecisionOption` removed the constraint that would have forced a split, so there is no longer a reason to scatter the contract across two packages: a reader opens one file and sees both what may be asked and what may be answered.
+**R1 — the whole vocabulary lives in one model file** *(settled at review)*. Queries, options, references, sections, placements and both answers go together in `distantlands.model`, in one file. Splitting `DecisionOption` into a persisted `DecisionOptionRef` and a display-carrying `DecisionOption` removed the constraint that would have forced a split, so there is no longer a reason to scatter the contract across two packages: a reader opens one file and sees both what may be asked and what may be answered.
 
 The tradeoff, stated plainly rather than argued: the model now holds a button's label and a section's label. That is prompt copy in a layer that otherwise holds none. It buys a single home for the contract, and it costs nothing structurally — `Decide` references these types exactly as it already references `PlayerId` and `PoolKey`, and gameplay is free to import the model in a way the reverse never is.
 
@@ -28,7 +28,7 @@ Two things are **not** in that file. The validator returns typed `OathViolation`
 
 On the apparent contradiction between the spec carrying labels on the query and its non-goal "moving presentation labels into gameplay/model code": those are different labels. Declarative prompt copy for a button or a section is authored by the action and travels on the query. Game-object names — a relic's name, a denizen's title — never enter gameplay and are still resolved by `GamePresentationProjector` at projection time from the option's ref. A `Denizen` option carries a ref and nothing else.
 
-**R2 — `CardDeck` moves to the model, and all seven ref variants are declared.** `DecisionOptionRef.Deck(id: CardDeck)` is persisted, so `CardDeck` cannot stay in `gameplay/operations/CoreOperations.scala`. The move is nearly free and that is worth knowing before it is planned as a risk: `CardDeck` is a closed four-case enum, and of the ten production files that reference it, nine already wildcard-import `oathdigital.model._`, so they keep compiling untouched. Only `gameplay/actions/Search.scala` names it in an explicit `gameplay.operations` import. No case object, no JSON tag and no wire string changes — the type declaration moves packages and nothing else.
+**R2 — `CardDeck` moves to the model, and all seven ref variants are declared.** `DecisionOptionRef.Deck(id: CardDeck)` is persisted, so `CardDeck` cannot stay in `gameplay/operations/CoreOperations.scala`. The move is nearly free and that is worth knowing before it is planned as a risk: `CardDeck` is a closed four-case enum, and of the ten production files that reference it, nine already wildcard-import `distantlands.model._`, so they keep compiling untouched. Only `gameplay/actions/Search.scala` names it in an explicit `gameplay.operations` import. No case object, no JSON tag and no wire string changes — the type declaration moves packages and nothing else.
 
 **R3 — the generic validator lives in gameplay, not in `ProcedureWalker`** *(tentatively approved)*. It returns typed `OathViolation`s, which the model may not name, so it cannot sit in the model beside the data it validates. And `ProcedureWalker.scala` is at 790 of the 800-line cap, so it cannot sit there either. It goes in a `DecisionQueries` object beside `DecisionQuery`, and the walker's `answerDecide` shrinks to an owner comparison plus one call. The thing to check at review is the boundary this draws: `DecisionQueries` never reads `ReadyGame`, so it cannot express state-dependent legality even by accident. Staleness is handled structurally instead, because the tree carrying the query is rebuilt against authoritative state on every command and an option that no longer exists is simply absent from the query. Adding a state parameter here would reintroduce the per-decision legality closure this change exists to delete.
 
@@ -54,7 +54,7 @@ The boundary R1 drew does not move. Game-object names still never enter a query:
 ### Task 1: `DecisionPayload` becomes `DecisionAnswer`
 
 **Files:**
-- Rename: `src/main/scala/oathdigital/model/DecisionPayload.scala` → `Decisions.scala`
+- Rename: `src/main/scala/distantlands/model/DecisionPayload.scala` → `Decisions.scala`
 - Modify: `model/PendingTree.scala`, `gameplay/operations/CoreOperations.scala`, `gameplay/walker/WalkerEvents.scala`, `gameplay/actions/recover/RecoverProcedure.scala`, `gameplay/actions/forge/ForgeProcedure.scala`, `serialization/WalkerEventCodec.scala`, `application/GameCommands.scala`, `application/GameIntentMapper.scala`, `shared/.../protocol/CommandIntents.scala`, `shared/.../protocol/CommandNestedCodecs.scala`, `shared/.../protocol/CommandIntentDecoders.scala`, `frontend/.../ServerUiSupport.scala`, `frontend/.../ForgeAssignmentState.scala`
 - Test: every suite naming the old family (`ProcedureWalkerSuite`, `WalkerStateSuite`, `RecoverProcedureSuite`, `ForgeProcedureSuite`, `GameEventWireSuite`, `GameHttpWireSuite`, `WalkerReplayDriftSuite`, `OathRulesWalkerPowerSuite`, `GameApplicationServiceSuite`, `WalkerDecisionProjectionSuite`, `HttpGameClientSuite`, `ServerModeUiSuite`, `ProtocolTestCommands`)
 
@@ -78,9 +78,9 @@ No wire or persisted string moves in this task. `encodeDecisionAnswer` still emi
 ### Task 2: the declarative decision vocabulary lands, unused
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/CardDeck.scala`, `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala`
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala` (the whole vocabulary lands here), `gameplay/operations/CoreOperations.scala` (remove `CardDeck`), `gameplay/actions/Search.scala` (its one explicit import)
-- Test: `src/test/scala/oathdigital/gameplay/walker/DecisionQuerySuite.scala` (new); mechanical import fixes in any suite naming `CardDeck` through `gameplay.operations`
+- Create: `src/main/scala/distantlands/model/CardDeck.scala`, `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala` (the whole vocabulary lands here), `gameplay/operations/CoreOperations.scala` (remove `CardDeck`), `gameplay/actions/Search.scala` (its one explicit import)
+- Test: `src/test/scala/distantlands/gameplay/walker/DecisionQuerySuite.scala` (new); mechanical import fixes in any suite naming `CardDeck` through `gameplay.operations`
 
 Additive only apart from the `CardDeck` package move, so this commit changes no behaviour and the gate stays green by construction. Landing the contract and its validator alone is what makes Task 3 reviewable — by then the only open question is whether Recover and Forge state their rules correctly, not whether the rules engine is right.
 
@@ -229,7 +229,7 @@ The synthetic-power test is the whole point of the change and deserves its own s
 ### Task 5: the generic two-section partition interaction
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/PartitionDecisionState.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/PartitionDecisionState.scala`
 - Modify: `frontend/.../CardDecisionState.scala`, `frontend/.../ActionDecisionRenderer.scala`, `shared/.../protocol/CommandIntents.scala`
 - Delete: `frontend/.../ForgeAssignmentState.scala`; `ForgeAssignment` wire row and its decoder; `model/PendingProcedures.scala`'s `ForgeResource` and `ForgeResourceAssignment`
 - Test: `frontend/.../CardDecisionStateSuite.scala`, a new `PartitionDecisionStateSuite`, `ServerModeUiSuite`, `CommandProtocolSuite`
@@ -297,7 +297,7 @@ Forge declares "Forge a relic" and "Complete Forge" beside the sections it alrea
 - [x] **Step 1: failing tests.** (a) `DecisionQuerySuite`: the same answer is accepted against a query whose heading and confirm label differ, proving `accepts` reads neither; (b) `WalkerDecisionProjectionSuite`: Forge projects its declared heading and confirm label, Recover's two decide parks project theirs, and a query declaring neither projects both as absent; (c) `WalkerDecisionQueryPowerSuite`: a power that rewrites a parked decision's heading changes what is projected, in the same edit that moves its options; (d) `ProjectionProtocolSuite`: the projection round-trips with both fields present and with both absent; (e) `ServerModeUiSuite`: the panel shows the declared copy, and a partition query declaring none falls back to the generic strings. Expected FAIL: the query has no copy.
 - [x] **Step 2: implement** the model fields, the validator's indifference to them, the projection DTO and its codec, and the projector pass-through.
 - [x] **Step 3: implement** the two declarations (Forge, Recover) and the frontend re-sourcing, deleting the `action == "forge"` branches.
-- [x] **Step 4:** re-run; expected PASS. `grep -n '"forge"' frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala` returns nothing: no panel names an action to decide what to call itself.
+- [x] **Step 4:** re-run; expected PASS. `grep -n '"forge"' frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala` returns nothing: no panel names an action to decide what to call itself.
 - [x] **Step 5:** `./sbtw "test"`, `./sbtw "frontend/test" "frontend/fastLinkJS"`, `python3 scripts/check-architecture.py`.
 - [x] **Step 6: commit** `feat(walker): let a decision author its own panel copy`.
 
@@ -358,7 +358,7 @@ The expectation was wrong, not the result.
 
 The legacy-tag sweep returns exactly one production hit, and it is a false
 positive left in place deliberately:
-`frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala:145`
+`frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala:145`
 uses `"recover-choice"` as the **CSS class** on the fallback button a Recover
 choice option gets when it is neither Continue nor Stop. It is not a JSON
 answer tag, no stylesheet or test reads it, and the three deleted tags survive

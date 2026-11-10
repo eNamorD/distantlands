@@ -1,0 +1,73 @@
+package distantlands.gameplay
+
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.HallOfMinistersCard
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.SealingWardCard
+import distantlands.gameplay.powers.cardplay.WildCryCard
+import distantlands.gameplay.powers.travel.DragonskinDrumCard
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+
+/** The production powers carry the global restrictions into every walker
+  * step, whichever node runs the operation (global operation restrictions
+  * design, "Testing: Slice 1"). */
+class GlobalRestrictionsWalkerSuite extends munit.FunSuite:
+  private val powers = WalkerPowerCatalog.default(catalog)
+  private val hall = HallOfMinistersCard.id
+  private val drum = DragonskinDrumCard.id
+  private val wildCry = WildCryCard.id
+  private val lockedCard = SealingWardCard.id
+
+  private def unchanged(ready: ReadyGame, tree: Operation,
+      walked: WalkerPowers)(using munit.Location): Unit =
+    ProcedureWalker.advance(ready, tree, None, walked) match
+      case Right(WalkerOutcome.Finished(state, events)) =>
+        assertEquals(state, ready)
+        assertEquals(events, Vector.empty)
+      case other => fail(s"expected a Finished walk, got $other")
+
+  test("a relic discard at a Hall-protected site is skipped, as Broken " +
+      "Forge's is"):
+    // p1 rules Ancient City, where the Hall stands, and p2 discards its relic.
+    val hallSite = AncientCitySite.id
+    val ready = Table.start.pawn(p1, at = hallSite)
+      .edifice(hall, EdificeSide.Intact, at = hallSite)
+      .warbandsAt(hallSite, p1, 1).relicAt(drum, at = hallSite).ready
+    unchanged(ready, Sequence(Vector(BuildOps((_, _) => Right(Vector(
+      Discard.Relic(drum, PositionedLocation(Location.Site(hallSite)), 0,
+        p2)))))), powers)
+
+  test("a modifier selected for the command protects its card on the " +
+      "action's first walk"):
+    val ready = Table.start.adviser(p1, wildCry).ready
+    val tree = Sequence(Vector(BuildOps((_, _) => Right(Vector(
+      Discard.Denizen(wildCry, PositionedLocation(Location.PlayArea(p1)),
+        Region.Provinces, catalog.suitOf(wildCry).get, 0, 0, p1))))))
+    unchanged(ready, tree, WalkerPowers.selected(powers,
+      Vector(PowerId("denizen.wild-cry"))))
+
+  test("a faceup locked adviser is not discarded by a plain walker step"):
+    val ready = Table.start.adviser(p1, lockedCard).ready
+    unchanged(ready, Sequence(Vector(Discard.Denizen(lockedCard,
+      PositionedLocation(Location.PlayArea(p1)), Region.Provinces,
+      catalog.suitOf(lockedCard).get, 0, 0, p1))), powers)
+
+  private val swapping = Table.start.adviser(p1, lockedCard)
+    .adviser(p2, wildCry).ready
+  private def swapBatch(required: Boolean): Operation = Sequence(Vector(
+    BuildOps((_, _) => Right(Vector(Swap(lockedCard,
+      PositionedLocation(Location.PlayArea(p1)), wildCry,
+      PositionedLocation(Location.PlayArea(p2))))), required = required)))
+
+  test("a plain BuildOps skips a refused swap"):
+    unchanged(swapping, swapBatch(required = false), powers)
+
+  test("a required BuildOps rejects the whole batch when one operation is " +
+      "refused"):
+    assertEquals(ProcedureWalker.advance(swapping, swapBatch(required = true),
+      None, powers), Left(OathViolation.CoreOperationRejected("locked",
+        s"${lockedCard.value} is locked")))

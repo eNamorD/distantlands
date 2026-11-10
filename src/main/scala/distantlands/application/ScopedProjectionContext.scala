@@ -1,0 +1,25 @@
+package distantlands.application
+
+import distantlands.model.{PlayerId, PlayerState, ReadyGame, SiteState}
+import distantlands.protocol.projection._
+
+private[application] final case class ScopedProjectionContext(
+    ready: ReadyGame,
+    viewer: Option[PlayerId]
+):
+  val current = ready.game.current
+  val active: PlayerState = current.player(current.turn.activePlayer).get
+  val activeSite: Option[SiteState] = active.pawnSite.flatMap(current.map.sites.get)
+
+private[application] final case class PendingProjection(
+    phase: String,
+    walkerDecision: Option[WalkerDecisionProjection],
+    walkerWaiting: Option[WalkerWaitingProjection]
+)
+
+// [[WalkerDecisionProjection]] itself now lives on the wire: it is the
+// same type `GameProjection.walkerDecision` carries (`shared/.../
+// ActionProjectionDtos.scala`), resolved here via the `protocol.projection`
+// wildcard import above rather than a separate application-local type --
+// see that file's doc comment for the owner-privacy and marker-relic
+// rulings that used to live on this now-deleted local copy.

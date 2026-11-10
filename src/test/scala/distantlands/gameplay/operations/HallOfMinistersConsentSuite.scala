@@ -1,0 +1,136 @@
+package distantlands.gameplay.operations
+
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.protocol.projection.ConsentAskProjection
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
+
+/** The Hall of Ministers on a power's site-card question (consent design,
+  * slice 3): Roving Terror, which discards a card at another site, asks the
+  * Hall's ruler before it takes a card the Hall protects. */
+class HallOfMinistersConsentSuite extends munit.FunSuite:
+  import PhasePowerHarness._
+
+  private val terror = RovingTerrorCard.id
+  private val source = DecisionOptionRef.Denizen(terror)
+  private val power = RovingTerror
+  private val home = AncientCitySite.id
+  private val woods = DeepWoodsSite.id
+  private val peaks = BrokenPeaksSite.id
+  private val errandBoy = ErrandBoyCard.id
+  private val wrestlers = WrestlersCard.id
+  private val hall = HallOfMinistersCard.id
+  private val errandBoyRef = DecisionOptionRef.Denizen(errandBoy)
+  /** Errand Boy's slot at Deep Woods, Roving Terror's answer for it. */
+  private val errandBoySlot = DecisionOptionRef.SiteSlot(woods, 0)
+  private val covers = ConsentKey(HallOfMinisters.id, p1,
+    HallOfMinisters.discardKey, errandBoyRef)
+
+  /** p1's Act at Ancient City beside Roving Terror. Errand Boy stands at
+    * Deep Woods with the intact Hall, which `ruled` gives its ruler, and,
+    * when `beside`, Wrestlers stands at Broken Peaks, which the Hall does
+    * not protect. */
+  private def guarded(ruled: Table => Table = _.warbandsAt(woods, p2, 1),
+      beside: Boolean = true): ReadyGame =
+    val table = ruled(Table.start.turn(p1, Phase.Act).pawn(p1, at = home)
+      .denizen(terror, at = home).denizen(errandBoy, at = woods)
+      .edifice(hall, EdificeSide.Intact, at = woods))
+    (if beside then table.denizen(wrestlers, at = peaks) else table).ready
+
+  private def remembering(ready: ReadyGame, answer: ConsentAnswer)
+      : ReadyGame =
+    ready.copy(consent = ConsentState(answers = Map(covers -> answer.by(p2)),
+      turn = Some(ConsentTurn.of(ready))))
+
+  private def errandBoyRow(t: OathTransition)(using munit.Location) =
+    present(queryOf(t, p1).toVector.flatMap(_.offeredOptions)
+      .find(_.id == errandBoySlot.wireId), "the Errand Boy row")
+
+  test("a card the Hall protects for a player is askable of that player, " +
+      "beside a card it does not protect"):
+    val t = accepted(use(guarded(), power, source))
+    assert(awaits(t, RovingTerror.decisionId),
+      parked.parkedDecision(t.state).toString)
+    val row = errandBoyRow(t)
+    assertEquals(row.state, "askable")
+    assertEquals(row.reason, Some("Hall of Ministers: Cannot discard cards " +
+      "from its ruler's sites without ruler's consent."))
+    assertEquals(row.consent, Some(ConsentAskProjection(Vector("p2"),
+      Vector("Hall of Ministers"))))
+
+  test("the ask names its granter and covers the card"):
+    val t = accepted(use(guarded(), power, source))
+    assertEquals(rules.consentAsk(t.state, p1, RovingTerror.decisionId,
+      errandBoySlot), Right(OptionReason.Askable(HallOfMinisters.id,
+        HallOfMinisters.noDiscardConsent(HallOfMinisters.source),
+        Vector(ConsentAsk(p2, Vector(HallOfMinisters.id))), Vector(covers))))
+
+  test("under bandits a protected card shows the Hall's reason"):
+    val row = errandBoyRow(accepted(use(guarded(_.bandits(woods, 2)), power,
+      source)))
+    assertEquals(row.state, "unavailable")
+    assertEquals(row.reason, Some("Protected by the Hall of Ministers"))
+
+  test("when the Hall protects every candidate the card is askable beside " +
+      "Continue, and after a refusal Continue remains"):
+    def continueOffered(t: OathTransition): Boolean =
+      queryOf(t, p1).toVector.flatMap(_.offeredOptions)
+        .exists(_.id == Decide.Pass.wireId)
+    val asked = accepted(use(guarded(beside = false), power, source))
+    assert(awaits(asked, RovingTerror.decisionId))
+    assertEquals(errandBoyRow(asked).state, "askable")
+    assert(continueOffered(asked))
+    val refused = accepted(use(remembering(guarded(beside = false),
+      ConsentAnswer.Refused), power, source))
+    assert(awaits(refused, RovingTerror.decisionId))
+    assertEquals(errandBoyRow(refused).state, "unavailable")
+    assert(continueOffered(refused))
+
+  test("with every candidate protected, a grant opens the card and Continue " +
+      "goes"):
+    val t = accepted(use(remembering(guarded(beside = false),
+      ConsentAnswer.Granted), power, source))
+    assert(awaits(t, RovingTerror.decisionId))
+    assertEquals(errandBoyRow(t).state, "available")
+    assert(!queryOf(t, p1).toVector.flatMap(_.offeredOptions)
+      .exists(_.id == Decide.Pass.wireId))
+
+  test("the Hall's own ruler takes the card freely"):
+    val t = accepted(use(guarded(_.warbandsAt(woods, p1, 1)), power, source))
+    assertEquals(errandBoyRow(t).state, "available")
+
+  test("a grant remembered for the card lets Roving Terror take it"):
+    val ready = remembering(guarded(), ConsentAnswer.Granted)
+    val t = accepted(use(ready, power, source))
+    assertEquals(errandBoyRow(t).state, "available")
+    val done = accepted(answer(t, p1, RovingTerror.decisionId,
+      pick(errandBoySlot)))
+    assert(Look(after(done)).cardsAt(woods).contains(terror))
+    assert(Look(after(done)).discardAfter(woods).contains(errandBoy))
+
+  test("a refusal remembered this turn leaves the Hall's reason"):
+    val ready = remembering(guarded(), ConsentAnswer.Refused)
+    val row = errandBoyRow(accepted(use(ready, power, source)))
+    assertEquals(row.state, "unavailable")
+    assertEquals(row.reason, Some("Protected by the Hall of Ministers"))
+
+  test("a Citizen's discard at an Empire site on an Exile's turn is " +
+      "askable of the Chancellor"):
+    val p3 = Table.p3
+    val ready = Table.start.imperial(p1, p2).turn(p3, Phase.Act)
+      .denizen(errandBoy, at = peaks)
+      .edifice(hall, EdificeSide.Intact, at = woods)
+      .warbandsAt(woods, p1, 1).warbandsAt(peaks, p1, 1).ready
+    val discard = Discard.Denizen(errandBoy,
+      PositionedLocation(Location.Site(peaks)), Region.Cradle, Suit.Order,
+      favor = 0, secrets = 0, actingPlayer = p2)
+    val reason = present(HallOfMinisters.reason(ready, discard),
+      "the Hall's reason")
+    assertEquals(reason.code, "discard-immune")
+    assertEquals(HallOfMinisters.granter(ready), Some(p1))

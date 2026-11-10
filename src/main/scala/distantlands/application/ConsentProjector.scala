@@ -1,0 +1,111 @@
+package distantlands.application
+
+import distantlands.gameplay.actions.{BannerRules, ImperialLaws}
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.model._
+import distantlands.protocol.projection._
+
+/** A waivable power's name as the panels write it: its source's name, the
+  * Narrow Pass for the Pass. */
+private[application] final class ConsentNames(
+    presentation: GamePresentationProjector, powers: ConsentPowers):
+  def power(id: PowerId): String = powers.source(id) match
+    case Some(PowerSourceRef.Site(site)) => presentation.siteLabel(site)
+    // A waivable edifice power is printed on its intact face (the Hall of
+    // Ministers), so the power is named for that face.
+    case Some(PowerSourceRef.Card(edifice: EdificeId)) =>
+      presentation.edificeLabel(edifice, EdificeSide.Intact)
+    case Some(PowerSourceRef.Card(card)) =>
+      presentation.cardDetails(card, None, hidden = false).name
+    case Some(PowerSourceRef.Banner(banner)) => BannerRules.displayName(banner)
+    case None => ImperialLaws.names.getOrElse(id,
+      presentation.safeLabel(id.value))
+
+/** The consent parts of a viewer's projection (consent design,
+  * "Projection"): the requester's waiting notice in place of the decision,
+  * each asked granter's prompt, and the viewer's own preferences. Nothing
+  * here says whether an answer was automatic, and no other player's
+  * preferences leave the server. */
+private[application] final class ConsentProjector(
+    presentation: GamePresentationProjector,
+    decisions: WalkerDecisionProjector, rows: DecisionOptionRows,
+    powers: ConsentPowers):
+  private val names = new ConsentNames(presentation, powers)
+
+  def applied(context: ScopedProjectionContext, projection: GameProjection)
+      : GameProjection =
+    val ready = context.ready
+    val request = ready.consent.pending
+    val requesting = request.filter(waiting =>
+      context.viewer.contains(waiting.requester))
+    val prompt = for
+      waiting <- request
+      viewer <- context.viewer
+      ask <- waiting.open.find(_.granter == viewer)
+    yield
+      // A payer is asked to travel to the site their key names (catalog
+      // batch 8, slice 15).
+      val paying = ask.powers.forall(powers.paying)
+      val site = Option.when(paying)(waiting.keysOf(ask).collectFirst {
+        case ConsentKey(_, _, _, DecisionOptionRef.Site(site)) => site })
+        .flatten
+      ConsentPromptProjection(waiting.requester.value,
+        ask.powers.map(names.power), site.fold(target(context, waiting))(
+          presentation.siteLabel), paying, waiting.use.map(used))
+    projection.copy(
+      walkerDecision =
+        if requesting.nonEmpty then None else projection.walkerDecision,
+      consentWaiting = requesting.map { waiting =>
+        val open = waiting.open
+        // "A's or B's" while only alternatives wait (catalog batch 8,
+        // slice 15).
+        ConsentWaitingProjection(open.map(_.granter.value),
+          either = open.size > 1 && open.forall(_.alternative),
+          use = waiting.use.map(used))
+      },
+      consentPrompt = prompt,
+      consentPreferences = context.viewer.toVector.flatMap(
+        preferences(ready, _)))
+
+  private def preferences(ready: ReadyGame, viewer: PlayerId)
+      : Vector[ConsentPreferencesProjection] =
+    powers.ruledBy(ready, viewer).map(power => ConsentPreferencesProjection(
+      power.value, names.power(power),
+      ready.game.current.players.map(_.player).filter(_ != viewer).map(
+        other => ConsentPreferenceRowProjection(other.value,
+          ready.consent.preference(viewer, power, other)
+            .fold(ConsentSetting.CaseByCase.key)(_.key))),
+      powers.source(power).collect { case PowerSourceRef.Card(card) =>
+        card.value }))
+
+  /** The option asked about, named as its decision row names it
+    * ([[DecisionOptionRows]]). A button has no name of its own, so its
+    * label is read from the parked decision the request is about, which is
+    * the one thing this still needs the walker projector for. */
+  private def target(context: ScopedProjectionContext,
+      request: ConsentRequest): String =
+    val ref = request.target
+    val option = ref match
+      case button: DecisionOptionRef.Button => decisions
+        .openDecisions(context.ready)
+        .filter(_.decisionId == request.decisionId)
+        .flatMap(offered).find(_.ref == button)
+      case _ => DecisionOption.forRef(ref)
+    option.flatMap(rows.project(context.ready, context.viewer,
+        context.ready.game.cardIndex.toOption, _))
+      .fold(ref.wireId)(_.label)
+
+  /** The name of the card whose automatic power a request is about, as
+    * the panels write it (catalog batch 8, item 10b). */
+  private def used(use: ConsentUse): String =
+    presentation.cardDetails(use.card, None, hidden = false).name
+
+  /** The options of a choose-one or a choose-many, as offered. */
+  private def offered(decide: Decide): Vector[DecisionOption] =
+    decide.query match
+      case one: DecisionQuery.ChooseOne => one.options
+      case many: DecisionQuery.ChooseMany => many.options
+      case _ => Vector.empty
+
+private[application] object ConsentProjector:
+  val withdrawNote = "Withdraw your consent request"

@@ -9,7 +9,7 @@ the defect the evidence supports.
 
 ## Problem
 
-`Table` validates what it builds. [`Table.ready`](../../../src/test/scala/oathdigital/testkit/Table.scala)
+`Table` validates what it builds. [`Table.ready`](../../../src/test/scala/distantlands/testkit/Table.scala)
 checks that no card is lost or in two places and that no force outnumbers its
 printed supply, and it fails the test naming what is wrong. `Table.unchecked`
 returns the same state with nothing checked.

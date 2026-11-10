@@ -1,0 +1,61 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.model._
+
+object MilitaryParadeCard extends Denizen(DenizenId("109"), "Military Parade", Suit.Order):
+  val power = PrintedPower(PowerId("denizen.military-parade"),
+    persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.EitherSidePlan),
+    text = "If you're victorious, gain [favor] from the favor banks " +
+      "matching each adviser of your enemy _(including Imperial " +
+      "Allies)_.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Military Parade (card 109), a battle plan for either side: "If you're
+  * victorious, gain [favor] from the favor banks matching each adviser of your
+  * enemy (including Imperial Allies)."
+  *
+  * It is free. Once the Campaign has resolved, its user gains one favor if they
+  * won for each faceup adviser the enemy holds then, from that adviser's suit
+  * bank (`FavorBySuit`). A facedown adviser has no suit and gives nothing.
+  * The Imperial Allies clause is a base-game rule; in New Foundations the
+  * plan counts only the one enemy's advisers (ruling R9). Bandits hold no
+  * advisers, so an attacker is not offered it against bandits. A bandit
+  * defender applies it by itself, since it is free, and when the bandits win
+  * the favor moves from the banks to the shared bank. The gains write the
+  * generic gain lines, so it writes no line of its own.
+  */
+case object MilitaryParade extends DenizenPlan(MilitaryParadeCard,
+    MilitaryParadeCard.power):
+  /** The enemy of the plan's user: the attacker for a defender, and the
+    * defending player for an attacker. */
+  private def enemy(use: PlanUse): Option[PlayerId] = use.side match
+    case CampaignPlanSide.Defender => Some(use.actor)
+    case CampaignPlanSide.Attacker => use.result.flatMap(_.defender.player)
+
+  /** `player`'s faceup advisers, a Marriage listed twice since it counts as
+    * two (`EffectiveSuit.weight`). */
+  private def advisers(ready: ReadyGame, player: PlayerId): Vector[CardId] =
+    ready.game.current.player(player).toVector
+      .flatMap(_.advisers.collect {
+        case DenizenState(held, Orientation.FaceUp, _) => held })
+      .flatMap(held => Vector.fill(EffectiveSuit.weight(held))(held))
+
+  def sides: Set[CampaignPlanSide] =
+    Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
+
+  def plan(context: PlanContext): Option[CampaignPlanOffer] =
+    context.denizen(cardId)
+      .filter(_ => context.enemy != CampaignDefender.Bandits)
+      .map(source => CampaignPlanOffer(source,
+        "Military Parade: gain favor for the enemy's advisers if victorious",
+        Vector.empty, Vector.empty))
+
+  override def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
+    PowerWindow.CampaignActionEligibility -> (use =>
+      if !use.won.contains(true) then Vector.empty
+      else MilitaryParade.enemy(use).toVector.flatMap(enemy =>
+        FavorBySuit.gains(use.user, FavorBySuit.counts(use.catalog, use.ready,
+          MilitaryParade.advisers(use.ready, enemy))))))

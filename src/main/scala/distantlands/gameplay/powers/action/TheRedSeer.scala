@@ -1,0 +1,54 @@
+package distantlands.gameplay.powers.action
+
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.powers.banner.CardPowerBanners
+import distantlands.gameplay.powers.OathkeeperGoalChoice
+import distantlands.model._
+
+object TheRedSeerCard extends Denizen(DenizenId("244"), "The Red Seer",
+    Suit.Nomad):
+  val power = PrintedPower(PowerId("denizen.the-red-seer"),
+    persistent = false, cost = Cost(secret = 1, secretBurnt = 2),
+    text = "**ACTION:** If you hold the Darkest Secret, change the " +
+      "Oathkeeper goal to anything but Devotion.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** The Red Seer (card 244), ACTION: "If you hold the Darkest Secret, change
+  * the Oathkeeper goal to anything but Devotion."
+  *
+  * The engine pays the printed cost. It is usable only by a player who
+  * holds the Darkest Secret; otherwise the Act menu shows it unavailable
+  * with "Nothing to do now". The user chooses a new goal from the four,
+  * with the current goal and Devotion shown unavailable. The title follows
+  * at the action's end, where the Oathkeeper check reads the new goal.
+  *
+  * Its line is the action's: "Changed the Oathkeeper goal to Protection."
+  * It narrates its question.
+  */
+case object TheRedSeer extends PaidAction(TheRedSeerCard.power):
+  val decisionId: String = "power.the-red-seer.goal"
+  val notDevotion: String = "The Red Seer cannot choose Devotion"
+  private val barred: Map[OathkeeperGoal, String] =
+    Map(OathkeeperGoal.Devotion -> notDevotion)
+
+  private val notes = NoteSet(id)
+  /** "Changed the Oathkeeper goal to Protection." */
+  val changed: NoteKey = OathkeeperGoalChoice.changed(notes, NoteKey.Used)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    CardPowerBanners.holdsDarkestSecret(ready, player)
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
+    Branch((live, _) => Vector(Decide(decisionId, player,
+      DecisionQuery.ChooseOne(OathkeeperGoalChoice.options(live, barred),
+        heading = Some("The Red Seer: change the Oathkeeper goal to " +
+          "anything but Devotion"))))),
+    BuildOps((live, pending) =>
+      OathkeeperGoalChoice.set(live, pending, decisionId, barred.keySet)),
+    Note(id, states => PowerSourceRef.of(source).flatMap(card =>
+      OathkeeperGoalChoice.changedNote(states, changed, card))))))

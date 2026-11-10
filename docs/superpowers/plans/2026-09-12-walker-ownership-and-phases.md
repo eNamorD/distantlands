@@ -36,33 +36,33 @@ The spec's `SetOathkeeper` also becomes its own task (Task 6), because a reviewe
 
 | File | Responsibility | Tasks |
 |---|---|---|
-| `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` (new) | Operation encode/decode, moved out of `WalkerEventCodec` | 1, 6 |
-| `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala` | Walker event encode/decode, procedure family tags, `Answered.by` | 1, 3, 4 |
-| `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala` | `PowerCtx.activePlayer` | 2 |
-| `src/main/scala/oathdigital/model/PendingTree.scala` | `PendingTree(at, answered)`, `Answered(decisionId, answer, by)` | 3 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala` | Actor-free walker events, `ChoicePayload.by`, `procedure` field | 3, 4 |
-| `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` | Owner check against `Answered.by`; `awaitedPlayer` | 2, 3, 5 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala` | Replay without stored actor | 3, 4 |
-| `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` | Requester checks, phase gate removal, `startTriggered`, boundary by family | 3, 4, 5, 7, 8 |
-| `src/main/scala/oathdigital/model/ProcedureRef.scala` (renamed from `ActionRef.scala`) | The three families | 4, 7 |
-| `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (renamed) | One map keyed by `ProcedureRef` | 4, 7 |
-| `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` | Awaited-player projection and `waiting` | 3, 4, 5 |
+| `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` (new) | Operation encode/decode, moved out of `WalkerEventCodec` | 1, 6 |
+| `src/main/scala/distantlands/serialization/WalkerEventCodec.scala` | Walker event encode/decode, procedure family tags, `Answered.by` | 1, 3, 4 |
+| `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala` | `PowerCtx.activePlayer` | 2 |
+| `src/main/scala/distantlands/model/PendingTree.scala` | `PendingTree(at, answered)`, `Answered(decisionId, answer, by)` | 3 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala` | Actor-free walker events, `ChoicePayload.by`, `procedure` field | 3, 4 |
+| `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` | Owner check against `Answered.by`; `awaitedPlayer` | 2, 3, 5 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala` | Replay without stored actor | 3, 4 |
+| `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` | Requester checks, phase gate removal, `startTriggered`, boundary by family | 3, 4, 5, 7, 8 |
+| `src/main/scala/distantlands/model/ProcedureRef.scala` (renamed from `ActionRef.scala`) | The three families | 4, 7 |
+| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (renamed) | One map keyed by `ProcedureRef` | 4, 7 |
+| `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` | Awaited-player projection and `waiting` | 3, 4, 5 |
 | `shared/.../projection/ActionProjectionDtos.scala`, `GameProjectionDto.scala`, `GameProjectionCodec.scala` | `WalkerWaitingProjection`, deletion of `OathkeeperRecipientProjection` | 5, 7 |
 | `frontend/.../WalkerPanelSupport.scala`, `ActionDecisionRenderer.scala`, `package.scala` | Waiting notice, generic choose-one panel, legacy block deletion | 5, 7 |
-| `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala`, `OperationStateMutation.scala`, `OperationError.scala` | `SetOathkeeper` | 6 |
-| `src/main/scala/oathdigital/gameplay/oathkeeper/OathkeeperRules.scala` (new) | `OathkeeperOutcome` and the title table | 7 |
-| `src/main/scala/oathdigital/gameplay/oathkeeper/OathkeeperProcedure.scala` (new) | The triggered tree | 7 |
-| `src/main/scala/oathdigital/gameplay/OathRules.scala` | `completeAction`'s Oathkeeper step, dead-guard deletion | 7, 8 |
-| `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala` | Loses `afterAction`, `chooseRecipient` and three evolve cases | 7 |
-| `src/test/scala/oathdigital/gameplay/oathkeeper/` (new) | `OathkeeperFixture`, `OathkeeperRulesSuite`, `OathkeeperProcedureSuite` | 7, 8 |
+| `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala`, `OperationStateMutation.scala`, `OperationError.scala` | `SetOathkeeper` | 6 |
+| `src/main/scala/distantlands/gameplay/oathkeeper/OathkeeperRules.scala` (new) | `OathkeeperOutcome` and the title table | 7 |
+| `src/main/scala/distantlands/gameplay/oathkeeper/OathkeeperProcedure.scala` (new) | The triggered tree | 7 |
+| `src/main/scala/distantlands/gameplay/OathRules.scala` | `completeAction`'s Oathkeeper step, dead-guard deletion | 7, 8 |
+| `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala` | Loses `afterAction`, `chooseRecipient` and three evolve cases | 7 |
+| `src/test/scala/distantlands/gameplay/oathkeeper/` (new) | `OathkeeperFixture`, `OathkeeperRulesSuite`, `OathkeeperProcedureSuite` | 7, 8 |
 
 ---
 
 ### Task 1: Codec headroom
 
 **Files:**
-- Create: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala:164-731`
+- Create: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala:164-731`
 
 **Interfaces:**
 - Produces: `private[serialization] trait WalkerOperationCodec { this: GameEventJsonSupport => protected final def encodeOperation(operation: CoreOperation): ujson.Value; protected final def decodeOperation(value: ujson.Value, path: String): Either[WireError, CoreOperation]; protected final def decodeSignedInt(value: ujson.Value, path: String): Either[WireError, Int] }`, mixed into `WalkerEventCodec`. Task 6 adds `SetOathkeeper`'s spelling here.
@@ -71,13 +71,13 @@ This is a pure move. Its acceptance criterion is the one batch-1 Task 1b used: n
 
 - [x] **Step 1: Record the baseline.**
 
-Run: `wc -l src/main/scala/oathdigital/serialization/WalkerEventCodec.scala && ./sbtw "testOnly oathdigital.serialization.GameEventWireSuite"`
+Run: `wc -l src/main/scala/distantlands/serialization/WalkerEventCodec.scala && ./sbtw "testOnly distantlands.serialization.GameEventWireSuite"`
 Expected: `785` lines; suite PASS.
 
 - [x] **Step 2: Move the operation codec.** Create `WalkerOperationCodec.scala` holding, verbatim and in their current order, `encodeOperation` (line 164) through `decodeOrientation` (line 726), plus `decodeSignedInt` (line 738) and `decodeOptionalSignedInt` (line 562) if nothing outside the moved block still calls them. Start the file with:
 
 ```scala
-package oathdigital.serialization
+package distantlands.serialization
 
 // imports: copy exactly the imports the moved methods need from
 // WalkerEventCodec.scala's header, and remove any the event codec no longer uses.
@@ -103,7 +103,7 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec {
 
 - [x] **Step 3: Verify it is a pure move.**
 
-Run: `./sbtw "test" && git diff --stat -- src/test shared/src/test frontend/src/test && wc -l src/main/scala/oathdigital/serialization/Walker*Codec.scala`
+Run: `./sbtw "test" && git diff --stat -- src/test shared/src/test frontend/src/test && wc -l src/main/scala/distantlands/serialization/Walker*Codec.scala`
 Expected: all tests PASS; the `git diff --stat` prints nothing; `WalkerEventCodec.scala` is under 250 lines and `WalkerOperationCodec.scala` under 800.
 
 - [x] **Step 4: Run the architecture check.**
@@ -114,7 +114,7 @@ Expected: PASS, no output from `diff --check`.
 - [x] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala src/main/scala/oathdigital/serialization/WalkerEventCodec.scala
+git add src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/serialization/WalkerEventCodec.scala
 git commit -m "refactor(walker): move operation spellings out of the event codec"
 ```
 
@@ -138,9 +138,9 @@ No other plan defect; review otherwise clean.
 ### Task 2: Rename `actor` to `activePlayer` on the walker and power surfaces
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala:11-20` (`PowerCtx`)
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala:11-20` (`PowerCtx`)
 - Modify: every `PowerCtx(` construction site and every `ctx.actor` reader (list with the command in Step 1)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (`WalkCtx.actor`), `WalkerPowerGather.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (`WalkCtx.actor`), `WalkerPowerGather.scala`
 - Modify: the `actor` parameter of `WalkerActionRegistry.build`/`rebuild` and of `RecoverProcedure`, `ForgeProcedure`, `TravelProcedure`, `TakeWealthProcedure`, `EndWakeProcedure` `build`/`rebuild`/`candidates`
 - Test: every suite the compiler names
 
@@ -154,7 +154,7 @@ Mechanical, no behaviour change. Stored copies (`PendingTree.actor`, walker even
 Run:
 ```bash
 grep -rn "ctx\.actor\|PowerCtx(\|WalkCtx(\|actor = ctx\.actor" --include='*.scala' src/main src/test
-grep -rn "actor: PlayerId" --include='*.scala' src/main/scala/oathdigital/gameplay/walker src/main/scala/oathdigital/gameplay/powerresolver src/main/scala/oathdigital/gameplay/powers src/main/scala/oathdigital/gameplay/actions/recover src/main/scala/oathdigital/gameplay/actions/forge src/main/scala/oathdigital/gameplay/actions/travel src/main/scala/oathdigital/gameplay/phases/wake
+grep -rn "actor: PlayerId" --include='*.scala' src/main/scala/distantlands/gameplay/walker src/main/scala/distantlands/gameplay/powerresolver src/main/scala/distantlands/gameplay/powers src/main/scala/distantlands/gameplay/actions/recover src/main/scala/distantlands/gameplay/actions/forge src/main/scala/distantlands/gameplay/actions/travel src/main/scala/distantlands/gameplay/phases/wake
 ```
 
 - [x] **Step 2: Rename.** In `PowerCtx`, rename the field to `activePlayer` and document it:
@@ -205,14 +205,14 @@ Step 4 came back empty.
 ### Task 3: Stop storing the active player; record who answered
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PendingTree.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerEvents.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:126-190, 555-600`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerReplay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`startWalker`, `resolveWalker`, `rollWalkerPrepared`, `walkerResumeContext`, `walkerTransition`, `parkedContinue`)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala:357-359`, `WalkerDecisionProjector.scala:52-100`
-- Test: `src/test/scala/oathdigital/gameplay/OathRulesWalkerPowerSuite.scala`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`, plus every suite constructing the changed types
+- Modify: `src/main/scala/distantlands/model/PendingTree.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:126-190, 555-600`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`startWalker`, `resolveWalker`, `rollWalkerPrepared`, `walkerResumeContext`, `walkerTransition`, `parkedContinue`)
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala:357-359`, `WalkerDecisionProjector.scala:52-100`
+- Test: `src/test/scala/distantlands/gameplay/OathRulesWalkerPowerSuite.scala`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, plus every suite constructing the changed types
 
 **Interfaces:**
 - Consumes: Task 2's `WalkCtx.activePlayer`.
@@ -265,7 +265,7 @@ Update the existing C1 tests in the same suite to the new `resolveWalker(state, 
 
 - [x] **Step 2: Run the tests to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathRulesWalkerPowerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathRulesWalkerPowerSuite"`
 Expected: FAIL to compile (`ChoicePayload` has two fields; `resolveWalker` takes an `Answered`).
 
 - [x] **Step 3: Change the model and events.**
@@ -349,7 +349,7 @@ Give each `Answered`/`ChoicePayload` the player who answers (the actor in every 
 Run: `./sbtw "test"`
 Expected: PASS, including the two new tests.
 
-- [x] **Step 10: Mutation check.** Temporarily change `answerDecide`'s check to `decide.owner == decide.owner` and run `./sbtw "testOnly oathdigital.gameplay.OathRulesWalkerPowerSuite"`.
+- [x] **Step 10: Mutation check.** Temporarily change `answerDecide`'s check to `decide.owner == decide.owner` and run `./sbtw "testOnly distantlands.gameplay.OathRulesWalkerPowerSuite"`.
 Expected: FAIL in "a seated non-active player's ResolveWalker against another player's parked decision is rejected". Revert.
 
 - [x] **Step 11: Commit**
@@ -376,12 +376,12 @@ off-turn roll before rebuilding the tree`). No other plan defect; Steps
 ### Task 4: Procedure reference families
 
 **Files:**
-- Rename: `src/main/scala/oathdigital/model/ActionRef.scala` → `src/main/scala/oathdigital/model/ProcedureRef.scala`
-- Rename: `src/main/scala/oathdigital/gameplay/walker/WalkerActionRegistry.scala` → `WalkerProcedureRegistry.scala`; `src/test/scala/oathdigital/gameplay/walker/WalkerActionRegistrySuite.scala` → `WalkerProcedureRegistrySuite.scala`
-- Modify: `src/main/scala/oathdigital/model/GameState.scala:149` (`walkerAction` → `walkerProcedure`)
+- Rename: `src/main/scala/distantlands/model/ActionRef.scala` → `src/main/scala/distantlands/model/ProcedureRef.scala`
+- Rename: `src/main/scala/distantlands/gameplay/walker/WalkerActionRegistry.scala` → `WalkerProcedureRegistry.scala`; `src/test/scala/distantlands/gameplay/walker/WalkerActionRegistrySuite.scala` → `WalkerProcedureRegistrySuite.scala`
+- Modify: `src/main/scala/distantlands/model/GameState.scala:149` (`walkerAction` → `walkerProcedure`)
 - Modify: `WalkerEvents.scala`, `WalkerReplay.scala`, `WalkerEventCodec.scala`, `OathRules.scala:363-380` (`WalkerTreeSource`), `OathRulesWalker.scala`
 - Modify: `application/GameCommands.scala:12`, `GameIntentMapper.scala:56-60`, `GameApplicationService.scala:161-162, 354-356, 378`, `WalkerDecisionProjector.scala`
-- Test: `src/test/scala/oathdigital/model/ActionValuesSuite.scala`, `WalkerProcedureRegistrySuite.scala`, `GameEventWireSuite.scala`, `EndWakeProcedureSuite.scala`
+- Test: `src/test/scala/distantlands/model/ActionValuesSuite.scala`, `WalkerProcedureRegistrySuite.scala`, `GameEventWireSuite.scala`, `EndWakeProcedureSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 3's events.
@@ -470,7 +470,7 @@ In `EndWakeProcedureSuite`, change the completion assertion to `WalkerCompleted(
 
 - [x] **Step 2: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.model.ActionValuesSuite"`
+Run: `./sbtw "testOnly distantlands.model.ActionValuesSuite"`
 Expected: FAIL to compile (`PhaseTransitionRef` not found).
 
 - [x] **Step 3: Implement the references.** `git mv` the file and write `ProcedureRef.scala` with the hierarchy above:
@@ -574,12 +574,12 @@ self-caught, neither a plan or production defect.
 ### Task 5: Off-turn ownership, any-phase resume, and the waiting projection
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` (add `awaitedPlayer`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`walkerResumeContext`, `parkedContinue`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`, `ScopedProjectionContext.scala:30-40`, `PendingProcedureProjector.scala:14-35`, `GameProjection.scala:155-160`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala`, `GameProjectionDto.scala:43`, `GameProjectionCodec.scala:19-22, 100, 163-169`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/package.scala:144`, `WalkerPanelSupport.scala`, `ActionDecisionRenderer.scala:339-342`
-- Test: `OathRulesWalkerPowerSuite.scala`, `application/WalkerDecisionProjectorSuite.scala`, `application/WalkerDecisionQueryPowerSuite.scala`, `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` (add `awaitedPlayer`)
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`walkerResumeContext`, `parkedContinue`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`, `ScopedProjectionContext.scala:30-40`, `PendingProcedureProjector.scala:14-35`, `GameProjection.scala:155-160`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala`, `GameProjectionDto.scala:43`, `GameProjectionCodec.scala:19-22, 100, 163-169`
+- Modify: `frontend/src/main/scala/distantlands/frontend/package.scala:144`, `WalkerPanelSupport.scala`, `ActionDecisionRenderer.scala:339-342`
+- Test: `OathRulesWalkerPowerSuite.scala`, `application/WalkerDecisionProjectorSuite.scala`, `application/WalkerDecisionQueryPowerSuite.scala`, `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`, `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 3's requester checks, Task 4's `ProcedureRef` and registry.
@@ -649,7 +649,7 @@ self-caught, neither a plan or production defect.
 
 - [x] **Step 2: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathRulesWalkerPowerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathRulesWalkerPowerSuite"`
 Expected: FAIL. The off-turn test gets `WrongPlayer` at the start continuation or the answer. The Wake test gets `Left(WrongPhase(Act, Wake))`. The Rest test already passes and stays as a guard.
 
 - [x] **Step 3: Implement the engine half.**
@@ -688,7 +688,7 @@ In `parkedContinue`, compute the awaited player once and pass it to `continuatio
 
 - [x] **Step 4: Run the engine tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathRulesWalkerPowerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathRulesWalkerPowerSuite"`
 Expected: PASS.
 
 - [x] **Step 5: Write the failing projection tests** in `WalkerDecisionProjectorSuite`. Add a helper parking a `Decide` owned by another player, using the suite's existing `TreeSource` seam:
@@ -739,7 +739,7 @@ In `WalkerDecisionQueryPowerSuite`, add a test that a synthetic `Transform` powe
 
 - [x] **Step 6: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite oathdigital.application.WalkerDecisionQueryPowerSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite distantlands.application.WalkerDecisionQueryPowerSuite"`
 Expected: FAIL to compile (`waiting`, `WalkerWaitingProjection` not found).
 
 - [x] **Step 7: Implement the projection.**
@@ -858,7 +858,7 @@ git commit -m "feat(walker): authorize and project a parked decision by its owne
 
 Landed as `4321aae..90f4e6a` (task range `266f2fb..90f4e6a`; main content
 commit `4321aae`). The plan's Files list omitted
-`frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala`;
+`frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala`;
 review found the off-turn owner's parked decision was not being surfaced
 with working controls to that owner, and the fix landed in the same
 task's closing commit,
@@ -871,11 +871,11 @@ other seated player, whom the game is waiting on. No other plan defect.
 ### Task 6: The `SetOathkeeper` operation
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/operations/CoreOperations.scala` (after `EnterPhase`, line 492)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateMutation.scala:305-330`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationError.scala` (after `PhaseAlreadyEntered`)
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
-- Test: `src/test/scala/oathdigital/gameplay/operations/OperationStateMutationSuite.scala`, `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala:495`
+- Modify: `src/main/scala/distantlands/gameplay/operations/CoreOperations.scala` (after `EnterPhase`, line 492)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateMutation.scala:305-330`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationError.scala` (after `PhaseAlreadyEntered`)
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
+- Test: `src/test/scala/distantlands/gameplay/operations/OperationStateMutationSuite.scala`, `src/test/scala/distantlands/serialization/GameEventWireSuite.scala:495`
 
 **Interfaces:**
 - Produces: `final case class SetOathkeeper(holder: Option[PlayerId]) extends PrimitiveOperation`; `OperationError.OathkeeperUnchanged(holder: Option[PlayerId])` with `code = "oathkeeper-unchanged"`.
@@ -919,7 +919,7 @@ In `GameEventWireSuite`'s "every CoreOperation variant round-trips through the w
 
 - [x] **Step 2: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationStateMutationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationStateMutationSuite"`
 Expected: FAIL to compile (`SetOathkeeper` not found).
 
 - [x] **Step 3: Implement.**
@@ -983,7 +983,7 @@ If the compiler reports a non-exhaustive match on `PrimitiveOperation` elsewhere
 
 - [x] **Step 4: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationStateMutationSuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationStateMutationSuite distantlands.serialization.GameEventWireSuite"`
 Expected: PASS.
 
 - [x] **Step 5: Full suite and architecture check.**
@@ -1012,22 +1012,22 @@ check by spec.
 ### Task 7: The triggered Oathkeeper procedure
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/oathkeeper/OathkeeperRules.scala`
-- Create: `src/main/scala/oathdigital/gameplay/oathkeeper/OathkeeperProcedure.scala`
-- Create: `src/test/scala/oathdigital/gameplay/oathkeeper/OathkeeperFixture.scala`, `OathkeeperRulesSuite.scala`, `OathkeeperProcedureSuite.scala`
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala` (`TriggeredProcedureRef.Oathkeeper`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala` (entry)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`startTriggered`, interim boundary exclusion)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala:180-190, 250-275, 340-356` (Oathkeeper step, deletions)
-- Modify: `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala` (deletions)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala`, `ActionDecisionRenderer.scala:560-574`, `package.scala:142-143`
+- Create: `src/main/scala/distantlands/gameplay/oathkeeper/OathkeeperRules.scala`
+- Create: `src/main/scala/distantlands/gameplay/oathkeeper/OathkeeperProcedure.scala`
+- Create: `src/test/scala/distantlands/gameplay/oathkeeper/OathkeeperFixture.scala`, `OathkeeperRulesSuite.scala`, `OathkeeperProcedureSuite.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala` (`TriggeredProcedureRef.Oathkeeper`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala` (entry)
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`startTriggered`, interim boundary exclusion)
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala:180-190, 250-275, 340-356` (Oathkeeper step, deletions)
+- Modify: `src/main/scala/distantlands/gameplay/StateBasedEvaluation.scala` (deletions)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala`, `ActionDecisionRenderer.scala:560-574`, `package.scala:142-143`
 - Delete, per Step 9's sweep: the legacy recipient command, events, codecs, projection and pending case
 - Test: `StateBasedEvaluationSuite.scala`, `EconomySuite.scala`, `EndWakeProcedureSuite.scala`, `GameEventWireSuite.scala`, `WalkerReplayDriftSuite.scala`, `WalkerDecisionProjectorSuite.scala`, `frontend/.../ServerModeUiSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 4's families and registry, Task 5's awaited-player continuation and projection, Task 6's `SetOathkeeper`.
 - Produces:
-  - `package oathdigital.gameplay.oathkeeper`: `sealed trait OathkeeperOutcome` with `NoChange`, `Transfer(holder: Option[PlayerId])`, `Choose(holder: PlayerId, candidates: Vector[PlayerId])`; `OathkeeperRules.outcome(ready: ReadyGame): OathkeeperOutcome`.
+  - `package distantlands.gameplay.oathkeeper`: `sealed trait OathkeeperOutcome` with `NoChange`, `Transfer(holder: Option[PlayerId])`, `Choose(holder: PlayerId, candidates: Vector[PlayerId])`; `OathkeeperRules.outcome(ready: ReadyGame): OathkeeperOutcome`.
   - `OathkeeperProcedure.recipientDecisionId: String = "oathkeeper.recipient"`; `OathkeeperProcedure.build(catalog: ExecutableCatalog, state: ReadyGame, activePlayer: PlayerId, args: Vector[DecisionOptionRef]): Either[OathViolation, Operation]`.
   - `TriggeredProcedureRef.Oathkeeper` (key `"oathkeeper"`).
   - `OathRulesWalker.startTriggered(transition: OathTransition, procedure: TriggeredProcedureRef): Either[OathViolation, OathTransition]`, `private[gameplay]`.
@@ -1036,13 +1036,13 @@ check by spec.
 - [x] **Step 1: Create the fixture.** Move `StateBasedEvaluationSuite.prepared`'s body into a reusable helper that works on any ready game, and make `StateBasedEvaluationSuite.prepared` delegate to it:
 
 ```scala
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay.ReadyGame
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.model._
+import distantlands.gameplay.ReadyGame
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.model._
 
 /** Title and site-ruler setups for the Supremacy goal the first game uses:
   * `owners(i)` rules the i-th in-play site with one exile warband (`None` is
@@ -1080,11 +1080,11 @@ object OathkeeperFixture {
 - [x] **Step 2: Write the failing outcome tests** in `OathkeeperRulesSuite`:
 
 ```scala
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay.oathkeeper.OathkeeperFixture._
-import oathdigital.gameplay.oathkeeper.OathkeeperOutcome._
-import oathdigital.model._
+import distantlands.gameplay.oathkeeper.OathkeeperFixture._
+import distantlands.gameplay.oathkeeper.OathkeeperOutcome._
+import distantlands.model._
 
 class OathkeeperRulesSuite extends munit.FunSuite {
   private val p = players
@@ -1128,16 +1128,16 @@ class OathkeeperRulesSuite extends munit.FunSuite {
 
 - [x] **Step 3: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.oathkeeper.OathkeeperRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.oathkeeper.OathkeeperRulesSuite"`
 Expected: FAIL to compile (`OathkeeperRules` not found).
 
 - [x] **Step 4: Implement the outcome.** Create `OathkeeperRules.scala`, moving `qualifyingPlayers` and `leadersWithPositiveCount` from `StateBasedEvaluation.scala:299-332` verbatim (their only caller is `afterAction`, which Step 9 deletes):
 
 ```scala
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay.ReadyGame
-import oathdigital.model._
+import distantlands.gameplay.ReadyGame
+import distantlands.model._
 
 sealed trait OathkeeperOutcome extends Product with Serializable
 object OathkeeperOutcome {
@@ -1173,24 +1173,24 @@ object OathkeeperRules {
 }
 ```
 
-Run: `./sbtw "testOnly oathdigital.gameplay.oathkeeper.OathkeeperRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.oathkeeper.OathkeeperRulesSuite"`
 Expected: PASS.
 
 - [x] **Step 5: Write the failing procedure tests** in `OathkeeperProcedureSuite`:
 
 ```scala
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay._
-import oathdigital.gameplay.OathEvent.BanditsRefilled
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.operations.SetOathkeeper
-import oathdigital.gameplay.oathkeeper.OathkeeperFixture._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ChoicePayload, WalkerCompleted,
+import distantlands.gameplay._
+import distantlands.gameplay.OathEvent.BanditsRefilled
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.operations.SetOathkeeper
+import distantlands.gameplay.oathkeeper.OathkeeperFixture._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ChoicePayload, WalkerCompleted,
   WalkerParked, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
 class OathkeeperProcedureSuite extends munit.FunSuite {
   private val rules = new OathRules(catalog)
@@ -1328,7 +1328,7 @@ In `EconomySuite`, add a test that the legacy Muster path starts the procedure w
 
 - [x] **Step 6: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.oathkeeper.OathkeeperProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.oathkeeper.OathkeeperProcedureSuite"`
 Expected: FAIL to compile (`OathkeeperProcedure`, `TriggeredProcedureRef.Oathkeeper`, `startTriggered` not found).
 
 - [x] **Step 7: Implement the procedure and its registration.**
@@ -1344,14 +1344,14 @@ object TriggeredProcedureRef {
 
 `OathkeeperProcedure.scala`:
 ```scala
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathViolation, ReadyGame}
-import oathdigital.gameplay.operations.{BuildOps, CoreOperation, Decide,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathViolation, ReadyGame}
+import distantlands.gameplay.operations.{BuildOps, CoreOperation, Decide,
   Operation, Sequence, SetOathkeeper}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
 /** Declared tree for every Oathkeeper title change (triggered, started by the
   * action boundary).
@@ -1609,7 +1609,7 @@ git commit -m "feat(walker): change the Oathkeeper title through one triggered p
 #### What Task 7 settled
 
 Landed as `7ccf57a`. The plan's Files list omitted
-`src/main/scala/oathdigital/gameplay/FirstGameSetup.scala`, which still
+`src/main/scala/distantlands/gameplay/FirstGameSetup.scala`, which still
 pattern-matched on the deleted `OathkeeperChanged`/`OathkeeperRecipient*`
 events; fixed within this same commit by matching
 `case _: UsurperFlipped | _: UsurperVictory =>` instead.
@@ -1661,9 +1661,9 @@ requires a production-code change.
 ### Task 8: The action boundary after every action
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`walkerTransition`, `WalkerCompletion`, `completionIn`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala:266-275, 304-307, 340-356`
-- Test: `src/test/scala/oathdigital/gameplay/TakeWealthProcedureSuite.scala:107-127`, `EndWakeProcedureSuite.scala:69-91`, `oathkeeper/OathkeeperProcedureSuite.scala`, `StateBasedEvaluationSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`walkerTransition`, `WalkerCompletion`, `completionIn`)
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala:266-275, 304-307, 340-356`
+- Test: `src/test/scala/distantlands/gameplay/TakeWealthProcedureSuite.scala:107-127`, `EndWakeProcedureSuite.scala:69-91`, `oathkeeper/OathkeeperProcedureSuite.scala`, `StateBasedEvaluationSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 4's families, Task 7's triggered procedure.
@@ -1743,7 +1743,7 @@ In `EndWakeProcedureSuite`, rewrite the comment on "ending Wake does not run the
 
 - [x] **Step 2: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.TakeWealthProcedureSuite oathdigital.gameplay.oathkeeper.OathkeeperProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.TakeWealthProcedureSuite distantlands.gameplay.oathkeeper.OathkeeperProcedureSuite"`
 Expected: FAIL: zero `BanditsRefilled` after Take Wealth, and no park after it.
 
 - [x] **Step 3: Decide the boundary by family.** In `OathRulesWalker`, replace `WalkerCompletion` and `completionIn` with:
@@ -1787,7 +1787,7 @@ Delete Task 7's interim `runsBoundary` expression and the long doc block on the 
       .flatMap(oathkeeperStep)
 ```
 
-Delete `hasResult` if nothing else calls it (`grep -n "hasResult" src/main/scala/oathdigital/gameplay/OathRules.scala`). In `appendEvaluation`, keep `transition.continue` unconditionally:
+Delete `hasResult` if nothing else calls it (`grep -n "hasResult" src/main/scala/distantlands/gameplay/OathRules.scala`). In `appendEvaluation`, keep `transition.continue` unconditionally:
 
 ```scala
   private def appendEvaluation(transition: OathTransition,
@@ -1866,7 +1866,7 @@ plan defect.
 - Modify: `docs/superpowers/specs/2026-09-12-walker-ownership-and-phases-design.md` (status line)
 
 - [x] **Step 1: Record what each task settled.** Under each task in this plan, add a `#### What Task N settled` note with its commit hash, any ruling taken during review, and anything the plan got wrong. Tick completed boxes.
-- [x] **Step 2: Update the walker spec.** In Migration status, replace "Nine `PendingProcedure` cases remain" with the eight that remain, removing the `OathkeeperRecipient` bullet. Record that ownership, phase freedom and triggered procedures have landed, and remove "(not yet implemented)" from the in-place notes this work fulfilled. In Verification, record that `WalkerReplayDriftSuite` now covers the Oathkeeper tie. Update the per-file line counts in "Costs worth carrying forward" with measured values: `wc -l src/main/scala/oathdigital/serialization/Walker*Codec.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/OathRulesWalker.scala src/main/scala/oathdigital/gameplay/actions/Campaign.scala`.
+- [x] **Step 2: Update the walker spec.** In Migration status, replace "Nine `PendingProcedure` cases remain" with the eight that remain, removing the `OathkeeperRecipient` bullet. Record that ownership, phase freedom and triggered procedures have landed, and remove "(not yet implemented)" from the in-place notes this work fulfilled. In Verification, record that `WalkerReplayDriftSuite` now covers the Oathkeeper tie. Update the per-file line counts in "Costs worth carrying forward" with measured values: `wc -l src/main/scala/distantlands/serialization/Walker*Codec.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/OathRulesWalker.scala src/main/scala/distantlands/gameplay/actions/Campaign.scala`.
 - [x] **Step 3: Mark the design spec implemented.** Add a status line under its title naming the commits.
 - [x] **Step 4: Verify each legacy boundary call site.** For every `completeAction` call site in `OathRules.handle` that lacks a `pending.isEmpty` guard (Economy, Search complete, Challenge complete and place-resource, minor actions, Vision reveal, Negotiation decline, Campaign place and raid relocation), confirm the handler clears or never sets `pending` before the boundary. Record the result per site in Task 7's settled note. Any site that can reach the boundary with `pending` set is a bug to report, not to paper over.
 - [x] **Step 5: Full gate.**

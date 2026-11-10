@@ -47,7 +47,7 @@ Task 1 amends the first two with the plan-time rulings, so read them again after
   - No power name appears in walker sources.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -98,11 +98,11 @@ The product owner settled rulings 1 to 4 on 2026-10-09. Task 1 writes all of the
 ## File map
 
 **Spinning Bee (Task 2):**
-- `src/main/scala/oathdigital/gameplay/actions/Search.scala`: `SearchRules.pile`.
-- `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala`: `sourcePicked`, and a placement that plays nothing when no card is held.
-- `src/main/scala/oathdigital/model/PowerNotes.scala`: `NoteArg.RegionName` and `NoteArg.SuitName`.
-- `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala` and `src/main/scala/oathdigital/application/gamelog/PowerLines.scala`: both new note arguments.
-- `src/main/scala/oathdigital/gameplay/powers/search/SpinningBee.scala`: new. The card object moves out of `catalog/holding/HoldingHearthDenizens.scala`.
+- `src/main/scala/distantlands/gameplay/actions/Search.scala`: `SearchRules.pile`.
+- `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala`: `sourcePicked`, and a placement that plays nothing when no card is held.
+- `src/main/scala/distantlands/model/PowerNotes.scala`: `NoteArg.RegionName` and `NoteArg.SuitName`.
+- `src/main/scala/distantlands/serialization/WalkerEventCodec.scala` and `src/main/scala/distantlands/application/gamelog/PowerLines.scala`: both new note arguments.
+- `src/main/scala/distantlands/gameplay/powers/search/SpinningBee.scala`: new. The card object moves out of `catalog/holding/HoldingHearthDenizens.scala`.
 - Registration: `ActionModifiers.scala` and the `powers.search` import in `NewFoundations.scala`.
 - Tests:
   - New: `SpinningBeeSuite`.
@@ -110,11 +110,11 @@ The product owner settled rulings 1 to 4 on 2026-10-09. Task 1 writes all of the
   - Changed: `PowerNoteWireSuite`, plus the testkit's `NoteText`.
 
 **Land Warden (Task 3):**
-- `src/main/scala/oathdigital/model/PowerWindow.scala`: `SearchKeep`.
-- `src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala`: `PlacementLimit`, `limitPlacements` and `refusal`.
-- `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala`: the limits applied.
+- `src/main/scala/distantlands/model/PowerWindow.scala`: `SearchKeep`.
+- `src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala`: `PlacementLimit`, `limitPlacements` and `refusal`.
+- `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala`: the limits applied.
 - `SearchProcedure.scala`: the keep window, `kept`, and the kept cards played in order.
-- `src/main/scala/oathdigital/gameplay/powers/search/LandWarden.scala`: new. The card object moves out of holding.
+- `src/main/scala/distantlands/gameplay/powers/search/LandWarden.scala`: new. The card object moves out of holding.
 - Registration as for Task 2.
 - Tests: `CardSlotsSuite`, plus the new `LandWardenSuite`.
 
@@ -246,17 +246,17 @@ git commit -m "docs(batch6): record slice 4 plan-time rulings"
 ### Task 2: Spinning Bee
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/Search.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala`
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala` (`encodeNoteArg` near line 129, `decodeNoteArg` near line 160)
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala` (`argument`, near line 83)
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/SpinningBee.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala` (remove `SpinningBeeCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (the `powers.search` import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/powers/NoteText.scala` (`plain`)
-- Test: `src/test/scala/oathdigital/gameplay/SearchSuite.scala`, `src/test/scala/oathdigital/serialization/PowerNoteWireSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/search/SpinningBeeSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/Search.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala`
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala` (`encodeNoteArg` near line 129, `decodeNoteArg` near line 160)
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala` (`argument`, near line 83)
+- Create: `src/main/scala/distantlands/gameplay/powers/search/SpinningBee.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` (remove `SpinningBeeCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (the `powers.search` import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/NoteText.scala` (`plain`)
+- Test: `src/test/scala/distantlands/gameplay/SearchSuite.scala`, `src/test/scala/distantlands/serialization/PowerNoteWireSuite.scala`, `src/test/scala/distantlands/gameplay/powers/search/SpinningBeeSuite.scala`
 
 **Interfaces:**
 - Consumes, from slice 3: `PowerWindow.SearchSourceSelection`, `DrawExtension.sourceOf`, `DrawExtension.redrawn`, and the test helpers `ShownOptions.atParkedDecision` and `ShownOptions.optionFor`.
@@ -264,7 +264,7 @@ git commit -m "docs(batch6): record slice 4 plan-time rulings"
   - `SearchRules.pile(ready: ReadyGame, source: SearchSource): Vector[WorldCardId]`, the whole pile, top first.
   - `SearchProcedure.sourcePicked(pending: PendingTree, origin: Region): Either[OathViolation, SearchSource]`
   - `NoteArg.RegionName(region: Region)` and `NoteArg.SuitName(suit: Suit)`, on the wire as kinds `"region"` and `"suit"`.
-  - `SpinningBee.id`, `SpinningBee.suitDecisionId` (`"search.suit"`), `SpinningBee.heading`, `SpinningBee.notWithOthers`, `SpinningBee.alone`, `SpinningBee.drawing`, `SpinningBee.declared(answered)`, and `SpinningBeeCard` in `oathdigital.gameplay.powers.search`.
+  - `SpinningBee.id`, `SpinningBee.suitDecisionId` (`"search.suit"`), `SpinningBee.heading`, `SpinningBee.notWithOthers`, `SpinningBee.alone`, `SpinningBee.drawing`, `SpinningBee.declared(answered)`, and `SpinningBeeCard` in `distantlands.gameplay.powers.search`.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -292,22 +292,22 @@ In `PowerNoteWireSuite`, test "a power note's card list and banner arguments rou
 
 (the closing parenthesis moves from the `Pile` line to the new one).
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/SpinningBeeSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/SpinningBeeSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerCompleted
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, ParkedNode, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerCompleted
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, ParkedNode, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Spinning Bee (card 232): declare a suit, then draw from the actor's own
   * discard pile until a card of that suit is drawn. No other Search
@@ -424,7 +424,7 @@ class SpinningBeeSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SearchSuite oathdigital.serialization.PowerNoteWireSuite oathdigital.gameplay.powers.search.SpinningBeeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SearchSuite distantlands.serialization.PowerNoteWireSuite distantlands.gameplay.powers.search.SpinningBeeSuite"`
 Expected: the test sources fail to compile: `pile is not a member of object SearchRules`, `RegionName is not a member of object NoteArg`, `not found: SpinningBee`.
 
 - [ ] **Step 3: Add the pile rule**
@@ -554,18 +554,18 @@ In the testkit's `NoteText.scala`, `plain`, after the `Pile` case:
 
 Delete `SpinningBeeCard` (the `object SpinningBeeCard ...` block of seven lines and the blank line after it) from `HoldingHearthDenizens.scala`. The file's imports stay: its other cards still use each of them.
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/SpinningBee.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/SpinningBee.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.{CardPlay, SearchRules}
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.{CardPlay, SearchRules}
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, OptionRestriction, PowerCtx, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object SpinningBeeCard extends Denizen(DenizenId("232"), "Spinning Bee", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.spinning-bee"),
@@ -733,7 +733,7 @@ object SpinningBee:
 
 - [ ] **Step 8: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SearchSuite oathdigital.serialization.PowerNoteWireSuite oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.SearchSuite distantlands.serialization.PowerNoteWireSuite distantlands.gameplay.powers.search.*"`
 Expected: PASS.
 
 Then run: `./sbtw test`
@@ -746,7 +746,7 @@ If a suite elsewhere now fails, check two things:
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/Search.scala src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala src/main/scala/oathdigital/model/PowerNotes.scala src/main/scala/oathdigital/serialization/WalkerEventCodec.scala src/main/scala/oathdigital/application/gamelog/PowerLines.scala src/main/scala/oathdigital/gameplay/powers/search/SpinningBee.scala src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/powers/NoteText.scala src/test/scala/oathdigital/gameplay/SearchSuite.scala src/test/scala/oathdigital/serialization/PowerNoteWireSuite.scala src/test/scala/oathdigital/gameplay/powers/search/SpinningBeeSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/Search.scala src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala src/main/scala/distantlands/model/PowerNotes.scala src/main/scala/distantlands/serialization/WalkerEventCodec.scala src/main/scala/distantlands/application/gamelog/PowerLines.scala src/main/scala/distantlands/gameplay/powers/search/SpinningBee.scala src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/powers/NoteText.scala src/test/scala/distantlands/gameplay/SearchSuite.scala src/test/scala/distantlands/serialization/PowerNoteWireSuite.scala src/test/scala/distantlands/gameplay/powers/search/SpinningBeeSuite.scala
 git commit -m "feat(search): Spinning Bee declares a suit and draws its own pile until it matches"
 ```
 
@@ -755,24 +755,24 @@ git commit -m "feat(search): Spinning Bee declares a suit and draws its own pile
 ### Task 3: Land Warden
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala` (after `SearchSourceSelection`, near line 71)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala` (`slots`, near line 62)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/LandWarden.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala` (remove `LandWardenCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (the `powers.search` import)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/search/LandWardenSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala` (after `SearchSourceSelection`, near line 71)
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala` (`slots`, near line 62)
+- Modify: `src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/LandWarden.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` (remove `LandWardenCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (the `powers.search` import)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Test: `src/test/scala/distantlands/gameplay/CardSlotsSuite.scala`, `src/test/scala/distantlands/gameplay/powers/search/LandWardenSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's `selected`, which returns the kept cards as a `Vector`.
 - Produces:
   - `PowerWindow.SearchKeep`, the window of the `search.cards` decision.
-  - `PlacementLimit(reason: OptionReason, allows: SearchPlacement => Boolean)` in `oathdigital.gameplay.actions`.
+  - `PlacementLimit(reason: OptionReason, allows: SearchPlacement => Boolean)` in `distantlands.gameplay.actions`.
   - `CardPlayRules.limitPlacements(limit: PlacementLimit): CardPlayRules` and `CardPlayRules.refusal(placement: SearchPlacement): Option[OptionReason]`.
   - `SearchProcedure.kept(answered: Vector[Answered]): Vector[WorldCardId]`, the kept cards in the order kept.
-  - `LandWarden.id`, `LandWarden.heading`, `LandWarden.toSite`, `LandWarden.siteRule`, and `LandWardenCard` in `oathdigital.gameplay.powers.search`.
+  - `LandWarden.id`, `LandWarden.heading`, `LandWarden.toSite`, `LandWarden.siteRule`, and `LandWardenCard` in `distantlands.gameplay.powers.search`.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -800,23 +800,23 @@ In `CardSlotsSuite`, add the import `PlacementLimit` to the `gameplay.actions` i
       refused(adviserPlay(0, faceup = false), "Test: site only")))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/search/LandWardenSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/search/LandWardenSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.{PlacementFixture, SearchPlay}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, ParkedNode, PlacementPicks,
+import distantlands.gameplay.{PlacementFixture, SearchPlay}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, ParkedNode, PlacementPicks,
   Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Land Warden (card 130): for 1 favor, a Search may keep two cards,
   * played in the order kept. When the first does not go to a site, the
@@ -935,7 +935,7 @@ class LandWardenSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.powers.search.LandWardenSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardSlotsSuite distantlands.gameplay.powers.search.LandWardenSuite"`
 Expected: the test sources fail to compile: `not found: PlacementLimit` and `not found: LandWarden`.
 
 - [ ] **Step 3: Add the window**
@@ -1088,19 +1088,19 @@ In `SearchProcedure.scala`:
 
 Delete `LandWardenCard` (the `object LandWardenCard ...` block of six lines and the blank line after it) from `HoldingHearthDenizens.scala`. The file's imports stay.
 
-Create `src/main/scala/oathdigital/gameplay/powers/search/LandWarden.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/search/LandWarden.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.PlacementLimit
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.PlacementLimit
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object LandWardenCard extends Denizen(DenizenId("130"), "Land Warden", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.land-warden"),
@@ -1190,7 +1190,7 @@ object LandWarden:
 
 - [ ] **Step 8: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardSlotsSuite distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.powers.search.*"`
 Expected: PASS.
 
 Then run: `./sbtw test`
@@ -1204,7 +1204,7 @@ Land Warden is a filler card in many suites, and it is Hearth. If a suite now fa
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerWindow.scala src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala src/main/scala/oathdigital/gameplay/actions/search/SearchProcedure.scala src/main/scala/oathdigital/gameplay/powers/search/LandWarden.scala src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala src/test/scala/oathdigital/gameplay/powers/search/LandWardenSuite.scala
+git add src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala src/main/scala/distantlands/gameplay/actions/search/SearchProcedure.scala src/main/scala/distantlands/gameplay/powers/search/LandWarden.scala src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala src/test/scala/distantlands/gameplay/CardSlotsSuite.scala src/test/scala/distantlands/gameplay/powers/search/LandWardenSuite.scala
 git commit -m "feat(search): Land Warden keeps two cards and sends one to a site"
 ```
 
@@ -1213,27 +1213,27 @@ git commit -m "feat(search): Land Warden keeps two cards and sends one to a site
 ### Task 4: The Search line keeps none, and two
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala` (`search`, near line 184)
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogSearchKeepSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala` (`search`, near line 184)
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogSearchKeepSuite.scala`
 
 **Interfaces:**
 - Consumes: `SpinningBee.id` and `SpinningBee.suitDecisionId` (Task 2), and `LandWarden.id` (Task 3).
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogSearchKeepSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogSearchKeepSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameCommand, StartPayload}
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powers.search.{LandWarden, SpinningBee}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
-import oathdigital.testkit.{Answers, CatalogNames, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.application.{GameCommand, StartPayload}
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powers.search.{LandWarden, SpinningBee}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
+import distantlands.testkit.{Answers, CatalogNames, Table}
+import distantlands.testkit.Table.p1
 import LogScripts._
 
 /** The lines of the Searches slice 4 adds: Spinning Bee's own line, a
@@ -1306,7 +1306,7 @@ class GameLogSearchKeepSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogSearchKeepSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogSearchKeepSuite"`
 Expected: FAIL in "Spinning Bee with no match": no line starts with "Drew ". The other two tests may already pass, since they need no change in `ActionLines`.
 
 - [ ] **Step 3: Say "kept none"**
@@ -1344,13 +1344,13 @@ In `ActionLines.scala`, `search`:
 
 - [ ] **Step 4: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS. The golden logs are unchanged: every earlier Search asks a keep or a placement question before it completes.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ActionLines.scala src/test/scala/oathdigital/application/gamelog/GameLogSearchKeepSuite.scala
+git add src/main/scala/distantlands/application/gamelog/ActionLines.scala src/test/scala/distantlands/application/gamelog/GameLogSearchKeepSuite.scala
 git commit -m "feat(gamelog): a Search that keeps nothing says so"
 ```
 
@@ -1359,8 +1359,8 @@ git commit -m "feat(gamelog): a Search that keeps nothing says so"
 ### Task 5: The keep panel for one or two cards
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala` (`keepOne` near line 314, `partitionInstruction` near line 331, `partitionZone` near line 379)
-- Test: `frontend/src/test/scala/oathdigital/frontend/PartitionPanelRenderSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala` (`keepOne` near line 314, `partitionInstruction` near line 331, `partitionZone` near line 379)
+- Test: `frontend/src/test/scala/distantlands/frontend/PartitionPanelRenderSuite.scala`
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1401,7 +1401,7 @@ In `PartitionPanelRenderSuite`, after the test "a partition that must meet a min
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.PartitionPanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.PartitionPanelRenderSuite"`
 Expected: FAIL. The instruction reads "Assign every option: Keep (1), Discard (0).", and the keep zone has no order line.
 
 - [ ] **Step 3: Give the shape its sentence**
@@ -1467,13 +1467,13 @@ In `WalkerPanelSupport.scala`:
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.*"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.*"`
 Expected: PASS, with 2 tests more than the frontend baseline.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala frontend/src/test/scala/oathdigital/frontend/PartitionPanelRenderSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala frontend/src/test/scala/distantlands/frontend/PartitionPanelRenderSuite.scala
 git commit -m "feat(frontend): a keep panel for one or two cards says so, and their order"
 ```
 

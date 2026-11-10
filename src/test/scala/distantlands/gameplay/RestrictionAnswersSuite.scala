@@ -1,0 +1,62 @@
+package distantlands.gameplay
+
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.PowerStubs.{RestrictionStub, TransformStub}
+
+/** The restriction traversal selects a `Branch` with the answers recorded so
+  * far, so a Restriction hooked inside a subtree that only exists once a
+  * decision is answered is checked once it does.
+  */
+class RestrictionAnswersSuite extends munit.FunSuite:
+  private val actor = Table.start.ready.game.current.turn.activePlayer
+  private val nested = PowerWindow.CampaignActionEligibility
+  private val ask = "test.ask"
+  private val yes = DecisionOptionRef.Button("yes")
+  private val no = DecisionOptionRef.Button("no")
+  private val violation = OathViolation.CampaignUnavailable("the test forbids it")
+
+  private val forbidding: ContributingPower = RestrictionStub(
+    PowerId("test.forbidding"), nested, (_, _) => Some(violation))
+  private val powers = WalkerPowers(Vector(forbidding))
+
+  /** A decision, then a subtree that exists only when it was answered "yes". */
+  private val tree: Operation = Sequence(Vector[Operation](
+    Decide(ask, actor, DecisionQuery.ChooseOne(Vector(
+      DecisionOption.Button(yes, "Yes"), DecisionOption.Button(no, "No")))),
+    Branch((_, pending) => if pending.answered.exists {
+      case Answered(`ask`, DecisionAnswer.ChooseOneAnswer(`yes`), _) => true
+      case _ => false
+    } then Vector(Sequence(Vector.empty, Some(nested))) else Vector.empty)))
+
+  private def answered(ref: DecisionOptionRef): Vector[Answered] =
+    Vector(Answered(ask, DecisionAnswer.ChooseOneAnswer(ref), actor))
+
+  private def violations(answers: Vector[Answered]): Vector[OathViolation] =
+    ProcedureWalker.restrictionViolations(tree, powers, Table.start.ready, actor,
+      answers)
+
+  test("a Restriction inside a subtree the answers have not opened is not checked"):
+    assertEquals(violations(Vector.empty), Vector.empty[OathViolation])
+    assertEquals(violations(answered(no)), Vector.empty[OathViolation])
+
+  test("once the answer opens the subtree its Restriction is checked"):
+    assertEquals(violations(answered(yes)), Vector[OathViolation](violation))
+
+  // ---- What a Transform inserts ----
+
+  private val inserting: ContributingPower = TransformStub(
+    PowerId("test.inserting"), PowerWindow.MusterActionEligibility,
+    (_, children) => children :+ Sequence(Vector.empty, Some(nested)))
+  private val root: Operation =
+    Sequence(Vector.empty, Some(PowerWindow.MusterActionEligibility))
+
+  test("a subtree a Transform inserts is checked too, not only the declared tree"):
+    val without = WalkerPowers(Vector(forbidding))
+    assertEquals(ProcedureWalker.restrictionViolations(root, without,
+      Table.start.ready, actor), Vector.empty[OathViolation])
+    val both = WalkerPowers(Vector(forbidding, inserting))
+    assertEquals(ProcedureWalker.restrictionViolations(root, both,
+      Table.start.ready, actor), Vector[OathViolation](violation))

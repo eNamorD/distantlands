@@ -1,0 +1,40 @@
+package distantlands.gameplay.powers.action
+
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.model._
+
+object BarbedNetCard extends Relic(RelicId("R36"), "Barbed Net", value = 33, defense = 1):
+  val power = PrintedPower(PowerId("relic.barbed-net"),
+    persistent = false, cost = Cost(secretBurnt = 3),
+    text = "**ACTION:** Take a relic from your site. _(You may keep it " +
+      "facedown.)_")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Barbed Net (relic R36), ACTION: burn 3 secrets, then take a relic from
+  * the player's site. The player may keep it facedown; the existing minor
+  * action that reveals an owned relic covers turning it up later.
+  *
+  * The peek, the choice, the take and their lines are [[SiteRelicTake]]'s,
+  * at the player's pawn site. With no relic there the cost stays paid and
+  * nothing else happens.
+  */
+case object BarbedNet extends PaidAction(BarbedNetCard.power):
+  val decisionId: String = "power.barbed-net.relic"
+  private val take = new SiteRelicTake(id, decisionId,
+    "Barbed Net: take a relic from your site",
+    (ready, player) => ready.game.current.pawnSite(player))
+  /** "{Red} peeked at the relics at {site}: {relics}." */
+  val peeked: NoteKey = take.peeked
+  /** "{Red} took {relic} facedown from {site}." */
+  val took: NoteKey = take.took
+  /** "{site} held no relic." */
+  val bare: NoteKey = take.bare
+  private val notes = NoteSet(id)
+  notes.include(take.notes)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  override def narratedDecisions: Set[String] = take.narrated
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] =
+    Right(Sequence(take.steps(player, source)))

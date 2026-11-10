@@ -1,0 +1,62 @@
+package distantlands.gameplay.powers.whenplayed
+
+import distantlands.gameplay.phases.RestCleanupPlan
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.powers.search.{DisciplesCard, LandWardenCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+
+class DissentSuite extends munit.FunSuite:
+  import WhenPlayedHarness._
+
+  private val power = registered[Dissent.type]
+  private val dissent = power.cardId
+
+  private def placed(player: PlayerId, n: Int): NoteText.Said =
+    NoteText.Said("placed", s"${player.value} placed $n favor on it.",
+      covers = false)
+
+  test("each player but the People's Favor's holder places one favor per " +
+      "suit they rule, or all they hold"):
+    // p1 rules Dissent (Discord) and Homesteaders (Hearth) and holds 3
+    // favor. p2 rules Land Warden (Hearth) and, through its warband there,
+    // Disciples (Arcane) at another Cradle site, and holds 1. p3 holds the
+    // People's Favor, and Defame (Discord), with 2 favor.
+    val ready = Table.start.adviser(p1, dissent).adviser(p1, HomesteadersCard)
+      .favor(p1, 3)
+      .adviser(p2, LandWardenCard).warbandsAt(nearSite, p2, 1)
+      .denizen(DisciplesCard, at = nearSite).favor(p2, 1)
+      .adviser(p3, DefameCard).favor(p3, 2).peoplesFavor(Some(p3), 1).ready
+    val done = Outcomes.finished(play(ready, power, dissent))
+    val end = Look(done.treeless)
+    assertEquals(Vector(p1, p2, p3).map(end.favor), Vector(1, 0, 2))
+    assertEquals(end.tokensOn(dissent), Tokens(3, 0))
+    assertEquals(said(power, done.events),
+      Vector(placed(p1, 2), placed(p2, 1)))
+
+  test("the favor placed on Dissent returns to the Discord bank at Rest"):
+    // p1 rules Dissent (Discord) and holds 2 favor: it places 1.
+    val ready = Table.start.adviser(p1, dissent).favor(p1, 2).ready
+    val done = Outcomes.finished(play(ready, power, dissent))
+    assertEquals(Look(done.treeless).tokensOn(dissent), Tokens(1, 0))
+    assertEquals(RestCleanupPlan.derive(catalog, done.treeless, p1)
+      .map(_.returnedFavor), Right(Map(Suit.Discord -> 1)))
+
+  test("the recorded operations rebuild the end state"):
+    // p1 rules Dissent and holds 2 favor; p2 rules Land Warden and holds 1.
+    val ready = Table.start.adviser(p1, dissent).favor(p1, 2)
+      .adviser(p2, LandWardenCard).favor(p2, 1).ready
+    val done = Outcomes.finished(play(ready, power, dissent))
+    assertJournalRebuilds(ready, done.events, done.treeless)
+
+  test("with nobody able to place, the line says so"):
+    // p1 rules Dissent but holds no favor; p2 and p3 rule nothing.
+    val ready = Table.start.adviser(p1, dissent).favor(p1, 0).ready
+    val done = Outcomes.finished(play(ready, power, dissent))
+    assertEquals(ops(done.events), Vector.empty)
+    assertEquals(said(power, done.events), Vector(NoteText.Said("none",
+      "Nobody placed favor.", covers = false)))

@@ -1,0 +1,41 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
+
+object InsectSwarmCard extends Denizen(DenizenId("184"), "Insect Swarm", Suit.Beast) with AdviserOnly:
+  val power = PrintedPower(PowerId("denizen.insect-swarm"),
+    persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
+    text = "Your enemy's battle plans each have an added cost of " +
+      "[favor-burnt].")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Insect Swarm (card 184), a persistent rule of a faceup adviser: "Your
+  * enemy's battle plans each have an added cost of [favor-burnt]."
+  *
+  * A `PlanSurcharge`: every plan the holder's enemy chooses costs one more
+  * favor, burnt. A burnt cost never rests on the card, so it goes to the shared
+  * bank even when paid outside its user's turn, and the title's plan burns it
+  * from its user's board. Bandits hold no favor and cannot pay it. With
+  * Gleaming Armor on the same side, both added costs apply.
+  *
+  * Each taxed plan writes "{Red}'s battle plans cost 1 extra favor, burnt."
+  */
+case object InsectSwarm extends PlanSurcharge:
+  val id: PowerId = InsectSwarmCard.power.id
+  /** The added cost, in favor burnt. */
+  val Favor: Int = 1
+  /** "{Red}'s battle plans cost {1} extra favor, burnt." */
+  val notes: NoteSet = NoteSet(id)
+  val taxed: NoteKey = notes.key("taxed", Vector(NotePart.Arg(0),
+    NotePart.Text("'s battle plans cost "), NotePart.Arg(1),
+    NotePart.Text(" extra favor, burnt.")))
+
+  val cardId: DenizenId = InsectSwarmCard.id
+  protected def power: PrintedPower = InsectSwarmCard.power
+  protected def cost: Cost = Cost(favorBurnt = InsectSwarm.Favor)
+  protected def surchargeNotes: NoteSet = InsectSwarm.notes
+  protected def amount: Int = InsectSwarm.Favor
+  protected def unpayable: OathViolation =
+    OathViolation.InsufficientFavor(InsectSwarm.Favor, 0)

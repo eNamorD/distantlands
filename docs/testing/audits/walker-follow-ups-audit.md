@@ -1,6 +1,24 @@
 # Audit: the walker follow-ups
 
-> Status: read-only audit, 2026-11-02, of the ROADMAP item "Walker
+> Status: followed up, 2026-11-03, with the owner's recommended defaults.
+> Section 1 landed as commit b5da1f60 (a start walks its procedure), section
+> 6 as 27f0a52e (the waiting line skips the look-ahead) and question 3 as
+> cafeebd0 (Empty Attack Pool, applied where every remove-attack-dice plan
+> takes effect). Section 5 and question 4 are overtaken: the Empire branch
+> seats Imperials, and `GameStartRules` refuses the Chronicle shapes not
+> yet supported. Of section 2's seven cards, Spiral Castle and the Hall of
+> Debate and Tome Guardians restrictions landed in catalog batch 9 and
+> Martial Culture and the Scepter's plan with the Empire, and Glamor, Relic
+> Hunter and Obsidian Cage as merge aacc259c (with 579b093b for the Cage's
+> Hospital and Throne rulings). Their rulings and readings, confirmed by the
+> owner on 2026-11-03, are in section 2. Only the Scepter Bearer legacy plan
+> is left; it waits for legacy powers. Every recommended slice is done or
+> overtaken, and the roadmap item was replaced by the per-card work.
+>
+> The summary and sections 2 and 3 describe the tree as audited. Section 4's
+> table is kept current.
+>
+> Written as a read-only audit, 2026-11-02, of the ROADMAP item "Walker
 > follow-ups" under Powers-related deferred items. The item was recorded by
 > the [campaign walker design](../../superpowers/specs/2026-09-19-campaign-walker-design.md)
 > ("Deferred, and recorded") and
@@ -57,7 +75,7 @@ could meet:
 ### What `procedure` means
 
 `PowerCtx.procedure`
-(`src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala:23-28`)
+(`src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala:23-28`)
 is documented as "the procedure the window is walked for, when it is
 known ... `None` for the command that starts a procedure, which has not
 recorded one yet." The doc describes the defect as intended behaviour.
@@ -65,19 +83,19 @@ recorded one yet." The doc describes the defect as intended behaviour.
 ### The two paths
 
 **Start.** `OathRulesWalker.startNow`
-(`src/main/scala/oathdigital/gameplay/OathRulesWalker.scala:56-73`) refuses
+(`src/main/scala/distantlands/gameplay/OathRulesWalker.scala:56-73`) refuses
 when `walkerProcedure.nonEmpty` (46-48), builds the tree, then:
 
 - `checkRestrictions(tree, powers, ready, actor)` (153-157) calls
   `ProcedureWalker.restrictionViolations`, which is
   `WalkerPowerGather.restrictionViolations` → `attributed`
-  (`src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala:295-313`).
+  (`src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala:295-313`).
   Its `ctxFor` builds `PowerCtx(state, actor, power.source, window, path,
   operation, state.game.current.walkerProcedure, answered)` (312-313), and
   the `Branch` and `AutomaticUse` descent (326-334) passes
   `state.game.current.walkerProcedure` again. At a start that is `None`.
 - `ProcedureWalker.advance(ready, tree, None, powers, walkerDice)`
-  (`src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:78-93`)
+  (`src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:78-93`)
   builds `WalkCtx(..., state.game.current.walkerProcedure, action)` (91-93),
   again `None`. Every window fold then passes `ctx.procedure`:
   `walkFolded` → `applyWindow` (325-330, `WalkerPowerGather.scala:54-67`),
@@ -209,13 +227,14 @@ are `BattlePlans`, `SimplePlans`, `PlanRules` and `PlanRewrites`
 
 Against the card data (`cards/content/card-data/oath/en-US/*.yml`, tag
 "Battle Plan": 85 cards, of which the New Foundations set excludes the
-"Base Game Only" ones), the New Foundations plans without a power are:
+"Base Game Only" ones), the New Foundations plans without a power at
+`0d1ae92` were these. All but Scepter Bearer have one now:
 
 | Card | Where it waits | Rule it needs | Window |
 | --- | --- | --- | --- |
 | Glamor (207) | `catalog/holding/HoldingArcaneDenizens.scala:17-23` | Raid may also target the enemy's secrets except their last; +1 defense die each; taken on victory | `CampaignTargetSelection` (new target kind), `CampaignGatherPools`, `CampaignRaidTransfer` |
 | Relic Hunter (126) | `HoldingOrderDenizens.scala:25-31` | Conquest may target facedown relics at targeted sites, +1 defense die each; taken relics may go to the relic deck's bottom | `CampaignTargetSelection`, `CampaignGatherPools`, `CampaignLosses`/`CampaignPlacement` (a Conquest has no transfer step today) |
-| Obsidian Cage (R18) | `HoldingRelics.scala:37-46` | on victory, the enemy's unkilled force moves onto the card; an Action returns them | `CampaignLosses`; a new card location for warbands |
+| Obsidian Cage (R18) | `gameplay/powers/campaign/ObsidianCage.scala`, `gameplay/powers/action/ObsidianCageAction.scala` | on victory, the enemy's unkilled force moves onto the card; an Action returns them | `CampaignLosses`; a new card location for warbands |
 | Spiral Castle / Spiral Dungeons (E23) | `HoldingEdifices.scala:238-250` | Raid victory: defender's pawn placed at this site and loses 2 Supply; ruined: attacker's pawn, bandits use it | `CampaignRaidRelocation` (replace the decision), `CampaignActionEligibility` for the attacker's pawn |
 | Martial Culture (10) | `HoldingOrderDenizens.scala:10-16` | an Exile who defeats another Exile may become a Citizen | Empire: no Citizen can exist yet |
 | The Grand Scepter's plan | `gameplay/operations/GrandScepter.scala:11-14` | an Imperial victorious against a Citizen exiles them | Empire |
@@ -236,6 +255,126 @@ Two rules of the step itself deserve a check rather than a card:
 The bandit family is complete as far as the rules go: bandits use
 cost-free plans they rule (`CampaignPlanChoice.banditPlans`), and the one
 deterministic bandit plan the design named (Watchdog) is in `BattlePlans`.
+
+### Relic Hunter: rulings made while implementing
+
+Relic Hunter (126) is implemented in
+`gameplay/powers/campaign/RelicHunter.scala`, under the owner's rulings of
+2026-11-03 (Conquest only; facedown relics at the targeted sites, a defense
+die each; taken on victory; any may go to the bottom of the relic deck).
+What the card and the rulings left open was decided as follows; the owner
+confirmed every reading on 2026-11-03:
+
+- **When the relics are chosen.** As the Glamor ruling has it: the plan is
+  used in the attacker's plan window like any plan, and its user then
+  chooses which relics to target. The question is the plan's amount
+  (`PlanAmount`), a `ChooseMany` of `SiteRelicSlot`s, so no option
+  discloses a facedown relic. Zero is a legal answer, and adds nothing.
+- **Which relics.** Every facedown relic at a site the Conquest targets,
+  the origin included (FAQ: a relic is targeted only with its site). A
+  relic a restriction would not let the attacker take (Ancient Bloodline)
+  is shown unavailable with its reason. With no relic to target the plan
+  is shown unavailable: "No facedown relic at the targeted sites".
+- **Where the take happens.** In the Conquest's placement window, after
+  the survivors are placed. The window now stands on every Conquest
+  victory, even with no survivor (`CampaignConquest`), so the take always
+  has its place. It comes before every "At End" plan, so Salt the Earth
+  buries the site after the relics are gone.
+- **How the bottom choice is made.** The attacker peeks at the targeted
+  relics, then answers one `ChooseMany` for those to put on the bottom of
+  the relic deck, then every targeted relic is taken, facedown as it lay,
+  and the chosen ones are moved to the bottom. "Any relics you take" means
+  the relics this plan took; nothing else is taken in a Conquest.
+- **An untaken relic.** A defeated attacker takes nothing, and the targeted
+  relics stay at their sites.
+- **Lines.** "Targeted 2 facedown relics for 2 defense dice." when the
+  relics are chosen; "Took {relics}." and "Put {relics} on the bottom of
+  the relic deck." when they are taken. The peeks keep their generic
+  "Peeked at" lines. The other seats see the relics' backs (golden
+  `relic-hunter`).
+
+### Glamor: rulings made while implementing
+
+Glamor (207) is implemented in `gameplay/powers/campaign/Glamor.scala`,
+under the owner's ruling of 2026-11-03 (chosen in the battle plan step
+like any plan; its user then chooses how many secrets to target, and those
+join the Campaign's targets). What the card and the ruling left open was
+decided as follows; the owner confirmed every reading on 2026-11-03:
+
+- **Who and where.** An attacker's plan, in a Raid or a Conquest against a
+  player defender. Bandits have no board, so it is never offered against
+  them. "Your enemy" is the Campaign's defender.
+- **How many.** The plan's amount, a `ChooseAmount` from one to the
+  defender's board secrets less one, faceup and facedown counted alike
+  (FAQ for Book Burning: "all of their secrets except one, whether face up
+  or down"). With one secret or none, the plan is shown unavailable: "The
+  defender has no secret but their last". Each targeted secret adds one
+  defense die.
+- **Where the take happens.** In a Raid, in the transfer window, after the
+  printed takes and consequences and before the pawn's relocation. In a
+  Conquest, in the placement window, as Relic Hunter's take.
+- **Which secrets, which side.** Faceup secrets are taken first, as Sleight
+  of Hand and Witch's Bargain take them, so the defender keeps a facedown
+  one when they have one. Each taken secret keeps its side (`Take` with a
+  `sourceSide`): a facedown secret arrives facedown on the attacker's
+  board and flips at their cleanup.
+- **A board that shrank.** The take is cut to leave the defender one
+  secret, should their board have lost any since the targeting (a burnt
+  secret cost, say). A defense plan's paid secrets flip facedown and stay
+  on the board, so they still count.
+- **Defeat.** A defeated attacker takes nothing.
+- **Lines.** "Targeted 2 secrets for 2 defense dice." when chosen, and
+  "Took 2 secrets from Blue." when taken, parallel to the Raid's "Took …
+  from Blue" (golden `glamor`).
+
+### Obsidian Cage: rulings made while implementing
+
+Obsidian Cage's battle plan (R18) is implemented in
+`gameplay/powers/campaign/ObsidianCage.scala`, under the owner's ruling of
+2026-11-03 (bandit warbands are always killed, so none reach the Cage).
+What the card, the FAQ and the ruling left open was decided as follows;
+the owner confirmed it on 2026-11-03, with the changes noted:
+
+- **Side.** Either side: the card's braid is printed red into blue, and
+  "your enemy's force" reads for both. Its holder uses it from the faceup
+  relic, for free. Against bandits it is shown unavailable: "Bandit
+  warbands are always killed, so none reach the Cage".
+- **The enemy's unkilled force.** The force as the losses left it, read as
+  Shield Wall and Sticky Fire read the force they kill (`KillWholeForce`,
+  ruling R4): a Conquest defender's warbands the victory returned to its
+  board (not the board it held before), a Raid defender's whole board, and
+  a defeated attacker's whole board with its warbands at a queued origin.
+- **Timing.** In the losses window, after the losses, so a Conquest's
+  placement and a Raid's transfer follow it.
+- **Hospital (owner's ruling).** A warband the enemy's Hospital saves
+  still survives in the force, so it ends on the Cage, not on Hospital's
+  site: the Cage moves Hospital's count from the supply to the card and
+  clears it (`Hospital.divert`), so Hospital places nothing at the end.
+  Cursed Cauldron counts those warbands as not dead
+  (`ObsidianCage.fromHospital`). Both are pinned by tests.
+- **The location.** Warbands on a card are kept by card and force in
+  `CurrentGameState.warbandsOnCards`, so they stay on the Cage wherever it
+  goes and keep an Exile's colour. They count as out of their bank
+  (`PlayerFacts.banked`, the operation guard's bank count). The table shows
+  them on the held relic's details, one entry per force, in its owner's
+  colour (`CardDetailsProjection.warbands`, empty when absent on the wire,
+  as `powers` is).
+- **Lines.** "Moved 2 of Blue's warbands onto Obsidian Cage.", or "Moved 2
+  warbands onto Obsidian Cage." when they are the actor's (golden
+  `obsidian-cage`).
+- **The Action.** Free, used by the Cage's holder
+  (`gameplay/powers/action/ObsidianCageAction.scala`). "Any board of the
+  same color" is every board whose warbands are of a caged force: an
+  Exile's lineage player's, the Chancellor's and Citizens' for Imperial
+  ones. One board asks how many, from one; several ask a distribution of at
+  least one. It is offered only while a caged force has a board. Lines:
+  "Returned 2 warbands from Obsidian Cage to Blue." and "Took back 1
+  warband from Obsidian Cage." for the user's own.
+- **The return (FAQ).** No in-game power returns a held relic to the relic
+  deck; the Chronicle's Throne does, at the game's end, so before the
+  Reliquary is stocked every warband on a card goes back to its supply,
+  with nothing asked (owner's ruling: no board takes them).
+
 The roadmap's separate item "Record a bandit's applied battle plan as an
 event" covers how that use is journaled.
 
@@ -273,14 +412,14 @@ is bound to each (`grep -l PowerWindow.<name>` under `gameplay/powers`):
 | Window | Bound today | Rules still unbound |
 | --- | --- | --- |
 | `CampaignAfterOutcome` | `VictoriousNow` (Peace Envoy, Hearts and Minds) | none |
-| `CampaignLosses` | Billowing Fog, Traveling Doctor (`SparedForce`), Sticky Fire, Shield Wall (`KillWholeForce`), Hospital, Cursed Cauldron, Peace Envoy | Obsidian Cage |
+| `CampaignLosses` | Billowing Fog, Traveling Doctor (`SparedForce`), Sticky Fire, Shield Wall (`KillWholeForce`), Hospital, Cursed Cauldron, Peace Envoy, Obsidian Cage | none |
 | `CampaignSkullLosses`, `CampaignSacrificeLosses` | Hospital, Cursed Cauldron | none |
-| `CampaignPlacement` | Vow of Wandering | Relic Hunter's relic take (if modelled as part of the Conquest resolution) |
-| `CampaignRaidTransfer` | the `BattlePlan` trait (no card) | Glamor's secrets |
+| `CampaignPlacement` | Vow of Wandering, Relic Hunter (its take), Glamor (its take in a Conquest) | none |
+| `CampaignRaidTransfer` | the `BattlePlan` trait, Glamor (its take) | none |
 | `CampaignRaidConsequences` | Keep | none |
-| `CampaignRaidRelocation` | Keep | Spiral Castle |
-| `CampaignActionEligibility` (the root, "At End") | Battle Honors, Book Burning, Careful Plans, `DiscardedAtEnd` (Pledge of Defense, Rain Boots, Rival Khan, Great Crusade, Mounted Patrol, Lancers, Horse Archers, Storm Caller, Warning Signals), Field Promotion, Herald, Hospital, Mercenaries, Military Parade, Salt the Earth, Second Wind, Sneak Attack, Tribute Spoils, Vow of Peace, Wild Mounts, Diplomat, the fortress rules | Spiral Dungeons (attacker's pawn and Supply), Martial Culture, Grand Scepter |
-| `CampaignTargetSelection` | Circlet of Command, Forgotten Vault, Lost Tongue, the Pass | Hall of Debate and Tome Guardians (`HoldingEdifices.scala:8-16, 190-198`: the ruler's enemies cannot target the banner they hold), Glamor and Relic Hunter's new target kinds |
+| `CampaignRaidRelocation` | Keep, Spiral Castle | none |
+| `CampaignActionEligibility` (the root, "At End") | Battle Honors, Book Burning, Careful Plans, `DiscardedAtEnd` (Pledge of Defense, Rain Boots, Rival Khan, Great Crusade, Mounted Patrol, Lancers, Horse Archers, Storm Caller, Warning Signals), Field Promotion, Herald, Hospital, Mercenaries, Military Parade, Salt the Earth, Second Wind, Sneak Attack, Tribute Spoils, Vow of Peace, Wild Mounts, Diplomat, the fortress rules, Spiral Castle / Spiral Dungeons, Martial Culture, the Grand Scepter's plan | none |
+| `CampaignTargetSelection` | Circlet of Command, Forgotten Vault, Lost Tongue, the Pass, Hall of Debate and Tome Guardians (`BannerGuardians`) | none; Glamor and Relic Hunter ask their targets as the plan's own question |
 
 The Raid step order (takes, then consequences in their own window, then
 relocation; `CampaignRaid.scala:11-30`) matches the rules' four Raid
@@ -356,7 +495,7 @@ active legacy, until each lands. The leftover `StateBasedEvaluation
 ## 6. `WalkerDecisionProjector.waiting`'s second `parkedDecide`
 
 `waiting`
-(`src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:117-137`)
+(`src/main/scala/distantlands/application/WalkerDecisionProjector.scala:117-137`)
 first calls `this.parked(..., previewed = false)` as a gate, which runs
 `ProcedureWalker.parkedDecide(ready, tree, pending, powers)` with the
 look-ahead on (171) and `queryProjection` on the narrowed query; then it

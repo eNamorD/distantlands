@@ -1,4 +1,4 @@
-# Oath Digital
+# Distant Lands
 
 A digital implementation of the board game Oath. Rulebook terms (site, adviser,
 denizen, relic, Chronicle, campaign, recover) are defined with citations in
@@ -31,8 +31,10 @@ _Avoid_: start argument (that is the player's selection), pinned value
 
 **Parked decision**:
 A question the procedure walker has stopped on and is waiting for its owner
-to answer, or, for a Negotiation deal, any of its co-owners. At most one is
-parked per game at a time.
+to answer, or, for a Negotiation deal, any of its co-owners. One walk is
+parked per game at a time. That park usually holds one decision; a
+`Simultaneous` node holds one per player, answered in any order, as the
+Throne's Citizenship offer does.
 _Avoid_: pending decision, walker decision, park
 
 **Phase menu**:
@@ -214,6 +216,51 @@ Everything a game begins from before anyone plays: the Chronicle, the seated
 participants and the recorded shuffle orders. Two games with the same input
 begin identically.
 _Avoid_: setup fixture, setup data, bootstrap
+
+**Baseline**:
+The Chronicle a game started from, kept whole on the campaign state by game
+start, including the lineages of colors that did not play. The Chronicle
+Phase evolves it.
+_Avoid_: original chronicle, input chronicle
+
+**Chronicle Phase**:
+The post-game tasks (Sun, Throne, World, Beacon, Stars), run as triggered
+walker procedures in the same game journal once the winner starts the
+Chronicle. The driver chains them in a fixed order.
+_Avoid_: post-game, campaign step
+
+**Task holder**:
+The seated player who resolves a Chronicle task card: the Throne (the
+winner), the World (the People's Favor's holder) or the Beacon (the Darkest
+Secret's holder), or whoever the winner or a double holder gives it to.
+_Avoid_: task owner, task player
+
+**Set-aside edifices**:
+Edifices discarded during a game, kept in discard order apart from the
+edifice deck. Build Edifice offers one only when its suit has none left in
+the deck, then returns them all to the deck (Chronicle ruling 9).
+_Avoid_: edifice discard pile, buried edifices
+
+**Gathering pile**:
+The denizens the World task deals into stacks: two faceup stacks and the
+facedown stack, which is always the last three cards.
+_Avoid_: World stacks, gathered denizens
+
+**Newly Dispossessed**:
+The six denizens the World task dispossessed this Chronicle, held apart from
+the older Dispossessed so the Beacon's return leaves them alone. The
+Chronicle record joins both.
+_Avoid_: new Dispossessed, World Dispossessed
+
+**Archived site**:
+A rival site the Stars task stores at the atlas's Recent end with every card
+left on it. The Empire's sites are kept in the Chronicle's `world` instead.
+_Avoid_: rival storage, stored rival
+
+**Evolved Chronicle**:
+The Chronicle the Chronicle Phase ends with, recorded by the
+`ChronicleUpdated` operation. The next game starts from it.
+_Avoid_: next chronicle, result chronicle
 
 **Situation**:
 A game reached by real play from a first-game input: every command issued and

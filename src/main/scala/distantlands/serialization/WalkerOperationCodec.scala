@@ -1,0 +1,736 @@
+package distantlands.serialization
+
+import distantlands.model._
+
+/** Operation spellings for recorded walker steps. `WalkerOperationWireSuite`
+  * pins every spelling.
+  *
+  * `encodeOperation`/`encodePiece` are total over `CoreOperation`/
+  * `Piece`, exactly like [[encodeLocation]] in [[WalkerValueCodec]] (added
+  * for the same reason: a bounded operation set is what let Catacombs'
+  * recorded `Move` out of `Location.Deck` reach an append-time throw with no
+  * test to catch it -- that lesson generalises to every recorded shape, not
+  * just `Location`). Totality is exceptionless: the walker's control
+  * vocabulary lives under the unsealed `Operation`, not under
+  * `CoreOperation`, so a control node is not a member of the encoded family
+  * and cannot reach this method. A NEW `CoreOperation` case still fails to
+  * compile here ("match may not be exhaustive") until it is given a real
+  * arm.
+  */
+private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
+    with FollowUpWire with OathkeeperWire with PositionWire
+    with WalkerValueCodec:
+  this: GameEventJsonSupport =>
+  import WireError._
+
+  /** The `CoreOperation` cases each encode/decode helper below owns. The
+    * compiler skips coverage instrumentation for a method body over 3000
+    * tree nodes, so a single `encodeOperation`/`decodeOperation` match was
+    * never measured; four smaller helpers are. Every group is a union of
+    * concrete cases, so `encodeOperation` still fails to compile when a
+    * `CoreOperation` case belongs to no group.
+    */
+  private type CardOperation =
+    Peek | Flip | Bury | Discard | RemoveFromMap | Draw | Play | Reveal | Swap |
+      Shuffle
+  private type PieceOperation =
+    Move | Take | Kill | Replace | Sacrifice | Burn | Give | Exchange | PayCost |
+      DrawNomadFavor
+  private type ResourceOperation = SpendSupply | GainSupply | FlipSecrets | Gain
+  private type TurnOperation = AdvanceVisionsDrawn.type | AdvanceRound.type |
+    UsurperLimiterRemoved.type | BeginTurn | EnterPhase |
+    SetOathkeeper | SetOathkeeperGoal | ChronicleUpdated | RecordPowerUse | RecordCampaignResult |
+    ModifyDicePool | Roll | ModifyRollOutcome | Reroll | SetDieFaces |
+    QueueProcedure | Defer | TakeDeferred | ActAsIf | ActAsIfAdvisers |
+    OpenPick | ClosePick | TrackPawn | ClearTrackedPawn
+  private type ChronicleOperation = RoleChanged | ChronicleTaskAssigned |
+    GrandScepterFromBox | ImperialWarbandsTaken | WarbandsAdded |
+    LineagePointsScored | EdificeBuilt | SuitedReserveFromBox
+
+  protected final def encodeOperation(operation: CoreOperation): ujson.Value =
+    operation match
+      case operation: CardOperation => encodeCardOperation(operation)
+      case operation: PieceOperation => encodePieceOperation(operation)
+      case operation: ResourceOperation => encodeResourceOperation(operation)
+      case operation: TurnOperation => encodeTurnOperation(operation)
+      case operation: ChronicleOperation => encodeChronicleOperation(operation)
+
+  private def encodeChronicleOperation(operation: ChronicleOperation)
+      : ujson.Value = operation match
+    case RoleChanged(lineage, role) => ujson.Obj("kind" -> "role-changed",
+      "lineage" -> lineage.value, "role" -> encodeRole(role))
+    case ChronicleTaskAssigned(task, player) => ujson.Obj(
+      "kind" -> "chronicle-task-assigned", "task" -> task.key,
+      "player" -> player.value)
+    case GrandScepterFromBox(player) => ujson.Obj(
+      "kind" -> "grand-scepter-from-box", "player" -> player.value)
+    case ImperialWarbandsTaken(count) => ujson.Obj(
+      "kind" -> "imperial-warbands-taken", "count" -> count)
+    case WarbandsAdded(force, count) => ujson.Obj(
+      "kind" -> "warbands-added", "force" -> encodeForceKind(force),
+      "count" -> count)
+    case LineagePointsScored(lineage, points) => ujson.Obj(
+      "kind" -> "lineage-points-scored", "lineage" -> lineage.value,
+      "points" -> points)
+    case EdificeBuilt(edifice, site) => ujson.Obj("kind" -> "edifice-built",
+      "edifice" -> edifice.value, "site" -> site.value)
+    case SuitedReserveFromBox(suit, cards) => ujson.Obj(
+      "kind" -> "suited-reserve-from-box", "suit" -> suit.key,
+      "cards" -> cards.map(card => ujson.Str(card.value)))
+
+  private def encodeCardOperation(operation: CardOperation): ujson.Value =
+    operation match
+      case Peek(viewer, card, at) => ujson.Obj("kind" -> "peek",
+        "viewerPlayerId" -> viewer.value, "card" -> encodeCardId(card),
+        "at" -> encodeLocation(at))
+      case Flip(card, at, orientation) => ujson.Obj("kind" -> "flip",
+        "card" -> encodeCardId(card), "at" -> encodeLocation(at),
+        "orientation" -> orientationKey(orientation))
+      case bury: Bury => ujson.Obj("kind" -> "bury",
+        "card" -> encodeBuryableCard(bury.card),
+        "from" -> encodePositionedLocation(bury.from))
+      case Discard.Denizen(card, from, to, suit, favor, secrets, actingPlayer,
+          _, actorless, position, cause) =>
+        withCause(withActorless(ujson.Obj("kind" -> "discard-denizen",
+          "card" -> card.value,
+          "from" -> encodePositionedLocation(from), "to" -> to.key,
+          "position" -> encodeStackPosition(position),
+          "suit" -> suit.key, "favor" -> favor, "secrets" -> secrets,
+          "actingPlayerId" -> actingPlayer.value), actorless), cause)
+      case Discard.Vision(card, from, to, _, position) => ujson.Obj(
+        "kind" -> "discard-vision", "card" -> card.value,
+        "from" -> encodePositionedLocation(from), "to" -> to.key,
+        "position" -> encodeStackPosition(position))
+      case Discard.RuinedEdifice(card, from, suit, favor, secrets,
+          actingPlayer, _, actorless, cause) =>
+        withCause(withActorless(ujson.Obj("kind" -> "discard-ruined-edifice",
+          "card" -> card.value,
+          "from" -> encodePositionedLocation(from), "suit" -> suit.key,
+          "favor" -> favor, "secrets" -> secrets,
+          "actingPlayerId" -> actingPlayer.value), actorless), cause)
+      case Discard.Buried(card, from, suit, favor, secrets, actingPlayer, _) =>
+        val encoded = ujson.Obj("kind" -> "discard-buried",
+          "card" -> encodeBuryableCard(card),
+          "from" -> encodePositionedLocation(from),
+          "favor" -> favor, "secrets" -> secrets,
+          "actingPlayerId" -> actingPlayer.value)
+        suit.foreach(bank => encoded("suit") = bank.key)
+        encoded
+      case Discard.Relic(card, from, secrets, actingPlayer) => ujson.Obj(
+        "kind" -> "discard-relic", "card" -> card.value,
+        "from" -> encodePositionedLocation(from), "secrets" -> secrets,
+        "actingPlayerId" -> actingPlayer.value)
+      case RemoveFromMap(card, from, to, suit, favor, secrets, actingPlayer) =>
+        ujson.Obj("kind" -> "remove-from-map", "card" -> encodeCardId(card),
+          "from" -> encodePositionedLocation(from),
+          "to" -> encodePositionedLocation(to), "suit" -> suit.key,
+          "favor" -> favor, "secrets" -> secrets,
+          "actingPlayerId" -> actingPlayer.value)
+      case Draw(player, cards, source, destination, position) => ujson.Obj(
+        "kind" -> "draw", "playerId" -> player.value,
+        "cards" -> ujson.Arr.from(cards.map(encodeCardId)),
+        "source" -> encodeLocation(source),
+        "destination" -> encodeLocation(destination),
+        "position" -> encodeStackPosition(position))
+      case Play(card, from, destination, orientation, _) => ujson.Obj(
+        "kind" -> "play", "card" -> encodeCardId(card),
+        "from" -> encodePositionedLocation(from),
+        "destination" -> encodeLocation(destination),
+        "orientation" -> orientationKey(orientation))
+      case Reveal(card, at) => ujson.Obj("kind" -> "reveal",
+        "card" -> encodeCardId(card), "at" -> encodeLocation(at))
+      case Swap(firstCard, firstLocation, secondCard, secondLocation, by) =>
+        withMover(ujson.Obj("kind" -> "swap",
+          "firstCard" -> encodeCardId(firstCard),
+          "firstLocation" -> encodePositionedLocation(firstLocation),
+          "secondCard" -> encodeCardId(secondCard),
+          "secondLocation" -> encodePositionedLocation(secondLocation)), by)
+      case Shuffle(pile, order) =>
+        val shuffled = ujson.Obj("kind" -> "shuffle",
+          "pile" -> encodeShufflePile(pile))
+        order.foreach(cards =>
+          shuffled("order") = ujson.Arr.from(cards.map(encodeCardId)))
+        shuffled
+
+  /** `encoded`, with `"by"` when the move names its mover. Written only
+    * when present, so a move without one encodes as before. */
+  private def withMover(encoded: ujson.Obj, by: Option[PlayerId]): ujson.Obj =
+    by.foreach(player => encoded("by") = player.value)
+    encoded
+
+  /** `encoded`, with `"actorless": true` when nobody performs the
+    * discard. Written only then, so other discards encode as before. */
+  private def withActorless(encoded: ujson.Obj, actorless: Boolean)
+      : ujson.Obj =
+    if actorless then encoded("actorless") = true
+    encoded
+
+  /** Whether a discard says nobody performs it. */
+  private def decodeActorless(value: ujson.Value): Boolean =
+    value.obj.get("actorless").exists(_.bool)
+
+  /** A discard's cause, written only when it has one. */
+  private def withCause(encoded: ujson.Obj, cause: Option[DiscardCause])
+      : ujson.Obj =
+    cause.foreach(found => encoded("cause") = ujson.Obj(
+      "powerId" -> found.power.value, "makesRoom" -> found.makesRoom))
+    encoded
+
+  /** A discard's cause, when it names one. */
+  private def decodeCause(value: ujson.Value, path: String)
+      : Either[WireError, Option[DiscardCause]] =
+    value.obj.get("cause").fold[Either[WireError, Option[DiscardCause]]](
+        Right(None)) { found =>
+      found.obj.get("powerId").map(_.str).flatMap(PowerId.fromValue)
+        .toRight(InvalidValue(s"$path.cause.powerId",
+          "a discard's cause names its power"))
+        .map(power => Some(DiscardCause(power,
+          found.obj.get("makesRoom").exists(_.bool))))
+    }
+
+  /** A discard's end of its pile. Required: a journal written before the
+    * field existed need not decode. */
+  private def discardPosition(value: ujson.Value, path: String)
+      : Either[WireError, StackPosition] = for
+    found <- value.obj.get("position").toRight(InvalidValue(
+      s"$path.position", "a discard names the top or the bottom of its pile"))
+    position <- decodeStackPosition(found.str, s"$path.position")
+    _ <- Either.cond(position != StackPosition.Unspecified, (),
+      InvalidValue(s"$path.position",
+        "a discard goes to the top or the bottom of its pile"))
+  yield position
+
+  /** The mover a move or swap names, if any. */
+  private def decodeMover(value: ujson.Value): Option[PlayerId] =
+    value.obj.get("by").map(by => PlayerId(by.str))
+
+  private def encodePieceOperation(operation: PieceOperation): ujson.Value =
+    operation match
+      case Move(piece, from, to, orientation, by) => withMover(ujson.Obj(
+        "kind" -> "move",
+        "piece" -> encodePiece(piece),
+        "from" -> encodePositionedLocation(from),
+        "to" -> encodePositionedLocation(to),
+        "resultingOrientation" -> orientation.fold[ujson.Value](ujson.Null)(
+          value => ujson.Str(orientationKey(value)))), by)
+      case Take(piece, player, from, to, sourcePosition, _, leaving,
+          sourceSide) =>
+        // Written only when present, so a Take without it encodes as before.
+        val optional: Vector[(String, ujson.Value)] =
+          if leaving.isEmpty then Vector.empty
+          else Vector("leaving" -> ujson.Arr.from(leaving.map(encodeOperation)))
+        ujson.Obj.from(Vector[(String, ujson.Value)](
+          "kind" -> "take", "piece" -> encodePiece(piece),
+          "playerId" -> player.value, "from" -> encodeLocation(from),
+          "to" -> encodeLocation(to),
+          "sourcePosition" -> encodeStackPosition(sourcePosition)) ++
+          optional ++ sideField("sourceSide", sourceSide))
+      case Kill(warbands, from) => ujson.Obj("kind" -> "kill",
+        "warbands" -> encodePiece(warbands),
+        "from" -> encodePositionedLocation(from))
+      case Replace(removed, replacements, at, _, by) => withMover(ujson.Obj(
+        "kind" -> "replace", "removed" -> encodePiece(removed),
+        "replacements" -> encodePiece(replacements),
+        "at" -> encodePositionedLocation(at)), by)
+      case Sacrifice(player, warbands, from) => ujson.Obj(
+        "kind" -> "sacrifice", "playerId" -> player.value,
+        "warbands" -> encodePiece(warbands),
+        "from" -> encodePositionedLocation(from))
+      case burn: Burn => ujson.Obj("kind" -> "burn",
+        "resource" -> encodePiece(burn.resource),
+        "from" -> encodePositionedLocation(burn.from),
+        "by" -> burn.by.fold[ujson.Value](ujson.Null)(
+          by => ujson.Str(by.value)))
+      case give: Give => encodeGive(give, "give")
+      case DrawNomadFavor(player, amount) => ujson.Obj(
+        "kind" -> "draw-nomad-favor", "playerId" -> player.value,
+        "amount" -> amount)
+      case Exchange(give, receive) => ujson.Obj("kind" -> "exchange",
+        "give" -> encodeGive(give, "exchange-give"),
+        "receive" -> encodeGive(receive, "exchange-receive"))
+      case PayCost(player, placedAt, cost, intoOccupied, matchingBank, _) =>
+        val optional: Vector[(String, ujson.Value)] =
+          (if intoOccupied then Vector("intoOccupied" -> (ujson.Bool(true): ujson.Value))
+          else Vector.empty) ++
+            matchingBank.toVector.map(suit =>
+              "matchingBank" -> (ujson.Str(suit.key): ujson.Value))
+        ujson.Obj.from(Vector[(String, ujson.Value)](
+          "kind" -> "pay-cost", "playerId" -> player.value,
+          "placedAt" -> encodeLocation(placedAt),
+          "cost" -> encodeCost(cost)) ++ optional)
+
+  private def encodeResourceOperation(operation: ResourceOperation): ujson.Value =
+    operation match
+      case SpendSupply(player, amount, _) => ujson.Obj(
+        "kind" -> "spend-supply", "playerId" -> player.value,
+        "amount" -> amount)
+      case GainSupply(player, amount) => ujson.Obj(
+        "kind" -> "gain-supply", "playerId" -> player.value,
+        "amount" -> amount)
+      case FlipSecrets(player, amount, from, to) => ujson.Obj(
+        "kind" -> "flip-secrets", "playerId" -> player.value,
+        "amount" -> amount, "from" -> encodeSecretSide(from),
+        "to" -> encodeSecretSide(to))
+      case Gain.Favor(player, suit, amount) => ujson.Obj(
+        "kind" -> "gain-favor", "playerId" -> player.value,
+        "suit" -> suit.key, "amount" -> amount)
+      case Gain.Secrets(player, amount) => ujson.Obj(
+        "kind" -> "gain-secrets", "playerId" -> player.value,
+        "amount" -> amount)
+      case Gain.Warbands(player, kind, amount) => ujson.Obj(
+        "kind" -> "gain-warbands", "playerId" -> player.value,
+        "force" -> encodeForceKind(kind), "amount" -> amount)
+
+  private def encodeTurnOperation(operation: TurnOperation): ujson.Value =
+    operation match
+      case AdvanceVisionsDrawn => ujson.Obj("kind" -> "advance-visions-drawn")
+      case AdvanceRound => ujson.Obj("kind" -> "advance-round")
+      case UsurperLimiterRemoved =>
+        ujson.Obj("kind" -> "usurper-limiter-removed")
+      case BeginTurn(player, phase) => ujson.Obj("kind" -> "begin-turn",
+        "playerId" -> player.value, "phase" -> phase.key)
+      case EnterPhase(phase) => ujson.Obj("kind" -> "enter-phase",
+        "phase" -> phase.key)
+      case operation: SetOathkeeper => encodeSetOathkeeper(operation)
+      case operation: SetOathkeeperGoal => encodeSetOathkeeperGoal(operation)
+      case ChronicleUpdated(chronicle) => ujson.Obj(
+        "kind" -> "chronicle-updated", "chronicle" -> encodeChronicle(chronicle))
+      // A use limit is journalled as the ref it records, not as the power
+      // that asked for it: replay adds the same ref to the same turn without
+      // gathering anything.
+      case RecordPowerUse(PowerUseRef(timing, source, id)) =>
+        ujson.Obj.from(Vector[(String, ujson.Value)](
+          "kind" -> "record-power-use",
+          "timing" -> encodePowerTiming(timing)) ++ (source match {
+          case PowerSourceRef.Site(site) => Vector("siteId" -> ujson.Str(site.value))
+          case PowerSourceRef.Card(card) => Vector(
+            "cardKind" -> ujson.Str(card.kind), "cardId" -> ujson.Str(card.value))
+          case PowerSourceRef.Banner(banner) =>
+            Vector("bannerKey" -> ujson.Str(banner.key))
+        }) :+ ("powerId" -> ujson.Str(id.value)))
+      case RecordCampaignResult(result) => ujson.Obj(
+        "kind" -> "record-campaign-result",
+        "result" -> encodeCampaignResult(result))
+      case QueueProcedure(entry, atFront) => ujson.Obj(
+        "kind" -> "queue-procedure",
+        "entry" -> encodeQueued(entry),
+        "atFront" -> ujson.Bool(atFront))
+      case ModifyDicePool(pool, delta, _) => ujson.Obj(
+        "kind" -> "modify-dice-pool", "pool" -> pool.value,
+        "delta" -> delta)
+      case Roll(pool, dice, _, _) => ujson.Obj("kind" -> "roll",
+        "pool" -> pool.value, "die" -> encodeDiceKind(dice.die))
+      case ModifyRollOutcome(pool, skulls, score) => ujson.Obj(
+        "kind" -> "modify-roll-outcome", "pool" -> pool.value,
+        "skulls" -> skulls.fold[ujson.Value](ujson.Null)(ujson.Num(_)),
+        "score" -> score.fold[ujson.Value](ujson.Null)(ujson.Num(_)))
+      case Reroll(pool, indices, faces) =>
+        val rerolled = ujson.Obj("kind" -> "reroll", "pool" -> pool.value,
+          "indices" -> ujson.Arr.from(indices.map(ujson.Num(_))))
+        faces.foreach(rolled =>
+          rerolled("faces") = ujson.Arr.from(rolled.map(encodeDieFace)))
+        rerolled
+      case SetDieFaces(pool, faces) => ujson.Obj(
+        "kind" -> "set-die-faces", "pool" -> pool.value,
+        "faces" -> ujson.Arr.from(faces.map(encodeDieFace)))
+      // A held op is spelled as a recorded one: it is held canonically.
+      case Defer(key, ops) => ujson.Obj("kind" -> "defer",
+        "key" -> key.value, "ops" -> ujson.Arr.from(ops.map(encodeOperation)))
+      case TakeDeferred(key) => ujson.Obj("kind" -> "take-deferred",
+        "key" -> key.value)
+      case ActAsIf(site) => ujson.Obj("kind" -> "act-as-if",
+        "siteId" -> site.value)
+      case ActAsIfAdvisers(player) => ujson.Obj(
+        "kind" -> "act-as-if-advisers", "playerId" -> player.value)
+      case TrackPawn(holder, target) => ujson.Obj("kind" -> "track-pawn",
+        "holder" -> holder.value, "target" -> target.value)
+      case ClearTrackedPawn(holder) => ujson.Obj(
+        "kind" -> "clear-tracked-pawn", "holder" -> holder.value)
+      case OpenPick(decisionId, option, label) => ujson.Obj(
+        "kind" -> "open-pick", "decisionId" -> decisionId,
+        "option" -> DecisionAnswerCodec.encodeRef(option),
+        "label" -> label.fold[ujson.Value](ujson.Null)(ujson.Str(_)))
+      case ClosePick() => ujson.Obj("kind" -> "close-pick")
+
+  private def encodePowerTiming(timing: PowerTiming): String = timing match
+    case PowerTiming.Wake => "wake"
+    case PowerTiming.Act => "act"
+    case PowerTiming.Rest => "rest"
+
+  private def decodePowerTiming(value: String,
+      path: String): Either[WireError, PowerTiming] = value match
+    case "wake" => Right(PowerTiming.Wake)
+    case "act" => Right(PowerTiming.Act)
+    case "rest" => Right(PowerTiming.Rest)
+    case other => Left(InvalidValue(path, s"unknown power timing '$other'"))
+
+  private type DecodedOperation = PartialFunction[String, Either[WireError, CoreOperation]]
+
+  protected final def decodeOperation(value: ujson.Value,
+      path: String): Either[WireError, CoreOperation] =
+    decodeCardOperation(value, path)
+      .orElse(decodePieceOperation(value, path))
+      .orElse(decodeResourceOperation(value, path))
+      .orElse(decodeTurnOperation(value, path))
+      .orElse(decodeChronicleOperation(value, path))
+      .applyOrElse(value("kind").str, (other: String) => Left(InvalidValue(
+        s"$path.kind", s"unknown recorded walker operation '$other'")))
+
+  private def decodeCardOperation(value: ujson.Value,
+      path: String): DecodedOperation =
+    case "peek" => for
+      card <- decodeCardRef(value("card"), s"$path.card")
+      at <- decodeLocation(value("at"), s"$path.at")
+    yield Peek(PlayerId(value("viewerPlayerId").str), card, at)
+    case "flip" => for
+      card <- decodeCardRef(value("card"), s"$path.card")
+      at <- decodeLocation(value("at"), s"$path.at")
+      orientation <- orientationFromKey(value("orientation").str,
+        s"$path.orientation")
+    yield Flip(card, at, orientation)
+    case "bury" => for
+      card <- decodeBuryableCard(value("card"), s"$path.card")
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+    yield Bury(card, from)
+    case "discard-denizen" => for
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      to <- decodeRegion(value("to").str, s"$path.to")
+      position <- discardPosition(value, path)
+      suit <- decodeSuit(value("suit").str, s"$path.suit")
+      favor <- safeIntField(value.obj, "favor", path)
+      secrets <- safeIntField(value.obj, "secrets", path)
+      cause <- decodeCause(value, path)
+    yield Discard.Denizen(DenizenId(value("card").str), from, to, suit,
+      favor, secrets, PlayerId(value("actingPlayerId").str),
+      actorless = decodeActorless(value), position = position, cause = cause)
+    case "discard-vision" => for
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      to <- decodeRegion(value("to").str, s"$path.to")
+      position <- discardPosition(value, path)
+    yield Discard.Vision(VisionId(value("card").str), from, to,
+      position = position)
+    case "discard-ruined-edifice" => for
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      suit <- decodeSuit(value("suit").str, s"$path.suit")
+      favor <- safeIntField(value.obj, "favor", path)
+      secrets <- safeIntField(value.obj, "secrets", path)
+      cause <- decodeCause(value, path)
+    yield Discard.RuinedEdifice(EdificeId(value("card").str), from, suit,
+      favor, secrets, PlayerId(value("actingPlayerId").str),
+      actorless = decodeActorless(value), cause = cause)
+    case "discard-buried" => for
+      card <- decodeBuryableCard(value("card"), s"$path.card")
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      suit <- value.obj.get("suit").fold[Either[WireError, Option[Suit]]](
+        Right(None))(found => decodeSuit(found.str, s"$path.suit").map(Some(_)))
+      favor <- safeIntField(value.obj, "favor", path)
+      secrets <- safeIntField(value.obj, "secrets", path)
+    yield Discard.Buried(card, from, suit, favor, secrets,
+      PlayerId(value("actingPlayerId").str))
+    case "discard-relic" => for
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      secrets <- safeIntField(value.obj, "secrets", path)
+    yield Discard.Relic(RelicId(value("card").str), from, secrets,
+      PlayerId(value("actingPlayerId").str))
+    case "remove-from-map" => for
+      card <- decodeCardRef(value("card"), s"$path.card")
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      to <- decodePositionedLocation(value("to"), s"$path.to")
+      suit <- decodeSuit(value("suit").str, s"$path.suit")
+      favor <- safeIntField(value.obj, "favor", path)
+      secrets <- safeIntField(value.obj, "secrets", path)
+    yield RemoveFromMap(card, from, to, suit, favor, secrets,
+      PlayerId(value("actingPlayerId").str))
+    case "draw" => for
+      cards <- traverse(value("cards").arr.zipWithIndex.toVector):
+        case (id, index) => decodeCardRef(id, s"$path.cards[$index]")
+      _ <- Either.cond(cards.nonEmpty, (), InvalidValue(s"$path.cards",
+        "draw must contain at least one card"))
+      source <- decodeLocation(value("source"), s"$path.source")
+      destination <- decodeLocation(value("destination"), s"$path.destination")
+      position <- value.obj.get("position").fold[Either[WireError,
+          StackPosition]](Right(StackPosition.Top))(found =>
+        decodeStackPosition(found.str, s"$path.position"))
+      _ <- Either.cond(position != StackPosition.Unspecified, (),
+        InvalidValue(s"$path.position",
+          "a draw takes from the top or the bottom"))
+    yield Draw(PlayerId(value("playerId").str), cards, source, destination,
+      position)
+    case "play" => for
+      card <- decodeCardRef(value("card"), s"$path.card")
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      destination <- decodeLocation(value("destination"), s"$path.destination")
+      _ <- destination match
+        case _: Location.Site | _: Location.PlayArea => Right(())
+        case other => Left(InvalidValue(s"$path.destination",
+          s"play destination must be a site or a play area, got $other"))
+      orientation <- orientationFromKey(value("orientation").str,
+        s"$path.orientation")
+    yield Play(card, from, destination, orientation)
+    case "reveal" => for
+      card <- decodeCardRef(value("card"), s"$path.card")
+      at <- decodeLocation(value("at"), s"$path.at")
+    yield Reveal(card, at)
+    case "swap" => for
+      firstCard <- decodeCardRef(value("firstCard"), s"$path.firstCard")
+      firstLocation <- decodePositionedLocation(value("firstLocation"),
+        s"$path.firstLocation")
+      secondCard <- decodeCardRef(value("secondCard"), s"$path.secondCard")
+      secondLocation <- decodePositionedLocation(value("secondLocation"),
+        s"$path.secondLocation")
+      _ <- Either.cond(firstCard != secondCard, (),
+        InvalidValue(path, "swap requires two different cards"))
+      _ <- Either.cond(firstLocation != secondLocation, (),
+        InvalidValue(path, "swap requires two different locations"))
+    yield Swap(firstCard, firstLocation, secondCard, secondLocation,
+      decodeMover(value))
+    case "shuffle" => for
+      pile <- decodeShufflePile(value("pile"), s"$path.pile")
+      order <- decodeShuffleOrder(value, path)
+    yield Shuffle(pile, order)
+
+  /** A Search pile keeps its Search source's spelling; the edifice deck and
+    * the set-aside relics have kinds of their own. */
+  private def encodeShufflePile(pile: ShufflePile): ujson.Value = pile match
+    case ShufflePile.Search(source) => encodeSearchSource(source)
+    case ShufflePile.EdificeDeck => ujson.Obj("kind" -> "edifice-deck")
+    case ShufflePile.SetAsideRelics => ujson.Obj("kind" -> "set-aside-relics")
+    case ShufflePile.CardGathering =>
+      ujson.Obj("kind" -> "card-gathering")
+    case ShufflePile.SuitedReserve(suit) =>
+      ujson.Obj("kind" -> "suited-reserve", "suit" -> suit.key)
+    case ShufflePile.Reliquary => ujson.Obj("kind" -> "reliquary")
+    case ShufflePile.Dispossessed => ujson.Obj("kind" -> "dispossessed")
+
+  private def decodeShufflePile(value: ujson.Value, path: String)
+      : Either[WireError, ShufflePile] =
+    value.objOpt.flatMap(_.get("kind")).flatMap(_.strOpt) match
+      case Some("edifice-deck") => Right(ShufflePile.EdificeDeck)
+      case Some("set-aside-relics") => Right(ShufflePile.SetAsideRelics)
+      case Some("card-gathering") => Right(ShufflePile.CardGathering)
+      case Some("reliquary") => Right(ShufflePile.Reliquary)
+      case Some("dispossessed") => Right(ShufflePile.Dispossessed)
+      case Some("suited-reserve") => decodeSuit(value("suit").str,
+        s"$path.suit").map(ShufflePile.SuitedReserve.apply)
+      case _ => decodeSearchSource(value, path).map(ShufflePile.Search.apply)
+
+  /** A recorded shuffle carries its order; a declared one has none. */
+  private def decodeShuffleOrder(value: ujson.Value, path: String)
+      : Either[WireError, Option[Vector[CardId]]] =
+    value.obj.get("order").fold[Either[WireError, Option[Vector[CardId]]]](
+      Right(None))(cards => traverse(cards.arr.zipWithIndex.toVector)({
+        case (card, index) => decodeCardId(card, s"$path.order[$index]")
+      }).map(Some(_)))
+
+  /** A recorded reroll carries its faces; a declared one has none. */
+  private def decodeRerolledFaces(value: ujson.Value, path: String)
+      : Either[WireError, Option[Vector[DieFace]]] =
+    value.obj.get("faces").fold[Either[WireError, Option[Vector[DieFace]]]](
+      Right(None))(faces => traverse(faces.arr.toVector)(face =>
+        decodeDieFace(face.str, s"$path.faces")).map(Some(_)))
+
+  private def decodePieceOperation(value: ujson.Value,
+      path: String): DecodedOperation =
+    case "draw-nomad-favor" =>
+      decodePositiveInt(value("amount"), s"$path.amount")
+        .map(amount => DrawNomadFavor(PlayerId(value("playerId").str), amount))
+    case "move" => for
+      piece <- decodePiece(value("piece"), s"$path.piece")
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      to <- decodePositionedLocation(value("to"), s"$path.to")
+      orientation <- value("resultingOrientation") match
+        case ujson.Null => Right(None)
+        case other => orientationFromKey(other.str,
+          s"$path.resultingOrientation").map(Some(_))
+    yield Move(piece, from, to, orientation, decodeMover(value))
+    case "take" => for
+      piece <- decodePiece(value("piece"), s"$path.piece")
+      from <- decodeLocation(value("from"), s"$path.from")
+      to <- decodeLocation(value("to"), s"$path.to")
+      sourcePosition <- decodeStackPosition(value("sourcePosition").str,
+        s"$path.sourcePosition")
+      leaving <- value.obj.get("leaving").fold[Either[WireError,
+          Vector[CoreOperation]]](Right(Vector.empty))(raw =>
+        traverse(raw.arr.zipWithIndex.toVector)({ case (operation, index) =>
+          decodeOperation(operation, s"$path.leaving[$index]") }))
+      sourceSide <- decodeSide(value, "sourceSide", path)
+    yield Take(piece, PlayerId(value("playerId").str), from, to,
+      sourcePosition, leaving = leaving, sourceSide = sourceSide)
+    case "kill" => for
+      piece <- decodePiece(value("warbands"), s"$path.warbands")
+      warbands <- asWarbands(piece, s"$path.warbands")
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+    yield Kill(warbands, from)
+    case "replace" => for
+      removedPiece <- decodePiece(value("removed"), s"$path.removed")
+      removed <- asWarbands(removedPiece, s"$path.removed")
+      replacementsPiece <- decodePiece(value("replacements"),
+        s"$path.replacements")
+      replacements <- asWarbands(replacementsPiece, s"$path.replacements")
+      at <- decodePositionedLocation(value("at"), s"$path.at")
+      _ <- Either.cond(removed.amount == replacements.amount, (),
+        InvalidValue(path, "replace must exchange equal numbers of warbands"))
+      _ <- Either.cond(removed.kind != replacements.kind, (),
+        InvalidValue(path, "replacement warbands must have a new color"))
+    yield Replace(removed, replacements, at, by = decodeMover(value))
+    case "sacrifice" => for
+      piece <- decodePiece(value("warbands"), s"$path.warbands")
+      warbands <- asWarbands(piece, s"$path.warbands")
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+    yield Sacrifice(PlayerId(value("playerId").str), warbands, from)
+    case "burn" => for
+      resource <- decodePiece(value("resource"), s"$path.resource")
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      by = value("by").strOpt.map(PlayerId(_))
+      burn <- resource match
+        case Piece.Favor(amount) => Right(Burn.favor(amount, from, by))
+        case Piece.Secrets(amount) => Right(Burn.secrets(amount, from, by))
+        case other => Left(InvalidValue(s"$path.resource",
+          s"unsupported burn resource $other"))
+    yield burn
+    case "give" => decodeGive(value, path)
+    case "exchange" => for
+      give <- decodeGive(value("give"), s"$path.give")
+      receive <- decodeGive(value("receive"), s"$path.receive")
+    yield Exchange(give, receive)
+    case "pay-cost" => for
+      placedAt <- decodeLocation(value("placedAt"), s"$path.placedAt")
+      cost <- decodeCost(value("cost"), s"$path.cost")
+      bank <- value.obj.get("matchingBank") match
+        case None | Some(ujson.Null) => Right(None)
+        case Some(raw) => decodeSuit(raw.str, s"$path.matchingBank").map(Some(_))
+    yield PayCost(PlayerId(value("playerId").str), placedAt, cost,
+      intoOccupied = value.obj.get("intoOccupied").exists(_.bool),
+      matchingBank = bank)
+
+  private def decodeResourceOperation(value: ujson.Value,
+      path: String): DecodedOperation =
+    case "spend-supply" => decodePositiveInt(value("amount"), s"$path.amount")
+      .map(amount => SpendSupply(PlayerId(value("playerId").str), amount))
+    case "gain-supply" => decodePositiveInt(value("amount"), s"$path.amount")
+      .map(amount => GainSupply(PlayerId(value("playerId").str), amount))
+    case "flip-secrets" => for
+      amount <- safeIntField(value.obj, "amount", path)
+      from <- decodeSecretSide(value("from").str, s"$path.from")
+      to <- decodeSecretSide(value("to").str, s"$path.to")
+    yield FlipSecrets(PlayerId(value("playerId").str), amount, from, to)
+    case "gain-favor" => for
+      amount <- safeIntField(value.obj, "amount", path)
+      suit <- decodeSuit(value("suit").str, s"$path.suit")
+    yield Gain.Favor(PlayerId(value("playerId").str), suit, amount)
+    case "gain-secrets" => safeIntField(value.obj, "amount", path).map(
+      amount => Gain.Secrets(PlayerId(value("playerId").str), amount))
+    case "gain-warbands" => for
+      force <- decodeForceKind(value("force"), s"$path.force")
+      amount <- safeIntField(value.obj, "amount", path)
+    yield Gain.Warbands(PlayerId(value("playerId").str), force, amount)
+
+  private def decodeChronicleOperation(value: ujson.Value,
+      path: String): DecodedOperation =
+    case "role-changed" =>
+      decodeRole(value("role").str, s"$path.role")
+        .map(RoleChanged(LineageId(value("lineage").str), _))
+    case "chronicle-task-assigned" =>
+      val key = value("task").str
+      ChronicleTask.fromKey(key).toRight(
+        InvalidValue(s"$path.task", s"unknown Chronicle task '$key'"))
+        .map(ChronicleTaskAssigned(_, PlayerId(value("player").str)))
+    case "grand-scepter-from-box" =>
+      Right(GrandScepterFromBox(PlayerId(value("player").str)))
+    case "imperial-warbands-taken" => for
+      count <- positive(value, "count", path)
+    yield ImperialWarbandsTaken(count)
+    case "warbands-added" => for
+      force <- decodeForceKind(value("force"), s"$path.force")
+      count <- positive(value, "count", path)
+    yield WarbandsAdded(force, count)
+    case "lineage-points-scored" => for
+      points <- positive(value, "points", path)
+    yield LineagePointsScored(LineageId(value("lineage").str), points)
+    case "edifice-built" => Right(EdificeBuilt(
+      EdificeId(value("edifice").str), SiteId(value("site").str)))
+    case "suited-reserve-from-box" => for
+      suit <- decodeSuit(value("suit").str, s"$path.suit")
+      cards = value("cards").arr.toVector.map(card => DenizenId(card.str))
+      _ <- Either.cond(cards.nonEmpty, (), InvalidValue(s"$path.cards",
+        "a suited reserve takes at least one boxed card"))
+    yield SuitedReserveFromBox(suit, cards)
+
+  private def positive(value: ujson.Value, name: String, path: String)
+      : Either[WireError, Int] =
+    safeIntField(value.obj, name, path).flatMap(number => Either.cond(
+      number > 0, number, InvalidValue(s"$path.$name", "must be positive")))
+
+  private def decodeTurnOperation(value: ujson.Value,
+      path: String): DecodedOperation =
+    case "advance-visions-drawn" => Right(AdvanceVisionsDrawn)
+    case "advance-round" => Right(AdvanceRound)
+    case "usurper-limiter-removed" => Right(UsurperLimiterRemoved)
+    case "begin-turn" =>
+      val key = value("phase").str
+      Phase.fromKey(key).toRight(
+        InvalidValue(s"$path.phase", s"unknown phase '$key'"))
+        .map(BeginTurn(PlayerId(value("playerId").str), _))
+    case "enter-phase" =>
+      val key = value("phase").str
+      Phase.fromKey(key).toRight(
+        InvalidValue(s"$path.phase", s"unknown phase '$key'"))
+        .map(EnterPhase.apply)
+    case "set-oathkeeper" => Right(decodeSetOathkeeper(value))
+    case "set-oathkeeper-goal" => decodeSetOathkeeperGoal(value, path)
+    case "chronicle-updated" =>
+      decodeChronicle(value("chronicle"), s"$path.chronicle")
+        .map(ChronicleUpdated.apply)
+    case "record-power-use" => for
+      timing <- decodePowerTiming(value("timing").str, s"$path.timing")
+      source <- (if value.obj.contains("siteId") then
+          Right(PowerSourceRef.Site(SiteId(value("siteId").str)))
+        else if value.obj.contains("bannerKey") then
+          Banner.fromKey(value("bannerKey").str).map(PowerSourceRef.Banner(_))
+            .toRight(InvalidValue(s"$path.bannerKey", "unknown banner"))
+        else GameEventJsonSupport.cardIdOfKind(value("cardKind").str,
+          value("cardId").str, s"$path.cardKind").map(PowerSourceRef.Card.apply)
+        ): Either[WireError, PowerSourceRef]
+    yield RecordPowerUse(PowerUseRef(timing, source,
+      PowerId(value("powerId").str)))
+    case "record-campaign-result" =>
+      decodeCampaignResult(value("result"), s"$path.result")
+        .map(RecordCampaignResult(_))
+    case "queue-procedure" =>
+      decodeQueued(value("entry"), s"$path.entry")
+        .map(QueueProcedure(_, value("atFront").bool))
+    case "modify-dice-pool" =>
+      decodeSignedInt(value("delta"), s"$path.delta")
+        .map(delta => ModifyDicePool(PoolKey(value("pool").str), delta))
+    case "roll" => decodeDiceKind(value("die").str, s"$path.die").map(die =>
+      Roll(PoolKey(value("pool").str), DiceSpec(die)))
+    case "modify-roll-outcome" => for
+      skulls <- decodeOptionalSignedInt(value("skulls"), s"$path.skulls")
+      score <- decodeOptionalSignedInt(value("score"), s"$path.score")
+    yield ModifyRollOutcome(PoolKey(value("pool").str), skulls, score)
+    case "reroll" => for
+      indices <- traverse(value("indices").arr.zipWithIndex.toVector)({
+        case (index, at) => decodeSignedInt(index, s"$path.indices[$at]") })
+      faces <- decodeRerolledFaces(value, path)
+    yield Reroll(PoolKey(value("pool").str), indices, faces)
+    case "set-die-faces" => traverse(value("faces").arr.toVector)(face =>
+      decodeDieFace(face.str, s"$path.faces")).map(faces =>
+      SetDieFaces(PoolKey(value("pool").str), faces))
+    case "defer" =>
+      traverse(value("ops").arr.zipWithIndex.toVector)({
+        case (operation, index) =>
+          decodeOperation(operation, s"$path.ops[$index]") })
+        .map(Defer(DeferralKey(value("key").str), _))
+    case "take-deferred" =>
+      Right(TakeDeferred(DeferralKey(value("key").str)))
+    case "act-as-if" => Right(ActAsIf(SiteId(value("siteId").str)))
+    case "act-as-if-advisers" =>
+      Right(ActAsIfAdvisers(PlayerId(value("playerId").str)))
+    case "track-pawn" => Right(TrackPawn(PlayerId(value("holder").str),
+      PlayerId(value("target").str)))
+    case "clear-tracked-pawn" =>
+      Right(ClearTrackedPawn(PlayerId(value("holder").str)))
+    case "open-pick" => DecisionAnswerCodec.decodeRef(value("option"),
+      s"$path.option").map(OpenPick(value("decisionId").str, _,
+        value("label").strOpt))
+    case "close-pick" => Right(ClosePick())

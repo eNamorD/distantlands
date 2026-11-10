@@ -25,7 +25,7 @@
 - Import rules:
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first.
@@ -55,35 +55,35 @@
 
 | File | Responsibility |
 |---|---|
-| Create `src/main/scala/oathdigital/gameplay/powers/action/Tutor.scala` | Tutor. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/ShiftingMap.scala` | Shifting Map. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/DemonTail.scala` | Demon Tail. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/WizardSchool.scala` | Wizard School. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/SpiritSnare.scala` | Spirit Snare. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/ClayRattle.scala` | Clay Rattle. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala` | Registers this slice's phase powers. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala` | Adds the group. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/cardplay/FavorBankChoice.scala` | Visible to all of `powers`. |
-| Modify `src/main/scala/oathdigital/model/ActionValues.scala` | `SearchSource.name`. |
-| Modify `src/main/scala/oathdigital/model/Cards.scala` | `CardZones.pile` and `CardZones.withPile`. |
-| Modify `src/main/scala/oathdigital/model/CoreOperations.scala` | The `Shuffle` operation. |
-| Create `src/main/scala/oathdigital/gameplay/operations/PileOperations.scala` | Applies a `Shuffle`. |
-| Modify `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala` | Dispatches `Shuffle`. |
-| Modify `src/main/scala/oathdigital/gameplay/walker/WalkerDice.scala` | `shuffle`, and the placeholder's identity order. |
-| Create `src/main/scala/oathdigital/gameplay/walker/WalkerShuffles.scala` | Fills a declared `Shuffle`'s order. |
-| Modify `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala` | Runs a declared `Shuffle` through `WalkerShuffles`. |
-| Modify `src/main/scala/oathdigital/application/GameRandomPorts.scala` | The production shuffle. |
-| Modify `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala` | Encodes and decodes `Shuffle`. |
-| Modify `src/main/scala/oathdigital/model/PowerNotes.scala` | `NoteArg.Pile`. |
-| Modify `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala` | Encodes and decodes `NoteArg.Pile`. |
-| Modify `src/main/scala/oathdigital/application/gamelog/PowerLines.scala` | Renders `NoteArg.Pile`. |
-| Modify `src/test/scala/oathdigital/gameplay/powers/NoteText.scala` | Reads `NoteArg.Pile` plainly. |
-| Create one suite per card in `src/test/scala/oathdigital/gameplay/powers/action/` | One per card. |
-| Create `src/test/scala/oathdigital/gameplay/operations/ShuffleOperationSuite.scala` | The `Shuffle` write. |
-| Modify `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala` | `Shuffle` and `NoteArg.Pile` round trips. |
-| Modify `src/test/scala/oathdigital/application/WalkerDiceAdapterSuite.scala` | The production shuffle. |
-| Modify `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala` | The pile rendering. |
-| Modify `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala` | Pins the six cards. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/Tutor.scala` | Tutor. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/ShiftingMap.scala` | Shifting Map. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/DemonTail.scala` | Demon Tail. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/WizardSchool.scala` | Wizard School. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/SpiritSnare.scala` | Spirit Snare. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/ClayRattle.scala` | Clay Rattle. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala` | Registers this slice's phase powers. |
+| Modify `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala` | Adds the group. |
+| Modify `src/main/scala/distantlands/gameplay/powers/cardplay/FavorBankChoice.scala` | Visible to all of `powers`. |
+| Modify `src/main/scala/distantlands/model/ActionValues.scala` | `SearchSource.name`. |
+| Modify `src/main/scala/distantlands/model/Cards.scala` | `CardZones.pile` and `CardZones.withPile`. |
+| Modify `src/main/scala/distantlands/model/CoreOperations.scala` | The `Shuffle` operation. |
+| Create `src/main/scala/distantlands/gameplay/operations/PileOperations.scala` | Applies a `Shuffle`. |
+| Modify `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala` | Dispatches `Shuffle`. |
+| Modify `src/main/scala/distantlands/gameplay/walker/WalkerDice.scala` | `shuffle`, and the placeholder's identity order. |
+| Create `src/main/scala/distantlands/gameplay/walker/WalkerShuffles.scala` | Fills a declared `Shuffle`'s order. |
+| Modify `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala` | Runs a declared `Shuffle` through `WalkerShuffles`. |
+| Modify `src/main/scala/distantlands/application/GameRandomPorts.scala` | The production shuffle. |
+| Modify `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` | Encodes and decodes `Shuffle`. |
+| Modify `src/main/scala/distantlands/model/PowerNotes.scala` | `NoteArg.Pile`. |
+| Modify `src/main/scala/distantlands/serialization/WalkerEventCodec.scala` | Encodes and decodes `NoteArg.Pile`. |
+| Modify `src/main/scala/distantlands/application/gamelog/PowerLines.scala` | Renders `NoteArg.Pile`. |
+| Modify `src/test/scala/distantlands/gameplay/powers/NoteText.scala` | Reads `NoteArg.Pile` plainly. |
+| Create one suite per card in `src/test/scala/distantlands/gameplay/powers/action/` | One per card. |
+| Create `src/test/scala/distantlands/gameplay/operations/ShuffleOperationSuite.scala` | The `Shuffle` write. |
+| Modify `src/test/scala/distantlands/serialization/GameEventWireSuite.scala` | `Shuffle` and `NoteArg.Pile` round trips. |
+| Modify `src/test/scala/distantlands/application/WalkerDiceAdapterSuite.scala` | The production shuffle. |
+| Modify `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala` | The pile rendering. |
+| Modify `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala` | Pins the six cards. |
 | Modify `docs/ROADMAP.md` | Records the slice. |
 
 ---
@@ -91,9 +91,9 @@
 ### Task 1: Tutor, Shifting Map, Demon Tail and Wizard School
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Tutor.scala`, `ShiftingMap.scala`, `DemonTail.scala`, `WizardSchool.scala`, `SelfActionPowers.scala` (all in `gameplay/powers/action/`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/TutorSuite.scala`, `ShiftingMapSuite.scala`, `DemonTailSuite.scala`, `WizardSchoolSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Tutor.scala`, `ShiftingMap.scala`, `DemonTail.scala`, `WizardSchool.scala`, `SelfActionPowers.scala` (all in `gameplay/powers/action/`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/TutorSuite.scala`, `ShiftingMapSuite.scala`, `DemonTailSuite.scala`, `WizardSchoolSuite.scala`
 
 **Interfaces:**
 - Consumes: `PaidAction(idValue: String, cost: Cost)`, `NoteSupport.gainedKey(name)`, `NoteSupport.gainNote(key, source, player, unit, read)(states)`, `NoteSupport.secrets`, `NoteSupport.supply`, `Gain.Secrets(player, amount)`, `GainSupply(player, amount)`, `EnterPhase(Phase.Rest)`.
@@ -105,11 +105,11 @@
 `TutorSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class TutorSuite extends munit.FunSuite:
   import PaidActionHarness._
@@ -155,11 +155,11 @@ class TutorSuite extends munit.FunSuite:
 `ShiftingMapSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class ShiftingMapSuite extends munit.FunSuite:
   import PaidActionHarness._
@@ -205,11 +205,11 @@ class ShiftingMapSuite extends munit.FunSuite:
 `DemonTailSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class DemonTailSuite extends munit.FunSuite:
   import PaidActionHarness._
@@ -257,12 +257,12 @@ class DemonTailSuite extends munit.FunSuite:
 `WizardSchoolSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
 
 class WizardSchoolSuite extends munit.FunSuite:
   import PaidActionHarness._
@@ -308,7 +308,7 @@ class WizardSchoolSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.TutorSuite oathdigital.gameplay.powers.action.ShiftingMapSuite oathdigital.gameplay.powers.action.DemonTailSuite oathdigital.gameplay.powers.action.WizardSchoolSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.TutorSuite distantlands.gameplay.powers.action.ShiftingMapSuite distantlands.gameplay.powers.action.DemonTailSuite distantlands.gameplay.powers.action.WizardSchoolSuite"`
 Expected: compile failure, "Not found: Tutor" (and the other three).
 
 - [ ] **Step 3: Write the four powers**
@@ -316,10 +316,10 @@ Expected: compile failure, "Not found: Tutor" (and the other three).
 `Tutor.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Tutor (card 69, adviser-only), ACTION: place 1 favor and 1 secret on this
   * card, then gain 1 secret from the shared bank, as Elders does. Its own
@@ -340,10 +340,10 @@ case object Tutor extends PaidAction("denizen.tutor",
 `ShiftingMap.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Shifting Map (relic R17), ACTION: place 1 secret on this relic, then gain
   * 1 Supply, up to the track's maximum. Its own line reads the Supply the
@@ -365,10 +365,10 @@ case object ShiftingMap extends PaidAction("relic.shifting-map",
 `DemonTail.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Demon Tail (relic R46), ACTION: burn 3 secrets, then gain 2 Supply, up to
   * the track's maximum. Its own line reads the Supply the track allowed, as
@@ -390,10 +390,10 @@ case object DemonTail extends PaidAction("relic.demon-tail",
 `WizardSchool.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Wizard School (card 34, site-only), ACTION: place 1 favor on this card,
   * gain 1 secret, then end the Act phase with `EnterPhase(Rest)`, as Murky
@@ -422,12 +422,12 @@ case object WizardSchool extends PaidAction("denizen.wizard-school",
 `SelfActionPowers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powerresolver.PhasePower
 
 /** The phase powers of catalog batch 2's slice 3, registered by
-  * [[oathdigital.gameplay.powers.PhasePowerCatalog]] through this one object,
+  * [[distantlands.gameplay.powers.PhasePowerCatalog]] through this one object,
   * like [[DiceAndRelicDrawPowers]].
   */
 object SelfActionPowers:
@@ -438,7 +438,7 @@ object SelfActionPowers:
 In `PhasePowerCatalog.scala`, change the action import to:
 
 ```scala
-import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, MagicWaterskin, MovementPowers, SelfActionPowers, TargetPowers, WaysideInn}
+import distantlands.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, MagicWaterskin, MovementPowers, SelfActionPowers, TargetPowers, WaysideInn}
 ```
 
 and add the group after `MovementPowers.forCatalog(catalog) ++`:
@@ -457,16 +457,16 @@ Expected: PASS, 18 tests.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/Tutor.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/ShiftingMap.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/DemonTail.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/WizardSchool.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala \
-  src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/TutorSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/ShiftingMapSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/DemonTailSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/WizardSchoolSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/Tutor.scala \
+  src/main/scala/distantlands/gameplay/powers/action/ShiftingMap.scala \
+  src/main/scala/distantlands/gameplay/powers/action/DemonTail.scala \
+  src/main/scala/distantlands/gameplay/powers/action/WizardSchool.scala \
+  src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala \
+  src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/action/TutorSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/ShiftingMapSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/DemonTailSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/WizardSchoolSuite.scala
 git commit -m "feat(powers): Tutor, Shifting Map, Demon Tail and Wizard School"
 ```
 
@@ -475,9 +475,9 @@ git commit -m "feat(powers): Tutor, Shifting Map, Demon Tail and Wizard School"
 ### Task 2: Spirit Snare
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/SpiritSnare.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/FavorBankChoice.scala`, `src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/SpiritSnareSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/SpiritSnare.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/FavorBankChoice.scala`, `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/SpiritSnareSuite.scala`
 
 **Interfaces:**
 - Consumes: `FavorBankChoice.take(ready, player, amount, decisionId, heading): Vector[Operation]` (one stocked bank is taken unasked, none gives nothing), `NoteSupport.took`, `NoteSupport.tookNote(source, player)(states)`.
@@ -489,12 +489,12 @@ git commit -m "feat(powers): Tutor, Shifting Map, Demon Tail and Wizard School"
 `SpiritSnareSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class SpiritSnareSuite extends munit.FunSuite:
   import PowerFixture._
@@ -567,7 +567,7 @@ class SpiritSnareSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SpiritSnareSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SpiritSnareSuite"`
 Expected: compile failure, "Not found: SpiritSnare".
 
 - [ ] **Step 3: Widen `FavorBankChoice`**
@@ -588,11 +588,11 @@ private[powers] object FavorBankChoice:
 `SpiritSnare.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.gameplay.powers.cardplay.FavorBankChoice
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.gameplay.powers.cardplay.FavorBankChoice
+import distantlands.model._
 
 /** Spirit Snare (card 33), ACTION: place 1 secret on this card, then take 1
   * favor from a favor bank the player chooses. One stocked bank is taken
@@ -633,16 +633,16 @@ In `SelfActionPowers.scala`, append `SpiritSnare`:
 
 - [ ] **Step 5: Run the suite, then the bank-take neighbours**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SpiritSnareSuite oathdigital.gameplay.powers.cardplay.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SpiritSnareSuite distantlands.gameplay.powers.cardplay.*"`
 Expected: PASS. Vow of Obedience's and Book Binders' suites stay green.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/SpiritSnare.scala \
-  src/main/scala/oathdigital/gameplay/powers/cardplay/FavorBankChoice.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/SpiritSnareSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/SpiritSnare.scala \
+  src/main/scala/distantlands/gameplay/powers/cardplay/FavorBankChoice.scala \
+  src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/action/SpiritSnareSuite.scala
 git commit -m "feat(powers): Spirit Snare takes a favor from a bank the player chooses"
 ```
 
@@ -651,15 +651,15 @@ git commit -m "feat(powers): Spirit Snare takes a favor from a bank the player c
 ### Task 3: The `Shuffle` operation (N4)
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ActionValues.scala`, `src/main/scala/oathdigital/model/Cards.scala`, `src/main/scala/oathdigital/model/CoreOperations.scala`
-- Create: `src/main/scala/oathdigital/gameplay/operations/PileOperations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerDice.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/WalkerShuffles.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Modify: `src/main/scala/oathdigital/application/GameRandomPorts.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala`
-- Test: create `src/test/scala/oathdigital/gameplay/operations/ShuffleOperationSuite.scala`; modify `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`, `src/test/scala/oathdigital/application/WalkerDiceAdapterSuite.scala`
+- Modify: `src/main/scala/distantlands/model/ActionValues.scala`, `src/main/scala/distantlands/model/Cards.scala`, `src/main/scala/distantlands/model/CoreOperations.scala`
+- Create: `src/main/scala/distantlands/gameplay/operations/PileOperations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerDice.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/WalkerShuffles.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Modify: `src/main/scala/distantlands/application/GameRandomPorts.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
+- Test: create `src/test/scala/distantlands/gameplay/operations/ShuffleOperationSuite.scala`; modify `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, `src/test/scala/distantlands/application/WalkerDiceAdapterSuite.scala`
 
 **Interfaces:**
 - Consumes: `SearchSource` (`WorldDeck`, `RegionalDiscard(region)`), `CardZones.discard(region)`, `ReadyGame.updateCurrent`, `OperationError.InvalidDescription(detail)`, the codec helpers `encodeSearchSource`, `decodeSearchSource`, `encodeWorldCardId`, `decodeWorldCardId`, `traverse` (all reachable from `WalkerOperationCodec` through its `GameEventJsonSupport` self-type).
@@ -674,10 +674,10 @@ git commit -m "feat(powers): Spirit Snare takes a favor from a bank the player c
 `ShuffleOperationSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.initialReady
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.initialReady
+import distantlands.model._
 
 class ShuffleOperationSuite extends munit.FunSuite:
   private val executor = new OperationExecutor()
@@ -735,7 +735,7 @@ In `WalkerDiceAdapterSuite.scala`, add:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.ShuffleOperationSuite oathdigital.serialization.GameEventWireSuite oathdigital.application.WalkerDiceAdapterSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.ShuffleOperationSuite distantlands.serialization.GameEventWireSuite distantlands.application.WalkerDiceAdapterSuite"`
 Expected: compile failure, "Not found: Shuffle".
 
 - [ ] **Step 3: Name the piles and read them**
@@ -795,9 +795,9 @@ final case class Shuffle(pile: SearchSource,
 `PileOperations.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The `Shuffle` write: a pile Search draws from takes the order the walker
   * generated. The order must hold exactly the pile's cards, so a recorded
@@ -832,9 +832,9 @@ In `OperationApplication.scala`, in `applyNonMoveLeaves`, after the `AdvanceVisi
 Replace `WalkerDice.scala` with:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
+import distantlands.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
   OathViolation}
 
 /** Where the walker's randomness comes from: an automatic `Roll`'s faces,
@@ -881,9 +881,9 @@ object WalkerDice:
 `WalkerShuffles.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{OathViolation, ReadyGame, Shuffle}
+import distantlands.model.{OathViolation, ReadyGame, Shuffle}
 
 /** Fills a declared `Shuffle`'s order from the walker's random source. Split
   * out of [[ProcedureWalker]], which is close to the project's per-file
@@ -903,7 +903,7 @@ private[walker] object WalkerShuffles:
         s"shuffle source gave $order for a pile of ${cards.size} cards")))
 ```
 
-In `ProcedureWalker.scala`, add `Shuffle` to the long `oathdigital.model` import (between `RollMode, ` and `SpendSupply`), then in the `case None =>` branch's `leaf match`, insert before `case _: Decide | _: Roll => Right(Park(path, ctx))`:
+In `ProcedureWalker.scala`, add `Shuffle` to the long `distantlands.model` import (between `RollMode, ` and `SpendSupply`), then in the `case None =>` branch's `leaf match`, insert before `case _: Decide | _: Roll => Right(Park(path, ctx))`:
 
 ```scala
           case shuffle: Shuffle if shuffle.order.isEmpty =>
@@ -977,25 +977,25 @@ If `WireError` is not already in scope in this file, import it from where `Inval
 
 - [ ] **Step 8: Run the tests to verify they pass**
 
-Run: the Step 2 command, then `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.gameplay.CampaignProcedureSuite"`.
+Run: the Step 2 command, then `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.gameplay.CampaignProcedureSuite"`.
 Expected: PASS. The walker and Campaign suites prove the dice port change left automatic rolls alone.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ActionValues.scala \
-  src/main/scala/oathdigital/model/Cards.scala \
-  src/main/scala/oathdigital/model/CoreOperations.scala \
-  src/main/scala/oathdigital/gameplay/operations/PileOperations.scala \
-  src/main/scala/oathdigital/gameplay/operations/OperationApplication.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerDice.scala \
-  src/main/scala/oathdigital/gameplay/walker/WalkerShuffles.scala \
-  src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala \
-  src/main/scala/oathdigital/application/GameRandomPorts.scala \
-  src/main/scala/oathdigital/serialization/WalkerOperationCodec.scala \
-  src/test/scala/oathdigital/gameplay/operations/ShuffleOperationSuite.scala \
-  src/test/scala/oathdigital/serialization/GameEventWireSuite.scala \
-  src/test/scala/oathdigital/application/WalkerDiceAdapterSuite.scala
+git add src/main/scala/distantlands/model/ActionValues.scala \
+  src/main/scala/distantlands/model/Cards.scala \
+  src/main/scala/distantlands/model/CoreOperations.scala \
+  src/main/scala/distantlands/gameplay/operations/PileOperations.scala \
+  src/main/scala/distantlands/gameplay/operations/OperationApplication.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerDice.scala \
+  src/main/scala/distantlands/gameplay/walker/WalkerShuffles.scala \
+  src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
+  src/main/scala/distantlands/application/GameRandomPorts.scala \
+  src/main/scala/distantlands/serialization/WalkerOperationCodec.scala \
+  src/test/scala/distantlands/gameplay/operations/ShuffleOperationSuite.scala \
+  src/test/scala/distantlands/serialization/GameEventWireSuite.scala \
+  src/test/scala/distantlands/application/WalkerDiceAdapterSuite.scala
 git commit -m "feat(engine): a Shuffle operation whose order the walker draws and the journal records"
 ```
 
@@ -1004,10 +1004,10 @@ git commit -m "feat(engine): a Shuffle operation whose order the walker draws an
 ### Task 4: `NoteArg.Pile` and Clay Rattle
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala`, `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala`, `src/main/scala/oathdigital/application/gamelog/PowerLines.scala`, `src/test/scala/oathdigital/gameplay/powers/NoteText.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/ClayRattle.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala`
-- Test: create `src/test/scala/oathdigital/gameplay/powers/action/ClayRattleSuite.scala`; modify `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`, `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala`, `src/main/scala/distantlands/serialization/WalkerEventCodec.scala`, `src/main/scala/distantlands/application/gamelog/PowerLines.scala`, `src/test/scala/distantlands/gameplay/powers/NoteText.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/ClayRattle.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala`
+- Test: create `src/test/scala/distantlands/gameplay/powers/action/ClayRattleSuite.scala`; modify `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 3's `Shuffle`, `SearchSource.name`, `WalkerDice.shuffle`; `NoteSupport.answer(states, decisionId)`; `Branch(select: (ReadyGame, PendingTree) => Vector[Operation])`; `DecisionQuery.ChooseOne(options, heading = Some(...))`; `DecisionOption.Button(ref, label)`.
@@ -1019,14 +1019,14 @@ git commit -m "feat(engine): a Shuffle operation whose order the walker draws an
 `ClayRattleSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerDice}
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerDice}
+import distantlands.model._
 
 class ClayRattleSuite extends munit.FunSuite:
   import PaidActionHarness._
@@ -1149,7 +1149,7 @@ In `GameLogPowerLinesSuite.scala`, after the test "a card list reads as one phra
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ClayRattleSuite oathdigital.serialization.GameEventWireSuite oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ClayRattleSuite distantlands.serialization.GameEventWireSuite distantlands.application.gamelog.GameLogPowerLinesSuite"`
 Expected: compile failure, "Not found: ClayRattle" and "value Pile is not a member of object NoteArg".
 
 - [ ] **Step 3: Add `NoteArg.Pile`**
@@ -1193,9 +1193,9 @@ In the test file `NoteText.scala`, add to `plain` after the `Banner` arm:
 `ClayRattle.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Clay Rattle (relic R47), ACTION: place 2 secrets on this relic, then
   * shuffle the world deck or any region's discard pile.
@@ -1250,21 +1250,21 @@ In `SelfActionPowers.scala`, append `ClayRattle`:
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: the Step 2 command, then `./sbtw "testOnly oathdigital.gameplay.powers.*"`.
+Run: the Step 2 command, then `./sbtw "testOnly distantlands.gameplay.powers.*"`.
 Expected: PASS. `PowerNoteCatalogSuite` accepts the new template, which starts with an argument.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/PowerNotes.scala \
-  src/main/scala/oathdigital/serialization/WalkerEventCodec.scala \
-  src/main/scala/oathdigital/application/gamelog/PowerLines.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/ClayRattle.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/NoteText.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/ClayRattleSuite.scala \
-  src/test/scala/oathdigital/serialization/GameEventWireSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala
+git add src/main/scala/distantlands/model/PowerNotes.scala \
+  src/main/scala/distantlands/serialization/WalkerEventCodec.scala \
+  src/main/scala/distantlands/application/gamelog/PowerLines.scala \
+  src/main/scala/distantlands/gameplay/powers/action/ClayRattle.scala \
+  src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/NoteText.scala \
+  src/test/scala/distantlands/gameplay/powers/action/ClayRattleSuite.scala \
+  src/test/scala/distantlands/serialization/GameEventWireSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala
 git commit -m "feat(powers): Clay Rattle shuffles a pile the player chooses"
 ```
 
@@ -1273,7 +1273,7 @@ git commit -m "feat(powers): Clay Rattle shuffles a pile the player chooses"
 ### Task 5: Pin the cards, record the slice, run the gates
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala`, `docs/ROADMAP.md`
+- Modify: `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala`, `docs/ROADMAP.md`
 
 - [ ] **Step 1: Pin the six cards**
 
@@ -1287,7 +1287,7 @@ In `PowerImplementationStatusSuite.scala`, after the test "catalog batch 2's bat
       .foreach(id => assert(implemented(PowerId(id)), id))
 ```
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.PowerImplementationStatusSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.PowerImplementationStatusSuite"`
 Expected: PASS.
 
 - [ ] **Step 2: Record the slice**
@@ -1313,7 +1313,7 @@ Expected: both pass.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala \
+git add src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala \
   docs/ROADMAP.md
 git commit -m "docs: record catalog batch 2 slice 3a"
 ```

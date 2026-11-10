@@ -1,0 +1,71 @@
+package distantlands.gameplay.powers.title
+
+import distantlands.catalog.{AdviserOnly, Denizen, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
+  PowerCtx, Transform}
+import distantlands.gameplay.{NoteSupport, PowerAccess}
+import distantlands.model._
+
+object ChaosCultCard extends Denizen(DenizenId("101"), "Chaos Cult", Suit.Discord) with AdviserOnly:
+  val power = PrintedPower(PowerId("denizen.chaos-cult"),
+    persistent = true, cost = Cost.free,
+    text = "After another player takes the Oathkeeper title, you take " +
+      "[favor] from them.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Chaos Cult (card 101, adviser-only), a rule of a faceup adviser: "After
+  * another player takes the Oathkeeper title, you take [favor] from them."
+  *
+  * A `Transform` on the title-change window (catalog batch 2, N7) appends a
+  * take after the change. The take reads the new holder live, so it runs
+  * after the `SetOathkeeper` of either the forced transfer or the holder's
+  * choice. It takes 1 favor with `Take` when the new holder is another
+  * player with favor, and nothing otherwise. The appended nodes depend only
+  * on who holds Chaos Cult faceup, which a title change does not alter, so
+  * the fold is the same while the choice is parked.
+  *
+  * The card is catalogued persistent, a rule rather than a modifier, so its
+  * resolution is the trait default, `Automatic`: it fires on every title
+  * change.
+  */
+case object ChaosCult extends ContributingPower:
+  val cardId: DenizenId = ChaosCultCard.id
+  val id: PowerId = ChaosCultCard.power.id
+  val Favor: Int = 1
+  private val notes = NoteSet(id)
+  /** "{Red} took {1 favor} from {Blue}." */
+  val took: NoteKey = notes.key("took", Vector(NotePart.Arg(0),
+    NotePart.Text(" took "), NotePart.Arg(1), NotePart.Text(" from "),
+    NotePart.Arg(2), NotePart.Text(".")))
+
+  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  override def applicable(ctx: PowerCtx): Boolean = holderOf(ctx.state).nonEmpty
+
+  def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.OathkeeperTitleChange -> Vector(Transform((ctx, children) =>
+      holderOf(ctx.state).fold(children)(holder => children ++ Vector(
+        BuildOps((live, _) => Right(take(live, holder))),
+        Note(id, tookNote(holder)))))))
+
+  private def holderOf(ready: ReadyGame): Option[PlayerId] =
+    PowerAccess.faceupAdviserHolder(ready, cardId)
+
+  private def take(ready: ReadyGame, holder: PlayerId): Vector[CoreOperation] =
+    ready.game.current.title.holder.filter(_ != holder)
+      .flatMap(newHolder => ready.game.current.player(newHolder))
+      .filter(_.board.favor > 0).toVector.map(from => Take(Piece.Favor(Favor),
+        holder, Location.PlayArea(from.player), Location.PlayArea(holder)))
+
+  /** What the holder gained in the take step, from the new Oathkeeper. */
+  private def tookNote(holder: PlayerId)(states: NoteStates)
+      : Option[LogNote] = for
+    step <- states.previous
+    amount = NoteSupport.favor(step, holder)
+    if amount > 0
+    from <- step._2.game.current.title.holder
+  yield NoteSupport.toBank(step, holder)(took(PowerSourceRef.Card(cardId),
+    NoteArg.Player(holder), NoteArg.Amount(amount, NoteUnit.Favor),
+    NoteArg.Player(from)))

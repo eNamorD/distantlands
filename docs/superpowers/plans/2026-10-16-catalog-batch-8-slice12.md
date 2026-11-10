@@ -36,7 +36,7 @@
 - `docs/superpowers/specs/2026-10-12-catalog-batch-8-design.md`: "The bar" (the slice 12 bullet), "Slice 12: Card play at another site" and "Testing".
 - `docs/superpowers/specs/2026-10-12-catalog-batch-8-rulings.md`: the slice 12 entry. Task 6 replaces it with this plan's rulings, which are listed under "Rulings" below.
 - `docs/superpowers/specs/2026-10-05-card-play-slots-design.md`, if present, for the slot builder and the placement procedure. The doc comments of `CardSlots` and `CardPlayProcedure` restate both.
-- `src/main/scala/oathdigital/gameplay/powers/search/CropRotation.scala`: the pattern each new card follows.
+- `src/main/scala/distantlands/gameplay/powers/search/CropRotation.scala`: the pattern each new card follows.
 
 **Starts from:** `main` at `466e619b` ("slice 11 done") or later. Where this plan quotes code, read the file as it is on `main` and apply the change to what is there.
 
@@ -86,7 +86,7 @@ The product owner settled these on 2026-10-16. They override the slice 12 entry 
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -100,7 +100,7 @@ The product owner settled these on 2026-10-16. They override the slice 12 entry 
   - To read a parked decision, match `ParkedNode.Decision(_, decide, _)` and compare `decide.decisionId`. The case's first field is the procedure, not the decision id.
   - Board a site's ruler with `warbandsAt(site, player, 1)`, and assert the ruler (`PowerAccess.ruledSites`) before relying on it.
   - The quiet table (`Table.start`) holds no warbands, cards or relics at any site. p1's pawn is at Ancient City (Cradle, room for three, no Homeland). Deep Woods is the Beast Homeland with room for three, Broken Peaks has room for one, and Buried Giant has room for one. Read a site's region from `ready.game.current.map.regionOf(site)` rather than assuming it.
-- **Note keys** are declared through a `NoteSet`, as plain `val`s after the set. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`, and check that the diff holds only the keys the task names.
+- **Note keys** are declared through a `NoteSet`, as plain `val`s after the set. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`, and check that the diff holds only the keys the task names.
 - **Names, exactly:**
   - `DecisionOptionRef.SiteRelicSlot(site: SiteId, index: Int)`, kind `"site-relic-slot"`, wire id `"{site}:{index}"`. `DecisionOption.SiteRelicSlot(ref)`.
   - `DecisionOption.Burying(option: DecisionOption, card: CardId)`.
@@ -122,21 +122,21 @@ The product owner settled these on 2026-10-16. They override the slice 12 entry 
 A seam with no card behind it yet. A site relic gets a positional ref, and the projection and the board draw relics in their places.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionDtos.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ChoiceWords.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/SiteCardPresentation.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardHomes.scala`
-- Test: `src/test/scala/oathdigital/model/DecisionOptionRefSuite.scala`
-- Test: `src/test/scala/oathdigital/application/SlotOptionRowsSuite.scala`
-- Test: `src/test/scala/oathdigital/application/GameApplicationServiceProjectionSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/ServerUiSupportSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/BoardOptionsRenderSuite.scala`
-- Update as the compiler and the wire tests demand: `frontend/src/test/scala/oathdigital/frontend/HttpGameClientSuite.scala`, `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`, `src/test/scala/oathdigital/application/GameServerGatewaySubmitBeginSuite.scala`, `src/test/scala/oathdigital/application/GameApplicationServiceReopenSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ChoiceWords.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/SiteCardPresentation.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardHomes.scala`
+- Test: `src/test/scala/distantlands/model/DecisionOptionRefSuite.scala`
+- Test: `src/test/scala/distantlands/application/SlotOptionRowsSuite.scala`
+- Test: `src/test/scala/distantlands/application/GameApplicationServiceProjectionSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/ServerUiSupportSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/BoardOptionsRenderSuite.scala`
+- Update as the compiler and the wire tests demand: `frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala`, `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`, `src/test/scala/distantlands/application/GameServerGatewaySubmitBeginSuite.scala`, `src/test/scala/distantlands/application/GameApplicationServiceReopenSuite.scala`
 
 **Interfaces:**
 - Produces: `DecisionOptionRef.SiteRelicSlot(site, index)`, `DecisionOption.SiteRelicSlot(ref)`, `SiteRelicsProjection(relics)` with `facedownCount` and `knownRelics` kept as derived `def`s, and the board key `site-relic-slot:{site}:{index}` on every site relic.
@@ -228,7 +228,7 @@ The suite's table fixture must hold one hidden relic at `woods`. Add it where th
 
 - [ ] **Step 2: Run them and watch them fail**
 
-Run: `./sbtw "testOnly oathdigital.model.DecisionOptionRefSuite oathdigital.application.SlotOptionRowsSuite" "frontend/testOnly oathdigital.frontend.BoardOptionsRenderSuite"`
+Run: `./sbtw "testOnly distantlands.model.DecisionOptionRefSuite distantlands.application.SlotOptionRowsSuite" "frontend/testOnly distantlands.frontend.BoardOptionsRenderSuite"`
 Expected: compile errors naming `SiteRelicSlot`.
 
 - [ ] **Step 3: The ref and the option**
@@ -381,28 +381,28 @@ The second one keeps its body; `knownRelics` is now the derived `def`.
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.model.DecisionOptionRefSuite oathdigital.application.*" "frontend/test" "sharedJVM/test"`. If the shared project has another name, take it from `build.sbt`.
+Run: `./sbtw "testOnly distantlands.model.DecisionOptionRefSuite distantlands.application.*" "frontend/test" "sharedJVM/test"`. If the shared project has another name, take it from `build.sbt`.
 Expected: all pass, with the 5 new server tests and 1 new frontend test.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Decisions.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala \
-  src/main/scala/oathdigital/application/GamePresentationProjector.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/application/gamelog/ChoiceWords.scala \
-  frontend/src/main/scala/oathdigital/frontend/SiteCardPresentation.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala \
-  frontend/src/main/scala/oathdigital/frontend/BoardHomes.scala \
-  src/test/scala/oathdigital/model/DecisionOptionRefSuite.scala \
-  src/test/scala/oathdigital/application/SlotOptionRowsSuite.scala \
-  src/test/scala/oathdigital/application/GameApplicationServiceProjectionSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ServerUiSupportSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/BoardOptionsRenderSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/HttpGameClientSuite.scala \
-  shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala
+git add src/main/scala/distantlands/model/Decisions.scala \
+  shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala \
+  src/main/scala/distantlands/application/GamePresentationProjector.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/application/gamelog/ChoiceWords.scala \
+  frontend/src/main/scala/distantlands/frontend/SiteCardPresentation.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala \
+  frontend/src/main/scala/distantlands/frontend/BoardHomes.scala \
+  src/test/scala/distantlands/model/DecisionOptionRefSuite.scala \
+  src/test/scala/distantlands/application/SlotOptionRowsSuite.scala \
+  src/test/scala/distantlands/application/GameApplicationServiceProjectionSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ServerUiSupportSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/BoardOptionsRenderSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala \
+  shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala
 git commit -m "feat(batch8): a relic at a site has a slot"
 ```
 
@@ -415,17 +415,17 @@ Add any other file the compiler made you touch, by its path.
 This is the engine seam. A play goes to any site its rules open. Permissions belong to the site, and so does the discard pile of its site cards. A test rule stands in for the cards.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ActionValues.scala` (`SearchPlacement.Site`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/CropRotation.scala`, `.../powers/search/LandWarden.scala`, `.../powers/banner/PeoplesFavorMob.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (the follow-up heading)
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala` (the "Played … to" site)
+- Modify: `src/main/scala/distantlands/model/ActionValues.scala` (`SearchPlacement.Site`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/CropRotation.scala`, `.../powers/search/LandWarden.scala`, `.../powers/banner/PeoplesFavorMob.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (the follow-up heading)
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala` (the "Played … to" site)
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Test: `src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala`, `src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala`, `src/test/scala/oathdigital/gameplay/PlacementFixture.scala`
-- Update: `src/test/scala/oathdigital/gameplay/HomelandLineSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/search/CropRotationSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMobSuite.scala`, `src/test/scala/oathdigital/testkit/PlacementPicks.scala`, and every test the compiler names for `SearchPlacement.Site` or `DiscardPermission`.
+- Test: `src/test/scala/distantlands/gameplay/CardSlotsSuite.scala`, `src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala`, `src/test/scala/distantlands/gameplay/PlacementFixture.scala`
+- Update: `src/test/scala/distantlands/gameplay/HomelandLineSuite.scala`, `src/test/scala/distantlands/gameplay/powers/search/CropRotationSuite.scala`, `src/test/scala/distantlands/gameplay/powers/banner/PeoplesFavorMobSuite.scala`, `src/test/scala/distantlands/testkit/PlacementPicks.scala`, and every test the compiler names for `SearchPlacement.Site` or `DiscardPermission`.
 
 **Interfaces:**
 - Consumes: nothing from Task 1.
@@ -563,7 +563,7 @@ Use each suite's own site value, such as `home.value` in `CropRotationSuite`.
 
 - [ ] **Step 2: Run them and watch them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.CardPlayProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardSlotsSuite distantlands.gameplay.CardPlayProcedureSuite"`
 Expected: compile errors naming `openSites`, `PlaySites` and `SearchPlacement.Site`'s arity.
 
 - [ ] **Step 3: The placement and the rules**
@@ -906,7 +906,7 @@ In `PlacementPicks.scala`, no change is needed yet; Task 4 extends `replaces`.
 
 - [ ] **Step 7: Regenerate the note keys and run the tests**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected diff in `declared-keys.txt`:
 - every `discard-first` line now reads `May discard a card at {0} first.`;
 - each `NoteSet` that includes `CardPlayRules.notes` gains a `bury-first = May bury a card at {0} first.` line.
@@ -919,23 +919,23 @@ Expected: all pass, with the 5 new tests. Fix every suite the compiler names for
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ActionValues.scala \
-  src/main/scala/oathdigital/gameplay/actions/CardPlayRules.scala \
-  src/main/scala/oathdigital/gameplay/actions/CardPlay.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/CropRotation.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/LandWarden.scala \
-  src/main/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMob.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/application/gamelog/ActionLines.scala \
+git add src/main/scala/distantlands/model/ActionValues.scala \
+  src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala \
+  src/main/scala/distantlands/gameplay/actions/CardPlay.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala \
+  src/main/scala/distantlands/gameplay/powers/search/CropRotation.scala \
+  src/main/scala/distantlands/gameplay/powers/search/LandWarden.scala \
+  src/main/scala/distantlands/gameplay/powers/banner/PeoplesFavorMob.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/application/gamelog/ActionLines.scala \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala \
-  src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala \
-  src/test/scala/oathdigital/gameplay/PlacementFixture.scala \
-  src/test/scala/oathdigital/gameplay/HomelandLineSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/CropRotationSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/banner/PeoplesFavorMobSuite.scala
+  src/test/scala/distantlands/gameplay/CardSlotsSuite.scala \
+  src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala \
+  src/test/scala/distantlands/gameplay/PlacementFixture.scala \
+  src/test/scala/distantlands/gameplay/HomelandLineSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/search/CropRotationSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/banner/PeoplesFavorMobSuite.scala
 git commit -m "feat(batch8): a card play names its site"
 ```
 
@@ -946,17 +946,17 @@ Add any other file the compiler made you touch, by its path.
 ### Task 3: Baron and New Growth
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/Baron.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/NewGrowth.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` (remove `BaronCard`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `NewGrowthCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/Baron.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/NewGrowth.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` (remove `BaronCard`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `NewGrowthCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/SearchFixture.scala` (one helper)
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (one script)
-- Create: `src/test/scala/oathdigital/gameplay/powers/search/BaronSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/search/NewGrowthSuite.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/powers/SearchFixture.scala` (one helper)
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (one script)
+- Create: `src/test/scala/distantlands/gameplay/powers/search/BaronSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/search/NewGrowthSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
 
 **Interfaces:**
 - Consumes: from Task 2, `PlaySites`, `CardPlayRules.openSites`, `DiscardPermission.lined` (`appliesAt`) and `PowerAccess.ruledSites`.
@@ -981,19 +981,19 @@ In `SearchFixture.scala`, after `placeReplacing`:
 `BaronSuite.scala` follows `CropRotationSuite`'s shape:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look,
   PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Baron (card 250), a selected Search modifier: "You may play to any site
   * you rule, and you may discard a card from that site first." */
@@ -1084,19 +1084,19 @@ class BaronSuite extends munit.FunSuite:
 `NewGrowthSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.FacedownAdviserPlay
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
+import distantlands.gameplay.FacedownAdviserPlay
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look,
   PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** New Growth (card 188), a selected Search modifier: "You may play
   * [suit-beast] and [suit-hearth] cards to any site (that has space)." */
@@ -1206,7 +1206,7 @@ In `GameLogActionLineSuite.scala`:
 
 - [ ] **Step 3: Run them and watch them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.BaronSuite oathdigital.gameplay.powers.search.NewGrowthSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.BaronSuite distantlands.gameplay.powers.search.NewGrowthSuite"`
 Expected: compile errors naming `Baron` and `NewGrowth`.
 
 - [ ] **Step 4: The powers**
@@ -1216,16 +1216,16 @@ Move `BaronCard` from `HoldingOrderDenizens.scala` into `Baron.scala`, and `NewG
 `Baron.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.{CardPlayRules, DiscardPermission,
   PlaySites}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object BaronCard extends Denizen(DenizenId("250"), "Baron", Suit.Order):
   val power = PrintedPower(PowerId("denizen.baron"),
@@ -1280,15 +1280,15 @@ object Baron:
 `NewGrowth.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.actions.PlaySites
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.actions.PlaySites
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object NewGrowthCard extends Denizen(DenizenId("188"), "New Growth",
     Suit.Beast):
@@ -1338,26 +1338,26 @@ In `ActionModifiers.forCatalog`, add `Vector(Baron.forCatalog(catalog))` and `Ve
 
 - [ ] **Step 5: Regenerate the note keys and run the tests**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected diff: `denizen.baron` gains its `discard-first` and `bury-first` lines; nothing else changes.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.* oathdigital.application.gamelog.* oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.* distantlands.application.gamelog.* distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: all pass, with 6 Baron, 5 New Growth and 1 log test new. If `PowerKindsCatalogSuite` lists the selected modifiers by id, add the two ids there.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/Baron.scala \
-  src/main/scala/oathdigital/gameplay/powers/search/NewGrowth.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
+git add src/main/scala/distantlands/gameplay/powers/search/Baron.scala \
+  src/main/scala/distantlands/gameplay/powers/search/NewGrowth.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/powers/SearchFixture.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/BaronSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/NewGrowthSuite.scala
+  src/test/scala/distantlands/gameplay/powers/SearchFixture.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/search/BaronSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/search/NewGrowthSuite.scala
 git commit -m "feat(batch8): Baron and New Growth play to other sites"
 ```
 
@@ -1368,16 +1368,16 @@ git commit -m "feat(batch8): Baron and New Growth play to other sites"
 This is the seam behind Forest Warden. A bury permission makes Replace options buries, offers relics, and asks the two follow-ups. A test bury permission stands in for the card.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala` (`DecisionOption.Burying`)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala` (`buries`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ChoiceWords.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardOptions.scala`
-- Modify: `src/test/scala/oathdigital/testkit/PlacementPicks.scala`
-- Test: `src/test/scala/oathdigital/gameplay/PlacementFixture.scala`, `src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala`, `src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala`, `src/test/scala/oathdigital/application/SlotOptionRowsSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/BoardOptionsRenderSuite.scala`, and the projection codec's round-trip suite (`shared/src/test/.../ProjectionProtocolSuite.scala`)
+- Modify: `src/main/scala/distantlands/model/Decisions.scala` (`DecisionOption.Burying`)
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala` (`buries`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ChoiceWords.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardOptions.scala`
+- Modify: `src/test/scala/distantlands/testkit/PlacementPicks.scala`
+- Test: `src/test/scala/distantlands/gameplay/PlacementFixture.scala`, `src/test/scala/distantlands/gameplay/CardSlotsSuite.scala`, `src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala`, `src/test/scala/distantlands/application/SlotOptionRowsSuite.scala`, `frontend/src/test/scala/distantlands/frontend/BoardOptionsRenderSuite.scala`, and the projection codec's round-trip suite (`shared/src/test/.../ProjectionProtocolSuite.scala`)
 
 **Interfaces:**
 - Consumes:
@@ -1560,7 +1560,7 @@ In `BoardOptionsRenderSuite.scala`:
 
 - [ ] **Step 2: Run them and watch them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.CardPlayProcedureSuite oathdigital.application.SlotOptionRowsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardSlotsSuite distantlands.gameplay.CardPlayProcedureSuite distantlands.application.SlotOptionRowsSuite"`
 Expected: compile errors naming `Burying`, `testBury` and `replacedDecisionId`.
 
 - [ ] **Step 3: The option, the projection field and the badge**
@@ -1810,21 +1810,21 @@ Expected: all pass, with the 7 new server tests, 1 new frontend test and 1 codec
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Decisions.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardSlots.scala \
-  src/main/scala/oathdigital/gameplay/actions/cardplay/CardPlayProcedure.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/application/gamelog/ChoiceWords.scala \
-  frontend/src/main/scala/oathdigital/frontend/BoardOptions.scala \
-  src/test/scala/oathdigital/testkit/PlacementPicks.scala \
-  src/test/scala/oathdigital/gameplay/PlacementFixture.scala \
-  src/test/scala/oathdigital/gameplay/CardSlotsSuite.scala \
-  src/test/scala/oathdigital/gameplay/CardPlayProcedureSuite.scala \
-  src/test/scala/oathdigital/application/SlotOptionRowsSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/BoardOptionsRenderSuite.scala \
-  shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala
+git add src/main/scala/distantlands/model/Decisions.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardSlots.scala \
+  src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/application/gamelog/ChoiceWords.scala \
+  frontend/src/main/scala/distantlands/frontend/BoardOptions.scala \
+  src/test/scala/distantlands/testkit/PlacementPicks.scala \
+  src/test/scala/distantlands/gameplay/PlacementFixture.scala \
+  src/test/scala/distantlands/gameplay/CardSlotsSuite.scala \
+  src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala \
+  src/test/scala/distantlands/application/SlotOptionRowsSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/BoardOptionsRenderSuite.scala \
+  shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala
 git commit -m "feat(batch8): the Replace path accepts a bury"
 ```
 
@@ -1833,12 +1833,12 @@ git commit -m "feat(batch8): the Replace path accepts a bury"
 ### Task 5: Forest Warden
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/search/ForestWarden.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala` (remove `ForestWardenCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/search/ForestWarden.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `ForestWardenCard`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
 - Modify: `src/test/resources/notes/declared-keys.txt` (regenerated)
-- Create: `src/test/scala/oathdigital/gameplay/powers/search/ForestWardenSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PlacementFixture.scala` (`projectedPlacement`)
+- Create: `src/test/scala/distantlands/gameplay/powers/search/ForestWardenSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PlacementFixture.scala` (`projectedPlacement`)
 
 **Interfaces:**
 - Consumes:
@@ -1850,21 +1850,21 @@ git commit -m "feat(batch8): the Replace path accepts a bury"
 - [ ] **Step 1: Write the failing suite**
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.PlacementFixture
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.operations.AncientBloodline
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
+import distantlands.gameplay.PlacementFixture
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.operations.AncientBloodline
+import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look,
   PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Forest Warden (card 218), a selected Search modifier: "If you play a
   * [suit-beast] card to a site, you may bury a card at the site first." */
@@ -1986,7 +1986,7 @@ The last test needs a projection helper. Add it to `PlacementFixture`, reading t
 
 - [ ] **Step 2: Run it and watch it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.ForestWardenSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.ForestWardenSuite"`
 Expected: compile errors naming `ForestWarden`.
 
 - [ ] **Step 3: The power**
@@ -1994,16 +1994,16 @@ Expected: compile errors naming `ForestWarden`.
 Move `ForestWardenCard` from `HoldingBeastDenizens.scala` into `ForestWarden.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.actions.{CardPlayRules, DiscardPermission,
   SiteRemoval}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object ForestWardenCard extends Denizen(DenizenId("218"), "Forest Warden",
     Suit.Beast):
@@ -2057,21 +2057,21 @@ Register it in `ActionModifiers` after `NewGrowth`.
 
 - [ ] **Step 4: Regenerate the note keys and run the tests**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected diff: `denizen.forest-warden` gains its `discard-first` and `bury-first` lines; nothing else changes.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.*"`
 Expected: all pass, with the 6 new tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/search/ForestWarden.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
+git add src/main/scala/distantlands/gameplay/powers/search/ForestWarden.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
   src/test/resources/notes/declared-keys.txt \
-  src/test/scala/oathdigital/gameplay/PlacementFixture.scala \
-  src/test/scala/oathdigital/gameplay/powers/search/ForestWardenSuite.scala
+  src/test/scala/distantlands/gameplay/PlacementFixture.scala \
+  src/test/scala/distantlands/gameplay/powers/search/ForestWardenSuite.scala
 git commit -m "feat(batch8): Forest Warden buries a card at the site first"
 ```
 

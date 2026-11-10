@@ -1,0 +1,72 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.Look
+
+/** Traveling Doctor: Billowing Fog's rule, free, and discarded after a
+  * Campaign its user lost. A bandit defender applies it and gains nothing
+  * from it. */
+class TravelingDoctorSuite extends munit.FunSuite:
+  private val card = TravelingDoctorCard.id
+  private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
+
+  private def lines(run: Run): Vector[NoteText.Said] =
+    NoteText.said(TravelingDoctor.id,
+      Vector(SparedForce.spared, PlanDiscard.discarded), run.events)
+
+  private val discarded = NoteText.Said("discarded",
+    "Discarded after the Campaign.", covers = false)
+
+  test("a defeated attacker loses no survivor, and the Doctor is discarded"):
+    val base = board(warbands = 5, supply = 7)
+    val b = withAdviser(base, card, Orientation.FaceUp)
+    val done = commit(rules(losingDice), b, 4)
+      .pick(b.actor, CampaignIds.attackerPlan, ref).finishPlanWindows
+    assertEquals(done.winner, Some(false))
+    assertEquals(Look(done.state).player(b.actor).board.warbands, 5)
+    assert(Look(done.state).inRegionalDiscard(card))
+    assertEquals(lines(done), Vector(NoteText.Said("spared",
+      s"${b.actor.value}'s force was spared.", covers = false), discarded))
+
+  test("a defeated attacker loses its skull and its sacrifice, and only " +
+      "the half is spared"):
+    val base = board(warbands = 5, supply = 7)
+    val b = withAdviser(base, card, Orientation.FaceUp)
+    val game = rules(dice(AttackDieFace.TwoSwordsSkull +:
+      Vector.fill(3)(AttackDieFace.HollowSword),
+      Vector.fill(2)(DefenseDieFace.TwoShields)))
+    val done = commit(game, b, 4)
+      .pick(b.actor, CampaignIds.attackerPlan, ref)
+      .finishAttackerPlans(b.actor)
+      .answer(b.actor, CampaignIds.sacrifice, ChooseAmountAnswer(1))
+      .finishPlanWindows
+    assertEquals(done.winner, Some(false))
+    assertEquals(Look(done.state).player(b.actor).board.warbands, 3)
+    assertEquals(lines(done), Vector(NoteText.Said("spared",
+      s"${b.actor.value}'s force was spared.", covers = false), discarded))
+
+  test("a victorious user keeps the Doctor"):
+    val base = board(warbands = 5, supply = 7)
+    val b = withAdviser(base, card, Orientation.FaceUp)
+    val done = commit(rules(winningDice), b, 4)
+      .pick(b.actor, CampaignIds.attackerPlan, ref).finishPlanWindows
+    assertEquals(done.winner, Some(true))
+    assert(Look(done.state).player(b.actor).advisers.exists(_.id == card))
+    assertEquals(lines(done), Vector.empty)
+
+  test("a bandit defender applies it, loses every targeted warband, and " +
+      "discards it"):
+    val base = board(warbands = 5, supply = 7)
+    // Two bandits rule the origin, where the Doctor stands.
+    val b = on(base)(_.bandits(base.origin, 2).denizen(card, at = base.origin))
+    val done = commit(rules(winningDice), b, 4).finishPlanWindows
+    assertEquals(done.winner, Some(true))
+    assert(done.ops.contains(Kill(Piece.Warbands(ForceKind.Bandit, 2),
+      PositionedLocation(Location.Site(b.origin)))))
+    assert(Look(done.state).inRegionalDiscard(card))
+    assertEquals(lines(done), Vector(discarded))

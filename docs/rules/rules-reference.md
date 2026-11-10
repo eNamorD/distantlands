@@ -35,12 +35,12 @@ No one begins Chancellor or Oathkeeper; the first player to satisfy Supremacy ta
 ### Later games
 
 1. Initialize map tracks, end die if Imperials play, relic deck, prior Oathkeeper goal/title, and stored world-deck denizens with Visions removed (CR p. 8).
-2. Players recover their stored color, legacies, starting adviser, 1 favor, 1 secret, 3 board warbands, and Supply. Imperials use purple warbands. Chancellor takes the Chancellor board, Grand Scepter, and one chosen facedown Reliquary relic (CR p. 8).
-3. If a Chancellor exists, restore Imperial sites from Recent Sites until the Empire divider, intact edifices/faceup denizens, stored facedown relics, and one Imperial warband each (CR p. 9).
+2. Players recover their stored color, legacies, starting adviser, 1 favor, 1 secret, 3 board warbands, and Supply. Imperials use purple warbands. Chancellor takes the Chancellor board, Grand Scepter, and one chosen facedown Reliquary relic (CR p. 8; the pick is Setup's first step, [Empire ruling R29](ambiguities.md#empire-rulings)).
+3. If a Chancellor exists, restore Imperial sites from Recent Sites until the Empire divider, intact edifices/faceup denizens, stored facedown relics, and one Imperial warband each (CR p. 9). Purple warbands are limited to 24: boards first, then sites Cradlemost first; a site the supply misses takes bandits ([R30](ambiguities.md#empire-rulings)). Remaining sites keep their stored cards and Homelands need no stored edifice ([R26, R27](ambiguities.md#empire-rulings)); the Empire always holds a site ([R28](ambiguities.md#empire-rulings)).
 4. With no Chancellor: force Foundation I to Wide Horizons and V to Mob's Favor; restore sites with ruined edifices, stored relics, capacity bandits; clear Reliquary; fill empty relic slots; turn stored Citizens into Exiles; choose first player; use Usurper Limiter and no end die (CR p. 9).
 5. Resolve six foundation setup cards in order. Their normal/altered faces determine map filling, banks/resources, player wealth, world composition, and banner side (CR pp. 10-11).
 6. Populate site resources, then build the world deck from the foundation-determined starting denizen stack, combining Vision packets as instructed (CR p. 12).
-7. In order, players place pawn (subject to Imperial placement), choose adviser, and reveal cards as allowed (CR p. 13).
+7. In order, players place pawn (subject to Imperial placement; Exiles at the Hintermost Empire site or a bandit site, [R25](ambiguities.md#empire-rulings)), choose adviser, and reveal cards as allowed (CR p. 13).
 
 ## Round and turn flow
 
@@ -144,6 +144,29 @@ At ends of rounds 5/6/7, if Chancellor or Citizen is Oathkeeper, roll the end di
 If Chancellor would win, a Citizen satisfying the current Successor goal wins instead. Successor mappings are: Supremacy -> more relics than Chancellor and every other Citizen; The People -> Darkest Secret; Protection -> People's Favor; Devotion -> Grand Scepter (CR p. 19).
 
 Without Empire, round 8 uses War Exhaustion while skipping Stable Regime and Chancellor steps; if still no winner, Oathkeeper wins, otherwise random (CR p. 19).
+
+## Imperial laws
+
+- **Seal of the Empire.** On an Imperial player's turn, that player rules the Imperial sites (CR p. 35).
+- **Steward of Imperial Domains.** Outside such a turn, the Chancellor rules the Imperial sites (CR p. 35).
+- **Imperial warbands.** Imperial players share one bank of 24 purple warbands, and a killed purple warband returns to it (CR p. 35).
+- **Refreshing Supply.** The Chancellor refreshes by the warbands in the purple bank; a Citizen matches the Chancellor's current Supply and keeps their unspent Supply, capped at 7 (CR p. 35).
+- **Chancellor's Eye.** A Citizen asks the Chancellor's consent to move warbands from their site to their board (CR p. 35).
+- **Warband Transfers.** An Imperial player may move warbands to or from another Imperial player's board when that player's pawn is at their site and that player consents (CR p. 35).
+- **Imperial Infighting.** An Imperial player may raid another Imperial player, and a Citizen may conquer Imperial sites, which the Chancellor defends (CR p. 35).
+- **Imperial Tactics.** In a Campaign, an Imperial player may use battle plans in another Imperial player's play area with their consent, and plans at Imperial sites with the Chancellor's consent; any Imperial player may pay a plan's costs or meet its requirements, even split between players. The Oathkeeper title is a defensive battle plan. The attacker and defender cannot use the same plan (CR p. 35).
+
+## Role changes
+
+- **Becoming a Citizen.** The player's board turns to its Citizen side; their warbands on the board and the map become purple, the player choosing which when the purple bank runs short; their revealed Vision is discarded; a Usurper title turns to its Oathkeeper side, and under Supremacy passes to the Chancellor; their Act phase ends if it is their turn; their Supply refreshes to 7 (CR p. 34).
+- **Becoming the Chancellor.** In a game with no Empire, a "become a Citizen" power makes the player the Chancellor instead: they also take the Chancellor board, the purple bank and the Grand Scepter (CR p. 34). The Usurper Limiter is removed at once (ruling R5), and the next round starts with them (ruling R4).
+- **Exile.** A Citizen's board turns to its Exile side; the purple warbands on it become warbands of their colour, the excess returning to the purple bank, while the Imperial warbands on the map stay; their Act phase ends if it is their turn; their Supply refreshes to 7 (CR p. 34).
+- **Self-exile.** As a minor action, a Citizen gives the Chancellor 1 favor per Imperial warband on their board, at least 3, and is exiled (CR p. 34).
+- **The Grand Scepter's Action.** Its Exile holder may become a Citizen (card OATH-GrandScepter-NF).
+- **The Grand Scepter in negotiation.** Its holder may offer Citizenship to Exiles among the negotiators, never to themself; accepting the deal is the Exile's consent (CR p. 34).
+- **The Grand Scepter's battle plan.** For 3 burnt favor, an Imperial player victorious against a Citizen may exile them (CR p. 34, ruling R23).
+- **"Become a Citizen" denizens.** Martial Culture (defeating another Exile), Long-Lost Heir, Bewitch (the most secrets), Ancient Pact (the Darkest Secret) and Royal Ambitions (the most sites); the last three also take a random relic from the Reliquary (rulings R21-R23).
+- **First game.** A group's first game is advised to ignore "become a Citizen" powers (CR p. 34, ambiguity F8); a setup option does so, on by default.
 
 ## Rules precedence and timing
 

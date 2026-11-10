@@ -77,7 +77,7 @@ Out of scope:
 
 ### `Table.start`: the quiet table
 
-`Table` lives in `src/test/scala/oathdigital/testkit/Table.scala`.
+`Table` lives in `src/test/scala/distantlands/testkit/Table.scala`.
 `Table.start` is built from `GameStartRules.evolve` over the fixture's
 Chronicle and orders, with the orders' first player set to p1. It takes about
 1 ms. Then:
@@ -246,7 +246,7 @@ brittleness check from the success criteria.
 Implemented on `test/table-builder`, 2026-09-27.
 
 **`Table`**
-- `Table`, `Look` and `CatalogNames` are in `src/test/scala/oathdigital/testkit`, with `TableSuite` (21 tests).
+- `Table`, `Look` and `CatalogNames` are in `src/test/scala/distantlands/testkit`, with `TableSuite` (21 tests).
 - Steps added beyond the design, each needed by three or more suites: `hand`, `discarded`, `knowsRelicAt`, `oathkeeper`.
 - Two ways to continue from a state a test already holds:
   - `Table.from(ready)` continues building from that state.

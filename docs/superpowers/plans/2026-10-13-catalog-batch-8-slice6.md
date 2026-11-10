@@ -46,7 +46,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Tree addresses.** No procedure tree gains, loses or moves a node. A follow-up lives at addresses under the batch's own node, which a leaf never had before. Every segment stays a non-negative integer, so `WalkerParked`'s replay check still holds.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -55,13 +55,13 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Then symlink the main checkout's `.tooling` and `node_modules` into the worktree before the first `./sbtw`.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Names, exactly:**
-  - In `oathdigital.gameplay.powerresolver`, file `ExecutedTrigger.scala`:
+  - In `distantlands.gameplay.powerresolver`, file `ExecutedTrigger.scala`:
     - `ExecutedBatch(actor: PlayerId, executed: Vector[CoreOperation], now: ReadyGame)`;
     - `trait ExecutedTrigger extends ContributingPower` with `def onExecuted(batch: ExecutedBatch): Option[Operation]`.
-  - In `oathdigital.gameplay.walker`, file `ExecutedTriggers.scala`: the `private[walker]` object `ExecutedTriggers`, with `key`, `of`, `batch`, `holds` and `held`.
+  - In `distantlands.gameplay.walker`, file `ExecutedTriggers.scala`: the `private[walker]` object `ExecutedTriggers`, with `key`, `of`, `batch`, `holds` and `held`.
   - `WalkCtx.following: Boolean` (default `false`).
-  - In `oathdigital.gameplay.powers.travel`, file `BrassArmyMoves.scala`: the case object `BrassArmyMoves`, with `decisionId = "power.brass-army.moved"`, `bury = DecisionOptionRef.Button("brass-army.bury")` and `flip = DecisionOptionRef.Button("brass-army.flip")`.
-  - In `oathdigital.gameplay.powers.banner`, file `SecretTestament.scala`: `SecretTestamentCard`, moved out of `HoldingRelics`, and the case object `SecretTestament`.
+  - In `distantlands.gameplay.powers.travel`, file `BrassArmyMoves.scala`: the case object `BrassArmyMoves`, with `decisionId = "power.brass-army.moved"`, `bury = DecisionOptionRef.Button("brass-army.bury")` and `flip = DecisionOptionRef.Button("brass-army.flip")`.
+  - In `distantlands.gameplay.powers.banner`, file `SecretTestament.scala`: `SecretTestamentCard`, moved out of `HoldingRelics`, and the case object `SecretTestament`.
   - Power ids are unchanged: `relic.brass-army.campaign`, `relic.brass-army.restriction` and `relic.secret-testament`.
   - Note keys:
     - `BrassArmyMoves`: `buried` (`"buried"`), `buriedBy` (`"buried-by"`), `flipped` (`"flipped"`) and `flippedBy` (`"flipped-by"`);
@@ -100,23 +100,23 @@ These are written into the design and the rulings appendix in Task 1. Rulings 1,
 
 ## File map
 
-- Create `src/main/scala/oathdigital/gameplay/powerresolver/ExecutedTrigger.scala`.
-- Create `src/main/scala/oathdigital/gameplay/walker/ExecutedTriggers.scala`. Modify:
+- Create `src/main/scala/distantlands/gameplay/powerresolver/ExecutedTrigger.scala`.
+- Create `src/main/scala/distantlands/gameplay/walker/ExecutedTriggers.scala`. Modify:
   - `WalkState.scala`: `WalkCtx.following`;
   - `WalkerSteps.scala`: `recordBatch` holds a triggering batch;
   - `ProcedureWalker.scala`: walks the follow-ups, fresh and on resume.
-- Modify `src/main/scala/oathdigital/gameplay/powers/campaign/BrassArmy.scala`: ±4, both sides.
+- Modify `src/main/scala/distantlands/gameplay/powers/campaign/BrassArmy.scala`: ±4, both sides.
 - Modify `docs/catalog/reference/new-foundations-component-catalog.json`: Brass Army's rules text.
-- Create `src/main/scala/oathdigital/gameplay/powers/travel/BrassArmyMoves.scala`.
-- Create `src/main/scala/oathdigital/gameplay/powers/banner/SecretTestament.scala`. Modify:
-  - `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala`: `SecretTestamentCard` leaves;
-  - `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`: imports it.
-- Modify `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`: both powers.
+- Create `src/main/scala/distantlands/gameplay/powers/travel/BrassArmyMoves.scala`.
+- Create `src/main/scala/distantlands/gameplay/powers/banner/SecretTestament.scala`. Modify:
+  - `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala`: `SecretTestamentCard` leaves;
+  - `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`: imports it.
+- Modify `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`: both powers.
 - Tests:
-  - create `src/test/scala/oathdigital/gameplay/walker/ExecutedTriggersSuite.scala`;
-  - create `src/test/scala/oathdigital/gameplay/powers/travel/BrassArmyMovesSuite.scala`;
-  - create `src/test/scala/oathdigital/gameplay/powers/banner/SecretTestamentSuite.scala`;
-  - modify `src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala` and `PowerKindsCatalogSuite.scala`.
+  - create `src/test/scala/distantlands/gameplay/walker/ExecutedTriggersSuite.scala`;
+  - create `src/test/scala/distantlands/gameplay/powers/travel/BrassArmyMovesSuite.scala`;
+  - create `src/test/scala/distantlands/gameplay/powers/banner/SecretTestamentSuite.scala`;
+  - modify `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala` and `PowerKindsCatalogSuite.scala`.
 - Docs: the design, the rulings appendix and `docs/ROADMAP.md`.
 
 ---
@@ -215,12 +215,12 @@ git commit -m "docs(batch8): slice 6 rulings: Secret Testament is a Challenge mo
 ### Task 2: Triggers on executed operations
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powerresolver/ExecutedTrigger.scala`
-- Create: `src/main/scala/oathdigital/gameplay/walker/ExecutedTriggers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkState.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala` (`recordBatch`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`
-- Test: `src/test/scala/oathdigital/gameplay/walker/ExecutedTriggersSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powerresolver/ExecutedTrigger.scala`
+- Create: `src/main/scala/distantlands/gameplay/walker/ExecutedTriggers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkState.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala` (`recordBatch`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`
+- Test: `src/test/scala/distantlands/gameplay/walker/ExecutedTriggersSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -231,15 +231,15 @@ git commit -m "docs(batch8): slice 6 rulings: Secret Testament is a Challenge mo
 - [ ] **Step 1: Write the failing tests.** Create `ExecutedTriggersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{Contribution, ExecutedBatch,
+import distantlands.gameplay.powerresolver.{Contribution, ExecutedBatch,
   ExecutedTrigger}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.Outcomes.{finished, parked, recorded}
-import oathdigital.testkit.ProcedureWalkerFixture._
-import oathdigital.testkit.WalkerStubs.continueOption
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.Outcomes.{finished, parked, recorded}
+import distantlands.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.WalkerStubs.continueOption
 
 class ExecutedTriggersSuite extends munit.FunSuite:
   /** Whether `executed` moves the fixture actor's pawn. */
@@ -322,15 +322,15 @@ class ExecutedTriggersSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.ExecutedTriggersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.ExecutedTriggersSuite"`
 Expected: FAIL to compile: `ExecutedTrigger`, `ExecutedBatch` and `ExecutedTriggers` are not found.
 
 - [ ] **Step 3: Add the trigger API.** Create `ExecutedTrigger.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{CoreOperation, Operation, PlayerId, ReadyGame}
+import distantlands.model.{CoreOperation, Operation, PlayerId, ReadyGame}
 
 /** What a trigger on executed operations reads (catalog batch 8, slice 6):
   * the active player, the operations one walker batch executed, and the
@@ -367,13 +367,13 @@ trait ExecutedTrigger extends ContributingPower:
 - [ ] **Step 5: Add the walker's side.** Create `ExecutedTriggers.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy,
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy,
   OperationRun}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Deferred,
+import distantlands.gameplay.powerresolver.{ContributingPower, Deferred,
   ExecutedBatch, ExecutedTrigger}
-import oathdigital.model.{Defer, DeferralKey, OathViolation, ReadyGame}
+import distantlands.model.{Defer, DeferralKey, OathViolation, ReadyGame}
 
 /** The walker's side of triggers on executed operations (catalog batch 8,
   * slice 6). A batch that starts a follow-up holds its executed operations
@@ -434,7 +434,7 @@ Extend `recordBatch`'s doc comment, after the `BurnTakes` sentence: "A batch who
 
 - [ ] **Step 7: Walk the follow-ups.** In `ProcedureWalker.scala`:
 
-1. Import `TakeDeferred` in the `oathdigital.model` import.
+1. Import `TakeDeferred` in the `distantlands.model` import.
 2. In `runNarrowed`, the `case Some(remaining)` branch rejects a cursor that runs past a leaf. Let a held batch's follow-ups take it instead:
 
 ```scala
@@ -526,7 +526,7 @@ Extend `recordBatch`'s doc comment, after the `BurnTakes` sentence: "A batch who
 
 - [ ] **Step 8: Run the tests to verify they pass.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.ExecutedTriggersSuite oathdigital.gameplay.DeferralSuite oathdigital.gameplay.walker.BurnTakesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.ExecutedTriggersSuite distantlands.gameplay.DeferralSuite distantlands.gameplay.walker.BurnTakesSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`
@@ -535,7 +535,7 @@ Expected: PASS. No power is a trigger yet, so nothing else changes.
 - [ ] **Step 9: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/ExecutedTrigger.scala src/main/scala/oathdigital/gameplay/walker/ExecutedTriggers.scala src/main/scala/oathdigital/gameplay/walker/WalkState.scala src/main/scala/oathdigital/gameplay/walker/WalkerSteps.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/test/scala/oathdigital/gameplay/walker/ExecutedTriggersSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/ExecutedTrigger.scala src/main/scala/distantlands/gameplay/walker/ExecutedTriggers.scala src/main/scala/distantlands/gameplay/walker/WalkState.scala src/main/scala/distantlands/gameplay/walker/WalkerSteps.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/test/scala/distantlands/gameplay/walker/ExecutedTriggersSuite.scala
 git commit -m "feat(batch8): a trigger may start a follow-up after a walker batch"
 ```
 
@@ -544,9 +544,9 @@ git commit -m "feat(batch8): a trigger may start a follow-up after a walker batc
 ### Task 3: Brass Army's battle plan is ±4
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/BrassArmy.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/BrassArmy.scala`
 - Modify: `docs/catalog/reference/new-foundations-component-catalog.json`
-- Test: `src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala`
 
 **Interfaces:**
 - Consumes: `PlanDice.effect(side, dice)` and `PlanDice.label(card, side, dice)` (existing, `private[campaign]`).
@@ -571,7 +571,7 @@ git commit -m "feat(batch8): a trigger may start a follow-up after a walker batc
 
 - [ ] **Step 2: Run it to verify it fails.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignPlansSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignPlansSuite"`
 Expected: FAIL: the defender's offer is `None`.
 
 - [ ] **Step 3: Make it a plan for either side.** In `BrassArmy.scala`:
@@ -610,7 +610,7 @@ Expected: FAIL: the defender's offer is `None`.
 
 - [ ] **Step 5: Run the tests to verify they pass.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignPlansSuite oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignPlansSuite distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: PASS. The attacker's test keeps its offer: its label is still "Brass Army: add 4 attack dice".
 
 Run: `./sbtw test`
@@ -619,7 +619,7 @@ Expected: PASS. If a Campaign suite whose defender holds Brass Army now sees an 
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/campaign/BrassArmy.scala docs/catalog/reference/new-foundations-component-catalog.json src/test/scala/oathdigital/gameplay/CampaignPlansSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/campaign/BrassArmy.scala docs/catalog/reference/new-foundations-component-catalog.json src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala
 git commit -m "fix(batch8): Brass Army's battle plan is ±4 for either side"
 ```
 
@@ -628,10 +628,10 @@ git commit -m "fix(batch8): Brass Army's battle plan is ±4 for either side"
 ### Task 4: Brass Army's restriction
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/BrassArmyMoves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/travel/BrassArmyMovesSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/BrassArmyMoves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/travel/BrassArmyMovesSuite.scala`
 
 **Interfaces:**
 - Consumes: `ExecutedTrigger`, `ExecutedBatch` (Task 2); `BrassArmyCard.restriction` (existing).
@@ -640,22 +640,22 @@ git commit -m "fix(batch8): Brass Army's battle plan is ±4 for either side"
 - [ ] **Step 1: Write the failing tests.** Create `BrassArmyMovesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.CampaignFixture.{on, raidBoard, rules}
-import oathdigital.gameplay.TravelPlay
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
+import distantlands.gameplay.CampaignFixture.{on, raidBoard, rules}
+import distantlands.gameplay.TravelPlay
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   winningDice}
-import oathdigital.gameplay.powers.targeting.TargetingFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
+import distantlands.gameplay.powers.targeting.TargetingFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class BrassArmyMovesSuite extends munit.FunSuite:
   private val brass = CatalogNames.relic("Brass Army")
@@ -762,19 +762,19 @@ Adjust to the fixtures as they are:
 
 - [ ] **Step 2: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.BrassArmyMovesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.BrassArmyMovesSuite"`
 Expected: FAIL to compile: `BrassArmyMoves` is not found.
 
 - [ ] **Step 3: Write the trigger.** Create `BrassArmyMoves.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powerresolver.{Contribution, ExecutedBatch,
+import distantlands.gameplay.powerresolver.{Contribution, ExecutedBatch,
   ExecutedTrigger}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.campaign.BrassArmyCard
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.campaign.BrassArmyCard
+import distantlands.model._
 
 /** Brass Army (relic R25)'s restriction: "Whenever your pawn moves (travel
   * or place), bury this or flip a secret you have facedown." (catalog batch
@@ -872,13 +872,13 @@ case object BrassArmyMoves extends ExecutedTrigger:
 
 `Sequence(buryIt(...))` uses the case class's own `Vector` constructor, and `Sequence(question(holder), Branch(...))` its varargs builder.
 
-- [ ] **Step 4: Register it.** In `WalkerPowerCatalog.default`, add `Vector(BrassArmyMoves)` after `Vector(VowOfSilence, VowOfDivision)`, and add `BrassArmyMoves` to the `oathdigital.gameplay.powers.travel` import. Add to its doc comment: "Brass Army's restriction is inert until a batch moves its holder's pawn."
+- [ ] **Step 4: Register it.** In `WalkerPowerCatalog.default`, add `Vector(BrassArmyMoves)` after `Vector(VowOfSilence, VowOfDivision)`, and add `BrassArmyMoves` to the `distantlands.gameplay.powers.travel` import. Add to its doc comment: "Brass Army's restriction is inert until a batch moves its holder's pawn."
 
 In `PowerKindsCatalogSuite`, add `"relic.brass-army.restriction"` at the end of `persistentRules`.
 
 - [ ] **Step 5: Run the tests to verify they pass.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.BrassArmyMovesSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.TravelProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.BrassArmyMovesSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.TravelProcedureSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`
@@ -887,7 +887,7 @@ Expected: PASS. A suite whose board gives a moving player a faceup Brass Army no
 - [ ] **Step 6: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/travel/BrassArmyMoves.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala src/test/scala/oathdigital/gameplay/powers/travel/BrassArmyMovesSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/travel/BrassArmyMoves.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala src/test/scala/distantlands/gameplay/powers/travel/BrassArmyMovesSuite.scala
 git commit -m "feat(batch8): Brass Army asks its holder after every pawn move"
 ```
 
@@ -896,12 +896,12 @@ git commit -m "feat(batch8): Brass Army asks its holder after every pawn move"
 ### Task 5: Secret Testament
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/banner/SecretTestament.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/banner/SecretTestamentSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/banner/SecretTestament.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/banner/SecretTestamentSuite.scala`
 
 **Interfaces:**
 - Consumes: `ChallengeProcedure.bannerDecisionId`, `BannerRules.holder` and `BannerRules.resources` (existing); `PowerWindow.ChallengeRibbon` (existing).
@@ -909,20 +909,20 @@ git commit -m "feat(batch8): Brass Army asks its holder after every pawn move"
 - [ ] **Step 1: Write the failing tests.** Create `SecretTestamentSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.gameplay.CampaignFixture.{on, raidBoard, rules}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver.{commit, winningDice}
-import oathdigital.gameplay.powers.targeting.TargetingFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.CampaignFixture.{on, raidBoard, rules}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver.{commit, winningDice}
+import distantlands.gameplay.powers.targeting.TargetingFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class SecretTestamentSuite extends munit.FunSuite:
   private val testament = CatalogNames.relic("Secret Testament")
@@ -1018,22 +1018,22 @@ Adjust to the fixtures as they are:
 
 - [ ] **Step 2: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.banner.SecretTestamentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.banner.SecretTestamentSuite"`
 Expected: FAIL to compile: `SecretTestament` is not found.
 
-- [ ] **Step 3: Move the card.** Cut `SecretTestamentCard` out of `HoldingRelics.scala`. Remove any import that file no longer uses. `NewFoundations.scala` imports the holding package with a wildcard, so add `import oathdigital.gameplay.powers.banner.SecretTestamentCard` beside its other power-card imports.
+- [ ] **Step 3: Move the card.** Cut `SecretTestamentCard` out of `HoldingRelics.scala`. Remove any import that file no longer uses. `NewFoundations.scala` imports the holding package with a wildcard, so add `import distantlands.gameplay.powers.banner.SecretTestamentCard` beside its other power-card imports.
 
 - [ ] **Step 4: Write the modifier.** Create `SecretTestament.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.challenge.ChallengeProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.challenge.ChallengeProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object SecretTestamentCard extends Relic(RelicId("R38"), "Secret Testament", value = 82, defense = 2):
   val power = PrintedPower(PowerId("relic.secret-testament"),
@@ -1122,13 +1122,13 @@ case object SecretTestament extends ContributingPower:
     }).map(_.player)
 ```
 
-- [ ] **Step 5: Register it.** In `WalkerPowerCatalog.default`, add `Vector(SecretTestament)` after `Vector(BrassArmyMoves)`, and `SecretTestament` to the `oathdigital.gameplay.powers.banner` import. Add to its doc comment: "Secret Testament is inert until a Challenge walks `ChallengeRibbon`."
+- [ ] **Step 5: Register it.** In `WalkerPowerCatalog.default`, add `Vector(SecretTestament)` after `Vector(BrassArmyMoves)`, and `SecretTestament` to the `distantlands.gameplay.powers.banner` import. Add to its doc comment: "Secret Testament is inert until a Challenge walks `ChallengeRibbon`."
 
 In `PowerKindsCatalogSuite`, add `"relic.secret-testament"` at the end of `persistentRules`.
 
 - [ ] **Step 6: Run the tests to verify they pass.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.banner.SecretTestamentSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.banner.SecretTestamentSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`
@@ -1137,7 +1137,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/banner/SecretTestament.scala src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala src/test/scala/oathdigital/gameplay/powers/banner/SecretTestamentSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/banner/SecretTestament.scala src/main/scala/distantlands/catalog/holding/HoldingRelics.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala src/test/scala/distantlands/gameplay/powers/banner/SecretTestamentSuite.scala
 git commit -m "feat(batch8): Secret Testament takes a challenged banner's tokens"
 ```
 

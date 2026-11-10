@@ -43,11 +43,11 @@ Found while planning; each is a decision this plan makes where the spec was sile
 ## File map and interfaces
 
 Create:
-- `src/main/scala/oathdigital/model/PlayerForceKind.scala`: `PlayerForceKind.of(ready, player): Option[ForceKind]`, the one role-to-warband-kind mapping.
-- `src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala`: `MusterSource` value plus `atSite`, `resolve`, `matching`.
-- `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala`: the shared tree builder and its `Kind` parameters.
-- `src/main/scala/oathdigital/gameplay/actions/economy/MusterProcedure.scala` and `TradeProcedure.scala`: `build`, `rebuild`, `startOptions`, `decisionId`.
-- `src/main/scala/oathdigital/application/OperationDetails.scala`: recorded operations to detail strings.
+- `src/main/scala/distantlands/model/PlayerForceKind.scala`: `PlayerForceKind.of(ready, player): Option[ForceKind]`, the one role-to-warband-kind mapping.
+- `src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala`: `MusterSource` value plus `atSite`, `resolve`, `matching`.
+- `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala`: the shared tree builder and its `Kind` parameters.
+- `src/main/scala/distantlands/gameplay/actions/economy/MusterProcedure.scala` and `TradeProcedure.scala`: `build`, `rebuild`, `startOptions`, `decisionId`.
+- `src/main/scala/distantlands/application/OperationDetails.scala`: recorded operations to detail strings.
 - Tests: `PlayerForceKindSuite`, `DecisionOptionRefSuite`, `WalkerPreviewSuite`, `EconomyFixture` (shared board builder), `MusterProcedureSuite`, `TradeProcedureSuite`, `EconomyWalkerSuite`, `EconomyProjectionSuite`, `EconomyParitySuite`, `WalkerChoicePanelRenderSuite`.
 
 Modify: `model/Decisions.scala`, `model/PowerWindow.scala`, `model/GameViolation.scala`, `model/GameProcedureProtocol.scala`, `model/ProcedureRef.scala`, `gameplay/operations/OperationStateAdapter.scala`, `gameplay/operations/OperationExecutor.scala`, `gameplay/walker/WalkerSimulation.scala`, `gameplay/walker/WalkerProcedureRegistry.scala`, `gameplay/OathRulesWalker.scala`, `application/WalkerDecisionProjector.scala`, `application/LegalActionProjector.scala`, `shared/.../ActionProjectionDtos.scala` and `ActionProjectionCodec.scala`, `frontend/.../WalkerPanelSupport.scala`, `ActionDecisionRenderer.scala`, `ModifierWorkflow.scala`; then the deletion list in Tasks 10 to 12.
@@ -96,21 +96,21 @@ final case class DecisionOptionProjection(kind: String, id: String, label: Strin
 ### Task 1: Edifice option reference
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Create: `src/test/scala/oathdigital/model/DecisionOptionRefSuite.scala`
-- Modify: `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala` (test "every option reference kind round trips through a recorded answer")
-- Modify: `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Create: `src/test/scala/distantlands/model/DecisionOptionRefSuite.scala`
+- Modify: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala` (test "every option reference kind round trips through a recorded answer")
+- Modify: `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`
 
 **Interfaces:**
 - Produces: `DecisionOptionRef.Edifice(id: EdificeId)` with `kind = "edifice"` and `wireId = id.value`; `DecisionOption.Edifice(ref: DecisionOptionRef.Edifice)`; `DecisionOption.forRef` returns it. Every wire path (answer codec, start arguments, journal, `GameIntentMapper`) already goes through `kind`/`wireId`/`fromWire`, so this is the only place the wire learns the kind.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/model/DecisionOptionRefSuite.scala`:
+Create `src/test/scala/distantlands/model/DecisionOptionRefSuite.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class DecisionOptionRefSuite extends munit.FunSuite {
   private val hall = DecisionOptionRef.Edifice(EdificeId("E16"))
@@ -173,12 +173,12 @@ In `WalkerDecisionProjectorSuite`, add this test after "a declared option whose 
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.model.DecisionOptionRefSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.model.DecisionOptionRefSuite"`
 Expected: compile FAIL, "value Edifice is not a member of object DecisionOptionRef".
 
 - [ ] **Step 3: Implement the model change**
 
-In `src/main/scala/oathdigital/model/Decisions.scala`:
+In `src/main/scala/distantlands/model/Decisions.scala`:
 
 1. After the `Vision` case class inside `object DecisionOptionRef`, add:
 
@@ -213,7 +213,7 @@ In `WalkerDecisionProjector.optionProjection`, add this case after `DecisionOpti
 
 - [ ] **Step 5: Run the tests and the wider suites**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.model.DecisionOptionRefSuite oathdigital.serialization.GameEventWireSuite oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.model.DecisionOptionRefSuite distantlands.serialization.GameEventWireSuite distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: PASS. If the compiler reports a non-exhaustive match over `DecisionOption` or `DecisionOptionRef` in another file, add the `Edifice` case there in the same way (`grep -rn "DecisionOption.Vision" src/main` lists the candidates).
 
 Then run `./sbtw -no-colors test` and expect PASS.
@@ -221,7 +221,7 @@ Then run `./sbtw -no-colors test` and expect PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Decisions.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/test/scala/oathdigital/model/DecisionOptionRefSuite.scala src/test/scala/oathdigital/serialization/GameEventWireSuite.scala src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala
+git add src/main/scala/distantlands/model/Decisions.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/test/scala/distantlands/model/DecisionOptionRefSuite.scala src/test/scala/distantlands/serialization/GameEventWireSuite.scala src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala
 git commit -m "feat(walker): add the Edifice decision option reference
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -230,11 +230,11 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 2: Per-option detail annotation
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala` (`DecisionOptionProjection`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala` (`encodeOptionRow`, `decodeOptionRow`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala` (`renderChooseOnePanel`)
-- Modify: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- Create: `frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala` (`DecisionOptionProjection`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala` (`encodeOptionRow`, `decodeOptionRow`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala` (`renderChooseOnePanel`)
+- Modify: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- Create: `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala`
 
 **Interfaces:**
 - Produces: `DecisionOptionProjection(kind, id, label, card = None, details: Vector[String] = Vector.empty)`. `details` is optional on the wire: an absent key decodes as empty, so no existing payload changes.
@@ -257,10 +257,10 @@ In `ProjectionProtocolSuite`, add after the test "a decision query declaring no 
   }
 ```
 
-Create `frontend/src/test/scala/oathdigital/frontend/WalkerChoicePanelRenderSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.scalajs.js
@@ -315,7 +315,7 @@ If `js` is unused the compiler only warns; drop the import if `-Xfatal-warnings`
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: compile FAIL, too many arguments for `DecisionOptionProjection`.
 
 - [ ] **Step 3: Implement the DTO and codec**
@@ -360,7 +360,7 @@ In `WalkerPanelSupport.renderChooseOnePanel`, after `panel.appendChild(choose)` 
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.protocol.ProjectionProtocolSuite"` then `./sbtw -no-colors "frontend/testOnly oathdigital.frontend.WalkerChoicePanelRenderSuite oathdigital.frontend.PartitionPanelRenderSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.protocol.ProjectionProtocolSuite"` then `./sbtw -no-colors "frontend/testOnly distantlands.frontend.WalkerChoicePanelRenderSuite distantlands.frontend.PartitionPanelRenderSuite"`
 Expected: PASS. Then `./sbtw -no-colors test` and `./sbtw -no-colors frontend/test`: PASS.
 
 - [ ] **Step 6: Commit**
@@ -375,8 +375,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 3: Walker preview of a parked choose-one
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala`
-- Create: `src/test/scala/oathdigital/gameplay/walker/WalkerPreviewSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala`
+- Create: `src/test/scala/distantlands/gameplay/walker/WalkerPreviewSuite.scala`
 
 **Interfaces:**
 - Consumes: `ProcedureWalker.advance(state, tree, None, powers)`, `ProcedureWalker.resolve(state, tree, pending, Answered, powers)`, `ProcedureWalker.parkedDecide(state, tree, pending, powers)`, `ProcedureWalker.restrictionViolations`.
@@ -396,14 +396,14 @@ def previewParked(state: ReadyGame, tree: Operation, pending: PendingTree,
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/WalkerPreviewSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/WalkerPreviewSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 class WalkerPreviewSuite extends munit.FunSuite {
   private val cheap = DecisionOptionRef.Button("cheap")
@@ -512,17 +512,17 @@ class WalkerPreviewSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.walker.WalkerPreviewSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.walker.WalkerPreviewSuite"`
 Expected: compile FAIL, "value preview is not a member of object WalkerSimulation".
 
 - [ ] **Step 3: Implement**
 
-Replace the body of `src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala` below the existing doc comment with the following (keep the existing scaladoc above `object WalkerSimulation`, and extend it with: "`preview` and `previewParked` extend the same idea to a tree that parks on a `ChooseOne`: they answer each option against the tree and report what that answer would record."):
+Replace the body of `src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala` below the existing doc comment with the following (keep the existing scaladoc above `object WalkerSimulation`, and extend it with: "`preview` and `previewParked` extend the same idea to a tree that parks on a `ChooseOne`: they answer each option against the tree and report what that answer would record."):
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Answered, CoreOperation, Decide, DecisionAnswer,
+import distantlands.model.{Answered, CoreOperation, Decide, DecisionAnswer,
   DecisionOption, DecisionQuery, OathEvent, OathViolation, Operation,
   PendingTree, ReadyGame}
 
@@ -636,13 +636,13 @@ object WalkerSimulation {
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.walker.WalkerPreviewSuite oathdigital.gameplay.TravelProcedureSuite oathdigital.gameplay.TakeWealthProcedureSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.walker.WalkerPreviewSuite distantlands.gameplay.TravelProcedureSuite distantlands.gameplay.TakeWealthProcedureSuite"`
 Expected: PASS (Travel and Take Wealth exercise `run`, which was rewritten around the shared `guarded`).
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/walker/WalkerSimulation.scala src/test/scala/oathdigital/gameplay/walker/WalkerPreviewSuite.scala
+git add src/main/scala/distantlands/gameplay/walker/WalkerSimulation.scala src/test/scala/distantlands/gameplay/walker/WalkerPreviewSuite.scala
 git commit -m "feat(walker): preview each option of a parked choose-one
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -651,13 +651,13 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 4: Shared model additions and the role-to-force-kind helper
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/PlayerForceKind.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationStateAdapter.scala` (`playerForceKind`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/OperationExecutor.scala` (`validateWarbands`)
-- Modify: `src/main/scala/oathdigital/model/PowerWindow.scala`
-- Modify: `src/main/scala/oathdigital/model/GameViolation.scala`
-- Modify: `src/main/scala/oathdigital/model/GameProcedureProtocol.scala`
-- Create: `src/test/scala/oathdigital/model/PlayerForceKindSuite.scala`
+- Create: `src/main/scala/distantlands/model/PlayerForceKind.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateAdapter.scala` (`playerForceKind`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationExecutor.scala` (`validateWarbands`)
+- Modify: `src/main/scala/distantlands/model/PowerWindow.scala`
+- Modify: `src/main/scala/distantlands/model/GameViolation.scala`
+- Modify: `src/main/scala/distantlands/model/GameProcedureProtocol.scala`
+- Create: `src/test/scala/distantlands/model/PlayerForceKindSuite.scala`
 
 **Interfaces:**
 - Produces: `PlayerForceKind.of(ready: ReadyGame, player: PlayerState): Option[ForceKind]`; the windows `MusterSourceSelection`, `MusterGain`, `TradeSourceSelection`, `TradeGain`; `OathViolation.NoPlayableOption(procedure: String)`; `OathContinue.AwaitingEconomyDecision(playerId: PlayerId, decision: DecisionId)`.
@@ -666,12 +666,12 @@ The mapping already exists twice as a private copy. This task extracts it, so th
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/test/scala/oathdigital/model/PlayerForceKindSuite.scala`. It tests the pure helper only, on a copy of the setup board whose lineage role is changed; it does not run Muster or Trade for an Imperial player.
+Create `src/test/scala/distantlands/model/PlayerForceKindSuite.scala`. It tests the pure helper only, on a copy of the setup board whose lineage role is changed; it does not run Muster or Trade for an Imperial player.
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
 
 class PlayerForceKindSuite extends munit.FunSuite {
   private val ready = initialReady
@@ -707,15 +707,15 @@ class PlayerForceKindSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.model.PlayerForceKindSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.model.PlayerForceKindSuite"`
 Expected: compile FAIL, "not found: value PlayerForceKind".
 
 - [ ] **Step 3: Implement the helper and use it**
 
-Create `src/main/scala/oathdigital/model/PlayerForceKind.scala`:
+Create `src/main/scala/distantlands/model/PlayerForceKind.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /** The kind of warband a player's own warbands are: the shared Imperial kind
   * for a Citizen or Chancellor, the lineage's own Exile kind otherwise. The
@@ -783,7 +783,7 @@ Expected: PASS. The extraction must not change behaviour, so every operation and
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model src/main/scala/oathdigital/gameplay/operations src/test/scala/oathdigital/model/PlayerForceKindSuite.scala
+git add src/main/scala/distantlands/model src/main/scala/distantlands/gameplay/operations src/test/scala/distantlands/model/PlayerForceKindSuite.scala
 git commit -m "refactor(model): share the role-to-warband-kind mapping and add Economy windows
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -792,13 +792,13 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 5: The Muster and Trade trees
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala`
-- Create: `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala`
-- Create: `src/main/scala/oathdigital/gameplay/actions/economy/MusterProcedure.scala`
-- Create: `src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala`
-- Create: `src/test/scala/oathdigital/gameplay/EconomyFixture.scala`
-- Create: `src/test/scala/oathdigital/gameplay/MusterProcedureSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/TradeProcedureSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/economy/MusterProcedure.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala`
+- Create: `src/test/scala/distantlands/gameplay/EconomyFixture.scala`
+- Create: `src/test/scala/distantlands/gameplay/MusterProcedureSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/TradeProcedureSuite.scala`
 
 **Interfaces:**
 - Consumes: `DecisionOptionRef.Edifice`, `DecisionOption.Edifice` (Task 1); `WalkerSimulation.preview` and `PreviewedOption` (Task 3); `PlayerForceKind.of` and the four windows (Task 4).
@@ -806,16 +806,16 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the shared test board**
 
-Create `src/test/scala/oathdigital/gameplay/EconomyFixture.scala`. It is the board `EconomySuite` builds, extracted so the new suites and the parity suite share it (`EconomySuite` itself is deleted in Task 12).
+Create `src/test/scala/distantlands/gameplay/EconomyFixture.scala`. It is the board `EconomySuite` builds, extracted so the new suites and the parity suite share it (`EconomySuite` itself is deleted in Task 12).
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
-import oathdigital.gameplay.setup._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import distantlands.gameplay.setup._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** The board the Muster and Trade suites share: the active player at a site
   * holding one token-free plain denizen, with a matching-suit denizen available
@@ -909,16 +909,16 @@ object EconomyFixture {
 
 - [ ] **Step 2: Write the failing Muster suite**
 
-Create `src/test/scala/oathdigital/gameplay/MusterProcedureSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/MusterProcedureSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.economy.{MusterProcedure, MusterSource}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.OathViolation._
+import distantlands.gameplay.actions.economy.{MusterProcedure, MusterSource}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.model.OathViolation._
 
 class MusterProcedureSuite extends munit.FunSuite {
   import EconomyFixture._
@@ -1052,15 +1052,15 @@ class MusterProcedureSuite extends munit.FunSuite {
 
 - [ ] **Step 3: Write the failing Trade suite**
 
-Create `src/test/scala/oathdigital/gameplay/TradeProcedureSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/TradeProcedureSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
 
 class TradeProcedureSuite extends munit.FunSuite {
   import EconomyFixture._
@@ -1146,18 +1146,18 @@ class TradeProcedureSuite extends munit.FunSuite {
 
 - [ ] **Step 4: Run the suites to verify they fail**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.MusterProcedureSuite oathdigital.gameplay.TradeProcedureSuite"`
-Expected: compile FAIL, "object economy is not a member of package oathdigital.gameplay.actions".
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.MusterProcedureSuite distantlands.gameplay.TradeProcedureSuite"`
+Expected: compile FAIL, "object economy is not a member of package distantlands.gameplay.actions".
 
 - [ ] **Step 5: Implement `MusterSource`**
 
-Create `src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** What a Muster or Trade draws on: the card its cost is placed on, the suit
   * that decides which advisers match and which favor bank a Trade draws from,
@@ -1236,14 +1236,14 @@ object MusterSource {
 
 - [ ] **Step 6: Implement the shared tree**
 
-Create `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathLifecycle, PowerRuntime}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathLifecycle, PowerRuntime}
+import distantlands.model._
 
 /** The tree Muster and Trade share:
   *
@@ -1340,15 +1340,15 @@ private[economy] object EconomyTree {
 
 - [ ] **Step 7: Implement the two procedures**
 
-Create `src/main/scala/oathdigital/gameplay/actions/economy/MusterProcedure.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/economy/MusterProcedure.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}
-import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.walker.{WalkerPowers, WalkerSimulation}
+import distantlands.gameplay.walker.WalkerSimulation.PreviewedOption
+import distantlands.model._
 
 /** Muster on the walker: pay one favor on a card at the pawn site and one
   * Supply, and gain a warband for each matching adviser plus one. Takes no
@@ -1383,15 +1383,15 @@ object MusterProcedure {
 }
 ```
 
-Create `src/main/scala/oathdigital/gameplay/actions/economy/TradeProcedure.scala`:
+Create `src/main/scala/distantlands/gameplay/actions/economy/TradeProcedure.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}
-import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.walker.{WalkerPowers, WalkerSimulation}
+import distantlands.gameplay.walker.WalkerSimulation.PreviewedOption
+import distantlands.model._
 
 /** Trade on the walker. The start selection is one resource button, `favor`
   * or `secret`, naming what the actor gains: Trade for favor pays one secret
@@ -1451,7 +1451,7 @@ object TradeProcedure {
 
 - [ ] **Step 8: Run the suites**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.MusterProcedureSuite oathdigital.gameplay.TradeProcedureSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.MusterProcedureSuite distantlands.gameplay.TradeProcedureSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. Likely adjustments if a test fails:
 - If the numbers differ from those in the legacy `EconomySuite` (favor 3, supply 6, warbands 5 for Muster with one matching adviser; favor 5 and bank 0 for Trade for favor with bank 1), read the recorded operations with `WalkerSimulation.preview` and compare them to `Economy.musterOperations`/`tradeOperations`; the cost and gain operations must be identical.
 - If `resolve` returns a different violation class than the test expects, keep the class the implementation reports only if it is one of `EconomyCardUnavailable`, `EconomyCardNotEmpty`, `InvalidEventOrder`; otherwise fix `resolve`.
@@ -1460,7 +1460,7 @@ Expected: PASS. Likely adjustments if a test fails:
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/economy src/test/scala/oathdigital/gameplay/EconomyFixture.scala src/test/scala/oathdigital/gameplay/MusterProcedureSuite.scala src/test/scala/oathdigital/gameplay/TradeProcedureSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/economy src/test/scala/distantlands/gameplay/EconomyFixture.scala src/test/scala/distantlands/gameplay/MusterProcedureSuite.scala src/test/scala/distantlands/gameplay/TradeProcedureSuite.scala
 git commit -m "feat(economy): declare Muster and Trade as walker trees
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -1469,12 +1469,12 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 6: Register Muster and Trade and gate a start with nothing playable
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ProcedureRef.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerProcedureRegistry.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (`startWalker`)
-- Modify: `src/test/scala/oathdigital/gameplay/walker/WalkerProcedureRegistrySuite.scala`
-- Modify: `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/EconomyWalkerSuite.scala`
+- Modify: `src/main/scala/distantlands/model/ProcedureRef.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (`startWalker`)
+- Modify: `src/test/scala/distantlands/gameplay/walker/WalkerProcedureRegistrySuite.scala`
+- Modify: `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/EconomyWalkerSuite.scala`
 
 **Interfaces:**
 - Consumes: `MusterProcedure`, `TradeProcedure` (Task 5); `WalkerSimulation.previewParked` and `PreviewedOption` (Task 3); `OathViolation.NoPlayableOption`, `OathContinue.AwaitingEconomyDecision` (Task 4).
@@ -1482,18 +1482,18 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/EconomyWalkerSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/EconomyWalkerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.oathkeeper.OathkeeperFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{WalkerCompleted, WalkerParked}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation.NoPlayableOption
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.oathkeeper.OathkeeperFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{WalkerCompleted, WalkerParked}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation.NoPlayableOption
 
 /** Muster and Trade through the rules, as a client drives them: start, park on
   * the source decision, answer.
@@ -1622,7 +1622,7 @@ In `WalkerProcedureRegistrySuite`, add:
   }
 ```
 
-In `GameApplicationServiceSuite`, add `import oathdigital.gameplay.actions.economy.MusterProcedure` to the imports and this test directly after "ruined edifice Economy target persists and replays with its kind" (the legacy test stays until Task 12):
+In `GameApplicationServiceSuite`, add `import distantlands.gameplay.actions.economy.MusterProcedure` to the imports and this test directly after "ruined edifice Economy target persists and replays with its kind" (the legacy test stays until Task 12):
 
 ```scala
   test("a walker Muster on an edifice persists, reloads and replays with its kind") {
@@ -1658,7 +1658,7 @@ In `GameApplicationServiceSuite`, add `import oathdigital.gameplay.actions.econo
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.EconomyWalkerSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.EconomyWalkerSuite"`
 Expected: compile FAIL, "value Muster is not a member of object ActionRef".
 
 - [ ] **Step 3: Add the references**
@@ -1681,7 +1681,7 @@ In the comment above `all`, change "the three major actions above rely on it" to
 
 - [ ] **Step 4: Register them and add the opt-in**
 
-In `WalkerProcedureRegistry.scala`: add `import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}`; extend `Entry`:
+In `WalkerProcedureRegistry.scala`: add `import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}`; extend `Entry`:
 
 ```scala
   private[gameplay] final case class Entry(
@@ -1740,7 +1740,7 @@ Add the accessor next to `isRegistered`:
 
 - [ ] **Step 5: Gate the start**
 
-In `OathRulesWalker.scala`, add `WalkerSimulation` to the `oathdigital.gameplay.walker` import list, then in `startWalker` insert the gate between the walk and the transition:
+In `OathRulesWalker.scala`, add `WalkerSimulation` to the `distantlands.gameplay.walker` import list, then in `startWalker` insert the gate between the walk and the transition:
 
 ```scala
             outcome <- walkerCall(ProcedureWalker.advance(ready, tree, None,
@@ -1779,7 +1779,7 @@ and add this method next to `walkerCall`:
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.EconomyWalkerSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite oathdigital.application.GameApplicationServiceSuite oathdigital.application.PendingWalkerInvariantSuite oathdigital.gameplay.PendingWalkerRulesSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.EconomyWalkerSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite distantlands.application.GameApplicationServiceSuite distantlands.application.PendingWalkerInvariantSuite distantlands.gameplay.PendingWalkerRulesSuite"`
 Expected: PASS. `PendingWalkerRulesSuite` iterates `StartableRef.all`, so it now also proves that no walker start (including Muster and Trade) runs over a parked decision. If `EconomyWalkerSuite`'s "only the actor can answer" fails on the wrong-player case, read what `resumeWalker` returns for a foreign requester and assert that violation instead of `isLeft` only if the existing Forge suite does the same.
 
 Then run `./sbtw -no-colors test`: PASS.
@@ -1787,7 +1787,7 @@ Then run `./sbtw -no-colors test`: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/ProcedureRef.scala src/main/scala/oathdigital/gameplay src/test/scala/oathdigital/gameplay src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala
+git add src/main/scala/distantlands/model/ProcedureRef.scala src/main/scala/distantlands/gameplay src/test/scala/distantlands/gameplay src/test/scala/distantlands/application/GameApplicationServiceSuite.scala
 git commit -m "feat(economy): run Muster and Trade on the walker
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -1796,10 +1796,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 7: Start controls and annotated decision options
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/OperationDetails.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/LegalActionProjector.scala`
-- Create: `src/test/scala/oathdigital/application/EconomyProjectionSuite.scala`
+- Create: `src/main/scala/distantlands/application/OperationDetails.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Modify: `src/main/scala/distantlands/application/LegalActionProjector.scala`
+- Create: `src/test/scala/distantlands/application/EconomyProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes: `MusterProcedure.startOptions`, `TradeProcedure.startOptions` (Task 5); `WalkerSimulation.previewParked` (Task 3); `WalkerProcedureRegistry.requiresPlayableOption` (Task 6); `DecisionOptionProjection.details` (Task 2).
@@ -1807,18 +1807,18 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/application/EconomyProjectionSuite.scala`:
+Create `src/test/scala/distantlands/application/EconomyProjectionSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.{EconomyFixture, OathRules}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.DecisionOptionProjection
+import distantlands.gameplay.{EconomyFixture, OathRules}
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.DecisionOptionProjection
 
 class EconomyProjectionSuite extends munit.FunSuite {
   import EconomyFixture._
@@ -1915,21 +1915,21 @@ class EconomyProjectionSuite extends munit.FunSuite {
 }
 ```
 
-Add `import oathdigital.gameplay.EconomyFixture.AddAdviserSource` if the wildcard import does not bring the case class into scope.
+Add `import distantlands.gameplay.EconomyFixture.AddAdviserSource` if the wildcard import does not bring the case class into scope.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.application.EconomyProjectionSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.application.EconomyProjectionSuite"`
 Expected: compile FAIL, "not found: value OperationDetails".
 
 - [ ] **Step 3: Implement `OperationDetails`**
 
-Create `src/main/scala/oathdigital/application/OperationDetails.scala`:
+Create `src/main/scala/distantlands/application/OperationDetails.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The consequences of answering a decision option, worded for display, read
   * off the operations the walk recorded for it. It words only what a player
@@ -1950,7 +1950,7 @@ private[application] object OperationDetails {
 
 - [ ] **Step 4: Prune and annotate in `WalkerDecisionProjector`**
 
-Add `WalkerSimulation` to the `oathdigital.gameplay.walker` import. Replace the `case None =>` branch of `parked(...)`:
+Add `WalkerSimulation` to the `distantlands.gameplay.walker` import. Replace the `case None =>` branch of `parked(...)`:
 
 ```scala
       case None => ProcedureWalker.parkedDecide(ready, tree, pending, powers)
@@ -2025,7 +2025,7 @@ Amend the doc comment on `queryProjection` that says "The projector never filter
 
 - [ ] **Step 5: Offer the start controls**
 
-In `LegalActionProjector.scala`, import `oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}`, then add:
+In `LegalActionProjector.scala`, import `distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}`, then add:
 
 ```scala
   /** Whether a Muster or Trade could start now: at least one source survives
@@ -2055,13 +2055,13 @@ and in `controls`, in the `Phase.Act` vector right after the `"beginForge"` entr
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.application.EconomyProjectionSuite oathdigital.application.WalkerDecisionProjectorSuite oathdigital.application.WalkerDecisionProjectionSuite oathdigital.application.PhasePowerProjectorSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.application.EconomyProjectionSuite distantlands.application.WalkerDecisionProjectorSuite distantlands.application.WalkerDecisionProjectionSuite distantlands.application.PhasePowerProjectorSuite"`
 Expected: PASS. Then `./sbtw -no-colors test`: PASS. The legacy `EconomySuite` still passes because the board-target actions and `legalMusters` are untouched until Task 10.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application src/test/scala/oathdigital/application/EconomyProjectionSuite.scala
+git add src/main/scala/distantlands/application src/test/scala/distantlands/application/EconomyProjectionSuite.scala
 git commit -m "feat(economy): offer Muster and Trade starts and annotate the parked source
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -2070,11 +2070,11 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 8: Frontend start controls and modifier workflow
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/EconomyControls.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierWorkflow.scala`
-- Create: `frontend/src/test/scala/oathdigital/frontend/EconomyControlsSuite.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/EconomyControls.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierWorkflow.scala`
+- Create: `frontend/src/test/scala/distantlands/frontend/EconomyControlsSuite.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala`
 
 **Interfaces:**
 - Consumes: the controls `beginMuster`, `beginTradeFavor`, `beginTradeSecret` (Task 7); the generic choose-one panel (Task 2).
@@ -2084,12 +2084,12 @@ The old board-target buttons for Muster and Trade keep rendering until Task 10 r
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `frontend/src/test/scala/oathdigital/frontend/EconomyControlsSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/EconomyControlsSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent, WalkerStartArgWire}
+import distantlands.protocol.{GameIntent, WalkerStartArgWire}
 import org.scalajs.dom
 
 /** The Muster and Trade start controls at the DOM, under jsdom. */
@@ -2144,7 +2144,7 @@ In `ModifierSelectionStateSuite`, in the test "targeted actions preview before c
       GameIntent.StartWalker("forge", Vector.empty),
       GameIntent.StartWalker("muster", Vector.empty),
       GameIntent.StartWalker("trade", Vector.empty,
-        Vector(oathdigital.protocol.WalkerStartArgWire("button", "favor"))),
+        Vector(distantlands.protocol.WalkerStartArgWire("button", "favor"))),
 ```
 
 ```scala
@@ -2154,17 +2154,17 @@ In `ModifierSelectionStateSuite`, in the test "targeted actions preview before c
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw -no-colors "frontend/testOnly oathdigital.frontend.EconomyControlsSuite oathdigital.frontend.ModifierSelectionStateSuite"`
+Run: `./sbtw -no-colors "frontend/testOnly distantlands.frontend.EconomyControlsSuite distantlands.frontend.ModifierSelectionStateSuite"`
 Expected: compile FAIL, "not found: value EconomyControls".
 
 - [ ] **Step 3: Implement**
 
-Create `frontend/src/main/scala/oathdigital/frontend/EconomyControls.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/EconomyControls.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
+import distantlands.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
 import ServerUiSupport._
 
 /** The Act-phase start controls for Muster and Trade. Each is offered by the
@@ -2215,7 +2215,7 @@ In `ModifierWorkflow`, change the walker actions set:
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw -no-colors "frontend/testOnly oathdigital.frontend.EconomyControlsSuite oathdigital.frontend.ModifierSelectionStateSuite"` then `./sbtw -no-colors frontend/test`
+Run: `./sbtw -no-colors "frontend/testOnly distantlands.frontend.EconomyControlsSuite distantlands.frontend.ModifierSelectionStateSuite"` then `./sbtw -no-colors frontend/test`
 Expected: PASS. If `ActionSections` or `button` is not visible from the new file, they live in `ServerUiSupport` as `private[frontend]`; the `import ServerUiSupport._` above brings them in.
 
 - [ ] **Step 5: Commit**
@@ -2230,7 +2230,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 9: Differential parity gate
 
 **Files:**
-- Create: `src/test/scala/oathdigital/gameplay/EconomyParitySuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/EconomyParitySuite.scala`
 
 **Interfaces:**
 - Consumes: the legacy `Economy` (still present), `MusterProcedure`, `TradeProcedure`, `EconomyFixture`.
@@ -2240,19 +2240,19 @@ Parity is possible only in exile-only, fixed-unaltered-Foundation states, becaus
 
 - [ ] **Step 1: Write the suite**
 
-Create `src/test/scala/oathdigital/gameplay/EconomyParitySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/EconomyParitySuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.actions.{Economy, EconomyCommand}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.actions.{Economy, EconomyCommand}
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.gameplay.walker.WalkerSimulation.PreviewedOption
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Legacy versus walker, on exile-only boards with the fixed unaltered
   * Foundation profile, the only states the legacy path accepts.
@@ -2390,7 +2390,7 @@ class EconomyParitySuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run the suite**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.EconomyParitySuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.EconomyParitySuite"`
 Expected: PASS for every board. When a comparison fails, do not weaken the assertion. Diagnose in this order:
 1. Candidates differ: print both vectors. A difference in gain with a shortage means the best-effort shrink and legacy `min` disagree; check `OperationStateAdapter.warbandsInBank` against `Economy.availableWarbands` (they agree for an Exile kind by the spec).
 2. State differs: compare `walker` and `legacy` field by field with `assertEquals(actual.game.current, expected.game.current)`; munit prints the differing field. Legitimate differences must be limited to the removed gates; anything else is a defect in the tree.
@@ -2399,7 +2399,7 @@ Expected: PASS for every board. When a comparison fails, do not weaken the asser
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/EconomyParitySuite.scala
+git add src/test/scala/distantlands/gameplay/EconomyParitySuite.scala
 git commit -m "test(economy): prove legacy and walker Muster and Trade agree
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
@@ -2408,12 +2408,12 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 10: Retire the legacy Muster and Trade projection and client surface
 
 **Files:**
-- Delete: `src/test/scala/oathdigital/gameplay/EconomySuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/EconomyWalkerSuite.scala` (two replacement tests)
-- Modify: `src/main/scala/oathdigital/application/LegalActionProjector.scala`, `ScopedProjectionContext.scala`, `GameProjection.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala`, `WorldProjectionDtos.scala`, `GameProjectionCodec.scala`
-- Modify: `src/main/scala/oathdigital/server/GameRoutes.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/package.scala`, `ServerUiSupport.scala`, `ModifierWorkflow.scala`
+- Delete: `src/test/scala/distantlands/gameplay/EconomySuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/EconomyWalkerSuite.scala` (two replacement tests)
+- Modify: `src/main/scala/distantlands/application/LegalActionProjector.scala`, `ScopedProjectionContext.scala`, `GameProjection.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala`, `WorldProjectionDtos.scala`, `GameProjectionCodec.scala`
+- Modify: `src/main/scala/distantlands/server/GameRoutes.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/package.scala`, `ServerUiSupport.scala`, `ModifierWorkflow.scala`
 - Modify tests: `shared/.../ProjectionProtocolSuite.scala`, `frontend/.../ServerModeUiSuite.scala`, `ModifierSelectionStateSuite.scala`, `BoardTargetSelectionStateSuite.scala`, `HttpGameClientSuite.scala`
 
 **Interfaces:**
@@ -2446,12 +2446,12 @@ This is one commit because the shared DTO change reaches the backend, the fronte
   }
 ```
 
-Then run `./sbtw -no-colors "testOnly oathdigital.gameplay.EconomyWalkerSuite"` (PASS) and delete the legacy suite: `git rm src/test/scala/oathdigital/gameplay/EconomySuite.scala`.
+Then run `./sbtw -no-colors "testOnly distantlands.gameplay.EconomyWalkerSuite"` (PASS) and delete the legacy suite: `git rm src/test/scala/distantlands/gameplay/EconomySuite.scala`.
 
 - [ ] **Step 2: Remove the backend projection**
 
 `LegalActionProjector.scala`:
-1. In the `oathdigital.gameplay.actions` import, delete `Economy, ` so it reads `{BannerRules, CampaignRules, ChallengeRules, ForgeRules, VisionRules, Visions}`.
+1. In the `distantlands.gameplay.actions` import, delete `Economy, ` so it reads `{BannerRules, CampaignRules, ChallengeRules, ForgeRules, VisionRules, Visions}`.
 2. In `project`, delete the two arguments that build `LegalMusterProjection` and `LegalTradeProjection` (the `if (ordinaryAct) Economy.legalMuster(...)` and `if (ordinaryAct) Economy.legalTrades(...)` expressions). The remaining arguments are, in order: controls, travel, search, the pending-match for board targets, `minor`.
 3. In `boardTargetActions`, delete `val musters`, `val trades`, `val favor` and `val secret`, and delete the last three entries of the final `Vector(...)` (`selection("muster", ...)`, `selection("trade-favor", ...)`, `selection("trade-secret", ...)`). The entry before them, `Option.when(hasConspiracy)(BoardTargetActionProjection(...))`, then ends the vector: remove its trailing comma so the vector closes with `).flatten`.
 4. Delete the `economyLabel` and `economyCandidate` helpers.
@@ -2503,9 +2503,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 11: Retire the legacy Muster and Trade commands and intents
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala`, `GameApplicationService.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`, `CommandIntentDecoders.scala`, `CommandIntentCodec.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameClient.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`, `Authorization.scala`, `GameIntentMapper.scala`, `GameApplicationService.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`, `CommandIntentDecoders.scala`, `CommandIntentCodec.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameClient.scala`
 - Modify tests: `shared/.../CommandProtocolSuite.scala`, `src/test/.../GameHttpWireSuite.scala`, `PendingWalkerInvariantSuite.scala`, `GameApplicationServiceSuite.scala`, `frontend/.../HttpGameClientSuite.scala`, `ProtocolTestCommands.scala`
 
 **Interfaces:**
@@ -2516,7 +2516,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - `GameCommands.scala`: delete `Muster` and `Trade` from `GameCommand`.
 - `Authorization.scala`: delete `muster` and `trade` (the two methods returning `GameCommand.Muster`/`GameCommand.Trade`).
 - `GameIntentMapper.scala`: delete the `Intent.Muster` and `Intent.Trade` cases, and the private `trade` and `economy` helpers.
-- `GameApplicationService.scala`: delete the `case GameCommand.Muster(...)` and `case GameCommand.Trade(...)` dispatch branches, the two `MajorActionKind.Muster`/`Trade` lines in the action-kind match, and `EconomyCommand` from the `oathdigital.gameplay.actions` import. In the doc comment above `walkerAction`, replace the sentence "a legacy-only kind like `Muster` simply has no matching `ActionRef`" with "a legacy-only kind like `Campaign` simply has no matching `ActionRef`".
+- `GameApplicationService.scala`: delete the `case GameCommand.Muster(...)` and `case GameCommand.Trade(...)` dispatch branches, the two `MajorActionKind.Muster`/`Trade` lines in the action-kind match, and `EconomyCommand` from the `distantlands.gameplay.actions` import. In the doc comment above `walkerAction`, replace the sentence "a legacy-only kind like `Muster` simply has no matching `ActionRef`" with "a legacy-only kind like `Campaign` simply has no matching `ActionRef`".
 
 - [ ] **Step 2: Remove the wire intents**
 
@@ -2533,14 +2533,14 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ```scala
     val failure = GameIntentMapper.bind(PlayerId("trusted"),
       GameIntent.StartWalker("search", Vector.empty,
-        Vector(oathdigital.protocol.WalkerStartArgWire("teleport", "x"))))
+        Vector(distantlands.protocol.WalkerStartArgWire("teleport", "x"))))
       .left.toOption.get
     assertEquals(failure.path, "$.intent.startArgs[0]")
 ```
 
 - `PendingWalkerInvariantSuite`: delete the `GameCommand.Muster(...)` and `GameCommand.Trade(...)` entries of `everyCommand`.
 - `GameApplicationServiceSuite`: in the test that starts a walker Recover and then submits a legacy command expecting rejection, replace `GameCommand.Muster(actor, EconomyTargetRef.Denizen(DenizenId("any-denizen")))` with `GameCommand.BeginChallenge(actor, Banner.PeoplesFavor)`; delete the legacy test "ruined edifice Economy target persists and replays with its kind" (the walker test from Task 6 replaces it).
-- `HttpGameClientSuite`, test "production client previews and submits the same ordered modifiers": replace `GameIntent.Trade(oathdigital.protocol.EconomyTarget("denizen", "10"), "favor")` with `GameIntent.BeginChallenge("peoples-favor")`.
+- `HttpGameClientSuite`, test "production client previews and submits the same ordered modifiers": replace `GameIntent.Trade(distantlands.protocol.EconomyTarget("denizen", "10"), "favor")` with `GameIntent.BeginChallenge("peoples-favor")`.
 - `ProtocolTestCommands.scala`: delete the `Muster` and `Trade` helper definitions.
 
 - [ ] **Step 4: Compile and run everything**
@@ -2559,8 +2559,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 12: Delete the legacy Economy rules, events and codecs
 
 **Files:**
-- Delete: `src/main/scala/oathdigital/gameplay/actions/Economy.scala`, `src/test/scala/oathdigital/gameplay/EconomyParitySuite.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`, `model/GameEventProtocol.scala`, `model/Cards.scala`, `model/GameViolation.scala`, `gameplay/setup/FirstGameSetup.scala`, `serialization/ActionEventCodec.scala`, `serialization/GameEventWire.scala`, `serialization/GameEventJsonSupport.scala`
+- Delete: `src/main/scala/distantlands/gameplay/actions/Economy.scala`, `src/test/scala/distantlands/gameplay/EconomyParitySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`, `model/GameEventProtocol.scala`, `model/Cards.scala`, `model/GameViolation.scala`, `gameplay/setup/FirstGameSetup.scala`, `serialization/ActionEventCodec.scala`, `serialization/GameEventWire.scala`, `serialization/GameEventJsonSupport.scala`
 - Modify tests: `src/test/.../GameEventWireSuite.scala`, `PendingWalkerRulesSuite.scala`
 
 **Interfaces:**
@@ -2568,11 +2568,11 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Delete the rules and the parity gate**
 
-`git rm src/main/scala/oathdigital/gameplay/actions/Economy.scala src/test/scala/oathdigital/gameplay/EconomyParitySuite.scala`. The parity suite compared the walker to the code deleted here, so it ends with it; the walker's own expectations live in `MusterProcedureSuite`, `TradeProcedureSuite`, `EconomyWalkerSuite` and `EconomyProjectionSuite`.
+`git rm src/main/scala/distantlands/gameplay/actions/Economy.scala src/test/scala/distantlands/gameplay/EconomyParitySuite.scala`. The parity suite compared the walker to the code deleted here, so it ends with it; the walker's own expectations live in `MusterProcedureSuite`, `TradeProcedureSuite`, `EconomyWalkerSuite` and `EconomyProjectionSuite`.
 
 - [ ] **Step 2: Remove the rules dispatch**
 
-`OathRules.scala`: delete `Economy, EconomyCommand` from the `oathdigital.gameplay.actions` import list, the whole `def handle(state: OathState, command: EconomyCommand)` method, and the two evolve cases `case event: Mustered => ...` and `case event: Traded => ...`.
+`OathRules.scala`: delete `Economy, EconomyCommand` from the `distantlands.gameplay.actions` import list, the whole `def handle(state: OathState, command: EconomyCommand)` method, and the two evolve cases `case event: Mustered => ...` and `case event: Traded => ...`.
 
 - [ ] **Step 3: Remove the events and their codecs**
 
@@ -2626,7 +2626,7 @@ In `2026-09-05-procedure-walker-design.md`:
 
 Run `./sbtw -no-colors test` and `./sbtw -no-colors frontend/test`. Expected: PASS for both.
 
-Run `git grep -n -i -E "muster|trade" -- src/main/scala/oathdigital/gameplay/actions src/main/scala/oathdigital/application | grep -v -i "economy/"` and read the hits: the only remaining ones should be the walker registry entries, `PowerRuntime`'s fallback kinds, the 24 diagnostic powers and the new controls and projection.
+Run `git grep -n -i -E "muster|trade" -- src/main/scala/distantlands/gameplay/actions src/main/scala/distantlands/application | grep -v -i "economy/"` and read the hits: the only remaining ones should be the walker registry entries, `PowerRuntime`'s fallback kinds, the 24 diagnostic powers and the new controls and projection.
 
 Play one Muster and one Trade by hand if a dev server is available (`./sbtw run`): the Act panel shows the three start buttons for a player who can afford them, starting one parks on a card list whose entries show `1 Supply · +N ...`, choosing a card completes the action, and a player who cannot afford any of them sees no button.
 

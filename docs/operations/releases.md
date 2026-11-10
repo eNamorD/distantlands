@@ -39,9 +39,9 @@ documents private pulls with a classic token scoped to `read:packages`.
 Release tags must be `vX.Y.Z-alpha.N`, `vX.Y.Z-beta.N`, or `vX.Y.Z-rc.N`, with
 nonnegative integers and no leading zeros. Stable versions, `SNAPSHOT`, build
 metadata, branches, and arbitrary refs are rejected. Local builds retain
-`0.1.0-SNAPSHOT`. Set `OATH_RELEASE_VERSION=0.1.0-alpha.1` to build a prerelease
+`0.1.0-SNAPSHOT`. Set `DLQ_RELEASE_VERSION=0.1.0-alpha.1` to build a prerelease
 locally; the `v` belongs only to the Git/registry tag. Both archive filenames and
-their single extraction directory are `oathdigital-0.1.0-alpha.1`, with `.zip`
+their single extraction directory are `distantlands-0.1.0-alpha.1`, with `.zip`
 or `.tgz` on the filename. Two versions can be extracted side by side.
 
 Universal archives require Java 21; OCI images include Java 21 and run as UID
@@ -50,10 +50,10 @@ launchers are included, but their browser/OS acceptance is provisional until
 recorded in the [alpha acceptance record](alpha-acceptance.md).
 
 Bundled archives include a Java 21 runtime built with `jlink` from the
-module list in `packaging/jlink-modules.txt`: `oathdigital-0.1.0-alpha.1-macos-arm64.tgz`,
-`oathdigital-0.1.0-alpha.1-windows-x64.zip`, and
-`oathdigital-0.1.0-alpha.1-linux-x64.tgz`. They extract to the same
-`oathdigital-0.1.0-alpha.1` directory. They are not signed or notarized; the
+module list in `packaging/jlink-modules.txt`: `distantlands-0.1.0-alpha.1-macos-arm64.tgz`,
+`distantlands-0.1.0-alpha.1-windows-x64.zip`, and
+`distantlands-0.1.0-alpha.1-linux-x64.tgz`. They extract to the same
+`distantlands-0.1.0-alpha.1` directory. They are not signed or notarized; the
 [quick start](quick-start.md) describes the one-time macOS and Windows prompts.
 Intel Macs and Linux arm64 use the all-platform archive or the OCI image.
 
@@ -93,7 +93,7 @@ starts the build.
    write`; verification jobs have only `contents: read`.
 2. Write the version's [release notes](#release-notes). The manual
    [LAN/TLS acceptance record](alpha-acceptance.md) is optional during alpha:
-   `0.1.0-alpha.3` shipped without one while a lighter way to test
+   `0.1.0-alpha.3` and `0.1.0-alpha.4` shipped without one while a lighter way to test
    separate-machine play is worked out. Create and push the chosen prerelease
    tag through your normal reviewed release process. This implementation does
    not create or push a tag.
@@ -163,7 +163,7 @@ platform before saving it as a tested-image artifact.
 To build and smoke the bundled archive for the host platform (`macos-arm64`
 or `linux-x64`) from an all-platform archive:
 
-    sh scripts/verify-alpha-release.sh bundled target/universal/oathdigital-0.1.0-alpha.1.tgz macos-arm64 /tmp/oath-bundled
+    sh scripts/verify-alpha-release.sh bundled target/universal/distantlands-0.1.0-alpha.1.tgz macos-arm64 /tmp/oath-bundled
 
 The `windows-x64` archive is built and smoked only by the workflow. Its smoke
 cannot stop the server gracefully, so the database-close check for Windows is

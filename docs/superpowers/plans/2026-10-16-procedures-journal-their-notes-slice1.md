@@ -37,7 +37,7 @@ names it produces are fixed.
 - **`model` may not import `application`, `gameplay`, `persistence`,
   `serialization` or `server`.**
 - **Golden logs: the rendered line never changes, the sequence may.** Run
-  `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`.
+  `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`.
   Tasks 1 to 7 leave the files untouched. Task 8 shifts the Muster entry's
   sequence number, and nothing else, because the journal gains the note
   event the entry is posted at — see ruling 6, amended when this task proved
@@ -151,10 +151,10 @@ git commit -m "docs: amend the note designs for procedure notes"
 ### Task 2: A note's source becomes optional
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala:7-8`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala:121-123,155-159`
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala:46-54`
-- Test: `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala:7-8`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala:121-123,155-159`
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala:46-54`
+- Test: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing.
@@ -190,7 +190,7 @@ the suite wraps them in a helper, use the helper.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventWireSuite"`
 Expected: FAIL to compile — `PowerNote` does not take an `Option`.
 
 - [ ] **Step 3: Make the source optional in the model**
@@ -272,10 +272,10 @@ fixtures that build a `PowerNote` directly take `Some(...)` too.
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventWireSuite"`
 Expected: PASS
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 Expected: PASS, every golden unchanged.
 
 - [ ] **Step 8: Commit**
@@ -298,10 +298,10 @@ plan did not foresee. That would be a `model` and codec change in slice 4,
 and a spec amendment under ruling 7.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/PowerNotes.scala`
-- Modify: `src/main/scala/oathdigital/serialization/WalkerEventCodec.scala:125-192`
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala:88-103`
-- Test: `src/test/scala/oathdigital/serialization/GameEventWireSuite.scala`
+- Modify: `src/main/scala/distantlands/model/PowerNotes.scala`
+- Modify: `src/main/scala/distantlands/serialization/WalkerEventCodec.scala:125-192`
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala:88-103`
+- Test: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's `PowerNote`.
@@ -341,7 +341,7 @@ test("an unknown note clause is a decode error"):
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventWireSuite"`
 Expected: FAIL to compile — `NoteArg.Players` does not exist.
 
 - [ ] **Step 3: Add the model types**
@@ -467,10 +467,10 @@ so slice 4's golden diff stays empty:
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventWireSuite"`
 Expected: PASS
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 Expected: PASS, unchanged.
 
 - [ ] **Step 7: Commit**
@@ -485,9 +485,9 @@ git commit -m "feat(gamelog): note arguments for players, clauses and placements
 ### Task 4: `ProcedureNotes` and the declared-set union
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/DeclaredNotes.scala:36-40`
-- Test: `src/test/scala/oathdigital/gameplay/powers/DeclaredNoteKeysSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/DeclaredNotes.scala:36-40`
+- Test: `src/test/scala/distantlands/gameplay/powers/DeclaredNoteKeysSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's `PowerNote`.
@@ -518,15 +518,15 @@ that declares no keys yet. Register every id the table names, with its
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected: FAIL to compile — `ProcedureNotes` does not exist.
 
 - [ ] **Step 3: Write `ProcedureNotes`**
 
 ```scala
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.model.{NoteKey, PowerId, ProcedureRef}
+import distantlands.model.{NoteKey, PowerId, ProcedureRef}
 
 /** The procedures that write their own Game Log lines (procedures journal
   * their own notes design, "ProcedureNotes"): each procedure's id and the
@@ -566,7 +566,7 @@ In `DeclaredNotes.of`, add `ProcedureNotes.all` to the concatenation beside
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected: FAIL — `declared.knows(muster)` is false, because `all` is empty.
 
 - [ ] **Step 6: Register the ids with no keys**
@@ -594,10 +594,10 @@ Muster.
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected: PASS
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 Expected: PASS, unchanged.
 
 - [ ] **Step 8: Commit**
@@ -614,9 +614,9 @@ git commit -m "feat(gamelog): procedures join the declared note union"
 `covered` and `repeated` were written when every note came from a power.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/PowerLines.scala:59-82`
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogJournal.scala:71-80`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/PowerLines.scala:59-82`
+- Modify: `src/main/scala/distantlands/application/gamelog/LogJournal.scala:71-80`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 4's `ProcedureNotes.writes`.
@@ -678,7 +678,7 @@ test("a non-covering note after a note does not cover it"):
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPowerLinesSuite"`
 Expected: FAIL — the kind is `Trigger`, the duplicate is dropped, and
 `covered(0)` is false. `journalOf` is the suite's existing helper for a
 journal of hand-made events; it supplies the closing event itself.
@@ -740,10 +740,10 @@ non-covering note, and let a covering note through to `exists`.
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPowerLinesSuite"`
 Expected: PASS
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS, goldens unchanged — no procedure writes a note yet, and the
 `covered` change must not move any existing line.
 
@@ -764,7 +764,7 @@ journaled at all. Both already hold for a power's note; this task pins them
 for a procedure's before any procedure relies on them.
 
 **Files:**
-- Test: `src/test/scala/oathdigital/gameplay/walker/WalkerNotesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/walker/WalkerNotesSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 4's `ProcedureNotes.id`.
@@ -809,7 +809,7 @@ not change.
 
 - [ ] **Step 2: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerNotesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerNotesSuite"`
 Expected: PASS. These guarantees come from the power log lines design's
 "Once per effect" rule and are expected to hold already. **If either fails,
 stop and report it** — a procedure note is journaled where a power's is, so
@@ -828,10 +828,10 @@ git commit -m "test(walker): a procedure note is journaled once, and not in a de
 ### Task 7: `ActionLineSource` and `Told`
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala:28-68`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala:49`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogPropertiesSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala:28-68`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala:49`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -861,7 +861,7 @@ later slice; it is the plan's running tally that a migration landed.
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPropertiesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPropertiesSuite"`
 Expected: FAIL to compile — `ActionLineSource` does not exist.
 
 - [ ] **Step 3: Replace `ActionLine.none` with the sealed source**
@@ -963,7 +963,7 @@ whose line is still a `Rule`; a migrating slice fills it in.
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS, goldens unchanged.
 
 - [ ] **Step 8: Commit**
@@ -981,13 +981,13 @@ The proof. `ActionLines.musterLines` is deleted and the golden logs do not
 move.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/MusterProcedure.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala:40-53,112-129`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/ProcedureNotes.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ProcedureLog.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/ActionLines.scala:63-78`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/MusterProcedure.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala:40-53,112-129`
+- Modify: `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/ActionLines.scala:63-78`
 - Modify: `src/test/resources/notes/declared-keys.txt`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 2–6.
@@ -1018,7 +1018,7 @@ uses; do not invent a new script.
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogActionLineSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogActionLineSuite"`
 Expected: FAIL — no `PowerNoted` for the Muster.
 
 - [ ] **Step 3: Declare Muster's key**
@@ -1136,10 +1136,10 @@ need both, so leave them.
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogActionLineSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogActionLineSuite"`
 Expected: PASS
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 Expected: the `muster` golden fails on the entry's sequence number alone —
 `10.0 action 1 muster@4 | Mustered 1 warband with [card:E26|Hiding Place]`
 becomes `11.0 ...`, with the spans, kind, depth and section unchanged.
@@ -1153,7 +1153,7 @@ template used `NoteArg.Amount` instead of `Number` plus `Plural`.
 `DeclaredNoteKeysSuite` now fails: the snapshot gains Muster's key. This is
 the one fixture this plan expects to change.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Read the failure, and add exactly one line to
 `src/test/resources/notes/declared-keys.txt`, in the file's sort order:
 

@@ -1,6 +1,11 @@
 # Audit: the Game Log lines the wording ledger collects
 
-> Status: read-only audit, 2026-11-02, of the ROADMAP item "Improve the
+> Status: implemented, 2026-11-03, with the owner's answers: the
+> recommended default for every question below, and every recommended
+> slice landed; the [ledger](../../superpowers/specs/2026-10-16-game-log-wording-ledger.md)
+> names each commit.
+>
+> Written as a read-only audit, 2026-11-02, of the ROADMAP item "Improve the
 > Game Log lines the wording ledger collects" under Game Log deferred items.
 > It reads every entry of the
 > [wording ledger](../../superpowers/specs/2026-10-16-game-log-wording-ledger.md)
@@ -22,7 +27,7 @@ Read off the lines that are not in the ledger, so a flagged line is judged
 against its neighbours rather than against taste:
 
 - **The actor goes unnamed; anyone else is named.** `LogWords.subject`
-  (`src/main/scala/oathdigital/application/gamelog/LogWords.scala:21-25`)
+  (`src/main/scala/distantlands/application/gamelog/LogWords.scala:21-25`)
   writes "Verb " for the run's actor and "{Blue} verb " for others. Every
   procedure line follows it: "Travelled to", "Mustered 1 warband with",
   "Took 1 favor from", "Kept", "Drew", "Forged", "Recovered", "Failed to

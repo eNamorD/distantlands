@@ -47,7 +47,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Tree addresses.** A parked game is stored by the address of its node in the procedure tree. Add nodes to the Campaign tree only where this plan says: one step appended at the end of the before-targets section. Do not wrap or insert anything elsewhere in it.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -56,12 +56,12 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Then symlink the main checkout's `.tooling` and `node_modules` into the worktree before the first `./sbtw`.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Names, exactly:**
-  - `oathdigital.model.EndWalk` (case object, in `model/Operation.scala`), and the walker step `Ended(ctx: WalkCtx)` in `walker/WalkState.scala`.
+  - `distantlands.model.EndWalk` (case object, in `model/Operation.scala`), and the walker step `Ended(ctx: WalkCtx)` in `walker/WalkState.scala`.
   - `CampaignIds.skip: DecisionOptionRef.Button` (`Button("skip")`) and `CampaignIds.skipOffered: PoolKey` (`"campaign.skip-offered"`).
   - `CampaignAnswers.skipped(pending): Boolean` and `CampaignSetup.skipOffered(ready): Boolean`.
-  - `oathdigital.gameplay.powers.cardplay.SuitOnlyAdvisers` (trait and companion object).
-  - `oathdigital.gameplay.powers.cardplay.VowOfUnionAdvisers` (final case class with `forCatalog`). Power id `denizen.vow-of-union.restriction`.
-  - `oathdigital.gameplay.powers.campaign.VowOfUnion` (case object) and `VowOfUnionCard`, in `campaign/VowOfUnion.scala`. Power id `denizen.vow-of-union.campaign`.
+  - `distantlands.gameplay.powers.cardplay.SuitOnlyAdvisers` (trait and companion object).
+  - `distantlands.gameplay.powers.cardplay.VowOfUnionAdvisers` (final case class with `forCatalog`). Power id `denizen.vow-of-union.restriction`.
+  - `distantlands.gameplay.powers.campaign.VowOfUnion` (case object) and `VowOfUnionCard`, in `campaign/VowOfUnion.scala`. Power id `denizen.vow-of-union.campaign`.
   - Decisions `campaign.vow-of-union.direction` (`VowOfUnion.directionDecisionId`) and `campaign.vow-of-union.arrange` (`VowOfUnion.arrangeDecisionId`).
   - `WarbandArrangement.oneWay`.
 - **Texts, exactly:**
@@ -106,27 +106,27 @@ The product owner reviewed rulings 5 and 6 on 2026-10-12; the rest are for revie
 ## File Structure
 
 - **Create:**
-  - `src/main/scala/oathdigital/gameplay/powers/cardplay/SuitOnlyAdvisers.scala`: the shared bury rule.
-  - `src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfUnionAdvisers.scala`: the restriction half.
-  - `src/main/scala/oathdigital/gameplay/powers/campaign/VowOfUnion.scala`: the card (Task 2), then the Campaign half (Task 4).
-  - `src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfUnionAdvisersSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/EndWalkSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/campaign/CampaignSkipSuite.scala`
-  - `src/test/scala/oathdigital/gameplay/powers/campaign/VowOfUnionSuite.scala`
-  - `src/test/scala/oathdigital/application/gamelog/VowOfUnionLogSuite.scala`
+  - `src/main/scala/distantlands/gameplay/powers/cardplay/SuitOnlyAdvisers.scala`: the shared bury rule.
+  - `src/main/scala/distantlands/gameplay/powers/cardplay/VowOfUnionAdvisers.scala`: the restriction half.
+  - `src/main/scala/distantlands/gameplay/powers/campaign/VowOfUnion.scala`: the card (Task 2), then the Campaign half (Task 4).
+  - `src/test/scala/distantlands/gameplay/powers/cardplay/VowOfUnionAdvisersSuite.scala`
+  - `src/test/scala/distantlands/gameplay/EndWalkSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/campaign/CampaignSkipSuite.scala`
+  - `src/test/scala/distantlands/gameplay/powers/campaign/VowOfUnionSuite.scala`
+  - `src/test/scala/distantlands/application/gamelog/VowOfUnionLogSuite.scala`
 - **Modify:**
-  - `src/main/scala/oathdigital/model/Operation.scala`: `EndWalk`.
-  - `src/main/scala/oathdigital/gameplay/walker/WalkState.scala` and `ProcedureWalker.scala`: the `Ended` step.
-  - `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala` (`CampaignIds`, `CampaignSetup.kindOf`, `CampaignAnswers`) and `CampaignProcedure.scala`: the Skip and the early end.
-  - `src/main/scala/oathdigital/application/gamelog/CampaignLines.scala` and, if needed, `StartLines.scala`: the early-end lines.
-  - `src/main/scala/oathdigital/gameplay/powers/cardplay/FamilyWagon.scala`: extends the shared trait.
-  - `src/main/scala/oathdigital/gameplay/powers/WarbandArrangement.scala`: `oneWay`.
-  - `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`: registers the restriction half.
-  - `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`: registers the Campaign half.
-  - `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`: the card moves out.
-  - `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`: imports.
-  - `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`: two ids.
-  - `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`: `raidAnswers` becomes public.
+  - `src/main/scala/distantlands/model/Operation.scala`: `EndWalk`.
+  - `src/main/scala/distantlands/gameplay/walker/WalkState.scala` and `ProcedureWalker.scala`: the `Ended` step.
+  - `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala` (`CampaignIds`, `CampaignSetup.kindOf`, `CampaignAnswers`) and `CampaignProcedure.scala`: the Skip and the early end.
+  - `src/main/scala/distantlands/application/gamelog/CampaignLines.scala` and, if needed, `StartLines.scala`: the early-end lines.
+  - `src/main/scala/distantlands/gameplay/powers/cardplay/FamilyWagon.scala`: extends the shared trait.
+  - `src/main/scala/distantlands/gameplay/powers/WarbandArrangement.scala`: `oneWay`.
+  - `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`: registers the restriction half.
+  - `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`: registers the Campaign half.
+  - `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`: the card moves out.
+  - `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`: imports.
+  - `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`: two ids.
+  - `src/test/scala/distantlands/application/gamelog/LogScripts.scala`: `raidAnswers` becomes public.
   - The design, the rulings appendix and `docs/ROADMAP.md`.
 
 ---
@@ -243,33 +243,33 @@ git commit -m "docs(batch8): record slice 3 plan-time rulings"
 ### Task 2: Beast advisers only
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/SuitOnlyAdvisers.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfUnionAdvisers.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/campaign/VowOfUnion.scala` (the card only)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/cardplay/FamilyWagon.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfUnionAdvisersSuite.scala`, `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/SuitOnlyAdvisers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/cardplay/VowOfUnionAdvisers.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/campaign/VowOfUnion.scala` (the card only)
+- Modify: `src/main/scala/distantlands/gameplay/powers/cardplay/FamilyWagon.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/cardplay/VowOfUnionAdvisersSuite.scala`, `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
-- Produces: `trait SuitOnlyAdvisers extends ContributingPower`, with abstract `catalog: ExecutableCatalog`, `cardId: DenizenId`, `suit: Suit`, `buryWarning: String` and an overridable `playRules(rules: CardPlayRules): CardPlayRules`. `SuitOnlyAdvisers.hasFaceUp(ready, player, card): Boolean`. `VowOfUnionAdvisers.forCatalog(catalog)`, `VowOfUnionAdvisers.id`, `VowOfUnionAdvisers.buryWarning`. `VowOfUnionCard` in `oathdigital.gameplay.powers.campaign`.
+- Produces: `trait SuitOnlyAdvisers extends ContributingPower`, with abstract `catalog: ExecutableCatalog`, `cardId: DenizenId`, `suit: Suit`, `buryWarning: String` and an overridable `playRules(rules: CardPlayRules): CardPlayRules`. `SuitOnlyAdvisers.hasFaceUp(ready, player, card): Boolean`. `VowOfUnionAdvisers.forCatalog(catalog)`, `VowOfUnionAdvisers.id`, `VowOfUnionAdvisers.buryWarning`. `VowOfUnionCard` in `distantlands.gameplay.powers.campaign`.
 
 - [ ] **Step 1: Write the failing suite.** Create `VowOfUnionAdvisersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.PlacementFixture
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powers.{AdviserLimit, NoteText}
-import oathdigital.gameplay.powers.whenplayed.{ASmallFavor, FaithfulFriend}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap
+import distantlands.gameplay.PlacementFixture
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powers.{AdviserLimit, NoteText}
+import distantlands.gameplay.powers.whenplayed.{ASmallFavor, FaithfulFriend}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap
 
 /** Vow of Union's restriction half through card play: under a faceup Vow
   * of Union the arrival pass buries every adviser that is not a faceup
@@ -385,21 +385,21 @@ If `Fae Merchant` or `Second Chance` turns out to print a WHEN PLAYED, or cannot
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.VowOfUnionAdvisersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.VowOfUnionAdvisersSuite"`
 Expected: compile failure, `VowOfUnionAdvisers` not found.
 
 - [ ] **Step 3: Create the shared trait.** Create `SuitOnlyAdvisers.scala`. It is Family Wagon's bury code with the card, the suit and the warning left abstract. The trait uses `def`s only, because a subclass's `val`s are not set yet while the trait initialises.
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.{AdviserFace, AdviserPlayNote,
   CardPlayRules}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
   ContributingPower, Contribution, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 /** A rule that its holder may have only faceup advisers of one suit, and
   * buries every other adviser they have or would gain: Family Wagon's
@@ -517,7 +517,7 @@ object SuitOnlyAdvisers:
       .flatMap(_.advisers)
 ```
 
-- [ ] **Step 4: Make Family Wagon extend it.** Replace everything in `FamilyWagon.scala` after `FamilyWagonCard` with the code below. Keep `FamilyWagonCard` as it is. The imports become `oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, PrintedPower}`, `oathdigital.gameplay.actions.CardPlayRules` and `oathdigital.model._`.
+- [ ] **Step 4: Make Family Wagon extend it.** Replace everything in `FamilyWagon.scala` after `FamilyWagonCard` with the code below. Keep `FamilyWagonCard` as it is. The imports become `distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, PrintedPower}`, `distantlands.gameplay.actions.CardPlayRules` and `distantlands.model._`.
 
 ```scala
 /** Family Wagon (card 168, adviser-only): "You have no adviser limit but
@@ -557,38 +557,38 @@ object FamilyWagon:
 
 - [ ] **Step 5: Run Family Wagon's suites.** They pin the refactor.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.FamilyWagonSuite oathdigital.gameplay.powers.cardplay.FamilyWagonArrivalsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.FamilyWagonSuite distantlands.gameplay.powers.cardplay.FamilyWagonArrivalsSuite"`
 Expected: PASS, with no test changed.
 
 - [ ] **Step 6: Move the card.** Cut `VowOfUnionCard` out of `HoldingBeastDenizens.scala` and create `campaign/VowOfUnion.scala` holding it, unchanged:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.model._
 
 object VowOfUnionCard extends Denizen(DenizenId("185"), "Vow of Union", Suit.Beast) with Locked with AdviserOnly:
   // The two PrintedPowers exactly as they were in HoldingBeastDenizens.
 ```
 
-Copy the `campaign` and `restriction` powers and `powers` verbatim. In `NewFoundations.scala`, add `VowOfUnionCard` to the `oathdigital.gameplay.powers.campaign.{...}` import, after `VowOfPeaceCard`, and re-wrap the import within 80 characters. `HoldingBeastDenizens.scala` keeps its imports while another card there uses them; remove any that become unused.
+Copy the `campaign` and `restriction` powers and `powers` verbatim. In `NewFoundations.scala`, add `VowOfUnionCard` to the `distantlands.gameplay.powers.campaign.{...}` import, after `VowOfPeaceCard`, and re-wrap the import within 80 characters. `HoldingBeastDenizens.scala` keeps its imports while another card there uses them; remove any that become unused.
 
 - [ ] **Step 7: Add the restriction half.** Create `VowOfUnionAdvisers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.campaign.VowOfUnionCard
-import oathdigital.model.{DenizenId, PowerId, Suit}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.campaign.VowOfUnionCard
+import distantlands.model.{DenizenId, PowerId, Suit}
 
 /** Vow of Union's restriction (card 185, adviser-only, locked): "You may
   * only have [Beast] advisers--bury other advisers you have or would gain."
   *
   * It is a [[SuitOnlyAdvisers]] rule for Beasts, as Family Wagon is for
   * Nomads. It lifts no limit. Its Campaign half is
-  * [[oathdigital.gameplay.powers.campaign.VowOfUnion]].
+  * [[distantlands.gameplay.powers.campaign.VowOfUnion]].
   */
 final case class VowOfUnionAdvisers private (catalog: ExecutableCatalog)
     extends SuitOnlyAdvisers:
@@ -606,7 +606,7 @@ object VowOfUnionAdvisers:
     new VowOfUnionAdvisers(catalog)
 ```
 
-In `WalkerPowerCatalog.scala`, add `VowOfUnionAdvisers` to the `oathdigital.gameplay.powers.cardplay.{...}` import and register it right after Family Wagon:
+In `WalkerPowerCatalog.scala`, add `VowOfUnionAdvisers` to the `distantlands.gameplay.powers.cardplay.{...}` import and register it right after Family Wagon:
 
 ```scala
       Vector(FamilyWagon.forCatalog(catalog)) ++
@@ -617,13 +617,13 @@ In `WalkerPowerCatalog.scala`, add `VowOfUnionAdvisers` to the `oathdigital.game
 
 - [ ] **Step 9: Run the suites.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.* distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS, with 4 new tests.
 
 - [ ] **Step 10: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/cardplay/SuitOnlyAdvisers.scala src/main/scala/oathdigital/gameplay/powers/cardplay/VowOfUnionAdvisers.scala src/main/scala/oathdigital/gameplay/powers/cardplay/FamilyWagon.scala src/main/scala/oathdigital/gameplay/powers/campaign/VowOfUnion.scala src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/oathdigital/catalog/holding/HoldingBeastDenizens.scala src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala src/test/scala/oathdigital/gameplay/powers/cardplay/VowOfUnionAdvisersSuite.scala src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/cardplay/SuitOnlyAdvisers.scala src/main/scala/distantlands/gameplay/powers/cardplay/VowOfUnionAdvisers.scala src/main/scala/distantlands/gameplay/powers/cardplay/FamilyWagon.scala src/main/scala/distantlands/gameplay/powers/campaign/VowOfUnion.scala src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala src/main/scala/distantlands/gameplay/cards/NewFoundations.scala src/test/scala/distantlands/gameplay/powers/cardplay/VowOfUnionAdvisersSuite.scala src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(batch8): Vow of Union keeps Beast advisers only, sharing Family Wagon's bury"
 ```
 
@@ -632,23 +632,23 @@ git commit -m "feat(batch8): Vow of Union keeps Beast advisers only, sharing Fam
 ### Task 3: A walk that ends, and a Campaign skipped
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Operation.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkState.scala`, `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala`, and any walker file the compiler names
-- Modify: `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala`, `src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala`
-- Test: `src/test/scala/oathdigital/gameplay/EndWalkSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/campaign/CampaignSkipSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Operation.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkState.scala`, `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`, and any walker file the compiler names
+- Modify: `src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala`, `src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala`
+- Test: `src/test/scala/distantlands/gameplay/EndWalkSuite.scala`, `src/test/scala/distantlands/gameplay/powers/campaign/CampaignSkipSuite.scala`
 
 **Interfaces:**
-- Produces: `oathdigital.model.EndWalk`. `CampaignIds.skip`, `CampaignIds.skipOffered`, `CampaignAnswers.skipped(pending: PendingTree): Boolean`, `CampaignSetup.skipOffered(ready: ReadyGame): Boolean`. A Campaign whose kind is not settled after the before-targets steps ends with `EndWalk`.
+- Produces: `distantlands.model.EndWalk`. `CampaignIds.skip`, `CampaignIds.skipOffered`, `CampaignAnswers.skipped(pending: PendingTree): Boolean`, `CampaignSetup.skipOffered(ready: ReadyGame): Boolean`. A Campaign whose kind is not settled after the before-targets steps ends with `EndWalk`.
 
 - [ ] **Step 1: Write the failing walker test.** Create `EndWalkSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
 
 /** `EndWalk` finishes the walk where it is reached: nothing after it runs,
   * in its own children or in any enclosing node. */
@@ -676,7 +676,7 @@ class EndWalkSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EndWalkSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EndWalkSuite"`
 Expected: compile failure, `EndWalk` not found.
 
 - [ ] **Step 3: Add `EndWalk`.** In `model/Operation.scala`, after the `Operation` trait:
@@ -711,23 +711,23 @@ case object EndWalk extends Operation:
 
 - [ ] **Step 5: Run the walker test.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EndWalkSuite oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.EndWalkSuite distantlands.gameplay.walker.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Write the failing Campaign test.** Create `CampaignSkipSuite.scala`. A test-only power stands in for Vow of Union, which Task 4 adds:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.Look
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.Look
 
 /** A Campaign whose start offered the Skip: the attacker is asked the kind
   * even with one legal kind, and "Skip Campaign" ends it. */
@@ -780,7 +780,7 @@ class CampaignSkipSuite extends munit.FunSuite:
 
 - [ ] **Step 7: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.CampaignSkipSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.CampaignSkipSuite"`
 Expected: compile failure, `CampaignIds.skip` not found.
 
 - [ ] **Step 8: Add the Skip and the early end.** In `CampaignSetup.scala`:
@@ -868,13 +868,13 @@ Expected: compile failure, `CampaignIds.skip` not found.
 
 - [ ] **Step 10: Run the Campaign suites.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.Campaign* oathdigital.gameplay.EndWalkSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.Campaign* distantlands.gameplay.EndWalkSuite"`
 Expected: PASS. The 3 new tests pass, and no existing Campaign test changes.
 
 - [ ] **Step 11: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/model/Operation.scala src/main/scala/oathdigital/gameplay/walker/WalkState.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignSetup.scala src/main/scala/oathdigital/gameplay/actions/campaign/CampaignProcedure.scala src/test/scala/oathdigital/gameplay/EndWalkSuite.scala src/test/scala/oathdigital/gameplay/powers/campaign/CampaignSkipSuite.scala
+git add src/main/scala/distantlands/model/Operation.scala src/main/scala/distantlands/gameplay/walker/WalkState.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignSetup.scala src/main/scala/distantlands/gameplay/actions/campaign/CampaignProcedure.scala src/test/scala/distantlands/gameplay/EndWalkSuite.scala src/test/scala/distantlands/gameplay/powers/campaign/CampaignSkipSuite.scala
 git commit -m "feat(batch8): end a walk early, and let a Campaign be skipped or end with nothing to attack"
 ```
 
@@ -885,12 +885,12 @@ Add any other walker file the compiler made you change.
 ### Task 4: Warbands at a Campaign's start
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WarbandArrangement.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/VowOfUnion.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/CampaignLines.scala` and, if Step 9 needs it, `StartLines.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/VowOfUnionSuite.scala`, `src/test/scala/oathdigital/application/gamelog/VowOfUnionLogSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WarbandArrangement.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/VowOfUnion.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/CampaignLines.scala` and, if Step 9 needs it, `StartLines.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/VowOfUnionSuite.scala`, `src/test/scala/distantlands/application/gamelog/VowOfUnionLogSuite.scala`
 
 **Interfaces:**
 - Consumes: `VowOfUnionCard` (Task 2). `CampaignIds.skip`, `CampaignIds.skipOffered`, `CampaignAnswers.skipped` and the early end (Task 3).
@@ -899,18 +899,18 @@ Add any other walker file the compiler made you change.
 - [ ] **Step 1: Write the failing suite.** Create `VowOfUnionSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer,
   DistributeAnswer}
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
 
 /** Vow of Union's Campaign half: at the start of any Campaign its holder
   * may move warbands, in one direction, between their board and the sites
@@ -1109,7 +1109,7 @@ Notes for this suite:
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.VowOfUnionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.VowOfUnionSuite"`
 Expected: compile failure, `VowOfUnion` not found.
 
 - [ ] **Step 3: Add the one-way arrangement.** In `WarbandArrangement.scala`, extend the object's doc comment with "Vow of Union arranges them in one direction, with no minimum (`oneWay`)." Then add after `query`:
@@ -1142,15 +1142,15 @@ Expected: compile failure, `VowOfUnion` not found.
 - [ ] **Step 4: Add the Campaign half.** In `campaign/VowOfUnion.scala`, widen the imports to:
 
 ```scala
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.campaign.{CampaignIds,
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.campaign.{CampaignIds,
   CampaignProcedure}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers,
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers,
   WarbandArrangement}
-import oathdigital.model._
+import distantlands.model._
 ```
 
 Then add after `VowOfUnionCard`:
@@ -1179,7 +1179,7 @@ Then add after `VowOfUnionCard`:
   * names the holder only when the holder is not the active player. It covers
   * nothing: the generic move lines say which sites. Both questions are
   * narrated. Its restriction half is
-  * [[oathdigital.gameplay.powers.cardplay.VowOfUnionAdvisers]].
+  * [[distantlands.gameplay.powers.cardplay.VowOfUnionAdvisers]].
   */
 case object VowOfUnion extends ContributingPower:
   val cardId: DenizenId = VowOfUnionCard.id
@@ -1317,7 +1317,7 @@ case object VowOfUnion extends ContributingPower:
 
 - [ ] **Step 6: Run the suite.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.VowOfUnionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.VowOfUnionSuite"`
 Expected: PASS, 5 tests.
 
 The suite is the first test of a non-attacker's question at the start of a Campaign. If the walker refuses it, or the force question does not read the moved warbands, stop and report. Do not change the walker or `CampaignProcedure` beyond Task 3 without asking.
@@ -1325,14 +1325,14 @@ The suite is the first test of a non-attacker's question at the start of a Campa
 - [ ] **Step 7: Write the failing log suite.** In `LogScripts.scala`, drop `private` from `raidAnswers`. Then create `VowOfUnionLogSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.VowOfUnion
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer}
-import oathdigital.testkit.{Answers, CatalogNames, Dice, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.VowOfUnion
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer}
+import distantlands.testkit.{Answers, CatalogNames, Dice, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, raidAnswers, texts}
 
 /** How Vow of Union reads in the Game Log: an off-turn holder is named,
@@ -1406,7 +1406,7 @@ Each board starts with 3 warbands, so each answer leaves the holder's board at 5
 
 - [ ] **Step 8: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.VowOfUnionLogSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.VowOfUnionLogSuite"`
 Expected: the first test passes; the other two fail on the missing early-end lines.
 
 - [ ] **Step 9: Write the early-end lines.** In `CampaignLines.closing`, a Campaign run that completes with no `RecordCampaignResult` posts one line. Replace the `WalkerCompleted` case's body so that a run with a result reads as before, and one without reads `ended`:
@@ -1436,7 +1436,7 @@ Expected: the first test passes; the other two fail on the missing early-end lin
       else "Nothing left to attack: the Campaign ended."))))
 ```
 
-Add `CampaignAnswers` to the `oathdigital.gameplay.actions.campaign` import.
+Add `CampaignAnswers` to the `distantlands.gameplay.actions.campaign` import.
 
 Then run the log suite again and fix what it shows, keeping the Raid and Conquest logs as they are:
   - **No line starts with "Campaign".** The start line waits for the first event that settles the kind and the defender, and a skipped Campaign never settles them. In `StartLines.campaign`, fall back to the bare tag at the run's `WalkerCompleted`: append `.orElse(Option.when(journal.event(at).isInstanceOf[WalkerCompleted])(Vector.empty))`.
@@ -1444,13 +1444,13 @@ Then run the log suite again and fix what it shows, keeping the Raid and Conques
 
 - [ ] **Step 10: Run the log suites.**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS, with 3 new tests and no existing test changed.
 
 - [ ] **Step 11: Commit.**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/WarbandArrangement.scala src/main/scala/oathdigital/gameplay/powers/campaign/VowOfUnion.scala src/main/scala/oathdigital/gameplay/powers/campaign/PlanRules.scala src/main/scala/oathdigital/application/gamelog/CampaignLines.scala src/test/scala/oathdigital/gameplay/powers/campaign/VowOfUnionSuite.scala src/test/scala/oathdigital/application/gamelog/LogScripts.scala src/test/scala/oathdigital/application/gamelog/VowOfUnionLogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/WarbandArrangement.scala src/main/scala/distantlands/gameplay/powers/campaign/VowOfUnion.scala src/main/scala/distantlands/gameplay/powers/campaign/PlanRules.scala src/main/scala/distantlands/application/gamelog/CampaignLines.scala src/test/scala/distantlands/gameplay/powers/campaign/VowOfUnionSuite.scala src/test/scala/distantlands/application/gamelog/LogScripts.scala src/test/scala/distantlands/application/gamelog/VowOfUnionLogSuite.scala
 git commit -m "feat(batch8): Vow of Union moves warbands at the start of any Campaign"
 ```
 

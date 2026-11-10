@@ -22,7 +22,7 @@ The same group plays in two ways, and the client must serve both:
 
 ## Product Purpose
 
-Oath Digital is a Scala/Scala.js implementation of Oath: New Foundations. The
+Distant Lands is a Scala/Scala.js implementation of Oath: New Foundations. The
 server stores a database of games and enforces the rules. Players connect with
 a web browser and play at a digital table.
 
@@ -33,7 +33,7 @@ players who already know the game.
 ## Positioning
 
 A fan-made, self-hosted digital table for Oath, built for veterans. It
-enforces the rules through a procedure walker that parks one decision at a
+enforces the rules through a procedure walker that parks one walk at a
 time, and it stays visually faithful to the physical components. The approach
 is heavily inspired by the HRF (haunt-roll-fail) implementation of Arcs.
 
@@ -53,15 +53,17 @@ is heavily inspired by the HRF (haunt-roll-fail) implementation of Arcs.
 
 ## Capabilities and Constraints
 
-- The rules engine parks at most one decision per game at a time. The viewer
-  sees it on one surface: a panel in the action pane, or clickable sites on the
+- The rules engine parks at most one walk per game at a time. It usually
+  holds one decision; a simultaneous step holds one per player who owes an
+  answer. The viewer sees a decision on one surface: a panel in the action pane, or clickable sites on the
   world board. `CONTEXT.md` defines the product terms (parked decision, form,
   surface, subject card, roll feedback, act-action control, draft set, modifier
   decision). Future UI copy and design must use those terms.
 - Rulebook terms (site, adviser, denizen, relic, Chronicle, campaign, recover)
   come from `docs/rules/glossary.yaml`.
-- Current scope is the all-Exile alpha. Empire and campaign-continuity rules
-  are future work (`docs/ROADMAP.md`).
+- The all-Exile alpha has shipped. The Empire rules and the Chronicle Phase
+  are in; Foundations, Legacies, Eras and the remaining Empire cards are
+  future work (`docs/ROADMAP.md`).
 - Only part of the denizen, relic and edifice catalog is implemented. Setup
   draws only implemented cards.
 - Phones (portrait, from 360px wide) and tablets are supported with touch
@@ -70,7 +72,7 @@ is heavily inspired by the HRF (haunt-roll-fail) implementation of Arcs.
 
 ## Brand Commitments
 
-- Name: **Oath Digital**.
+- Name: **Distant Lands**.
 - Unofficial and fan-made. Oath: New Foundations is designed by Cole Wehrle
   and published by Buried Giant Studios; this project is not affiliated with
   or endorsed by them. The MIT license covers the software only, not Buried
@@ -84,7 +86,7 @@ is heavily inspired by the HRF (haunt-roll-fail) implementation of Arcs.
 
 - Rules reference, glossary, rule index and traceability: `docs/rules/`.
 - Component catalog: the Scala card catalog, listed in
-  `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`; the old JSON
+  `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`; the old JSON
   is kept as reference data in `docs/catalog/reference/`.
 - Operations and release docs: `docs/operations/`; acceptance records:
   `docs/testing/`.

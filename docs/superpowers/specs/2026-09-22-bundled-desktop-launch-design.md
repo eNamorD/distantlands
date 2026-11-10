@@ -17,13 +17,13 @@ the address the window prints.
 | Bundled platforms | macOS arm64, Windows x64, Linux x64 |
 | All-platform archive | Kept unchanged; still requires Java 21 |
 | Build approach | Post-process the existing Universal stage (no sbt `JlinkPlugin`, no `jpackage`) |
-| Smart defaults | In Scala, behind `OATH_LAUNCH=desktop`; launcher scripts stay thin |
+| Smart defaults | In Scala, behind `DLQ_LAUNCH=desktop`; launcher scripts stay thin |
 | Default exposure | LAN: bind all interfaces, detect the LAN address |
 | Overrides | A properties file in the per-user app-data folder |
 | First-run experience | Console window with a banner, plus automatic browser open |
 
 Command-line and OCI runs keep their current behavior. Nothing new runs
-unless `OATH_LAUNCH=desktop` is set.
+unless `DLQ_LAUNCH=desktop` is set.
 
 ## Evidence from the spike
 
@@ -31,8 +31,8 @@ On 2026-09-21 a throwaway `jlink` runtime built from Temurin 21.0.12.1+1
 (macOS arm64) with the module list below was 52 MB, against 335 MB for the full
 JDK. The runtime plus the staged app compressed to a 68 MB `.tgz`. With
 `JAVA_HOME` pointing at that runtime and no Java on `PATH`, the staged
-`bin/oathdigital` reached `/health/ready`, served the index page and
-`main.js`, and logged `Oath Digital database closed` on SIGTERM.
+`bin/distantlands` reached `/health/ready`, served the index page and
+`main.js`, and logged `Distant Lands database closed` on SIGTERM.
 
 `jdeps --print-module-deps` reported
 `java.base,java.desktop,java.management,java.naming,java.sql,jdk.jfr,jdk.unsupported`.
@@ -41,18 +41,18 @@ The spike added `jdk.crypto.ec` and `jdk.localedata` (English only).
 
 ## Distribution layout
 
-Bundled archives are named `oathdigital-<version>-<target>.<ext>`, where
+Bundled archives are named `distantlands-<version>-<target>.<ext>`, where
 `<target>` is `macos-arm64`, `windows-x64`, or `linux-x64`, and `<ext>` is
 `tgz` for macOS and Linux and `zip` for Windows. Each extracts to the same
 single directory as the all-platform archive:
 
 ```
-oathdigital-<version>/
-  Start Oath Digital.command    macOS
-  start-oathdigital.sh          Linux
-  Start Oath Digital.bat        Windows
-  bin/oathdigital               unchanged CLI launcher
-  bin/oathdigital.bat           unchanged CLI launcher
+distantlands-<version>/
+  Start Distant Lands.command    macOS
+  start-distantlands.sh          Linux
+  Start Distant Lands.bat        Windows
+  bin/distantlands               unchanged CLI launcher
+  bin/distantlands.bat           unchanged CLI launcher
   lib/  share/  conf/           identical to the all-platform archive
   jre/                          jlink runtime, bundled archives only
 ```
@@ -85,8 +85,8 @@ Consequences:
 Checked-in text files mapped into the Universal stage, not generated. Each:
 
 1. Changes to its own directory.
-2. Sets `OATH_LAUNCH=desktop`.
-3. Runs `bin/oathdigital` (or `bin\oathdigital.bat`).
+2. Sets `DLQ_LAUNCH=desktop`.
+3. Runs `bin/distantlands` (or `bin\distantlands.bat`).
 4. If the exit status is non-zero, waits for a key press so the error stays
    readable before the window closes.
 
@@ -109,7 +109,7 @@ Steps:
    `jdeps` reports and the list lacks.
 3. Run `jlink --add-modules <list> --include-locales en --strip-debug
    --no-man-pages --no-header-files --compress=zip-6 --output <dir>/jre`.
-4. Copy the staged app beside `jre/` under `oathdigital-<version>/`.
+4. Copy the staged app beside `jre/` under `distantlands-<version>/`.
 5. On macOS, apply ad-hoc signing (`codesign --force -s -`) to the runtime
    binaries only if the plan's quarantine test shows it is needed.
 6. Write the `.tgz` or `.zip` and print its SHA-256.
@@ -118,8 +118,8 @@ The script never downloads anything. The workflow supplies the JDK.
 
 ### 4. Desktop launch profile
 
-A new unit in `oathdigital.server`, invoked by `OathServer` before
-`ServerConfig.parse` only when `OATH_LAUNCH=desktop`. It produces an effective
+A new unit in `distantlands.server`, invoked by `DistantLandsServer` before
+`ServerConfig.parse` only when `DLQ_LAUNCH=desktop`. It produces an effective
 environment map; `ServerConfig.parse` then runs unchanged, so all existing
 validation and the trusted-alpha trust-boundary rule still apply.
 
@@ -130,9 +130,9 @@ filesystem, process launch) are injected so the logic is unit-testable.
 
 | OS | Folder |
 | --- | --- |
-| macOS | `~/Library/Application Support/OathDigital` |
-| Windows | `%LOCALAPPDATA%\OathDigital` |
-| Linux and others | `$XDG_DATA_HOME/oathdigital`, else `~/.local/share/oathdigital` |
+| macOS | `~/Library/Application Support/DistantLands` |
+| Windows | `%LOCALAPPDATA%\DistantLands` |
+| Linux and others | `$XDG_DATA_HOME/distantlands`, else `~/.local/share/distantlands` |
 
 The desktop default database path is `<app-data>/data/database`. The data is
 outside the extracted application, so replacing the application with a new
@@ -140,10 +140,10 @@ version does not replace the database.
 
 #### Settings file
 
-Location: `<app-data>/oathdigital.properties`, Java properties format.
+Location: `<app-data>/distantlands.properties`, Java properties format.
 
-Recognized keys: `OATH_HOST`, `OATH_PORT`, `OATH_PUBLIC_BASE_URL`,
-`OATH_DATABASE_PATH`, `OATH_OPEN_BROWSER`. Any other key is a configuration
+Recognized keys: `DLQ_HOST`, `DLQ_PORT`, `DLQ_PUBLIC_BASE_URL`,
+`DLQ_DATABASE_PATH`, `DLQ_OPEN_BROWSER`. Any other key is a configuration
 error.
 
 On startup, if the file does not exist, the profile writes a template in
@@ -159,8 +159,8 @@ From highest to lowest:
 1. Command-line flags.
 2. Environment variables.
 3. Settings file.
-4. Desktop defaults: `OATH_HOST=0.0.0.0`, detected `OATH_PUBLIC_BASE_URL`,
-   `OATH_DATABASE_PATH=<app-data>/data/database`, `OATH_OPEN_BROWSER=true`.
+4. Desktop defaults: `DLQ_HOST=0.0.0.0`, detected `DLQ_PUBLIC_BASE_URL`,
+   `DLQ_DATABASE_PATH=<app-data>/data/database`, `DLQ_OPEN_BROWSER=true`.
 5. The existing built-in defaults in `ServerConfig`.
 
 The profile fills a key only when no higher layer sets it. Command-line flags
@@ -183,8 +183,8 @@ The chooser is a pure function over interface records and the probe result.
 The detected public base URL is `http://<address>:<port>`, using the
 effective port.
 
-Detection runs only when no higher layer sets `OATH_PUBLIC_BASE_URL` and the
-effective host is the wildcard `0.0.0.0`. If a higher layer sets `OATH_HOST`
+Detection runs only when no higher layer sets `DLQ_PUBLIC_BASE_URL` and the
+effective host is the wildcard `0.0.0.0`. If a higher layer sets `DLQ_HOST`
 to a loopback address, the profile sets no public base URL. If it sets a
 specific non-loopback address, the profile uses `http://<that address>:<port>`
 instead of detecting one.
@@ -196,7 +196,7 @@ contain the port. If binding fails because the address is in use, the server
 prints one line and exits with status 2:
 
 ```
-oathdigital: port 8080 is in use. Is Oath Digital already running? Change OATH_PORT in <settings path>.
+distantlands: port 8080 is in use. Is Distant Lands already running? Change DLQ_PORT in <settings path>.
 ```
 
 The settings-path hint appears only under the desktop profile.
@@ -206,7 +206,7 @@ The settings-path hint appears only under the desktop profile.
 After the server binds, the profile prints:
 
 ```
-Oath Digital <version> is running.
+Distant Lands <version> is running.
   Players open:  <public base URL>
   Data folder:   <database directory>
   Settings:      <settings file>
@@ -216,7 +216,7 @@ Close this window or press Ctrl-C to stop.
 
 The no-LAN variant replaces the first detail line with
 `Only this computer can connect: http://127.0.0.1:<port>` and adds
-`No local network address found. Set OATH_PUBLIC_BASE_URL in the settings file.`
+`No local network address found. Set DLQ_PUBLIC_BASE_URL in the settings file.`
 
 The browser opens the **public base URL**, not a loopback address. The
 same-origin check compares the request `Origin` with the public base URL, so a
@@ -225,7 +225,7 @@ public base URL is absent and the browser opens `http://127.0.0.1:<port>/`.
 
 Opening uses `open` on macOS, `cmd /c start "" <url>` on Windows, and
 `xdg-open` elsewhere. Failure is logged as a warning and ignored.
-`OATH_OPEN_BROWSER=false` disables it.
+`DLQ_OPEN_BROWSER=false` disables it.
 
 Closing the window or pressing Ctrl-C stops the server through the existing
 graceful-shutdown hook.
@@ -268,20 +268,20 @@ smokes the host platform's target locally.
 - LAN chooser: default-route private address, Docker or VPN interface skipped
   in favor of the probe, public probe result rejected, fallback to the first
   private interface, loopback fallback.
-- Detection skipped when `OATH_PUBLIC_BASE_URL` is set, or when `OATH_HOST`
+- Detection skipped when `DLQ_PUBLIC_BASE_URL` is set, or when `DLQ_HOST`
   is set to a loopback or a specific non-loopback address.
 - Banner text for both variants.
-- Browser command per OS, and `OATH_OPEN_BROWSER=false`.
+- Browser command per OS, and `DLQ_OPEN_BROWSER=false`.
 - Port-in-use message, using a real socket held on an ephemeral port.
-- Regression: without `OATH_LAUNCH`, `ServerConfig.parse` receives exactly the
+- Regression: without `DLQ_LAUNCH`, `ServerConfig.parse` receives exactly the
   process environment.
 
 ### Bundled smoke
 
 `scripts/smoke-bundled-distribution.sh`, with a PowerShell counterpart for
-Windows. It runs the extracted archive's `bin/oathdigital` with no
-`JAVA_HOME`, no Java on `PATH`, `OATH_LAUNCH=desktop`,
-`OATH_OPEN_BROWSER=false`, and `HOME`, `LOCALAPPDATA`, and `XDG_DATA_HOME`
+Windows. It runs the extracted archive's `bin/distantlands` with no
+`JAVA_HOME`, no Java on `PATH`, `DLQ_LAUNCH=desktop`,
+`DLQ_OPEN_BROWSER=false`, and `HOME`, `LOCALAPPDATA`, and `XDG_DATA_HOME`
 pointing at a temporary directory. It asserts:
 
 - The Java process runs from the archive's `jre/`.
@@ -289,7 +289,7 @@ pointing at a temporary directory. It asserts:
 - The database was created under `<app-data>/data/`.
 - `/health/ready`, `/`, and `main.js` respond successfully.
 - The banner's address matches the listening address.
-- After a stop signal, the log contains `Oath Digital database closed`.
+- After a stop signal, the log contains `Distant Lands database closed`.
 
 ### Manual acceptance
 

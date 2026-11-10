@@ -17,7 +17,7 @@
 - Unchanged, and to be checked in the diff: the model's `DecisionQuery`; `DecisionAnswerWire` and `CommandNestedCodecs`; `DecisionAnswerCodec` and its eight journal tag constants; the durable journal format; every projected string and label; option and section order; which surface a form reaches; rendered DOM.
 - The six form spellings stay `choose-one`, `choose-many`, `choose-amount`, `partition`, `distribute`, `negotiate`, and the discriminator key stays `"form"` — deliberately not the `"kind"` its two neighbours in `ActionProjectionCodec` use, because **form** is the word `CONTEXT.md` gives the concept. Say so in the codec's doc comment so a later reader does not "fix" it.
 - Per-case `exact` sets are what makes the strictness real. Each case's `exact` set is `"form"` plus exactly the keys that case's `encode` writes, and nothing else.
-- `shared/src/main` may import only `oathdigital.protocol` (`scripts/check-architecture.py`). The new cases need nothing else; do not reach for a `model` type.
+- `shared/src/main` may import only `distantlands.protocol` (`scripts/check-architecture.py`). The new cases need nothing else; do not reach for a `model` type.
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn` on both projects: every match over the new trait must be total at the point of the commit, and an import or private member the retyped code no longer uses fails the build. Treat the compiler as the authority on the edit list — the file lists below are what inspection found and are not guaranteed complete.
 - Production files stay under 800 lines (`scripts/check-architecture.py`). `ActionProjectionDtos.scala` is 298 and `ActionProjectionCodec.scala` is 336 today; the codec grows most, so extract the section and slot encode/decode helpers rather than inlining them six times.
 - Commit trailer: the committing model's own `Co-Authored-By` line.
@@ -26,7 +26,7 @@
 
 ### Amendments this plan makes to the spec
 
-1. **The agreement test is a pair over one test-only table, not a single test.** No compilation unit sees both sides: `src/test` is JVM and cannot see `oathdigital.frontend`; `frontend/src/test` is Scala.js and cannot see `oathdigital.application`; `shared/src/test/scala` is a test source directory of *both* (`build.sbt:40`, `build.sbt:268`) and so must compile against neither. That impossibility is the defect the slice removes. Until then the two sides agree through a test-only table in `shared/src/test`, which is deliberately not shared with `DecisionAnswerCodec`'s journal tags.
+1. **The agreement test is a pair over one test-only table, not a single test.** No compilation unit sees both sides: `src/test` is JVM and cannot see `distantlands.frontend`; `frontend/src/test` is Scala.js and cannot see `distantlands.application`; `shared/src/test/scala` is a test source directory of *both* (`build.sbt:40`, `build.sbt:268`) and so must compile against neither. That impossibility is the defect the slice removes. Until then the two sides agree through a test-only table in `shared/src/test`, which is deliberately not shared with `DecisionAnswerCodec`'s journal tags.
 2. **Two more suites need logic edits** than the spec's Verification section lists: `AlchemistSuite` (`src/test/.../powers/action/AlchemistSuite.scala:66-70` asserts `query.form`, `query.slots` and `(query.minTotal, query.maxTotal)` on the projection) and `DicePowerDecisionProjectionSuite` (`:36-53` reads `projection.query.get.options`, which the trait renames to `offeredOptions`).
 3. **`Surface.Selection` loses its `form` field.** It existed only to remember which of the two forms the query was; the query's own type now says. `Surface.Selection(decision, query)` where `query: SelectionForm`.
 4. **Two confirm-label call sites become literals.** `partitionConfirmLabel(query)` is `query.confirmLabel.getOrElse("Confirm")`, and it is called today on a choose-many (`WalkerSelectionPanels.renderMany`) and on a choose-one (`WalkerPanelSupport.renderBoardPanel`) — neither of which the projector ever gives a confirm label. Under the new type those two read the literal `"Confirm"`, which is byte-identical output. `DistributePanelRenderer` reads the required `String` directly.
@@ -39,9 +39,9 @@
 Commit 1. It must be able to fail today, which is why it is separate and first: nothing currently asserts that the set of forms the projector emits equals the set the frontend recognises.
 
 **Files:**
-- Create: `shared/src/test/scala/oathdigital/protocol/DecisionFormVocabulary.scala`
-- Create: `frontend/src/test/scala/oathdigital/frontend/DecisionFormAgreementSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala` (one new test)
+- Create: `shared/src/test/scala/distantlands/protocol/DecisionFormVocabulary.scala`
+- Create: `frontend/src/test/scala/distantlands/frontend/DecisionFormAgreementSuite.scala`
+- Modify: `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala` (one new test)
 
 **Interfaces:**
 - Consumes: `WalkerDecisionProjector` through the existing `parked(action)` / `projectorFor(tree)` seam in `WalkerDecisionProjectorSuite`; `ParkedDecision.DecisionForm.parse`.
@@ -49,10 +49,10 @@ Commit 1. It must be able to fail today, which is why it is separate and first: 
 
 - [ ] **Step 1: The shared table**
 
-Create `shared/src/test/scala/oathdigital/protocol/DecisionFormVocabulary.scala`:
+Create `shared/src/test/scala/distantlands/protocol/DecisionFormVocabulary.scala`:
 
 ```scala
-package oathdigital.protocol
+package distantlands.protocol
 
 /** The projection wire's form vocabulary, as data, for the one commit in
   * which it is not a type.
@@ -62,8 +62,8 @@ package oathdigital.protocol
   * structural, and this table is deleted with the last reader.
   *
   * It lives here because no single compilation unit sees both sides:
-  * `src/test` cannot see `oathdigital.frontend`, `frontend/src/test` cannot
-  * see `oathdigital.application`, and `shared/src/test/scala` -- a test
+  * `src/test` cannot see `distantlands.frontend`, `frontend/src/test` cannot
+  * see `distantlands.application`, and `shared/src/test/scala` -- a test
   * source directory of both projects -- must compile against neither. That
   * is the defect: today the two vocabularies can only agree by convention.
   * Until the type exists they agree through this table, and adding a seventh
@@ -88,12 +88,12 @@ object DecisionFormVocabulary:
 
 - [ ] **Step 2: The frontend half**
 
-Create `frontend/src/test/scala/oathdigital/frontend/DecisionFormAgreementSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/DecisionFormAgreementSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.DecisionFormVocabulary
+import distantlands.protocol.DecisionFormVocabulary
 import ParkedDecision.DecisionForm
 
 /** The client half of the vocabulary pin: the set of forms this client
@@ -120,7 +120,7 @@ class DecisionFormAgreementSuite extends munit.FunSuite:
 
 - [ ] **Step 3: The backend half**
 
-Add one test to `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala`, after `"a parked choose-amount projects its bounds and confirm label"`. Add `import oathdigital.protocol.DecisionFormVocabulary` to the file's imports; everything else it needs comes from the existing `oathdigital.model._`.
+Add one test to `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`, after `"a parked choose-amount projects its bounds and confirm label"`. Add `import distantlands.protocol.DecisionFormVocabulary` to the file's imports; everything else it needs comes from the existing `distantlands.model._`.
 
 ```scala
   /** The projector half of the vocabulary pin: every shape the model can
@@ -158,7 +158,7 @@ and add a comment pointing at `NegotiationDealProjectionSuite:46`, which already
 
 - [ ] **Step 4: Run both suites**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite" "frontend/testOnly oathdigital.frontend.DecisionFormAgreementSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite" "frontend/testOnly distantlands.frontend.DecisionFormAgreementSuite"`
 Expected: green. If the frontend assertion fails, the vocabularies already disagree — stop and report it; that is a live defect, not a test bug.
 
 - [ ] **Step 5: Run the full gate and record the baseline**
@@ -169,7 +169,7 @@ Expected: all green. Write the backend and frontend test counts into the task no
 - [ ] **Step 6: Commit**
 
 ```bash
-git add shared/src/test/scala/oathdigital/protocol/DecisionFormVocabulary.scala frontend/src/test/scala/oathdigital/frontend/DecisionFormAgreementSuite.scala src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala
+git add shared/src/test/scala/distantlands/protocol/DecisionFormVocabulary.scala frontend/src/test/scala/distantlands/frontend/DecisionFormAgreementSuite.scala src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala
 git commit -m "test(protocol): pin the decision form vocabulary on both sides
 
 Nothing asserted that the set of forms the projector emits equals the set
@@ -188,10 +188,10 @@ Co-Authored-By: <the committing model's trailer>"
 Commit 2 begins here. **Do not commit at the end of this task.** After it, `shared/src/main` compiles and `src/main` and `frontend/src/main` do not.
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala` (`:70-106`: the doc comment and the flat record)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala` (`:167-232`: `encodeDecisionQuery`/`decodeDecisionQuery`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandProtocol.scala` (`:5-21`: one new case)
-- Modify: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala` (the fixture at `:62-68`, the tests at `:97`, `:134`, `:152`, `:171`, `:186`, `:198`, and two new rejection tests)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala` (`:70-106`: the doc comment and the flat record)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala` (`:167-232`: `encodeDecisionQuery`/`decodeDecisionQuery`)
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandProtocol.scala` (`:5-21`: one new case)
+- Modify: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala` (the fixture at `:62-68`, the tests at `:97`, `:134`, `:152`, `:171`, `:186`, `:198`, and two new rejection tests)
 
 **Interfaces:**
 - Consumes: `DecisionOptionProjection`, `DecisionSectionProjection`, `DecisionSlotProjection`, `NegotiationDealProjection`, and `ProjectionCodecSupport`'s helpers.
@@ -403,7 +403,7 @@ In `ActionProjectionCodec.scala`, replace `encodeDecisionQuery`/`decodeDecisionQ
         deal <- decodeDeal(dealRaw, s"$path.deal")
         heading <- optionalString(value, "heading", path)
       yield DecisionQueryProjection.Negotiate(deal, heading)
-      case other => Left(oathdigital.protocol.ProtocolDecodeFailure
+      case other => Left(distantlands.protocol.ProtocolDecodeFailure
         .UnknownVariant(s"$path.form", s"unknown decision form '$other'"))
     ): Result[DecisionQueryProjection]
   yield query
@@ -492,16 +492,16 @@ Expected: `shared` and its suite compile; `src/main` fails on `WalkerDecisionPro
 Still commit 2. No commit at the end.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` (`:214-244`)
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala` (`:143-147`)
-- Modify: `src/test/scala/oathdigital/application/WalkerDecisionProjectorSuite.scala` (delete the Task 1 pin; retype `:134`, `:162`, `:173` and the field reads at `:136-141`, `:152`, `:175`, `:435`)
-- Modify: `src/test/scala/oathdigital/application/WalkerDecisionProjectionSuite.scala` (`:72`, `:236` constructions; `:260`, `:363`, `:368`, `:373` reads)
-- Modify: `src/test/scala/oathdigital/application/PhasePowerProjectorSuite.scala` (`:131`, `:144`)
-- Modify: `src/test/scala/oathdigital/application/NegotiationDealProjectionSuite.scala` (`:46`)
-- Modify: `src/test/scala/oathdigital/application/GameServerGatewaySubmitBeginSuite.scala` (`:81`)
-- Modify: `src/test/scala/oathdigital/application/GameApplicationServiceSuite.scala` (`:856`, `:859`)
-- Modify: `src/test/scala/oathdigital/application/DicePowerDecisionProjectionSuite.scala` (`:36`, `:38`, `:51`, `:53`)
-- Modify: `src/test/scala/oathdigital/gameplay/powers/action/AlchemistSuite.scala` (`:66-70`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` (`:214-244`)
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala` (`:143-147`)
+- Modify: `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala` (delete the Task 1 pin; retype `:134`, `:162`, `:173` and the field reads at `:136-141`, `:152`, `:175`, `:435`)
+- Modify: `src/test/scala/distantlands/application/WalkerDecisionProjectionSuite.scala` (`:72`, `:236` constructions; `:260`, `:363`, `:368`, `:373` reads)
+- Modify: `src/test/scala/distantlands/application/PhasePowerProjectorSuite.scala` (`:131`, `:144`)
+- Modify: `src/test/scala/distantlands/application/NegotiationDealProjectionSuite.scala` (`:46`)
+- Modify: `src/test/scala/distantlands/application/GameServerGatewaySubmitBeginSuite.scala` (`:81`)
+- Modify: `src/test/scala/distantlands/application/GameApplicationServiceSuite.scala` (`:856`, `:859`)
+- Modify: `src/test/scala/distantlands/application/DicePowerDecisionProjectionSuite.scala` (`:36`, `:38`, `:51`, `:53`)
+- Modify: `src/test/scala/distantlands/gameplay/powers/action/AlchemistSuite.scala` (`:66-70`)
 
 **Interfaces:**
 - Consumes: the new trait from Task 2; the model's `DecisionQuery`, unchanged.
@@ -607,19 +607,19 @@ Expected: green at the Task 1 baseline minus one (the deleted pin). Any behaviou
 Still commit 2. No commit at the end.
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala` (delete `:38-54`, retype `:56-60`, `:80-104`, `:185-215`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/PartitionDecisionState.scala` (`:158`, `:216-232`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerSelectionDraft.scala` (`:14`, `:20`, `:22-23`, `:45-47`, `:63-85`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/DistributeDecisionState.scala` (`:74`, `:96-108`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala` (`:133-146`, `:253-332`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerSelectionPanels.scala` (`:9`, `:16-70`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/DistributePanelRenderer.scala` (`:32-35`)
-- Delete: `frontend/src/test/scala/oathdigital/frontend/DecisionFormAgreementSuite.scala`
-- Delete: `shared/src/test/scala/oathdigital/protocol/DecisionFormVocabulary.scala`
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ParkedDecisionSuite.scala` (the `query(form)` helper at `:30`, the local `surface(form)` at `:48`, and the twenty-six literals that follow; delete the `DecisionForm.parse` assertion at `:71-72`)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala` (the form-branching helper at `:23`)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/SessionDraftsSuite.scala`, `WalkerSelectionDraftSuite.scala`, `PartitionDecisionStateSuite.scala`, `PartitionPanelRenderSuite.scala`, `DistributePanelRenderSuite.scala`, `WalkerChoicePanelRenderSuite.scala`, `RecoverPanelSuite.scala`, `CardChoicePanelSuite.scala`, `BoardSurfaceSuite.scala`, `SuitGlyphSuite.scala`, `ServerModeUiSuite.scala` (constructor changes)
-- Possibly modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:168` — `Surface.Board`'s query is a `ChooseOne`, which still has `.options`, so this likely needs no edit. Confirm with the compiler rather than editing on spec.
+- Modify: `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala` (delete `:38-54`, retype `:56-60`, `:80-104`, `:185-215`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/PartitionDecisionState.scala` (`:158`, `:216-232`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerSelectionDraft.scala` (`:14`, `:20`, `:22-23`, `:45-47`, `:63-85`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/DistributeDecisionState.scala` (`:74`, `:96-108`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala` (`:133-146`, `:253-332`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerSelectionPanels.scala` (`:9`, `:16-70`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/DistributePanelRenderer.scala` (`:32-35`)
+- Delete: `frontend/src/test/scala/distantlands/frontend/DecisionFormAgreementSuite.scala`
+- Delete: `shared/src/test/scala/distantlands/protocol/DecisionFormVocabulary.scala`
+- Modify: `frontend/src/test/scala/distantlands/frontend/ParkedDecisionSuite.scala` (the `query(form)` helper at `:30`, the local `surface(form)` at `:48`, and the twenty-six literals that follow; delete the `DecisionForm.parse` assertion at `:71-72`)
+- Modify: `frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala` (the form-branching helper at `:23`)
+- Modify: `frontend/src/test/scala/distantlands/frontend/SessionDraftsSuite.scala`, `WalkerSelectionDraftSuite.scala`, `PartitionDecisionStateSuite.scala`, `PartitionPanelRenderSuite.scala`, `DistributePanelRenderSuite.scala`, `WalkerChoicePanelRenderSuite.scala`, `RecoverPanelSuite.scala`, `CardChoicePanelSuite.scala`, `BoardSurfaceSuite.scala`, `SuitGlyphSuite.scala`, `ServerModeUiSuite.scala` (constructor changes)
+- Possibly modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:168` — `Surface.Board`'s query is a `ChooseOne`, which still has `.options`, so this likely needs no edit. Confirm with the compiler rather than editing on spec.
 
 **Interfaces:**
 - Consumes: the new trait through the existing `DecisionQueryState` alias (`frontend.scala:52-53`). `DecisionQueryState.ChooseOne` works in type position through the `val` alias, exactly as `SiteForces.Exile` already does in `ServerUiSupport.scala:74`.
@@ -765,7 +765,7 @@ Every one of these produces byte-identical DOM. Prove it with the panel suites r
 
 - [ ] **Step 4: Delete the pin**
 
-Delete `frontend/src/test/scala/oathdigital/frontend/DecisionFormAgreementSuite.scala` and, now that its last reader is gone, `shared/src/test/scala/oathdigital/protocol/DecisionFormVocabulary.scala`.
+Delete `frontend/src/test/scala/distantlands/frontend/DecisionFormAgreementSuite.scala` and, now that its last reader is gone, `shared/src/test/scala/distantlands/protocol/DecisionFormVocabulary.scala`.
 
 - [ ] **Step 5: Retype the frontend suites**
 
@@ -793,13 +793,13 @@ Expected: green at the Task 1 baseline minus one (the deleted pin), with every p
 Still commit 2. No commit at the end.
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameClient.scala` (`:68-92` the failure family and `isTransient`; `:220-222` `GameJson.decodeProjection`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableControls.scala` (`:34-41` `SessionControls`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableSession.scala` (`:9-13` `Navigation`, the state at `:31-39`, `accept` at `:107-123`, `loadExisting` and `reconnect`, the `SessionControls` and `TableView` blocks, and the companion)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala` (`:11-20` `TableView`, `:56-63` the failure notice)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala` (`BrowserNavigation`)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala` (`RecordingNavigation`, three new tests)
-- Possibly modify: `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala` if it builds a `Navigation` or asserts the failure notice
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameClient.scala` (`:68-92` the failure family and `isTransient`; `:220-222` `GameJson.decodeProjection`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableControls.scala` (`:34-41` `SessionControls`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableSession.scala` (`:9-13` `Navigation`, the state at `:31-39`, `accept` at `:107-123`, `loadExisting` and `reconnect`, the `SessionControls` and `TableView` blocks, and the companion)
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala` (`:11-20` `TableView`, `:56-63` the failure notice)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` (`BrowserNavigation`)
+- Modify: `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala` (`RecordingNavigation`, three new tests)
+- Possibly modify: `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala` if it builds a `Navigation` or asserts the failure notice
 
 **Interfaces:**
 - Consumes: `ProtocolDecodeFailure.UnknownVariant` from Task 2.
@@ -832,7 +832,7 @@ In `GameJson.decodeProjection`:
       case error => GameClientFailure.DecodeFailure(error.path, error.message)
 ```
 
-Add `ProtocolDecodeFailure` to the file's `oathdigital.protocol` import list. Leave the preview decode at `:191-193` as a plain `DecodeFailure`: a preview response is not the table's position, and a stale bundle will have already failed on a projection.
+Add `ProtocolDecodeFailure` to the file's `distantlands.protocol` import list. Leave the preview decode at `:191-193` as a plain `DecodeFailure`: a preview response is not the table's position, and a stale bundle will have already failed on a projection.
 
 - [ ] **Step 2: The session owns the decision**
 
@@ -1012,22 +1012,22 @@ python3 scripts/check-architecture.py && python3 scripts/check-markdown-links.py
 ./sbtw clean coverage test coverageReport frontend/test
 ```
 
-Expected: both suites green, the link succeeds, the architecture check passes (no production file over 800 lines; `shared/src/main` importing only `oathdigital.protocol`), the markdown link check passes, and coverage stays at or above the 86.8 floor. If coverage dips, the gap is a case whose `offeredOptions` or codec arm nothing reaches — add the missing round trip rather than lowering the ratchet.
+Expected: both suites green, the link succeeds, the architecture check passes (no production file over 800 lines; `shared/src/main` importing only `distantlands.protocol`), the markdown link check passes, and coverage stays at or above the 86.8 floor. If coverage dips, the gap is a case whose `offeredOptions` or codec arm nothing reaches — add the missing round trip rather than lowering the ratchet.
 
 - [ ] **Step 5: Inspect the diff**
 
 Confirm, by reading `git diff --cached` rather than by memory:
 
 - The six form spellings and the `"form"` discriminator key are unchanged.
-- `src/main/scala/oathdigital/serialization/DecisionAnswerCodec.scala` is untouched, and its eight journal tag constants still spell themselves.
-- `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala` and `CommandNestedCodecs.scala` are untouched.
+- `src/main/scala/distantlands/serialization/DecisionAnswerCodec.scala` is untouched, and its eight journal tag constants still spell themselves.
+- `shared/src/main/scala/distantlands/protocol/CommandIntents.scala` and `CommandNestedCodecs.scala` are untouched.
 - `grep -rn 'query\.form\|\.form ==\|DecisionForm' src frontend shared` returns nothing outside `.md` files.
 - No panel suite's expected DOM changed.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala shared/src/main/scala/oathdigital/protocol/CommandProtocol.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/main/scala/oathdigital/application/GameProjection.scala frontend/src/main/scala/oathdigital/frontend CONTEXT.md docs/superpowers/specs shared/src/test/scala/oathdigital/protocol src/test frontend/src/test
+git add shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala shared/src/main/scala/distantlands/protocol/CommandProtocol.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/main/scala/distantlands/application/GameProjection.scala frontend/src/main/scala/distantlands/frontend CONTEXT.md docs/superpowers/specs shared/src/test/scala/distantlands/protocol src/test frontend/src/test
 git status --short
 ```
 

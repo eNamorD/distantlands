@@ -1,0 +1,33 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
+
+object PledgeOfDefenseCard extends Denizen(DenizenId("243"), "Pledge of Defense", Suit.Nomad):
+  val power = PrintedPower(PowerId("denizen.pledge-of-defense"),
+    persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.DefensePlan),
+    text = "+X [defense-die] X equals all [suit-nomad] cards you rule. " +
+      "At end, discard this card.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Pledge of Defense (card 243), a defender's battle plan: "+X [defense-die]
+  * X equals all [suit-nomad] cards you rule. At end, discard this card."
+  *
+  * It is free. It adds one defense die per nomad card its user rules,
+  * counting itself, as Great Crusade counts (`GreatCrusade.nomads`). A bandit
+  * defender counts the nomad cards at every site bandits rule. The card is
+  * discarded through the standard discard once the Campaign has resolved,
+  * whoever won, as Horse Archers is.
+  */
+case object PledgeOfDefense extends DenizenPlan(PledgeOfDefenseCard,
+    PledgeOfDefenseCard.power) with DiscardedAtEnd:
+  def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
+
+  def plan(context: PlanContext): Option[CampaignPlanOffer] =
+    context.denizen(cardId).map { source =>
+      val dice = GreatCrusade.nomads(context, cardId)
+      val noun = if dice == 1 then "defense die" else "defense dice"
+      CampaignPlanOffer(source, s"Pledge of Defense: add $dice $noun",
+        Vector.empty, Vector(CampaignPlanEffect.AddDefenseDice(dice)))
+    }

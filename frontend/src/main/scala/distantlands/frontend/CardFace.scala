@@ -1,0 +1,197 @@
+package distantlands.frontend
+
+import org.scalajs.dom
+import scala.scalajs.js
+import ServerUiSupport._
+
+/** The one place a projected `CardDetails` becomes DOM.
+  *
+  * Every card occupies its type's box -- denizen 1:1.4, relic 1:1 -- in both
+  * states, so revealing or covering a card can never reflow the pane around
+  * it. Full rules live in the inspection overlay, not here: a summary fits a
+  * small card and rules do not (measured p90 is 134 glyphs for a denizen).
+  */
+private[frontend] object CardFace:
+
+  /** Edifices share the denizen box because they occupy denizen slots, and a
+    * differently shaped edifice would break the slot grid the moment one is
+    * built. Visions share it rather than earn a ratio used by one case.
+    */
+  def boxClass(cardKind: String): String =
+    if cardKind == "relic" then "card-face-relic" else "card-face-denizen"
+
+  /** Safe on a card the viewer cannot identify: a denizen back and a vision
+    * back differ physically, so which one this is stays public even when the
+    * card's identity does not. `GamePresentationProjector` projects the real
+    * kind for an unidentifiable adviser (commit `7ae54c3`).
+    */
+  def backLetter(cardKind: String): String = cardKind match
+    case "vision" => "V"
+    case "relic" => "R"
+    case _ => "D"
+
+  def faceDown(card: CardDetails): Boolean =
+    card.hidden || card.orientation.contains("face-down")
+
+  /** How wide a name's longest word is, in em of the compact face's bold
+    * text. The browser measures it in the body face at 700; where there is
+    * no canvas (the test harness) a character counts 0.6em, wider than any
+    * word's. A card carries it as `--name-em`; the map carries the width
+    * its scale leaves a card (`--box-em`, `GameTableShell.nameBoxEm`), and
+    * the stylesheet shows the whole name where the first is within the
+    * second and the initials everywhere else.
+    */
+  def nameWidthEm(name: String): Double =
+    words(name).map(word => measured(word)
+      .getOrElse(word.length * FallbackAdvanceEm)).maxOption.getOrElse(0.0)
+
+  private val FallbackAdvanceEm = 0.6
+  private val MeasurePx = 100.0
+  private val MeasureFont = s"700 ${MeasurePx}px " +
+    "\"Atkinson Hyperlegible Next\", ui-sans-serif, system-ui, sans-serif"
+
+  /** One context for every card, on an offscreen canvas so nothing joins
+    * the document; `None` where the platform has none. The test harness's
+    * jsdom has no `OffscreenCanvas`, and asking its canvas element for a
+    * context throws out of band, so the capability is checked, not tried.
+    */
+  private lazy val measurer: Option[dom.CanvasRenderingContext2D] =
+    Option.when(js.typeOf(js.Dynamic.global.OffscreenCanvas) != "undefined") {
+      js.Dynamic.newInstance(js.Dynamic.global.OffscreenCanvas)(1, 1).getContext("2d")
+    }.filter(context => context != null && !js.isUndefined(context))
+      .map(_.asInstanceOf[dom.CanvasRenderingContext2D])
+
+  private def measured(word: String): Option[Double] = measurer.map { context =>
+    context.font = MeasureFont
+    context.measureText(word).width / MeasurePx
+  }
+
+  private def words(name: String): Vector[String] =
+    name.split("[\\s-]+").toVector.filter(_.nonEmpty)
+
+  /** The name as a card shows it when the map is too small for the whole
+    * word: the first character of each word, or a lone word's first two.
+    * Case is the catalog's own, so "Master of Disguise" reads MoD.
+    */
+  def initials(name: String): String = words(name) match
+    case Vector(only) => only.take(2)
+    case many => many.map(_.take(1)).mkString
+
+  def render(card: CardDetails): dom.html.Button =
+    val node = dom.document.createElement("button").asInstanceOf[dom.html.Button]
+    node.`type` = "button"
+    node.className = Vector("card-face", boxClass(card.cardKind),
+      if faceDown(card) then "card-face-down" else "",
+      if faceDown(card) && !card.hidden then "card-face-knowable" else "",
+      if card.implemented then "" else "card-face-unimplemented")
+      .filter(_.nonEmpty).mkString(" ")
+    if !card.hidden then
+      node.style.setProperty("--name-em",
+        (math.round(nameWidthEm(card.name) * 100) / 100.0).toString)
+    node.setAttribute("data-card-id", card.cardId)
+    node.setAttribute("aria-label",
+      if card.hidden then card.name
+      else if card.implemented then card.name
+      else s"${card.name} (unimplemented)")
+    // The whole name on hover, for the zoomed-out face that shows initials.
+    if !card.hidden then HoverTip.set(node, card.name)
+
+    if card.hidden then
+      node.appendChild(text("span", "card-back-letter", backLetter(card.cardKind)))
+    else if faceDown(card) then
+      // Knowable: the back is what shows at rest; the summary is revealed by
+      // CSS on hover only, inside the same box, so nothing moves.
+      node.appendChild(text("span", "card-back-letter", backLetter(card.cardKind)))
+      val pip = element("span", "card-knowable-pip")
+      pip.setAttribute("aria-hidden", "true")
+      node.appendChild(pip)
+      val peek = element("span", "card-hover-summary")
+      summary(card).foreach(peek.appendChild)
+      node.appendChild(peek)
+    else
+      summary(card).foreach(node.appendChild)
+
+    // A click means inspect, in every context. Decision panels select by
+    // drag, by option buttons, or by the plus/minus steppers, never
+    // by clicking a card. The one clickable ancestor a card sits in, a site
+    // box on the board, ignores events that came from a card
+    // (`WorldBoardRenderer.onCard`); the card itself does not stop them, so
+    // an ancestor that wants to know a card was clicked still can.
+    node.onclick = _ => CardInspection.open(card, node)
+    node
+
+  /** Priority order, dropped from the bottom as the box shrinks: the header
+    * (suit glyph with the restriction banner hung under it, name, and
+    * defense at its right end), live tokens, the power marks, unimplemented.
+    * The suit rides the header as a glyph rather than a word below the name:
+    * it costs no line and colour plus shape says it faster than reading
+    * does. The restriction is a banner under it for the same reason, as the
+    * printed card hangs it, and is the whole card's. Each power's modifier
+    * tab or battle-plan crown stands in the lower-left corner, a first step
+    * toward a face that shows its powers; the rest of a power is read in the
+    * overlay.
+    */
+  private def summary(card: CardDetails): Vector[dom.Element] =
+    val header = element("span", "card-header")
+    val suit = card.suit.map(value => RulesTextRenderer.glyph(s"suit-$value"))
+    // One column for the glyph and the banner, so a name that does not fit
+    // beside them drops under both whole, as it drops under a glyph alone.
+    PowerMarks.restriction(card) match
+      case Some(banner) =>
+        val emblems = element("span", "card-emblems")
+        suit.foreach(emblems.appendChild)
+        emblems.appendChild(banner)
+        header.appendChild(emblems)
+      case None => suit.foreach(header.appendChild)
+    header.appendChild(text("span", "card-name", card.name))
+    // Both forms are in the DOM and the map's scale picks one, so a zoom
+    // never re-renders a card. The short form is decoration for the eye:
+    // the button's label already carries the name.
+    val short = text("span", "card-name-short", initials(card.name))
+    short.setAttribute("aria-hidden", "true")
+    header.appendChild(short)
+    val tokens = element("span", "card-tokens")
+    if card.favor > 0 then counted("favor", card.favor).foreach(tokens.appendChild)
+    if card.secrets > 0 then counted("secret", card.secrets).foreach(tokens.appendChild)
+    // Warbands on the card (Obsidian Cage), each force in its colour.
+    card.warbands.foreach { forces =>
+      val group = element("span",
+        s"card-warbands ${ServerUiSupport.forceCssClass(forces)}")
+      HoverTip.set(group, ServerUiSupport.forceText(forces))
+      counted("warband", forces.count).foreach(group.appendChild)
+      tokens.appendChild(group)
+    }
+    // The pawn a Tracker's holder chose last turn, in its player's colour.
+    // A button's children are presentational, so the marker is hidden from
+    // assistive technology and the overlay's Tracking row carries it.
+    card.tracking.foreach { tracked =>
+      val node = text("span", s"card-tracking force-${tracked.color.key}",
+        "●")
+      node.setAttribute("aria-hidden", "true")
+      HoverTip.set(node, tracked.label)
+      tokens.appendChild(node)
+    }
+    // Defense is rolled against, so it is drawn as the dice that roll it. It
+    // rides the header's right end rather than floating over the corner: a
+    // name long enough to wrap would otherwise run under the dice. The
+    // printed relic value it used to share a line with is a catalog number,
+    // and lives in the overlay.
+    card.defense.filter(_ > 0).foreach { value =>
+      val node = element("span", "card-defense")
+      node.setAttribute("aria-label", s"defense $value")
+      (0 until value).foreach(_ =>
+        node.appendChild(RulesTextRenderer.glyph("defense-die")))
+      header.appendChild(node)
+    }
+    val marks = element("span", "card-power-marks")
+    card.powers.foreach(power => power.modifier.foreach(mark =>
+      PowerMarks.modifier(mark, power.persistent).foreach(marks.appendChild)))
+    Vector(Some(header),
+      Option.when(tokens.childNodes.length > 0)(tokens),
+      Option.when(marks.childNodes.length > 0)(marks),
+      Option.when(!card.implemented)(
+        text("span", "card-unimplemented-badge", "Unimplemented"))).flatten
+
+  private def counted(token: String, count: Int): Vector[dom.Element] =
+    Vector(RulesTextRenderer.glyph(token),
+      text("span", "card-token-count", count.toString))

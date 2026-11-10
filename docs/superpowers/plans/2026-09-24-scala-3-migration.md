@@ -52,9 +52,9 @@ Work in a git worktree on branch `scala-3-migration` (superpowers:using-git-work
 
 | File | Change | Task |
 | --- | --- | --- |
-| `src/test/scala/oathdigital/persistence/HsqldbDatabaseOwnerSuite.scala` | Add characterization test for `retryTransientLock` | 1 |
-| `src/main/scala/oathdigital/persistence/HsqldbDatabaseOwner.scala` | Replace `do/while` with a tail-recursive loop | 1 |
-| `src/main/scala/oathdigital/server/OathServer.scala` | Explicit `ExecutionContext` type | 2 |
+| `src/test/scala/distantlands/persistence/HsqldbDatabaseOwnerSuite.scala` | Add characterization test for `retryTransientLock` | 1 |
+| `src/main/scala/distantlands/persistence/HsqldbDatabaseOwner.scala` | Replace `do/while` with a tail-recursive loop | 1 |
+| `src/main/scala/distantlands/server/DistantLandsServer.scala` | Explicit `ExecutionContext` type | 2 |
 | `build.sbt` | `-Xsource:3` (Task 2); version, flags, coverage floor (Task 4) | 2, 4 |
 | Files reported by the compiler | Minimal migration fixes | 2, 4 |
 | `project/plugins.sbt` | `sbt-scalajs` 1.20.1 → 1.22.0 | 3 |
@@ -66,8 +66,8 @@ Work in a git worktree on branch `scala-3-migration` (superpowers:using-git-work
 Scala 3 removed `do { ... } while (...)`. The method's current behavior must survive exactly, including one subtle rule: after a backoff sleep, the deadline is checked again before the next attempt.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/persistence/HsqldbDatabaseOwner.scala` (imports at lines 1–16; method at lines 149–171)
-- Test: `src/test/scala/oathdigital/persistence/HsqldbDatabaseOwnerSuite.scala` (append a test after the one at line 119)
+- Modify: `src/main/scala/distantlands/persistence/HsqldbDatabaseOwner.scala` (imports at lines 1–16; method at lines 149–171)
+- Test: `src/test/scala/distantlands/persistence/HsqldbDatabaseOwnerSuite.scala` (append a test after the one at line 119)
 
 **Interfaces:**
 - Consumes: `HsqldbDatabaseOwner.retryTransientLock[A](attempt: () => Either[OpenAttemptFailure, A], maxAttempts: Int, deadlineNanos: Long, nanoTime: () => Long, sleep: Long => Unit, retryable: Throwable => Boolean): Either[OpenAttemptFailure, A]`, `HsqldbDatabaseOwner.ConnectionFailure(error: Throwable)`
@@ -141,7 +141,7 @@ Append inside `class HsqldbDatabaseOwnerSuite`, after the closing brace of the t
 
 - [ ] **Step 2: Run the test against the current code**
 
-Run: `./sbtw "testOnly oathdigital.persistence.HsqldbDatabaseOwnerSuite"`
+Run: `./sbtw "testOnly distantlands.persistence.HsqldbDatabaseOwnerSuite"`
 Expected: PASS, all tests. This is a characterization test: it must pass *before* the refactor, proving it describes today's behavior. If it fails, the test is wrong — fix the test, not the code.
 
 - [ ] **Step 3: Replace the loop**
@@ -183,7 +183,7 @@ Why this is equivalent: the old loop counted the attempt before running it (`att
 
 - [ ] **Step 4: Run the suite again**
 
-Run: `./sbtw "testOnly oathdigital.persistence.HsqldbDatabaseOwnerSuite"`
+Run: `./sbtw "testOnly distantlands.persistence.HsqldbDatabaseOwnerSuite"`
 Expected: PASS, all tests.
 
 - [ ] **Step 5: Run the gate** (see "Gate"). Expected: all pass.
@@ -191,7 +191,7 @@ Expected: PASS, all tests.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/persistence/HsqldbDatabaseOwner.scala src/test/scala/oathdigital/persistence/HsqldbDatabaseOwnerSuite.scala
+git add src/main/scala/distantlands/persistence/HsqldbDatabaseOwner.scala src/test/scala/distantlands/persistence/HsqldbDatabaseOwnerSuite.scala
 git commit -m "refactor(persistence): drop do/while from the reopen retry loop
 
 Scala 3 removed do/while. A tail-recursive loop keeps the same attempt
@@ -206,7 +206,7 @@ paths the existing one did not cover."
 With `-Xsource:3`, Scala 2.13 reports Scala 3 incompatibilities in the `scala3-migration` category, and these are compile errors by default. Once the flag is on, new code on `main` cannot reintroduce them.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/server/OathServer.scala:4` and `:41`
+- Modify: `src/main/scala/distantlands/server/DistantLandsServer.scala:4` and `:41`
 - Modify: `build.sbt` (both `scalacOptions` blocks: the `root` block and the `frontend` block)
 - Modify: whatever files the compiler reports in Step 3
 
@@ -214,7 +214,7 @@ With `-Xsource:3`, Scala 2.13 reports Scala 3 incompatibilities in the `scala3-m
 - Consumes: nothing from Task 1.
 - Produces: `scalacOptions` in both projects equal to `Seq("-deprecation", "-feature", "-unchecked", "-Xlint", "-Xsource:3")`. Task 4 replaces these.
 
-- [ ] **Step 1: Fix the known incompatibility in `OathServer`**
+- [ ] **Step 1: Fix the known incompatibility in `DistantLandsServer`**
 
 Line 4 becomes:
 
@@ -274,12 +274,12 @@ Expected: `[success]`. Repeat Step 4 until it is.
 If Step 4 touched more than about 15 files, split into one commit per row of the table, each passing the gate, with the `build.sbt` flag change in the last commit. Otherwise one commit:
 
 ```bash
-git add build.sbt src/main/scala/oathdigital/server/OathServer.scala
+git add build.sbt src/main/scala/distantlands/server/DistantLandsServer.scala
 git add -u src frontend/src shared
 git commit -m "build: compile with -Xsource:3 to block Scala 3 incompatibilities
 
 Adds the flag to both projects and fixes what it reports, starting with
-the untyped implicit execution context in OathServer. Every fix is valid
+the untyped implicit execution context in DistantLandsServer. Every fix is valid
 on both 2.13 and Scala 3."
 ```
 
@@ -353,10 +353,10 @@ Then create a database with the 2.13 build for the compatibility check in Step 9
 ```bash
 ./sbtw Universal/stage
 rm -rf var/scala3-migration && mkdir -p var/scala3-migration
-OATH_DATABASE_PATH=var/scala3-migration/database OATH_PORT=18091 OATH_OPEN_BROWSER=false target/universal/stage/bin/oathdigital
+DLQ_DATABASE_PATH=var/scala3-migration/database DLQ_PORT=18091 DLQ_OPEN_BROWSER=false target/universal/stage/bin/distantlands
 ```
 
-Open `http://localhost:18091`, create a game, and take at least one action. Write down the game's identifier. Stop the server with Ctrl-C and confirm the log ends with `Oath Digital database closed`.
+Open `http://localhost:18091`, create a game, and take at least one action. Write down the game's identifier. Stop the server with Ctrl-C and confirm the log ends with `Distant Lands database closed`.
 
 - [ ] **Step 2: Check for a newer 3.9 patch**
 
@@ -439,10 +439,10 @@ Expected: `[success]`, then the smoke script exits 0.
 - [ ] **Step 9: Manual end-to-end run with the 2.13 database**
 
 ```bash
-OATH_DATABASE_PATH=var/scala3-migration/database OATH_PORT=18091 OATH_OPEN_BROWSER=false target/universal/stage/bin/oathdigital
+DLQ_DATABASE_PATH=var/scala3-migration/database DLQ_PORT=18091 DLQ_OPEN_BROWSER=false target/universal/stage/bin/distantlands
 ```
 
-Open `http://localhost:18091`. Expected: the game created in Step 1 loads with its action applied; you can take one more action; the browser console shows no errors. Stop with Ctrl-C; expected log ends with `Oath Digital database closed`.
+Open `http://localhost:18091`. Expected: the game created in Step 1 loads with its action applied; you can take one more action; the browser console shows no errors. Stop with Ctrl-C; expected log ends with `Distant Lands database closed`.
 
 - [ ] **Step 10: Rest of the gate**
 

@@ -233,7 +233,7 @@ reach the encoder, and this design makes that unrepresentable.
 
 Two comments cite a Scala 2.13 constraint on a 3.9.0 build:
 `model/Operation.scala:10-13` and
-`src/test/scala/oathdigital/testkit/WalkerStubs.scala:14-19`. The rule they
+`src/test/scala/distantlands/testkit/WalkerStubs.scala:14-19`. The rule they
 describe is unchanged in Scala 3 -- only the version is wrong -- but after
 this change their conclusion changes too. Both are rewritten to state the
 Scala 3 rule and to say what unsealed now buys: generic vocabulary authored

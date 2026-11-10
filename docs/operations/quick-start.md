@@ -1,6 +1,6 @@
 # Trusted-alpha quick start
 
-Oath Digital's trusted-alpha mode is for a group whose members trust one
+Distant Lands' trusted-alpha mode is for a group whose members trust one
 another. Each seat link grants full control of that seat. There are no
 accounts, passwords, invitations, revocation, or remote-administration tools.
 Send each link only to its intended player and keep a private saved copy.
@@ -13,25 +13,25 @@ else needs installing. `<version>` is the release version, for example
 
 | Computer | Download |
 | --- | --- |
-| Mac with Apple silicon | `oathdigital-<version>-macos-arm64.tgz` |
-| Windows (64-bit Intel or AMD) | `oathdigital-<version>-windows-x64.zip` |
-| Linux (64-bit Intel or AMD) | `oathdigital-<version>-linux-x64.tgz` |
+| Mac with Apple silicon | `distantlands-<version>-macos-arm64.tgz` |
+| Windows (64-bit Intel or AMD) | `distantlands-<version>-windows-x64.zip` |
+| Linux (64-bit Intel or AMD) | `distantlands-<version>-linux-x64.tgz` |
 
 1. Extract the archive: double-click it on macOS, or right-click and choose
    **Extract All** on Windows. On Linux, extract it with your file manager.
-2. Move the extracted `oathdigital-<version>` folder out of Downloads (or
+2. Move the extracted `distantlands-<version>` folder out of Downloads (or
    Desktop or Documents) into a plain folder such as your home folder or
    `Applications`, for example by dragging it there in Finder or Explorer.
    Starting the server from inside Downloads, Desktop, or Documents makes the
    operating system ask for extra one-time folder-access permission; starting
    it from elsewhere avoids that prompt.
 3. Open the moved folder and start the server:
-   - macOS: double-click **Start Oath Digital.command**. The first time, macOS
+   - macOS: double-click **Start Distant Lands.command**. The first time, macOS
      says it cannot verify the file. Open **System Settings › Privacy &
      Security**, choose **Open Anyway** for it, and confirm.
-   - Windows: double-click **Start Oath Digital.bat**. If SmartScreen appears,
+   - Windows: double-click **Start Distant Lands.bat**. If SmartScreen appears,
      choose **More info › Run anyway**.
-   - Linux: run `./start-oathdigital.sh` from a terminal in that folder, or use
+   - Linux: run `./start-distantlands.sh` from a terminal in that folder, or use
      your file manager's "Run in terminal" action.
 4. If the system asks whether to allow incoming connections, allow them on
    private networks only.
@@ -91,13 +91,13 @@ above and share the LAN address instead.
    MAC address the router shows afterwards. Windows has an equivalent "Random
    hardware addresses" setting for each network.
 3. **Set the public address.** The first start of a Start file creates
-   `oathdigital.properties` in the app-data folder (see the
+   `distantlands.properties` in the app-data folder (see the
    [desktop launch profile](configuration.md#desktop-launch-profile)). Remove
-   the leading `#` from the `OATH_PUBLIC_BASE_URL` line and set it to the
+   the leading `#` from the `DLQ_PUBLIC_BASE_URL` line and set it to the
    public address from step 1, keeping `http://` and the port:
 
    ```properties
-   OATH_PUBLIC_BASE_URL=http://203.0.113.7:8080
+   DLQ_PUBLIC_BASE_URL=http://203.0.113.7:8080
    ```
 
    Restart the server. Seat links and request checks use this exact address.
@@ -145,7 +145,7 @@ Remove the port forward, or stop the server, whenever nobody is playing.
 A cloud virtual machine avoids steps 1, 2, and 4, because it already has a
 public address. Open TCP port 8080 to the Internet in the provider's firewall
 or security group, install the Linux or universal archive, and start it with the
-same `OATH_HOST=0.0.0.0` and `OATH_PUBLIC_BASE_URL=http://<public-address>:8080`
+same `DLQ_HOST=0.0.0.0` and `DLQ_PUBLIC_BASE_URL=http://<public-address>:8080`
 values shown in the [advanced section](#linux). Stop or delete the machine when
 you are finished.
 
@@ -175,7 +175,7 @@ java -version
 Confirm the reported major version is 21.
 
 Use a data directory outside the extracted application so replacing the
-application does not replace the database. The value of `OATH_DATABASE_PATH`
+application does not replace the database. The value of `DLQ_DATABASE_PATH`
 is the database file prefix inside that directory.
 
 #### macOS
@@ -189,14 +189,14 @@ directory do not. This macOS example also assumes the host's LAN address is
 ```sh
 mkdir -p /Users/alex/Applications
 cd /Users/alex/Applications
-tar -xzf /Users/alex/Downloads/oathdigital-0.1.0-alpha.1.tgz
-mkdir -p /Users/alex/OathDigitalData/alpha-1
-cd oathdigital-0.1.0-alpha.1
-OATH_HOST=0.0.0.0 \
-OATH_PORT=8080 \
-OATH_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
-OATH_DATABASE_PATH=/Users/alex/OathDigitalData/alpha-1/database \
-bin/oathdigital
+tar -xzf /Users/alex/Downloads/distantlands-0.1.0-alpha.1.tgz
+mkdir -p /Users/alex/DistantLandsData/alpha-1
+cd distantlands-0.1.0-alpha.1
+DLQ_HOST=0.0.0.0 \
+DLQ_PORT=8080 \
+DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
+DLQ_DATABASE_PATH=/Users/alex/DistantLandsData/alpha-1/database \
+bin/distantlands
 ```
 
 #### Linux
@@ -206,14 +206,14 @@ This example assumes the archive is in `/home/alex/Downloads`:
 ```sh
 mkdir -p /home/alex/apps
 cd /home/alex/apps
-tar -xzf /home/alex/Downloads/oathdigital-0.1.0-alpha.1.tgz
-mkdir -p /home/alex/oathdigital-data/alpha-1
-cd oathdigital-0.1.0-alpha.1
-OATH_HOST=0.0.0.0 \
-OATH_PORT=8080 \
-OATH_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
-OATH_DATABASE_PATH=/home/alex/oathdigital-data/alpha-1/database \
-bin/oathdigital
+tar -xzf /home/alex/Downloads/distantlands-0.1.0-alpha.1.tgz
+mkdir -p /home/alex/distantlands-data/alpha-1
+cd distantlands-0.1.0-alpha.1
+DLQ_HOST=0.0.0.0 \
+DLQ_PORT=8080 \
+DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
+DLQ_DATABASE_PATH=/home/alex/distantlands-data/alpha-1/database \
+bin/distantlands
 ```
 
 #### Windows
@@ -222,26 +222,26 @@ Run these commands in PowerShell. This example assumes the ZIP is in
 `C:\Users\Alex\Downloads`:
 
 ```powershell
-New-Item -ItemType Directory -Force -Path C:\OathDigital
-Set-Location C:\OathDigital
-Expand-Archive -LiteralPath C:\Users\Alex\Downloads\oathdigital-0.1.0-alpha.1.zip -DestinationPath .
-New-Item -ItemType Directory -Force -Path C:\OathDigitalData\alpha-1
-$env:OATH_HOST = '0.0.0.0'
-$env:OATH_PORT = '8080'
-$env:OATH_PUBLIC_BASE_URL = 'http://192.168.1.20:8080'
-$env:OATH_DATABASE_PATH = 'C:\OathDigitalData\alpha-1\database'
-.\oathdigital-0.1.0-alpha.1\bin\oathdigital.bat
+New-Item -ItemType Directory -Force -Path C:\DistantLands
+Set-Location C:\DistantLands
+Expand-Archive -LiteralPath C:\Users\Alex\Downloads\distantlands-0.1.0-alpha.1.zip -DestinationPath .
+New-Item -ItemType Directory -Force -Path C:\DistantLandsData\alpha-1
+$env:DLQ_HOST = '0.0.0.0'
+$env:DLQ_PORT = '8080'
+$env:DLQ_PUBLIC_BASE_URL = 'http://192.168.1.20:8080'
+$env:DLQ_DATABASE_PATH = 'C:\DistantLandsData\alpha-1\database'
+.\distantlands-0.1.0-alpha.1\bin\distantlands.bat
 ```
 
 Replace `192.168.1.20` with the host's private LAN address. For host-only use,
-omit `OATH_HOST` and set or omit the public base URL as described in
+omit `DLQ_HOST` and set or omit the public base URL as described in
 [runtime configuration](configuration.md). For Internet exposure, prefer the
 HTTPS arrangement in [network and browser guidance](network-and-browser.md).
 For a small trusted group, [plain HTTP over the Internet](#playing-over-the-internet-plain-http-trusted-group)
 is possible, with the risks listed there.
 
 Press Ctrl-C once to stop an archive process. Wait for the process to exit and
-the `Oath Digital database closed` log line before backing up or moving data.
+the `Distant Lands database closed` log line before backing up or moving data.
 
 ### OCI image
 
@@ -252,15 +252,15 @@ placeholder below must be replaced with the actual lowercase GitHub owner and
 repository:
 
 ```sh
-export OATH_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.1.0-alpha.1'
-docker pull "$OATH_IMAGE_REFERENCE"
-docker volume create oathdigital-data
-docker run --detach --name oathdigital \
+export DLQ_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.1.0-alpha.1'
+docker pull "$DLQ_IMAGE_REFERENCE"
+docker volume create distantlands-data
+docker run --detach --name distantlands \
   --publish 8080:8080 \
-  --env OATH_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
-  --volume oathdigital-data:/var/lib/oathdigital \
-  "$OATH_IMAGE_REFERENCE"
-docker logs --follow oathdigital
+  --env DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
+  --volume distantlands-data:/var/lib/distantlands \
+  "$DLQ_IMAGE_REFERENCE"
+docker logs --follow distantlands
 ```
 
 The first GHCR publication is private by default. Before giving this command to
@@ -273,9 +273,9 @@ Stop cleanly before backup, upgrade, or restore, then remove only the stopped
 container. The named volume remains:
 
 ```sh
-docker stop --time 15 oathdigital
-docker rm oathdigital
-docker volume inspect oathdigital-data
+docker stop --time 15 distantlands
+docker rm distantlands
+docker volume inspect distantlands-data
 ```
 
 See [data and upgrade policy](data-policy.md) before copying or changing a
@@ -285,20 +285,26 @@ database.
 
 1. Open the configured public base URL, such as
    `http://192.168.1.20:8080/`, on the host.
-2. The page starts with a red and a blue player. Use **Add a Player** to add
+2. The page offers **New Chronicle** and, once a saved Chronicle is loaded
+   from the list, **Continue Chronicle**. Saved Chronicles live in this
+   browser's storage, not in the database; export one to keep a copy. Choose
+   one to reach the player list.
+3. For a new Chronicle, optionally edit its name. The page starts with a red
+   and a blue player. Use **Add a Player** to add
    another color (`red`, `blue`, `yellow`, `white`, `black`, `pink`, or
    `brown`), up to six players, and **Remove** to drop one. A game needs at
    least two players. Each color is its own lineage.
-3. Optionally edit each player ID. IDs default to the capitalized color name,
+4. Optionally edit each player ID. IDs default to the capitalized color name,
    such as `Red`, and must be unique. An ID starts with a letter or digit, may
    then use letters, digits, `.`, `_`, `:` and `-`, and is at most 128
    characters long.
-4. Select **Create game**. The page generates the game ID. The seating order
+5. Select **Create game**. The page generates the game ID. The seating order
    and the first player are shuffled when the game starts, along with the sites
-   and decks.
-5. Copy and privately save every displayed seat link before leaving the page.
+   and decks. In a continued Chronicle with a Chancellor, the Chancellor goes
+   first, or a random Citizen when the Chancellor does not play.
+6. Copy and privately save every displayed seat link before leaving the page.
    The creation result is the only place that lists all raw links.
-6. Send each player only their assigned link. Do not post links in public chat,
+7. Send each player only their assigned link. Do not post links in public chat,
    issue trackers, screenshots, or access logs.
 
 Opening `/s/{seat-code}` stores a seat cookie and redirects to the canonical

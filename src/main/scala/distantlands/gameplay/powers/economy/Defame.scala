@@ -1,0 +1,97 @@
+package distantlands.gameplay.powers.economy
+
+import distantlands.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
+import distantlands.gameplay.{EffectiveSuit, NoteSupport}
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{PowerAnswers, SelectedModifier}
+import distantlands.model._
+
+object DefameCard extends Denizen(DenizenId("102"), "Defame", Suit.Discord):
+  val power = PrintedPower(PowerId("denizen.defame"),
+    persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
+    text = "After trading with a [suit-discord] card, burn " +
+      "[favor-burnt] from any player board.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Defame (card 102), a selected Trade modifier with no cost: after trading
+  * with a Discord card, burn 1 favor from any player's board.
+  *
+  * One `Branch` is appended to the Trade's root, as Moving Market's is: a
+  * decision inside the Economy `Branch` would fail on resume. It asks only
+  * when the source was Discord, by its suit as the Trade reads it
+  * (`EffectiveSuit.traded`), and some
+  * player holds favor. The options are the players with favor, the actor
+  * included, in seat order, then Skip when some player holds none, since
+  * burning from an empty board is legal and burns nothing. Skip writes
+  * nothing.
+  *
+  * Its line names the chosen player, the actor included: "Burned {1 favor}
+  * from {Blue}'s board." No generic line exists for a burn.
+  */
+case object Defame extends SelectedModifier:
+  val id: PowerId = DefameCard.power.id
+  /** Under the `trade.` prefix, as Moving Market's is. */
+  val decisionId: String = "trade.defame.burn"
+  val skip: DecisionOptionRef.Button = DecisionOptionRef.Button("skip")
+  val Burned: Int = 1
+  private val notes = NoteSet(id)
+  /** "Burned {1 favor} from {Blue}'s board." */
+  val burned: NoteKey = notes.key("burned", Vector(NotePart.Text("Burned "),
+    NotePart.Arg(0), NotePart.Text(" from "), NotePart.Arg(1),
+    NotePart.Text("'s board.")))
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  val card: Denizen = DefameCard
+  def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.TradeActionEligibility -> Vector(Transform((ctx, children) =>
+      children :+ offer(ctx.catalog, ctx.actor))))
+
+  private def offer(catalog: ExecutableCatalog,
+      actor: PlayerId): Operation = Branch((ready, pending) =>
+    val players = ready.game.current.players
+    val holding = players.filter(_.board.favor > 0).map(_.player)
+    if !discordSource(catalog, ready, pending) || holding.isEmpty then
+      Vector.empty
+    else
+      val options: Vector[DecisionOption] = holding.map(player =>
+        DecisionOption.Player(DecisionOptionRef.Player(player))) ++
+        Option.when(holding.size < players.size)(
+          DecisionOption.Button(skip, "Skip")).toVector
+      Vector(
+        Decide(decisionId, actor, DecisionQuery.ChooseOne(options,
+          heading = Some("Defame: burn 1 favor from a player's board"))),
+        BuildOps((_, answered) => burn(actor, answered)),
+        Note(id, burnedNote)))
+
+  private def discordSource(catalog: ExecutableCatalog,
+      ready: ReadyGame, pending: PendingTree)
+      : Boolean = PowerAnswers.one(pending, TradeProcedure.decisionId)
+    .flatMap(EffectiveSuit.traded(catalog, ready, pending.answered, _))
+    .contains(Suit.Discord)
+
+  private def burn(actor: PlayerId, pending: PendingTree)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    PowerAnswers.one(pending, decisionId) match
+      case Some(`skip`) => Right(Vector.empty)
+      case Some(DecisionOptionRef.Player(target)) => Right(Vector(
+        Burn.favor(Burned, PositionedLocation(Location.PlayArea(target)),
+          Some(actor))))
+      case Some(other) => Left(OathViolation.InvalidEventOrder(
+        s"${other.wireId} is not a player or Skip"))
+      case None => Left(PowerAnswers.missing(decisionId))
+
+  /** The favor the burn's step took from the chosen board. */
+  private def burnedNote(states: NoteStates): Option[LogNote] = for
+    case DecisionOptionRef.Player(target) <-
+      NoteSupport.answer(states, decisionId)
+    step <- states.previous
+    amount = -NoteSupport.favor(step, target)
+    if amount > 0
+  yield burned(PowerSourceRef.Card(cardId),
+    NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Player(target))

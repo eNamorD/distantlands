@@ -1,0 +1,16 @@
+package distantlands.gameplay.powers.action
+
+import distantlands.gameplay.powerresolver.PhasePower
+
+/** The phase powers of catalog batch 2's slice 3, catalog batch 3's slice
+  * 3a and catalog batch 4's Homesteaders, registered by [[distantlands.gameplay.powers.PhasePowerCatalog]]
+  * through this one object, like [[DiceAndRelicDrawPowers]]. Each names its
+  * denizen card, so all are always present.
+  */
+object SelfActionPowers:
+  val all: Vector[PhasePower] =
+    Vector[PhasePower](Tutor, ShiftingMap, DemonTail, WizardSchool,
+      SpiritSnare, ClayRattle, Scryer, OracularPig,
+      Oracle, BloodPact, ArcaneBrokers, Bog,
+      RelicBreaker, TavernSongs, TinkersFair, SkeletonKey, Messenger,
+      BedOfRoots, Homesteaders)

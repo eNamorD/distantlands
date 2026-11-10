@@ -12,13 +12,13 @@
 
 ## Global Constraints
 
-- `BackendArchitectureSuite` applies: production files stay at or under 800 lines; no power name appears in `gameplay/walker` or `gameplay/operations` sources (a lowercase substring scan of the names of files that declare `extends ContributingPower` or `extends PhasePower`); a power imports nothing from `oathdigital.gameplay.walker`; no direct state writes under `gameplay/powers`.
+- `BackendArchitectureSuite` applies: production files stay at or under 800 lines; no power name appears in `gameplay/walker` or `gameplay/operations` sources (a lowercase substring scan of the names of files that declare `extends ContributingPower` or `extends PhasePower`); a power imports nothing from `distantlands.gameplay.walker`; no direct state writes under `gameplay/powers`.
 - A power is declared solely by a `ContributingPower` or `PhasePower`. No engine code is added for it. If a task finds that a power cannot be, stop and report the minimal engine change instead of adding it.
 - Non-battle rolls are automatic (rulings, "Rules that apply to every power"). Defense dice score with `DefenseDieFace.score` (a Doubler multiplies the total). Attack dice score with `AttackDieFace.score` (a skull face counts two swords, hollow swords one per pair). A skull is any skull face.
 - Relics taken by a power draw are taken facedown.
 - Commit messages end with `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>`. Code, comments, commits and docs are normal prose.
 - Run the whole suite with `./sbtw test`. Run one suite with `./sbtw "testOnly <fully.qualified.Suite>"`.
-- A fresh git worktree has no `.tooling` directory, which `./sbtw` needs. It is gitignored. Link the main checkout's copy once: `ln -s /Users/roman/projects/oathdigital/.tooling .tooling`.
+- A fresh git worktree has no `.tooling` directory, which `./sbtw` needs. It is gitignored. Link the main checkout's copy once: `ln -s /Users/roman/projects/distantlands/.tooling .tooling`.
 - Test fixtures keep the card inventory whole: a card leaves the place it came from when it is placed, or `CardIndex` fails.
 
 ## What planning found
@@ -50,13 +50,13 @@ Resolve these before executing. The plan takes the default named in each, and sa
 
 ## File Structure
 
-- Create `src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala`: the shared draw.
-- Create `src/main/scala/oathdigital/gameplay/powers/action/RollResults.scala`: reads a roll's score and skulls.
+- Create `src/main/scala/distantlands/gameplay/powers/RelicDraws.scala`: the shared draw.
+- Create `src/main/scala/distantlands/gameplay/powers/action/RollResults.scala`: reads a roll's score and skulls.
 - Create `.../action/GamblingHall.scala`, `BoneDice.scala`, `MurkyFountain.scala`, `DowsingSticks.scala`, `FaeMerchant.scala`.
 - Create `.../action/DiceAndRelicDrawPowers.scala`: the slice's registry group.
-- Modify `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`: one import and one line.
-- Create test support `src/test/scala/oathdigital/gameplay/powers/action/PaidActionHarness.scala`.
-- Create one suite per power under `src/test/scala/oathdigital/gameplay/powers/action/`, and `src/test/scala/oathdigital/application/DicePowerDecisionProjectionSuite.scala`.
+- Modify `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`: one import and one line.
+- Create test support `src/test/scala/distantlands/gameplay/powers/action/PaidActionHarness.scala`.
+- Create one suite per power under `src/test/scala/distantlands/gameplay/powers/action/`, and `src/test/scala/distantlands/application/DicePowerDecisionProjectionSuite.scala`.
 - Modify the design and rulings docs (Task 6).
 
 ---
@@ -64,13 +64,13 @@ Resolve these before executing. The plan takes the default named in each, and sa
 ### Task 1: The dice kit and Gambling Hall
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/RollResults.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/PaidActionHarness.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/GamblingHallSuite.scala`
-- Test: `src/test/scala/oathdigital/application/DicePowerDecisionProjectionSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/RollResults.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/PaidActionHarness.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/GamblingHallSuite.scala`
+- Test: `src/test/scala/distantlands/application/DicePowerDecisionProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes slice 1a's `PaidAction(idValue, cost)` and `PowerFixture` (`base`, `actor`, `player`, `home`, `withBoard`, `inPhase`, `atHome`, `atSite`), and `CampaignFixture.dice`.
@@ -83,19 +83,19 @@ Ruling: cost 2 favor placed. Roll 4 defense dice. When the total X is above zero
 
 - [ ] **Step 1: Write the test support**
 
-`src/test/scala/oathdigital/gameplay/powers/action/PaidActionHarness.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/PaidActionHarness.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.{CampaignFixture, OathRules}
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerDice
-import oathdigital.model._
-import oathdigital.serialization.GameEventWire
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.{CampaignFixture, OathRules}
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerDice
+import distantlands.model._
+import distantlands.serialization.GameEventWire
+import distantlands.model.OathState.Ready
 
 /** Drives an Act phase power through the rules, the way `MagicWaterskinSuite`
   * does, with fixed dice and a journal replay check. Shared by the slice 1b
@@ -173,14 +173,14 @@ object PaidActionHarness {
 
 - [ ] **Step 2: Write the failing Gambling Hall suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/GamblingHallSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/GamblingHallSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class GamblingHallSuite extends munit.FunSuite {
   import PaidActionHarness._
@@ -278,7 +278,7 @@ class GamblingHallSuite extends munit.FunSuite {
   test("a Gambling Hall at a site the actor rules is usable from another site") {
     val far = base.game.current.map.inPlay.toVector.sortBy(_.value)
       .find(_ != home(base)).get
-    val kind = oathdigital.gameplay.powers.PlayerFacts.forceKind(base, actor)
+    val kind = distantlands.gameplay.powers.PlayerFacts.forceKind(base, actor)
       .toOption.get
     val ready0 = act(withBoard(atSite(base, hall, far).updateCurrent(c =>
       c.copy(map = c.map.copy(sites = c.map.sites.updated(far,
@@ -291,15 +291,15 @@ class GamblingHallSuite extends munit.FunSuite {
 
 - [ ] **Step 3: Write the failing projection suite**
 
-`src/test/scala/oathdigital/application/DicePowerDecisionProjectionSuite.scala`. Task 5 adds a second test to it.
+`src/test/scala/distantlands/application/DicePowerDecisionProjectionSuite.scala`. Task 5 adds a second test to it.
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.PowerFixture._
-import oathdigital.gameplay.powers.action.{GamblingHall, PaidActionHarness}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerFixture._
+import distantlands.gameplay.powers.action.{GamblingHall, PaidActionHarness}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** The parked decisions of the slice 1b powers reach their owner with every
   * option presented, and reach nobody else. A projection is dropped whole when
@@ -337,17 +337,17 @@ class DicePowerDecisionProjectionSuite extends munit.FunSuite {
 
 - [ ] **Step 4: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GamblingHallSuite oathdigital.application.DicePowerDecisionProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GamblingHallSuite distantlands.application.DicePowerDecisionProjectionSuite"`
 Expected: FAIL to compile, `not found: value GamblingHall`.
 
 - [ ] **Step 5: Write `RollResults` and Gambling Hall**
 
-`src/main/scala/oathdigital/gameplay/powers/action/RollResults.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/RollResults.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.model.{PoolKey, ReadyGame}
+import distantlands.model.{PoolKey, ReadyGame}
 
 /** Reads the outcome an automatic `Roll` wrote into state. A pool that never
   * rolled reads as zero, so a `BuildOps` that runs after a skipped roll needs
@@ -367,12 +367,12 @@ private[action] object RollResults {
 }
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/action/GamblingHall.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/GamblingHall.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Gambling Hall (card 93), ACTION: place 2 favor on this card, roll 4
   * defense dice, and when the total X is above zero choose any favor bank
@@ -421,15 +421,15 @@ case object GamblingHall extends PaidAction("denizen.gambling-hall",
 
 - [ ] **Step 6: Register the slice's group**
 
-`src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePower
 
-/** The phase powers of slice 1b, registered by [[oathdigital.gameplay.powers.PhasePowerCatalog]]
+/** The phase powers of slice 1b, registered by [[distantlands.gameplay.powers.PhasePowerCatalog]]
   * through this one object so that later slices add their own group without
   * editing the same lines.
   */
@@ -439,10 +439,10 @@ object DiceAndRelicDrawPowers {
 }
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`: extend the import and the vector (the two changed lines only):
+`src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`: extend the import and the vector (the two changed lines only):
 
 ```scala
-import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, MagicWaterskin, WaysideInn}
+import distantlands.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, MagicWaterskin, WaysideInn}
 ```
 ```scala
       Vector[PhasePower](WaysideInn, Elders, MagicWaterskin, MarbleFountains) ++
@@ -451,7 +451,7 @@ import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, Magic
 
 - [ ] **Step 7: Run the suites, then the full suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GamblingHallSuite oathdigital.application.DicePowerDecisionProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GamblingHallSuite distantlands.application.DicePowerDecisionProjectionSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`
@@ -471,9 +471,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 2: Bone Dice
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/BoneDice.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/BoneDiceSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/BoneDice.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/BoneDiceSuite.scala`
 
 **Interfaces:**
 - Consumes `RollResults.score`, `RollResults.skulls`, `PaidActionHarness.attackDice`, `PlayerFacts.player`.
@@ -483,14 +483,14 @@ Ruling: cost 1 secret placed. Roll 2 attack dice. Gain Supply equal to the sword
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/BoneDiceSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/BoneDiceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class BoneDiceSuite extends munit.FunSuite {
   import PaidActionHarness._
@@ -567,18 +567,18 @@ class BoneDiceSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BoneDiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BoneDiceSuite"`
 Expected: FAIL to compile, `not found: value BoneDice`.
 
 - [ ] **Step 3: Write Bone Dice**
 
-`src/main/scala/oathdigital/gameplay/powers/action/BoneDice.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/BoneDice.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 /** Bone Dice (relic R24), ACTION: place 1 secret on this relic, roll 2 attack
   * dice, gain Supply equal to the sword score, then bury this relic if any
@@ -634,7 +634,7 @@ In `DiceAndRelicDrawPowers.scala` change the vector to:
 
 - [ ] **Step 5: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BoneDiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BoneDiceSuite"`
 Expected: PASS. If the skull test shows the secret still on the relic, the `BuildOps` ran before the cost: re-read "What planning found" item 5 before changing the power.
 
 - [ ] **Step 6: Commit**
@@ -651,9 +651,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 3: Murky Fountain
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/MurkyFountain.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/MurkyFountainSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/MurkyFountain.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/MurkyFountainSuite.scala`
 
 **Interfaces:**
 - Consumes `PowerAccess.siteOf`, `PowerAccess.pawnSite` (`private[gameplay]`, reachable from `gameplay.powers`), `RollResults.score`, `PaidActionHarness.defenseDice`, `PowerFixture.withEdifice`.
@@ -663,14 +663,14 @@ Ruling: cost 1 secret placed on the edifice card. If your pawn is at this site, 
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/MurkyFountainSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/MurkyFountainSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PlayerFacts, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PlayerFacts, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class MurkyFountainSuite extends munit.FunSuite {
   import PaidActionHarness._
@@ -776,18 +776,18 @@ class MurkyFountainSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.MurkyFountainSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.MurkyFountainSuite"`
 Expected: FAIL to compile, `not found: value MurkyFountain`.
 
 - [ ] **Step 3: Write Murky Fountain**
 
-`src/main/scala/oathdigital/gameplay/powers/action/MurkyFountain.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/MurkyFountain.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 /** Murky Fountain (edifice E15, ruined), ACTION: place 1 secret on this card.
   * If your pawn is at this site, roll 2 defense dice and gain Supply equal to
@@ -841,7 +841,7 @@ In `DiceAndRelicDrawPowers.scala` change the vector to:
 
 - [ ] **Step 5: Run the suite, then the full suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.MurkyFountainSuite"` then `./sbtw test`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.MurkyFountainSuite"` then `./sbtw test`
 Expected: PASS. If the pawn-elsewhere test fails on `Sequence(Vector.empty)`, replace it with `BuildOps((_, _) => Right(Vector.empty))` and record the finding. If the zero-total test ends in `ActActionSelection`, the phase change did not run: read `walkerTransition` (item 7) before changing the power.
 
 - [ ] **Step 6: Commit**
@@ -858,10 +858,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 4: The relic draw and Dowsing Sticks
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/DowsingSticks.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/DowsingSticksSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/RelicDraws.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/DowsingSticks.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/DowsingSticksSuite.scala`
 
 **Interfaces:**
 - Produces `RelicDraws.takeTop(ready, actor): Vector[CoreOperation]`, empty when the relic deck is empty. Task 5 uses it. Slice 1a's Family Heirloom keeps its own draw, because it must fail inside a guarded `Repeat`.
@@ -871,14 +871,14 @@ Ruling: cost 1 secret placed and 2 secrets burnt. Draw a relic from the relic de
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/DowsingSticksSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/DowsingSticksSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class DowsingSticksSuite extends munit.FunSuite {
   import PaidActionHarness._
@@ -944,17 +944,17 @@ class DowsingSticksSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.DowsingSticksSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.DowsingSticksSuite"`
 Expected: FAIL to compile, `not found: value DowsingSticks`.
 
 - [ ] **Step 3: Write the draw and Dowsing Sticks**
 
-`src/main/scala/oathdigital/gameplay/powers/RelicDraws.scala`:
+`src/main/scala/distantlands/gameplay/powers/RelicDraws.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Relic draws that powers share. */
 object RelicDraws {
@@ -968,13 +968,13 @@ object RelicDraws {
 }
 ```
 
-`src/main/scala/oathdigital/gameplay/powers/action/DowsingSticks.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/DowsingSticks.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.RelicDraws
-import oathdigital.model._
+import distantlands.gameplay.powers.RelicDraws
+import distantlands.model._
 
 /** Dowsing Sticks (relic R09), ACTION: place 1 secret on this relic and burn
   * 2 secrets, then draw a relic and take it facedown. An empty relic deck
@@ -1001,7 +1001,7 @@ In `DiceAndRelicDrawPowers.scala` change the vector to:
 
 - [ ] **Step 5: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.DowsingSticksSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.DowsingSticksSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -1018,10 +1018,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 ### Task 5: Fae Merchant
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/FaeMerchant.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/FaeMerchantSuite.scala`
-- Test: `src/test/scala/oathdigital/application/DicePowerDecisionProjectionSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/FaeMerchant.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/DiceAndRelicDrawPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/FaeMerchantSuite.scala`
+- Test: `src/test/scala/distantlands/application/DicePowerDecisionProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes `RelicDraws.takeTop`, `PlayerFacts.player`, `Bury.standard`, and `RelicRole.GrandScepter` from the catalog.
@@ -1031,14 +1031,14 @@ Ruling: cost 1 secret placed. Draw a relic and take it (facedown, see open quest
 
 - [ ] **Step 1: Write the failing suite**
 
-`src/test/scala/oathdigital/gameplay/powers/action/FaeMerchantSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/FaeMerchantSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class FaeMerchantSuite extends munit.FunSuite {
   import PaidActionHarness._
@@ -1167,8 +1167,8 @@ class FaeMerchantSuite extends munit.FunSuite {
 In `DicePowerDecisionProjectionSuite.scala` change the imports to:
 
 ```scala
-import oathdigital.gameplay.powers.PowerFixture._
-import oathdigital.gameplay.powers.action.{FaeMerchant, GamblingHall,
+import distantlands.gameplay.powers.PowerFixture._
+import distantlands.gameplay.powers.action.{FaeMerchant, GamblingHall,
   PaidActionHarness}
 ```
 
@@ -1194,19 +1194,19 @@ and add this test after the Gambling Hall one:
 
 - [ ] **Step 3: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.FaeMerchantSuite oathdigital.application.DicePowerDecisionProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.FaeMerchantSuite distantlands.application.DicePowerDecisionProjectionSuite"`
 Expected: FAIL to compile, `not found: value FaeMerchant`.
 
 - [ ] **Step 4: Write Fae Merchant**
 
-`src/main/scala/oathdigital/gameplay/powers/action/FaeMerchant.scala`:
+`src/main/scala/distantlands/gameplay/powers/action/FaeMerchant.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, RelicRole}
-import oathdigital.gameplay.powers.{PlayerFacts, RelicDraws}
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, RelicRole}
+import distantlands.gameplay.powers.{PlayerFacts, RelicDraws}
+import distantlands.model._
 
 /** Fae Merchant (card 180), ACTION: place 1 secret on this card, draw a relic
   * and take it facedown, then put exactly one relic you hold, except the
@@ -1280,12 +1280,12 @@ object FaeMerchant {
 In `DiceAndRelicDrawPowers.scala` change the vector to its final form:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePower
 
-/** The phase powers of slice 1b, registered by [[oathdigital.gameplay.powers.PhasePowerCatalog]]
+/** The phase powers of slice 1b, registered by [[distantlands.gameplay.powers.PhasePowerCatalog]]
   * through this one object so that later slices add their own group without
   * editing the same lines.
   */
@@ -1298,7 +1298,7 @@ object DiceAndRelicDrawPowers {
 
 - [ ] **Step 6: Run the suites, then the full suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.FaeMerchantSuite oathdigital.application.DicePowerDecisionProjectionSuite"` then `./sbtw test`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.FaeMerchantSuite distantlands.application.DicePowerDecisionProjectionSuite"` then `./sbtw test`
 Expected: PASS. If the projection test returns `None` for the owner, an option could not be presented: read `WalkerDecisionProjector.card` and `GamePresentationProjector.identifiesCard` (item 10) and report rather than changing the projector.
 
 - [ ] **Step 7: Commit**

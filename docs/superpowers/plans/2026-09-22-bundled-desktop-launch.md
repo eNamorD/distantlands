@@ -4,7 +4,7 @@
 
 **Goal:** Let a trusted-alpha host run the server without installing Java and without typing commands: download the archive for their OS, extract it, double-click **Start**, share the printed address.
 
-**Architecture:** A desktop launch profile in Scala (`oathdigital.server`), active only when `OATH_LAUNCH=desktop`, computes an effective environment (settings file, app-data database path, detected LAN address) and hands it to the unchanged `ServerConfig.parse`; after binding it prints a banner and opens the browser. Packaging adds checked-in Start files and one launcher line that prefers a bundled `jre/`. A post-processing script turns the tested all-platform archive into per-OS archives with a `jlink` runtime, and a new release-workflow matrix job builds and smokes them on macOS, Windows, and Linux.
+**Architecture:** A desktop launch profile in Scala (`distantlands.server`), active only when `DLQ_LAUNCH=desktop`, computes an effective environment (settings file, app-data database path, detected LAN address) and hands it to the unchanged `ServerConfig.parse`; after binding it prints a banner and opens the browser. Packaging adds checked-in Start files and one launcher line that prefers a bundled `jre/`. A post-processing script turns the tested all-platform archive into per-OS archives with a `jlink` runtime, and a new release-workflow matrix job builds and smokes them on macOS, Windows, and Linux.
 
 **Tech Stack:** Scala 2.13, Akka HTTP 10.5.3, munit, sbt-native-packager 1.11.7, Temurin 21 `jdeps`/`jlink`, POSIX `sh`, PowerShell 7, GitHub Actions.
 
@@ -13,19 +13,19 @@
 ## Global Constraints
 
 - Bundled targets exactly: `macos-arm64` (runner `macos-14`, `.tgz`), `windows-x64` (runner `windows-latest`, `.zip`), `linux-x64` (runner `ubuntu-24.04`, `.tgz`).
-- Bundled archive name: `oathdigital-<version>-<target>.<ext>`; it extracts to the single directory `oathdigital-<version>/`, the same root as the all-platform archive.
+- Bundled archive name: `distantlands-<version>-<target>.<ext>`; it extracts to the single directory `distantlands-<version>/`, the same root as the all-platform archive.
 - The all-platform ZIP/TGZ stays, requires Java 21, and must keep passing `scripts/smoke-packaged-distribution.sh`.
-- Without `OATH_LAUNCH`, behavior is unchanged: `ServerConfig.parse` receives exactly `sys.env`, no files are written, and CLI/OCI output is unchanged (including today's bind-failure behavior). `OATH_LAUNCH` set to anything other than `desktop` is a configuration error.
-- Desktop precedence, highest first: command-line flags, environment variables, settings file, desktop defaults (`OATH_HOST=0.0.0.0`, detected `OATH_PUBLIC_BASE_URL`, `OATH_DATABASE_PATH=<app-data>/data/database`, `OATH_OPEN_BROWSER=true`), existing `ServerConfig` defaults.
-- Settings file: `<app-data>/oathdigital.properties`, Java properties format, keys exactly `OATH_HOST`, `OATH_PORT`, `OATH_PUBLIC_BASE_URL`, `OATH_DATABASE_PATH`, `OATH_OPEN_BROWSER`. Unknown key is an error. Template is written only if missing and never overwritten.
-- App-data folders: macOS `~/Library/Application Support/OathDigital`; Windows `%LOCALAPPDATA%\OathDigital`; others `$XDG_DATA_HOME/oathdigital`, else `~/.local/share/oathdigital`. `~` is `HOME` when set and non-blank, else `user.home`.
+- Without `DLQ_LAUNCH`, behavior is unchanged: `ServerConfig.parse` receives exactly `sys.env`, no files are written, and CLI/OCI output is unchanged (including today's bind-failure behavior). `DLQ_LAUNCH` set to anything other than `desktop` is a configuration error.
+- Desktop precedence, highest first: command-line flags, environment variables, settings file, desktop defaults (`DLQ_HOST=0.0.0.0`, detected `DLQ_PUBLIC_BASE_URL`, `DLQ_DATABASE_PATH=<app-data>/data/database`, `DLQ_OPEN_BROWSER=true`), existing `ServerConfig` defaults.
+- Settings file: `<app-data>/distantlands.properties`, Java properties format, keys exactly `DLQ_HOST`, `DLQ_PORT`, `DLQ_PUBLIC_BASE_URL`, `DLQ_DATABASE_PATH`, `DLQ_OPEN_BROWSER`. Unknown key is an error. Template is written only if missing and never overwritten.
+- App-data folders: macOS `~/Library/Application Support/DistantLands`; Windows `%LOCALAPPDATA%\DistantLands`; others `$XDG_DATA_HOME/distantlands`, else `~/.local/share/distantlands`. `~` is `HOME` when set and non-blank, else `user.home`.
 - LAN detection: UDP "connect" to `192.0.2.1:9` probe, accepted only if private IPv4 (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`); else first up, non-loopback, private IPv4 interface; else host `127.0.0.1` and the no-LAN banner.
 - Default port stays 8080; no automatic port change.
 - The browser opens the public base URL, never `127.0.0.1`, unless there is no public base URL.
-- Expected failures print one line prefixed `oathdigital: ` to stderr and exit with status 2, never a stack trace. Settings-template write failure and browser-open failure are warnings.
+- Expected failures print one line prefixed `distantlands: ` to stderr and exit with status 2, never a stack trace. Settings-template write failure and browser-open failure are warnings.
 - Seat links, cookies, databases, and raw server logs never appear in published evidence; smoke failure output redacts `/s/<code>`.
 - `packaging/jlink-modules.txt` is the only module list; the bundling script fails when `jdeps` reports a module missing from it.
-- Release verification and bundling use Java 21. Locally: `export JAVA_HOME=/Users/roman/projects/oathdigital/.tooling/jdk-21.0.12.1+1/Contents/Home; export PATH="$JAVA_HOME/bin:$PATH"`. Plain `./sbtw test` may use the default JDK 17.
+- Release verification and bundling use Java 21. Locally: `export JAVA_HOME=/Users/roman/projects/distantlands/.tooling/jdk-21.0.12.1+1/Contents/Home; export PATH="$JAVA_HOME/bin:$PATH"`. Plain `./sbtw test` may use the default JDK 17.
 - Out of scope: Intel macOS and Linux arm64 bundled archives, code signing and notarization, installers, tray app, automatic firewall changes.
 - Every commit message ends with the session's `Co-Authored-By` trailer.
 
@@ -33,14 +33,14 @@
 
 | File | Responsibility |
 | --- | --- |
-| `src/main/scala/oathdigital/server/DesktopPaths.scala` | Per-OS app-data folder, settings file path, default database path |
-| `src/main/scala/oathdigital/server/DesktopSettings.scala` | Settings keys, template text, load and write-if-missing |
-| `src/main/scala/oathdigital/server/LanAddress.scala` | Private-IPv4 test, pure chooser, system probe and interface listing |
-| `src/main/scala/oathdigital/server/DesktopLaunchProfile.scala` | `OATH_LAUNCH` switch, precedence merge, `prepare` entry point |
-| `src/main/scala/oathdigital/server/DesktopConsole.scala` | Banner text, browser URL and command, bind-failure message |
-| `src/main/scala/oathdigital/server/OathServer.scala` | Wiring only |
-| `src/test/scala/oathdigital/server/Desktop*Suite.scala`, `LanAddressSuite.scala` | Unit tests per unit above |
-| `packaging/desktop/Start Oath Digital.command`, `start-oathdigital.sh`, `Start Oath Digital.bat` | Double-click Start files |
+| `src/main/scala/distantlands/server/DesktopPaths.scala` | Per-OS app-data folder, settings file path, default database path |
+| `src/main/scala/distantlands/server/DesktopSettings.scala` | Settings keys, template text, load and write-if-missing |
+| `src/main/scala/distantlands/server/LanAddress.scala` | Private-IPv4 test, pure chooser, system probe and interface listing |
+| `src/main/scala/distantlands/server/DesktopLaunchProfile.scala` | `DLQ_LAUNCH` switch, precedence merge, `prepare` entry point |
+| `src/main/scala/distantlands/server/DesktopConsole.scala` | Banner text, browser URL and command, bind-failure message |
+| `src/main/scala/distantlands/server/DistantLandsServer.scala` | Wiring only |
+| `src/test/scala/distantlands/server/Desktop*Suite.scala`, `LanAddressSuite.scala` | Unit tests per unit above |
+| `packaging/desktop/Start Distant Lands.command`, `start-distantlands.sh`, `Start Distant Lands.bat` | Double-click Start files |
 | `packaging/jlink-modules.txt` | The bundled runtime's module list |
 | `build.sbt` | Launcher define, Start file mappings, `verifyPackageMappings` assertions |
 | `.gitattributes` | CRLF for `.bat` |
@@ -53,7 +53,7 @@
 ## Decisions Taken Where the Spec Was Open
 
 - The port-in-use one-line message applies under the desktop profile only. CLI and OCI runs keep today's bind-failure behavior, per the spec's "no change to command-line or OCI behavior".
-- `OATH_LAUNCH` set to a value other than `desktop` is a configuration error rather than silently ignored.
+- `DLQ_LAUNCH` set to a value other than `desktop` is a configuration error rather than silently ignored.
 - The Windows smoke cannot stop the server gracefully from a script, so the Windows database-close check is acceptance row 22, not CI.
 - macOS ad-hoc signing is added only if the Task 12 quarantine checkpoint shows the bundled `java` is blocked. Until then the script verifies the existing signature.
 
@@ -62,19 +62,19 @@
 ### Task 1: Desktop paths
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/DesktopPaths.scala`
-- Test: `src/test/scala/oathdigital/server/DesktopPathsSuite.scala`
+- Create: `src/main/scala/distantlands/server/DesktopPaths.scala`
+- Test: `src/test/scala/distantlands/server/DesktopPathsSuite.scala`
 
 **Interfaces:**
 - Produces:
   - `DesktopPaths.appDataDirectory(osName: String, environment: Map[String, String], fallbackHome: String): java.nio.file.Path`
-  - `DesktopPaths.settingsFile(appData: Path): Path` = `appData/oathdigital.properties`
+  - `DesktopPaths.settingsFile(appData: Path): Path` = `appData/distantlands.properties`
   - `DesktopPaths.databasePath(appData: Path): Path` = `appData/data/database`
 
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.nio.file.Paths
 
@@ -82,12 +82,12 @@ class DesktopPathsSuite extends munit.FunSuite {
   test("macOS uses Application Support under HOME") {
     assertEquals(
       DesktopPaths.appDataDirectory("Mac OS X", Map("HOME" -> "/Users/alex"), "/ignored"),
-      Paths.get("/Users/alex", "Library", "Application Support", "OathDigital")
+      Paths.get("/Users/alex", "Library", "Application Support", "DistantLands")
     )
   }
 
   test("a blank or missing HOME falls back to user.home") {
-    val expected = Paths.get("/home/fallback", "Library", "Application Support", "OathDigital")
+    val expected = Paths.get("/home/fallback", "Library", "Application Support", "DistantLands")
     assertEquals(DesktopPaths.appDataDirectory("Mac OS X", Map.empty, "/home/fallback"), expected)
     assertEquals(DesktopPaths.appDataDirectory("Mac OS X", Map("HOME" -> " "), "/home/fallback"), expected)
   }
@@ -95,26 +95,26 @@ class DesktopPathsSuite extends munit.FunSuite {
   test("Windows uses LOCALAPPDATA") {
     assertEquals(
       DesktopPaths.appDataDirectory("Windows 11", Map("LOCALAPPDATA" -> "/c/Users/alex/AppData/Local"), "/ignored"),
-      Paths.get("/c/Users/alex/AppData/Local", "OathDigital")
+      Paths.get("/c/Users/alex/AppData/Local", "DistantLands")
     )
   }
 
   test("Windows without LOCALAPPDATA uses AppData/Local under the home folder") {
     assertEquals(
       DesktopPaths.appDataDirectory("Windows 11", Map.empty, "/c/Users/alex"),
-      Paths.get("/c/Users/alex", "AppData", "Local", "OathDigital")
+      Paths.get("/c/Users/alex", "AppData", "Local", "DistantLands")
     )
   }
 
   test("Linux uses XDG_DATA_HOME") {
     assertEquals(
       DesktopPaths.appDataDirectory("Linux", Map("XDG_DATA_HOME" -> "/data/xdg", "HOME" -> "/home/alex"), "/ignored"),
-      Paths.get("/data/xdg", "oathdigital")
+      Paths.get("/data/xdg", "distantlands")
     )
   }
 
   test("Linux without a usable XDG_DATA_HOME uses .local/share") {
-    val expected = Paths.get("/home/alex", ".local", "share", "oathdigital")
+    val expected = Paths.get("/home/alex", ".local", "share", "distantlands")
     assertEquals(DesktopPaths.appDataDirectory("Linux", Map("HOME" -> "/home/alex"), "/ignored"), expected)
     assertEquals(
       DesktopPaths.appDataDirectory("Linux", Map("HOME" -> "/home/alex", "XDG_DATA_HOME" -> ""), "/ignored"),
@@ -123,22 +123,22 @@ class DesktopPathsSuite extends munit.FunSuite {
   }
 
   test("settings file and database path live in the app-data folder") {
-    val appData = Paths.get("/data/oathdigital")
-    assertEquals(DesktopPaths.settingsFile(appData), Paths.get("/data/oathdigital/oathdigital.properties"))
-    assertEquals(DesktopPaths.databasePath(appData), Paths.get("/data/oathdigital/data/database"))
+    val appData = Paths.get("/data/distantlands")
+    assertEquals(DesktopPaths.settingsFile(appData), Paths.get("/data/distantlands/distantlands.properties"))
+    assertEquals(DesktopPaths.databasePath(appData), Paths.get("/data/distantlands/data/database"))
   }
 }
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.server.DesktopPathsSuite"`
+Run: `./sbtw "testOnly distantlands.server.DesktopPathsSuite"`
 Expected: FAIL, compilation error `not found: value DesktopPaths`.
 
 - [ ] **Step 3: Write minimal implementation**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.nio.file.{Path, Paths}
 
@@ -152,19 +152,19 @@ object DesktopPaths {
     val home = nonBlank(environment, "HOME").getOrElse(fallbackHome)
     val os = osName.toLowerCase
     if (os.startsWith("mac"))
-      Paths.get(home, "Library", "Application Support", "OathDigital")
+      Paths.get(home, "Library", "Application Support", "DistantLands")
     else if (os.startsWith("windows"))
       nonBlank(environment, "LOCALAPPDATA")
-        .map(Paths.get(_, "OathDigital"))
-        .getOrElse(Paths.get(home, "AppData", "Local", "OathDigital"))
+        .map(Paths.get(_, "DistantLands"))
+        .getOrElse(Paths.get(home, "AppData", "Local", "DistantLands"))
     else
       nonBlank(environment, "XDG_DATA_HOME")
-        .map(Paths.get(_, "oathdigital"))
-        .getOrElse(Paths.get(home, ".local", "share", "oathdigital"))
+        .map(Paths.get(_, "distantlands"))
+        .getOrElse(Paths.get(home, ".local", "share", "distantlands"))
   }
 
   def settingsFile(appData: Path): Path =
-    appData.resolve("oathdigital.properties")
+    appData.resolve("distantlands.properties")
 
   def databasePath(appData: Path): Path =
     appData.resolve("data").resolve("database")
@@ -178,13 +178,13 @@ object DesktopPaths {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.server.DesktopPathsSuite"`
+Run: `./sbtw "testOnly distantlands.server.DesktopPathsSuite"`
 Expected: PASS, 7 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/DesktopPaths.scala src/test/scala/oathdigital/server/DesktopPathsSuite.scala
+git add src/main/scala/distantlands/server/DesktopPaths.scala src/test/scala/distantlands/server/DesktopPathsSuite.scala
 git commit -m "feat: resolve per-user desktop app-data paths"
 ```
 
@@ -193,8 +193,8 @@ git commit -m "feat: resolve per-user desktop app-data paths"
 ### Task 2: Desktop settings file
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/DesktopSettings.scala`
-- Test: `src/test/scala/oathdigital/server/DesktopSettingsSuite.scala`
+- Create: `src/main/scala/distantlands/server/DesktopSettings.scala`
+- Test: `src/test/scala/distantlands/server/DesktopSettingsSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -206,41 +206,41 @@ git commit -m "feat: resolve per-user desktop app-data paths"
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Files, Path}
 
 class DesktopSettingsSuite extends munit.FunSuite {
   private val directory = FunFixture[Path](
-    setup = _ => Files.createTempDirectory("oathdigital-settings"),
+    setup = _ => Files.createTempDirectory("distantlands-settings"),
     teardown = path => deleteRecursively(path)
   )
 
   directory.test("a missing file has no settings") { dir =>
-    assertEquals(DesktopSettings.load(dir.resolve("oathdigital.properties")), Right(Map.empty[String, String]))
+    assertEquals(DesktopSettings.load(dir.resolve("distantlands.properties")), Right(Map.empty[String, String]))
   }
 
   directory.test("known keys load trimmed and blank values are dropped") { dir =>
-    val file = write(dir, "OATH_PORT = 9000 \nOATH_HOST=\n# OATH_OPEN_BROWSER=false\nOATH_DATABASE_PATH=C:/OathData/database\n")
+    val file = write(dir, "DLQ_PORT = 9000 \nDLQ_HOST=\n# DLQ_OPEN_BROWSER=false\nDLQ_DATABASE_PATH=C:/DistantLandsData/database\n")
     assertEquals(
       DesktopSettings.load(file),
-      Right(Map("OATH_PORT" -> "9000", "OATH_DATABASE_PATH" -> "C:/OathData/database"))
+      Right(Map("DLQ_PORT" -> "9000", "DLQ_DATABASE_PATH" -> "C:/DistantLandsData/database"))
     )
   }
 
   directory.test("an unknown key is a configuration error naming the file") { dir =>
-    val file = write(dir, "OATH_PORT=9000\nOATH_PROT=9001\n")
-    assertEquals(DesktopSettings.load(file), Left(s"$file: unknown setting OATH_PROT"))
+    val file = write(dir, "DLQ_PORT=9000\nDLQ_PROT=9001\n")
+    assertEquals(DesktopSettings.load(file), Left(s"$file: unknown setting DLQ_PROT"))
   }
 
   directory.test("an unreadable settings path is a configuration error") { dir =>
-    val file = Files.createDirectory(dir.resolve("oathdigital.properties"))
+    val file = Files.createDirectory(dir.resolve("distantlands.properties"))
     assertEquals(DesktopSettings.load(file), Left(s"$file: cannot read settings file"))
   }
 
   directory.test("the template comments out every key and loads as empty") { dir =>
-    val file = dir.resolve("app").resolve("oathdigital.properties")
+    val file = dir.resolve("app").resolve("distantlands.properties")
     assertEquals(DesktopSettings.writeTemplateIfMissing(file), None)
     val lines = new String(Files.readAllBytes(file), UTF_8).linesIterator.toVector
     DesktopSettings.Keys.foreach(key => assert(lines.exists(_.startsWith(s"#$key=")), key))
@@ -249,19 +249,19 @@ class DesktopSettingsSuite extends munit.FunSuite {
   }
 
   directory.test("an existing settings file is never overwritten") { dir =>
-    val file = write(dir, "OATH_PORT=9000\n")
+    val file = write(dir, "DLQ_PORT=9000\n")
     assertEquals(DesktopSettings.writeTemplateIfMissing(file), None)
-    assertEquals(new String(Files.readAllBytes(file), UTF_8), "OATH_PORT=9000\n")
+    assertEquals(new String(Files.readAllBytes(file), UTF_8), "DLQ_PORT=9000\n")
   }
 
   directory.test("a template that cannot be written is a warning") { dir =>
     val blocker = write(dir, "not a directory")
-    val warning = DesktopSettings.writeTemplateIfMissing(blocker.resolve("oathdigital.properties"))
+    val warning = DesktopSettings.writeTemplateIfMissing(blocker.resolve("distantlands.properties"))
     assert(warning.exists(_.startsWith("could not create settings file ")), warning.toString)
   }
 
   private def write(dir: Path, content: String): Path =
-    Files.write(dir.resolve("oathdigital.properties"), content.getBytes(UTF_8))
+    Files.write(dir.resolve("distantlands.properties"), content.getBytes(UTF_8))
 
   private def deleteRecursively(path: Path): Unit = {
     if (Files.isDirectory(path)) {
@@ -276,13 +276,13 @@ class DesktopSettingsSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.server.DesktopSettingsSuite"`
+Run: `./sbtw "testOnly distantlands.server.DesktopSettingsSuite"`
 Expected: FAIL, `not found: value DesktopSettings`.
 
 - [ ] **Step 3: Write minimal implementation**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Files, Path, StandardOpenOption}
@@ -294,34 +294,34 @@ import scala.util.control.NonFatal
 /** The desktop profile's optional per-user settings file. */
 object DesktopSettings {
   val Keys: Vector[String] = Vector(
-    "OATH_HOST",
-    "OATH_PORT",
-    "OATH_PUBLIC_BASE_URL",
-    "OATH_DATABASE_PATH",
-    "OATH_OPEN_BROWSER"
+    "DLQ_HOST",
+    "DLQ_PORT",
+    "DLQ_PUBLIC_BASE_URL",
+    "DLQ_DATABASE_PATH",
+    "DLQ_OPEN_BROWSER"
   )
 
   val template: String = Vector(
-    "# Oath Digital settings, used when the server is started with Start Oath Digital.",
+    "# Distant Lands settings, used when the server is started with Start Distant Lands.",
     "# Remove the leading # from a line to use it. Environment variables and",
     "# command-line options override this file. Restart the server after editing.",
-    "# On Windows, write paths with forward slashes, for example C:/OathData/database.",
+    "# On Windows, write paths with forward slashes, for example C:/DistantLandsData/database.",
     "",
     "# Address to listen on. 0.0.0.0 accepts other computers on your network;",
     "# 127.0.0.1 accepts only this computer.",
-    "#OATH_HOST=0.0.0.0",
+    "#DLQ_HOST=0.0.0.0",
     "",
     "# Port to listen on. Seat links contain the port.",
-    "#OATH_PORT=8080",
+    "#DLQ_PORT=8080",
     "",
     "# Address players open, if the detected one is wrong. Seat links contain it.",
-    "#OATH_PUBLIC_BASE_URL=http://192.168.1.20:8080",
+    "#DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080",
     "",
     "# Database file prefix. Default: the data folder next to this file.",
-    "#OATH_DATABASE_PATH=/path/to/OathDigitalData/database",
+    "#DLQ_DATABASE_PATH=/path/to/DistantLandsData/database",
     "",
     "# Set to false to stop the browser opening at startup.",
-    "#OATH_OPEN_BROWSER=true",
+    "#DLQ_OPEN_BROWSER=true",
     ""
   ).mkString("\n")
 
@@ -364,13 +364,13 @@ object DesktopSettings {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.server.DesktopSettingsSuite"`
+Run: `./sbtw "testOnly distantlands.server.DesktopSettingsSuite"`
 Expected: PASS, 7 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/DesktopSettings.scala src/test/scala/oathdigital/server/DesktopSettingsSuite.scala
+git add src/main/scala/distantlands/server/DesktopSettings.scala src/test/scala/distantlands/server/DesktopSettingsSuite.scala
 git commit -m "feat: load and template the desktop settings file"
 ```
 
@@ -379,8 +379,8 @@ git commit -m "feat: load and template the desktop settings file"
 ### Task 3: LAN address detection
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/LanAddress.scala`
-- Test: `src/test/scala/oathdigital/server/LanAddressSuite.scala`
+- Create: `src/main/scala/distantlands/server/LanAddress.scala`
+- Test: `src/test/scala/distantlands/server/LanAddressSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -392,7 +392,7 @@ git commit -m "feat: load and template the desktop settings file"
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.net.InetAddress
 
@@ -447,13 +447,13 @@ class LanAddressSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.server.LanAddressSuite"`
+Run: `./sbtw "testOnly distantlands.server.LanAddressSuite"`
 Expected: FAIL, `not found: value LanAddress`.
 
 - [ ] **Step 3: Write minimal implementation**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.net.{DatagramSocket, Inet4Address, InetAddress, NetworkInterface}
 
@@ -524,13 +524,13 @@ object LanAddress {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.server.LanAddressSuite"`
+Run: `./sbtw "testOnly distantlands.server.LanAddressSuite"`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/LanAddress.scala src/test/scala/oathdigital/server/LanAddressSuite.scala
+git add src/main/scala/distantlands/server/LanAddress.scala src/test/scala/distantlands/server/LanAddressSuite.scala
 git commit -m "feat: detect the host's private LAN address"
 ```
 
@@ -539,26 +539,26 @@ git commit -m "feat: detect the host's private LAN address"
 ### Task 4: Desktop launch profile
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/DesktopLaunchProfile.scala`
-- Test: `src/test/scala/oathdigital/server/DesktopLaunchProfileSuite.scala`
+- Create: `src/main/scala/distantlands/server/DesktopLaunchProfile.scala`
+- Test: `src/test/scala/distantlands/server/DesktopLaunchProfileSuite.scala`
 
 **Interfaces:**
 - Consumes: `DesktopPaths` (Task 1), `DesktopSettings` (Task 2), `ServerConfig.parse(arguments, environment, version)` (existing).
 - Produces:
   - `final case class DesktopLaunch(environment: Map[String, String], settingsFile: Path, openBrowser: Boolean, lanDetectionFailed: Boolean, warnings: Vector[String])`
   - `DesktopLaunchProfile.resolve(arguments: Array[String], environment: Map[String, String], settings: Map[String, String], appData: Path, detectLanAddress: () => Option[String]): Either[String, DesktopLaunch]` — `warnings` empty.
-  - `DesktopLaunchProfile.prepare(arguments: Array[String], environment: Map[String, String], osName: String, fallbackHome: String, detectLanAddress: () => Option[String]): Either[String, Option[DesktopLaunch]]` — `Right(None)` when `OATH_LAUNCH` is unset, touching no files.
+  - `DesktopLaunchProfile.prepare(arguments: Array[String], environment: Map[String, String], osName: String, fallbackHome: String, detectLanAddress: () => Option[String]): Either[String, Option[DesktopLaunch]]` — `Right(None)` when `DLQ_LAUNCH` is unset, touching no files.
 
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.net.URI
 import java.nio.file.{Files, Path, Paths}
 
 class DesktopLaunchProfileSuite extends munit.FunSuite {
-  private val appData = Paths.get("/data/oathdigital")
+  private val appData = Paths.get("/data/distantlands")
   private val lan: () => Option[String] = () => Some("192.168.1.20")
   private val noDetection: () => Option[String] =
     () => fail("LAN detection must not run")
@@ -573,15 +573,15 @@ class DesktopLaunchProfileSuite extends munit.FunSuite {
       .fold(error => fail(error), identity)
 
   private def parse(arguments: Array[String], launch: DesktopLaunch): ServerConfig =
-    ServerConfig.parse(arguments, launch.environment + ("OATH_MODE" -> "trusted-alpha"), "0.1.0-alpha.1")
+    ServerConfig.parse(arguments, launch.environment + ("DLQ_MODE" -> "trusted-alpha"), "0.1.0-alpha.1")
       .fold(errors => fail(errors.mkString("; ")), identity)
 
   test("desktop defaults bind all interfaces with the detected address") {
     val launch = resolve()
-    assertEquals(launch.environment.get("OATH_HOST"), Some("0.0.0.0"))
-    assertEquals(launch.environment.get("OATH_PUBLIC_BASE_URL"), Some("http://192.168.1.20:8080"))
-    assertEquals(launch.environment.get("OATH_DATABASE_PATH"), Some(appData.resolve("data/database").toString))
-    assertEquals(launch.settingsFile, appData.resolve("oathdigital.properties"))
+    assertEquals(launch.environment.get("DLQ_HOST"), Some("0.0.0.0"))
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("http://192.168.1.20:8080"))
+    assertEquals(launch.environment.get("DLQ_DATABASE_PATH"), Some(appData.resolve("data/database").toString))
+    assertEquals(launch.settingsFile, appData.resolve("distantlands.properties"))
     assert(launch.openBrowser)
     assert(!launch.lanDetectionFailed)
     val config = parse(Array.empty, launch)
@@ -589,20 +589,20 @@ class DesktopLaunchProfileSuite extends munit.FunSuite {
   }
 
   test("the settings file overrides desktop defaults") {
-    val launch = resolve(settings = Map("OATH_PORT" -> "9000"))
-    assertEquals(launch.environment.get("OATH_PORT"), Some("9000"))
-    assertEquals(launch.environment.get("OATH_PUBLIC_BASE_URL"), Some("http://192.168.1.20:9000"))
+    val launch = resolve(settings = Map("DLQ_PORT" -> "9000"))
+    assertEquals(launch.environment.get("DLQ_PORT"), Some("9000"))
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("http://192.168.1.20:9000"))
   }
 
   test("environment variables override the settings file") {
-    val launch = resolve(environment = Map("OATH_PORT" -> "9100"), settings = Map("OATH_PORT" -> "9000"))
-    assertEquals(launch.environment.get("OATH_PORT"), Some("9100"))
-    assertEquals(launch.environment.get("OATH_PUBLIC_BASE_URL"), Some("http://192.168.1.20:9100"))
+    val launch = resolve(environment = Map("DLQ_PORT" -> "9100"), settings = Map("DLQ_PORT" -> "9000"))
+    assertEquals(launch.environment.get("DLQ_PORT"), Some("9100"))
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("http://192.168.1.20:9100"))
   }
 
   test("command-line flags override environment variables") {
     val arguments = Array("--port", "9200")
-    val launch = resolve(arguments = arguments, environment = Map("OATH_PORT" -> "9100"))
+    val launch = resolve(arguments = arguments, environment = Map("DLQ_PORT" -> "9100"))
     val config = parse(arguments, launch)
     assertEquals(config.port, 9200)
     assertEquals(config.publicBaseUrl, Some(new URI("http://192.168.1.20:9200")))
@@ -611,53 +611,53 @@ class DesktopLaunchProfileSuite extends munit.FunSuite {
   test("a flag alone counts as set for the database path") {
     val arguments = Array("--database-path", "/elsewhere/database")
     val launch = resolve(arguments = arguments)
-    assertEquals(launch.environment.get("OATH_DATABASE_PATH"), None)
+    assertEquals(launch.environment.get("DLQ_DATABASE_PATH"), None)
     assertEquals(parse(arguments, launch).databasePath, Paths.get("/elsewhere/database"))
   }
 
   test("an explicit public base URL skips detection") {
-    val launch = resolve(settings = Map("OATH_PUBLIC_BASE_URL" -> "https://oath.example.test"), detect = noDetection)
-    assertEquals(launch.environment.get("OATH_PUBLIC_BASE_URL"), Some("https://oath.example.test"))
+    val launch = resolve(settings = Map("DLQ_PUBLIC_BASE_URL" -> "https://oath.example.test"), detect = noDetection)
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("https://oath.example.test"))
   }
 
   test("a loopback host skips detection and sets no public base URL") {
-    val launch = resolve(environment = Map("OATH_HOST" -> "127.0.0.1"), detect = noDetection)
-    assertEquals(launch.environment.get("OATH_PUBLIC_BASE_URL"), None)
+    val launch = resolve(environment = Map("DLQ_HOST" -> "127.0.0.1"), detect = noDetection)
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), None)
     assert(!launch.lanDetectionFailed)
     assertEquals(parse(Array.empty, launch).publicBaseUrl, None)
   }
 
   test("a specific non-loopback host becomes the public base URL") {
-    val launch = resolve(settings = Map("OATH_HOST" -> "192.168.5.5"), detect = noDetection)
-    assertEquals(launch.environment.get("OATH_PUBLIC_BASE_URL"), Some("http://192.168.5.5:8080"))
+    val launch = resolve(settings = Map("DLQ_HOST" -> "192.168.5.5"), detect = noDetection)
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("http://192.168.5.5:8080"))
   }
 
   test("no LAN address falls back to this computer only") {
     val launch = resolve(detect = () => None)
-    assertEquals(launch.environment.get("OATH_HOST"), Some("127.0.0.1"))
-    assertEquals(launch.environment.get("OATH_PUBLIC_BASE_URL"), None)
+    assertEquals(launch.environment.get("DLQ_HOST"), Some("127.0.0.1"))
+    assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), None)
     assert(launch.lanDetectionFailed)
     assertEquals(parse(Array.empty, launch).host, "127.0.0.1")
   }
 
   test("browser opening follows settings and environment precedence") {
-    assert(!resolve(settings = Map("OATH_OPEN_BROWSER" -> "false")).openBrowser)
-    assert(resolve(environment = Map("OATH_OPEN_BROWSER" -> "TRUE"), settings = Map("OATH_OPEN_BROWSER" -> "false")).openBrowser)
+    assert(!resolve(settings = Map("DLQ_OPEN_BROWSER" -> "false")).openBrowser)
+    assert(resolve(environment = Map("DLQ_OPEN_BROWSER" -> "TRUE"), settings = Map("DLQ_OPEN_BROWSER" -> "false")).openBrowser)
     assertEquals(
-      DesktopLaunchProfile.resolve(Array.empty, Map("OATH_OPEN_BROWSER" -> "yes"), Map.empty, appData, lan),
-      Left("OATH_OPEN_BROWSER: must be true or false")
+      DesktopLaunchProfile.resolve(Array.empty, Map("DLQ_OPEN_BROWSER" -> "yes"), Map.empty, appData, lan),
+      Left("DLQ_OPEN_BROWSER: must be true or false")
     )
   }
 
   test("unrelated environment variables pass through") {
-    val launch = resolve(environment = Map("OATH_CATALOG_PATH" -> "/catalog.json", "PATH" -> "/usr/bin"))
-    assertEquals(launch.environment.get("OATH_CATALOG_PATH"), Some("/catalog.json"))
+    val launch = resolve(environment = Map("DLQ_CATALOG_PATH" -> "/catalog.json", "PATH" -> "/usr/bin"))
+    assertEquals(launch.environment.get("DLQ_CATALOG_PATH"), Some("/catalog.json"))
     assertEquals(launch.environment.get("PATH"), Some("/usr/bin"))
   }
 
-  test("prepare leaves the environment untouched and writes nothing without OATH_LAUNCH") {
-    val home = Files.createTempDirectory("oathdigital-home")
-    val environment = Map("HOME" -> home.toString, "OATH_PORT" -> "9300")
+  test("prepare leaves the environment untouched and writes nothing without DLQ_LAUNCH") {
+    val home = Files.createTempDirectory("distantlands-home")
+    val environment = Map("HOME" -> home.toString, "DLQ_PORT" -> "9300")
     assertEquals(
       DesktopLaunchProfile.prepare(Array.empty, environment, "Linux", home.toString, noDetection),
       Right(None)
@@ -668,32 +668,32 @@ class DesktopLaunchProfileSuite extends munit.FunSuite {
 
   test("prepare rejects an unknown launch profile") {
     assertEquals(
-      DesktopLaunchProfile.prepare(Array.empty, Map("OATH_LAUNCH" -> "tray"), "Linux", "/tmp", noDetection),
-      Left("OATH_LAUNCH: must be desktop when set")
+      DesktopLaunchProfile.prepare(Array.empty, Map("DLQ_LAUNCH" -> "tray"), "Linux", "/tmp", noDetection),
+      Left("DLQ_LAUNCH: must be desktop when set")
     )
   }
 
   test("prepare reads settings and creates the data folder") {
-    val home = Files.createTempDirectory("oathdigital-home")
-    val environment = Map("HOME" -> home.toString, "OATH_LAUNCH" -> "desktop")
-    val appData = home.resolve(".local/share/oathdigital")
+    val home = Files.createTempDirectory("distantlands-home")
+    val environment = Map("HOME" -> home.toString, "DLQ_LAUNCH" -> "desktop")
+    val appData = home.resolve(".local/share/distantlands")
     Files.createDirectories(appData)
-    Files.write(appData.resolve("oathdigital.properties"), "OATH_PORT=9400\n".getBytes("UTF-8"))
+    Files.write(appData.resolve("distantlands.properties"), "DLQ_PORT=9400\n".getBytes("UTF-8"))
     val launch = DesktopLaunchProfile.prepare(Array.empty, environment, "Linux", home.toString, lan)
       .fold(error => fail(error), _.getOrElse(fail("expected a desktop launch")))
-    assertEquals(launch.environment.get("OATH_PORT"), Some("9400"))
+    assertEquals(launch.environment.get("DLQ_PORT"), Some("9400"))
     assert(Files.isDirectory(appData.resolve("data")))
     assertEquals(launch.warnings, Vector.empty)
   }
 
   test("prepare reports an unknown settings key") {
-    val home = Files.createTempDirectory("oathdigital-home")
-    val appData = home.resolve(".local/share/oathdigital")
+    val home = Files.createTempDirectory("distantlands-home")
+    val appData = home.resolve(".local/share/distantlands")
     Files.createDirectories(appData)
-    val file = Files.write(appData.resolve("oathdigital.properties"), "OATH_PROT=1\n".getBytes("UTF-8"))
+    val file = Files.write(appData.resolve("distantlands.properties"), "DLQ_PROT=1\n".getBytes("UTF-8"))
     assertEquals(
-      DesktopLaunchProfile.prepare(Array.empty, Map("HOME" -> home.toString, "OATH_LAUNCH" -> "desktop"), "Linux", home.toString, lan),
-      Left(s"$file: unknown setting OATH_PROT")
+      DesktopLaunchProfile.prepare(Array.empty, Map("HOME" -> home.toString, "DLQ_LAUNCH" -> "desktop"), "Linux", home.toString, lan),
+      Left(s"$file: unknown setting DLQ_PROT")
     )
   }
 }
@@ -701,13 +701,13 @@ class DesktopLaunchProfileSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.server.DesktopLaunchProfileSuite"`
+Run: `./sbtw "testOnly distantlands.server.DesktopLaunchProfileSuite"`
 Expected: FAIL, `not found: type DesktopLaunch`.
 
 - [ ] **Step 3: Write minimal implementation**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.nio.file.{Files, Path, Paths}
 
@@ -722,18 +722,18 @@ final case class DesktopLaunch(
 )
 
 /**
- * The double-click launch profile. Only active when `OATH_LAUNCH=desktop`;
+ * The double-click launch profile. Only active when `DLQ_LAUNCH=desktop`;
  * it fills in unset values and leaves validation to `ServerConfig.parse`.
  */
 object DesktopLaunchProfile {
-  val LaunchVariable = "OATH_LAUNCH"
+  val LaunchVariable = "DLQ_LAUNCH"
   private val Wildcard = "0.0.0.0"
   private val DefaultPort = "8080"
   private val Flags = Map(
-    "OATH_HOST" -> "--host",
-    "OATH_PORT" -> "--port",
-    "OATH_PUBLIC_BASE_URL" -> "--public-base-url",
-    "OATH_DATABASE_PATH" -> "--database-path"
+    "DLQ_HOST" -> "--host",
+    "DLQ_PORT" -> "--port",
+    "DLQ_PUBLIC_BASE_URL" -> "--public-base-url",
+    "DLQ_DATABASE_PATH" -> "--database-path"
   )
   private val Loopback = Set("127.0.0.1", "localhost", "::1", "[::1]")
 
@@ -774,29 +774,29 @@ object DesktopLaunchProfile {
     def higher(key: String): Option[String] =
       flagValue(key).orElse(environment.get(key)).orElse(settings.get(key))
 
-    val openBrowser = environment.get("OATH_OPEN_BROWSER")
-      .orElse(settings.get("OATH_OPEN_BROWSER"))
+    val openBrowser = environment.get("DLQ_OPEN_BROWSER")
+      .orElse(settings.get("DLQ_OPEN_BROWSER"))
       .getOrElse("true").trim.toLowerCase match {
         case "true" => Right(true)
         case "false" => Right(false)
-        case _ => Left("OATH_OPEN_BROWSER: must be true or false")
+        case _ => Left("DLQ_OPEN_BROWSER: must be true or false")
       }
 
     openBrowser.map { open =>
-      val port = higher("OATH_PORT").map(_.trim).getOrElse(DefaultPort)
-      val host = higher("OATH_HOST").map(_.trim).getOrElse(Wildcard)
+      val port = higher("DLQ_PORT").map(_.trim).getOrElse(DefaultPort)
+      val host = higher("DLQ_HOST").map(_.trim).getOrElse(Wildcard)
       val (address, lanDetectionFailed) =
-        if (higher("OATH_PUBLIC_BASE_URL").nonEmpty) (Map.empty[String, String], false)
+        if (higher("DLQ_PUBLIC_BASE_URL").nonEmpty) (Map.empty[String, String], false)
         else if (host == Wildcard) detectLanAddress() match {
-          case Some(lan) => (Map("OATH_PUBLIC_BASE_URL" -> s"http://$lan:$port"), false)
-          case None => (Map("OATH_HOST" -> "127.0.0.1"), true)
+          case Some(lan) => (Map("DLQ_PUBLIC_BASE_URL" -> s"http://$lan:$port"), false)
+          case None => (Map("DLQ_HOST" -> "127.0.0.1"), true)
         }
         else if (Loopback.contains(host.toLowerCase)) (Map.empty[String, String], false)
-        else (Map("OATH_PUBLIC_BASE_URL" -> s"http://${bracketed(host)}:$port"), false)
+        else (Map("DLQ_PUBLIC_BASE_URL" -> s"http://${bracketed(host)}:$port"), false)
 
       val defaults = Map(
-        "OATH_HOST" -> Wildcard,
-        "OATH_DATABASE_PATH" -> DesktopPaths.databasePath(appData).toString
+        "DLQ_HOST" -> Wildcard,
+        "DLQ_DATABASE_PATH" -> DesktopPaths.databasePath(appData).toString
       ).filter { case (key, _) => higher(key).isEmpty }
       val fromSettings = settings.filter { case (key, _) =>
         Flags.contains(key) && flagValue(key).isEmpty && !environment.contains(key)
@@ -813,7 +813,7 @@ object DesktopLaunchProfile {
   }
 
   private def createDataFolder(launch: DesktopLaunch): Either[String, Unit] =
-    launch.environment.get("OATH_DATABASE_PATH") match {
+    launch.environment.get("DLQ_DATABASE_PATH") match {
       case None => Right(())
       case Some(databasePath) =>
         val folder = Paths.get(databasePath).toAbsolutePath.normalize.getParent
@@ -830,17 +830,17 @@ object DesktopLaunchProfile {
 }
 ```
 
-Note: when a `--database-path` flag is present, `OATH_DATABASE_PATH` may still be in the environment; the data folder is then created for the environment value only. That is harmless, and `ServerRuntime` handles the flag's path as today.
+Note: when a `--database-path` flag is present, `DLQ_DATABASE_PATH` may still be in the environment; the data folder is then created for the environment value only. That is harmless, and `ServerRuntime` handles the flag's path as today.
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.server.DesktopLaunchProfileSuite"`
+Run: `./sbtw "testOnly distantlands.server.DesktopLaunchProfileSuite"`
 Expected: PASS, 15 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/DesktopLaunchProfile.scala src/test/scala/oathdigital/server/DesktopLaunchProfileSuite.scala
+git add src/main/scala/distantlands/server/DesktopLaunchProfile.scala src/test/scala/distantlands/server/DesktopLaunchProfileSuite.scala
 git commit -m "feat: merge desktop launch settings with defined precedence"
 ```
 
@@ -849,8 +849,8 @@ git commit -m "feat: merge desktop launch settings with defined precedence"
 ### Task 5: Banner, browser, and bind-failure message
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/DesktopConsole.scala`
-- Test: `src/test/scala/oathdigital/server/DesktopConsoleSuite.scala`
+- Create: `src/main/scala/distantlands/server/DesktopConsole.scala`
+- Test: `src/test/scala/distantlands/server/DesktopConsoleSuite.scala`
 
 **Interfaces:**
 - Consumes: `DesktopLaunch` (Task 4), `ServerConfig` (existing).
@@ -864,7 +864,7 @@ git commit -m "feat: merge desktop launch settings with defined precedence"
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.net.{InetAddress, ServerSocket}
 import java.nio.file.Paths
@@ -873,13 +873,13 @@ import java.nio.file.Paths
 private final class BindFailedException extends RuntimeException("Bind failed")
 
 class DesktopConsoleSuite extends munit.FunSuite {
-  private val settingsFile = Paths.get("/data/oathdigital/oathdigital.properties")
+  private val settingsFile = Paths.get("/data/distantlands/distantlands.properties")
   private val nl = System.lineSeparator
 
   private def config(environment: Map[String, String]): ServerConfig =
     ServerConfig.parse(
       Array.empty,
-      environment ++ Map("OATH_MODE" -> "trusted-alpha", "OATH_DATABASE_PATH" -> "/data/oathdigital/data/database"),
+      environment ++ Map("DLQ_MODE" -> "trusted-alpha", "DLQ_DATABASE_PATH" -> "/data/distantlands/data/database"),
       "0.1.0-alpha.1"
     ).fold(errors => fail(errors.mkString("; ")), identity)
 
@@ -887,13 +887,13 @@ class DesktopConsoleSuite extends munit.FunSuite {
     DesktopLaunch(Map.empty, settingsFile, openBrowser = true, lanDetectionFailed, Vector.empty)
 
   test("the LAN banner names the player address, data folder and settings file") {
-    val lanConfig = config(Map("OATH_HOST" -> "0.0.0.0", "OATH_PUBLIC_BASE_URL" -> "http://192.168.1.20:8080"))
+    val lanConfig = config(Map("DLQ_HOST" -> "0.0.0.0", "DLQ_PUBLIC_BASE_URL" -> "http://192.168.1.20:8080"))
     assertEquals(
       DesktopConsole.banner(lanConfig, launch(lanDetectionFailed = false)),
       Vector(
-        "Oath Digital 0.1.0-alpha.1 is running.",
+        "Distant Lands 0.1.0-alpha.1 is running.",
         "  Players open:  http://192.168.1.20:8080",
-        s"  Data folder:   ${Paths.get("/data/oathdigital/data")}",
+        s"  Data folder:   ${Paths.get("/data/distantlands/data")}",
         s"  Settings:      $settingsFile",
         "Seat links contain this address. If it changes, players need the new address.",
         "Close this window or press Ctrl-C to stop."
@@ -902,24 +902,24 @@ class DesktopConsoleSuite extends munit.FunSuite {
   }
 
   test("the no-LAN banner says only this computer can connect") {
-    val localConfig = config(Map("OATH_HOST" -> "127.0.0.1"))
+    val localConfig = config(Map("DLQ_HOST" -> "127.0.0.1"))
     assertEquals(
       DesktopConsole.banner(localConfig, launch(lanDetectionFailed = true)),
       Vector(
-        "Oath Digital 0.1.0-alpha.1 is running.",
+        "Distant Lands 0.1.0-alpha.1 is running.",
         "  Only this computer can connect: http://127.0.0.1:8080",
-        s"  Data folder:   ${Paths.get("/data/oathdigital/data")}",
+        s"  Data folder:   ${Paths.get("/data/distantlands/data")}",
         s"  Settings:      $settingsFile",
-        "No local network address found. Set OATH_PUBLIC_BASE_URL in the settings file.",
+        "No local network address found. Set DLQ_PUBLIC_BASE_URL in the settings file.",
         "Close this window or press Ctrl-C to stop."
       ).mkString("", nl, nl)
     )
   }
 
   test("the browser opens the public base URL, else loopback") {
-    val lanConfig = config(Map("OATH_HOST" -> "0.0.0.0", "OATH_PUBLIC_BASE_URL" -> "http://192.168.1.20:8080"))
+    val lanConfig = config(Map("DLQ_HOST" -> "0.0.0.0", "DLQ_PUBLIC_BASE_URL" -> "http://192.168.1.20:8080"))
     assertEquals(DesktopConsole.browserUrl(lanConfig), "http://192.168.1.20:8080/")
-    assertEquals(DesktopConsole.browserUrl(config(Map("OATH_HOST" -> "127.0.0.1"))), "http://127.0.0.1:8080/")
+    assertEquals(DesktopConsole.browserUrl(config(Map("DLQ_HOST" -> "127.0.0.1"))), "http://127.0.0.1:8080/")
   }
 
   test("the browser command follows the operating system") {
@@ -947,7 +947,7 @@ class DesktopConsoleSuite extends munit.FunSuite {
       }
       assertEquals(
         DesktopConsole.bindFailure(new RuntimeException("bind failed", error), 8080, settingsFile),
-        Some(s"port 8080 is in use. Is Oath Digital already running? Change OATH_PORT in $settingsFile.")
+        Some(s"port 8080 is in use. Is Distant Lands already running? Change DLQ_PORT in $settingsFile.")
       )
     } finally held.close()
   }
@@ -961,13 +961,13 @@ class DesktopConsoleSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.server.DesktopConsoleSuite"`
+Run: `./sbtw "testOnly distantlands.server.DesktopConsoleSuite"`
 Expected: FAIL, `not found: value DesktopConsole`.
 
 - [ ] **Step 3: Write minimal implementation**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.net.BindException
 import java.nio.file.Path
@@ -983,13 +983,13 @@ object DesktopConsole {
     }
     val lines =
       Vector(
-        s"Oath Digital ${config.version} is running.",
+        s"Distant Lands ${config.version} is running.",
         address,
         s"  Data folder:   ${config.databasePath.getParent}",
         s"  Settings:      ${launch.settingsFile}"
       ) ++
         (if (launch.lanDetectionFailed)
-           Vector("No local network address found. Set OATH_PUBLIC_BASE_URL in the settings file.")
+           Vector("No local network address found. Set DLQ_PUBLIC_BASE_URL in the settings file.")
          else Vector.empty) ++
         (if (config.publicBaseUrl.nonEmpty)
            Vector("Seat links contain this address. If it changes, players need the new address.")
@@ -1031,21 +1031,21 @@ object DesktopConsole {
       .collectFirst {
         case cause if cause.isInstanceOf[BindException] ||
             cause.getClass.getSimpleName == "BindFailedException" =>
-          s"port $port is in use. Is Oath Digital already running? " +
-            s"Change OATH_PORT in $settingsFile."
+          s"port $port is in use. Is Distant Lands already running? " +
+            s"Change DLQ_PORT in $settingsFile."
       }
 }
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.server.DesktopConsoleSuite"`
+Run: `./sbtw "testOnly distantlands.server.DesktopConsoleSuite"`
 Expected: PASS, 7 tests.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/DesktopConsole.scala src/test/scala/oathdigital/server/DesktopConsoleSuite.scala
+git add src/main/scala/distantlands/server/DesktopConsole.scala src/test/scala/distantlands/server/DesktopConsoleSuite.scala
 git commit -m "feat: render the desktop banner and open the browser"
 ```
 
@@ -1054,15 +1054,15 @@ git commit -m "feat: render the desktop banner and open the browser"
 ### Task 6: Wire the desktop profile into server startup
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/server/OathServer.scala:14-22` (configuration), `:81-100` (bind and after-bind)
+- Modify: `src/main/scala/distantlands/server/DistantLandsServer.scala:14-22` (configuration), `:81-100` (bind and after-bind)
 
 **Interfaces:**
 - Consumes: `DesktopLaunchProfile.prepare`, `LanAddress.detect`, `DesktopConsole.*`.
-- Produces: startup behavior the smoke in Task 9 asserts: banner lines `  Players open:  <url>` or `  Only this computer can connect: <url>` on stdout after `Oath Digital server listening at`.
+- Produces: startup behavior the smoke in Task 9 asserts: banner lines `  Players open:  <url>` or `  Only this computer can connect: <url>` on stdout after `Distant Lands server listening at`.
 
 - [ ] **Step 1: Replace the configuration block**
 
-Replace lines 17-22 of `OathServer.scala` with:
+Replace lines 17-22 of `DistantLandsServer.scala` with:
 
 ```scala
     val osName = sys.props.getOrElse("os.name", "")
@@ -1074,16 +1074,16 @@ Replace lines 17-22 of `OathServer.scala` with:
       () => LanAddress.detect()
     ) match {
       case Left(error) =>
-        System.err.println(s"oathdigital: $error")
+        System.err.println(s"distantlands: $error")
         sys.exit(2)
       case Right(prepared) => prepared
     }
     launch.toVector.flatMap(_.warnings)
-      .foreach(warning => System.err.println(s"oathdigital: warning: $warning"))
+      .foreach(warning => System.err.println(s"distantlands: warning: $warning"))
     val environment = launch.fold(sys.env)(_.environment)
     val config = ServerConfig.parse(arguments, environment, version) match {
       case Left(errors) =>
-        errors.foreach(error => System.err.println(s"oathdigital: $error"))
+        errors.foreach(error => System.err.println(s"distantlands: $error"))
         sys.exit(2)
       case Right(parsed) => parsed
     }
@@ -1104,14 +1104,14 @@ Replace the `catch` block in the `binding` expression and the lines after `readi
                 DesktopConsole.bindFailure(error, config.port, desktop.settingsFile)
               ) match {
                 case Some(message) =>
-                  System.err.println(s"oathdigital: $message")
+                  System.err.println(s"distantlands: $message")
                   sys.exit(2)
                 case None => throw error
               }
           }
         readiness.markReady()
         system.log.info(
-          "Oath Digital server listening at http://{}:{}/",
+          "Distant Lands server listening at http://{}:{}/",
           config.host,
           Int.box(config.port)
         )
@@ -1143,30 +1143,30 @@ Expected: PASS, all suites, including the unchanged `ServerConfigSuite`.
 Run from the repository root (development catalog path works from here):
 
 ```bash
-export JAVA_HOME=/Users/roman/projects/oathdigital/.tooling/jdk-21.0.12.1+1/Contents/Home
+export JAVA_HOME=/Users/roman/projects/distantlands/.tooling/jdk-21.0.12.1+1/Contents/Home
 export PATH="$JAVA_HOME/bin:$PATH"
 ./sbtw Universal/stage
 scratch=$(mktemp -d)
-env -i PATH=/usr/bin:/bin HOME="$scratch" OATH_LAUNCH=desktop OATH_OPEN_BROWSER=false OATH_PORT=18090 target/universal/stage/bin/oathdigital > "$scratch/first.log" 2>&1 &
+env -i PATH=/usr/bin:/bin HOME="$scratch" DLQ_LAUNCH=desktop DLQ_OPEN_BROWSER=false DLQ_PORT=18090 target/universal/stage/bin/distantlands > "$scratch/first.log" 2>&1 &
 first=$!
 sleep 15
 grep -E '^  (Players open:|Only this computer can connect:)' "$scratch/first.log"
-env -i PATH=/usr/bin:/bin HOME="$scratch" OATH_LAUNCH=desktop OATH_OPEN_BROWSER=false OATH_PORT=18090 target/universal/stage/bin/oathdigital; echo "exit=$?"
+env -i PATH=/usr/bin:/bin HOME="$scratch" DLQ_LAUNCH=desktop DLQ_OPEN_BROWSER=false DLQ_PORT=18090 target/universal/stage/bin/distantlands; echo "exit=$?"
 kill -TERM "$first"; wait "$first"
-ls "$scratch/Library/Application Support/OathDigital"
+ls "$scratch/Library/Application Support/DistantLands"
 ```
 
 Expected:
 - The first log shows `  Players open:  http://<private address>:18090` (or the no-LAN variant).
-- The second run prints exactly one stderr line `oathdigital: port 18090 is in use. Is Oath Digital already running? Change OATH_PORT in <path>/oathdigital.properties.` and `exit=2`, with no stack trace.
-- The app-data folder contains `oathdigital.properties` and `data/`.
+- The second run prints exactly one stderr line `distantlands: port 18090 is in use. Is Distant Lands already running? Change DLQ_PORT in <path>/distantlands.properties.` and `exit=2`, with no stack trace.
+- The app-data folder contains `distantlands.properties` and `data/`.
 
 If the second run prints a stack trace instead, Akka's exception chain differs from the Task 5 matcher. Print the chain (`Iterator.iterate(error)(_.getCause).takeWhile(_ != null).map(_.getClass.getName)`), add a failing `DesktopConsoleSuite` case that reproduces that shape, and extend `bindFailure` until it passes. Then rerun this step.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/server/OathServer.scala
+git add src/main/scala/distantlands/server/DistantLandsServer.scala
 git commit -m "feat: start the server under the desktop launch profile"
 ```
 
@@ -1175,21 +1175,21 @@ git commit -m "feat: start the server under the desktop launch profile"
 ### Task 7: Launcher runtime selection and Start files
 
 **Files:**
-- Create: `packaging/desktop/Start Oath Digital.command`, `packaging/desktop/start-oathdigital.sh`, `packaging/desktop/Start Oath Digital.bat`
+- Create: `packaging/desktop/Start Distant Lands.command`, `packaging/desktop/start-distantlands.sh`, `packaging/desktop/Start Distant Lands.bat`
 - Modify: `build.sbt:78-97` (mappings and launcher defines), `build.sbt:112-199` (`verifyPackageMappings`)
 - Modify or create: `.gitattributes`
 
 **Interfaces:**
-- Produces: archive-root files `Start Oath Digital.command`, `start-oathdigital.sh`, `Start Oath Digital.bat`; launchers that use `../jre` when present. Tasks 8-9 rely on both.
+- Produces: archive-root files `Start Distant Lands.command`, `start-distantlands.sh`, `Start Distant Lands.bat`; launchers that use `../jre` when present. Tasks 8-9 rely on both.
 
 - [ ] **Step 1: Add the failing `verifyPackageMappings` assertions**
 
 In `verifyPackageMappings`, add these three entries to `requiredFiles`:
 
 ```scala
-        "Start Oath Digital.command",
-        "start-oathdigital.sh",
-        "Start Oath Digital.bat",
+        "Start Distant Lands.command",
+        "start-distantlands.sh",
+        "Start Distant Lands.bat",
 ```
 
 and before `val failures =`, add:
@@ -1199,11 +1199,11 @@ and before `val failures =`, add:
         .collectFirst { case (source, `destination`) => IO.read(source) }
         .getOrElse("")
       val bundledRuntimeFailures = Seq(
-        if (launcherSource("bin/oathdigital").contains(
+        if (launcherSource("bin/distantlands").contains(
               """then bundled_jvm="$(realpath "${app_home}/../jre")"; fi"""
             )) None
         else Some("bash launcher must prefer a bundled jre/"),
-        if (launcherSource("bin/oathdigital.bat").contains(
+        if (launcherSource("bin/distantlands.bat").contains(
               """if exist "%APP_HOME%\jre\bin\java.exe" set "BUNDLED_JVM=%APP_HOME%\jre""""
             )) None
         else Some("batch launcher must prefer a bundled jre\\")
@@ -1220,43 +1220,43 @@ and change the failures expression to:
 - [ ] **Step 2: Run to verify it fails**
 
 Run: `./sbtw verifyPackageMappings`
-Expected: FAIL with `Invalid package mappings: missing Start Oath Digital.command, missing start-oathdigital.sh, missing Start Oath Digital.bat, bash launcher must prefer a bundled jre/, batch launcher must prefer a bundled jre\`.
+Expected: FAIL with `Invalid package mappings: missing Start Distant Lands.command, missing start-distantlands.sh, missing Start Distant Lands.bat, bash launcher must prefer a bundled jre/, batch launcher must prefer a bundled jre\`.
 
 - [ ] **Step 3: Create the Start files**
 
-`packaging/desktop/Start Oath Digital.command` and `packaging/desktop/start-oathdigital.sh` have identical content:
+`packaging/desktop/Start Distant Lands.command` and `packaging/desktop/start-distantlands.sh` have identical content:
 
 ```sh
 #!/bin/sh
-# Double-click to start Oath Digital. Close this window or press Ctrl-C to stop.
+# Double-click to start Distant Lands. Close this window or press Ctrl-C to stop.
 cd "$(dirname "$0")" || exit 1
-OATH_LAUNCH=desktop
-export OATH_LAUNCH
-bin/oathdigital "$@"
+DLQ_LAUNCH=desktop
+export DLQ_LAUNCH
+bin/distantlands "$@"
 status=$?
 case "$status" in
   0|130|143) ;;
   *)
-    printf '\nOath Digital stopped with an error (exit %s). Press Return to close this window.\n' "$status"
+    printf '\nDistant Lands stopped with an error (exit %s). Press Return to close this window.\n' "$status"
     read -r _
     ;;
 esac
 exit "$status"
 ```
 
-`packaging/desktop/Start Oath Digital.bat`:
+`packaging/desktop/Start Distant Lands.bat`:
 
 ```bat
 @echo off
-rem Double-click to start Oath Digital. Close this window or press Ctrl-C to stop.
+rem Double-click to start Distant Lands. Close this window or press Ctrl-C to stop.
 setlocal
 cd /d "%~dp0"
-set "OATH_LAUNCH=desktop"
-call "bin\oathdigital.bat" %*
+set "DLQ_LAUNCH=desktop"
+call "bin\distantlands.bat" %*
 set "status=%ERRORLEVEL%"
 if not "%status%"=="0" (
   echo.
-  echo Oath Digital stopped with an error ^(exit %status%^).
+  echo Distant Lands stopped with an error ^(exit %status%^).
   pause
 )
 exit /b %status%
@@ -1265,9 +1265,9 @@ exit /b %status%
 Then mark the shell files executable in Git and the batch file CRLF:
 
 ```bash
-chmod +x "packaging/desktop/Start Oath Digital.command" packaging/desktop/start-oathdigital.sh
+chmod +x "packaging/desktop/Start Distant Lands.command" packaging/desktop/start-distantlands.sh
 printf '*.bat text eol=crlf\n' >> .gitattributes
-git add --renormalize .gitattributes "packaging/desktop/Start Oath Digital.bat"
+git add --renormalize .gitattributes "packaging/desktop/Start Distant Lands.bat"
 ```
 
 - [ ] **Step 4: Add the mappings and launcher defines in `build.sbt`**
@@ -1276,9 +1276,9 @@ After the existing `Universal / mappings ++= { ... }` block, add:
 
 ```scala
     Universal / mappings ++= Seq(
-      "Start Oath Digital.command",
-      "start-oathdigital.sh",
-      "Start Oath Digital.bat"
+      "Start Distant Lands.command",
+      "start-distantlands.sh",
+      "Start Distant Lands.bat"
     ).map(name => baseDirectory.value / "packaging/desktop" / name -> name),
 ```
 
@@ -1303,10 +1303,10 @@ Run:
 ```bash
 ./sbtw verifyPackageMappings Universal/packageZipTarball Universal/packageBin
 scratch=$(mktemp -d)
-tar -xzf target/universal/oathdigital-0.1.0-SNAPSHOT.tgz -C "$scratch"
-test -x "$scratch/oathdigital-0.1.0-SNAPSHOT/Start Oath Digital.command" && test -x "$scratch/oathdigital-0.1.0-SNAPSHOT/start-oathdigital.sh" && echo tgz-executable
-unzip -Z target/universal/oathdigital-0.1.0-SNAPSHOT.zip | grep -E 'start-oathdigital.sh|Start Oath Digital'
-sh scripts/smoke-packaged-distribution.sh "$scratch/oathdigital-0.1.0-SNAPSHOT" 18080
+tar -xzf target/universal/distantlands-0.1.0-SNAPSHOT.tgz -C "$scratch"
+test -x "$scratch/distantlands-0.1.0-SNAPSHOT/Start Distant Lands.command" && test -x "$scratch/distantlands-0.1.0-SNAPSHOT/start-distantlands.sh" && echo tgz-executable
+unzip -Z target/universal/distantlands-0.1.0-SNAPSHOT.zip | grep -E 'start-distantlands.sh|Start Distant Lands'
+sh scripts/smoke-packaged-distribution.sh "$scratch/distantlands-0.1.0-SNAPSHOT" 18080
 ```
 
 Expected: `verifyPackageMappings` passes; `tgz-executable`; the ZIP listing shows `-rwxr-xr-x` for the two shell files; the existing packaged smoke passes unchanged.
@@ -1333,8 +1333,8 @@ git commit -m "feat: add double-click Start files and bundled runtime selection"
 - Create: `packaging/jlink-modules.txt`, `scripts/package-bundled-runtime.sh`
 
 **Interfaces:**
-- Consumes: an extracted all-platform archive directory `oathdigital-<version>` (Task 7 contents).
-- Produces: `sh scripts/package-bundled-runtime.sh APP_DIRECTORY TARGET NEW_OUTPUT_DIRECTORY` writes `NEW_OUTPUT_DIRECTORY/oathdigital-<version>-<target>.<tgz|zip>` and prints `<sha256>  <archive>`.
+- Consumes: an extracted all-platform archive directory `distantlands-<version>` (Task 7 contents).
+- Produces: `sh scripts/package-bundled-runtime.sh APP_DIRECTORY TARGET NEW_OUTPUT_DIRECTORY` writes `NEW_OUTPUT_DIRECTORY/distantlands-<version>-<target>.<tgz|zip>` and prints `<sha256>  <archive>`.
 
 - [ ] **Step 1: Create the module list**
 
@@ -1380,13 +1380,13 @@ case "$target" in
   windows-x64) extension=zip ;;
   *) fail "unknown target: $target" ;;
 esac
-[ -d "$app_directory/lib" ] && [ -f "$app_directory/bin/oathdigital" ] ||
-  fail "not an extracted Oath Digital archive: $app_directory"
+[ -d "$app_directory/lib" ] && [ -f "$app_directory/bin/distantlands" ] ||
+  fail "not an extracted Distant Lands archive: $app_directory"
 [ ! -e "$app_directory/jre" ] || fail "app directory already contains jre/"
 root=$(basename "$app_directory")
 case "$root" in
-  oathdigital-*) ;;
-  *) fail "app directory must be named oathdigital-<version>: $root" ;;
+  distantlands-*) ;;
+  *) fail "app directory must be named distantlands-<version>: $root" ;;
 esac
 [ -n "${JAVA_HOME:-}" ] || fail "JAVA_HOME must select a Java 21 JDK"
 "$JAVA_HOME/bin/java" -version 2>&1 | grep -Eq 'version "21\.' ||
@@ -1409,7 +1409,7 @@ for jar in "$app_directory"/lib/*.jar; do
   classpath="$classpath$(native_path "$jar")$separator"
 done
 server_jar=
-for jar in "$app_directory"/lib/dev.oathdigital.*.jar; do server_jar=$jar; done
+for jar in "$app_directory"/lib/quest.distantlands.*.jar; do server_jar=$jar; done
 [ -f "$server_jar" ] || fail "server jar not found under $app_directory/lib"
 required=$("$JAVA_HOME/bin/jdeps" --multi-release 21 --ignore-missing-deps \
   --print-module-deps -q --class-path "$classpath" "$(native_path "$server_jar")" | tr -d '\r')
@@ -1462,14 +1462,14 @@ Then: `chmod +x scripts/package-bundled-runtime.sh`
 Run:
 
 ```bash
-export JAVA_HOME=/Users/roman/projects/oathdigital/.tooling/jdk-21.0.12.1+1/Contents/Home
+export JAVA_HOME=/Users/roman/projects/distantlands/.tooling/jdk-21.0.12.1+1/Contents/Home
 export PATH="$JAVA_HOME/bin:$PATH"
 ./sbtw Universal/packageZipTarball
 scratch=$(mktemp -d)
-tar -xzf target/universal/oathdigital-0.1.0-SNAPSHOT.tgz -C "$scratch"
+tar -xzf target/universal/distantlands-0.1.0-SNAPSHOT.tgz -C "$scratch"
 cp packaging/jlink-modules.txt "$scratch/modules.backup"
 grep -v '^java.sql$' "$scratch/modules.backup" > packaging/jlink-modules.txt
-sh scripts/package-bundled-runtime.sh "$scratch/oathdigital-0.1.0-SNAPSHOT" macos-arm64 "$scratch/out-missing"; echo "exit=$?"
+sh scripts/package-bundled-runtime.sh "$scratch/distantlands-0.1.0-SNAPSHOT" macos-arm64 "$scratch/out-missing"; echo "exit=$?"
 cp "$scratch/modules.backup" packaging/jlink-modules.txt
 git diff --exit-code packaging/jlink-modules.txt
 ```
@@ -1481,12 +1481,12 @@ Expected: `bundled runtime packaging failed: packaging/jlink-modules.txt lacks m
 Run (same shell):
 
 ```bash
-sh scripts/package-bundled-runtime.sh "$scratch/oathdigital-0.1.0-SNAPSHOT" macos-arm64 "$scratch/out"
+sh scripts/package-bundled-runtime.sh "$scratch/distantlands-0.1.0-SNAPSHOT" macos-arm64 "$scratch/out"
 ls -lh "$scratch/out"
-tar -tzf "$scratch/out/oathdigital-0.1.0-SNAPSHOT-macos-arm64.tgz" | awk -F/ '{print $1}' | sort -u
+tar -tzf "$scratch/out/distantlands-0.1.0-SNAPSHOT-macos-arm64.tgz" | awk -F/ '{print $1}' | sort -u
 ```
 
-Expected: one checksum line; an archive of roughly 70 MB; the only root entry is `oathdigital-0.1.0-SNAPSHOT`.
+Expected: one checksum line; an archive of roughly 70 MB; the only root entry is `distantlands-0.1.0-SNAPSHOT`.
 
 - [ ] **Step 5: Commit**
 
@@ -1545,21 +1545,21 @@ trap cleanup EXIT
 
 case "$port" in ''|*[!0-9]*) fail "port must be an integer: $port" ;; esac
 [ -x "$app_directory/jre/bin/java" ] || fail "missing bundled jre/ in $app_directory"
-[ -x "$app_directory/Start Oath Digital.command" ] && [ -x "$app_directory/start-oathdigital.sh" ] ||
+[ -x "$app_directory/Start Distant Lands.command" ] && [ -x "$app_directory/start-distantlands.sh" ] ||
   fail "Start files must be present and executable"
 app=$(cd "$app_directory" && pwd -P)
-temporary=$(mktemp -d "${TMPDIR:-/tmp}/oathdigital-bundled.XXXXXX")
+temporary=$(mktemp -d "${TMPDIR:-/tmp}/distantlands-bundled.XXXXXX")
 temporary=$(cd "$temporary" && pwd -P)
 log_file="$temporary/server.log"
 mkdir -p "$temporary/home"
 case "$(uname -s)" in
-  Darwin) app_data="$temporary/home/Library/Application Support/OathDigital" ;;
-  *) app_data="$temporary/xdg/oathdigital" ;;
+  Darwin) app_data="$temporary/home/Library/Application Support/DistantLands" ;;
+  *) app_data="$temporary/xdg/distantlands" ;;
 esac
 
 env -i PATH=/usr/bin:/bin HOME="$temporary/home" XDG_DATA_HOME="$temporary/xdg" \
-  OATH_LAUNCH=desktop OATH_OPEN_BROWSER=false OATH_PORT="$port" \
-  "$app/bin/oathdigital" >"$log_file" 2>&1 &
+  DLQ_LAUNCH=desktop DLQ_OPEN_BROWSER=false DLQ_PORT="$port" \
+  "$app/bin/distantlands" >"$log_file" 2>&1 &
 child_pid=$!
 
 url=
@@ -1581,14 +1581,14 @@ for path in /health/ready / /assets/main.js; do
 done
 ps -o command= -p "$child_pid" | grep -F "$app/jre/bin/java" >/dev/null ||
   fail "server is not running on the bundled runtime"
-[ -f "$app_data/oathdigital.properties" ] || fail "settings file was not created"
+[ -f "$app_data/distantlands.properties" ] || fail "settings file was not created"
 ls "$app_data/data" 2>/dev/null | grep -q '^database\.' ||
   fail "database was not created in the app-data folder"
 
 kill -TERM "$child_pid"
 wait "$child_pid" 2>/dev/null || true
 child_pid=
-grep -q 'Oath Digital database closed' "$log_file" || fail "database did not close cleanly"
+grep -q 'Distant Lands database closed' "$log_file" || fail "database did not close cleanly"
 echo "bundled distribution smoke passed: $app"
 ```
 
@@ -1601,16 +1601,16 @@ Run:
 ```bash
 scratch=$(mktemp -d)
 ./sbtw Universal/packageZipTarball
-tar -xzf target/universal/oathdigital-0.1.0-SNAPSHOT.tgz -C "$scratch"
-sh scripts/package-bundled-runtime.sh "$scratch/oathdigital-0.1.0-SNAPSHOT" macos-arm64 "$scratch/out"
+tar -xzf target/universal/distantlands-0.1.0-SNAPSHOT.tgz -C "$scratch"
+sh scripts/package-bundled-runtime.sh "$scratch/distantlands-0.1.0-SNAPSHOT" macos-arm64 "$scratch/out"
 mkdir "$scratch/bundled"
-tar -xzf "$scratch/out/oathdigital-0.1.0-SNAPSHOT-macos-arm64.tgz" -C "$scratch/bundled"
-sh scripts/smoke-bundled-distribution.sh "$scratch/bundled/oathdigital-0.1.0-SNAPSHOT" 18081
+tar -xzf "$scratch/out/distantlands-0.1.0-SNAPSHOT-macos-arm64.tgz" -C "$scratch/bundled"
+sh scripts/smoke-bundled-distribution.sh "$scratch/bundled/distantlands-0.1.0-SNAPSHOT" 18081
 ```
 
 Expected: `bundled distribution smoke passed: <path>`.
 
-Negative check: run the smoke against the all-platform extraction `"$scratch/oathdigital-0.1.0-SNAPSHOT"`. Expected: `bundled distribution smoke failed: missing bundled jre/ in ...`.
+Negative check: run the smoke against the all-platform extraction `"$scratch/distantlands-0.1.0-SNAPSHOT"`. Expected: `bundled distribution smoke failed: missing bundled jre/ in ...`.
 
 - [ ] **Step 3: Create the Windows smoke**
 
@@ -1631,22 +1631,22 @@ function Fail([string]$Message) { throw "bundled distribution smoke failed: $Mes
 $app = (Resolve-Path -LiteralPath $AppDirectory).Path
 $bundledJava = Join-Path $app 'jre\bin\java.exe'
 if (-not (Test-Path -LiteralPath $bundledJava)) { Fail "missing bundled jre\ in $app" }
-if (-not (Test-Path -LiteralPath (Join-Path $app 'Start Oath Digital.bat'))) { Fail 'missing Start Oath Digital.bat' }
+if (-not (Test-Path -LiteralPath (Join-Path $app 'Start Distant Lands.bat'))) { Fail 'missing Start Distant Lands.bat' }
 
-$temporary = Join-Path ([IO.Path]::GetTempPath()) ('oathdigital-bundled-' + [guid]::NewGuid())
+$temporary = Join-Path ([IO.Path]::GetTempPath()) ('distantlands-bundled-' + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $temporary | Out-Null
 $log = Join-Path $temporary 'server.log'
 $errorLog = Join-Path $temporary 'server.err.log'
-$appData = Join-Path $temporary 'local\OathDigital'
+$appData = Join-Path $temporary 'local\DistantLands'
 
 $env:LOCALAPPDATA = Join-Path $temporary 'local'
 Remove-Item Env:JAVA_HOME -ErrorAction SilentlyContinue
 $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
-$env:OATH_LAUNCH = 'desktop'
-$env:OATH_OPEN_BROWSER = 'false'
-$env:OATH_PORT = "$Port"
+$env:DLQ_LAUNCH = 'desktop'
+$env:DLQ_OPEN_BROWSER = 'false'
+$env:DLQ_PORT = "$Port"
 
-$process = Start-Process -FilePath (Join-Path $app 'bin\oathdigital.bat') -NoNewWindow -PassThru `
+$process = Start-Process -FilePath (Join-Path $app 'bin\distantlands.bat') -NoNewWindow -PassThru `
   -RedirectStandardOutput $log -RedirectStandardError $errorLog
 try {
   $url = $null
@@ -1668,7 +1668,7 @@ try {
   $java = Get-CimInstance Win32_Process -Filter "Name = 'java.exe'" |
     Where-Object { $_.ExecutablePath -ieq $bundledJava }
   if (-not $java) { Fail 'server is not running on the bundled runtime' }
-  if (-not (Test-Path -LiteralPath (Join-Path $appData 'oathdigital.properties'))) { Fail 'settings file was not created' }
+  if (-not (Test-Path -LiteralPath (Join-Path $appData 'distantlands.properties'))) { Fail 'settings file was not created' }
   if (-not (Get-ChildItem -LiteralPath (Join-Path $appData 'data') -Filter 'database.*' -ErrorAction SilentlyContinue)) {
     Fail 'database was not created in the app-data folder'
   }
@@ -1699,7 +1699,7 @@ Insert before the final `*)` case:
     esac
     [ -f "$2" ] || fail "missing all-platform archive: $2"
     [ ! -e "$4" ] || fail "output directory already exists"
-    temporary=$(mktemp -d "${TMPDIR:-/tmp}/oathdigital-bundled-release.XXXXXX")
+    temporary=$(mktemp -d "${TMPDIR:-/tmp}/distantlands-bundled-release.XXXXXX")
     trap 'rm -rf -- "$temporary"' EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM
@@ -1722,8 +1722,8 @@ and change the usage line in `*)` to:
 
 - [ ] **Step 5: Run the verification mode**
 
-Run: `sh scripts/verify-alpha-release.sh bundled target/universal/oathdigital-0.1.0-SNAPSHOT.tgz macos-arm64 "$(mktemp -d)/out"`
-Expected: `bundled distribution smoke passed: ...` then `bundled archive verification passed: oathdigital-0.1.0-SNAPSHOT-macos-arm64`.
+Run: `sh scripts/verify-alpha-release.sh bundled target/universal/distantlands-0.1.0-SNAPSHOT.tgz macos-arm64 "$(mktemp -d)/out"`
+Expected: `bundled distribution smoke passed: ...` then `bundled archive verification passed: distantlands-0.1.0-SNAPSHOT-macos-arm64`.
 
 Run: `sh scripts/verify-alpha-release.sh self-test`
 Expected: unchanged pass line.
@@ -1793,26 +1793,26 @@ Insert after the `images` job, reusing the exact pinned action revisions already
       - name: Build the bundled archive from the tested all-platform archive
         run: |
           mkdir universal "extracted app"
-          tar -xzf "release-bundle/oathdigital-$RELEASE_VERSION.tgz" -C universal
-          sh scripts/package-bundled-runtime.sh "universal/oathdigital-$RELEASE_VERSION" "$TARGET" bundled
-          archive="bundled/oathdigital-$RELEASE_VERSION-$TARGET.$EXTENSION"
+          tar -xzf "release-bundle/distantlands-$RELEASE_VERSION.tgz" -C universal
+          sh scripts/package-bundled-runtime.sh "universal/distantlands-$RELEASE_VERSION" "$TARGET" bundled
+          archive="bundled/distantlands-$RELEASE_VERSION-$TARGET.$EXTENSION"
           if [ "$EXTENSION" = zip ]; then
             python -m zipfile -e "$archive" "extracted app"
           else
             tar -xzf "$archive" -C "extracted app"
           fi
-          [ "$(ls -A "extracted app")" = "oathdigital-$RELEASE_VERSION" ]
+          [ "$(ls -A "extracted app")" = "distantlands-$RELEASE_VERSION" ]
       - name: Smoke the extracted bundled archive
         if: runner.os != 'Windows'
-        run: sh scripts/smoke-bundled-distribution.sh "extracted app/oathdigital-$RELEASE_VERSION" 18080
+        run: sh scripts/smoke-bundled-distribution.sh "extracted app/distantlands-$RELEASE_VERSION" 18080
       - name: Smoke the extracted bundled archive
         if: runner.os == 'Windows'
         shell: pwsh
-        run: ./scripts/smoke-bundled-distribution.ps1 -AppDirectory "extracted app/oathdigital-$env:RELEASE_VERSION" -Port 18080
+        run: ./scripts/smoke-bundled-distribution.ps1 -AppDirectory "extracted app/distantlands-$env:RELEASE_VERSION" -Port 18080
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: bundled-${{ matrix.target }}
-          path: bundled/oathdigital-*-${{ matrix.target }}.${{ matrix.extension }}
+          path: bundled/distantlands-*-${{ matrix.target }}.${{ matrix.extension }}
           if-no-files-found: error
           retention-days: 14
 ```
@@ -1835,8 +1835,8 @@ In the `Create prerelease without replacing existing assets` step, change the ch
 
 ```yaml
           (cd release-bundle && sha256sum amd64-evidence.txt arm64-evidence.txt manifest-evidence.txt \
-            "oathdigital-$RELEASE_VERSION-macos-arm64.tgz" "oathdigital-$RELEASE_VERSION-linux-x64.tgz" \
-            "oathdigital-$RELEASE_VERSION-windows-x64.zip" >> SHA256SUMS)
+            "distantlands-$RELEASE_VERSION-macos-arm64.tgz" "distantlands-$RELEASE_VERSION-linux-x64.tgz" \
+            "distantlands-$RELEASE_VERSION-windows-x64.zip" >> SHA256SUMS)
 ```
 
 - [ ] **Step 3: Validate the workflow syntax**
@@ -1877,19 +1877,19 @@ else needs installing:
 
 | Computer | Download |
 | --- | --- |
-| Mac with Apple silicon | `oathdigital-0.1.0-alpha.1-macos-arm64.tgz` |
-| Windows (64-bit Intel or AMD) | `oathdigital-0.1.0-alpha.1-windows-x64.zip` |
-| Linux (64-bit Intel or AMD) | `oathdigital-0.1.0-alpha.1-linux-x64.tgz` |
+| Mac with Apple silicon | `distantlands-0.1.0-alpha.1-macos-arm64.tgz` |
+| Windows (64-bit Intel or AMD) | `distantlands-0.1.0-alpha.1-windows-x64.zip` |
+| Linux (64-bit Intel or AMD) | `distantlands-0.1.0-alpha.1-linux-x64.tgz` |
 
 1. Extract the archive: double-click it on macOS, or right-click and choose
    **Extract All** on Windows. On Linux, extract it with your file manager.
-2. Open the extracted `oathdigital-0.1.0-alpha.1` folder and start the server:
-   - macOS: double-click **Start Oath Digital.command**. The first time, macOS
+2. Open the extracted `distantlands-0.1.0-alpha.1` folder and start the server:
+   - macOS: double-click **Start Distant Lands.command**. The first time, macOS
      says it cannot verify the file. Open **System Settings › Privacy &
      Security**, choose **Open Anyway** for it, and confirm.
-   - Windows: double-click **Start Oath Digital.bat**. If SmartScreen appears,
+   - Windows: double-click **Start Distant Lands.bat**. If SmartScreen appears,
      choose **More info › Run anyway**.
-   - Linux: run `./start-oathdigital.sh` from a terminal in that folder, or use
+   - Linux: run `./start-distantlands.sh` from a terminal in that folder, or use
      your file manager's "Run in terminal" action.
 3. If the system asks whether to allow incoming connections, allow them on
    private networks only.
@@ -1921,8 +1921,8 @@ Append to `docs/operations/configuration.md`:
 ```markdown
 ## Desktop launch profile
 
-The Start files set `OATH_LAUNCH=desktop`. Without that variable, nothing in
-this section applies. Any other value of `OATH_LAUNCH` is a configuration
+The Start files set `DLQ_LAUNCH=desktop`. Without that variable, nothing in
+this section applies. Any other value of `DLQ_LAUNCH` is a configuration
 error.
 
 Under the desktop profile, values come from, in order of precedence:
@@ -1936,22 +1936,22 @@ Under the desktop profile, values come from, in order of precedence:
 
 | Computer | App-data folder |
 | --- | --- |
-| macOS | `~/Library/Application Support/OathDigital` |
-| Windows | `%LOCALAPPDATA%\OathDigital` |
-| Linux and others | `$XDG_DATA_HOME/oathdigital`, else `~/.local/share/oathdigital` |
+| macOS | `~/Library/Application Support/DistantLands` |
+| Windows | `%LOCALAPPDATA%\DistantLands` |
+| Linux and others | `$XDG_DATA_HOME/distantlands`, else `~/.local/share/distantlands` |
 
 The database is `data/database` inside that folder. The settings file is
-`oathdigital.properties` inside that folder. The first start writes it with
+`distantlands.properties` inside that folder. The first start writes it with
 every setting commented out. Remove the leading `#` from a line to use it, and
-restart the server. It accepts only `OATH_HOST`, `OATH_PORT`,
-`OATH_PUBLIC_BASE_URL`, `OATH_DATABASE_PATH`, and `OATH_OPEN_BROWSER`
+restart the server. It accepts only `DLQ_HOST`, `DLQ_PORT`,
+`DLQ_PUBLIC_BASE_URL`, `DLQ_DATABASE_PATH`, and `DLQ_OPEN_BROWSER`
 (`true` or `false`). On Windows, write paths with forward slashes, such as
-`C:/OathData/database`.
+`C:/DistantLandsData/database`.
 
 The detected address is the private IPv4 address of the connection the
 computer uses for its default route. If there is none, the server listens on
 `127.0.0.1` only and says so. If the detected address is wrong, set
-`OATH_PUBLIC_BASE_URL` in the settings file. The port stays at 8080 unless
+`DLQ_PUBLIC_BASE_URL` in the settings file. The port stays at 8080 unless
 you change it; if it is in use, the server stops with a message naming the
 settings file.
 ```
@@ -1962,10 +1962,10 @@ In "Versions and compatibility", after the paragraph about archive filenames, ad
 
 ```markdown
 Bundled archives include a Java 21 runtime built with `jlink` from the
-module list in `packaging/jlink-modules.txt`: `oathdigital-0.1.0-alpha.1-macos-arm64.tgz`,
-`oathdigital-0.1.0-alpha.1-windows-x64.zip`, and
-`oathdigital-0.1.0-alpha.1-linux-x64.tgz`. They extract to the same
-`oathdigital-0.1.0-alpha.1` directory. They are not signed or notarized; the
+module list in `packaging/jlink-modules.txt`: `distantlands-0.1.0-alpha.1-macos-arm64.tgz`,
+`distantlands-0.1.0-alpha.1-windows-x64.zip`, and
+`distantlands-0.1.0-alpha.1-linux-x64.tgz`. They extract to the same
+`distantlands-0.1.0-alpha.1` directory. They are not signed or notarized; the
 [quick start](quick-start.md) describes the one-time macOS and Windows prompts.
 Intel Macs and Linux arm64 use the all-platform archive or the OCI image.
 ```
@@ -1976,7 +1976,7 @@ In "Operator sequence" step 3, after "extracts and smokes both archives under Ja
 To build and smoke the bundled archive for the host platform (`macos-arm64`
 or `linux-x64`) from an all-platform archive:
 
-    sh scripts/verify-alpha-release.sh bundled target/universal/oathdigital-0.1.0-alpha.1.tgz macos-arm64 /tmp/oath-bundled
+    sh scripts/verify-alpha-release.sh bundled target/universal/distantlands-0.1.0-alpha.1.tgz macos-arm64 /tmp/oath-bundled
 
 The `windows-x64` archive is built and smoked only by the workflow. Its smoke
 cannot stop the server gracefully, so the database-close check for Windows is
@@ -1992,12 +1992,12 @@ Append:
 
 `scripts/smoke-bundled-distribution.sh APP_DIRECTORY PORT` (macOS, Linux) and
 `scripts/smoke-bundled-distribution.ps1 -AppDirectory DIR -Port PORT`
-(Windows) start an extracted bundled archive with `OATH_LAUNCH=desktop`, no
+(Windows) start an extracted bundled archive with `DLQ_LAUNCH=desktop`, no
 `JAVA_HOME`, no Java on `PATH`, and a temporary app-data folder. They check
 that the process runs from `jre/`, that the banner address answers
 `/health/ready`, `/`, and `/assets/main.js`, and that the settings file and
 database are in the app-data folder. The POSIX smoke also checks
-`Oath Digital database closed` after SIGTERM.
+`Distant Lands database closed` after SIGTERM.
 ```
 
 - [ ] **Step 5: Add acceptance rows to `alpha-acceptance.md`**
@@ -2017,7 +2017,7 @@ build ships. Use a machine without Java 21 on `PATH` where possible.
 | 19 | Record the firewall prompt and the choice made (private networks only). | UNEXECUTED | |
 | 20 | The window shows the banner; the browser opens the game-creation page at the banner address. | UNEXECUTED | |
 | 21 | Create a game on the host; a second machine joins using a seat link with the banner address and completes a turn. | UNEXECUTED | |
-| 22 | Close the Start window (Windows: close the console window). The next start restores the game, and the log from the first run ends with `Oath Digital database closed`. | UNEXECUTED | |
+| 22 | Close the Start window (Windows: close the console window). The next start restores the game, and the log from the first run ends with `Distant Lands database closed`. | UNEXECUTED | |
 ```
 
 - [ ] **Step 6: Update the roadmap**
@@ -2027,7 +2027,7 @@ In `docs/ROADMAP.md` Phase 5 item 2, after "publish a short host/player quick-st
 - [ ] **Step 7: Run the documentation checks**
 
 Run: `python3 scripts/check-markdown-links.py && ./sbtw verifyPackageMappings`
-Expected: `Markdown link check passed: <n> files`; `verifyPackageMappings` passes (the docs are bundled into `share/oathdigital`).
+Expected: `Markdown link check passed: <n> files`; `verifyPackageMappings` passes (the docs are bundled into `share/distantlands`).
 
 - [ ] **Step 8: Commit**
 
@@ -2049,16 +2049,16 @@ git commit -m "docs: document bundled archives and the desktop launch profile"
 - [ ] **Step 1: Run the full local gate under Java 21**
 
 ```bash
-export JAVA_HOME=/Users/roman/projects/oathdigital/.tooling/jdk-21.0.12.1+1/Contents/Home
+export JAVA_HOME=/Users/roman/projects/distantlands/.tooling/jdk-21.0.12.1+1/Contents/Home
 export PATH="$JAVA_HOME/bin:$PATH"
 python3 scripts/check-architecture.py
 python3 scripts/validate-component-catalog.py
 python3 scripts/check-markdown-links.py
 ./sbtw verifyReleaseVersion test frontend/test verifyPackageMappings Universal/packageBin Universal/packageZipTarball
 scratch=$(mktemp -d)
-tar -xzf target/universal/oathdigital-0.1.0-SNAPSHOT.tgz -C "$scratch"
-sh scripts/smoke-packaged-distribution.sh "$scratch/oathdigital-0.1.0-SNAPSHOT" 18080
-sh scripts/verify-alpha-release.sh bundled target/universal/oathdigital-0.1.0-SNAPSHOT.tgz macos-arm64 "$scratch/out"
+tar -xzf target/universal/distantlands-0.1.0-SNAPSHOT.tgz -C "$scratch"
+sh scripts/smoke-packaged-distribution.sh "$scratch/distantlands-0.1.0-SNAPSHOT" 18080
+sh scripts/verify-alpha-release.sh bundled target/universal/distantlands-0.1.0-SNAPSHOT.tgz macos-arm64 "$scratch/out"
 ```
 
 Expected: every command passes. Record JVM and frontend test counts.
@@ -2067,9 +2067,9 @@ Expected: every command passes. Record JVM and frontend test counts.
 
 Stop and ask the user to do this on their Mac; the agent cannot click through Gatekeeper:
 
-1. The agent copies `$scratch/out/oathdigital-0.1.0-SNAPSHOT-macos-arm64.tgz` to a folder the user names, and marks it as downloaded, so macOS treats it like a browser download:
+1. The agent copies `$scratch/out/distantlands-0.1.0-SNAPSHOT-macos-arm64.tgz` to a folder the user names, and marks it as downloaded, so macOS treats it like a browser download:
    `xattr -w com.apple.quarantine "0083;$(printf '%x' "$(date +%s)");Safari;" <archive>`
-2. The user double-clicks the archive in Finder, then double-clicks **Start Oath Digital.command**, and follows any prompt.
+2. The user double-clicks the archive in Finder, then double-clicks **Start Distant Lands.command**, and follows any prompt.
 3. The user reports: each prompt's wording, whether **Open Anyway** was needed, whether the bundled `java` then ran or was blocked, the firewall prompt, whether the browser opened the banner address.
 
 If the bundled `java` is blocked after the Start file was allowed, add ad-hoc signing to `scripts/package-bundled-runtime.sh` in the `Darwin` branch before `codesign --verify`:

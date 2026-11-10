@@ -10,9 +10,9 @@ is deleted from this file.
 | --- | --- | --- |
 | 7 | `ServerConfig.scala` `isLoopback` | Bracketed IPv6 loopback `[::1]` is rejected although bare `::1` is accepted. Normalize by stripping surrounding brackets in `parseHost`. |
 | 12 | `build.sbt` resource generator | `Compile / resourceGenerators` puts `frontend / fullLinkJS` on the test classpath, so every `./sbtw test` pays the slowest build step. Scope the generator behind a packaging flag. |
-| 13 | `src/test/resources/oathdigital/frontend/index.html` | The test fixture shadows the generated resource indistinguishably, so the suite cannot detect a wrong generated `index.html`. Add a fixture-only marker and assert on it. |
+| 13 | `src/test/resources/distantlands/frontend/index.html` | The test fixture shadows the generated resource indistinguishably, so the suite cannot detect a wrong generated `index.html`. Add a fixture-only marker and assert on it. |
 | 15 | `build.sbt` docker settings | The scoped/unscoped `dockerEnvVars` and `dockerExposedVolumes` pairs look redundant but are **load-bearing** — sbt-native-packager renders from the unscoped keys, and removing them silently drops the `ENV` and `VOLUME` lines. `verifyPackageMappings` catches it. Do not "simplify" without reading that gate. |
-| 16 | `build.sbt` `verifyPackageMappings` | The Dockerfile ordering assertion hardcodes the literal `oathdigital:root` instead of deriving it from `daemonUser`/`daemonGroup`. A plugin version emitting `chown -R 10001:0` would fail the build loudly, not pass silently. |
+| 16 | `build.sbt` `verifyPackageMappings` | The Dockerfile ordering assertion hardcodes the literal `distantlands:root` instead of deriving it from `daemonUser`/`daemonGroup`. A plugin version emitting `chown -R 10001:0` would fail the build loudly, not pass silently. |
 | 18 | Docker image | No `HEALTHCHECK`. `/health/ready` is the right probe; the `-jre` base image has no `curl`, so this needs a `wget` or Java-based probe. |
 
 ## Reconnection UX after a disconnect
@@ -30,8 +30,9 @@ Not a defect; a cost the current design pays and could stop paying.
 
 `SnapshotPollingCoordinator` reschedules a `setTimeout` every 5s while the tab
 is visible and every 30s while it is hidden. Each tick calls `GameClient.load`,
-which issues `GET /api/dev/first-games/{id}?playerId=…` and returns the entire
-viewer-scoped projection. Nothing has usually changed, so the steady-state cost
+which issues `GET /games/{game-id}/api` for a trusted seat (or
+`GET /api/dev/first-games/{id}?playerId=…` in development) and returns the
+entire viewer-scoped projection. Nothing has usually changed, so the steady-state cost
 of an idle game is a full projection per client per 5s.
 
 The comparison that prompted this note: `haunt-roll-fail` polls the same way but
@@ -55,7 +56,7 @@ design before anyone implements it.
 ## Documentation gaps
 
 - `docs/operations/configuration.md` documents named and anonymous volumes but not
-  host bind mounts at `/var/lib/oathdigital`, where the *host* directory's
+  host bind mounts at `/var/lib/distantlands`, where the *host* directory's
   ownership — not the image's — decides whether UID 10001 can write.
 
 ## Deliberate deviations from the plan text

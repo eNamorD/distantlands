@@ -27,13 +27,13 @@
 ### Task 1: Persistent seat capability model
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/IdentityRepository.scala`
-- Modify: `src/main/scala/oathdigital/persistence/EventJournalSchema.scala`
-- Modify: `src/main/scala/oathdigital/persistence/HsqldbIdentityRepository.scala`
-- Modify: `src/main/scala/oathdigital/persistence/HsqldbDatabaseOwner.scala`
-- Test: `src/test/scala/oathdigital/persistence/HsqldbIdentityRepositorySuite.scala`
-- Create: `src/test/scala/oathdigital/server/SeatCodeSuite.scala`
-- Create: `src/main/scala/oathdigital/server/SeatCode.scala`
+- Modify: `src/main/scala/distantlands/application/IdentityRepository.scala`
+- Modify: `src/main/scala/distantlands/persistence/EventJournalSchema.scala`
+- Modify: `src/main/scala/distantlands/persistence/HsqldbIdentityRepository.scala`
+- Modify: `src/main/scala/distantlands/persistence/HsqldbDatabaseOwner.scala`
+- Test: `src/test/scala/distantlands/persistence/HsqldbIdentityRepositorySuite.scala`
+- Create: `src/test/scala/distantlands/server/SeatCodeSuite.scala`
+- Create: `src/main/scala/distantlands/server/SeatCode.scala`
 
 **Interfaces:**
 - Produces: `SeatCode.generate(random: SecureRandom): SeatCode`, `SeatCode.parse(raw: String): Either[String, SeatCode]`, `SeatCode.digest: SeatCodeDigest`.
@@ -46,7 +46,7 @@
 
 - [ ] **Step 2: Run RED gate**
 
-  Run `./sbtw "testOnly oathdigital.server.SeatCodeSuite"`; expected failure: missing `SeatCode` and `SeatCodeDigest` APIs.
+  Run `./sbtw "testOnly distantlands.server.SeatCodeSuite"`; expected failure: missing `SeatCode` and `SeatCodeDigest` APIs.
 
 - [ ] **Step 3: Implement minimal code and digest types**
 
@@ -54,7 +54,7 @@
 
 - [ ] **Step 4: Run GREEN gate**
 
-  Run `./sbtw "testOnly oathdigital.server.SeatCodeSuite"`; expected: all tests pass.
+  Run `./sbtw "testOnly distantlands.server.SeatCodeSuite"`; expected: all tests pass.
 
 - [ ] **Step 5: Write failing migration/repository tests**
 
@@ -62,7 +62,7 @@
 
 - [ ] **Step 6: Run persistence RED gate**
 
-  Run `./sbtw "testOnly oathdigital.persistence.HsqldbIdentityRepositorySuite"`; expected failure from schema version/API absence.
+  Run `./sbtw "testOnly distantlands.persistence.HsqldbIdentityRepositorySuite"`; expected failure from schema version/API absence.
 
 - [ ] **Step 7: Implement migration and repository methods**
 
@@ -70,7 +70,7 @@
 
 - [ ] **Step 8: Run GREEN and regression gates**
 
-  Run `./sbtw "testOnly oathdigital.persistence.HsqldbIdentityRepositorySuite oathdigital.server.SeatCodeSuite"`; expected: all pass.
+  Run `./sbtw "testOnly distantlands.persistence.HsqldbIdentityRepositorySuite distantlands.server.SeatCodeSuite"`; expected: all pass.
 
 - [ ] **Step 9: Commit**
 
@@ -79,16 +79,16 @@
 ### Task 2: Transactional trusted game provisioning
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/TrustedGameProvisioning.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala`
-- Create: `src/main/scala/oathdigital/application/TrustedGameStore.scala`
-- Create: `src/main/scala/oathdigital/persistence/HsqldbTrustedGameStore.scala`
-- Modify: `src/main/scala/oathdigital/persistence/HsqldbDatabaseOwner.scala`
-- Create: `shared/src/main/scala/oathdigital/protocol/TrustedGameProtocol.scala`
-- Create: `shared/src/main/scala/oathdigital/protocol/TrustedGameProtocolCodec.scala`
-- Modify: `src/main/scala/oathdigital/server/ServerRuntime.scala`
-- Test: `src/test/scala/oathdigital/server/TrustedGameProvisioningSuite.scala`
-- Test: `shared/src/test/scala/oathdigital/protocol/TrustedGameProtocolSuite.scala`
+- Create: `src/main/scala/distantlands/server/TrustedGameProvisioning.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala`
+- Create: `src/main/scala/distantlands/application/TrustedGameStore.scala`
+- Create: `src/main/scala/distantlands/persistence/HsqldbTrustedGameStore.scala`
+- Modify: `src/main/scala/distantlands/persistence/HsqldbDatabaseOwner.scala`
+- Create: `shared/src/main/scala/distantlands/protocol/TrustedGameProtocol.scala`
+- Create: `shared/src/main/scala/distantlands/protocol/TrustedGameProtocolCodec.scala`
+- Modify: `src/main/scala/distantlands/server/ServerRuntime.scala`
+- Test: `src/test/scala/distantlands/server/TrustedGameProvisioningSuite.scala`
+- Test: `shared/src/test/scala/distantlands/protocol/TrustedGameProtocolSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1 `SeatCode`, `SeatCodeDigest`, `TrustedSeat`, and `IdentityRepository.createTrustedSeats`.
@@ -103,7 +103,7 @@
 
 - [ ] **Step 2: Run protocol RED gate**
 
-  Run `./sbtw "sharedJVM/testOnly oathdigital.protocol.TrustedGameProtocolSuite"`; expected failure: protocol types absent.
+  Run `./sbtw "sharedJVM/testOnly distantlands.protocol.TrustedGameProtocolSuite"`; expected failure: protocol types absent.
 
 - [ ] **Step 3: Implement minimal shared protocol and codecs**
 
@@ -119,7 +119,7 @@
 
 - [ ] **Step 6: Run provisioning RED gate**
 
-  Run `./sbtw "testOnly oathdigital.server.TrustedGameProvisioningSuite"`; expected failure: provisioning API absent.
+  Run `./sbtw "testOnly distantlands.server.TrustedGameProvisioningSuite"`; expected failure: provisioning API absent.
 
 - [ ] **Step 7: Implement minimal provisioning service**
 
@@ -127,7 +127,7 @@
 
 - [ ] **Step 8: Run GREEN and focused regression gates**
 
-  Run `./sbtw "testOnly oathdigital.server.TrustedGameProvisioningSuite oathdigital.persistence.HsqldbIdentityRepositorySuite oathdigital.application.GameApplicationServiceSuite"`; expected: all pass.
+  Run `./sbtw "testOnly distantlands.server.TrustedGameProvisioningSuite distantlands.persistence.HsqldbIdentityRepositorySuite distantlands.application.GameApplicationServiceSuite"`; expected: all pass.
 
 - [ ] **Step 9: Commit**
 
@@ -136,18 +136,18 @@
 ### Task 3: Seat exchange, cookie authentication, and trusted APIs
 
 **Files:**
-- Create: `src/main/scala/oathdigital/server/TrustedSeatRoutes.scala`
-- Create: `src/main/scala/oathdigital/server/TrustedGameGateway.scala`
-- Modify: `src/main/scala/oathdigital/server/ProductionFrontendRoutes.scala`
-- Modify: `src/main/scala/oathdigital/server/ServerRoutes.scala`
-- Modify: `src/main/scala/oathdigital/server/ServerRuntime.scala`
-- Test: `src/test/scala/oathdigital/server/TrustedSeatRoutesSuite.scala`
-- Test: `src/test/scala/oathdigital/server/ServerRoutesSuite.scala`
+- Create: `src/main/scala/distantlands/server/TrustedSeatRoutes.scala`
+- Create: `src/main/scala/distantlands/server/TrustedGameGateway.scala`
+- Modify: `src/main/scala/distantlands/server/ProductionFrontendRoutes.scala`
+- Modify: `src/main/scala/distantlands/server/ServerRoutes.scala`
+- Modify: `src/main/scala/distantlands/server/ServerRuntime.scala`
+- Test: `src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala`
+- Test: `src/test/scala/distantlands/server/ServerRoutesSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1 digest resolution; Task 2 provisioning; existing `GameApplicationService`, `GameProjector`, `GameIntentMapper`, and HTTP codecs.
 - Produces: `POST /games`, `GET /s/{seatCode}`, `GET /games/{gameId}`, `GET /games/{gameId}/api`, `POST /games/{gameId}/api/commands`, and `POST /games/{gameId}/api/preview`.
-- Produces cookie name `oath_seat`, path `/games/{gameId}`, `HttpOnly`, `SameSite=Lax`, `Max-Age=31536000`, `Secure` iff HTTPS, with no Domain attribute.
+- Produces cookie name `distantlands_seat`, path `/games/{gameId}`, `HttpOnly`, `SameSite=Lax`, `Max-Age=31536000`, `Secure` iff HTTPS, with no Domain attribute.
 
 - [ ] **Step 1: Write failing gateway tests**
 
@@ -155,7 +155,7 @@
 
 - [ ] **Step 2: Run gateway RED gate**
 
-  Run `./sbtw "testOnly oathdigital.server.TrustedSeatRoutesSuite"`; expected failure: trusted gateway/routes absent.
+  Run `./sbtw "testOnly distantlands.server.TrustedSeatRoutesSuite"`; expected failure: trusted gateway/routes absent.
 
 - [ ] **Step 3: Implement gateway**
 
@@ -171,7 +171,7 @@
 
 - [ ] **Step 6: Run GREEN gates**
 
-  Run `./sbtw "testOnly oathdigital.server.TrustedSeatRoutesSuite oathdigital.server.ServerRoutesSuite oathdigital.server.AuthenticatedGameRoutesSuite"`; expected: all pass.
+  Run `./sbtw "testOnly distantlands.server.TrustedSeatRoutesSuite distantlands.server.ServerRoutesSuite distantlands.server.AuthenticatedGameRoutesSuite"`; expected: all pass.
 
 - [ ] **Step 7: Commit**
 
@@ -180,13 +180,13 @@
 ### Task 4: Trusted frontend flow
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameClient.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/Main.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/DevelopmentRenderer.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/HttpGameClientSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameClient.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/Main.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/DevelopmentRenderer.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 3 canonical path and seat-scoped APIs.
@@ -199,7 +199,7 @@
 
 - [ ] **Step 2: Run client RED gate**
 
-  Run `./sbtw "frontend/testOnly oathdigital.frontend.HttpGameClientSuite"`; expected failure: trusted client absent.
+  Run `./sbtw "frontend/testOnly distantlands.frontend.HttpGameClientSuite"`; expected failure: trusted client absent.
 
 - [ ] **Step 3: Implement trusted client**
 
@@ -215,7 +215,7 @@
 
 - [ ] **Step 6: Run GREEN and Scala.js gates**
 
-  Run `./sbtw "frontend/testOnly oathdigital.frontend.HttpGameClientSuite oathdigital.frontend.ServerModeUiSuite" frontend/fullLinkJS`; expected: all pass.
+  Run `./sbtw "frontend/testOnly distantlands.frontend.HttpGameClientSuite distantlands.frontend.ServerModeUiSuite" frontend/fullLinkJS`; expected: all pass.
 
 - [ ] **Step 7: Commit**
 
@@ -229,7 +229,7 @@
 - Modify: `docs/operations/packaged-smoke-test.md`
 - Modify: `docs/ROADMAP.md`
 - Modify: `docs/superpowers/plans/2026-09-08-phase-5-trusted-seat-access.md`
-- Test: `src/test/scala/oathdigital/server/TrustedSeatRoutesSuite.scala`
+- Test: `src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 1–4 complete trusted seat flow.
@@ -241,7 +241,7 @@
 
 - [ ] **Step 2: Run route RED gate**
 
-  Run `./sbtw "testOnly oathdigital.server.TrustedSeatRoutesSuite"`; expected failure until persistence/runtime wiring is correct.
+  Run `./sbtw "testOnly distantlands.server.TrustedSeatRoutesSuite"`; expected failure until persistence/runtime wiring is correct.
 
 - [ ] **Step 3: Extend Universal and container smoke scripts**
 
@@ -255,7 +255,7 @@
   ./sbtw test frontend/fullLinkJS verifyPackageMappings Universal/stage Universal/packageBin Universal/packageZipTarball Docker/stage
   scripts/smoke-packaged-distribution.sh target/universal/stage 18080
   ./sbtw Docker/publishLocal
-  scripts/smoke-packaged-container.sh oathdigital:0.1.0-SNAPSHOT 18081
+  scripts/smoke-packaged-container.sh distantlands:0.1.0-SNAPSHOT 18081
   git diff --check
   ```
 
@@ -282,7 +282,7 @@
   expectation was invalid rather than persistence behavior. After narrowing
   the test to persisted seat identity, link exchange, cookie reload, cross-seat
   command denial, unchanged sequence, and correct-seat command acceptance,
-  `./sbtw "testOnly oathdigital.server.TrustedSeatRoutesSuite"` passed 9 of 9.
+  `./sbtw "testOnly distantlands.server.TrustedSeatRoutesSuite"` passed 9 of 9.
   Existing runtime persistence needed no production patch.
 - `./sbtw test frontend/fullLinkJS verifyPackageMappings Universal/stage Universal/packageBin Universal/packageZipTarball Docker/stage`
   exited 0. JVM tests: 561 passed, 0 failed, 0 errors. Optimized frontend
@@ -290,8 +290,8 @@
   Docker staging succeeded. Existing Scaladoc warnings remained unchanged;
   Docker staging warned that it could not inspect the unavailable daemon.
 - Universal artifacts:
-  `target/universal/oathdigital-0.1.0-SNAPSHOT.tgz` and
-  `target/universal/oathdigital-0.1.0-SNAPSHOT.zip`. Docker staging artifact:
+  `target/universal/distantlands-0.1.0-SNAPSHOT.tgz` and
+  `target/universal/distantlands-0.1.0-SNAPSHOT.zip`. Docker staging artifact:
   `target/docker/stage/Dockerfile`.
 - `scripts/smoke-packaged-distribution.sh target/universal/stage 18080`
   exited 0 after proving readiness, packaged frontend, three separate seat
@@ -299,8 +299,8 @@
   retained-cookie reloads, original-link exchange after restart, database-close
   evidence for both runs, and bounded shutdown.
 - `./sbtw Docker/publishLocal` exited 1 because the Docker daemon socket was
-  unavailable. Therefore image `oathdigital:0.1.0-SNAPSHOT` was not built and
-  `scripts/smoke-packaged-container.sh oathdigital:0.1.0-SNAPSHOT 18081` was
+  unavailable. Therefore image `distantlands:0.1.0-SNAPSHOT` was not built and
+  `scripts/smoke-packaged-container.sh distantlands:0.1.0-SNAPSHOT 18081` was
   unrun, not passed.
 - `sh -n scripts/smoke-packaged-distribution.sh` and
   `sh -n scripts/smoke-packaged-container.sh` exited 0. `git diff --check`

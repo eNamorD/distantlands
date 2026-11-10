@@ -44,7 +44,7 @@ placement and the script verifies that the game sequence advances.
 The script sends `TERM`, allows at most 15 seconds for shutdown, accepts the
 JVM's normal `0` or `143` termination status, and verifies database files and an
 explicit database-close log entry. It launches a second process against the
-same `OATH_DATABASE_PATH`, waits for readiness, and proves that all three
+same `DLQ_DATABASE_PATH`, waits for readiness, and proves that all three
 retained cookies still load their own seat at the advanced sequence. It also
 re-exchanges all three original links before the second bounded shutdown. This
 proves game, command, cookie, and link persistence by reopening the database,
@@ -67,7 +67,7 @@ Build the local image and verify package mappings:
 Then run the required process-level follow-up:
 
 ```sh
-scripts/smoke-packaged-container.sh oathdigital:0.1.0-SNAPSHOT 18081
+scripts/smoke-packaged-container.sh distantlands:0.1.0-SNAPSHOT 18081
 ```
 
 The script checks Docker before creating resources. It creates one uniquely
@@ -103,9 +103,9 @@ explicit operator action because it depends on the local Docker runtime.
 
 `scripts/smoke-bundled-distribution.sh APP_DIRECTORY PORT` (macOS, Linux) and
 `scripts/smoke-bundled-distribution.ps1 -AppDirectory DIR -Port PORT`
-(Windows) start an extracted bundled archive with `OATH_LAUNCH=desktop`, no
+(Windows) start an extracted bundled archive with `DLQ_LAUNCH=desktop`, no
 `JAVA_HOME`, no Java on `PATH`, and a temporary app-data folder. They check
 that the process runs from `jre/`, that the banner address answers
 `/health/ready`, `/`, and `/assets/main.js`, and that the settings file and
 database are in the app-data folder. The POSIX smoke also checks
-`Oath Digital database closed` after SIGTERM.
+`Distant Lands database closed` after SIGTERM.

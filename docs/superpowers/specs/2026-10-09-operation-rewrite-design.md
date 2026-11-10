@@ -119,7 +119,7 @@ they are, not by how the procedure happened to build them. Then:
 
 ### `OperationRewrite`
 
-`oathdigital.gameplay.powerresolver.OperationRewrite`, beside the other
+`distantlands.gameplay.powerresolver.OperationRewrite`, beside the other
 power-facing types.
 
 ```scala
@@ -188,7 +188,7 @@ ops: a held `Discard.Denizen` is not `required`.
 Both run through the pipeline like `ModifyDicePool`, get
 `WalkerOperationCodec` entries, and write no Game Log line.
 
-**Helper.** `oathdigital.gameplay.powerresolver.Deferred`:
+**Helper.** `distantlands.gameplay.powerresolver.Deferred`:
 
 ```scala
 object Deferred:

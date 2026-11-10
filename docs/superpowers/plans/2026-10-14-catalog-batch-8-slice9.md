@@ -48,19 +48,19 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Nothing under `gameplay/actions` imports `gameplay/powers`. `CardPowerBanners` lives under `gameplay/powers` for that reason: no reader outside the card powers can reach it.
 - **Tree addresses.** Only Armed Mob's tree changes: it gains a `Branch` before its adviser question, which moves that question's address. Old replays need no support. No other procedure tree gains, loses or moves a node.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
-  - Stage explicit paths only; never `git add -A`. An untracked `src/test/scala/oathdigital/gameplay/HiddenScopeProbeSuite.scala` belongs to another session; leave it alone.
+  - Stage explicit paths only; never `git add -A`. An untracked `src/test/scala/distantlands/gameplay/HiddenScopeProbeSuite.scala` belongs to another session; leave it alone.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
   - Then symlink the main checkout's `.tooling` and `node_modules` into the worktree before the first `./sbtw`.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Names, exactly:**
-  - File `src/main/scala/oathdigital/gameplay/powers/banner/CardPowerBanners.scala`: `object CardPowerBanners` with:
+  - File `src/main/scala/distantlands/gameplay/powers/banner/CardPowerBanners.scala`: `object CardPowerBanners` with:
     - `trait DarkestSecretOverride` with `def actsAsDarkestSecretHolder(ready: ReadyGame, player: PlayerId): Boolean`;
     - `def holdsDarkestSecret(ready: ReadyGame, player: PlayerId): Boolean`.
-  - File `src/main/scala/oathdigital/gameplay/powers/banner/YewStaff.scala`:
+  - File `src/main/scala/distantlands/gameplay/powers/banner/YewStaff.scala`:
     - `object YewStaffCard`, moved unchanged from `catalog/holding/HoldingRelics.scala`;
     - `case object YewStaff extends ContributingPower with CardPowerBanners.DarkestSecretOverride`.
   - `PlanContext.holdsDarkestSecret: Boolean` replaces `PlanContext.holds(banner: Banner)`.
@@ -94,13 +94,13 @@ The product owner settled these on 2026-10-14. Task 1 writes them into the desig
 ## File map
 
 - Create:
-  - `src/main/scala/oathdigital/gameplay/powers/banner/CardPowerBanners.scala`.
-  - `src/main/scala/oathdigital/gameplay/powers/banner/YewStaff.scala`: `YewStaffCard` and `YewStaff`.
-  - `src/test/scala/oathdigital/gameplay/powers/banner/YewStaffSuite.scala`: 3 tests.
+  - `src/main/scala/distantlands/gameplay/powers/banner/CardPowerBanners.scala`.
+  - `src/main/scala/distantlands/gameplay/powers/banner/YewStaff.scala`: `YewStaffCard` and `YewStaff`.
+  - `src/test/scala/distantlands/gameplay/powers/banner/YewStaffSuite.scala`: 3 tests.
 - Modify, the check (Task 2):
   - `catalog/holding/HoldingRelics.scala`: `YewStaffCard` moves out;
   - `gameplay/powers/WalkerPowerCatalog.scala`;
-  - test: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`.
+  - test: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`.
 - Modify, the readers (Task 3), all under `gameplay/powers`:
   - `search/Disciples.scala`, `action/TerrorSpells.scala`, `action/TheRedSeer.scala`;
   - `campaign/PlanContext.scala`, `campaign/FaeBattalion.scala`, `campaign/RustingRay.scala`, `campaign/FireTalkers.scala`, `campaign/UnstableSummon.scala`;
@@ -108,7 +108,7 @@ The product owner settled these on 2026-10-14. Task 1 writes them into the desig
 - Modify, Armed Mob (Task 4): `gameplay/powers/action/ArmedMob.scala`; test `ArmedMobSuite`, 6 tests.
 - Modify, docs (Tasks 1 and 5): the design, the rulings appendix and `docs/ROADMAP.md`.
 
-`gameplay/cards/NewFoundations.scala` needs no change: it already imports `oathdigital.gameplay.powers.banner._`, so `YewStaffCard` resolves at its new home.
+`gameplay/cards/NewFoundations.scala` needs no change: it already imports `distantlands.gameplay.powers.banner._`, so `YewStaffCard` resolves at its new home.
 
 ---
 
@@ -212,12 +212,12 @@ git commit -m "docs(batch8): record slice 9's plan-time rulings"
 ### Task 2: The check, and Yew Staff
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/banner/CardPowerBanners.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/banner/YewStaff.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/banner/YewStaffSuite.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/banner/CardPowerBanners.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/banner/YewStaff.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/banner/YewStaffSuite.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingRelics.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `BannerRules.holder(current: GameState, banner: Banner): Option[PlayerId]` (`gameplay/actions/BannerRules.scala`).
@@ -225,14 +225,14 @@ git commit -m "docs(batch8): record slice 9's plan-time rulings"
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/banner/YewStaffSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/banner/YewStaffSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** Yew Staff: its holder holds the Darkest Secret as the card powers they
   * use see it. Each power's own suite tests that it reads the check. */
@@ -263,16 +263,16 @@ class YewStaffSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.banner.YewStaffSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.banner.YewStaffSuite"`
 Expected: compilation fails, because `CardPowerBanners` does not exist.
 
 - [ ] **Step 3: Create `CardPowerBanners.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** The banners as a card power sees them for the player using it (catalog
   * batch 8, slice 9). Only card powers read it. Challenge, scoring, the
@@ -302,11 +302,11 @@ object CardPowerBanners:
 Cut `object YewStaffCard` out of `catalog/holding/HoldingRelics.scala` and paste it, unchanged, where the comment below says. `HoldingRelics.scala` keeps its imports, because its other relics use them.
 
 ```scala
-package oathdigital.gameplay.powers.banner
+package distantlands.gameplay.powers.banner
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 // object YewStaffCard, moved here unchanged from HoldingRelics.scala.
 
@@ -345,7 +345,7 @@ In `PowerKindsCatalogSuite`, add `"relic.yew-staff"` as the last entry of `persi
 
 - [ ] **Step 6: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.banner.YewStaffSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.banner.YewStaffSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS, 3 new tests.
 
 Run: `./sbtw test`
@@ -354,12 +354,12 @@ Expected: PASS, the baseline plus 3.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/banner/CardPowerBanners.scala \
-  src/main/scala/oathdigital/gameplay/powers/banner/YewStaff.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingRelics.scala \
-  src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala \
-  src/test/scala/oathdigital/gameplay/powers/banner/YewStaffSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/banner/CardPowerBanners.scala \
+  src/main/scala/distantlands/gameplay/powers/banner/YewStaff.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingRelics.scala \
+  src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala \
+  src/test/scala/distantlands/gameplay/powers/banner/YewStaffSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(batch8): Yew Staff and the card powers' Darkest Secret check"
 ```
 
@@ -368,14 +368,14 @@ git commit -m "feat(batch8): Yew Staff and the card powers' Darkest Secret check
 ### Task 3: The card powers read the check
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/search/Disciples.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/TerrorSpells.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/TheRedSeer.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/PlanContext.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/FaeBattalion.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/RustingRay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/FireTalkers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/campaign/UnstableSummon.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/search/Disciples.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/TerrorSpells.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/TheRedSeer.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/PlanContext.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/FaeBattalion.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/RustingRay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/FireTalkers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/campaign/UnstableSummon.scala`
 - Test: `DisciplesSuite`, `TerrorSpellsSuite`, `TheRedSeerSuite`, `FaeBattalionSuite`, `RustingRaySuite`, `FireTalkersSuite`, `UnstableSummonSuite`, one new test each.
 
 **Interfaces:**
@@ -386,7 +386,7 @@ git commit -m "feat(batch8): Yew Staff and the card powers' Darkest Secret check
 
 Add each test at the end of its suite. Each suite's helpers are already defined there.
 
-`src/test/scala/oathdigital/gameplay/powers/search/DisciplesSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/search/DisciplesSuite.scala`:
 
 ```scala
   test("with Yew Staff and no Darkest Secret, a world Search costing 3 " +
@@ -397,7 +397,7 @@ Add each test at the end of its suite. Each suite's helpers are already defined 
       assertEquals(spent(ready, modifiers), 2, holder.toString)
 ```
 
-`src/test/scala/oathdigital/gameplay/powers/action/TerrorSpellsSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/TerrorSpellsSuite.scala`:
 
 ```scala
   test("with Yew Staff and no Darkest Secret it kills two"):
@@ -410,7 +410,7 @@ Add each test at the end of its suite. Each suite's helpers are already defined 
       NoteText.Said(NoteKey.Used, "Killed 2 warbands.", covers = false)))
 ```
 
-`src/test/scala/oathdigital/gameplay/powers/action/TheRedSeerSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/action/TheRedSeerSuite.scala`:
 
 ```scala
   test("with Yew Staff and no Darkest Secret it is usable"):
@@ -421,7 +421,7 @@ Add each test at the end of its suite. Each suite's helpers are already defined 
       TheRedSeer.decisionId))
 ```
 
-`src/test/scala/oathdigital/gameplay/powers/campaign/FaeBattalionSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/campaign/FaeBattalionSuite.scala`:
 
 ```scala
   test("with Yew Staff it counts hollow swords while another player holds " +
@@ -434,7 +434,7 @@ Add each test at the end of its suite. Each suite's helpers are already defined 
     assertEquals(done.result.attackScore, 3)
 ```
 
-`src/test/scala/oathdigital/gameplay/powers/campaign/RustingRaySuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/campaign/RustingRaySuite.scala`:
 
 ```scala
   test("with Yew Staff the defender uses it without the Darkest Secret"):
@@ -446,7 +446,7 @@ Add each test at the end of its suite. Each suite's helpers are already defined 
     assertEquals(said(RustingRay, done.events), Vector(ignored))
 ```
 
-`src/test/scala/oathdigital/gameplay/powers/campaign/FireTalkersSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/campaign/FireTalkersSuite.scala`:
 
 ```scala
   test("with Yew Staff it is offered while another player holds the " +
@@ -459,7 +459,7 @@ Add each test at the end of its suite. Each suite's helpers are already defined 
     assert(picked.ops.contains(ModifyDicePool(CampaignIds.attackPool, 3)))
 ```
 
-`src/test/scala/oathdigital/gameplay/powers/campaign/UnstableSummonSuite.scala`:
+`src/test/scala/distantlands/gameplay/powers/campaign/UnstableSummonSuite.scala`:
 
 ```scala
   test("with Yew Staff it burns from the Darkest Secret another player " +
@@ -480,12 +480,12 @@ Add any import a suite lacks. `DisciplesSuite`, `TerrorSpellsSuite` and `TheRedS
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.DisciplesSuite oathdigital.gameplay.powers.action.TerrorSpellsSuite oathdigital.gameplay.powers.action.TheRedSeerSuite oathdigital.gameplay.powers.campaign.FaeBattalionSuite oathdigital.gameplay.powers.campaign.RustingRaySuite oathdigital.gameplay.powers.campaign.FireTalkersSuite oathdigital.gameplay.powers.campaign.UnstableSummonSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.DisciplesSuite distantlands.gameplay.powers.action.TerrorSpellsSuite distantlands.gameplay.powers.action.TheRedSeerSuite distantlands.gameplay.powers.campaign.FaeBattalionSuite distantlands.gameplay.powers.campaign.RustingRaySuite distantlands.gameplay.powers.campaign.FireTalkersSuite distantlands.gameplay.powers.campaign.UnstableSummonSuite"`
 Expected: the 7 new tests fail, because the powers read the banner only. The other tests pass.
 
 - [ ] **Step 3: Route the readers through the check**
 
-Each change replaces a direct banner read. Add `import oathdigital.gameplay.powers.banner.CardPowerBanners` to each file changed below, and remove `BannerRules` from its imports when nothing else in the file uses it.
+Each change replaces a direct banner read. Add `import distantlands.gameplay.powers.banner.CardPowerBanners` to each file changed below, and remove `BannerRules` from its imports when nothing else in the file uses it.
 
 `Disciples.scala`, in the `SpendSupply` case's guard, replace:
 
@@ -533,7 +533,7 @@ In `UnstableSummon`'s doc comment, change "While its user holds the Darkest Secr
 
 - [ ] **Step 4: Check that only the allowed readers read the banner directly**
 
-Run: `grep -rn "Banner.DarkestSecret" src/main/scala/oathdigital/gameplay/powers | grep "holder"`
+Run: `grep -rn "Banner.DarkestSecret" src/main/scala/distantlands/gameplay/powers | grep "holder"`
 Expected, and nothing else:
 - `banner/CardPowerBanners.scala`: the check itself;
 - `whenplayed/WizardsConclave.scala`: who takes the banner;
@@ -560,8 +560,8 @@ git commit -m "feat(batch8): card powers read the Darkest Secret through Yew Sta
 ### Task 4: Armed Mob with Yew Staff
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/ArmedMob.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/action/ArmedMobSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/ArmedMob.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/action/ArmedMobSuite.scala`
 
 **Interfaces:**
 - Consumes from Task 2: `CardPowerBanners.holdsDarkestSecret`.
@@ -570,8 +570,8 @@ git commit -m "feat(batch8): card powers read the Darkest Secret through Yew Sta
 - [ ] **Step 1: Write the failing tests**
 
 In `ArmedMobSuite`:
-- add `ParkedNode` to the `oathdigital.testkit` import;
-- add `import oathdigital.gameplay.powers.PhasePowerCatalog`;
+- add `ParkedNode` to the `distantlands.testkit` import;
+- add `import distantlands.gameplay.powers.PhasePowerCatalog`;
 - add this helper and value after `choose`:
 
 ```scala
@@ -670,14 +670,14 @@ Then add these tests at the end:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ArmedMobSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ArmedMobSuite"`
 Expected: compilation fails, because `ArmedMob.playerDecisionId` and `ArmedMob.noAdviser` do not exist.
 
 - [ ] **Step 3: Rewrite Armed Mob**
 
 Replace the doc comment, the class and the object in `ArmedMob.scala` with the code below. Keep `ArmedMobCard` as it is.
 
-Add `import oathdigital.gameplay.powers.banner.CardPowerBanners`.
+Add `import distantlands.gameplay.powers.banner.CardPowerBanners`.
 
 In `discardOf`, keep the suit reader that `main` has. The code below shows `catalog.suitOf`; after slice 8 it is `EffectiveSuit.of`. If the note-keys plan has landed, declare `neither` the way `main` declares the other keys, instead of the `noteKeys` override shown.
 
@@ -865,7 +865,7 @@ The class reads `candidates` through `import ArmedMob._`. A class sees its compa
 
 - [ ] **Step 4: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ArmedMobSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ArmedMobSuite"`
 Expected: PASS, the 6 new tests and every existing one. The existing "the player may be the target" test now sees the "one of your faceup advisers" heading; it checks no heading, so it passes unchanged.
 
 Run: `./sbtw test`
@@ -874,8 +874,8 @@ Expected: PASS, the baseline plus 16.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/ArmedMob.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/ArmedMobSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/ArmedMob.scala \
+  src/test/scala/distantlands/gameplay/powers/action/ArmedMobSuite.scala
 git commit -m "feat(batch8): Armed Mob may target its Yew Staff user"
 ```
 

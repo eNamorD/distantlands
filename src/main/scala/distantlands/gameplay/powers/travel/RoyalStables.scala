@@ -1,0 +1,41 @@
+package distantlands.gameplay.powers.travel
+
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
+
+object RoyalStablesCard extends Denizen(DenizenId("245"), "Royal Stables", Suit.Nomad) with SiteOnly:
+  val power = PrintedPower(PowerId("denizen.royal-stables"),
+    persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
+    text = "Travel costs one less Supply _(minimum 1)_.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Royal Stables (card 245, site-only), a selected Travel modifier with no
+  * cost, usable at the pawn's site or a site the player rules: Travel costs
+  * one less Supply, never less than 1.
+  *
+  * It lowers the amount of the Travel's `SpendSupply`, when the Travel has
+  * one. Tents and Forest Paths remove the payment entirely, so with either the
+  * Travel stays free. Terrain and the other Travel powers settle the amount
+  * first: they all sort at priority 0, and Royal Stables sorts after them.
+  */
+case object RoyalStables extends SelectedModifier:
+  val id: PowerId = RoyalStablesCard.power.id
+  val Reduction: Int = 1
+  val Minimum: Int = 1
+  /** Folds after every Travel power at the default priority 0. */
+  val Priority: Int = 1
+
+  val card: Denizen = RoyalStablesCard
+  def actions: Set[MajorActionType] = Set(MajorActionType.Travel)
+  override def priority: Int = RoyalStables.Priority
+
+  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.TravelCost -> Vector(Transform((ctx, operations) =>
+      TravelRoute.adjustSupply(ctx, operations)(amount =>
+        (amount - RoyalStables.Reduction).max(RoyalStables.Minimum)))))
+
+  override def appliesAt(ctx: PowerCtx): Boolean =
+    TravelRoute.pawnMove(ctx.operation).nonEmpty

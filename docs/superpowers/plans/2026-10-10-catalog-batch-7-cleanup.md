@@ -24,7 +24,7 @@
 - **Build rules.** The build runs with `-Werror` and `-Wunused:imports,privates,locals,implicits,nowarn`. An unused import or private member fails it.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
 - **Test helper names** state what they build. A doc comment does not excuse a vague name.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -45,8 +45,8 @@
 ### Task 1: The Game Log under Careful Plans
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala` (the `raid` script group, around lines 478–545)
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogCampaignSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala` (the `raid` script group, around lines 478–545)
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogCampaignSuite.scala`
 - Modify: `docs/ROADMAP.md` (the item "Cover the Game Log under Careful Plans")
 
 **Interfaces:**
@@ -133,14 +133,14 @@ Append to `GameLogCampaignSuite`:
 
 - [ ] **Step 4: Run the test**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogCampaignSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogCampaignSuite"`
 Expected: PASS, 6 tests.
 
 - [ ] **Step 5: Mutation check**
 
 In `raidUnderCarefulPlans`, change `Tokens(0, 0)` in the answer's guard to `Tokens(9, 9)`. The guard never matches, so Careful Plans is not chosen and the dice roll in the printed order. (Deleting `.favor(p1, 1)` is not a mutation: the table already gives p1 favor.)
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogCampaignSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogCampaignSuite"`
 Expected: FAIL in the new test. The assertion `from >= 0` fails, because no line reads "Activated Careful Plans".
 
 Restore `Tokens(0, 0)` and run the suite again. Expected: PASS.
@@ -153,8 +153,8 @@ In `docs/ROADMAP.md`, under "Left behind by catalog batch 7", delete the whole i
 
 ```bash
 git diff --stat
-git add src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogCampaignSuite.scala \
+git add src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogCampaignSuite.scala \
   docs/ROADMAP.md
 git commit -m "test(batch7): pin the Game Log's order under Careful Plans"
 ```
@@ -164,7 +164,7 @@ git commit -m "test(batch7): pin the Game Log's order under Careful Plans"
 ### Task 2: Hearts and Minds reads the People's Favor at the end
 
 **Files:**
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/HeartsAndMindsSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/HeartsAndMindsSuite.scala`
 
 **Interfaces:**
 - Consumes: from `PlanDriver`, `Run(game, transition, events, powers)` (a case class), `commit`, `Run.pick`, `Run.finishPlanWindows`, `awaits` and `said`. From `CampaignFixture`, `ready(state: OathState): ReadyGame`. From `testkit`, `Table.from(ready: ReadyGame): Table`, `Table.unchecked: ReadyGame` and `Table.peoplesFavor(holder: Option[PlayerId], favor: Int)`.
@@ -175,7 +175,7 @@ git commit -m "test(batch7): pin the Game Log's order under Careful Plans"
 In `HeartsAndMindsSuite.scala`, change the testkit import to:
 
 ```scala
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.{CatalogNames, Look, Table}
 ```
 
 Add this helper after `defender`:
@@ -222,14 +222,14 @@ The `awaits` assertion matters: it shows the Campaign is still running when the 
 
 - [ ] **Step 2: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.HeartsAndMindsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.HeartsAndMindsSuite"`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 3: Mutation check**
 
 In the first new test, replace the line `_.peoplesFavor(Some(b.rival), favor = 1)).finishPlanWindows` with `identity).finishPlanWindows`, so the banner never moves.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.HeartsAndMindsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.HeartsAndMindsSuite"`
 Expected: FAIL in "a People's Favor won during the Campaign keeps the card": the card is no longer at the origin. This shows the banner change, and nothing else, is what keeps the card.
 
 Restore the line and run the suite again. Expected: PASS.
@@ -238,7 +238,7 @@ Restore the line and run the suite again. Expected: PASS.
 
 ```bash
 git diff --stat
-git add src/test/scala/oathdigital/gameplay/powers/campaign/HeartsAndMindsSuite.scala
+git add src/test/scala/distantlands/gameplay/powers/campaign/HeartsAndMindsSuite.scala
 git commit -m "test(batch7): pin Hearts and Minds' People's Favor at the end"
 ```
 
@@ -247,7 +247,7 @@ git commit -m "test(batch7): pin Hearts and Minds' People's Favor at the end"
 ### Task 3: An unchosen Signal Trees reveals nothing
 
 **Files:**
-- Test: `src/test/scala/oathdigital/gameplay/powers/campaign/SignalTreesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/campaign/SignalTreesSuite.scala`
 - Modify: `docs/ROADMAP.md` (the item "Pin two slice 4 rulings in tests")
 
 **Interfaces:**
@@ -280,7 +280,7 @@ In `SignalTreesSuite.scala`, delete the whole test `test("until it is applied, n
 
 - [ ] **Step 2: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SignalTreesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SignalTreesSuite"`
 Expected: PASS, 6 tests.
 
 - [ ] **Step 3: Mutation check**
@@ -288,7 +288,7 @@ Expected: PASS, 6 tests.
 Wire Signal Trees' effect as a rewrite, which runs whether or not the plan was chosen. In `SignalTrees.scala`, add to the imports:
 
 ```scala
-import oathdigital.gameplay.powerresolver.Transform
+import distantlands.gameplay.powerresolver.Transform
 ```
 
 and add this member to the class, after `plan`:
@@ -299,10 +299,10 @@ and add this member to the class, after `plan`:
       signal(ctx.activePlayer, CampaignPlanSide.Attacker) +: children))
 ```
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SignalTreesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SignalTreesSuite"`
 Expected: FAIL in "unchosen, it reveals and moves nothing up to the Campaign's end". A card is known, the pile has moved, or the walk fails. Any of these counts.
 
-Revert `SignalTrees.scala` (`git checkout src/main/scala/oathdigital/gameplay/powers/campaign/SignalTrees.scala`) and run the suite again. Expected: PASS.
+Revert `SignalTrees.scala` (`git checkout src/main/scala/distantlands/gameplay/powers/campaign/SignalTrees.scala`) and run the suite again. Expected: PASS.
 
 - [ ] **Step 4: Remove the roadmap item**
 
@@ -319,7 +319,7 @@ In `docs/ROADMAP.md`, under "Left behind by catalog batch 7", delete the whole i
 
 ```bash
 git diff --stat
-git add src/test/scala/oathdigital/gameplay/powers/campaign/SignalTreesSuite.scala \
+git add src/test/scala/distantlands/gameplay/powers/campaign/SignalTreesSuite.scala \
   docs/ROADMAP.md
 git commit -m "test(batch7): pin that an unchosen Signal Trees reveals nothing"
 ```

@@ -44,7 +44,7 @@
 | `frontend/src/test/.../RecordingServerUiView.scala` | `RecordingView` gains `staged`/`drafts` (Task 2); becomes `RecordingControls` (Task 7). |
 | `frontend/src/test/.../ServerModeUiSuite.scala` | The seat-change interim-frame test (Task 6). |
 
-Tests live in `frontend/src/test/scala/oathdigital/frontend/`, one suite per production module where one exists.
+Tests live in `frontend/src/test/scala/distantlands/frontend/`, one suite per production module where one exists.
 
 ---
 
@@ -53,11 +53,11 @@ Tests live in `frontend/src/test/scala/oathdigital/frontend/`, one suite per pro
 The draft set as one immutable value with the three write methods, plus `ModifierWorkflow.reconcile` taking a context so all seven reconcilers share one signature. No production caller yet.
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/SessionDrafts.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierWorkflow.scala:41-46`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala:130-131` (the one caller of `ModifierWorkflow.reconcile`)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala:158-161`
-- Create: `frontend/src/test/scala/oathdigital/frontend/SessionDraftsSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/SessionDrafts.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierWorkflow.scala:41-46`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala:130-131` (the one caller of `ModifierWorkflow.reconcile`)
+- Modify: `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala:158-161`
+- Create: `frontend/src/test/scala/distantlands/frontend/SessionDraftsSuite.scala`
 
 **Interfaces:**
 - Consumes: the seven existing reconcilers (`BoardTargetSelectionState.reconcile`, `WalkerPartitionDraft.reconcile`, `WalkerDistributeDraft.reconcile`, `WalkerSelectionDraft.reconcile`, `WalkerBoardDraft.reconcile`, `ModifierWorkflow.reconcile`, `FacedownAdviserDraft.reconcile`), unchanged except `ModifierWorkflow.reconcile`.
@@ -69,13 +69,13 @@ The draft set as one immutable value with the three write methods, plus `Modifie
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `frontend/src/test/scala/oathdigital/frontend/SessionDraftsSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/SessionDraftsSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{MajorActionPreviewResponse, PreviewModifier}
+import distantlands.model.PlayerColor
+import distantlands.protocol.{MajorActionPreviewResponse, PreviewModifier}
 
 /** The draft set as a value: what `reconcile` keeps and drops, what `staged`
   * touches, and the exact slots each `FlowExit` clears (spec, "leave").
@@ -197,12 +197,12 @@ class SessionDraftsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SessionDraftsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SessionDraftsSuite"`
 Expected: compile error, `Not found: SessionDrafts`.
 
 - [ ] **Step 3: Change `ModifierWorkflow.reconcile` to take a context**
 
-In `frontend/src/main/scala/oathdigital/frontend/ModifierWorkflow.scala`, replace lines 41–46:
+In `frontend/src/main/scala/distantlands/frontend/ModifierWorkflow.scala`, replace lines 41–46:
 
 ```scala
   def reconcile(previous: Option[ModifierWorkflow],
@@ -213,14 +213,14 @@ In `frontend/src/main/scala/oathdigital/frontend/ModifierWorkflow.scala`, replac
         selected.sequence == context.sequence
 ```
 
-In `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala`, replace lines 130–131:
+In `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala`, replace lines 130–131:
 
 ```scala
           modifierWorkflow = ModifierWorkflow.reconcile(modifierWorkflow,
             BoardSelectionContext(gameId, selectedPlayer, displayed.nextSequence))
 ```
 
-In `frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala`, replace lines 158–161 so the three calls pass a context:
+In `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala`, replace lines 158–161 so the three calls pass a context:
 
 ```scala
     assertEquals(ModifierWorkflow.reconcile(Some(targets),
@@ -235,10 +235,10 @@ In `frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.sca
 
 - [ ] **Step 4: Write `SessionDrafts`**
 
-Create `frontend/src/main/scala/oathdigital/frontend/SessionDrafts.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/SessionDrafts.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** The draft set (CONTEXT.md): everything a viewer has staged at the table
   * and not yet sent. One immutable value, bound to one game, seat and
@@ -339,7 +339,7 @@ private[frontend] enum FlowExit:
 
 - [ ] **Step 5: Run the suite and the frontend gate**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SessionDraftsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SessionDraftsSuite"`
 Expected: 9 tests pass.
 
 Run: `./sbtw "frontend/test"`
@@ -348,11 +348,11 @@ Expected: green (the `ModifierSelectionStateSuite` change and the `ServerModeUi`
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/SessionDrafts.scala \
-  frontend/src/main/scala/oathdigital/frontend/ModifierWorkflow.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala \
-  frontend/src/test/scala/oathdigital/frontend/SessionDraftsSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/SessionDrafts.scala \
+  frontend/src/main/scala/distantlands/frontend/ModifierWorkflow.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala \
+  frontend/src/test/scala/distantlands/frontend/SessionDraftsSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala
 git commit -m "feat(frontend): add the draft set as one immutable value
 
 SessionDrafts owns reconcile, staged and leave; nothing calls it yet.
@@ -369,10 +369,10 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 Three narrow traits. `ServerUiView` extends `ActionControls` for the duration of the migration, so a renderer that now takes `controls: TableControls` still accepts the `ui` its callers pass. `ViewerPresentation` gains the viewer id so `currentPlayerId` can leave the sink.
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/TableControls.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:7-39` (trait), `:214-255` (presentation)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala:377-421` (the `ui` adapter)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/RecordingServerUiView.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/TableControls.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:7-39` (trait), `:214-255` (presentation)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala:377-421` (the `ui` adapter)
+- Modify: `frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala`
 - Modify: the six suites constructing `ViewerPresentation`: `ActionOptionRowSuite.scala`, `ModifierSelectionStateSuite.scala`, `ParkedDecisionSuite.scala`, `PanelPlacementSuite.scala`, `RestButtonSuite.scala`, `TemporaryHandPreviewSuite.scala`
 
 **Interfaces:**
@@ -386,12 +386,12 @@ Three narrow traits. `ServerUiView` extends `ActionControls` for the duration of
 
 - [ ] **Step 1: Write the sink traits**
 
-Create `frontend/src/main/scala/oathdigital/frontend/TableControls.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/TableControls.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, PreviewModifier}
+import distantlands.protocol.{GameIntent => GameCommand, PreviewModifier}
 
 /** What a panel or the board may do to the session: stage a draft, send a
   * command, or hand over a board selection. Three members; a renderer reads
@@ -434,7 +434,7 @@ private[frontend] trait SessionControls:
 
 - [ ] **Step 2: Bridge `ServerUiView` onto `ActionControls`**
 
-In `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala`, replace the trait at lines 7–39 with:
+In `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala`, replace the trait at lines 7–39 with:
 
 ```scala
 /** Transitional: the session as the renderers still see it. Every member
@@ -467,7 +467,7 @@ private[frontend] trait ServerUiView extends ActionControls:
 
 (The ten flow commands, `submitCommand` and `handleSelection` are now inherited.)
 
-In `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala`, inside `lazy val ui: ServerUiView = new ServerUiView:` add, after `def rerender() = render()`:
+In `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala`, inside `lazy val ui: ServerUiView = new ServerUiView:` add, after `def rerender() = render()`:
 
 ```scala
       def stage(draft: Draft) =
@@ -482,7 +482,7 @@ In `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala`, inside `la
 
 - [ ] **Step 3: Give `ViewerPresentation` the viewer id**
 
-In `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala`, replace lines 214–219:
+In `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala`, replace lines 214–219:
 
 ```scala
   private[frontend] final case class ViewerPresentation(
@@ -515,7 +515,7 @@ In each of the six suites, the construction `ServerUiSupport.ViewerPresentation(
 
 - [ ] **Step 4: Teach the fake to record stages**
 
-In `frontend/src/test/scala/oathdigital/frontend/RecordingServerUiView.scala`, add after `var rerenders: Int = 0`:
+In `frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala`, add after `var rerenders: Int = 0`:
 
 ```scala
   var staged: Vector[Draft] = Vector.empty
@@ -541,16 +541,16 @@ Expected: green. Nothing calls `stage` yet; the six suites compile with the new 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/TableControls.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala \
-  frontend/src/test/scala/oathdigital/frontend/RecordingServerUiView.scala \
-  frontend/src/test/scala/oathdigital/frontend/ActionOptionRowSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ParkedDecisionSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/PanelPlacementSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/RestButtonSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/TemporaryHandPreviewSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/TableControls.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala \
+  frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala \
+  frontend/src/test/scala/distantlands/frontend/ActionOptionRowSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ParkedDecisionSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/PanelPlacementSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/RestButtonSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/TemporaryHandPreviewSuite.scala
 git commit -m "refactor(frontend): add the three sinks and bridge ServerUiView onto them
 
 TableControls, ActionControls and SessionControls are the interfaces the
@@ -567,13 +567,13 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 Every panel the route dispatches takes the draft slot it reads and a `TableControls`; `ParkedDecision.render` takes the whole draft set and passes each panel its slot. `ActionDecisionRenderer` (still on `ui`) passes a bridge draft set built by `ServerModeUi`.
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala:71-73,86,104,122,133-146,148-150,188,303-419`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/DistributePanelRenderer.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerSelectionPanels.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/NegotiationDealPanel.scala:17-22,64-67`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala:126-145`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:45-47,271`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala:78-83` (bridge)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala:71-73,86,104,122,133-146,148-150,188,303-419`
+- Modify: `frontend/src/main/scala/distantlands/frontend/DistributePanelRenderer.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerSelectionPanels.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/NegotiationDealPanel.scala:17-22,64-67`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala:126-145`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:45-47,271`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala:78-83` (bridge)
 - Modify tests: `PartitionPanelRenderSuite.scala`, `DistributePanelRenderSuite.scala`, `WalkerSelectionPanelsSuite.scala`, `NegotiationDealPanelSuite.scala`, `BoardSurfaceSuite.scala` (the `pane` helper and its two tests), `CardChoicePanelSuite.scala:71-75`, `WalkerChoicePanelRenderSuite.scala:28-33`, `RecoverPanelSuite.scala:18-26`, `SuitGlyphSuite.scala:36-41`
 
 **Interfaces:**
@@ -818,18 +818,18 @@ Expected: green. If `WalkerSelectionPanelsSuite`'s amount test fails on the subm
 - [ ] **Step 9: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala \
-  frontend/src/main/scala/oathdigital/frontend/DistributePanelRenderer.scala \
-  frontend/src/main/scala/oathdigital/frontend/WalkerSelectionPanels.scala \
-  frontend/src/main/scala/oathdigital/frontend/NegotiationDealPanel.scala \
-  frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala \
-  frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala \
-  frontend/src/test/scala/oathdigital/frontend/PartitionPanelRenderSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/DistributePanelRenderSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/WalkerSelectionPanelsSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/NegotiationDealPanelSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/BoardSurfaceSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala \
+  frontend/src/main/scala/distantlands/frontend/DistributePanelRenderer.scala \
+  frontend/src/main/scala/distantlands/frontend/WalkerSelectionPanels.scala \
+  frontend/src/main/scala/distantlands/frontend/NegotiationDealPanel.scala \
+  frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala \
+  frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala \
+  frontend/src/test/scala/distantlands/frontend/PartitionPanelRenderSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/DistributePanelRenderSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/WalkerSelectionPanelsSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/NegotiationDealPanelSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/BoardSurfaceSuite.scala
 git commit -m "refactor(frontend): hand each parked-decision panel its draft and a TableControls
 
 Panels read the slot they need as a value and stage a replacement through
@@ -846,11 +846,11 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 `WorldBoardRenderer` reads the board targets, the board draft and the context off the draft set; `FacedownAdviserRenderer` takes `ActionControls`; `DevelopmentRenderer` takes `SessionControls`.
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:7-8,31-37,139-190`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/FacedownAdviserRenderer.scala:7-8`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/DevelopmentRenderer.scala:7-8,38`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:150-152` (the facedown call)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala` (the `players`/`world`/`controls` calls; a `SessionControls` adapter)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:7-8,31-37,139-190`
+- Modify: `frontend/src/main/scala/distantlands/frontend/FacedownAdviserRenderer.scala:7-8`
+- Modify: `frontend/src/main/scala/distantlands/frontend/DevelopmentRenderer.scala:7-8,38`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:150-152` (the facedown call)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` (the `players`/`world`/`controls` calls; a `SessionControls` adapter)
 - Modify tests: `BoardSurfaceSuite.scala` (the `world` helper, `SelectingView`), `SiteBoxLayoutSuite.scala:25-50`, `PanelPlacementSuite.scala:37-38`, `PlayerBoardSuite.scala` (five `playerBoards` calls), `SuitGlyphSuite.scala:16-23`, `CardChoicePanelSuite.scala:26-27`
 
 **Interfaces:**
@@ -986,19 +986,19 @@ Expected: green.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala \
-  frontend/src/main/scala/oathdigital/frontend/FacedownAdviserRenderer.scala \
-  frontend/src/main/scala/oathdigital/frontend/DevelopmentRenderer.scala \
-  frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala \
-  frontend/src/test/scala/oathdigital/frontend/RecordingServerUiView.scala \
-  frontend/src/test/scala/oathdigital/frontend/BoardSurfaceSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/SiteBoxLayoutSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/PanelPlacementSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/PlayerBoardSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/SuitGlyphSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/CardChoicePanelSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala \
+  frontend/src/main/scala/distantlands/frontend/FacedownAdviserRenderer.scala \
+  frontend/src/main/scala/distantlands/frontend/DevelopmentRenderer.scala \
+  frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala \
+  frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala \
+  frontend/src/test/scala/distantlands/frontend/BoardSurfaceSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/SiteBoxLayoutSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/PanelPlacementSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/PlayerBoardSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/SuitGlyphSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/CardChoicePanelSuite.scala
 git commit -m "refactor(frontend): read the board's drafts as values, and split the dev toolbar's sink
 
 WorldBoardRenderer takes the draft set and a TableControls; the facedown
@@ -1014,9 +1014,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 `ActionDecisionRenderer` reads drafts and `presentation.playerId`, takes `ActionControls`, and returns `ActionPane(element, prompt)` so `ServerModeUi` composes the decision key from values instead of scraping the DOM.
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala:5-8,45-50,73,86-87,92-93,142,150-171,246-253`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala:78-92`
-- Create: `frontend/src/test/scala/oathdigital/frontend/ActionPanePromptSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala:5-8,45-50,73,86-87,92-93,142,150-171,246-253`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala:78-92`
+- Create: `frontend/src/test/scala/distantlands/frontend/ActionPanePromptSuite.scala`
 - Modify tests: `ActionOptionRowSuite.scala:21-32`, `ModifierSelectionStateSuite.scala:27-35`, `PanelPlacementSuite.scala:40-43`, `RestButtonSuite.scala:14-24`, `TemporaryHandPreviewSuite.scala:12-20`, `ServerModeUiSuite.scala:731,747`
 
 **Interfaces:**
@@ -1028,13 +1028,13 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Write the failing prompt suite**
 
-Create `frontend/src/test/scala/oathdigital/frontend/ActionPanePromptSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/ActionPanePromptSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.MajorActionPreviewResponse
+import distantlands.model.PlayerColor
+import distantlands.protocol.MajorActionPreviewResponse
 import org.scalajs.dom
 
 /** The prompt the action pane reports is the text the old DOM scrape
@@ -1089,7 +1089,7 @@ class ActionPanePromptSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ActionPanePromptSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ActionPanePromptSuite"`
 Expected: compile error, `Not found: ActionPane` (or a signature mismatch on `actionsPanel`).
 
 - [ ] **Step 3: Migrate `ActionDecisionRenderer`**
@@ -1173,7 +1173,7 @@ Remove `currentPlayerId`, `currentGameId` and `modifierWorkflow` from `Recording
 
 - [ ] **Step 6: Run the suite and the gate**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ActionPanePromptSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ActionPanePromptSuite"`
 Expected: 3 tests pass.
 
 Run: `./sbtw "frontend/test"`
@@ -1182,17 +1182,17 @@ Expected: green.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ActionDecisionRenderer.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala \
-  frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala \
-  frontend/src/test/scala/oathdigital/frontend/ActionPanePromptSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/RecordingServerUiView.scala \
-  frontend/src/test/scala/oathdigital/frontend/ActionOptionRowSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ModifierSelectionStateSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/PanelPlacementSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/RestButtonSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/TemporaryHandPreviewSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala \
+  frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala \
+  frontend/src/test/scala/distantlands/frontend/ActionPanePromptSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala \
+  frontend/src/test/scala/distantlands/frontend/ActionOptionRowSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/PanelPlacementSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/RestButtonSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/TemporaryHandPreviewSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala
 git commit -m "refactor(frontend): return the action pane's prompt instead of scraping it
 
 ActionDecisionRenderer reads the draft set and ActionControls, and hands
@@ -1209,8 +1209,8 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 The seven draft `var`s become one; the reconcile block becomes one line; the three session sites assign `empty`; the five flow exits call `leave`. The seat-change test is written first and fails against the old reset.
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala` (throughout `start`)
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala` (one new test)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` (throughout `start`)
+- Modify: `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala` (one new test)
 
 **Interfaces:**
 - Consumes: Tasks 1–5.
@@ -1218,7 +1218,7 @@ The seven draft `var`s become one; the reconcile block becomes one line; the thr
 
 - [ ] **Step 1: Write the failing seat-change test**
 
-In `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala`, after the test "development root retains query loading and raw history", add:
+In `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala`, after the test "development root retains query loading and raw history", add:
 
 ```scala
   /** Spec, behavior change 1. A development session follows the active
@@ -1230,7 +1230,7 @@ In `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala`, after
   test("a seat change clears the walker drafts before the interim render"):
     val browser = new TestBrowser("?gameId=g&playerId=red")
     def snapshot(sequence: Long, active: String): String =
-      oathdigital.protocol.projection.GameProjectionCodec.encode(
+      distantlands.protocol.projection.GameProjectionCodec.encode(
         GameProjection("g", sequence, "act", Some(active),
           Vector(GamePlayer("red", "Red", "Exile", PlayerColor.Red),
             GamePlayer("blue", "Blue", "Exile", PlayerColor.Blue)),
@@ -1260,7 +1260,7 @@ In `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala`, after
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ServerModeUiSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ServerModeUiSuite"`
 Expected: the new test fails on `partition-zones` being non-empty (the stale draft renders); every other test passes.
 
 - [ ] **Step 3: Replace the seven vars with one value**
@@ -1395,7 +1395,7 @@ The `ui` adapter:
 
 - [ ] **Step 4: Run the suite and the gate**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ServerModeUiSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ServerModeUiSuite"`
 Expected: the seat-change test now passes, and every other test still does.
 
 Run: `./sbtw "frontend/test"`
@@ -1404,7 +1404,7 @@ Expected: green.
 Then confirm `BoardSelectionContext(` is constructed exactly once in the file:
 
 ```bash
-grep -c 'BoardSelectionContext(' frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala
+grep -c 'BoardSelectionContext(' frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala
 ```
 
 Expected: `1` (the `store` reconcile). `ModifierSelectionContext(` is a different type and may appear twice.
@@ -1412,8 +1412,8 @@ Expected: `1` (the `store` reconcile). `ModifierSelectionContext(` is a differen
 - [ ] **Step 5: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala \
-  frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala \
+  frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala
 git commit -m "refactor(frontend): hold the draft set as one value with named exits
 
 Seven draft vars become one SessionDrafts; the reconcile block is one
@@ -1431,9 +1431,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 Nothing reads the transitional getters any more. The trait goes; `ServerModeUi`'s adapter is typed `ActionControls`; the fake becomes `RecordingControls` with no constructor arguments.
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala` (delete the trait)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala` (the adapter's type and members)
-- Rename: `frontend/src/test/scala/oathdigital/frontend/RecordingServerUiView.scala` → `RecordingControls.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala` (delete the trait)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` (the adapter's type and members)
+- Rename: `frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala` → `RecordingControls.scala`
 - Modify: every suite naming `RecordingView` (17 files)
 
 **Interfaces:**
@@ -1447,16 +1447,16 @@ Delete the `ServerUiView` trait from `ServerUiSupport.scala` (and its doc commen
 - [ ] **Step 2: Rename the fake**
 
 ```bash
-git mv frontend/src/test/scala/oathdigital/frontend/RecordingServerUiView.scala \
-  frontend/src/test/scala/oathdigital/frontend/RecordingControls.scala
+git mv frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala \
+  frontend/src/test/scala/distantlands/frontend/RecordingControls.scala
 ```
 
 Its content becomes:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => Intent, PreviewModifier}
+import distantlands.protocol.{GameIntent => Intent, PreviewModifier}
 
 /** An `ActionControls` that records what was staged and submitted instead
   * of touching a session, shared by every panel render suite. `drafts` is
@@ -1487,7 +1487,7 @@ private[frontend] class RecordingControls extends ActionControls:
 Then across the test tree:
 
 ```bash
-cd frontend/src/test/scala/oathdigital/frontend
+cd frontend/src/test/scala/distantlands/frontend
 sed -i '' -E 's/new RecordingView\("[^"]*", *"?[a-zA-Z]*"?\)/new RecordingControls()/g; s/\bRecordingView\b/RecordingControls/g' *.scala
 ```
 
@@ -1497,9 +1497,9 @@ Then `grep -rn 'RecordingView\|currentPlayerId\|currentGameId' frontend/src/test
 
 ```bash
 grep -rn 'ServerUiView' frontend/src | wc -l
-grep -c 'querySelector' frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala
-grep -ln 'rerender' frontend/src/main/scala/oathdigital/frontend/*.scala
-grep -c 'BoardSelectionContext(' frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala
+grep -c 'querySelector' frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala
+grep -ln 'rerender' frontend/src/main/scala/distantlands/frontend/*.scala
+grep -c 'BoardSelectionContext(' frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala
 ```
 
 Expected, in order: `0`; `0`; no files; `1`.

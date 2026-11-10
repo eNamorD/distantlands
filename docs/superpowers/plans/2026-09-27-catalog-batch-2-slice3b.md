@@ -31,7 +31,7 @@
 - Import rules:
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first.
@@ -57,31 +57,31 @@
 
 | File | Responsibility |
 |---|---|
-| Modify `src/main/scala/oathdigital/application/GamePresentationProjector.scala` | Names a peeked card in the world deck or a discard pile to its peeker. |
-| Modify `src/main/scala/oathdigital/gameplay/operations/CardKnowledgeMoves.scala` | `forget` visible to the package. |
-| Modify `src/main/scala/oathdigital/gameplay/operations/PileOperations.scala` | A shuffle forgets its pile's cards. |
-| Modify `src/main/scala/oathdigital/application/gamelog/LogEntry.scala` | `LogSpan.Cards`. |
-| Modify `src/main/scala/oathdigital/application/gamelog/LogWords.scala` | `listed`, the note card list rule. |
-| Modify `src/main/scala/oathdigital/application/gamelog/PowerLines.scala` | `NoteArg.Cards` through `listed`. |
-| Modify `src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala` | The `cards` span on the wire. |
-| Modify `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala` | `LogSpanWire.cards`. |
-| Modify `shared/src/main/scala/oathdigital/protocol/projection/LogPageCodec.scala` | Encodes and decodes `cards`. |
-| Modify `src/main/scala/oathdigital/model/Decisions.scala` | `DecisionQuery.Inspect`. |
-| Modify `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala` | Validates `Inspect` and its answer. |
-| Modify `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala` | Projects `Inspect`. |
-| Modify `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala` | `DecisionQueryProjection.Inspect`. |
-| Modify `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala` | The `inspect` form. |
-| Modify `src/main/scala/oathdigital/application/gamelog/DetailLines.scala` | No "Chose" line for Done. |
-| Create `frontend/src/main/scala/oathdigital/frontend/CardList.scala` | The card-list grid. |
-| Create `frontend/src/main/scala/oathdigital/frontend/InspectPanel.scala` | The Inspect decision's panel. |
-| Modify `frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala` | Routes `Inspect` to its panel. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/Scryer.scala` | Scryer. |
-| Create `src/main/scala/oathdigital/gameplay/powers/action/OracularPig.scala` | Oracular Pig. |
-| Modify `src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala` | Registers both. |
-| Modify `frontend/src/main/scala/oathdigital/frontend/CardInspection.scala` | A `Cards` request. |
-| Modify `frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala` | `showCards`. |
-| Modify `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala` | Wires the `Cards` request. |
-| Modify `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala` | The "6 cards" control. |
+| Modify `src/main/scala/distantlands/application/GamePresentationProjector.scala` | Names a peeked card in the world deck or a discard pile to its peeker. |
+| Modify `src/main/scala/distantlands/gameplay/operations/CardKnowledgeMoves.scala` | `forget` visible to the package. |
+| Modify `src/main/scala/distantlands/gameplay/operations/PileOperations.scala` | A shuffle forgets its pile's cards. |
+| Modify `src/main/scala/distantlands/application/gamelog/LogEntry.scala` | `LogSpan.Cards`. |
+| Modify `src/main/scala/distantlands/application/gamelog/LogWords.scala` | `listed`, the note card list rule. |
+| Modify `src/main/scala/distantlands/application/gamelog/PowerLines.scala` | `NoteArg.Cards` through `listed`. |
+| Modify `src/main/scala/distantlands/application/gamelog/GameLogProjector.scala` | The `cards` span on the wire. |
+| Modify `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala` | `LogSpanWire.cards`. |
+| Modify `shared/src/main/scala/distantlands/protocol/projection/LogPageCodec.scala` | Encodes and decodes `cards`. |
+| Modify `src/main/scala/distantlands/model/Decisions.scala` | `DecisionQuery.Inspect`. |
+| Modify `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala` | Validates `Inspect` and its answer. |
+| Modify `src/main/scala/distantlands/application/WalkerDecisionProjector.scala` | Projects `Inspect`. |
+| Modify `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala` | `DecisionQueryProjection.Inspect`. |
+| Modify `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala` | The `inspect` form. |
+| Modify `src/main/scala/distantlands/application/gamelog/DetailLines.scala` | No "Chose" line for Done. |
+| Create `frontend/src/main/scala/distantlands/frontend/CardList.scala` | The card-list grid. |
+| Create `frontend/src/main/scala/distantlands/frontend/InspectPanel.scala` | The Inspect decision's panel. |
+| Modify `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala` | Routes `Inspect` to its panel. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/Scryer.scala` | Scryer. |
+| Create `src/main/scala/distantlands/gameplay/powers/action/OracularPig.scala` | Oracular Pig. |
+| Modify `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala` | Registers both. |
+| Modify `frontend/src/main/scala/distantlands/frontend/CardInspection.scala` | A `Cards` request. |
+| Modify `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala` | `showCards`. |
+| Modify `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala` | Wires the `Cards` request. |
+| Modify `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala` | The "6 cards" control. |
 | Modify `frontend/styles.css`, `DESIGN.md` | The card list's styling and its design record. |
 
 ---
@@ -89,10 +89,10 @@
 ### Task 1: A peeked pile card is known to its peeker; a shuffle forgets
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala` (`identifiesCard` and its scaladoc)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/CardKnowledgeMoves.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/operations/PileOperations.scala`
-- Test: `src/test/scala/oathdigital/application/CardKnowledgeSuite.scala`, `src/test/scala/oathdigital/gameplay/operations/ShuffleOperationSuite.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala` (`identifiesCard` and its scaladoc)
+- Modify: `src/main/scala/distantlands/gameplay/operations/CardKnowledgeMoves.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/PileOperations.scala`
+- Test: `src/test/scala/distantlands/application/CardKnowledgeSuite.scala`, `src/test/scala/distantlands/gameplay/operations/ShuffleOperationSuite.scala`
 
 **Interfaces:**
 - Produces: `GamePresentationProjector.identifiesCard` and `identifiesAt` return true for a world card in `CardContainer.Deck(CardDeck.World)` or `CardContainer.RegionalDiscard(_)` when `ready.knowledge.advisers(viewer)` holds it. `CardKnowledgeMoves.forget(knowledge: CardKnowledge, id: CardId): CardKnowledge` is visible to `gameplay.operations`.
@@ -140,7 +140,7 @@ In `ShuffleOperationSuite.scala`, add at the end:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.CardKnowledgeSuite oathdigital.gameplay.operations.ShuffleOperationSuite"`
+Run: `./sbtw "testOnly distantlands.application.CardKnowledgeSuite distantlands.gameplay.operations.ShuffleOperationSuite"`
 Expected: FAIL. The peeker is not told the card ("to its peeker"), and the shuffled pile is still known.
 
 - [ ] **Step 3: Name a peeked pile card to its peeker**
@@ -212,17 +212,17 @@ with:
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.CardKnowledgeSuite oathdigital.gameplay.operations.ShuffleOperationSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.CardKnowledgeSuite distantlands.gameplay.operations.ShuffleOperationSuite distantlands.application.gamelog.*"`
 Expected: PASS, the game log suites included.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/GamePresentationProjector.scala \
-  src/main/scala/oathdigital/gameplay/operations/CardKnowledgeMoves.scala \
-  src/main/scala/oathdigital/gameplay/operations/PileOperations.scala \
-  src/test/scala/oathdigital/application/CardKnowledgeSuite.scala \
-  src/test/scala/oathdigital/gameplay/operations/ShuffleOperationSuite.scala
+git add src/main/scala/distantlands/application/GamePresentationProjector.scala \
+  src/main/scala/distantlands/gameplay/operations/CardKnowledgeMoves.scala \
+  src/main/scala/distantlands/gameplay/operations/PileOperations.scala \
+  src/test/scala/distantlands/application/CardKnowledgeSuite.scala \
+  src/test/scala/distantlands/gameplay/operations/ShuffleOperationSuite.scala
 git commit -m "feat(engine): a card peeked in a pile is known to its peeker until shuffled"
 ```
 
@@ -231,10 +231,10 @@ git commit -m "feat(engine): a card peeked in a pile is known to its peeker unti
 ### Task 2: A note's list of more than five cards
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/gamelog/LogEntry.scala`, `LogWords.scala`, `PowerLines.scala`, `GameLogProjector.scala` (all in `src/main/scala/oathdigital/application/gamelog/`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala`, `shared/src/main/scala/oathdigital/protocol/projection/LogPageCodec.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GoldenLog.scala`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`, `shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/LogEntry.scala`, `LogWords.scala`, `PowerLines.scala`, `GameLogProjector.scala` (all in `src/main/scala/distantlands/application/gamelog/`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala`, `shared/src/main/scala/distantlands/protocol/projection/LogPageCodec.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GoldenLog.scala`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`, `shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `identifiesAt`, through `LogWords.seen`.
@@ -294,12 +294,12 @@ In `LogPageCodecSuite.scala`, add at the end:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPowerLinesSuite oathdigital.protocol.LogPageCodecSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPowerLinesSuite distantlands.protocol.LogPageCodecSuite"`
 Expected: compilation FAILS: `LogSpan.Cards` and `LogSpanWire`'s `cards` do not exist.
 
 - [ ] **Step 3: Add the span and its wire field**
 
-In `LogEntry.scala`, add the import `import oathdigital.protocol.projection.CardDetailsProjection` below the package line, and add a case after `Cost` in `object LogSpan`:
+In `LogEntry.scala`, add the import `import distantlands.protocol.projection.CardDetailsProjection` below the package line, and add a case after `Cost` in `object LogSpan`:
 
 ```scala
   /** More cards than a line names inline, read as "6 cards": the list a
@@ -380,7 +380,7 @@ In `LogWords.scala`, after `def one(word: CardWord)`, add:
 
   /** A card as a card list shows it: its face when named, else its back. */
   private def face(id: CardId, word: CardWord)
-      : oathdigital.protocol.projection.CardDetailsProjection = word match
+      : distantlands.protocol.projection.CardDetailsProjection = word match
     case CardWord.Named(_) => presentation.cardDetails(id, None, hidden = false)
     case CardWord.Back(_) => presentation.hiddenCard(id match
       case _: RelicId => "relic"
@@ -409,21 +409,21 @@ with:
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.* oathdigital.protocol.LogPageCodecSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.* distantlands.protocol.LogPageCodecSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/LogEntry.scala \
-  src/main/scala/oathdigital/application/gamelog/LogWords.scala \
-  src/main/scala/oathdigital/application/gamelog/PowerLines.scala \
-  src/main/scala/oathdigital/application/gamelog/GameLogProjector.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/LogProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/LogPageCodec.scala \
-  src/test/scala/oathdigital/application/gamelog/GoldenLog.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala \
-  shared/src/test/scala/oathdigital/protocol/LogPageCodecSuite.scala
+git add src/main/scala/distantlands/application/gamelog/LogEntry.scala \
+  src/main/scala/distantlands/application/gamelog/LogWords.scala \
+  src/main/scala/distantlands/application/gamelog/PowerLines.scala \
+  src/main/scala/distantlands/application/gamelog/GameLogProjector.scala \
+  shared/src/main/scala/distantlands/protocol/projection/LogProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/LogPageCodec.scala \
+  src/test/scala/distantlands/application/gamelog/GoldenLog.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala \
+  shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala
 git commit -m "feat(log): a note's list of more than five cards opens as a card list"
 ```
 
@@ -432,14 +432,14 @@ git commit -m "feat(log): a note's list of more than five cards opens as a card 
 ### Task 3: The `Inspect` decision and its panel
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/DetailLines.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala`, `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala`
-- Create: `frontend/src/main/scala/oathdigital/frontend/CardList.scala`, `frontend/src/main/scala/oathdigital/frontend/InspectPanel.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala`
-- Test: create `src/test/scala/oathdigital/gameplay/walker/InspectQuerySuite.scala` and `frontend/src/test/scala/oathdigital/frontend/InspectPanelSuite.scala`; modify `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`, `src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/ParkedDecisionSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/DetailLines.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala`, `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/CardList.scala`, `frontend/src/main/scala/distantlands/frontend/InspectPanel.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala`
+- Test: create `src/test/scala/distantlands/gameplay/walker/InspectQuerySuite.scala` and `frontend/src/test/scala/distantlands/frontend/InspectPanelSuite.scala`; modify `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`, `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`, `frontend/src/test/scala/distantlands/frontend/ParkedDecisionSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `identifiesCard`.
@@ -450,12 +450,12 @@ git commit -m "feat(log): a note's list of more than five cards opens as a card 
 
 - [ ] **Step 1: Write the failing server and shared tests**
 
-Create `src/test/scala/oathdigital/gameplay/walker/InspectQuerySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/walker/InspectQuerySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{DecisionAnswer, DecisionOptionRef, DecisionQuery,
+import distantlands.model.{DecisionAnswer, DecisionOptionRef, DecisionQuery,
   DenizenId, OathViolation, PlayerId}
 
 /** The `Inspect` decision (catalog batch 2, N5): cards to look at and one
@@ -513,7 +513,7 @@ In `ProjectionProtocolSuite.scala`, after the test "a ranged distribute query ro
       Right(carrying))
 ```
 
-In `GameLogPowerLinesSuite.scala`, add `ChoicePayload` to the `oathdigital.gameplay.walker` import, and after the test "more than five cards its viewer may identify none of read as a count" add:
+In `GameLogPowerLinesSuite.scala`, add `ChoicePayload` to the `distantlands.gameplay.walker` import, and after the test "more than five cards its viewer may identify none of read as a count" add:
 
 ```scala
 
@@ -533,7 +533,7 @@ In `GameLogPowerLinesSuite.scala`, add `ChoicePayload` to the `oathdigital.gamep
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.InspectQuerySuite oathdigital.protocol.ProjectionProtocolSuite oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.InspectQuerySuite distantlands.protocol.ProjectionProtocolSuite distantlands.application.gamelog.GameLogPowerLinesSuite"`
 Expected: compilation FAILS: `DecisionQuery.Inspect` and `DecisionQueryProjection.Inspect` do not exist.
 
 - [ ] **Step 3: Declare the query and validate it**
@@ -671,7 +671,7 @@ If the compiler reports another exhaustive match over `DecisionQuery` or `Decisi
 
 - [ ] **Step 5: Run the server and shared tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.protocol.* oathdigital.application.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.protocol.* distantlands.application.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Write the failing frontend tests**
@@ -687,13 +687,13 @@ In `ParkedDecisionSuite.scala`, after the test "each form routes to the surface 
     assertEquals(routeOf(at).surface, Some(Surface.Inspect(at, inspect)))
 ```
 
-Create `frontend/src/test/scala/oathdigital/frontend/InspectPanelSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/InspectPanelSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent}
+import distantlands.protocol.{DecisionAnswerWire, GameIntent}
 
 /** The Inspect decision's panel: the cards in order, faces and backs, and
   * the one Done button. Runs under jsdom. */
@@ -739,15 +739,15 @@ class InspectPanelSuite extends munit.FunSuite:
 
 - [ ] **Step 7: Run the frontend tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ParkedDecisionSuite oathdigital.frontend.InspectPanelSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ParkedDecisionSuite distantlands.frontend.InspectPanelSuite"`
 Expected: compilation FAILS: `Surface.Inspect` and `InspectPanel` do not exist (and `formSurface` no longer covers every form).
 
 - [ ] **Step 8: Build the card list, the panel and the route**
 
-Create `frontend/src/main/scala/oathdigital/frontend/CardList.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/CardList.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import ServerUiSupport.{element, text}
@@ -771,10 +771,10 @@ private[frontend] object CardList:
     list
 ```
 
-Create `frontend/src/main/scala/oathdigital/frontend/InspectPanel.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/InspectPanel.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import ServerUiSupport.{button, text}
@@ -834,20 +834,20 @@ Expected: PASS, the shared suites included.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Decisions.scala \
-  src/main/scala/oathdigital/gameplay/walker/DecisionQueries.scala \
-  src/main/scala/oathdigital/application/WalkerDecisionProjector.scala \
-  src/main/scala/oathdigital/application/gamelog/DetailLines.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala \
-  shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala \
-  frontend/src/main/scala/oathdigital/frontend/CardList.scala \
-  frontend/src/main/scala/oathdigital/frontend/InspectPanel.scala \
-  frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala \
-  src/test/scala/oathdigital/gameplay/walker/InspectQuerySuite.scala \
-  shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogPowerLinesSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/ParkedDecisionSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/InspectPanelSuite.scala
+git add src/main/scala/distantlands/model/Decisions.scala \
+  src/main/scala/distantlands/gameplay/walker/DecisionQueries.scala \
+  src/main/scala/distantlands/application/WalkerDecisionProjector.scala \
+  src/main/scala/distantlands/application/gamelog/DetailLines.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala \
+  shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala \
+  frontend/src/main/scala/distantlands/frontend/CardList.scala \
+  frontend/src/main/scala/distantlands/frontend/InspectPanel.scala \
+  frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala \
+  src/test/scala/distantlands/gameplay/walker/InspectQuerySuite.scala \
+  shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/ParkedDecisionSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/InspectPanelSuite.scala
 git commit -m "feat(engine): an Inspect decision that shows cards until Done"
 ```
 
@@ -858,9 +858,9 @@ Add any file the compiler made you touch in Step 4 to this list.
 ### Task 4: Scryer and Oracular Pig
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/action/Scryer.scala`, `src/main/scala/oathdigital/gameplay/powers/action/OracularPig.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala`
-- Test: create `src/test/scala/oathdigital/gameplay/powers/action/ScryerSuite.scala`, `src/test/scala/oathdigital/gameplay/powers/action/OracularPigSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/action/Scryer.scala`, `src/main/scala/distantlands/gameplay/powers/action/OracularPig.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala`
+- Test: create `src/test/scala/distantlands/gameplay/powers/action/ScryerSuite.scala`, `src/test/scala/distantlands/gameplay/powers/action/OracularPigSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's knowledge rule, Task 2's `NoteArg.Cards` rendering (through the log only; the suites read notes with `NoteText`), Task 3's `DecisionQuery.Inspect`, `DecisionQuery.Inspect.Done` and `DecisionQueryProjection.Inspect`.
@@ -868,17 +868,17 @@ Add any file the compiler made you touch in Step 4 to this list.
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/ScryerSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/ScryerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.application.GamePresentationProjector
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.DecisionQueryProjection
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.DecisionQueryProjection
 
 class ScryerSuite extends munit.FunSuite:
   import PowerFixture._
@@ -965,17 +965,17 @@ class ScryerSuite extends munit.FunSuite:
     assert(use(broke, Scryer, source).isLeft)
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/action/OracularPigSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/action/OracularPigSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.application.GamePresentationProjector
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.DecisionQueryProjection
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.DecisionQueryProjection
 
 class OracularPigSuite extends munit.FunSuite:
   import PowerFixture._
@@ -1047,17 +1047,17 @@ class OracularPigSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ScryerSuite oathdigital.gameplay.powers.action.OracularPigSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ScryerSuite distantlands.gameplay.powers.action.OracularPigSuite"`
 Expected: compilation FAILS: `Scryer` and `OracularPig` do not exist.
 
 - [ ] **Step 3: Implement Scryer**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/Scryer.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/Scryer.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Scryer (denizen 19), ACTION: place 1 secret on this card, then peek at
   * any one discard pile.
@@ -1133,12 +1133,12 @@ case object Scryer extends PaidAction("denizen.scryer", Cost(secret = 1)):
 
 - [ ] **Step 4: Implement Oracular Pig**
 
-Create `src/main/scala/oathdigital/gameplay/powers/action/OracularPig.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/action/OracularPig.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Oracular Pig (relic R14), ACTION, no cost: peek at the top 3 cards of the
   * world deck.
@@ -1185,17 +1185,17 @@ In `SelfActionPowers.scala`, make the list:
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.*"`
 Expected: PASS, `PowerNoteCatalogSuite` and `BackendArchitectureSuite` included.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/action/Scryer.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/OracularPig.scala \
-  src/main/scala/oathdigital/gameplay/powers/action/SelfActionPowers.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/ScryerSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/action/OracularPigSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/action/Scryer.scala \
+  src/main/scala/distantlands/gameplay/powers/action/OracularPig.scala \
+  src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala \
+  src/test/scala/distantlands/gameplay/powers/action/ScryerSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/action/OracularPigSuite.scala
 git commit -m "feat(powers): Scryer and Oracular Pig peek at a pile and show it"
 ```
 
@@ -1204,9 +1204,9 @@ git commit -m "feat(powers): Scryer and Oracular Pig peek at a pile and show it"
 ### Task 5: The log's card list, and the card list's design
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardInspection.scala`, `CardInspectionOverlay.scala`, `GameTableShell.scala`, `GameLogPane.scala` (all in `frontend/src/main/scala/oathdigital/frontend/`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardInspection.scala`, `CardInspectionOverlay.scala`, `GameTableShell.scala`, `GameLogPane.scala` (all in `frontend/src/main/scala/distantlands/frontend/`)
 - Modify: `frontend/styles.css`, `DESIGN.md`
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala`, `frontend/src/test/scala/oathdigital/frontend/CardInspectionOverlaySuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala`, `frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala`
 
 **Interfaces:**
 - Consumes: Task 2's `LogSpanWire.cards` (kind `"cards"`), Task 3's `CardList.render`.
@@ -1271,7 +1271,7 @@ In `CardInspectionOverlaySuite.scala`, add at the end:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.GameLogPaneSuite oathdigital.frontend.CardInspectionOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.GameLogPaneSuite distantlands.frontend.CardInspectionOverlaySuite"`
 Expected: compilation FAILS: `CardInspection.Request.Cards` and `showCards` do not exist.
 
 - [ ] **Step 3: Open a card list from the log**
@@ -1356,13 +1356,13 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/CardInspection.scala \
-  frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala \
-  frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala \
-  frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala \
+git add frontend/src/main/scala/distantlands/frontend/CardInspection.scala \
+  frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala \
+  frontend/src/main/scala/distantlands/frontend/GameTableShell.scala \
+  frontend/src/main/scala/distantlands/frontend/GameLogPane.scala \
   frontend/styles.css DESIGN.md \
-  frontend/src/test/scala/oathdigital/frontend/GameLogPaneSuite.scala \
-  frontend/src/test/scala/oathdigital/frontend/CardInspectionOverlaySuite.scala
+  frontend/src/test/scala/distantlands/frontend/GameLogPaneSuite.scala \
+  frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala
 git commit -m "feat(frontend): the card list, from the Inspect panel and the log"
 ```
 
@@ -1371,7 +1371,7 @@ git commit -m "feat(frontend): the card list, from the Inspect panel and the log
 ### Task 6: Pin the cards, record the slice, run the gates
 
 **Files:**
-- Modify: `src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala`, `docs/ROADMAP.md`
+- Modify: `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala`, `docs/ROADMAP.md`
 
 - [ ] **Step 1: Pin the two cards**
 
@@ -1384,7 +1384,7 @@ In `PowerImplementationStatusSuite.scala`, after the test "catalog batch 2's fir
       .foreach(id => assert(implemented(PowerId(id)), id))
 ```
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.PowerImplementationStatusSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.PowerImplementationStatusSuite"`
 Expected: PASS.
 
 - [ ] **Step 2: Record the slice**
@@ -1419,7 +1419,7 @@ Expected: both pass.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/gameplay/powers/PowerImplementationStatusSuite.scala \
+git add src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.scala \
   docs/ROADMAP.md
 git commit -m "docs: record catalog batch 2 slice 3b"
 ```

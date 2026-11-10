@@ -19,13 +19,13 @@ case "$target" in
   windows-x64) extension=zip ;;
   *) fail "unknown target: $target" ;;
 esac
-[ -d "$app_directory/lib" ] && [ -f "$app_directory/bin/oathdigital" ] ||
-  fail "not an extracted Oath Digital archive: $app_directory"
+[ -d "$app_directory/lib" ] && [ -f "$app_directory/bin/distantlands" ] ||
+  fail "not an extracted Distant Lands archive: $app_directory"
 [ ! -e "$app_directory/jre" ] || fail "app directory already contains jre/"
 root=$(basename "$app_directory")
 case "$root" in
-  oathdigital-*) ;;
-  *) fail "app directory must be named oathdigital-<version>: $root" ;;
+  distantlands-*) ;;
+  *) fail "app directory must be named distantlands-<version>: $root" ;;
 esac
 [ -n "${JAVA_HOME:-}" ] || fail "JAVA_HOME must select a Java 21 JDK"
 "$JAVA_HOME/bin/java" -version 2>&1 | grep -Eq 'version "21\.' ||
@@ -48,7 +48,7 @@ for jar in "$app_directory"/lib/*.jar; do
   classpath="$classpath$(native_path "$jar")$separator"
 done
 server_jar=
-for jar in "$app_directory"/lib/dev.oathdigital.*.jar; do server_jar=$jar; done
+for jar in "$app_directory"/lib/quest.distantlands.*.jar; do server_jar=$jar; done
 [ -f "$server_jar" ] || fail "server jar not found under $app_directory/lib"
 required=$("$JAVA_HOME/bin/jdeps" --multi-release 21 --ignore-missing-deps \
   --print-module-deps -q --class-path "$classpath" "$(native_path "$server_jar")" | tr -d '\r')

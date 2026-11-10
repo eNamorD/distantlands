@@ -1,0 +1,8 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+14.0 action 1 negotiation@4 | Negotiated with [player:p2|p2]
+15.0 delta 1 negotiation@4 | [player:p1|p1] offered Citizenship to [player:p2|p2].
+16.0 delta 1 negotiation@4 | Moved 2 Imperial warbands to [site:site:broken-peaks|Broken Peaks]
+17.0 delta 1 negotiation@4 | [player:p2|p2] became a Citizen.
+21.0 trigger 1 | Oathkeeper passed to [player:p1|p1]

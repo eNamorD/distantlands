@@ -1,0 +1,43 @@
+package distantlands.application
+
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Commands
+
+/** A phase menu through the service (walker-driven game loop design,
+  * rulings 11 and 12). */
+class PhaseMenuServiceSuite extends munit.FunSuite:
+  private val ancientCity = AncientCitySite.id
+  private val favor = PhaseMenu.takeWealth(WakeResource.Favor)
+
+  /** A fresh service at p1's Wake, the Wake menu parked, one favor to take
+    * at Ancient City. */
+  private def waking(using munit.Location)
+      : (GameApplicationService, InMemoryEventStreamRepository) =
+    Table.start.pawn(p1, at = ancientCity).pawn(p2, at = BrokenPeaksSite)
+      .pawn(p3, at = BuriedGiantSite).turn(p1, Phase.Wake)
+      .siteTokens(ancientCity, favor = 1, secrets = 0)
+      .phaseMenuParked.service()
+
+  test("Undo after a pick returns to the menu"):
+    val (service, _) = waking
+    val taken = accepted(service.handle("game", 0L,
+      MenuPlay.picking(p1, favor)))
+    val undone = accepted(service.handle("game", taken.nextSequence,
+      Commands.undo(p1)))
+    assertEquals(MenuPlay.parked(undone.state), Some(PhaseMenu.Menu.Wake))
+
+  test("Undo after an Act pick returns to the Act menu"):
+    val (service, _) = Table.start.pawn(p1, at = ancientCity)
+      .pawn(p2, at = BrokenPeaksSite).pawn(p3, at = BuriedGiantSite)
+      .phaseMenuParked.service()
+    val taken = accepted(service.handle("game", 0L,
+      MenuPlay.starting(p1, ActionRef.Search)))
+    val undone = accepted(service.handle("game", taken.nextSequence,
+      Commands.undo(p1)))
+    assertEquals(MenuPlay.parked(undone.state), Some(PhaseMenu.Menu.Act))

@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Behavior-preserving. No protocol, DTO, gameplay, CSS or DOM-structure change. Preview requests, submitted commands, control strings and the decision key are byte-identical.
-- `ActionControls`, `TableControls` and `SessionControls` (`frontend/src/main/scala/oathdigital/frontend/TableControls.scala`) do not change. No renderer and no renderer suite changes.
+- `ActionControls`, `TableControls` and `SessionControls` (`frontend/src/main/scala/distantlands/frontend/TableControls.scala`) do not change. No renderer and no renderer suite changes.
 - `ServerModeUi` keeps `var drafts`, `render`, `submitTransport`, `store`, `accept`, `loadExisting`, `newGame`, `reconnect`, `poll`, `session`, `controlsAvailable` and the bootstrap unchanged.
 - `FlowHost` member names are `displayedProjection`, `currentGameId`, `currentPlayerId`, `currentDrafts`, `replaceDrafts`, `redraw`, `fail`, `preview`, `send`. Inside the anonymous implementation in `ServerModeUi.start`, a member named `projection` or `render` would shadow the local it forwards to and recurse.
 - `ModifierWorkflow` keeps its name.
@@ -27,8 +27,8 @@
 ### Task 1: `FlowStep`, `TargetsEntry` and `SessionDrafts.step`
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/SessionDrafts.scala` (add `step` after `leave`; add the two enums after `FlowExit`)
-- Test: `frontend/src/test/scala/oathdigital/frontend/SessionDraftsSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/SessionDrafts.scala` (add `step` after `leave`; add the two enums after `FlowExit`)
+- Test: `frontend/src/test/scala/distantlands/frontend/SessionDraftsSuite.scala`
 
 **Interfaces:**
 - Consumes: `SessionDrafts`, `FlowExit`, `ModifierWorkflow`, `ModifierSelectionState.toggle/moveEarlier/moveLater`, `FacedownAdviserDraft.choose`, `BoardTargetSelectionState` (all existing).
@@ -99,7 +99,7 @@ Append to `SessionDraftsSuite` (before the final `empty has no context` test). T
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SessionDraftsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SessionDraftsSuite"`
 Expected: compile error, `FlowStep` not found.
 
 - [ ] **Step 3: Implement `step` and the enums**
@@ -154,17 +154,17 @@ private[frontend] enum TargetsEntry:
   case NoTargets
 ```
 
-Add `import oathdigital.protocol.PreviewModifier` at the top of `SessionDrafts.scala` (the file has no protocol import today).
+Add `import distantlands.protocol.PreviewModifier` at the top of `SessionDrafts.scala` (the file has no protocol import today).
 
 - [ ] **Step 4: Run the suite to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SessionDraftsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SessionDraftsSuite"`
 Expected: all tests pass (10 existing + 6 new).
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/SessionDrafts.scala frontend/src/test/scala/oathdigital/frontend/SessionDraftsSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/SessionDrafts.scala frontend/src/test/scala/distantlands/frontend/SessionDraftsSuite.scala
 git commit -m "feat(frontend): name the modifier flow's steps on the draft set
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
@@ -175,9 +175,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 2: `ModifierWorkflow.fromPreview`
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ModifierWorkflow.scala` (companion, after `targeted`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala:255-263` and `:292-299` (the two constructions in `submit` and `startTargetedFlow`)
-- Create: `frontend/src/test/scala/oathdigital/frontend/ModifierWorkflowSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ModifierWorkflow.scala` (companion, after `targeted`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala:255-263` and `:292-299` (the two constructions in `submit` and `startTargetedFlow`)
+- Create: `frontend/src/test/scala/distantlands/frontend/ModifierWorkflowSuite.scala`
 
 **Interfaces:**
 - Consumes: `ModifierSelectionState.reconcile(previous, context, candidates, fingerprint)`, `ModifierWorkflowStage`.
@@ -186,9 +186,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the failing suite**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent, MajorActionPreviewResponse, PreviewModifier}
+import distantlands.protocol.{GameIntent, MajorActionPreviewResponse, PreviewModifier}
 
 /** `fromPreview` is the one constructor both flow entries use: stage by the
   * response, fingerprint by its shape, selection carried through reconcile.
@@ -233,7 +233,7 @@ class ModifierWorkflowSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierWorkflowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierWorkflowSuite"`
 Expected: compile error, `fromPreview` is not a member.
 
 - [ ] **Step 3: Implement `fromPreview`**
@@ -260,7 +260,7 @@ In the `ModifierWorkflow` companion, after `targeted`:
 
 - [ ] **Step 4: Run the suite to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierWorkflowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierWorkflowSuite"`
 Expected: 3 tests pass.
 
 - [ ] **Step 5: Call it from both flow entries in `ServerModeUi`**
@@ -299,7 +299,7 @@ Expected: all green.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ModifierWorkflow.scala frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala frontend/src/test/scala/oathdigital/frontend/ModifierWorkflowSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/ModifierWorkflow.scala frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala frontend/src/test/scala/distantlands/frontend/ModifierWorkflowSuite.scala
 git commit -m "refactor(frontend): build the modifier workflow from a preview in one place
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
@@ -310,9 +310,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 3: `FlowHost`, `ModifierFlow`, its suite, and the wiring
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/ModifierFlow.scala`
-- Create: `frontend/src/test/scala/oathdigital/frontend/ModifierFlowSuite.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala` (delete `submit`, `activatePreviewTargets`, `startTargetedFlow`, `confirmModifierSelection`, `completeTargetCommand`, `restoredTargets`, `handleBoardSelection` and the anonymous `ui`; add `host` and the one-line `ui`)
+- Create: `frontend/src/main/scala/distantlands/frontend/ModifierFlow.scala`
+- Create: `frontend/src/test/scala/distantlands/frontend/ModifierFlowSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` (delete `submit`, `activatePreviewTargets`, `startTargetedFlow`, `confirmModifierSelection`, `completeTargetCommand`, `restoredTargets`, `handleBoardSelection` and the anonymous `ui`; add `host` and the one-line `ui`)
 
 **Interfaces:**
 - Consumes: `FlowStep`, `TargetsEntry`, `SessionDrafts.step` (Task 1); `ModifierWorkflow.fromPreview` (Task 2); `ActionControls` (unchanged); `ServerUiSupport.commandForSelection(action, targets, playerId)`; `ModifierWorkflow.action/targeted/targetAction/submission`; `BoardTargetSelectionState.reconcile/restore`; `FacedownAdviserDraft.initial`.
@@ -325,10 +325,10 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 The fake host answers previews through a `Promise`, so a test lands the response after the flow has registered its callback. Callbacks on the Scala.js queue run first in, first out, so a future mapped after `answer` sees the flow's effects.
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => GameCommand, MajorActionPreviewRequest,
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => GameCommand, MajorActionPreviewRequest,
   MajorActionPreviewResponse, ModifierInvocation, PreviewModifier}
 
 import scala.concurrent.{Future, Promise}
@@ -615,21 +615,21 @@ class ModifierFlowSuite extends munit.FunSuite:
     ui.handleSelection(BoardSelectionResult.Submit(travel,
       Vector(BoardTargetRef.Site("site:woods"))))
     assertEquals(host.sent, Vector(GameCommand.StartWalker("travel", Vector("h.a"),
-      Vector(oathdigital.protocol.WalkerStartArgWire("site", "site:woods"))) -> Vector.empty))
+      Vector(distantlands.protocol.WalkerStartArgWire("site", "site:woods"))) -> Vector.empty))
     assertEquals(host.currentDrafts.modifiers, None)
 ```
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierFlowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierFlowSuite"`
 Expected: compile error, `FlowHost` not found.
 
 - [ ] **Step 3: Write `ModifierFlow.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, _}
+import distantlands.protocol.{GameIntent => GameCommand, _}
 import ServerUiSupport.commandForSelection
 
 import scala.concurrent.Future
@@ -777,7 +777,7 @@ private[frontend] final class ModifierFlow(host: FlowHost) extends ActionControl
 
 - [ ] **Step 4: Run the suite to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierFlowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierFlowSuite"`
 Expected: 19 tests pass. If `fold[TargetsEntry]` or the tuple pattern in the `for` fails to compile, fix the type ascription; do not change the logic.
 
 - [ ] **Step 5: Wire `ServerModeUi` to the module**
@@ -811,29 +811,29 @@ Expected: all green, including every `ServerModeUiSuite` test.
 Run these, expecting the counts shown:
 
 ```bash
-grep -c "client.preview" frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala
+grep -c "client.preview" frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala
 ```
 Expected: `1`.
 
 ```bash
-grep -rln "copy(modifiers\|copy(facedownAdviser" frontend/src/main/scala/oathdigital/frontend/
+grep -rln "copy(modifiers\|copy(facedownAdviser" frontend/src/main/scala/distantlands/frontend/
 ```
 Expected: only `SessionDrafts.scala`.
 
 ```bash
-grep -rn "ModifierSelectionContext(" frontend/src/main/scala/oathdigital/frontend/ | grep -v "case class"
+grep -rn "ModifierSelectionContext(" frontend/src/main/scala/distantlands/frontend/ | grep -v "case class"
 ```
 Expected: one line, in `ModifierFlow.scala`.
 
 ```bash
-wc -l frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala frontend/src/main/scala/oathdigital/frontend/ModifierFlow.scala
+wc -l frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala frontend/src/main/scala/distantlands/frontend/ModifierFlow.scala
 ```
 Expected: `ServerModeUi.scala` about 270, `ModifierFlow.scala` under 160.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ModifierFlow.scala frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala frontend/src/test/scala/oathdigital/frontend/ModifierFlowSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/ModifierFlow.scala frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala frontend/src/test/scala/distantlands/frontend/ModifierFlowSuite.scala
 git commit -m "refactor(frontend): move the modifier flow behind ActionControls as ModifierFlow
 
 The seven flow functions and the anonymous ActionControls leave
@@ -849,7 +849,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 4: The jsdom wiring test, the glossary sentence, the spec status
 
 **Files:**
-- Modify: `frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala` (add one test after "a seat change clears the walker drafts before the interim render")
+- Modify: `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala` (add one test after "a seat change clears the walker drafts before the interim render")
 - Modify: `CONTEXT.md` ("Modifier flow" entry, currently lines 76-82)
 - Modify: `docs/superpowers/specs/2026-09-25-modifier-flow-module-design.md:3` (status line)
 
@@ -869,7 +869,7 @@ Add to `ServerModeUiSuite` after the seat-change test. The suite already imports
     */
   test("a previewed major action orders its modifier and posts the ordered command"):
     val browser = new TestBrowser("?gameId=g&playerId=red")
-    val projection = oathdigital.protocol.projection.GameProjectionCodec.encode(
+    val projection = distantlands.protocol.projection.GameProjectionCodec.encode(
       GameProjection("g", 1L, "act-action-selection", Some("red"),
         Vector(GamePlayer("red", "Red", "Exile", PlayerColor.Red)),
         Vector.empty, Vector.empty, Vector("beginRecover"), ready = true,
@@ -912,7 +912,7 @@ Add to `ServerModeUiSuite` after the seat-change test. The suite already imports
 
 - [ ] **Step 2: Run the test to verify it passes against the wired module**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ServerModeUiSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ServerModeUiSuite"`
 Expected: PASS. This test is written after the move, so it passes first time; its value is that it fails if `host.preview`, `host.send` or `host.redraw` is miswired. To see it fail, temporarily make `redraw()` in the host a no-op: the `modifier-confirm` assertion fails. Revert before committing.
 
 - [ ] **Step 3: Add the glossary sentence**
@@ -955,7 +955,7 @@ Expected: all green; architecture check passes.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/test/scala/oathdigital/frontend/ServerModeUiSuite.scala CONTEXT.md docs/superpowers/specs/2026-09-25-modifier-flow-module-design.md
+git add frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala CONTEXT.md docs/superpowers/specs/2026-09-25-modifier-flow-module-design.md
 git commit -m "test(frontend): drive the modifier flow through the preview endpoint, and record the slice
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"

@@ -11,7 +11,7 @@ runs. Modules declare trees; they do not run them.
 ## Layout
 
 ```text
-oathdigital/gameplay/
+distantlands/gameplay/
   OathRules.scala          aggregate: evolve, begin game, route commands
   OathRulesWalker.scala    walker commands: start, resolve, consent
   OathDriver.scala         what runs between walks: queue, action boundary,
@@ -92,8 +92,8 @@ client renders only projected controls.
 
 Application-owned ports prepare random draws and dice; events record the
 results, and replay checks them without drawing again. There is no stored
-fact naming who a park waits on: `ProcedureWalker.awaitedPlayer` recomputes
-the owner from live state.
+fact naming who a park waits on: `ProcedureWalker.awaitedPlayers` and
+`awaitedInSeatOrder` recompute the owners from live state.
 
 ## Boundaries
 

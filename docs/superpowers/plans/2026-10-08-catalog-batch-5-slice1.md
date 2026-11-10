@@ -46,7 +46,7 @@ The log line rules are in `docs/superpowers/specs/2026-09-26-power-log-lines-des
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -88,7 +88,7 @@ These settle what the spec and rulings leave open. Each one says what it costs i
 
 ## File Structure
 
-Production, under `src/main/scala/oathdigital/` unless stated:
+Production, under `src/main/scala/distantlands/` unless stated:
 
 | File | Change | Responsibility | Task |
 |---|---|---|---|
@@ -109,7 +109,7 @@ Production, under `src/main/scala/oathdigital/` unless stated:
 | `catalog/holding/HoldingOrderDenizens.scala` | modify | Pressgangs leaves | 4 |
 | `gameplay/cards/NewFoundations.scala` | modify | imports each moved card from the economy package | 2, 3, 4 |
 
-Tests, under `src/test/scala/oathdigital/` unless stated:
+Tests, under `src/test/scala/distantlands/` unless stated:
 
 | File | Change | Tests added | Task |
 |---|---|---|---|
@@ -132,17 +132,17 @@ Docs: `docs/ROADMAP.md` and the batch 5 design spec, in Task 5.
 ### Task 1: The source decision is the gate, and `resolve` is a lookup
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala` (whole file)
-- Modify: `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala` (`tree`)
-- Modify: `src/main/scala/oathdigital/gameplay/operations/PayCostRules.scala` (doc comment)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/MovingMarket.scala` (class doc comment)
-- Modify: `src/test/scala/oathdigital/gameplay/EconomyFixture.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/MusterProcedureSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/EconomyProjectionSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala` (whole file)
+- Modify: `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala` (`tree`)
+- Modify: `src/main/scala/distantlands/gameplay/operations/PayCostRules.scala` (doc comment)
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/MovingMarket.scala` (class doc comment)
+- Modify: `src/test/scala/distantlands/gameplay/EconomyFixture.scala`
+- Modify: `src/test/scala/distantlands/gameplay/MusterProcedureSuite.scala`
+- Modify: `src/test/scala/distantlands/application/EconomyProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes: `DecisionOption.Unavailable`, `OptionReason.Written`, `RuleSourceRef.{SiteCard, Edifice, Adviser}`.
-- Produces, in `oathdigital.gameplay.actions.economy`:
+- Produces, in `distantlands.gameplay.actions.economy`:
   - `final case class MusterSource(card: CardId, suit: Suit, origin: RuleSourceRef)`. The `option` field is gone.
   - `MusterSource.Occupied: OptionReason`, the written reason "Already holds favor or secrets".
   - `MusterSource.atSite(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId): Vector[DecisionOption]`.
@@ -153,7 +153,7 @@ Docs: `docs/ROADMAP.md` and the batch 5 design spec, in Task 5.
 
 - [ ] **Step 1: Rename the stub and add the resume stub**
 
-In `src/test/scala/oathdigital/gameplay/EconomyFixture.scala`, replace the `AddAdviserSource` case class with:
+In `src/test/scala/distantlands/gameplay/EconomyFixture.scala`, replace the `AddAdviserSource` case class with:
 
 ```scala
   /** Stub of ContributingPower for the Muster source: adds `card` to the
@@ -193,21 +193,21 @@ In `src/test/scala/oathdigital/gameplay/EconomyFixture.scala`, replace the `AddA
 
 - [ ] **Step 2: Rewrite the Muster tests the change affects, and add the new ones**
 
-In `src/test/scala/oathdigital/gameplay/MusterProcedureSuite.scala`:
+In `src/test/scala/distantlands/gameplay/MusterProcedureSuite.scala`:
 
 Change the imports to:
 
 ```scala
-import oathdigital.gameplay.actions.economy.{MusterProcedure, MusterSource}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.actions.economy.{MusterProcedure, MusterSource}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation._
+import distantlands.testkit.{CatalogNames, Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 ```
 
 and the fixture import inside the class to:
@@ -332,11 +332,11 @@ Replace the last test, "a power that adds an option to the source decision has i
     assertEquals(Look(Outcomes.ready(done.state)).boardWarbands(p1), 3 + 1)
 ```
 
-`OathRules` is in this suite's own package, `oathdigital.gameplay`, so it needs no import.
+`OathRules` is in this suite's own package, `distantlands.gameplay`, so it needs no import.
 
 - [ ] **Step 3: Update the projection suite**
 
-In `src/test/scala/oathdigital/application/EconomyProjectionSuite.scala`:
+In `src/test/scala/distantlands/application/EconomyProjectionSuite.scala`:
 
 Change `import EconomyFixture.AddAdviserSource` to `import EconomyFixture.AddSource`, and add beside `magiciansCode`:
 
@@ -382,7 +382,7 @@ Add after it:
 
 - [ ] **Step 4: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.MusterProcedureSuite oathdigital.application.EconomyProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.MusterProcedureSuite distantlands.application.EconomyProjectionSuite"`
 
 Expected: compile failure in `MusterProcedureSuite`: `MusterSource` still takes four arguments, its `option` among them. Once Step 5 removes the field, these tests would fail on the old behavior:
 - "a card carrying tokens is shown unavailable": the query offers no option.
@@ -393,13 +393,13 @@ Expected: compile failure in `MusterProcedureSuite`: `MusterSource` still takes 
 
 - [ ] **Step 5: Rewrite `MusterSource`**
 
-Replace `src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala` with:
+Replace `src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala` with:
 
 ```scala
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** What a Muster or Trade draws on: the card its cost is placed on, the suit
   * that decides which advisers match and which favor bank a Trade draws from,
@@ -515,7 +515,7 @@ object MusterSource:
 
 - [ ] **Step 6: Read the new `atSite` in the tree**
 
-In `src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala`, in `tree`, replace
+In `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala`, in `tree`, replace
 
 ```scala
       MusterSource.atSite(catalog, state, actor).map(_.option),
@@ -529,7 +529,7 @@ with
 
 - [ ] **Step 7: Update the two doc comments**
 
-In `src/main/scala/oathdigital/gameplay/operations/PayCostRules.scala`, replace the paragraph
+In `src/main/scala/distantlands/gameplay/operations/PayCostRules.scala`, replace the paragraph
 
 ```scala
   * Muster and Trade check the same fact earlier (`MusterSource`, with its own
@@ -546,7 +546,7 @@ with
   * `intoOccupied`. This is the enforcement point for every `PayCost`.
 ```
 
-In `src/main/scala/oathdigital/gameplay/powers/economy/MovingMarket.scala`, replace
+In `src/main/scala/distantlands/gameplay/powers/economy/MovingMarket.scala`, replace
 
 ```scala
   * One `Branch` is appended to the Trade's root, after the source, cost and
@@ -566,7 +566,7 @@ with
 
 - [ ] **Step 8: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.MusterProcedureSuite oathdigital.application.EconomyProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.MusterProcedureSuite distantlands.application.EconomyProjectionSuite"`
 Expected: PASS.
 
 - [ ] **Step 9: Run the whole server suite**
@@ -577,13 +577,13 @@ Expected: PASS. A suite that asserted a token-bearing card is absent from a Must
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/actions/economy/MusterSource.scala \
-  src/main/scala/oathdigital/gameplay/actions/economy/EconomyTree.scala \
-  src/main/scala/oathdigital/gameplay/operations/PayCostRules.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/MovingMarket.scala \
-  src/test/scala/oathdigital/gameplay/EconomyFixture.scala \
-  src/test/scala/oathdigital/gameplay/MusterProcedureSuite.scala \
-  src/test/scala/oathdigital/application/EconomyProjectionSuite.scala
+git add src/main/scala/distantlands/gameplay/actions/economy/MusterSource.scala \
+  src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala \
+  src/main/scala/distantlands/gameplay/operations/PayCostRules.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/MovingMarket.scala \
+  src/test/scala/distantlands/gameplay/EconomyFixture.scala \
+  src/test/scala/distantlands/gameplay/MusterProcedureSuite.scala \
+  src/test/scala/distantlands/application/EconomyProjectionSuite.scala
 git commit -m "feat(economy): the source decision gates Muster and Trade, and resolve finds a source anywhere"
 ```
 
@@ -592,41 +592,41 @@ git commit -m "feat(economy): the source decision gates Muster and Trade, and re
 ### Task 2: Golem Legions
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/GolemLegions.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `GolemLegionsCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (economy import)
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/GolemLegionsSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`
-- Modify: `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/GolemLegions.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `GolemLegionsCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (economy import)
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/GolemLegionsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/LogScripts.scala`
+- Modify: `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`
 
 **Interfaces:**
 - Consumes: `MusterSource.offered` (Task 1), `SelectedModifier`, `Transform`.
 - Produces:
   - `private[economy] object EconomySources` with `widened(operations: Vector[Operation], cards: Vector[SiteDenizenState]): Vector[Operation]`, and a private `withOptions` that Tasks 3 and 4 reuse.
-  - `GolemLegionsCard`, `final case class GolemLegions`, `GolemLegions.id`, `GolemLegions.forCatalog(catalog)`, in `oathdigital.gameplay.powers.economy`.
+  - `GolemLegionsCard`, `final case class GolemLegions`, `GolemLegions.id`, `GolemLegions.forCatalog(catalog)`, in `distantlands.gameplay.powers.economy`.
 
 - [ ] **Step 1: Write the failing suite**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/GolemLegionsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/GolemLegionsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
   Look, PhasePowerHarness, PowerRules, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class GolemLegionsSuite extends munit.FunSuite:
   private val golem = CatalogNames.denizen("Golem Legions")
@@ -711,10 +711,10 @@ class GolemLegionsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Add the Game Log script and its test**
 
-In `src/test/scala/oathdigital/application/gamelog/LogScripts.scala`, add the import
+In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add the import
 
 ```scala
-import oathdigital.gameplay.powers.economy.GolemLegions
+import distantlands.gameplay.powers.economy.GolemLegions
 ```
 
 and add after `initiatedMuster`:
@@ -730,7 +730,7 @@ and add after `initiatedMuster`:
     Script("golem-muster", service, p1)
 ```
 
-In `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`, add after "Muster under Initiation Rite":
+In `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala`, add after "Muster under Initiation Rite":
 
 ```scala
   test("Muster on Golem Legions: the line names the adviser as the source"):
@@ -741,22 +741,22 @@ In `src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala`
 
 - [ ] **Step 3: Pin the registration**
 
-In `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`, add `"denizen.golem-legions"` to the end of `modifiers`, after `"denizen.special-envoy"`.
+In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, add `"denizen.golem-legions"` to the end of `modifiers`, after `"denizen.special-envoy"`.
 
 - [ ] **Step 4: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.GolemLegionsSuite oathdigital.application.gamelog.GameLogActionLineSuite"`
-Expected: compile failure, `GolemLegions` is not a member of `oathdigital.gameplay.powers.economy`.
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.GolemLegionsSuite distantlands.application.gamelog.GameLogActionLineSuite"`
+Expected: compile failure, `GolemLegions` is not a member of `distantlands.gameplay.powers.economy`.
 
 - [ ] **Step 5: Write the shared helper**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.economy.MusterSource
-import oathdigital.model._
+import distantlands.gameplay.actions.economy.MusterSource
+import distantlands.model._
 
 /** What the Muster and Trade source powers share (catalog batch 5 design,
   * "Slice 1: Muster and Trade sources"). Each rewrites the source decision,
@@ -793,16 +793,16 @@ private[economy] object EconomySources:
 
 - [ ] **Step 6: Write the power and move its card**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/GolemLegions.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/GolemLegions.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object GolemLegionsCard extends Denizen(DenizenId("199"), "Golem Legions", Suit.Arcane) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.golem-legions"),
@@ -850,12 +850,12 @@ object GolemLegions:
     new GolemLegions(catalog)
 ```
 
-Delete the `GolemLegionsCard` object (and its trailing blank line) from `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala`. Remove an import the deletion leaves unused.
+Delete the `GolemLegionsCard` object (and its trailing blank line) from `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala`. Remove an import the deletion leaves unused.
 
-In `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`, add `GolemLegionsCard` to the `oathdigital.gameplay.powers.economy` import, in alphabetical order:
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `GolemLegionsCard` to the `distantlands.gameplay.powers.economy` import, in alphabetical order:
 
 ```scala
-import oathdigital.gameplay.powers.economy.{AnimalPlaymatesCard,
+import distantlands.gameplay.powers.economy.{AnimalPlaymatesCard,
   AwaitedReturnCard, BirdsongCard, CupOfPlentyCard, CurfewCard,
   DefameCard, DowntroddenCard, GolemLegionsCard, InitiationRiteCard,
   KnightsErrantCard, MountedLibraryCard, MovingMarketCard, RowdyPubCard,
@@ -864,10 +864,10 @@ import oathdigital.gameplay.powers.economy.{AnimalPlaymatesCard,
 
 - [ ] **Step 7: Register the power and retire its stub**
 
-In `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`, add `GolemLegions` to the economy import:
+In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`, add `GolemLegions` to the economy import:
 
 ```scala
-import oathdigital.gameplay.powers.economy.{AnimalPlaymates, AwaitedReturn,
+import distantlands.gameplay.powers.economy.{AnimalPlaymates, AwaitedReturn,
   Birdsong, CupOfPlenty, Curfew, Defame, Downtrodden, GolemLegions,
   InitiationRite, MountedLibrary, MovingMarket, RowdyPub, TheOldOak,
   VillageIdiot, VowOfBeastkin, VowOfPoverty}
@@ -875,26 +875,26 @@ import oathdigital.gameplay.powers.economy.{AnimalPlaymates, AwaitedReturn,
 
 and add `Vector(GolemLegions.forCatalog(catalog)) ++` after `Vector(Defame.forCatalog(catalog)) ++`.
 
-In `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala`, delete the line `object GolemLegions extends ReviewedPower("denizen.golem-legions", None, economy)` and remove `GolemLegions` from `powers`.
+In `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala`, delete the line `object GolemLegions extends ReviewedPower("denizen.golem-legions", None, economy)` and remove `GolemLegions` from `powers`.
 
 - [ ] **Step 8: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.GolemLegionsSuite oathdigital.application.gamelog.GameLogActionLineSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.GolemLegionsSuite distantlands.application.gamelog.GameLogActionLineSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/GolemLegions.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/GolemLegionsSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala \
-  src/test/scala/oathdigital/application/gamelog/LogScripts.scala \
-  src/test/scala/oathdigital/application/gamelog/GameLogActionLineSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/GolemLegions.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/main/scala/distantlands/gameplay/powers/MusterPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/GolemLegionsSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala \
+  src/test/scala/distantlands/application/gamelog/LogScripts.scala \
+  src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala
 git commit -m "feat(economy): Golem Legions musters on itself"
 ```
 
@@ -903,17 +903,17 @@ git commit -m "feat(economy): Golem Legions musters on itself"
 ### Task 3: Map Library and Skilled Merchants
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala` (add `inPawnRegion`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/MapLibrary.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/SkilledMerchants.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala` (remove `MapLibraryCard`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala` (remove `SkilledMerchantsCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (economy import)
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/MapLibrarySuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/SkilledMerchantsSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala` (add `inPawnRegion`)
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/MapLibrary.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/SkilledMerchants.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` (remove `MapLibraryCard`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` (remove `SkilledMerchantsCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (economy import)
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/MapLibrarySuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/SkilledMerchantsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `EconomySources.widened` (Task 2), `PowerAccess.pawnSite`, `SiteRulers.siteOf`.
@@ -923,21 +923,21 @@ git commit -m "feat(economy): Golem Legions musters on itself"
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/MapLibrarySuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/MapLibrarySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ModifierOffers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ModifierOffers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
   Look, PhasePowerHarness, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class MapLibrarySuite extends munit.FunSuite:
   private val library = CatalogNames.denizen("Map Library")
@@ -1011,17 +1011,17 @@ class MapLibrarySuite extends munit.FunSuite:
     assert(!tradeModifiers(ruledOnly).contains(MapLibrary.id))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/SkilledMerchantsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/SkilledMerchantsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, EconomyActions, Look,
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, EconomyActions, Look,
   PhasePowerHarness, PowerRules, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class SkilledMerchantsSuite extends munit.FunSuite:
   private val merchants = CatalogNames.denizen("Skilled Merchants")
@@ -1086,19 +1086,19 @@ class SkilledMerchantsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Pin the registrations**
 
-In `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`, add `"denizen.map-library"` and `"denizen.skilled-merchants"` to the end of `modifiers`.
+In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, add `"denizen.map-library"` and `"denizen.skilled-merchants"` to the end of `modifiers`.
 
 - [ ] **Step 3: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.MapLibrarySuite oathdigital.gameplay.powers.economy.SkilledMerchantsSuite"`
-Expected: compile failure, `MapLibrary` and `SkilledMerchants` are not members of `oathdigital.gameplay.powers.economy`.
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.MapLibrarySuite distantlands.gameplay.powers.economy.SkilledMerchantsSuite"`
+Expected: compile failure, `MapLibrary` and `SkilledMerchants` are not members of `distantlands.gameplay.powers.economy`.
 
 - [ ] **Step 4: Add the region's cards to the helper**
 
-In `src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala`, add the import
+In `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala`, add the import
 
 ```scala
-import oathdigital.gameplay.PowerAccess
+import distantlands.gameplay.PowerAccess
 ```
 
 and add after `widened`:
@@ -1116,16 +1116,16 @@ and add after `widened`:
 
 - [ ] **Step 5: Write the two powers and move their cards**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/MapLibrary.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/MapLibrary.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{PowerAccess, SiteRulers}
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.{PowerAccess, SiteRulers}
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object MapLibraryCard extends Denizen(DenizenId("76"), "Map Library", Suit.Arcane) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.map-library"),
@@ -1170,16 +1170,16 @@ object MapLibrary:
     new MapLibrary(catalog)
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/SkilledMerchants.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/SkilledMerchants.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object SkilledMerchantsCard extends Denizen(DenizenId("238"), "Skilled Merchants", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.skilled-merchants"),
@@ -1220,7 +1220,7 @@ Delete `MapLibraryCard` from `HoldingArcaneDenizens.scala` and `SkilledMerchants
 In `NewFoundations.scala`, add `MapLibraryCard` and `SkilledMerchantsCard` to the economy import:
 
 ```scala
-import oathdigital.gameplay.powers.economy.{AnimalPlaymatesCard,
+import distantlands.gameplay.powers.economy.{AnimalPlaymatesCard,
   AwaitedReturnCard, BirdsongCard, CupOfPlentyCard, CurfewCard,
   DefameCard, DowntroddenCard, GolemLegionsCard, InitiationRiteCard,
   KnightsErrantCard, MapLibraryCard, MountedLibraryCard, MovingMarketCard,
@@ -1233,7 +1233,7 @@ import oathdigital.gameplay.powers.economy.{AnimalPlaymatesCard,
 In `ActionModifiers.scala`, change the economy import to:
 
 ```scala
-import oathdigital.gameplay.powers.economy.{AnimalPlaymates, AwaitedReturn,
+import distantlands.gameplay.powers.economy.{AnimalPlaymates, AwaitedReturn,
   Birdsong, CupOfPlenty, Curfew, Defame, Downtrodden, GolemLegions,
   InitiationRite, MapLibrary, MountedLibrary, MovingMarket, RowdyPub,
   SkilledMerchants, TheOldOak, VillageIdiot, VowOfBeastkin, VowOfPoverty}
@@ -1250,23 +1250,23 @@ In `MusterPowers.scala`, delete the `MapLibrary` and `SkilledMerchants` objects 
 
 - [ ] **Step 7: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.MapLibrarySuite oathdigital.gameplay.powers.economy.SkilledMerchantsSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.MapLibrarySuite distantlands.gameplay.powers.economy.SkilledMerchantsSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/MapLibrary.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/SkilledMerchants.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingArcaneDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/MapLibrarySuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/SkilledMerchantsSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/MapLibrary.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/SkilledMerchants.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/main/scala/distantlands/gameplay/powers/MusterPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/MapLibrarySuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/SkilledMerchantsSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(economy): Map Library and Skilled Merchants trade across the region"
 ```
 
@@ -1275,17 +1275,17 @@ git commit -m "feat(economy): Map Library and Skilled Merchants trade across the
 ### Task 4: Pressgangs and Old Songs
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala` (add `ExemptionPriority`, `exempted`, `intoOccupied`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/Pressgangs.scala`
-- Create: `src/main/scala/oathdigital/gameplay/powers/economy/OldSongs.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala`
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala` (remove `PressgangsCard`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala` (remove `OldSongsCard`)
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala` (economy import)
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/PressgangsSuite.scala`
-- Create: `src/test/scala/oathdigital/gameplay/powers/economy/OldSongsSuite.scala`
-- Modify: `src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala` (add `ExemptionPriority`, `exempted`, `intoOccupied`)
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/Pressgangs.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/economy/OldSongs.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala`
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` (remove `PressgangsCard`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` (remove `OldSongsCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (economy import)
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/PressgangsSuite.scala`
+- Create: `src/test/scala/distantlands/gameplay/powers/economy/OldSongsSuite.scala`
+- Modify: `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`
 
 **Interfaces:**
 - Consumes: `MusterSource.Occupied` and `MusterSource.cardOf` (Task 1), `EconomySources.withOptions` (Task 2), `GolemLegions` (Task 2), `PowerAnswers.last`, `PowerCtx.answered`.
@@ -1297,24 +1297,24 @@ git commit -m "feat(economy): Map Library and Skilled Merchants trade across the
 
 - [ ] **Step 1: Write the failing suites**
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/PressgangsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/PressgangsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ModifierOffers
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ModifierOffers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
   Look, PhasePowerHarness, PowerRules, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class PressgangsSuite extends munit.FunSuite:
   private val pressgangs = CatalogNames.denizen("Pressgangs")
@@ -1402,23 +1402,23 @@ class PressgangsSuite extends munit.FunSuite:
     assert(!modifiers(ready, ActionRef.Trade).contains(Pressgangs.id))
 ```
 
-Create `src/test/scala/oathdigital/gameplay/powers/economy/OldSongsSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/economy/OldSongsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ModifierOffers
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ModifierOffers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
   Look, PhasePowerHarness, PowerRules, Refusals, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class OldSongsSuite extends munit.FunSuite:
   private val songs = CatalogNames.denizen("Old Songs")
@@ -1498,15 +1498,15 @@ In `PowerKindsCatalogSuite.scala`, add `"denizen.pressgangs"` and `"denizen.old-
 
 - [ ] **Step 3: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.PressgangsSuite oathdigital.gameplay.powers.economy.OldSongsSuite"`
-Expected: compile failure, `Pressgangs` and `OldSongs` are not members of `oathdigital.gameplay.powers.economy`.
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.PressgangsSuite distantlands.gameplay.powers.economy.OldSongsSuite"`
+Expected: compile failure, `Pressgangs` and `OldSongs` are not members of `distantlands.gameplay.powers.economy`.
 
 - [ ] **Step 4: Add the exemption and the payment mark to the helper**
 
 In `EconomySources.scala`, add the import
 
 ```scala
-import oathdigital.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.PowerAnswers
 ```
 
 and add after `inPawnRegion`:
@@ -1551,16 +1551,16 @@ and add after `inPawnRegion`:
 
 - [ ] **Step 5: Write the two powers and move their cards**
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/Pressgangs.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/Pressgangs.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object PressgangsCard extends Denizen(DenizenId("6"), "Pressgangs", Suit.Order):
   val power = PrintedPower(PowerId("denizen.pressgangs"),
@@ -1600,16 +1600,16 @@ object Pressgangs:
     new Pressgangs(catalog)
 ```
 
-Create `src/main/scala/oathdigital/gameplay/powers/economy/OldSongs.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/economy/OldSongs.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.economy.{MusterSource, TradeProcedure}
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.economy.{MusterSource, TradeProcedure}
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object OldSongsCard extends Denizen(DenizenId("229"), "Old Songs", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.old-songs"),
@@ -1659,7 +1659,7 @@ Delete `PressgangsCard` from `HoldingOrderDenizens.scala` and `OldSongsCard` fro
 In `NewFoundations.scala`, add `OldSongsCard` and `PressgangsCard` to the economy import:
 
 ```scala
-import oathdigital.gameplay.powers.economy.{AnimalPlaymatesCard,
+import distantlands.gameplay.powers.economy.{AnimalPlaymatesCard,
   AwaitedReturnCard, BirdsongCard, CupOfPlentyCard, CurfewCard,
   DefameCard, DowntroddenCard, GolemLegionsCard, InitiationRiteCard,
   KnightsErrantCard, MapLibraryCard, MountedLibraryCard, MovingMarketCard,
@@ -1672,7 +1672,7 @@ import oathdigital.gameplay.powers.economy.{AnimalPlaymatesCard,
 In `ActionModifiers.scala`, change the economy import to:
 
 ```scala
-import oathdigital.gameplay.powers.economy.{AnimalPlaymates, AwaitedReturn,
+import distantlands.gameplay.powers.economy.{AnimalPlaymates, AwaitedReturn,
   Birdsong, CupOfPlenty, Curfew, Defame, Downtrodden, GolemLegions,
   InitiationRite, MapLibrary, MountedLibrary, MovingMarket, OldSongs,
   Pressgangs, RowdyPub, SkilledMerchants, TheOldOak, VillageIdiot,
@@ -1690,23 +1690,23 @@ In `MusterPowers.scala`, delete the `Pressgangs` and `OldSongs` objects and remo
 
 - [ ] **Step 7: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.* oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.* distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS. If "selected, Muster places its favor beside the tokens" fails with `CardOccupied` or `EconomyCardNotEmpty`, the cost mark did not apply. Check that `ctx.answered` holds the source answer at `MusterCost`, and stop and report if it does not.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powers/economy/EconomySources.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/Pressgangs.scala \
-  src/main/scala/oathdigital/gameplay/powers/economy/OldSongs.scala \
-  src/main/scala/oathdigital/gameplay/powers/ActionModifiers.scala \
-  src/main/scala/oathdigital/gameplay/powers/MusterPowers.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingOrderDenizens.scala \
-  src/main/scala/oathdigital/catalog/holding/HoldingHearthDenizens.scala \
-  src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/PressgangsSuite.scala \
-  src/test/scala/oathdigital/gameplay/powers/economy/OldSongsSuite.scala \
-  src/test/scala/oathdigital/gameplay/PowerKindsCatalogSuite.scala
+git add src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/Pressgangs.scala \
+  src/main/scala/distantlands/gameplay/powers/economy/OldSongs.scala \
+  src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala \
+  src/main/scala/distantlands/gameplay/powers/MusterPowers.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala \
+  src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala \
+  src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/PressgangsSuite.scala \
+  src/test/scala/distantlands/gameplay/powers/economy/OldSongsSuite.scala \
+  src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala
 git commit -m "feat(economy): Pressgangs and Old Songs draw on cards that hold tokens"
 ```
 

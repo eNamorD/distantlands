@@ -1,0 +1,59 @@
+package distantlands.gameplay.powers.whenplayed
+
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
+
+object CharlatanCard extends Denizen(DenizenId("79"), "Charlatan", Suit.Discord):
+  val power = PrintedPower(PowerId("denizen.charlatan"),
+    persistent = false, cost = Cost.free,
+    text = "**WHEN PLAYED:** burn all [secret] but one from the Darkest " +
+      "Secret.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Charlatan (card 79), WHEN PLAYED: burn all secrets but one from the
+  * Darkest Secret.
+  *
+  * The banner's secrets are read live. When it holds more than 1, all but 1
+  * burn, whoever holds it, or nobody. Otherwise nothing burns and the line
+  * says so.
+  */
+case object Charlatan extends WhenPlayedPower:
+  val cardId: DenizenId = CharlatanCard.id
+  val id: PowerId = CharlatanCard.power.id
+  /** The secrets the Darkest Secret keeps. */
+  val Kept: Int = 1
+  private val notes = NoteSet(id)
+  /** "Burned {n secrets} from the {Darkest Secret}." */
+  val burned: NoteKey = notes.key("burned", Vector(NotePart.Text("Burned "),
+    NotePart.Arg(0), NotePart.Text(" from the "), NotePart.Arg(1),
+    NotePart.Text(".")))
+  /** "The {Darkest Secret} had no secret to burn." */
+  val none: NoteKey = notes.key("none", Vector(NotePart.Text("The "),
+    NotePart.Arg(0), NotePart.Text(" had no secret to burn.")))
+
+  private def secretsOn(ready: ReadyGame): Int =
+    ready.game.current.banners.darkestSecret.secrets
+
+  private def burn(ready: ReadyGame, actor: PlayerId): Vector[CoreOperation] =
+    val extra = secretsOn(ready) - Kept
+    if extra <= 0 then Vector.empty
+    else Vector(Burn.secrets(extra,
+      PositionedLocation(Location.OnBanner(Banner.DarkestSecret)),
+      Some(actor)))
+
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  def effect(ctx: PowerCtx): Vector[Operation] = Vector(
+    BuildOps((ready, _) => Right(burn(ready, ctx.actor))),
+    Note(id, burnedNote))
+
+  /** What the burn step took from the banner. */
+  private def burnedNote(states: NoteStates): Option[LogNote] =
+    val source = PowerSourceRef.Card(cardId)
+    val banner = NoteArg.Banner(Banner.DarkestSecret)
+    val burnt = states.previous.fold(0)((before, after) =>
+      secretsOn(before) - secretsOn(after))
+    Some(if burnt > 0 then burned(source,
+      NoteArg.Amount(burnt, NoteUnit.Secret), banner)
+    else none(source, banner))

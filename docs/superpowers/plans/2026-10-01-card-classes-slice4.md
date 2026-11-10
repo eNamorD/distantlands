@@ -42,7 +42,7 @@ moves for relics and edifices; this plan follows its patterns.
 - The reviewed-catalog stubs (`ActionPowers`, `MusterPowers`, `RestPowers`,
   `NegotiationPowers`, `CampaignPowers`, `RecoverPowers`) are not touched;
   they belong to the reviewed-catalog cleanup item.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Gates at the end of every task: `./sbtw test frontend/test`,
   `python3 scripts/check-architecture.py`,
   `python3 scripts/check-markdown-links.py`.
@@ -119,20 +119,20 @@ with the user on 2026-10-01.
 
 ## Files
 
-- Modify: `src/main/scala/oathdigital/catalog/Cards.scala` (`Site`)
-- Modify: `src/main/scala/oathdigital/catalog/holding/HoldingSites.scala`
-- Modify: `src/main/scala/oathdigital/catalog/CatalogModel.scala`
-- Modify: `src/main/scala/oathdigital/catalog/CatalogHandlerInventory.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/actions/CardPlay.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala`
-- Modify: `src/main/scala/oathdigital/application/FirstGameChronicleGenerator.scala`
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/RuleSourceIndex.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/wake/RiverSitePower.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/PhasePowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`
+- Modify: `src/main/scala/distantlands/catalog/Cards.scala` (`Site`)
+- Modify: `src/main/scala/distantlands/catalog/holding/HoldingSites.scala`
+- Modify: `src/main/scala/distantlands/catalog/CatalogModel.scala`
+- Modify: `src/main/scala/distantlands/catalog/CatalogHandlerInventory.scala`
+- Modify: `src/main/scala/distantlands/gameplay/actions/CardPlay.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala`
+- Modify: `src/main/scala/distantlands/application/FirstGameChronicleGenerator.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala`
+- Modify: `src/main/scala/distantlands/gameplay/RuleSourceIndex.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/wake/RiverSitePower.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`
   (imports only)
 - Modify (tests): `testkit/TestCards.scala`, `gameplay/HomelandRuleSuite.scala`,
   `gameplay/cards/CardCatalogSuite.scala`,
@@ -147,7 +147,7 @@ with the user on 2026-10-01.
   `application/FirstGameChronicleGeneratorSuite.scala`,
   `gameplay/powers/wake/RiverFixture.scala`,
   `gameplay/powers/wake/RiverSitePowerSuite.scala` (all under
-  `src/test/scala/oathdigital/`)
+  `src/test/scala/distantlands/`)
 - Modify: `docs/ROADMAP.md` (tick slice 4)
 
 ## Scripts
@@ -254,7 +254,7 @@ listed under **Files** above except `ExecutableCatalogSuite`,
 
 - [ ] **Step 1: Write the failing test**
 
-In `src/test/scala/oathdigital/testkit/TestCards.scala`, give `siteLike` a
+In `src/test/scala/distantlands/testkit/TestCards.scala`, give `siteLike` a
 `homeland` parameter. Replace:
 
 ```scala
@@ -280,9 +280,9 @@ with:
       homeland, handlers) {}
 ```
 
-In `src/test/scala/oathdigital/gameplay/HomelandRuleSuite.scala`, change the
-import `oathdigital.testkit.{CatalogNames, Table}` to
-`oathdigital.testkit.{CatalogNames, Table, TestCards}`, change the class
+In `src/test/scala/distantlands/gameplay/HomelandRuleSuite.scala`, change the
+import `distantlands.testkit.{CatalogNames, Table}` to
+`distantlands.testkit.{CatalogNames, Table, TestCards}`, change the class
 doc's "The site's handler names the suit, and the discard is" to "The site
 prints its Homeland suit, and the discard is", and replace the first test:
 
@@ -311,7 +311,7 @@ with:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.HomelandRuleSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.HomelandRuleSuite"`
 Expected: FAIL, 1 of 6: "the Homeland suit is the one the site prints",
 `None` obtained where `Some(Order)` was expected (the suit still comes from
 the handler string).
@@ -338,8 +338,8 @@ import re
 import sys
 
 W = sys.argv[1].rstrip("/") + "/"
-M = W + "src/main/scala/oathdigital/"
-T = W + "src/test/scala/oathdigital/"
+M = W + "src/main/scala/distantlands/"
+T = W + "src/test/scala/distantlands/"
 
 
 def edit(path, *pairs):
@@ -386,10 +386,10 @@ def site(m):
 s, n = re.subn(r"    homeland = ([^\n]*),\n    handlers = Vector\(([^)]*)\)\)",
                site, s)
 assert n == 24, n
-s = s.replace("import oathdigital.catalog.{Site}\n",
-              "import oathdigital.catalog.Site\n")
-s = s.replace("import oathdigital.model.{SiteId, Suit, Tokens}\n",
-              "import oathdigital.model.{PowerId, SiteId, Suit, Tokens}\n")
+s = s.replace("import distantlands.catalog.{Site}\n",
+              "import distantlands.catalog.Site\n")
+s = s.replace("import distantlands.model.{SiteId, Suit, Tokens}\n",
+              "import distantlands.model.{PowerId, SiteId, Suit, Tokens}\n")
 open(p, "w").write(s)
 
 edit(M + "catalog/CatalogModel.scala", (
@@ -517,7 +517,7 @@ print("site handlers are power ids; Homeland reads the printed suit")
 
 The handler and the `homeland` field now both declare a Homeland, so a
 check keeps them in step. In
-`src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`, insert
+`src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`, insert
 before `test("printed numbers are non-negative"):`:
 
 ```scala
@@ -594,13 +594,13 @@ Co-Authored-By: <the committing model's own line>"
   `RiverSitePower.all: Vector[RiverSitePower]`,
   `RiverSitePower.isRiver(site: SiteId): Boolean`,
   `TravelSitePowers.all: Vector[ContributingPower]`; the four River sites
-  in package `oathdigital.gameplay.powers.wake`, the other nine in
-  `oathdigital.gameplay.powers.travel`. `ExecutableCatalog.siteWithHandler`
+  in package `distantlands.gameplay.powers.wake`, the other nine in
+  `distantlands.gameplay.powers.travel`. `ExecutableCatalog.siteWithHandler`
   is gone.
 
 - [ ] **Step 1: Extend the placement and registration tests**
 
-In `src/test/scala/oathdigital/gameplay/cards/CardCatalogSuite.scala`, in
+In `src/test/scala/distantlands/gameplay/cards/CardCatalogSuite.scala`, in
 the test "a card leaves the holding files once it is implemented", replace:
 
 ```scala
@@ -641,7 +641,7 @@ with:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: FAIL, 2 of 12. "a card leaves the holding files once it is
 implemented" lists the 13 implemented sites, from "Ancient City" to "Tidal
 Marshes". "card powers are registered whichever cards a catalog lists"
@@ -674,8 +674,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import s4_imports as imports
 
 W = sys.argv[1].rstrip("/") + "/"
-M = W + "src/main/scala/oathdigital/"
-T = W + "src/test/scala/oathdigital/"
+M = W + "src/main/scala/distantlands/"
+T = W + "src/test/scala/distantlands/"
 RIVER = "gameplay/powers/wake/RiverSitePower.scala"
 TRAVEL = "gameplay/powers/travel/TravelSitePowers.scala"
 # A site with a River power sits beside the River, even if it also has a
@@ -695,7 +695,7 @@ DEST = {
     "RockyCoastSite": TRAVEL,
     "SunkenIslesSite": TRAVEL,
 }
-HOLDING = "oathdigital.catalog.holding"
+HOLDING = "distantlands.catalog.holding"
 
 
 def edit(path, *pairs):
@@ -734,8 +734,8 @@ for rel in (RIVER, TRAVEL):
             lines[j:j] = [""] + blocks[site].split("\n")
             j += 1 + blocks[site].count("\n") + 1
     s = "\n".join(lines)
-    s = imports.add(s, "oathdigital.catalog", {"Site"})
-    s = imports.add(s, "oathdigital.model", {"PowerId", "SiteId", "Tokens"})
+    s = imports.add(s, "distantlands.catalog", {"Site"})
+    s = imports.add(s, "distantlands.model", {"PowerId", "SiteId", "Tokens"})
     pkg = re.search(r"^package (\S+)", s, re.M).group(1)
     for site in DEST:
         if DEST[site] == rel:
@@ -773,7 +773,7 @@ edit(M + RIVER, (
   def isRiver(site: SiteId): Boolean = all.exists(_.site == site)
 """))
 s = open(M + RIVER).read()
-s = imports.remove(s, "oathdigital.catalog", {"ExecutableCatalog"})
+s = imports.remove(s, "distantlands.catalog", {"ExecutableCatalog"})
 open(M + RIVER, "w").write(s)
 
 # 3. The Travel terrain powers name their sites.
@@ -824,8 +824,8 @@ object TravelSitePowers:
     case Supported(id, site, NarrowPass) =>
       NarrowPassSitePower(id, site, coastSites, coastOrIslandSites)
 '''
-s = imports.remove(s, "oathdigital.catalog", {"ExecutableCatalog"})
-s = imports.add(s, "oathdigital.gameplay.powers.wake",
+s = imports.remove(s, "distantlands.catalog", {"ExecutableCatalog"})
+s = imports.add(s, "distantlands.gameplay.powers.wake",
                 {"HeadwatersSite", "TidalMarshesSite"})
 open(p, "w").write(s)
 
@@ -882,7 +882,7 @@ edit(T + "gameplay/powers/wake/RiverFixture.scala", (
     "  lazy val river: RiverSitePower = RiverSitePower.forCatalog(catalog)\n",
     "  lazy val river: RiverSitePower = RiverSitePower.all\n"), (
     "RiverSitePower.isRiver(catalog, site)", "RiverSitePower.isRiver(site)"), (
-    "import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog\n", ""))
+    "import distantlands.gameplay.setup.FirstGameSetupFixture.catalog\n", ""))
 edit(T + "gameplay/powers/wake/RiverSitePowerSuite.scala", (
     "RiverSitePower.isRiver(catalog, site)", "RiverSitePower.isRiver(site)"))
 edit(T + "gameplay/TravelSitePowersSuite.scala", (
@@ -891,9 +891,9 @@ edit(T + "gameplay/TravelSitePowersSuite.scala", (
     "    assert(!TravelSitePowers.forCatalog(augmented).map(_.id).contains(fixturePower))\n",
     "    assert(!WalkerPowerCatalog.default(augmented).powers.map(_.id)\n"
     "      .contains(fixturePower))\n"), (
-    "import oathdigital.gameplay.powers.travel.TravelSitePowers\n",
-    "import oathdigital.gameplay.powers.WalkerPowerCatalog\n"
-    "import oathdigital.gameplay.powers.travel.TravelSitePowers\n"))
+    "import distantlands.gameplay.powers.travel.TravelSitePowers\n",
+    "import distantlands.gameplay.powers.WalkerPowerCatalog\n"
+    "import distantlands.gameplay.powers.travel.TravelSitePowers\n"))
 edit(T + "gameplay/CampaignPowersSuite.scala", (
     "  private val passPower = TravelSitePowers.forCatalog(catalog).collectFirst {\n",
     "  private val passPower = TravelSitePowers.all.collectFirst {\n"))

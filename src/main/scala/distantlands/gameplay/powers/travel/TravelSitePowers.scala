@@ -1,0 +1,246 @@
+package distantlands.gameplay.powers.travel
+
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.powerresolver._
+import distantlands.gameplay.cards.{BrokenPeaksSite, DesolateShoreSite,
+  FairIsleSite, GreenShoreSite, HeadwatersSite, HiddenPlaceSite, MinesSite,
+  NarrowPassSite, RockyCoastSite, SunkenIslesSite, TidalMarshesSite}
+import distantlands.model.{DecisionOptionRef, Location, Move, NoteKey,
+  NotePart, NoteSet, OathViolation, Operation, Piece, PlayerId,
+  PositionedLocation, PowerId, LogNote, PowerSourceRef, PowerWindow,
+  ReadyGame, RuleSourceRef, SiteId, SiteRule, SiteRuler, SpendSupply}
+
+private[travel] object TravelRoute:
+  final case class PawnMove(player: PlayerId, source: SiteId, destination: SiteId)
+
+  def pawnMove(operation: Operation): Option[PawnMove] =
+    Operation.flatten(operation).collectFirst:
+      case Move(Piece.Pawn(player), PositionedLocation(Location.Site(source), _, _),
+          PositionedLocation(Location.Site(destination), _, _), _, _) =>
+        PawnMove(player, source, destination)
+
+  /** `operations` with `payments` just before the pawn's move: after the
+    * rest of the cost and every question in it (consent slice 4), and
+    * before the traveller arrives. Last when the node holds no move. */
+  def beforeMove(operations: Vector[Operation], payments: Vector[Operation])
+      : Vector[Operation] =
+    val (cost, move) = operations.span:
+      case Move(Piece.Pawn(_), _, _, _, _) => false
+      case _ => true
+    cost ++ payments ++ move
+
+  /** `operations` with `rewrite` applied to the amount of each of the
+    * traveller's Supply payments, wherever the cost window holds them. */
+  def adjustSupply(ctx: PowerCtx, operations: Vector[Operation])
+      (rewrite: Int => Int): Vector[Operation] =
+    OperationRewrite.ops(ctx, operations)((_, _) => {
+      case payment @ SpendSupply(player, amount, _)
+          if player == ctx.actor =>
+        Vector(payment.copy(amount = rewrite(amount)))
+    })
+
+/** The Travel terrain of the sites in play, read from the state on every
+  * call: the printed Coast and Island sites, plus the site of either face
+  * of E03. Grand Canal makes its site a Coast. Lost Lagoon makes its site
+  * an Island, which has the Coast power (catalog batch 10, ruling 12).
+  */
+private[travel] object TravelTerrain:
+  def coastSites(ready: ReadyGame): Set[SiteId] =
+    TravelSitePowers.printedCoastSites ++ GrandCanal.site(ready) ++
+      LostLagoon.site(ready)
+
+  def coastOrIslandSites(ready: ReadyGame): Set[SiteId] =
+    coastSites(ready) ++ TravelSitePowers.printedIslandSites
+
+  /** Whether `route` leaves a Coast for a Coast or an Island. */
+  def coastRoute(ready: ReadyGame, route: TravelRoute.PawnMove): Boolean =
+    coastSites(ready).contains(route.source) &&
+      coastOrIslandSites(ready).contains(route.destination)
+
+  /** The terrain adds a Coast route ignores: "ignores other Travel
+    * modifiers (Mountain, Pass, etc.)". The Pass is not an add; its
+    * restriction reads `coastRoute` itself. */
+  def ignoredOnCoastRoute(other: ContributingPower): Boolean = other match
+    case _: MountainSitePower | _: IslandSitePower | LostLagoon => true
+    case _ => false
+
+final case class MountainSitePower(id: PowerId, site: SiteId)
+    extends ContributingPower:
+  def source: RuleSourceRef = RuleSourceRef.Site(site)
+  def contributions: Map[PowerWindow, Vector[Contribution]] =
+    Map.empty.updated(PowerWindow.TravelCost,
+      Vector(Transform((ctx, operations) =>
+        TravelRoute.adjustSupply(ctx, operations)(_ + 1))))
+  override def applicable(ctx: PowerCtx): Boolean =
+    TravelRoute.pawnMove(ctx.operation).exists(_.destination == site)
+
+final case class IslandSitePower(id: PowerId, site: SiteId)
+    extends ContributingPower:
+  def source: RuleSourceRef = RuleSourceRef.Site(site)
+  def contributions: Map[PowerWindow, Vector[Contribution]] =
+    Map.empty.updated(PowerWindow.TravelCost,
+      Vector(Transform((ctx, operations) =>
+        TravelRoute.adjustSupply(ctx, operations)(_ + 2))))
+  override def applicable(ctx: PowerCtx): Boolean =
+    TravelRoute.pawnMove(ctx.operation).exists(_.destination == site)
+
+final case class CoastSitePower(id: PowerId, site: SiteId)
+    extends ContributingPower:
+  def source: RuleSourceRef = RuleSourceRef.Site(site)
+  def contributions: Map[PowerWindow, Vector[Contribution]] =
+    Map.empty.updated(PowerWindow.TravelCost,
+      Vector(Transform((ctx, operations) =>
+        TravelRoute.adjustSupply(ctx, operations)(_ => 1))))
+  override def applicable(ctx: PowerCtx): Boolean = TravelRoute
+    .pawnMove(ctx.operation).exists(route => route.source == site &&
+      TravelTerrain.coastRoute(ctx.state, route))
+  override def shouldIgnore(other: ContributingPower): Boolean =
+    TravelTerrain.ignoredOnCoastRoute(other)
+
+final case class NarrowPassSitePower(id: PowerId, site: SiteId)
+    extends ContributingPower:
+  def source: RuleSourceRef = RuleSourceRef.Site(site)
+  private val own = NoteSet(id)
+  own.include(NarrowPassSitePower.notes)
+  override def noteKeys: Vector[NoteKey] = own.declared
+  def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.TravelActionEligibility ->
+      Vector(Restriction((ctx, _) => blocked(ctx), travelNote,
+        Some(waiver(NarrowPassSitePower.noTravelConsent)))),
+    PowerWindow.CampaignTargetSelection ->
+      Vector(OptionRestriction(campaignBlocked, campaignNote,
+        Some(waiver(NarrowPassSitePower.noTargetConsent)))))
+
+  /** "Unless you have the consent of the Pass's ruler" (consent design,
+    * slices 1 and 2): the player who rules the Pass may waive it, for a
+    * Travel or for a campaign target. `note` words the reason of an option
+    * its ruler may be asked about. */
+  private def waiver(note: NoteKey): Waiver = Waiver(
+    ready => SiteRulers.rulerOf(ready, site).collect {
+      case SiteRuler.Player(player) => player },
+    PowerSourceRef.Site(site),
+    (_, _) => note(PowerSourceRef.Site(site)))
+
+  /** A blocked destination's hover reason (travel destination design,
+    * ruling 4). */
+  private def travelNote(ctx: PowerCtx, ref: DecisionOptionRef)
+      : Option[LogNote] =
+    Some(NarrowPassSitePower.noTravel(PowerSourceRef.Site(site)))
+
+  /** A hidden target site's hover reason. */
+  private def campaignNote(ctx: PowerCtx, ref: DecisionOptionRef)
+      : Option[LogNote] =
+    Some(NarrowPassSitePower.noTarget(PowerSourceRef.Site(site)))
+
+  override def applicable(ctx: PowerCtx): Boolean = ctx.window match
+    // Per candidate, in `campaignBlocked`: nothing about the tree decides it.
+    case PowerWindow.CampaignTargetSelection => true
+    case _ => TravelRoute.pawnMove(ctx.operation).exists { route =>
+      val map = ctx.state.game.current.map
+      (for
+        sourceRegion <- map.regionOf(route.source)
+        destinationRegion <- map.regionOf(route.destination)
+        passRegion <- map.regionOf(site)
+      yield sourceRegion != destinationRegion && destinationRegion == passRegion &&
+        route.destination != site).getOrElse(false)
+    }
+
+  /** Campaign: "If your pawn is outside this region, you cannot ... target
+    * other sites in this region in campaigns, unless you have the consent of
+    * the Pass's ruler." Judged per candidate site, never against the other
+    * targets. Its ruler is never blocked (consent design, ruling 5); anyone
+    * else may ask its ruler for consent (slice 2). Only site options are considered: a Raid targets a
+    * pawn, relics and banners, never a site.
+    */
+  private def campaignBlocked(ctx: PowerCtx, ref: DecisionOptionRef)
+      : Option[OathViolation] = ref match
+    case DecisionOptionRef.Site(target) =>
+      val current = ctx.state.game.current
+      val map = current.map
+      val outside = for
+        pawn <- CampaignSetup.originOf(ctx.state, ctx.actor)
+        pawnRegion <- map.regionOf(pawn)
+        targetRegion <- map.regionOf(target)
+        passRegion <- map.regionOf(site)
+      yield pawnRegion != targetRegion && targetRegion == passRegion &&
+        target != site
+      val ruledByActor = SiteRule.rulingPlayer(ctx.state, site)
+        .contains(SiteRuler.Player(ctx.actor))
+      Option.when(outside.contains(true) && !ruledByActor)(
+        OathViolation.CampaignUnavailable(
+          s"a Pass prevents targeting '${target.value}' from the " +
+            "Campaign's site"))
+    case _ => None
+
+  private def blocked(ctx: PowerCtx): Option[OathViolation] =
+    TravelRoute.pawnMove(ctx.operation).flatMap { route =>
+      if TravelTerrain.coastRoute(ctx.state, route) then None
+      else SiteRule.rulingPlayer(ctx.state, site) match
+        case Some(SiteRuler.Player(player)) if player == route.player => None
+        case _ =>
+          Some(OathViolation.TravelPassBlocked(site, route.destination))
+    }
+
+object NarrowPassSitePower:
+  /** The keys this object owns, which no one power owns. A power that
+    * writes one includes this set. */
+  val notes: NoteSet = NoteSet.unowned("NarrowPassSitePower")
+  /** "Cannot target other sites in the region." */
+  val noTarget: NoteKey = notes.key("no-target", Vector(
+    NotePart.Text("Cannot target other sites in the region.")))
+  /** "Cannot travel to other sites in the region." */
+  val noTravel: NoteKey = notes.key("no-travel", Vector(
+    NotePart.Text("Cannot travel to other sites in the region.")))
+  /** "Cannot travel to other sites in the region without ruler's consent.":
+    * the reason of a destination its ruler may be asked about. */
+  val noTravelConsent: NoteKey = notes.key("no-travel-consent", Vector(
+    NotePart.Text("Cannot travel to other sites in the region without " +
+      "ruler's consent.")))
+
+  /** "Cannot target other sites in the region without ruler's consent.":
+    * the reason of a campaign target its ruler may be asked about. */
+  val noTargetConsent: NoteKey = notes.key("no-target-consent", Vector(
+    NotePart.Text("Cannot target other sites in the region without " +
+      "ruler's consent.")))
+
+/** The sites' Travel terrain contributions. Printed site topology lives on
+  * the power objects; the live Coast and Island sets come from
+  * [[TravelTerrain]], and command state supplies the current route through
+  * PowerCtx.operation.
+  */
+object TravelSitePowers:
+  private enum Terrain { case Mountain, Island, Coast, NarrowPass }
+  import Terrain._
+  private final case class Supported(id: PowerId, site: SiteId,
+      terrain: Terrain)
+
+  /** Explicit reviewed Travel handlers, in power id order. A power comes
+    * only from this list, never from a `*.coast`-looking handler id.
+    */
+  private val supported = Vector(
+    Supported(BrokenPeaksSite.mountain, BrokenPeaksSite.id, Mountain),
+    Supported(DesolateShoreSite.coast, DesolateShoreSite.id, Coast),
+    Supported(FairIsleSite.coast, FairIsleSite.id, Coast),
+    Supported(FairIsleSite.island, FairIsleSite.id, Island),
+    Supported(GreenShoreSite.coast, GreenShoreSite.id, Coast),
+    Supported(HeadwatersSite.mountain, HeadwatersSite.id, Mountain),
+    Supported(HiddenPlaceSite.mountain, HiddenPlaceSite.id, Mountain),
+    Supported(MinesSite.mountain, MinesSite.id, Mountain),
+    Supported(NarrowPassSite.pass, NarrowPassSite.id, NarrowPass),
+    Supported(RockyCoastSite.coast, RockyCoastSite.id, Coast),
+    Supported(SunkenIslesSite.coast, SunkenIslesSite.id, Coast),
+    Supported(SunkenIslesSite.island, SunkenIslesSite.id, Island),
+    Supported(TidalMarshesSite.coast, TidalMarshesSite.id, Coast))
+  private[travel] val printedCoastSites: Set[SiteId] = supported.collect {
+    case Supported(_, site, Coast) => site
+  }.toSet
+  private[travel] val printedIslandSites: Set[SiteId] = supported.collect {
+    case Supported(_, site, Island) => site
+  }.toSet
+
+  val all: Vector[ContributingPower] = supported.map:
+    case Supported(id, site, Mountain) => MountainSitePower(id, site)
+    case Supported(id, site, Island) => IslandSitePower(id, site)
+    case Supported(id, site, Coast) => CoastSitePower(id, site)
+    case Supported(id, site, NarrowPass) => NarrowPassSitePower(id, site)

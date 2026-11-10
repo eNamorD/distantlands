@@ -143,7 +143,7 @@ Out of scope, and follow-ups if the next profile still shows them:
 7. **A committed profiling script.** `scripts/profile-tests.py <test filter>`
    runs `./sbtw` with Java Flight Recorder on the filtered root tests. It then
    prints the slowest suites and tests from the JUnit XML reports written by
-   that run, plus the top self and inclusive `oathdigital` frames from the
+   that run, plus the top self and inclusive `distantlands` frames from the
    recording. Output goes under `target/profile/`. A short guide,
    `docs/testing/profiling.md`, explains how to run it and how to read it.
    `SearchBudget` stays as it is; its numbers are reported alongside.
@@ -163,7 +163,7 @@ Each task reports before and after:
 - gate wall-clock time and CPU time;
 - summed root suite time and the ten slowest suites;
 - the top frames from the profiling script on
-  `oathdigital.gameplay.powers.campaign.*`;
+  `distantlands.gameplay.powers.campaign.*`;
 - `SearchBudget`'s two timings.
 
 ## Process

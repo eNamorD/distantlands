@@ -10,7 +10,7 @@ the Task 7 Step 5 product-owner review, committed together with this record.
 **Server:**
 
 ```bash
-OATH_DATABASE_PATH=/tmp/card-shape-verification ./sbtw "run --port 8123"
+DLQ_DATABASE_PATH=/tmp/card-shape-verification ./sbtw "run --port 8123"
 ```
 
 Opened at `http://127.0.0.1:8123/?mode=server`, a fresh game created through
@@ -187,7 +187,7 @@ turns a card the viewer is allowed to read face-up before drawing it; a
 card the viewer cannot identify still shows its back, since there is
 nothing to turn. Removing the badge left the frontend's whole visual
 chain unused, so `VisualDomRenderer` and `VisualRenderPlan` went with it;
-`oathdigital.presentation` itself was untouched then (it has since been
+`distantlands.presentation` itself was untouched then (it has since been
 deleted as unused).
 
 **Players pane and partitions, fourth revision.** A player board is now one

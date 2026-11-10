@@ -1,0 +1,28 @@
+package distantlands.frontend
+
+/** What every `LogStore` promises: a key that was written reads back its
+  * value, a second write to a key replaces the first, and a key that was
+  * never written reads as nothing. `FakeLogStore`, which the log suites
+  * use, and `LogStore.browser`, over a working `localStorage`, both run it,
+  * so the fake cannot drift from the real store.
+  */
+private[frontend] abstract class LogStoreContract extends munit.FunSuite:
+  /** A new, empty store. */
+  protected def make(): LogStore
+  /** Undoes what `make` set up. */
+  protected def release(store: LogStore): Unit = ()
+
+  private val fresh = FunFixture[LogStore](_ => make(), release)
+
+  fresh.test("a key that was written reads back its value"): store =>
+    store.write("distantlands.log.seen.g1.red", "42")
+    assertEquals(store.read("distantlands.log.seen.g1.red"), Some("42"))
+
+  fresh.test("a second write to a key replaces the first"): store =>
+    store.write("distantlands.log.seen.g1.red", "42")
+    store.write("distantlands.log.seen.g1.red", "57")
+    assertEquals(store.read("distantlands.log.seen.g1.red"), Some("57"))
+
+  fresh.test("a key that was never written reads as nothing"): store =>
+    store.write("distantlands.log.seen.g1.red", "42")
+    assertEquals(store.read("distantlands.log.seen.g1.blue"), None)

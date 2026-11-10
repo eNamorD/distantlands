@@ -1,0 +1,50 @@
+package distantlands.application
+
+import distantlands.gameplay.walker.WalkerDice
+import distantlands.model._
+
+
+trait CampaignDicePort:
+  def rollAttack(count: Int): Vector[AttackDieFace]
+  def rollDefense(count: Int): Vector[DefenseDieFace]
+  /** `count` round dice, each uniform over 1 to 6. A test port may fix
+    * them. */
+  def rollRound(count: Int): Vector[RoundDieFace] =
+    CampaignDicePort.uniformRound(count)
+  /** A uniform order for a pile of `count` cards, as a permutation of
+    * `0 until count`. A test port may fix it. */
+  def shuffle(count: Int): Vector[Int] = CampaignDicePort.uniform(count)
+object CampaignDicePort:
+  val random: CampaignDicePort = new CampaignDicePort:
+    private val rng = new scala.util.Random()
+    private val attack = Vector(
+      AttackDieFace.HollowSword, AttackDieFace.HollowSword,
+      AttackDieFace.HollowSword, AttackDieFace.OneSword,
+      AttackDieFace.OneSword, AttackDieFace.TwoSwordsSkull)
+    private val defense = Vector(DefenseDieFace.Blank, DefenseDieFace.Blank,
+      DefenseDieFace.OneShield, DefenseDieFace.OneShield,
+      DefenseDieFace.TwoShields, DefenseDieFace.Doubler)
+    def rollAttack(count: Int) = Vector.fill(count)(attack(rng.nextInt(6)))
+    def rollDefense(count: Int) = Vector.fill(count)(defense(rng.nextInt(6)))
+
+  /** The walker's dice source, backed by `port`: the same faces a legacy
+    * Campaign rolled, now drawn by an automatic `Roll` node, and the port's
+    * pile order for a `Shuffle`.
+    */
+  def walkerDice(port: CampaignDicePort): WalkerDice = new WalkerDice:
+    def roll(kind: DiceKind, count: Int)
+        : Either[OathViolation, Vector[DieFace]] = Right(kind match {
+      case DiceKind.Attack => port.rollAttack(count)
+      case DiceKind.Defense => port.rollDefense(count)
+      case DiceKind.Round => port.rollRound(count)
+    })
+    override def shuffle(count: Int): Either[OathViolation, Vector[Int]] =
+      Right(port.shuffle(count))
+
+  private val shuffler = new scala.util.Random()
+  private def uniform(count: Int): Vector[Int] =
+    shuffler.shuffle((0 until count).toVector)
+
+  private val roundRoller = new scala.util.Random()
+  private def uniformRound(count: Int): Vector[RoundDieFace] =
+    Vector.fill(count)(RoundDieFace.values(roundRoller.nextInt(6)))

@@ -57,7 +57,7 @@ two-machine requirement.
 | ---: | --- | --- | --- |
 | 11 | The external origin uses a valid HTTPS certificate and the backend listens only on a restricted interface that is not directly reachable from Machine B. | UNEXECUTED | Not observed. |
 | 12 | A newly generated seat link uses the exact configured HTTPS scheme, host, and port. | UNEXECUTED | Not observed. |
-| 13 | Visiting the seat link stays on the HTTPS origin and returns an `oath_seat` cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, and the exact `/games/{game-id}` path. | UNEXECUTED | Not observed. |
+| 13 | Visiting the seat link stays on the HTTPS origin and returns a `distantlands_seat` cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, and the exact `/games/{game-id}` path. | UNEXECUTED | Not observed. |
 | 14 | A same-origin gameplay request succeeds; a deliberately mismatched `Origin` request is rejected without changing game state. | UNEXECUTED | Not observed. |
 | 15 | Normal exchange, a controlled failing `/s/` request, and a `/s/` request with the backend unreachable (on a throwaway proxy instance) use a disposable test code; every NGINX access/error log, upstream application log, and applicable proxy, CDN, firewall, WAF, agent, or dashboard log is inspected, and no raw `/s/{seat-code}`, `Cookie`, or `Set-Cookie` value appears. | UNEXECUTED | Not observed. |
 | 16 | Forwarded identity headers do not select or change a seat; the seat cookie remains the only trusted seat identity. | UNEXECUTED | Not observed. |
@@ -74,7 +74,7 @@ build ships. Use a machine without Java 21 on `PATH` where possible.
 | 19 | Record the firewall prompt and the choice made (private networks only). | UNEXECUTED | |
 | 20 | The window shows the banner; the browser opens the game-creation page at the banner address. | UNEXECUTED | |
 | 21 | Create a game on the host; a second machine joins using a seat link with the banner address and completes a turn. | UNEXECUTED | |
-| 22 | Close the Start window (Windows: close the console window). The next start restores the game, and the log from the first run ends with `Oath Digital database closed`. | UNEXECUTED | |
+| 22 | Close the Start window (Windows: close the console window). The next start restores the game, and the log from the first run ends with `Distant Lands database closed`. | UNEXECUTED | |
 
 ## Browser observations
 

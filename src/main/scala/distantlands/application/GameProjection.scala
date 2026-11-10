@@ -1,0 +1,184 @@
+package distantlands.application
+
+import distantlands.application.chronicle.ChronicleEntries
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.OathState.{NoGame, Ready}
+import distantlands.gameplay.{OathRules, PlayerSecretSummary}
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.powers.{ConsentPowers, PhasePowerCatalog,
+  WalkerPowerCatalog}
+import distantlands.model._
+import distantlands.protocol.projection._
+
+/** Assembles a player-scoped projection from authoritative state. */
+final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
+    entries: ChronicleEntries = ChronicleEntries()):
+  def this(catalog: ExecutableCatalog) =
+    this(catalog, PhasePowerCatalog.default)
+
+  private val presentation = new GamePresentationProjector(catalog)
+  // One row module for the three projectors that label an option, so a
+  // row is worded once.
+  private val rows = new DecisionOptionRows(catalog, presentation,
+    ConsentPowers.default)
+  private val walkerDecisions = new WalkerDecisionProjector(catalog,
+    presentation, WalkerPowerCatalog.default(catalog),
+    WalkerDecisionProjector.declaredTree, phasePowers, rows)
+  private val pendingProjector =
+    new PendingProjector(presentation, walkerDecisions)
+  private val consent = new ConsentProjector(presentation, walkerDecisions,
+    rows, ConsentPowers.default)
+  private val aid = new PlanAidProjector(new OathRules(catalog,
+    walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
+    phasePowerCatalog = phasePowers), rows)
+
+  private val logs = new gamelog.GameLogProjector(catalog, presentation)
+
+  /** The log page after `after` for `viewer`; `None` when `after` is past
+    * the journal's end. */
+  /** The log from `after` as `viewer` reads it; no viewer reads the public
+    * lines alone. */
+  def logPage(gameId: String, history: GameHistory, after: Long,
+      viewer: Option[PlayerId]): Option[LogPage] =
+    logs.page(gameId, history, after, viewer)
+
+  def project(gameId: String, loaded: LoadedGame,
+      requestingPlayer: PlayerId): GameProjection =
+    projectFor(gameId, loaded, Some(requestingPlayer))
+
+  def projectPublic(gameId: String, loaded: LoadedGame): GameProjection =
+    projectFor(gameId, loaded, None)
+
+  private def projectFor(gameId: String, loaded: LoadedGame,
+      requestingPlayer: Option[PlayerId]): GameProjection = loaded.state match
+    case NoGame => GameProjection(gameId, loaded.nextSequence, "not-started", None,
+      Vector.empty, Vector.empty, Vector.empty,
+      ready = false, completed = false)
+    case Ready(ready) =>
+      val context = ScopedProjectionContext(ready, requestingPlayer)
+      val waiting = ready.consent.pending
+      // While a request waits, its requester's Undo withdraws it, and nobody
+      // else undoes or redoes past it (consent design, plan decision 7). An
+      // automatic power's request is withdrawn by the issuer of the batch
+      // that walked to its step, whose Undo takes that batch back too
+      // (automatic power consent design, ruling 9).
+      val walked = waiting.exists(_.use.nonEmpty)
+      val withdraws = !walked && waiting.exists(request =>
+        requestingPlayer.contains(request.requester))
+      consent.applied(context, readyProjection(gameId, loaded.nextSequence,
+        context).copy(
+        undo = if withdraws then
+            Some(StepOfferProjection(ConsentProjector.withdrawNote))
+          else if walked then offer(loaded.undo, requestingPlayer, "Undo")
+          else if waiting.nonEmpty then None
+          else offer(loaded.undo, requestingPlayer, "Undo"),
+        redo = if waiting.nonEmpty then None
+          else offer(loaded.redo, requestingPlayer, "Redo"),
+        logRevision = loaded.logRevision, planAidPrompt = aid.prompt(context)))
+
+  /** `step` offered to its issuer alone (undo design, "Rulings" and
+    * "Controls"): "Undo: {line}", or "Undo your last step" when the batch
+    * posts no line of its own, with `verb` in place of "Undo". */
+  private def offer(step: Option[UndoStep], viewer: Option[PlayerId],
+      verb: String): Option[StepOfferProjection] =
+    step.filter(step => viewer.contains(step.issuer)).map(step =>
+      StepOfferProjection(
+        step.note.fold(s"$verb your last step")(line => s"$verb: $line")))
+
+  private def readyProjection(gameId: String, sequence: Long,
+      context: ScopedProjectionContext): GameProjection =
+    val current = context.current
+    val active = context.active
+    val pending = pendingProjector.project(context)
+    val site = context.activeSite
+
+    GameProjection(
+      gameId, sequence, pending.phase, Some(current.turn.activePlayer.value),
+      presentation.readyPlayers(context.ready),
+      presentation.readyWorld(context.ready, context.viewer),
+      current.players.flatMap(player => player.pawnSite.map(site =>
+        PawnLocationProjection(player.player.value, site.value))),
+      ready = true, completed = true,
+      activePlayerResources = Some({
+        val secrets = PlayerSecretSummary.derive(context.ready, active.player)
+          .fold(error => throw new IllegalStateException(error), identity)
+        ActivePlayerResourcesProjection(
+        active.board.favor, active.board.faceUpSecrets,
+        active.board.faceDownSecrets, secrets.committed, secrets.totalSecrets,
+        active.board.supply.supply)
+      }),
+      currentSiteResources = active.pawnSite.flatMap(siteId => site.map(state =>
+        CurrentSiteResourcesProjection(siteId.value, state.tokens.favor,
+          state.tokens.secrets))),
+      worldDeckCount = current.commonCards.worldDeck.size,
+      worldDeckTopCardKind = current.commonCards.worldDeck.headOption
+        .map(presentation.cardKind),
+      playerBoards = presentation.playerBoards(context.ready, context.viewer),
+      oathkeeper = Some(OathkeeperProjection(
+        context.ready.game.campaign.oathkeeperGoal.key,
+        current.title.holder.map(_.value), current.title.side match {
+          case TitleSide.Oathkeeper => "oathkeeper"
+          case TitleSide.Usurper => "usurper"
+        }, current.tracks.usurperLimited, current.result.map(_.winner.value),
+        current.result.map(_.kind.key))),
+      banners = presentation.banners(context.ready).filter(_.holderPlayerId.isEmpty),
+      favorBanks = Suit.all.map(suit => FavorBankProjection(suit.key,
+        context.ready.banks.favor.getOrElse(suit, 0))),
+      tracks = Some(GameTracksProjection(current.tracks.round,
+        current.tracks.visionsDrawn, current.tracks.usurperLimited, 4,
+        context.ready.setup.firstPlayer.value)),
+      relicDeckCount = current.commonCards.relicDeck.size)
+      .copy(walkerDecision = pending.walkerDecision,
+        chronicle = Some(chronicleView(context.ready.game.campaign)),
+        walkerWaiting = pending.walkerWaiting,
+        temporaryHandPreview = handPreview(context, pending.walkerDecision),
+        supplyMaximum = SupplyTrack.Maximum,
+        supplyBands = FinishRestProcedure.ExileSupply.refreshBands.map(band =>
+          SupplyBandProjection(band.warbandsInBank.minimum,
+            Option.when(band.warbandsInBank.maximum != Int.MaxValue)(
+              band.warbandsInBank.maximum), band.baseSupply)))
+
+  /** Every seat's Chronicle (Chronicle browsing design, "Projection"): the
+    * name and starting digest from the start, the evolved Chronicle once
+    * the Chronicle Phase journals it. The relic deck's order shows; that is
+    * accepted. */
+  private def chronicleView(campaign: CampaignState): ChronicleProjection =
+    ChronicleProjection(campaign.baseline.name,
+      entries.entry(campaign.baseline).digest,
+      campaign.evolved.map(entries.entry))
+
+  /** The cards the viewer is handling and nothing else on the panel draws:
+    * their own temporary hand, face up because the cards are held in their
+    * hand and read by them alone (another seat, and a spectator, are shown
+    * nothing), and the card a parked placement is about, which may be held
+    * elsewhere -- a facedown adviser is played from the board.
+    *
+    * A card the parked decision offers as an option is left out: the
+    * decision draws it itself, and one card drawn twice reads as two cards.
+    * The same rule keeps a placement's card to one copy when it is also in
+    * the hand, as a Search's kept card is.
+    */
+  private def handPreview(context: ScopedProjectionContext,
+      decision: Option[WalkerDecisionProjection])
+      : Vector[CardDetailsProjection] =
+    val hand = context.viewer.toVector.flatMap(viewer =>
+      context.current.temporaryHands.getOrElse(viewer, Vector.empty))
+      .map(card => presentation.cardDetails(card, Some(Orientation.FaceUp),
+        hidden = false))
+    val subjects = decision.toVector.flatMap(parked =>
+      walkerDecisions.subjectCards(context.ready, context.viewer,
+        parked.decisionId))
+    val offered = decision.toVector.flatMap(offeredCards).toSet
+    (hand ++ subjects).distinctBy(_.cardId)
+      .filterNot(card => offered.contains(card.cardId))
+
+  /** Every card a decision puts in front of the player, named by the id an
+    * answer spells: an option's own reference, and the card details that
+    * option carries when it is card-shaped.
+    */
+  private def offeredCards(decision: WalkerDecisionProjection): Vector[String] =
+    decision.query.toVector.flatMap { query =>
+      val options = query.offeredOptions
+      options.map(_.id) ++ options.flatMap(_.card).map(_.cardId)
+    }

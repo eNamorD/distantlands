@@ -62,7 +62,7 @@ The generator lives in the application layer, draws through the random port, and
 
 - `atlasBox`: all 24 sites in random order. Each of the 6 Homelands (one per suit) carries its suit's implemented edifice as an item.
 - `worldDeck`: 60 denizens, 10 per suit: every implemented denizen of the suit (up to 10), filled to 10 with random unimplemented ones. "Implemented" is `PowerImplementationStatus`, the same source as the UI's unimplemented-card marker.
-- `dispossessed`: 2 random unimplemented denizens per suit (12), taken from the denizens left after the 60.
+- `dispossessed`: 2 random denizens per suit (12), implemented or not, taken from the denizens left after the 60. (Amended 2026-11-03: it took unimplemented ones only, which ran out as the catalog filled; the owner chose a uniform draw from what the world deck left.)
 - `relicDeck`: all 47 ordinary relics.
 - Everything else empty or default.
 
@@ -117,7 +117,7 @@ A first game places only ruined faces. The intact faces are built now because th
 ## Testing
 
 - The Chronicle shape test against the TTS sample JSON.
-- Generator invariants: counts per suit, dispossessed cards all unimplemented, uniqueness, every Homeland carrying its implemented edifice, implemented cards on top after the shuffle.
+- Generator invariants: counts per suit, dispossessed cards disjoint from the world deck, uniqueness, every Homeland carrying its implemented edifice, implemented cards on top after the shuffle.
 - Replay of `GameStarted` reproduces the same `ReadyGame` with no RNG.
 - `UnsupportedChronicle` for each refused shape.
 - A walker setup suite: turn order, pawn then adviser, discards of the rejected cards, `SetupEnd` order, entry into Wake.

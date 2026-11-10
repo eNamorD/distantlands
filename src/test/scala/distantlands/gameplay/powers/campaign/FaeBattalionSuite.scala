@@ -1,0 +1,49 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.banner.YewStaffCard
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+
+/** Fae Battalion: a free attacker's plan, offered while its user holds the
+  * Darkest Secret, that counts each hollow sword as a sword. */
+class FaeBattalionSuite extends munit.FunSuite:
+  private val card = FaeBattalionCard.id
+  private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
+  private val counted = NoteText.Said("counted",
+    "Hollow swords counted as swords.", covers = false)
+
+  /** p1 holds Fae Battalion and Longbows faceup; Longbows keeps the
+    * attacker's window open. */
+  private def attacker: Board = withAdviser(withAdviser(
+    board(warbands = 5, supply = 7), card, Orientation.FaceUp), LongbowsCard,
+    Orientation.FaceUp)
+
+  test("with the Darkest Secret each hollow sword counts as a sword, and it " +
+      "says so"):
+    val base = attacker
+    val b = on(base)(_.darkestSecret(Some(base.actor), secrets = 1))
+    val done = commit(rules(losingDice), b, 3)
+      .pick(b.actor, CampaignIds.attackerPlan, ref).finishPlanWindows
+    // Three hollow swords score 3 instead of 1.
+    assertEquals(done.result.attackScore, 3)
+    assertEquals(NoteText.said(FaeBattalion.id, FaeBattalion.noteKeys,
+      done.events), Vector(counted))
+
+  test("it is not offered while its user lacks the Darkest Secret"):
+    val base = attacker
+    val b = on(base)(_.darkestSecret(Some(base.rival), secrets = 1))
+    val run = commit(rules(losingDice), b, 3)
+    assert(awaits(run, b.actor, CampaignIds.attackerPlan))
+    assert(!run.offered(b.actor).contains(ref))
+
+  test("with Yew Staff it counts hollow swords while another player holds " +
+      "the Darkest Secret"):
+    val base = attacker
+    val b = on(base)(_.darkestSecret(Some(base.rival), secrets = 1)
+      .relic(base.actor, YewStaffCard))
+    val done = commit(rules(losingDice), b, 3)
+      .pick(b.actor, CampaignIds.attackerPlan, ref).finishPlanWindows
+    assertEquals(done.result.attackScore, 3)

@@ -84,7 +84,7 @@ Status: surveyed, awaiting review.
 ```
 
 - **ID** is `<area number>-<three-digit sequence>`, for example `04-017`. Shared fixtures use `00-…`.
-- **File** is the path relative to the test source root (`src/test/scala/oathdigital/`, `frontend/src/test/scala/oathdigital/frontend/` or `shared/src/test/scala/`), with a line number: `gameplay/RestSuite.scala:88`.
+- **File** is the path relative to the test source root (`src/test/scala/distantlands/`, `frontend/src/test/scala/distantlands/frontend/` or `shared/src/test/scala/`), with a line number: `gameplay/RestSuite.scala:88`.
 - **Test** is the test's title, abbreviated after 60 characters with `…`, or `suite` for a finding about the whole file or many of its tests.
 - **Rule** is `R1`…`R11`, or `Keep` for a candidate the agent judged fine and wants on record (a phase-subject patch, a helper that passes).
 - **Problem** is one line.
@@ -110,7 +110,7 @@ The standard: a new reader can open any test and say what it checks from its
 body alone. Every fact the outcome depends on is stated there, in the game's
 own words. DRY applies to mechanics (a builder, a fake, an assertion helper),
 never to the story of the test. Read the testkit first:
-src/test/scala/oathdigital/testkit/Table.scala (the builder; its doc comment
+src/test/scala/distantlands/testkit/Table.scala (the builder; its doc comment
 lists the quiet start: p1's Act, pawns at Ancient City, Broken Peaks and
 Buried Giant, nothing at the sites, 1 favor, 1 faceup secret, 3 warbands,
 7 Supply each), Look.scala (reads) and CatalogNames.scala (names to ids).
@@ -226,7 +226,7 @@ root = files("src/test/scala")
 front = files("frontend/src/test")
 shared = files("shared/src/test")
 
-G = "src/test/scala/oathdigital/"
+G = "src/test/scala/distantlands/"
 ENGINE = re.compile(r"^(Operation|Walker|Contribution|Restriction|Rule|Power|"
                     r"Pending|Lazy|Repeat|Enclosing|Offer|CoOwned|"
                     r"GlobalRestrictions|OptionRestriction|DecisionQueries|"
@@ -320,7 +320,7 @@ echo "state patches (updateCurrent/copy(current =): $(git grep -c -E 'updateCurr
 echo "@unchecked: $(git grep -c '@unchecked' -- $T $F | sum)"
 echo "numeric card ids: $(git grep -c -E '(Denizen|Relic|Edifice|Vision|Card|Site)Id\("[0-9]+"\)' -- $T $F | sum)"
 echo "tuple destructures with _: $(git grep -c -E 'val \((_|[a-z][A-Za-z0-9]*), .*_\) =' -- $T $F | sum)"
-echo "Table.update escapes: $(git grep -c -E '\.update\(' -- $T/oathdigital | sum)"
+echo "Table.update escapes: $(git grep -c -E '\.update\(' -- $T/distantlands | sum)"
 echo "test files over 800 lines: $(git ls-files "$T/*.scala" "$F/*.scala" | xargs wc -l | awk '$2 != "total" && $1 > 800' | wc -l | tr -d ' ')"
 echo "largest test file: $(git ls-files "$T/*.scala" "$F/*.scala" | xargs wc -l | awk '$2 != "total"' | sort -rn | head -1 | awk '{print $1, $2}')"
 ```

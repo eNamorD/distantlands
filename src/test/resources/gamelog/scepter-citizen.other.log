@@ -1,0 +1,9 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+5.0 phase 0 | Rest
+6.0 action 1 use-power:relic.the-grand-scepter.action@4 | [card:grand-scepter|The Grand Scepter]: Became a Citizen.
+9.0 turn 0 | [player:p2|p2]'s turn
+9.1 phase 0 | Wake
+11.0 action 1 | Nothing happened in Wake
+11.1 phase 0 | Act

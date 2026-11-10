@@ -1,0 +1,51 @@
+package distantlands.application
+
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.{OathViolation, PhaseTransitionRef}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+
+/** A service seeded with a start state: its streams begin there instead of
+  * at `GameStarted`. Tests only; see the service and log start-states
+  * design. */
+class GenesisServiceSuite extends munit.FunSuite:
+  test("a missing stream loads as the genesis at sequence 0"):
+    val table = Table.start
+    val (service, _) = table.service()
+    assertEquals(service.load("g"), Right(Some(LoadedGame(table.phaseMenuParked.state, 0L))))
+
+  test("the first command runs against the genesis, and replay starts there"):
+    val table = Table.start
+    val (service, repository) = table.service()
+    val rested = accepted(service.handle("g", 0L, MenuPlay.starting(p1, PhaseTransitionRef.BeginRest)))
+    assert(rested.events.nonEmpty)
+    // the batch opens with CommandAccepted, which events omits
+    assertEquals(rested.nextSequence, rested.events.size.toLong + 1L)
+    // A second service over the same journal replays from the same genesis.
+    val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
+    assertEquals(reloaded.load("g").map(_.map(_.state)),
+      Right(Some(rested.state)))
+
+  test("a started genesis refuses Begin, and appends nothing"):
+    // A genesis with no menu parked: a live game would refuse for the menu.
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository,
+      genesis = Table.start.state)
+    assertEquals(service.handle("g", 0L, GameCommand.Begin(
+      FirstGameSetupFixture.chronicle, FirstGameSetupFixture.orders)),
+      Left(GameApplicationError.CommandRejected(OathViolation.GameAlreadyExists)))
+    assertEquals(repository.load("g"), Right(None))
+
+  test("a genesis has no history until its first command"):
+    val (service, _) = Table.start.service()
+    assertEquals(service.history("g"), Right(None))
+
+  test("without a genesis, a missing stream still accepts only Begin"):
+    val service = new GameApplicationService(catalog,
+      new InMemoryEventStreamRepository)
+    assertEquals(service.load("g"), Right(None))
+    assertEquals(service.handle("g", 0L, MenuPlay.starting(p1, PhaseTransitionRef.BeginRest)),
+      Left(GameApplicationError.StreamNotFound("g")))

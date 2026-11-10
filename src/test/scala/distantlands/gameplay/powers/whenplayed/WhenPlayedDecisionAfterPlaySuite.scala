@@ -1,0 +1,88 @@
+package distantlands.gameplay.powers.whenplayed
+
+import distantlands.gameplay.FacedownAdviserPlay
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.SearchFixture._
+import distantlands.gameplay.powers.action.{ArcaneBrokersCard, DowsingSticksCard,
+  WardOfSilenceCard}
+import distantlands.gameplay.powers.campaign.ArcaneArmorCard
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+
+/** A When Played power that asks the player something asks it after the card
+  * has left the temporary hand (or the facedown slot). The walker rebuilds the
+  * tree from the state at every command, so the tree must not depend on the
+  * card still being where the play started. Family Heirloom is the power with
+  * such a question; these run it through the whole rules path.
+  */
+class WhenPlayedDecisionAfterPlaySuite extends munit.FunSuite:
+  private val heirloom = FamilyHeirloom.cardId
+  private val take = DecisionAnswer.ChooseOneAnswer(FamilyHeirloom.keep)
+  private val bottom = DecisionAnswer.ChooseOneAnswer(FamilyHeirloom.bottom)
+  /** The relic Family Heirloom draws. */
+  private val top = DowsingSticksCard.id
+
+  /** A Search that draws only `cards`, with 5 Supply and Dowsing Sticks on
+    * top of the relic deck. */
+  private def searching(cards: Vector[WorldCardId]): Table =
+    Table.from(staged(cards, supply = 5)).relicDeckTop(top)
+
+  private def answer(from: OathTransition, choice: DecisionAnswer) =
+    rules.resolveWalker(from.state, p1, FamilyHeirloom.decisionId, choice)
+
+  test("a searched Family Heirloom played faceup asks its question and keeps " +
+      "the relic"):
+    val ready = searching(Vector(heirloom)).ready
+    val done = accepted(for
+      started <- start(ready)
+      chosen <- keep(started, heirloom)
+      placed <- place(chosen, heirloom, PlayedAs.Faceup)
+      answered <- answer(placed, take)
+    yield answered)
+    assert(Look(after(done)).relics(p1).contains(top))
+
+  test("a searched Family Heirloom played faceup can put the relic on the " +
+      "bottom of the deck"):
+    val ready = searching(Vector(heirloom)).ready
+    val done = accepted(for
+      started <- start(ready)
+      chosen <- keep(started, heirloom)
+      placed <- place(chosen, heirloom, PlayedAs.Faceup)
+      answered <- answer(placed, bottom)
+    yield answered)
+    assert(!Look(after(done)).relics(p1).contains(top))
+    assertEquals(after(done).game.current.commonCards.relicDeck.last, top)
+
+  test("a facedown Family Heirloom played faceup asks its question and keeps " +
+      "the relic"):
+    val drawing = searching(Vector.empty).ready
+    val asAdviser = PowerFixture.asAdviser(drawing, heirloom,
+      Orientation.FaceDown)
+    val ready = PowerFixture.inPhase(asAdviser, Phase.Act)
+    val done = accepted(for
+      started <- FacedownAdviserPlay.parkedOnPlacement(rules,
+        OathState.Ready(ready), p1, heirloom)
+      placed <- place(started, heirloom, PlayedAs.Faceup)
+      answered <- answer(placed, take)
+    yield answered)
+    assert(Look(after(done)).relics(p1).contains(top))
+
+  test("a Replace slot plays the card in the place of an adviser, and the " +
+      "question after the play still resolves"):
+    // The adviser area holds 3, so these fill it.
+    val wardOfSilence = WardOfSilenceCard.id
+    val full = searching(Vector(heirloom)).adviser(p1, wardOfSilence)
+      .adviser(p1, ArcaneBrokersCard).adviser(p1, ArcaneArmorCard).ready
+    val replaced = accepted(for
+      started <- start(full)
+      chosen <- keep(started, heirloom)
+      placed <- SearchFixture.placeReplacing(chosen, heirloom, PlayedAs.Faceup,
+        wardOfSilence)
+    yield placed)
+    val done = accepted(answer(replaced, take))
+    assert(Look(after(done)).relics(p1).contains(top))
+    assert(!Look(after(done)).player(p1).advisers.exists(
+      _.id == wardOfSilence))

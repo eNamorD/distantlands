@@ -1,3 +1,6 @@
 # Mechanical Scala 3 syntax rewrites; see docs/superpowers/specs/2026-09-24-scala-3-modernization-design.md
 e3103667b9cca24be377ad527f78da17f2cadf2f
 bd9e2948ccc0560c2c0549df07c14a4676d1328c
+
+# Mechanical package rename to distantlands; see docs/superpowers/specs/2026-11-09-distantlands-rename-design.md
+74f785c5939f726118dcdcfe9cc7baf28fcc265b

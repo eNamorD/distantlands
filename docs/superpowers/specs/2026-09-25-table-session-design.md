@@ -285,9 +285,9 @@ proof that the moves change nothing.
 
 Greps after the slice:
 
-- `grep -c "var " frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala` is `0`.
-- `grep -n "dom\." frontend/src/main/scala/oathdigital/frontend/TableSession.scala` finds nothing.
-- `grep -n "client\." frontend/src/main/scala/oathdigital/frontend/TableScreen.scala` finds nothing.
+- `grep -c "var " frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` is `0`.
+- `grep -n "dom\." frontend/src/main/scala/distantlands/frontend/TableSession.scala` finds nothing.
+- `grep -n "client\." frontend/src/main/scala/distantlands/frontend/TableScreen.scala` finds nothing.
 
 ## Preservation boundary
 
@@ -298,12 +298,12 @@ existing suite. No protocol, DTO, CSS or DOM-structure change.
 
 ## Files
 
-- Create: `frontend/src/main/scala/oathdigital/frontend/TableSession.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/TableSession.scala`
   (`TableSession`, its companion, `Navigation`), about 230 lines.
-- Create: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala`
   (`TableView`, `TableScreen`), about 100 lines.
-- Create: `frontend/src/test/scala/oathdigital/frontend/TableSessionSuite.scala`.
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerModeUi.scala`
+- Create: `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala`.
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala`
   (composition and `BrowserNavigation`).
 - Modify: `CONTEXT.md` ("Table session" section, one entry).
 

@@ -1,0 +1,15 @@
+package distantlands.catalog.holding
+
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.model.{Cost, DenizenId, PowerId, Suit}
+
+// Generated from the retired runtime JSON (card classes slice 1).
+// Hand-edited from here on; a card moves out when it is implemented.
+
+object DeedWriterCard extends Denizen(DenizenId("146"), "Deed Writer", Suit.Hearth):
+  val power = PrintedPower(PowerId("denizen.deed-writer"),
+    persistent = false, cost = Cost.free,
+    text = "**WHEN NEGOTIATING:** You may give, receive, and swap " +
+      "sites. Old ruler moves warbands from site to their board, " +
+      "and new ruler moves warbands to site from their board.")
+  val powers: Vector[PrintedPower] = Vector(power)

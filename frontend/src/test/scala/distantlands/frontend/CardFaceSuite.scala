@@ -1,0 +1,249 @@
+package distantlands.frontend
+
+import Dom.{all, firstMatch}
+import distantlands.protocol.projection.TrackedPawnProjection
+import org.scalajs.dom
+
+/** `CardFace` is the one place a projected `CardDetails` becomes DOM, so
+  * every rule about card shape, redaction and knowability is pinned here.
+  * Runs under jsdom (`Test / jsEnv` in `build.sbt`).
+  */
+class CardFaceSuite extends munit.FunSuite:
+  private val faceUp = CardDetails("d1", "denizen", "Old Oak",
+    suit = Some("order"), restrictions = Some("site-only"),
+    rulesText = Some("**ACTION:** Gain [favor]."),
+    orientation = Some("face-up"), favor = 2, secrets = 1)
+
+  private val hidden = CardDetails("hidden", "vision", "Facedown vision",
+    orientation = Some("face-down"), hidden = true)
+
+  private val knowable = CardDetails("r7", "relic", "Ancient Crown",
+    rulesText = Some("Rule"), orientation = Some("face-down"),
+    relicValue = Some(3), defense = Some(1))
+
+  test("each card type gets its box, whichever way it faces"):
+    Vector("denizen" -> "card-face-denizen", "vision" -> "card-face-denizen",
+      "edifice" -> "card-face-denizen", "relic" -> "card-face-relic").foreach {
+      case (kind, box) =>
+        val up = CardFace.render(CardDetails("c", kind, "Name",
+          orientation = Some("face-up")))
+        val down = CardFace.render(CardDetails("hidden", kind,
+          s"Facedown $kind", orientation = Some("face-down"), hidden = true))
+        assert(up.classList.contains(box), kind)
+        assert(down.classList.contains(box), kind)
+    }
+
+  test("a face-up card shows its summary with no field names"):
+    // favor and secrets restate faceUp's values so the counts read locally.
+    val node = CardFace.render(faceUp.copy(favor = 2, secrets = 1))
+    assertEquals(firstMatch(node, ".card-name").map(_.textContent),
+      Some("Old Oak"))
+    // The restriction is the whole card's, so it is a banner, not words.
+    assertEquals(firstMatch(node, ".card-header .restriction-mark")
+      .map(_.getAttribute("aria-label")), Some("Site only"))
+    assert(!node.textContent.contains("site"), node.textContent)
+    assertEquals(all(node, ".card-tokens .token-glyph")
+      .map(_.getAttribute("aria-label")), Vector("favor", "secret"))
+    assertEquals(all(node, ".card-token-count").map(_.textContent),
+      Vector("2", "1"))
+    assert(!node.textContent.contains("Suit:"), node.textContent)
+    assert(!node.textContent.contains("Favor:"), node.textContent)
+
+  test("warbands caged on a card show as counted warbands in their colour"):
+    val cage = knowable.copy(orientation = Some("face-up"), warbands = Vector(
+      SiteForces.Exile(2, "p2", distantlands.model.PlayerColor.Blue,
+        "Blue Warbands")))
+    val node = CardFace.render(cage)
+    val group = firstMatch(node, ".card-tokens .card-warbands.force-blue")
+    assertEquals(group.map(_.getAttribute("data-tip")), Some("Blue Warbands x2"))
+    assertEquals(all(node, ".card-warbands .token-glyph")
+      .map(_.getAttribute("aria-label")), Vector("warband"))
+    assertEquals(all(node, ".card-warbands .card-token-count")
+      .map(_.textContent), Vector("2"))
+
+  test("a Tracker's chosen pawn shows on the card in its player's colour"):
+    val tracker = knowable.copy(orientation = Some("face-up"), tracking =
+      Some(TrackedPawnProjection("p2", distantlands.model.PlayerColor.Red,
+        "Tracking Red")))
+    val marker = firstMatch(CardFace.render(tracker),
+      ".card-tokens .card-tracking.force-red")
+    assertEquals(marker.map(_.getAttribute("data-tip")), Some("Tracking Red"))
+    assertEquals(marker.map(_.getAttribute("aria-hidden")), Some("true"))
+
+  test("a face carries its initials for the zoomed-out map, out of the accessible name"):
+    val node = CardFace.render(faceUp)
+    val short = firstMatch(node, ".card-name-short")
+    assertEquals(short.map(_.textContent), Some("OO"))
+    assertEquals(short.flatMap(s => Option(s.getAttribute("aria-hidden"))), Some("true"))
+    assertEquals(node.getAttribute("aria-label"), "Old Oak")
+    assertEquals(node.getAttribute("data-tip"), "Old Oak")
+
+  test("initials take each word's first character as written, or a lone word's first two"):
+    assertEquals(CardFace.initials("Rotting Fortress"), "RF")
+    assertEquals(CardFace.initials("Master of Disguise"), "MoD")
+    assertEquals(CardFace.initials("Quartermaster"), "Qu")
+    assertEquals(CardFace.initials("Well-Fed Elders"), "WFE")
+    assertEquals(CardFace.initials(""), "")
+
+  test("a card carries its longest word's width; without a canvas a character is 0.6em"):
+    assertEqualsDouble(CardFace.nameWidthEm("Elders"), 3.6, 0.001)
+    assertEqualsDouble(CardFace.nameWidthEm("Rotting Fortress"), 4.8, 0.001)
+    assertEqualsDouble(CardFace.nameWidthEm("Quartermaster"), 7.8, 0.001)
+    assertEqualsDouble(CardFace.nameWidthEm(""), 0.0, 0.001)
+    // "Old Oak": the longest word is three characters.
+    val node = CardFace.render(faceUp)
+    assertEquals(node.style.getPropertyValue("--name-em"), "1.8")
+    assertEquals(CardFace.render(hidden).style.getPropertyValue("--name-em"), "")
+
+  test("rules text never reaches the face"):
+    assert(!CardFace.render(faceUp).textContent.contains("ACTION"))
+    assert(!CardFace.render(knowable).textContent.contains("Rule"))
+
+  /** Defense is rolled against, so it is drawn as the dice that roll it, one
+    * per point. The printed relic value is a catalog number nobody acts on;
+    * it belongs to the overlay, not to the little face.
+    */
+  test("a relic face carries its defense as dice, and not its printed value"):
+    // relicValue and defense restate knowable's values so the 3 and the
+    // "defense 1" read locally.
+    val relic = CardFace.render(knowable.copy(orientation = Some("face-up"),
+      relicValue = Some(3), defense = Some(1)))
+    assertEquals(all(relic, ".card-defense .token-glyph")
+      .map(_.getAttribute("aria-label")), Vector("defense die"))
+    assertEquals(relic.querySelector(".card-defense").getAttribute("aria-label"),
+      "defense 1")
+    assert(!relic.textContent.contains("3"), relic.textContent)
+    assertEquals(all(relic, ".card-stat"), Vector.empty)
+    assertEquals(all(CardFace.render(faceUp), ".card-defense"), Vector.empty)
+
+  test("each point of defense is its own die"):
+    assertEquals(all(CardFace.render(knowable.copy(orientation = Some("face-up"),
+      defense = Some(3))), ".card-defense .token-glyph").size, 3)
+
+  test("an unidentifiable card exposes no name, suit or rules and shows its letter"):
+    val node = CardFace.render(hidden)
+    assert(node.classList.contains("card-face-down"))
+    assert(!node.classList.contains("card-face-knowable"))
+    assertEquals(firstMatch(node, ".card-back-letter").map(_.textContent),
+      Some("V"))
+    assertEquals(node.getAttribute("aria-label"), "Facedown vision")
+    assertEquals(all(node, ".card-name"), Vector.empty)
+    assertEquals(all(node, ".card-header"), Vector.empty)
+    assertEquals(node.textContent, "V")
+    assert(!node.hasAttribute("data-tip"))
+    assertEquals(firstMatch(node, ".card-name-short"), None)
+
+  /** The suit word is gone: the glyph carries the suit, and it is coloured by
+    * the same custom property the word used to be.
+    */
+  test("a suited card leads with its suit glyph, then its name"):
+    val node = CardFace.render(faceUp)
+    val header = firstMatch(node, ".card-header")
+      .getOrElse(fail("no card header"))
+    val glyph = firstMatch(header, ".token-glyph")
+      .getOrElse(fail("no suit glyph"))
+    assertEquals(glyph.getAttribute("aria-label"), "order suit")
+    assertEquals(glyph.getAttribute("class"), "token-glyph token-suit-order")
+    // The restriction banner hangs under the glyph, the two one column.
+    val emblems = header.firstChild.asInstanceOf[dom.Element]
+    assertEquals(emblems.getAttribute("class"), "card-emblems")
+    assertEquals(emblems.firstChild, glyph)
+    assertEquals(emblems.lastChild.asInstanceOf[dom.Element].getAttribute("class"),
+      "restriction-mark restriction-mark-site")
+    assertEquals(header.childNodes(1).asInstanceOf[dom.Element].getAttribute("class"),
+      "card-name")
+    assertEquals(header.childNodes(2).asInstanceOf[dom.Element].getAttribute("class"),
+      "card-name-short")
+    assertEquals(all(node, ".card-suit"), Vector.empty)
+    assert(!node.textContent.contains("order"), node.textContent)
+
+  test("an unrestricted card leads with its bare suit glyph"):
+    val node = CardFace.render(faceUp.copy(restrictions = Some("unrestricted")))
+    val header = firstMatch(node, ".card-header")
+      .getOrElse(fail("no card header"))
+    assertEquals(header.firstChild.asInstanceOf[dom.Element].getAttribute("class"),
+      "token-glyph token-suit-order")
+    assertEquals(all(node, ".restriction-mark"), Vector.empty)
+
+  test("each power's modifier tab or plan crown stands at the face's foot"):
+    import distantlands.protocol.projection.ModifierMarkProjection
+    val node = CardFace.render(faceUp.copy(powers = Vector(
+      PowerFace("Spend no Supply.", persistent = true,
+        modifier = Some(ModifierMarkProjection.Action(Vector("travel")))),
+      PowerFace("**ACTION:** Gain [favor]."),
+      PowerFace("± [attack-die]", modifier = Some(
+        ModifierMarkProjection.BattlePlan(Vector("defense")))))))
+    assertEquals(all(node, ".card-power-marks > .power-mark")
+      .map(_.getAttribute("aria-label")),
+      Vector("Persistent Travel modifier", "Defense plan"))
+    // A card whose powers modify nothing carries no row.
+    assertEquals(all(CardFace.render(faceUp), ".card-power-marks"), Vector.empty)
+
+  test("a card with no suit shows its name alone in the header"):
+    val bare = CardFace.render(knowable.copy(orientation = Some("face-up"),
+      defense = None))
+    val header = firstMatch(bare, ".card-header")
+      .getOrElse(fail("no card header"))
+    assertEquals(all(header, ".token-glyph"), Vector.empty)
+    assertEquals(firstMatch(header, ".card-name").map(_.textContent),
+      Some("Ancient Crown"))
+    assertEquals(header.firstChild, firstMatch(header, ".card-name").orNull)
+
+  /** The dice ride the header's right end, so a name that wraps is laid out
+    * beside them rather than under them.
+    */
+  test("defense dice sit at the end of the header, after the name"):
+    val relic = CardFace.render(knowable.copy(orientation = Some("face-up")))
+    val header = firstMatch(relic, ".card-header")
+      .getOrElse(fail("no card header"))
+    assertEquals(header.lastChild.asInstanceOf[dom.Element].getAttribute("class"),
+      "card-defense")
+
+  /** Every card is unrestricted unless it says otherwise, so printing the word
+    * spends a line of a small face on nothing.
+    */
+  test("an unrestricted card prints no restriction"):
+    val node = CardFace.render(faceUp.copy(restrictions = Some("unrestricted")))
+    assertEquals(all(node, ".card-restriction"), Vector.empty)
+    assert(!node.textContent.contains("unrestricted"), node.textContent)
+
+  test("each hidden kind gets its own letter"):
+    assertEquals(CardFace.backLetter("denizen"), "D")
+    assertEquals(CardFace.backLetter("edifice"), "D")
+    assertEquals(CardFace.backLetter("vision"), "V")
+    assertEquals(CardFace.backLetter("relic"), "R")
+
+  /** A denizen back and a vision back differ physically, so which one a
+    * face-down adviser is remains public even when its identity is not.
+    * `GamePresentationProjector` projects the real kind (commit `7ae54c3`);
+    * the face must therefore never collapse the two into one letter.
+    */
+  test("an unidentifiable adviser still says whether it is a denizen or a vision"):
+    val denizenBack = CardFace.render(CardDetails("hidden", "denizen",
+      "Facedown denizen", orientation = Some("face-down"), hidden = true))
+    val visionBack = CardFace.render(CardDetails("hidden", "vision",
+      "Facedown vision", orientation = Some("face-down"), hidden = true))
+    assertEquals(firstMatch(denizenBack, ".card-back-letter")
+      .map(_.textContent), Some("D"))
+    assertEquals(firstMatch(visionBack, ".card-back-letter")
+      .map(_.textContent), Some("V"))
+
+  test("a knowable back carries the pip and a hover-only summary"):
+    val node = CardFace.render(knowable)
+    assert(node.classList.contains("card-face-down"))
+    assert(node.classList.contains("card-face-knowable"))
+    assertEquals(firstMatch(node, ".card-back-letter").map(_.textContent),
+      Some("R"))
+    assertEquals(all(node, ".card-knowable-pip").size, 1)
+    assertEquals(firstMatch(node, ".card-hover-summary .card-name")
+      .map(_.textContent),
+      Some("Ancient Crown"))
+
+  test("an unimplemented card is marked by class, accessible name and badge"):
+    val node = CardFace.render(faceUp.copy(implemented = false))
+    assert(node.classList.contains("card-face-unimplemented"))
+    assertEquals(node.getAttribute("aria-label"), "Old Oak (unimplemented)")
+    assertEquals(all(node, ".card-unimplemented-badge").size, 1)
+
+  test("the card id rides the element for focus restoration"):
+    assertEquals(CardFace.render(faceUp).getAttribute("data-card-id"), "d1")

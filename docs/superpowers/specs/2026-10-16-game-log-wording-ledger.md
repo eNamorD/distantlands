@@ -16,93 +16,56 @@ work, not the finding.
 
 ## Open
 
-- **`TradeProcedure.tradedForNoSecrets` — "Traded with {card} for no
-  secrets".** The
-  `bought` slot normally holds a thing gained ("for 2 secrets"), so the
-  no-gain case reads as though "no secrets" were the commodity. A Trade that
-  yields nothing is a different sentence, not the same sentence with a zero
-  in it.
-
-- **`SearchProcedure.keptCards` — "Drew {cards} from {source} and kept
-  none".** "None" after "kept" is terse to the point of ambiguity: it can be
-  read as the name of what was kept. The surrounding lines all name a thing.
-  Slice 3 split Search's line in two, and the joined form this quotes went
-  with it: a Search that keeps nothing writes no "Kept" line at all now.
-  The question of how to say "kept nothing" is unchanged and unanswered.
-
-- **`CardPlayProcedure`'s adviser placement key — "Played {card} as an
-  adviser".** A card kept
-  from a Search already has a "kept" line, so the pair reads twice about one
-  card. Worth deciding which of the two carries the placement.
-
-- **`CampaignNotes.skipped` and `CampaignNotes.nothingToAttack` —
-  "Skipped the Campaign." and "Nothing left to attack: the Campaign
-  ended."** Two outcomes of one branch, written
-  in two registers: the first is an actor's choice, the second a reason and
-  an outcome joined by a colon. They post at the same place and should read
-  as alternatives.
-
-- **`CampaignNotes.lost` against `CampaignNotes.playerLost` — the
-  capitalisation dance.** When the loser is
-  the acting player the line has no subject, so the first clause is
-  capitalised in code: "Lost 2 warbands and burned 1 favor", against "Blue
-  lost 2 warbands and burned 1 favor" for anyone else. The same event reads
-  as two different kinds of sentence depending on who is reading. Worth
-  deciding whether the subject should simply always be named.
-
-  It no longer blocks slice 4 of the procedures-journal-their-notes
-  migration: splitting the sentence per node leaves the subject-omitted
-  case carrying one clause, so it is a flat key and today's words survive.
-  The question of whether the subject should always be named is open on
-  its own merits.
-
-- **`SetupProcedure.placedPawn` — "{Blue} placed pawn at {site}".** Missing
-  article. Every other line in the module writes a determiner.
-
-- **`StartLines.scala:66` — "Continued" with a bare cost span.** Recover's
-  repeat line says the Supply spent and nothing about what was continued. It
-  is the only line in the log that is a single word plus a number.
-
-- **`CampaignNotes.activatedOathkeeperTitle` and
-  `CampaignNotes.activatedUsurperTitle` — the title plan's activation line
-  lost its label.** It read "{Blue} activated Oathkeeper title: add 1
-  defense die", the label `TitleDefensePlan` authored for its offer, which
-  the rule rendered through `ChoiceWords.option`. A note's arguments are
-  typed references, never text, so it now reads "{Blue} activated the
-  Oathkeeper title". The dice it adds are told by the Defense total, so
-  nothing the log does not say twice is lost — worth deciding whether the
-  other plan activations should name what the plan does too, since each of
-  them names only its card.
-
-- **`CampaignNotes.attack` and `CampaignNotes.defense` — a Campaign's
-  totals read after the plan that rewrote them.** `CampaignLines.recorded`
-  read forward to `journal.segmentEnd` to suppress a total a plan
-  overwrites, so "Attack: 8" read *before* "Outriders: Skulls ignored.".
-  The note sits after the result window closes, so the plan's own line
-  comes first. Worth deciding which order a reader wants: the number then
-  its reason, or the reason then the number.
-
-- **`CampaignNotes.lost`, `playerLost`, `banditsLost`, `defenderLost` and
-  `sentTo` — a defeated Raid defender's losses read as three sentences.**
-  One joined sentence became "{Blue} lost 1 warband", "{Blue} burned 1
-  favor and discarded Tinker" and "{Blue} was sent to the Mine", because
-  the clauses are applied in three different nodes and a note reaches one
-  leaf. Worth deciding whether three sentences are better read than one; it
-  is no longer a mechanism question.
-
-- **A Campaign's loss lines now come before what the victory gained.** The
-  rule aggregated both at completion and posted the gains first: "Took Wine
-  of Welcome from Blue" then the loss sentence, and "Placed 2 warbands on
-  Ancient City" then "The bandits lost 3 warbands". The notes sit in the
-  nodes that apply each, and the losses node runs before the Raid's
-  transfer and the Conquest's placement, so each loss line now reads first.
-  Worth deciding whether a victory should be told spoils-first.
+_(none)_
 
 ## Fixed
 
-_(none yet)_
+Settled by the [wording audit](../../testing/audits/game-log-wording-audit.md)
+of 2026-11-02, with the owner's answers to its questions.
+
+- **`CampaignNotes.skipped` and `CampaignNotes.nothingToAttack`** now read
+  "Skipped the Campaign" (a `Decision` line) and "Ended the Campaign with
+  nothing left to attack" (an `Action` line), and `CampaignNotes.sentTo`
+  reads "Sent {Blue}'s pawn to {site}". Commit 3585de92.
+- **`SetupProcedure.placedPawn`** reads "{Blue} placed their pawn at
+  {site}", and `TravelProcedure.travelled` "Traveled to {site}", the
+  rulebook's spelling. Commit abd42cf9.
+- **`TradeProcedure.tradedForNoSecrets` and `tradedForNoFavor`** read
+  "Traded with {card} and gained no secrets" (or favor). Commit a5935931.
+- **The plan activation lines** say "used", the rules' verb: "Used {card}",
+  "{Blue} used {card}", "The bandits used {card}", "{Blue} used the
+  Oathkeeper title". Each plan line still names only its card; the totals
+  tell what it did. Commit 3e320136.
+- **`StartLines.continuedRecover`** reads "Continued recovering" with its
+  Supply cost. Commit cd7339f2.
+- **A facedown card's slot** (below): the count fallback holds everywhere.
+  A choice naming a facedown adviser the viewer cannot identify reads "a
+  Denizen from {Blue}'s advisers", and `LogWords.slotted` is gone. Commit
+  3e82dd70.
+
+## Closed
+
+Entries the audit judged fine as they stand, with its reason.
+
+- **`CampaignNotes.lost` against `playerLost`.** The unnamed actor and the
+  named other player is the convention every line follows
+  (`LogWords.subject`); naming the actor everywhere would be a log-wide
+  change, and the owner kept the convention.
+- **`SearchProcedure.keptCards`, "kept none".** The keep decision requires
+  at least one card, so a Search cannot keep nothing; the one power that
+  empties the hand (Spinning Bee) writes its own line.
+- **`CardPlayProcedure`'s placement after a Search's "Kept".** Two answers
+  in two commands; dropping either line would hide a step.
+- **A Campaign's totals after the plan that rewrote them.** The reason, then
+  the number it produced, is the order a reader follows.
+- **A defeated Raid defender's losses as three sentences.** They are three
+  rule steps, and other powers' lines can land between them.
+- **A Campaign's loss lines before the victory's gains.** That is the
+  rulebook's order: kill defeated warbands, then resolve the victory.
 
 ## A facedown card's slot, in a negotiation only
+
+_Settled: the count fallback, everywhere (see Fixed)._
 
 `LogWords.slotted` (`LogWords.scala:62-76`) names a card the viewer cannot
 identify by its row and 1-based slot, "facedown adviser (slot 2)". Nothing

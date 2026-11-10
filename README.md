@@ -1,4 +1,4 @@
-# Oath Digital
+# Distant Lands
 
 A Scala/Scala.js implementation of Oath: New Foundations, heavily inspired by
 the HRF implementation of Arcs. The host runs a server that stores a database
@@ -72,15 +72,15 @@ Build the frontend and run the loopback server:
 
 ```sh
 ./sbtw frontend/fastLinkJS
-./sbtw 'runMain oathdigital.server.OathServer --database-path var/oathdigital'
+./sbtw 'runMain distantlands.server.DistantLandsServer --database-path var/distantlands'
 ```
 
-Open `http://127.0.0.1:8080/?mode=server`. The start page is the same one
-trusted-alpha hosts use and creates the game the same way, with a random
-Chronicle and seating; **Create game** then opens the development table as the
+Open `http://127.0.0.1:8080/?mode=server`. The start pages are the same ones
+trusted-alpha hosts use: choose **New Chronicle** (a random Chronicle) or
+**Continue Chronicle**, then the players; **Create game** then opens the development table as the
 first listed player, where the toolbar switches between players. Check
 `http://127.0.0.1:8080/health/ready`, stop with Ctrl-C, and retain
-`var/oathdigital*` to preserve local games. The development transport
+`var/distantlands*` to preserve local games. The development transport
  is loopback-only and is not an authentication boundary.
 
 ### Packaged server

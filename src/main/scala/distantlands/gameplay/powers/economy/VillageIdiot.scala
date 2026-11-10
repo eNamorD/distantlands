@@ -1,0 +1,40 @@
+package distantlands.gameplay.powers.economy
+
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{PowerAnswers, SelectedModifier}
+import distantlands.model._
+
+object VillageIdiotCard extends Denizen(DenizenId("231"), "Village Idiot", Suit.Hearth) with SiteOnly:
+  val power = PrintedPower(PowerId("denizen.village-idiot"),
+    persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Muster)),
+    text = "After mustering with this card, gain [favor] from the " +
+      "[suit-hearth] bank.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Village Idiot (card 231, site-only), a selected Muster modifier with no
+  * cost: "After mustering with this card, gain [favor] from the Hearth bank."
+  *
+  * As for Rowdy Pub, the card mustered on is the answer to the Muster's
+  * source decision, read when the gain node runs, so the favor is gained only
+  * when Village Idiot is the card. The favor is best-effort: an empty Hearth
+  * bank gives nothing. The generic gain line tells it, so it writes no line.
+  */
+case object VillageIdiot extends SelectedModifier:
+  val id: PowerId = VillageIdiotCard.power.id
+  val Favor: Int = 1
+
+  val card: Denizen = VillageIdiotCard
+  def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
+
+  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.MusterGain -> Vector(Transform((ctx, operations) =>
+      operations :+ favor(ctx.actor))))
+
+  private def favor(actor: PlayerId): Operation = BuildOps((_, pending) =>
+    Right(if PowerAnswers.one(pending, MusterProcedure.decisionId)
+        .contains(DecisionOptionRef.Denizen(card.id)) then
+      Vector[CoreOperation](Gain.Favor(actor, Suit.Hearth, VillageIdiot.Favor))
+    else Vector.empty))

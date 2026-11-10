@@ -1,0 +1,180 @@
+package distantlands.gameplay.walker
+
+import distantlands.testkit.PowerStubs.TransformStub
+import distantlands.gameplay.walker.WalkerSimulation.{PreviewOutcome,
+  PreviewedOption}
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.p1
+
+class WalkerPreviewSuite extends munit.FunSuite:
+  private val cheap = DecisionOptionRef.Button("cheap")
+  private val dear = DecisionOptionRef.Button("dear")
+  private val extra = DecisionOptionRef.Button("extra")
+  private val hooked = PowerWindow.SearchCost
+
+  /** The start with p1's Supply at `amount`. */
+  private def withSupply(amount: Int): ReadyGame =
+    Table.start.supply(p1, amount).ready
+
+  /** A decision, then a cost that depends on the answer. */
+  private def tree(actor: PlayerId): Operation = Sequence(Vector[Operation](
+    Decide("pick", actor, DecisionQuery.ChooseOne(Vector(
+      DecisionOption.Button(cheap, "Cheap"),
+      DecisionOption.Button(dear, "Dear"))), window = Some(hooked)),
+    Branch((_, pending) => pending.answered.collectFirst {
+      case Answered("pick", DecisionAnswer.ChooseOneAnswer(ref), _) => ref
+    } match {
+      case Some(`cheap`) => Vector[Operation](SpendSupply(actor, 1))
+      case Some(`dear`) => Vector[Operation](SpendSupply(actor, 3))
+      case _ => Vector.empty[Operation]
+    })))
+
+  test("each option of a parked choose-one is answered against the tree"):
+    val ready = withSupply(2)
+    // The search hides the unaffordable option before the preview reads it.
+    val previewed =
+      WalkerSimulation.preview(tree(p1), ready, WalkerPowers.empty)
+        .getOrElse(fail("a tree parked on a choose-one must preview"))
+    assertEquals(previewed.map(_.option.ref), Vector(cheap))
+    assertEquals(previewed.head.outcome, Right(PreviewOutcome(
+      Vector(SpendSupply(p1, 1)), complete = true)))
+    // With the search off, the preview reports why each option cannot run.
+    val unsearched = WalkerSimulation.preview(tree(p1), ready,
+      WalkerPowers.empty.copy(probing = false))
+      .getOrElse(fail("a tree parked on a choose-one must preview"))
+    assertEquals(unsearched.map(_.option.ref), Vector(cheap, dear))
+    assertEquals(unsearched(1).outcome, Left(
+      OathViolation.CoreOperationRejected("insufficient-supply",
+        "a supply spend of 3 exceeds the 2 available")),
+      "three Supply is not affordable with two")
+
+  test("an option that finishes the tree is complete and one that parks again is not"):
+    val ready = withSupply(5)
+    val twoStep = Sequence(Vector[Operation](
+      Decide("first", p1, DecisionQuery.ChooseOne(Vector(
+        DecisionOption.Button(cheap, "Cheap")))),
+      Decide("second", p1, DecisionQuery.ChooseOne(Vector(
+        DecisionOption.Button(dear, "Dear"))))))
+    val previewed = WalkerSimulation.preview(twoStep, ready, WalkerPowers.empty)
+      .getOrElse(fail("a two-decision tree must preview its first decision"))
+    assertEquals(previewed.map(_.outcome.map(_.complete)), Vector(Right(false)))
+
+  test("a tree that never parks, or runs an operation first, or parks on another " +
+      "query shape has nothing to preview"):
+    val ready = withSupply(5)
+    assertEquals(WalkerSimulation.preview(Sequence(Vector[Operation](
+      SpendSupply(p1, 1))), ready, WalkerPowers.empty).left.toOption,
+      Some(OathViolation.InvalidEventOrder(
+        "a previewed tree finished without parking on a decision")))
+    assertEquals(WalkerSimulation.preview(Sequence(Vector[Operation](
+      SpendSupply(p1, 1),
+      Decide("late", p1, DecisionQuery.ChooseOne(Vector(
+        DecisionOption.Button(cheap, "Cheap")))))), ready,
+      WalkerPowers.empty).left.toOption, Some(OathViolation.InvalidEventOrder(
+        "a previewed tree may not run operations before its first decision")))
+    val distribute = Sequence(Vector[Operation](Decide("split", p1,
+      DecisionQuery.Distribute.exactly(Vector(
+        DistributeSlot(DecisionOptionRef.FavorBank(Suit.Arcane), 0, 2, Some(2)),
+        DistributeSlot(DecisionOptionRef.FavorBank(Suit.Nomad), 0, 6, Some(0))),
+        total = 2, heading = Some("League Treaty"), confirmLabel = "Move"))))
+    assertEquals(WalkerSimulation.preview(distribute, ready, WalkerPowers.empty)
+      .left.toOption, Some(OathViolation.InvalidEventOrder(
+        "decision split is not a choose-one, so it cannot be previewed")))
+
+  test("a transform on the decision's window changes what is previewed"):
+    val ready = withSupply(5)
+    val addExtra = TransformStub(PowerId("test.add-extra"), hooked,
+      (_, operations) => operations.map {
+        case decide: Decide => decide.query match {
+          case one: DecisionQuery.ChooseOne =>
+            decide.copy(query = one.copy(
+              options = one.options :+ DecisionOption.Button(extra, "Extra")))
+              : Operation
+          case _ => decide
+        }
+        case other => other
+      })
+    val previewed = WalkerSimulation.preview(tree(p1), ready,
+      WalkerPowers(Vector(addExtra)))
+      .getOrElse(fail("the folded decision must preview"))
+    assertEquals(previewed.map(_.option.ref), Vector(cheap, dear, extra))
+    assertEquals(previewed.last.outcome, Right(PreviewOutcome(Vector.empty,
+      complete = true)))
+
+  test("previewParked reads the same options from an already-parked position"):
+    val ready = withSupply(2)
+    val action = tree(p1)
+    val parked = Outcomes.parked(
+      ProcedureWalker.advance(ready, action, None, WalkerPowers.empty))
+    assertEquals(
+      WalkerSimulation.previewParked(ready, action, parked.tree, WalkerPowers.empty),
+      WalkerSimulation.preview(action, ready, WalkerPowers.empty))
+
+  test("an option shown as unavailable is not previewed"):
+    val ready = withSupply(2)
+    val action = Sequence(Vector[Operation](Decide("pick", p1,
+      DecisionQuery.ChooseOne(Vector(DecisionOption.Button(cheap, "Cheap"),
+        DecisionOption.Unavailable(DecisionOption.Button(dear, "Dear"),
+          OptionReason.Written("Too dear")))))))
+    val parked = Outcomes.parked(
+      ProcedureWalker.advance(ready, action, None, WalkerPowers.empty))
+    assertEquals(WalkerSimulation.previewParked(ready, action, parked.tree,
+      WalkerPowers.empty).map(_.map(_.option.ref)), Right(Vector(cheap)))
+
+  test("refusal is empty for a tree a start would walk and names the " +
+      "rejected cost otherwise"):
+    val ready = withSupply(2)
+    val spend = Sequence(Vector[Operation](SpendSupply(p1, 1)))
+    assertEquals(WalkerSimulation.refusal(spend, ready, WalkerPowers.empty),
+      None)
+    val unaffordable = Sequence(Vector[Operation](SpendSupply(p1, 3)))
+    assertEquals(WalkerSimulation.refusal(unaffordable, ready,
+      WalkerPowers.empty), Some(OathViolation.CoreOperationRejected(
+        "insufficient-supply", "a supply spend of 3 exceeds the 2 available")))
+
+  /** Two plain decisions, then a step in `stepWindow`, then 2 Supply. */
+  private def chain(stepWindow: Option[PowerWindow]): Operation =
+    Sequence(Vector[Operation](
+      Decide("first", p1, DecisionQuery.ChooseOne(Vector(
+        DecisionOption.Button(cheap, "Cheap")))),
+      Decide("second", p1, DecisionQuery.ChooseOne(Vector(
+        DecisionOption.Button(dear, "Dear")))),
+      Decide("step", p1, DecisionQuery.ChooseOne(Vector(
+        DecisionOption.Button(extra, "Pay"))), window = stepWindow),
+      SpendSupply(p1, 2)))
+
+  /** What `previewParked` with a follow-up says the first answer leads to. */
+  private def followed(action: Operation)(using munit.Location)
+      : Either[OathViolation, Vector[Either[OathViolation, PreviewOutcome]]] =
+    val ready = withSupply(5)
+    val parked = Outcomes.parked(
+      ProcedureWalker.advance(ready, action, None, WalkerPowers.empty))
+    WalkerSimulation.previewParked(ready, action, parked.tree,
+      WalkerPowers.empty, followUp = true).map(_.map(_.outcome))
+
+  test("a pay-or-ask step is previewed past the one follow-up level"):
+    val paid = PreviewOutcome(Vector(SpendSupply(p1, 2)), complete = true)
+    val stepped = PreviewOutcome(Vector.empty, complete = false,
+      next = Vector(PreviewedOption(DecisionOption.Button(extra, "Pay"),
+        Right(paid))))
+    assertEquals(followed(chain(Some(PowerWindow.PayOrAsk))),
+      Right(Vector(Right(PreviewOutcome(Vector.empty, complete = false,
+        next = Vector(PreviewedOption(DecisionOption.Button(dear, "Dear"),
+          Right(stepped))))))))
+    // Any other decision past the first follow-up is not previewed.
+    assertEquals(followed(chain(None)),
+      Right(Vector(Right(PreviewOutcome(Vector.empty, complete = false,
+        next = Vector(PreviewedOption(DecisionOption.Button(dear, "Dear"),
+          Right(PreviewOutcome(Vector.empty, complete = false)))))))))
+
+  test("a badge reads every way on, through each further question"):
+    val paying = PreviewOutcome(Vector(SpendSupply(p1, 2)), complete = true)
+    val waived = PreviewOutcome(Vector.empty, complete = true)
+    val stepped = PreviewOutcome(Vector(SpendSupply(p1, 1)), complete = false,
+      next = Vector(
+        PreviewedOption(DecisionOption.Button(cheap, "Pay"), Right(paying)),
+        PreviewedOption(DecisionOption.Button(dear, "Free"), Right(waived))))
+    val outer = PreviewOutcome(Vector.empty, complete = false, next = Vector(
+      PreviewedOption(DecisionOption.Button(extra, "Go"), Right(stepped))))
+    assertEquals(PricedOptions.badge(outer, p1), "3 Supply or 1 Supply")

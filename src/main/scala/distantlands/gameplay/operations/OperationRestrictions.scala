@@ -1,0 +1,117 @@
+package distantlands.gameplay.operations
+
+import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked, SiteOnly}
+import distantlands.model._
+
+/** The operation restrictions that hold for a command, wherever its
+  * operations run (global operation restrictions design, "The restriction
+  * set").
+  *
+  * `printed` are the restrictions a catalog's cards print: [[LockedCards]],
+  * holding every card whose `Locked` trait shows the lock icon and the cards
+  * the [[AsIfLocked]] printed rules lock, [[RestrictionIcons]], holding
+  * every adviser-only and site-only denizen, and each printed rule that is a
+  * restriction itself. The printed rules are `printedRules`.
+  * `active` adds the [[ActiveModifier]] rule for the modifiers picked for
+  * the running action, and the restrictions the offered powers register.
+  * `unlocked` are the cards whose lock does not bind for this walk: the
+  * own card of a power whose use ignores its lock
+  * ([[distantlands.gameplay.powerresolver.IgnoresOwnLock]]).
+  * Every one refuses as `Impossible`: an optional operation is skipped, a
+  * required one rejects.
+  * `active` reads each printed restriction and each power's through
+  * [[ConsentedRestriction]], so a remembered grant lifts the refusal it
+  * covers (consent design, slice 3).
+  */
+final class OperationRestrictions private (catalog: Option[ExecutableCatalog]):
+  val printed: Vector[OperationRestriction] =
+    catalog.fold(Vector.empty)(OperationRestrictions.printedBy)
+
+  def active(powerRestrictions: Vector[OperationRestriction],
+      modifiers: Vector[PowerId], picked: Vector[CardId] = Vector.empty,
+      unlocked: Set[CardId] = Set.empty)
+      : Vector[OperationRestriction] =
+    printed.map(restriction => ConsentedRestriction(
+        OperationRestrictions.unlocking(restriction, unlocked))) ++ catalog
+      .filter(_ => modifiers.nonEmpty || picked.nonEmpty)
+      .map(ActiveModifier(_, modifiers, picked)).toVector ++
+      powerRestrictions.map(ConsentedRestriction(_))
+
+object OperationRestrictions:
+  /** No catalog: only the powers' own restrictions hold. For suites that
+    * walk a hand-built power list. */
+  val none: OperationRestrictions = new OperationRestrictions(None)
+
+  def forCatalog(catalog: ExecutableCatalog): OperationRestrictions =
+    new OperationRestrictions(Some(catalog))
+
+  /** The printed powers an operation restriction enforces, with no walker
+    * power: the one list `printed`, `PowerImplementationStatus`,
+    * `ConsentPowers` and `RuleNotes` read. An [[AsIfLocked]] rule joins
+    * [[LockedCards]]; a rule that is a restriction itself stands alone. */
+  val printedRules: Vector[PrintedRule] =
+    Vector(AncientBloodline, HallOfMinisters, GrandScepter,
+      GrandScepterNegotiation, StillBoilingLake)
+
+  /** Only a card at a site or in a play area is in play. A card drawn by a
+    * Search and discarded from the temporary hand is not. */
+  private[operations] def inPlay(from: Location): Boolean = from match
+    case _: Location.Site | _: Location.PlayArea => true
+    case _ => false
+
+  /** `restriction` with the locks on `unlocked` lifted: a [[LockedCards]]
+    * without those cards, its as-if rules kept. Any other restriction is
+    * returned unchanged. */
+  private def unlocking(restriction: OperationRestriction,
+      unlocked: Set[CardId]): OperationRestriction = restriction match
+    case locks: LockedCards if unlocked.nonEmpty =>
+      locks.copy(cards = locks.cards -- unlocked)
+    case other => other
+
+  private def printedBy(catalog: ExecutableCatalog): Vector[OperationRestriction] =
+    val locked: Set[CardId] =
+      (catalog.denizens.collect { case d: Locked => d.id: CardId } ++
+        catalog.edifices.collect {
+          case e if e.intact.isInstanceOf[Locked] => e.id: CardId }).toSet
+    val adviserOnly: Set[CardId] =
+      catalog.denizens.collect { case d: AdviserOnly => d.id: CardId }.toSet
+    val siteOnly: Set[CardId] =
+      catalog.denizens.collect { case d: SiteOnly => d.id: CardId }.toSet
+    Vector(LockedCards(locked,
+        printedRules.collect { case rule: AsIfLocked => rule }),
+      RestrictionIcons(adviserOnly, siteOnly)) ++
+      printedRules.collect { case rule: OperationRestriction => rule }
+
+/** A card that prints a modifier picked for the running action cannot be
+  * discarded while the action runs: a modifier the player picked in the
+  * action's modifier decision stays in play until the action ends.
+  * `modifiers` are the picked powers, as the walker holds them; `picked` are
+  * their cards, for a check made outside the walk. */
+final case class ActiveModifier(catalog: ExecutableCatalog,
+    modifiers: Vector[PowerId], picked: Vector[CardId] = Vector.empty)
+    extends OperationRestriction:
+  override def reason(ready: ReadyGame,
+      operation: CoreOperation): Option[OperationReason] = operation match
+    case value: Discard.Denizen
+        if OperationRestrictions.inPlay(value.from.location) =>
+      refused(value.card)
+    case value: Discard.Relic
+        if OperationRestrictions.inPlay(value.from.location) =>
+      refused(value.card)
+    case value: Discard.Buried
+        if OperationRestrictions.inPlay(value.from.location) =>
+      refused(value.card.id)
+    case _ => None
+
+  private def refused(card: CardId): Option[OperationReason] =
+    Option.when(picked.contains(card) ||
+        modifiers.exists(power => printedBy(power).contains(card)))(
+      OperationReason("active-modifier", s"${card.value} is a modifier " +
+        "selected for this action and cannot be discarded",
+        OperationReasonKind.Impossible))
+
+  private def printedBy(power: PowerId): Option[CardId] =
+    catalog.denizenWithPower(power)
+      .map(card => DenizenId(card.id.value): CardId)
+      .orElse(catalog.relicWithPower(power)
+        .map(card => RelicId(card.id.value): CardId))

@@ -47,17 +47,17 @@ Measured on 2026-09-24:
 
 Known Scala 3 incompatibilities found by inspection:
 
-- `src/main/scala/oathdigital/persistence/HsqldbDatabaseOwner.scala:159` uses
+- `src/main/scala/distantlands/persistence/HsqldbDatabaseOwner.scala:159` uses
   `do { ... } while (...)`, which Scala 3 removed.
-- `src/main/scala/oathdigital/server/OathServer.scala:41` declares
+- `src/main/scala/distantlands/server/DistantLandsServer.scala:41` declares
   `implicit val executionContext = system.executionContext` without a type;
   Scala 3 requires an explicit type on implicit definitions.
 - `-Xlint` is a Scala 2 option.
 
 Compiles unchanged on Scala 3 and stays as is: the package object in
-`frontend/src/main/scala/oathdigital/frontend/package.scala`, the
+`frontend/src/main/scala/distantlands/frontend/package.scala`, the
 `implicit final class ... extends AnyVal` in
-`src/main/scala/oathdigital/gameplay/actions/Search.scala`, all `implicit`
+`src/main/scala/distantlands/gameplay/actions/Search.scala`, all `implicit`
 parameters, and all sealed-trait ADTs.
 
 ## Stage 1: preparation on 2.13.16
@@ -70,7 +70,7 @@ it lands on `main` independently and never needs reverting.
    stops on a non-retryable result, on `maxAttempts`, or at the deadline. The
    existing suite covers this method; add a test only for a retry-count edge
    case it does not already exercise.
-2. Give `OathServer`'s implicit execution context the explicit type
+2. Give `DistantLandsServer`'s implicit execution context the explicit type
    `ExecutionContext`.
 3. Add `-Xsource:3` to `scalacOptions` in both projects. Scala 2.13 reports
    the resulting diagnostics in the `scala3-migration` category, which is

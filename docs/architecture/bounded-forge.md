@@ -24,5 +24,5 @@ A resumed Forge rebuilds its tree without the start gates. Starting spends 1
 Supply, so re-checking supply would strand a player who began with exactly 1.
 
 Only the printed base procedure exists. The pre-release component corpus was
-audited and has no handler that modifies the base Forge procedure, so
-`ForgePowers` is empty. Forge never interprets component `rulesText`.
+audited and has no handler that modifies the base Forge procedure, so no
+power binds a Forge window. Forge never interprets component `rulesText`.

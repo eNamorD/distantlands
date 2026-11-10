@@ -1,0 +1,114 @@
+package distantlands.gameplay.powers.cardplay
+
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.{HomesteadersCard, MessengerCard}
+import distantlands.gameplay.powers.campaign.{CodeOfHonorCard, LancersCard,
+  MountainGiantCard, ShieldWallCard, WildMountsCard}
+import distantlands.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Table}
+
+class SaddleMakersSuite extends munit.FunSuite:
+  import PowerFixture._
+  import SearchFixture._
+
+  private val saddle = SaddleMakersCard.id
+  // Three denizens of each suit, whose powers these tests do not use; p1
+  // plays the first of each: Wild Mounts (Nomad), Code of Honor (Order),
+  // Homesteaders (Hearth).
+  private val nomad = Vector(WildMountsCard.id, LancersCard.id,
+    MountainGiantCard.id)
+  private val order = Vector(CodeOfHonorCard.id, MessengerCard.id,
+    ShieldWallCard.id)
+  private val hearth = Vector(HomesteadersCard.id, LandWardenCard.id,
+    NewsFromAfarCard.id)
+  private val holder = Table.p2
+
+  /** `holder` holds Saddle Makers on `orientation`, the Nomad bank holds 3
+    * favor, and the actor Searches a world deck topped by `top`. */
+  private def heldTable(top: Vector[WorldCardId],
+      orientation: Orientation = Orientation.FaceUp): Table =
+    Table.from(SearchFixture.staged(top, supply = 5)).adviser(holder, saddle,
+      facedown = orientation == Orientation.FaceDown)
+      .bankFavor(Suit.Nomad, 3)
+  private def held(top: Vector[WorldCardId],
+      orientation: Orientation = Orientation.FaceUp)(
+          using munit.Location): ReadyGame =
+    heldTable(top, orientation).ready
+
+  private def favor(ready: ReadyGame, id: PlayerId): Int =
+    Look(ready).player(id).board.favor
+  private def bank(ready: ReadyGame, suit: Suit): Int =
+    ready.banks.favor.getOrElse(suit, 0)
+
+  private val power = SaddleMakers
+
+  private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
+    NoteText.said(power.id, power.noteKeys, events)
+
+  test("another player's nomad card played as a faceup adviser gains the " +
+      "holder 2 favor from the Nomad bank"):
+    val ready = held(nomad)
+    val done = play(ready, Vector.empty, nomad.head, PlayedAs.Faceup)
+    val after = SearchFixture.after(done)
+    assertEquals(favor(after, holder), favor(ready, holder) + 2)
+    assertEquals(bank(after, Suit.Nomad), 3 - 2)
+    assertEquals(ActPowerHarness.replayed(rules, ready, done.events), after)
+
+  test("an order card played to a site counts too"):
+    val ready = held(order)
+    val played = play(ready, Vector.empty, order.head, PlayedAs.AtSite)
+    val after = SearchFixture.after(played)
+    assertEquals(favor(after, holder), favor(ready, holder) + 2)
+
+  test("a card of another suit, a facedown play and a discard gain nothing"):
+    val other = SearchFixture.after(play(held(hearth), Vector.empty,
+      hearth.head, PlayedAs.Faceup))
+    assertEquals(favor(other, holder), favor(held(hearth), holder))
+    Vector(PlayedAs.Facedown, PlayedAs.Discarded).foreach { button =>
+      val ready = held(nomad)
+      val after = SearchFixture.after(play(ready, Vector.empty, nomad.head,
+        button))
+      assertEquals(favor(after, holder), favor(ready, holder), button)
+    }
+
+  test("a facedown adviser turned faceup by its play counts"):
+    val ready = Table.start.adviser(holder, saddle)
+      .adviser(actor, nomad.head, facedown = true).ready
+    val after = SearchFixture.after(playFacedown(ready, Vector.empty,
+      nomad.head, PlayedAs.Faceup))
+    assertEquals(favor(after, holder), favor(ready, holder) + 2)
+
+  test("the holder's own play gains nothing"):
+    val ready = asAdviser(SearchFixture.staged(nomad, supply = 5), saddle)
+    val after = SearchFixture.after(play(ready, Vector.empty, nomad.head,
+      PlayedAs.Faceup))
+    assertEquals(favor(after, actor), favor(ready, actor))
+    assertEquals(bank(after, Suit.Nomad), bank(ready, Suit.Nomad))
+
+  test("a facedown Saddle Makers is not active"):
+    val ready = held(nomad, Orientation.FaceDown)
+    val after = SearchFixture.after(play(ready, Vector.empty, nomad.head,
+      PlayedAs.Faceup))
+    assertEquals(favor(after, holder), favor(ready, holder))
+
+  // ---- Lines ----
+
+  test("the holder's gain is Saddle Makers' line"):
+    val done = play(held(nomad), Vector.empty, nomad.head, PlayedAs.Faceup)
+    assertEquals(said(done.events), Vector(NoteText.Said("gained",
+      s"${holder.value} gained 2 favor from the Nomad bank.", covers = true)))
+
+  test("a bank holding 1 favor gives 1, and an empty bank gives nothing and " +
+      "writes no line"):
+    val low = heldTable(nomad).bankFavor(Suit.Nomad, 1).ready
+    val one = play(low, Vector.empty, nomad.head, PlayedAs.Faceup)
+    val afterOne = SearchFixture.after(one)
+    assertEquals(favor(afterOne, holder), favor(low, holder) + 1)
+    assertEquals(said(one.events), Vector(NoteText.Said("gained",
+      s"${holder.value} gained 1 favor from the Nomad bank.", covers = true)))
+    val empty = heldTable(nomad).bankFavor(Suit.Nomad, 0).ready
+    val none = play(empty, Vector.empty, nomad.head, PlayedAs.Faceup)
+    assertEquals(favor(SearchFixture.after(none), holder), favor(empty, holder))
+    assertEquals(said(none.events), Vector.empty)

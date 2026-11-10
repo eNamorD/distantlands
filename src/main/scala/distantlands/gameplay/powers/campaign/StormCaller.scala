@@ -1,0 +1,29 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.model._
+
+object StormCallerCard extends Denizen(DenizenId("167"), "Storm Caller", Suit.Nomad):
+  val power = PrintedPower(PowerId("denizen.storm-caller"),
+    persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.DefensePlan),
+    text = "+2 [defense-die] At end, discard Storm Caller.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Storm Caller (card 167), a defender's battle plan: "+2 [defense-die] At
+  * end, discard Storm Caller."
+  *
+  * It is free and adds two defense dice. The card is discarded through the
+  * standard discard once the Campaign has resolved, whoever won. A bandit
+  * defender applies it at a site it rules, and it is discarded then too.
+  */
+case object StormCaller extends DenizenPlan(StormCallerCard,
+    StormCallerCard.power) with DiscardedAtEnd:
+  val Dice: Int = 2
+
+  def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
+
+  def plan(context: PlanContext): Option[CampaignPlanOffer] =
+    context.denizen(cardId).map(source => CampaignPlanOffer(source,
+      "Storm Caller: add 2 defense dice", Vector.empty,
+      Vector(CampaignPlanEffect.AddDefenseDice(StormCaller.Dice))))

@@ -105,6 +105,9 @@ the same operation application replay uses (`WalkerReplay.executeRecorded`,
 exposed one operation at a time). Every line and every visibility judgement
 is therefore made against the state immediately before and after the
 operation it describes, not the whole batch.
+A composite operation is applied as one operation: the engine applies its
+children together, so no state exists between two of them. A line about
+one of a composite's children is judged at the composite's states.
 
 The formatter reads operations, not `DeltaMeaning`. `DeltaMeaning` falls back
 to an operation's class name for every batch that is not a dice-pool change, a
@@ -489,7 +492,7 @@ maintenance with a structure where knowledge cannot be left behind.
 > replaces; it is kept because the flat record was a deliberate choice at the
 > time, not an accident.
 
-The wire types live in `shared/src/main/scala/oathdigital/protocol/`, beside
+The wire types live in `shared/src/main/scala/distantlands/protocol/`, beside
 `GameProjectionDto`, so the server and the Scala.js client compile the same
 definitions.
 
@@ -526,7 +529,7 @@ GET /games/{gameId}/api/log/{after}
 the whole log. The response carries `nextSequence` so the client can ask
 with it next time, the same cursor the state projection already carries.
 Anything outside `0..nextSequence` is a 400 `malformed`. The route uses
-the same `oath_seat` cookie authentication and private headers as the
+the same `distantlands_seat` cookie authentication and private headers as the
 projection route. It has no observer mode, as the projection route has
 none; observer formatting is exercised by the formatter's own tests.
 
@@ -572,11 +575,15 @@ the pane shows the single headline "Setup".
 
 ### Divider
 
-On load, the client reads `oath.log.seen.{gameId}.{seatId}` from
+On load, the client reads `distantlands.log.seen.{gameId}.{seatId}` from
 `localStorage`. If it holds a sequence lower than the last entry's, the client
 inserts a client-only line "Since you last looked" before the first entry
-with a higher sequence, and scrolls the pane so that line sits at the top.
-Otherwise it opens at the bottom. The marker is written whenever the pane or
+with a higher sequence. Either way the pane opens at the bottom, on the
+newest entries, which playtesters asked to see first; the divider waits above
+for a reader who scrolls back. A pane the stylesheet hides when the log
+arrives, as the phone's pane switch does, cannot scroll, so it goes to the
+bottom when it is shown, unless the reader had scrolled up before it was
+hidden. The marker is written whenever the pane or
 the overlay has been scrolled to the end for one second, and on page unload.
 An observer seat writes no marker and shows no divider. Reads and writes are
 wrapped so a blocked store degrades to "no divider". This is the first
@@ -678,7 +685,7 @@ Server:
   formatter handles, including a declined negotiation, and a campaign.
 - **Six-player smoke read.** During the first slice, the completed six-player
   game `manual-1790205747051-112090` (1053 events) is formatted once from a
-  copy of `var/oathdigital` into scratch space for a person to read. Nothing
+  copy of `var/distantlands` into scratch space for a person to read. Nothing
   from it is committed.
 - **Golden tests.** The exact `LogEntry` vectors for each script, for the
   acting seat and for another seat.

@@ -1,0 +1,97 @@
+package distantlands.gameplay.powers.campaign
+
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.dice.{DiceThrow, RerollChoice}
+import distantlands.gameplay.powerresolver.{Contribution, OfferReroll,
+  PowerCtx}
+import distantlands.model._
+
+object MasterAtArmsCard extends Denizen(DenizenId("249"), "Master at Arms",
+    Suit.Order):
+  val power = PrintedPower(PowerId("denizen.master-at-arms"),
+    persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
+    text = "You may reroll any number of dice that show hollow swords " +
+      "[hollow-sword] once.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** Master at Arms (card 249), an attacker's battle plan: "You may reroll any
+  * number of dice that show hollow swords once."
+  *
+  * It is free and does nothing when chosen. Once chosen, it offers a reroll
+  * at the attack roll's roll step. Every hollow sword is the same face, so
+  * it asks how many to reroll, from one to all of them, and rerolls the
+  * first that many; with one it asks nothing. On a throw with no hollow
+  * sword it is shown unavailable. The roll step stops offering it once it
+  * is used, which is the "once".
+  *
+  * It writes "Rerolled {n} hollow swords.".
+  */
+case object MasterAtArms extends DenizenPlan(MasterAtArmsCard,
+    MasterAtArmsCard.power):
+  /** Its "how many" question on the `number`th attack throw. */
+  def decisionId(number: Int): String =
+    RerollChoice.followUpId(CampaignIds.attackPool, number, "master-at-arms")
+  val label: String = "Master at Arms: reroll hollow swords"
+  /** Its reroll button. */
+  val rerollLabel: String = "Reroll any [hollow-sword] with Master at Arms"
+  val heading: String = "Reroll how many hollow swords?"
+  val noHollowSword: String = "No die shows a hollow sword"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Rerolled {n} hollow swords." */
+  val rerolled: NoteKey = notes.key("rerolled", Vector(
+    NotePart.Text("Rerolled "), NotePart.Arg(0),
+    NotePart.Plural(0, " hollow sword.", " hollow swords.")))
+
+  /** The indices of the throw's dice showing a hollow sword, in order. */
+  def hollow(rolled: DiceThrow): Vector[Int] =
+    rolled.indices.zip(rolled.faces).collect {
+      case (index, AttackDieFace.HollowSword) => index }
+
+  /** How many hollow swords the user chose to reroll on throw `number`. */
+  private def amount(pending: PendingTree, number: Int): Option[Int] =
+    pending.answered.reverse.collectFirst {
+      case Answered(id, DecisionAnswer.ChooseAmountAnswer(n), _)
+          if id == decisionId(number) => n
+    }
+
+  def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
+
+  def plan(context: PlanContext): Option[CampaignPlanOffer] =
+    context.denizen(cardId).map(source => CampaignPlanOffer(source,
+      MasterAtArms.label, Vector.empty, Vector.empty))
+
+  override def otherContributions: Map[PowerWindow, Vector[Contribution]] =
+    Map(PowerWindow.Reroll -> Vector(OfferReroll(offer)))
+
+  private def offer(ctx: PowerCtx): Option[RerollOffer] =
+    RerollChoice.throwOf(ctx).filter(rolled =>
+      rolled.pool == CampaignIds.attackPool &&
+        rolled.roller == ctx.actor &&
+        PlanUse.chosen(ctx.catalog, ctx.state,
+          PendingTree(ctx.nodePath, ctx.answered),
+          ctx.actor, cardRef, sides, afterOutcome = false).nonEmpty)
+      .map(rolled => MasterAtArms.hollow(rolled) match
+        case Vector() => RerollOffer(cardId, MasterAtArms.rerollLabel, None,
+          Vector.empty,
+          Some(OptionReason.Written(MasterAtArms.noHollowSword)))
+        case hollow => RerollOffer(cardId, MasterAtArms.rerollLabel, None,
+          steps(rolled, hollow)))
+
+  private def note(amount: Int): Note = Note(id, _ =>
+    Some(MasterAtArms.rerolled(PowerSourceRef.Card(cardId),
+      NoteArg.Number(amount))))
+
+  private def steps(rolled: DiceThrow, hollow: Vector[Int])
+      : Vector[Operation] =
+    if hollow.size == 1 then
+      Vector(note(1), Reroll(rolled.pool, hollow))
+    else Vector(
+      Decide(MasterAtArms.decisionId(rolled.number), rolled.roller,
+        DecisionQuery.ChooseAmount(1, hollow.size,
+          Some(MasterAtArms.heading), "Reroll")),
+      Branch((_, pending) => MasterAtArms.amount(pending, rolled.number)
+        .toVector.flatMap(amount => Vector(note(amount),
+          Reroll(rolled.pool, hollow.take(amount))))))

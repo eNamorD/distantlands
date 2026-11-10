@@ -1,0 +1,141 @@
+package distantlands.gameplay.powers.action
+
+import distantlands.catalog.Site
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite,
+  DeepWoodsSite, DesolateShoreSite, DunesSite}
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.campaign.{InsectSwarmCard, VowOfUnionCard}
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Refusals, Table}
+import distantlands.testkit.ActPowerHarness.usableIds
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
+
+class BrassHorseSuite extends munit.FunSuite:
+  import PowerFixture._
+  import MovementFixture._
+  import PhasePowerHarness.{awaits, backToActing, ops, replayed}
+
+  private val horse = BrassHorseCard.id
+
+  /** p1's Act at Ancient City, in the Cradle, holding Brass Horse with 2
+    * secrets; Buried Giant lies in the Provinces. `homelands` stands a
+    * ruined Beast edifice at Deep Woods and a ruined Hearth one at Golden
+    * Valley, and no other card lies at any site. */
+  private def staged(using munit.Location) =
+      Table.from(homelands(quietTable)).turn(actor, Phase.Act)
+    .pawn(actor, AncientCitySite).relic(actor, horse).secrets(actor, 2)
+    .ready
+  // Three denizens no site, hand or discard of the quiet table holds.
+  private val beastTop = InsectSwarmCard.id
+  private val beastElsewhere = VowOfUnionCard.id
+  private val nomadTop = OracleCard.id
+  private def cradleTopped(card: WorldCardId)(using munit.Location) =
+    Table.from(staged).discarded(Region.Cradle, card).ready
+  private def site(site: Site) = DecisionOptionRef.Site(site.id)
+  private def reveals(events: Vector[OathEvent]) = ops(events).collect {
+    case reveal: Reveal => reveal }
+
+  test("one matching site takes the pawn there without a question"):
+    val start = cradleTopped(beastTop)
+    val done = accepted(use(start, BrassHorse.id, horse))
+    val after = ready(done.state)
+    assert(backToActing(done))
+    assertEquals(Look(after).pawn(actor), DeepWoodsSite.id)
+    assertEquals(Look(after).tokensOn(horse), Tokens(0, 1))
+    assertEquals(after.game.current.commonCards.discard(Region.Cradle).last,
+      beastTop)
+    assertEquals(reveals(done.events), Vector(
+      Reveal(beastTop, Location.RegionalDiscard(Region.Cradle))))
+    // The reveal is public: every player now knows the card.
+    after.game.current.players.map(_.player).foreach(player =>
+      assert(after.knowledge.advisers.getOrElse(player, Vector.empty)
+        .contains(beastTop), player))
+    assertWireRoundTrips(done.events)
+    assertEquals(replayed(start, done.events), Right(done.state))
+
+  test("several matching sites ask, and only they are offered"):
+    val start = atSite(cradleTopped(beastTop), beastElsewhere,
+      DunesSite.id)
+    val parked = accepted(use(start, BrassHorse.id, horse))
+    assert(awaits(parked, BrassHorse.decisionId))
+    assertEquals(
+      choose(parked.state, BrassHorse.decisionId, site(BuriedGiantSite))
+        .left.toOption,
+      Some(Refusals.notOffered(BrassHorse.decisionId)))
+    val done = accepted(choose(parked.state, BrassHorse.decisionId,
+      site(DunesSite)))
+    assert(backToActing(done))
+    assertEquals(Look(ready(done.state)).pawn(actor),
+      DunesSite.id)
+    assertEquals(replayed(start, parked.events ++ done.events), Right(done.state))
+
+  test("the current site never counts as a match"):
+    val start = atSite(cradleTopped(beastTop), beastElsewhere,
+      AncientCitySite.id)
+    val done = accepted(use(start, BrassHorse.id, horse))
+    assert(backToActing(done))
+    assertEquals(Look(ready(done.state)).pawn(actor),
+      DeepWoodsSite.id)
+
+  test("with no matching site any other site may be chosen"):
+    val start = cradleTopped(nomadTop)
+    val parked = accepted(use(start, BrassHorse.id, horse))
+    assert(awaits(parked, BrassHorse.decisionId))
+    assertEquals(
+      choose(parked.state, BrassHorse.decisionId, site(AncientCitySite))
+        .left.toOption,
+      Some(Refusals.notOffered(BrassHorse.decisionId)))
+    val done = accepted(choose(parked.state, BrassHorse.decisionId,
+      site(DesolateShoreSite)))
+    assertEquals(Look(ready(done.state)).pawn(actor),
+      DesolateShoreSite.id)
+
+  test("an empty pile reveals nothing, so the power cannot be used"):
+    // The quiet table's Cradle discard is empty.
+    val start = staged
+    assert(!usableIds(start).contains(BrassHorse.id))
+    assertEquals(use(start, BrassHorse.id, horse).left.toOption,
+      Some(Refusals.nothingToDo(BrassHorse.id,
+        DecisionOptionRef.Relic(horse))))
+
+  test("a Vision on top has no suit, so any other site may be chosen"):
+    val vision = VisionRules.Sanctuary
+    val start = cradleTopped(vision)
+    val parked = accepted(use(start, BrassHorse.id, horse))
+    assert(awaits(parked, BrassHorse.decisionId))
+    assertEquals(reveals(parked.events),
+      Vector(Reveal(vision, Location.RegionalDiscard(Region.Cradle))))
+    val done = accepted(choose(parked.state, BrassHorse.decisionId,
+      site(DeepWoodsSite)))
+    assertEquals(Look(ready(done.state)).pawn(actor),
+      DeepWoodsSite.id)
+
+  test("the region is the one the pawn's site is in"):
+    val provincesTop = beastTop
+    val start = Table.from(staged).pawn(actor, BuriedGiantSite)
+      .discarded(Region.Provinces, provincesTop).ready
+    val done = accepted(use(start, BrassHorse.id, horse))
+    assertEquals(reveals(done.events), Vector(
+      Reveal(provincesTop, Location.RegionalDiscard(Region.Provinces))))
+    assertEquals(Look(ready(done.state)).pawn(actor),
+      DeepWoodsSite.id)
+
+  test("it is unusable without a secret"):
+    val id = BrassHorse.id
+    val start = cradleTopped(beastTop)
+    val broke = Table.from(start).secrets(actor, 0).ready
+    assert(usableIds(start).contains(id))
+    assert(!usableIds(broke).contains(id))
+    assertEquals(use(broke, id, horse).left.toOption,
+      Some(OathViolation.InsufficientSecrets(1, 0)))
+
+  test("it writes the card it revealed in place of the generic line, then where the pawn went"):
+    val done = accepted(use(cradleTopped(beastTop), BrassHorse.id, horse))
+    assertEquals(NoteText.said(BrassHorse, done.events), Vector(
+      NoteText.Said(NoteKey.Used, s"${actor.value} revealed ${beastTop.value}.",
+        covers = true),
+      NoteText.Said("placed",
+        s"${actor.value} placed at ${DeepWoodsSite.id.value}.",
+        covers = false)))

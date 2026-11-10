@@ -1,7 +1,7 @@
 # Network, HTTPS proxy, and browser guidance
 
 Seat links are bearer credentials for a trusted group. Anyone with a link can
-control its seat. Oath Digital trusted-alpha mode does not add accounts,
+control its seat. Distant Lands trusted-alpha mode does not add accounts,
 passwords, remote administration, or protection against malicious players.
 
 ## Browser support status
@@ -10,7 +10,7 @@ Browser support remains provisional until each release is manually accepted.
 Automated HTTP smoke tests do not establish browser compatibility. A build's own
 [acceptance record](../testing/alpha-acceptance-0.1.0-alpha.2.md) holds the exact
 tested browser, version, and OS; this table only summarizes the latest tested
-build. `0.1.0-alpha.3` shipped without a manual run. The table is not a durable
+build. `0.1.0-alpha.3` and `0.1.0-alpha.4` shipped without a manual run. The table is not a durable
 compatibility promise for later builds.
 
 | Browser family | Status as of `0.1.0-alpha.2` (2026-09-23) |
@@ -55,11 +55,11 @@ Choose the address reachable from player machines, for example
 `192.168.1.20`, and use the exact browser-visible origin:
 
 ```sh
-OATH_HOST=0.0.0.0 \
-OATH_PORT=8080 \
-OATH_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
-OATH_DATABASE_PATH=/home/alex/oathdigital-data/alpha-1/database \
-bin/oathdigital
+DLQ_HOST=0.0.0.0 \
+DLQ_PORT=8080 \
+DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
+DLQ_DATABASE_PATH=/home/alex/distantlands-data/alpha-1/database \
+bin/distantlands
 ```
 
 If a host firewall blocks the service, allow inbound TCP port 8080 only from
@@ -78,23 +78,23 @@ describes that setup and its risks.
 
 ## HTTPS reverse proxy
 
-Terminate TLS at the proxy and bind the Oath Digital backend only to loopback.
+Terminate TLS at the proxy and bind the Distant Lands backend only to loopback.
 The public base URL must be the exact external HTTPS origin; it controls seat
 links, request-origin checks, and the cookie's `Secure` attribute:
 
 ```sh
-OATH_HOST=127.0.0.1 \
-OATH_PORT=8080 \
-OATH_PUBLIC_BASE_URL=https://oath.example.com \
-OATH_DATABASE_PATH=/home/alex/oathdigital-data/alpha-1/database \
-bin/oathdigital
+DLQ_HOST=127.0.0.1 \
+DLQ_PORT=8080 \
+DLQ_PUBLIC_BASE_URL=https://oath.example.com \
+DLQ_DATABASE_PATH=/home/alex/distantlands-data/alpha-1/database \
+bin/distantlands
 ```
 
 The following NGINX example belongs inside the `http` context. Replace the
 certificate paths and host name with operator-controlled values:
 
 ```nginx
-log_format oath_no_secrets '$remote_addr [$time_local] '
+log_format distantlands_no_secrets '$remote_addr [$time_local] '
                            '"$request_method $uri $server_protocol" '
                            '$status $body_bytes_sent "$http_user_agent"';
 
@@ -107,7 +107,7 @@ server {
 
     location ^~ /s/ {
         access_log off;
-        error_log /var/log/nginx/oathdigital-seat-exchange-error.log crit;
+        error_log /var/log/nginx/distantlands-seat-exchange-error.log crit;
         proxy_pass http://127.0.0.1:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-User "";
@@ -117,7 +117,7 @@ server {
     }
 
     location / {
-        access_log /var/log/nginx/oathdigital-access.log oath_no_secrets;
+        access_log /var/log/nginx/distantlands-access.log distantlands_no_secrets;
         proxy_pass http://127.0.0.1:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-User "";
@@ -161,7 +161,7 @@ operators even after redaction.
 
 Do not expose port 8080 beyond loopback when using this proxy. Do not treat
 `X-Forwarded-User`, `X-Remote-User`, `Remote-User`, `Authorization`, client IP,
-or any other forwarded header as player identity. Oath Digital derives trusted
+or any other forwarded header as player identity. Distant Lands derives trusted
 seat identity only from its seat cookie; the blank header settings above are
 defense in depth, not an authentication integration.
 

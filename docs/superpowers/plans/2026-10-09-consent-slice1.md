@@ -59,7 +59,7 @@ The code forced these, or the spec left them open. Task 13 records each one in t
 - **File size.** Every Scala file, production or test, stays at or under 800 lines (`scripts/check-architecture.py`, `BackendArchitectureSuite`).
   - Put new code in the new files this plan names, never in a file near the limit.
   - `GameApplicationService.scala` is at 577 lines and `WalkerDecisionProjector.scala` at 677; keep each addition to what the task shows.
-- **Shared protocol.** No `.str` anywhere under `shared/src/main/scala/oathdigital/protocol` (`BackendArchitectureSuite`); use the codec helpers `string`, `strings` and `field`. An intent field must never be named `actor`, `actorId`, `actorPlayerId` or `playerId` (`CommandJsonSupport.rejectActorFields`); the requester of a preference is `requesterId`.
+- **Shared protocol.** No `.str` anywhere under `shared/src/main/scala/distantlands/protocol` (`BackendArchitectureSuite`); use the codec helpers `string`, `strings` and `field`. An intent field must never be named `actor`, `actorId`, `actorPlayerId` or `playerId` (`CommandJsonSupport.rejectActorFields`); the requester of a preference is `requesterId`.
 - **Ids and wording, exactly:**
   - Event types: `consent.requested`, `consent.answered`, `consent.request-withdrawn`, `consent.preference-set`, `consent.preferences-cleared`.
   - Intent tags: `requestConsent` (`decisionId`, `target`), `answerConsent` (`choice`), `setConsentPreference` (`powerId`, `requesterId`, `setting`).
@@ -89,7 +89,7 @@ The code forced these, or the spec left them open. Task 13 records each one in t
     - `p2 now decides case by case whether p1 may ignore Narrow Pass.`
     - `p2's consent preferences for Narrow Pass were reset.`
 - **Rulings** (spec, "Rulings"). These apply: 3 (the game always enforces), 4 (bandits never consent), 5 (own powers), 6 (ignore effects first), 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18 and 19. Ruling 9's several pending asks are modelled (`asks` is a vector), but no slice-1 power can produce two granters.
-- **Never touch the live database `var/oathdigital`.** Never run `preview_start`.
+- **Never touch the live database `var/distantlands`.** Never run `preview_start`.
 - **Concurrent sessions.** Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree on branch `feat/consent-slice1`.
   - `EnterWorktree` branches from `origin`, which lags local `main`, so fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -97,9 +97,9 @@ The code forced these, or the spec left them open. Task 13 records each one in t
   - Copy `.superpowers/` from the main checkout if a ledger is in use.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Verification commands:**
-  - One server suite: `./sbtw "testOnly oathdigital.model.ConsentStateSuite"` (any fully qualified suite name).
-  - One frontend suite: `./sbtw "frontend/testOnly oathdigital.frontend.ConsentAskingSuite"`.
-  - One shared suite: `./sbtw "sharedJVM/testOnly oathdigital.protocol.CommandProtocolSuite"`. If sbt names the project differently, `./sbtw projects` lists it.
+  - One server suite: `./sbtw "testOnly distantlands.model.ConsentStateSuite"` (any fully qualified suite name).
+  - One frontend suite: `./sbtw "frontend/testOnly distantlands.frontend.ConsentAskingSuite"`.
+  - One shared suite: `./sbtw "sharedJVM/testOnly distantlands.protocol.CommandProtocolSuite"`. If sbt names the project differently, `./sbtw projects` lists it.
   - Whole server or frontend: `./sbtw test` or `./sbtw frontend/test`.
   - Full gate (Task 13):
     1. `./sbtw "test" "frontend/test"`
@@ -112,14 +112,14 @@ The code forced these, or the spec left them open. Task 13 records each one in t
 
 Created:
 
-- `src/main/scala/oathdigital/model/Consent.scala`: preferences, settings, choices, keys, asks, the request, the turn, and `ConsentState` with its transitions.
-- `src/main/scala/oathdigital/gameplay/consent/ConsentEvolution.scala`: folds consent events into `ReadyGame.consent`.
-- `src/main/scala/oathdigital/serialization/ConsentEventCodec.scala`: the five event payloads.
-- `src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala`: the waivable powers, their granters and sources.
-- `src/main/scala/oathdigital/application/ConsentDesk.scala`: the consent commands as events to append.
-- `src/main/scala/oathdigital/application/ConsentProjector.scala`: `ConsentNames` and `ConsentProjector`.
-- `src/main/scala/oathdigital/application/gamelog/ConsentLines.scala`: the consent log lines.
-- `shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionDtos.scala` and `ConsentProjectionCodec.scala`.
+- `src/main/scala/distantlands/model/Consent.scala`: preferences, settings, choices, keys, asks, the request, the turn, and `ConsentState` with its transitions.
+- `src/main/scala/distantlands/gameplay/consent/ConsentEvolution.scala`: folds consent events into `ReadyGame.consent`.
+- `src/main/scala/distantlands/serialization/ConsentEventCodec.scala`: the five event payloads.
+- `src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala`: the waivable powers, their granters and sources.
+- `src/main/scala/distantlands/application/ConsentDesk.scala`: the consent commands as events to append.
+- `src/main/scala/distantlands/application/ConsentProjector.scala`: `ConsentNames` and `ConsentProjector`.
+- `src/main/scala/distantlands/application/gamelog/ConsentLines.scala`: the consent log lines.
+- `shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionDtos.scala` and `ConsentProjectionCodec.scala`.
 - Frontend: `ConsentAsking.scala`, `ConsentPanels.scala`, `SitePowerLinks.scala`.
 - Tests:
   - `model/ConsentStateSuite`
@@ -141,20 +141,20 @@ Modified (main ones): `GameStateProtocol.scala`, `GameEventProtocol.scala`, `Gam
 ### Task 1: Consent state, events and their wire format
 
 **Files:**
-- Create: `src/main/scala/oathdigital/model/Consent.scala`
-- Create: `src/main/scala/oathdigital/gameplay/consent/ConsentEvolution.scala`
-- Create: `src/main/scala/oathdigital/serialization/ConsentEventCodec.scala`
-- Modify: `src/main/scala/oathdigital/model/GameStateProtocol.scala` (`ReadyGame`)
-- Modify: `src/main/scala/oathdigital/model/GameEventProtocol.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala:68-117` (`evolve`)
-- Modify: `src/main/scala/oathdigital/serialization/GameEventWire.scala:19-21, 27-46, 246-271`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala:134-177` (one silent arm, replaced in Task 8)
-- Test: `src/test/scala/oathdigital/model/ConsentStateSuite.scala`
-- Test: `src/test/scala/oathdigital/serialization/ConsentEventWireSuite.scala`
-- Test: `src/test/scala/oathdigital/gameplay/consent/ConsentEvolutionSuite.scala`
+- Create: `src/main/scala/distantlands/model/Consent.scala`
+- Create: `src/main/scala/distantlands/gameplay/consent/ConsentEvolution.scala`
+- Create: `src/main/scala/distantlands/serialization/ConsentEventCodec.scala`
+- Modify: `src/main/scala/distantlands/model/GameStateProtocol.scala` (`ReadyGame`)
+- Modify: `src/main/scala/distantlands/model/GameEventProtocol.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala:68-117` (`evolve`)
+- Modify: `src/main/scala/distantlands/serialization/GameEventWire.scala:19-21, 27-46, 246-271`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala:134-177` (one silent arm, replaced in Task 8)
+- Test: `src/test/scala/distantlands/model/ConsentStateSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/ConsentEventWireSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/consent/ConsentEvolutionSuite.scala`
 
 **Interfaces:**
-- Produces (model, package `oathdigital.model`):
+- Produces (model, package `distantlands.model`):
   - `enum ConsentPreference(val key: String) { Never, Always }`
   - `enum ConsentSetting(val key: String) { Never, CaseByCase, Always }` with `preference: Option[ConsentPreference]` and `ConsentSetting.fromKey(key: String): Option[ConsentSetting]`
   - `enum ConsentChoice(val key: String) { Never, No, Yes, Always }` with `granted: Boolean`, `setting: Option[ConsentSetting]` and `ConsentChoice.fromKey`
@@ -175,16 +175,16 @@ Modified (main ones): `GameStateProtocol.scala`, `GameEventProtocol.scala`, `Gam
   - `ConsentRequestWithdrawn(requester: PlayerId)`
   - `ConsentPreferenceSet(granter: PlayerId, power: PowerId, requester: PlayerId, setting: ConsentSetting)`
   - `ConsentPreferencesCleared(granter: PlayerId, power: PowerId)`
-- Produces (gameplay): `oathdigital.gameplay.consent.ConsentEvolution.evolve(ready: ReadyGame, event: ConsentEvent): Either[OathViolation, ReadyGame]`
+- Produces (gameplay): `distantlands.gameplay.consent.ConsentEvolution.evolve(ready: ReadyGame, event: ConsentEvent): Either[OathViolation, ReadyGame]`
 
 - [ ] **Step 1: Write the failing model tests**
 
-Create `src/test/scala/oathdigital/model/ConsentStateSuite.scala`:
+Create `src/test/scala/distantlands/model/ConsentStateSuite.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Unwrap.accepted
 
 /** The consent ledger's transitions (consent design, "State" and rulings
   * 9, 12, 14, 15 and 17). */
@@ -283,15 +283,15 @@ class ConsentStateSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.model.ConsentStateSuite"`
+Run: `./sbtw "testOnly distantlands.model.ConsentStateSuite"`
 Expected: compilation FAIL, `Not found: type ConsentTurn` (and the other consent types).
 
 - [ ] **Step 3: Write the model**
 
-Create `src/main/scala/oathdigital/model/Consent.scala`:
+Create `src/main/scala/distantlands/model/Consent.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /** A granter's standing answer to one requester on one power (consent
   * design, ruling 15). Case-by-case is no entry. */
@@ -435,7 +435,7 @@ final case class ConsentState(
       turn = Some(now))
 ```
 
-In `src/main/scala/oathdigital/model/GameStateProtocol.scala`, give `ReadyGame` its ledger after `knowledge`:
+In `src/main/scala/distantlands/model/GameStateProtocol.scala`, give `ReadyGame` its ledger after `knowledge`:
 
 ```scala
 final case class ReadyGame(
@@ -452,18 +452,18 @@ Then run `grep -rn "ReadyGame(" src/main/scala src/test/scala | grep -v "ReadyGa
 
 - [ ] **Step 4: Run the model tests**
 
-Run: `./sbtw "testOnly oathdigital.model.ConsentStateSuite"`
+Run: `./sbtw "testOnly distantlands.model.ConsentStateSuite"`
 Expected: PASS, 9 tests.
 
 - [ ] **Step 5: Write the failing event tests**
 
-Create `src/test/scala/oathdigital/serialization/ConsentEventWireSuite.scala`:
+Create `src/test/scala/distantlands/serialization/ConsentEventWireSuite.scala`:
 
 ```scala
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
 
 /** The consent facts round-trip through the envelope (consent design,
@@ -505,19 +505,19 @@ class ConsentEventWireSuite extends munit.FunSuite:
     assert(encoded.flatMap(GameEventWire.decode).isLeft)
 ```
 
-Create `src/test/scala/oathdigital/gameplay/consent/ConsentEvolutionSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/consent/ConsentEvolutionSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.consent
+package distantlands.gameplay.consent
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** The rules fold consent facts into the ledger and nothing else. */
 class ConsentEvolutionSuite extends munit.FunSuite:
@@ -556,12 +556,12 @@ class ConsentEvolutionSuite extends munit.FunSuite:
 
 - [ ] **Step 6: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.ConsentEventWireSuite oathdigital.gameplay.consent.ConsentEvolutionSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.ConsentEventWireSuite distantlands.gameplay.consent.ConsentEvolutionSuite"`
 Expected: compilation FAIL, `ConsentRequested is not a member of object OathEvent`.
 
 - [ ] **Step 7: Add the events, their evolution and their codec**
 
-In `src/main/scala/oathdigital/model/GameEventProtocol.scala`, after `trait WalkerEvent extends OathEvent` (line 14), add:
+In `src/main/scala/distantlands/model/GameEventProtocol.scala`, after `trait WalkerEvent extends OathEvent` (line 14), add:
 
 ```scala
 /** The consent facts (consent design, "Events"). None opens a command
@@ -592,13 +592,13 @@ and inside `object OathEvent`, after `StepRestored`:
       power: PowerId) extends ConsentEvent
 ```
 
-Create `src/main/scala/oathdigital/gameplay/consent/ConsentEvolution.scala`:
+Create `src/main/scala/distantlands/gameplay/consent/ConsentEvolution.scala`:
 
 ```scala
-package oathdigital.gameplay.consent
+package distantlands.gameplay.consent
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
 
 /** Folds the consent facts into `ReadyGame.consent` (consent design,
@@ -619,7 +619,7 @@ object ConsentEvolution:
     ).map(next => ready.copy(consent = next))
 ```
 
-In `OathRules.evolve` (`src/main/scala/oathdigital/gameplay/OathRules.scala`), add before the undo arms (`case _: CommandAccepted => Right(state)`):
+In `OathRules.evolve` (`src/main/scala/distantlands/gameplay/OathRules.scala`), add before the undo arms (`case _: CommandAccepted => Right(state)`):
 
 ```scala
       case event: ConsentEvent => state match
@@ -628,15 +628,15 @@ In `OathRules.evolve` (`src/main/scala/oathdigital/gameplay/OathRules.scala`), a
         case _ => Left(GameNotStarted)
 ```
 
-and import `oathdigital.gameplay.consent.ConsentEvolution`.
+and import `distantlands.gameplay.consent.ConsentEvolution`.
 
-Create `src/main/scala/oathdigital/serialization/ConsentEventCodec.scala`:
+Create `src/main/scala/distantlands/serialization/ConsentEventCodec.scala`:
 
 ```scala
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
 
 /** The consent facts (consent design, "Events"). */
@@ -723,7 +723,7 @@ Run `./sbtw compile` and fix any other non-exhaustive match the compiler names o
 
 - [ ] **Step 8: Run the Task 1 suites**
 
-Run: `./sbtw "testOnly oathdigital.model.ConsentStateSuite oathdigital.serialization.ConsentEventWireSuite oathdigital.gameplay.consent.ConsentEvolutionSuite"`
+Run: `./sbtw "testOnly distantlands.model.ConsentStateSuite distantlands.serialization.ConsentEventWireSuite distantlands.gameplay.consent.ConsentEvolutionSuite"`
 Expected: PASS.
 
 - [ ] **Step 9: Run the whole server suite**
@@ -734,7 +734,7 @@ Expected: PASS. `ReadyGame` equality now includes an empty ledger on both sides.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Consent.scala src/main/scala/oathdigital/model/GameStateProtocol.scala src/main/scala/oathdigital/model/GameEventProtocol.scala src/main/scala/oathdigital/gameplay/consent/ConsentEvolution.scala src/main/scala/oathdigital/gameplay/OathRules.scala src/main/scala/oathdigital/serialization/ConsentEventCodec.scala src/main/scala/oathdigital/serialization/GameEventWire.scala src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala src/test/scala/oathdigital/model/ConsentStateSuite.scala src/test/scala/oathdigital/serialization/ConsentEventWireSuite.scala src/test/scala/oathdigital/gameplay/consent/ConsentEvolutionSuite.scala
+git add src/main/scala/distantlands/model/Consent.scala src/main/scala/distantlands/model/GameStateProtocol.scala src/main/scala/distantlands/model/GameEventProtocol.scala src/main/scala/distantlands/gameplay/consent/ConsentEvolution.scala src/main/scala/distantlands/gameplay/OathRules.scala src/main/scala/distantlands/serialization/ConsentEventCodec.scala src/main/scala/distantlands/serialization/GameEventWire.scala src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala src/test/scala/distantlands/model/ConsentStateSuite.scala src/test/scala/distantlands/serialization/ConsentEventWireSuite.scala src/test/scala/distantlands/gameplay/consent/ConsentEvolutionSuite.scala
 git commit -m "feat(consent): add the consent ledger, its events and their wire format"
 ```
 
@@ -745,15 +745,15 @@ git commit -m "feat(consent): add the consent ledger, its events and their wire 
 ### Task 2: Waivers and the waivable-power registry
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala:68-79` (`Restriction`)
-- Modify: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala:144-228` (`NarrowPassSitePower`)
-- Create: `src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala:68-79` (`Restriction`)
+- Modify: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala:144-228` (`NarrowPassSitePower`)
+- Create: `src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala`
 
 **Interfaces:**
 - Consumes: nothing from Task 1 but the model package.
 - Produces:
-  - `oathdigital.gameplay.powerresolver.Waiver(granter: ReadyGame => Option[PlayerId], source: PowerSourceRef, note: (PowerCtx, DecisionOptionRef) => PowerNote)`
+  - `distantlands.gameplay.powerresolver.Waiver(granter: ReadyGame => Option[PlayerId], source: PowerSourceRef, note: (PowerCtx, DecisionOptionRef) => PowerNote)`
   - `Restriction(fn, note = Contribution.silent, waiver: Option[Waiver] = None)`
   - `NarrowPassSitePower.noTravelConsent: NoteKey`, with key `no-travel-consent`
   - `final class ConsentPowers(powers: Vector[ContributingPower])` with these methods:
@@ -765,16 +765,16 @@ git commit -m "feat(consent): add the consent ledger, its events and their wire 
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.powers.travel.{MinesSite, NarrowPassSite,
+import distantlands.gameplay.powers.travel.{MinesSite, NarrowPassSite,
   TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table.{p1, p2}
 
 /** Which powers can be waived, and who may waive them (consent design,
   * rulings 1, 4 and 16). */
@@ -804,12 +804,12 @@ class ConsentPowersSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.ConsentPowersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.ConsentPowersSuite"`
 Expected: compilation FAIL, `Not found: ConsentPowers`.
 
 - [ ] **Step 3: Add `Waiver`, the Pass's waiver and the registry**
 
-In `ContributingPower.scala`, add `PowerSourceRef` to the `oathdigital.model` import list, then replace the `Restriction` case class with:
+In `ContributingPower.scala`, add `PowerSourceRef` to the `distantlands.model` import list, then replace the `Restriction` case class with:
 
 ```scala
 /** Validates the whole action tree root, returning a violation to reject the
@@ -871,17 +871,17 @@ Also add, in `object NarrowPassSitePower`:
       "ruler's consent.")))
 ```
 
-Import `oathdigital.gameplay.SiteRulers` and `oathdigital.gameplay.powerresolver.Waiver` in that file if they are not already imported. `SiteRulers` is `private[gameplay]`, which this package can see.
+Import `distantlands.gameplay.SiteRulers` and `distantlands.gameplay.powerresolver.Waiver` in that file if they are not already imported. `SiteRulers` is `private[gameplay]`, which this package can see.
 
-Create `src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala`:
+Create `src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{ContributingPower, Restriction,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{ContributingPower, Restriction,
   Waiver}
-import oathdigital.model.{PlayerId, PowerId, PowerSourceRef, ReadyGame}
+import distantlands.model.{PlayerId, PowerId, PowerSourceRef, ReadyGame}
 
 /** The waivable powers (consent design, "Powers declare waivability"): every
   * power with a contribution that declares a `Waiver`. The grid, the
@@ -912,13 +912,13 @@ object ConsentPowers:
 
 - [ ] **Step 4: Run the test, then the Travel suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.ConsentPowersSuite oathdigital.gameplay.TravelSitePowersSuite oathdigital.application.TravelDestinationRowsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.ConsentPowersSuite distantlands.gameplay.TravelSitePowersSuite distantlands.application.TravelDestinationRowsSuite"`
 Expected: PASS. No walker code reads the waiver yet, so the Travel suites are unchanged.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/powerresolver/ContributingPower.scala src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala src/main/scala/oathdigital/gameplay/powers/ConsentPowers.scala src/test/scala/oathdigital/gameplay/powers/ConsentPowersSuite.scala
+git add src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala src/main/scala/distantlands/gameplay/powers/ConsentPowers.scala src/test/scala/distantlands/gameplay/powers/ConsentPowersSuite.scala
 git commit -m "feat(consent): let a restriction declare its waiver, and the Pass declare one for Travel"
 ```
 
@@ -929,15 +929,15 @@ git commit -m "feat(consent): let a restriction declare its waiver, and the Pass
 This task builds the service routing that every consent command uses, and the one command that needs no walker: `SetConsentPreference`. It also fixes the fold (plan decision 1) and adds the stale-preference clearing after every append.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/ConsentDesk.scala`
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`
-- Modify: `src/main/scala/oathdigital/model/GameViolation.scala`
-- Modify: `src/main/scala/oathdigital/application/JournalFold.scala:74-102`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala:228-275, 327-410, 451-531`
-- Modify: `src/test/scala/oathdigital/application/PendingWalkerInvariantSuite.scala:31-48`
-- Modify: `src/test/scala/oathdigital/testkit/SituationDriver.scala:164-201`
-- Create: `src/test/scala/oathdigital/application/ConsentFixture.scala`
-- Test: `src/test/scala/oathdigital/application/ConsentPreferenceServiceSuite.scala`
+- Create: `src/main/scala/distantlands/application/ConsentDesk.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`
+- Modify: `src/main/scala/distantlands/model/GameViolation.scala`
+- Modify: `src/main/scala/distantlands/application/JournalFold.scala:74-102`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala:228-275, 327-410, 451-531`
+- Modify: `src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala:31-48`
+- Modify: `src/test/scala/distantlands/testkit/SituationDriver.scala:164-201`
+- Create: `src/test/scala/distantlands/application/ConsentFixture.scala`
+- Test: `src/test/scala/distantlands/application/ConsentPreferenceServiceSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's ledger and events. Task 2's `ConsentPowers`.
@@ -954,17 +954,17 @@ This task builds the service routing that every consent command uses, and the on
 
 - [ ] **Step 1: Write the test fixture and the failing service tests**
 
-Create `src/test/scala/oathdigital/application/ConsentFixture.scala`:
+Create `src/test/scala/distantlands/application/ConsentFixture.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** A game for consent through the service: TravelFixture's board with the
   * Narrow Pass ruled by p2. p1 is active at the Cradle's plains, and the
@@ -1000,17 +1000,17 @@ object ConsentFixture:
 
 `requestDunes` names `GameCommand.RequestConsent`, which Task 5 adds. Leave that member out of this task's copy of the file, along with the `TravelProcedure` import only it uses, and add both in Task 5, Step 1.
 
-Create `src/test/scala/oathdigital/application/ConsentPreferenceServiceSuite.scala`:
+Create `src/test/scala/distantlands/application/ConsentPreferenceServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.travel.{MinesSite, NarrowPassSite}
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentPreferenceSet,
+import distantlands.gameplay.powers.travel.{MinesSite, NarrowPassSite}
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentPreferenceSet,
   ConsentPreferencesCleared}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Consent preferences through the service (consent design, rulings 15 to
   * 18, "Undo" and plan decision 1). */
@@ -1105,16 +1105,16 @@ class ConsentPreferenceServiceSuite extends munit.FunSuite:
     assertEquals(started.undo.map(_.until), Some(started.nextSequence - 1L))
 ```
 
-Add `import oathdigital.gameplay.powers.travel.TravelFixture` to the suite's imports for the last test.
+Add `import distantlands.gameplay.powers.travel.TravelFixture` to the suite's imports for the last test.
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.ConsentPreferenceServiceSuite"`
+Run: `./sbtw "testOnly distantlands.application.ConsentPreferenceServiceSuite"`
 Expected: compilation FAIL, `SetConsentPreference is not a member of object GameCommand`.
 
 - [ ] **Step 3: Add the violations and the command**
 
-In `src/main/scala/oathdigital/model/GameViolation.scala`, after `FollowUpPending`:
+In `src/main/scala/distantlands/model/GameViolation.scala`, after `FollowUpPending`:
 
 ```scala
   /** A consent request waits on its granters: only their answers, the
@@ -1145,15 +1145,15 @@ and add to `issuer` (consent commands open no batch of their own):
 
 - [ ] **Step 4: Write the consent desk**
 
-Create `src/main/scala/oathdigital/application/ConsentDesk.scala`:
+Create `src/main/scala/distantlands/application/ConsentDesk.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.powers.ConsentPowers
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentPreferenceSet,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentPreferenceSet,
   ConsentPreferencesCleared}
 
 /** The consent commands (consent design, "Commands"). Each answers with the
@@ -1208,7 +1208,7 @@ private[application] final class ConsentDesk(rules: OathRules,
 
 - [ ] **Step 5: Close a batch at a consent event, and carry the ledger across undo**
 
-In `JournalFold.scala`, add `ConsentEvent` to the imports (`import oathdigital.model._` already covers it) and add this case to `Progress.next`, before the final `case event =>`:
+In `JournalFold.scala`, add `ConsentEvent` to the imports (`import distantlands.model._` already covers it) and add this case to `Progress.next`, before the final `case event =>`:
 
 ```scala
         // A consent fact opens no batch and joins none (consent design,
@@ -1249,7 +1249,7 @@ In `GameApplicationService.scala`:
   private val consent = new ConsentDesk(rules, ConsentPowers.default(catalog))
 ```
 
-and import `oathdigital.gameplay.powers.ConsentPowers` (the file already imports `oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}`; add it to that list).
+and import `distantlands.gameplay.powers.ConsentPowers` (the file already imports `distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}`; add it to that list).
 
 2. In `handle`, send both branches through a new `routed`. The missing-stream branch's `handleAgainst(gameId, FoldedJournal(genesis, Vector.empty, Nil), command, ExpectedStream.MustNotExist, 0L)` becomes:
 
@@ -1369,7 +1369,7 @@ In `PendingWalkerInvariantSuite.everyCommand`, append (the power is not waivable
 
 ```scala
     GameCommand.SetConsentPreference(actor,
-      oathdigital.gameplay.powers.travel.MinesSite.mountain,
+      distantlands.gameplay.powers.travel.MinesSite.mountain,
       PlayerId("p2"), ConsentSetting.Always),
 ```
 
@@ -1383,7 +1383,7 @@ In `SituationDriver.transition`, add before the Undo/Redo arm:
 
 - [ ] **Step 8: Run the preference suite and the undo suites**
 
-Run: `./sbtw "testOnly oathdigital.application.ConsentPreferenceServiceSuite oathdigital.application.UndoServiceSuite oathdigital.application.RedoServiceSuite oathdigital.application.JournalFoldSuite oathdigital.application.JournalFoldRedoSuite oathdigital.application.PendingWalkerInvariantSuite"`
+Run: `./sbtw "testOnly distantlands.application.ConsentPreferenceServiceSuite distantlands.application.UndoServiceSuite distantlands.application.RedoServiceSuite distantlands.application.JournalFoldSuite distantlands.application.JournalFoldRedoSuite distantlands.application.PendingWalkerInvariantSuite"`
 Expected: PASS.
 
 - [ ] **Step 9: Run the whole server suite**
@@ -1394,7 +1394,7 @@ Expected: PASS.
 - [ ] **Step 10: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/ConsentDesk.scala src/main/scala/oathdigital/application/GameCommands.scala src/main/scala/oathdigital/model/GameViolation.scala src/main/scala/oathdigital/application/JournalFold.scala src/main/scala/oathdigital/application/GameApplicationService.scala src/test/scala/oathdigital/application/PendingWalkerInvariantSuite.scala src/test/scala/oathdigital/testkit/SituationDriver.scala src/test/scala/oathdigital/application/ConsentFixture.scala src/test/scala/oathdigital/application/ConsentPreferenceServiceSuite.scala
+git add src/main/scala/distantlands/application/ConsentDesk.scala src/main/scala/distantlands/application/GameCommands.scala src/main/scala/distantlands/model/GameViolation.scala src/main/scala/distantlands/application/JournalFold.scala src/main/scala/distantlands/application/GameApplicationService.scala src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala src/test/scala/distantlands/testkit/SituationDriver.scala src/test/scala/distantlands/application/ConsentFixture.scala src/test/scala/distantlands/application/ConsentPreferenceServiceSuite.scala
 git commit -m "feat(consent): set preferences at any time, kept across undo and cleared when the ruler changes"
 ```
 
@@ -1402,12 +1402,12 @@ git commit -m "feat(consent): set preferences at any time, kept across undo and 
 ### Task 4: Askable options and the ledger check in the walker
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/Decisions.scala:328-331` (`OptionReason`)
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala:1-3, 168-247`
-- Modify: `src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala:443-453` (`narrowAt`)
-- Modify: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala` (new `consentAsks`)
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:560-564` (`reasonText`, one arm)
-- Test: `src/test/scala/oathdigital/gameplay/powers/travel/NarrowPassConsentSuite.scala`
+- Modify: `src/main/scala/distantlands/model/Decisions.scala:328-331` (`OptionReason`)
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala:1-3, 168-247`
+- Modify: `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala:443-453` (`narrowAt`)
+- Modify: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala` (new `consentAsks`)
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:560-564` (`reasonText`, one arm)
+- Test: `src/test/scala/distantlands/gameplay/powers/travel/NarrowPassConsentSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `ConsentState.remembered`, `ConsentKey`, `ConsentTurn`, `ConsentAsk`. Task 2's `Restriction.waiver` and `NarrowPassSitePower.noTravelConsent`.
@@ -1418,23 +1418,23 @@ git commit -m "feat(consent): set preferences at any time, kept across undo and 
 
 - [ ] **Step 1: Write the failing walker tests**
 
-Create `src/test/scala/oathdigital/gameplay/powers/travel/NarrowPassConsentSuite.scala`:
+Create `src/test/scala/distantlands/gameplay/powers/travel/NarrowPassConsentSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Restriction}
-import oathdigital.gameplay.powers.{PowerFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks}
-import oathdigital.testkit.Table.p2
-import oathdigital.testkit.Unwrap.{accepted, present, rejected}
+import distantlands.gameplay.powers.{PowerFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Outcomes, PlacementPicks}
+import distantlands.testkit.Table.p2
+import distantlands.testkit.Unwrap.{accepted, present, rejected}
 
 /** Which Travel destinations the Narrow Pass makes askable (consent
   * design, rulings 4 to 8 and 12, "Walker and powers"). The fixture board's
@@ -1560,12 +1560,12 @@ class NarrowPassConsentSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.NarrowPassConsentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.NarrowPassConsentSuite"`
 Expected: compilation FAIL, `Askable is not a member of object OptionReason`.
 
 - [ ] **Step 3: Add the reason**
 
-In `src/main/scala/oathdigital/model/Decisions.scala`, inside `object OptionReason`:
+In `src/main/scala/distantlands/model/Decisions.scala`, inside `object OptionReason`:
 
 ```scala
   /** Blocked only by waivable powers whose rulers may be asked (consent
@@ -1586,7 +1586,7 @@ In `WalkerDecisionProjector.reasonText`, add the arm the compiler now asks for (
 
 In `WalkerPowerGather.scala`:
 
-1. Add `ConsentAnswer, ConsentAsk, ConsentKey, ConsentTurn` to the `oathdigital.model` import list.
+1. Add `ConsentAnswer, ConsentAsk, ConsentKey, ConsentTurn` to the `distantlands.model` import list.
 2. In `attributed`, drop a granted breach:
 
 ```scala
@@ -1725,11 +1725,11 @@ In `OathRulesWalker.scala`, after `resolveWalker`, add:
             s"${target.wireId} is not an option to ask consent for")))
 ```
 
-Import `oathdigital.gameplay.walker.PricedOptions` (beside the file's other walker imports). `ConsentUnavailable` comes from the file's `oathdigital.model.OathViolation._` import; if the file names violations qualified instead, write `OathViolation.ConsentUnavailable`.
+Import `distantlands.gameplay.walker.PricedOptions` (beside the file's other walker imports). `ConsentUnavailable` comes from the file's `distantlands.model.OathViolation._` import; if the file names violations qualified instead, write `OathViolation.ConsentUnavailable`.
 
 - [ ] **Step 6: Run the walker tests and the Travel suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.NarrowPassConsentSuite oathdigital.gameplay.powers.travel.ForestPathsSuite oathdigital.gameplay.TravelSitePowersSuite oathdigital.gameplay.TravelProcedureSuite oathdigital.application.TravelDestinationRowsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.NarrowPassConsentSuite distantlands.gameplay.powers.travel.ForestPathsSuite distantlands.gameplay.TravelSitePowersSuite distantlands.gameplay.TravelProcedureSuite distantlands.application.TravelDestinationRowsSuite"`
 Expected: PASS. Every pre-existing Pass test uses the fixture's bandit-held Pass (plan decision 14), so its reason is still `no-travel`.
 
 - [ ] **Step 7: Run the whole server suite**
@@ -1740,7 +1740,7 @@ Expected: PASS.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/model/Decisions.scala src/main/scala/oathdigital/gameplay/walker/WalkerPowerGather.scala src/main/scala/oathdigital/gameplay/walker/ProcedureWalker.scala src/main/scala/oathdigital/gameplay/OathRulesWalker.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/test/scala/oathdigital/gameplay/powers/travel/NarrowPassConsentSuite.scala
+git add src/main/scala/distantlands/model/Decisions.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/OathRulesWalker.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/test/scala/distantlands/gameplay/powers/travel/NarrowPassConsentSuite.scala
 git commit -m "feat(consent): mark a destination askable when only waivable powers block it, and honour a grant"
 ```
 
@@ -1749,12 +1749,12 @@ git commit -m "feat(consent): mark a destination askable when only waivable powe
 ### Task 5: Requests and answers through the service
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/application/ConsentDesk.scala`
-- Modify: `src/main/scala/oathdigital/application/GameCommands.scala`
-- Modify: `src/main/scala/oathdigital/application/GameApplicationService.scala` (`routed`, `applyCommand`)
-- Modify: `src/test/scala/oathdigital/application/ConsentFixture.scala` (add `requestDunes`)
-- Modify: `src/test/scala/oathdigital/application/PendingWalkerInvariantSuite.scala`
-- Test: `src/test/scala/oathdigital/application/ConsentRequestServiceSuite.scala`
+- Modify: `src/main/scala/distantlands/application/ConsentDesk.scala`
+- Modify: `src/main/scala/distantlands/application/GameCommands.scala`
+- Modify: `src/main/scala/distantlands/application/GameApplicationService.scala` (`routed`, `applyCommand`)
+- Modify: `src/test/scala/distantlands/application/ConsentFixture.scala` (add `requestDunes`)
+- Modify: `src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala`
+- Test: `src/test/scala/distantlands/application/ConsentRequestServiceSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 3's desk, routing and fixture. Task 4's `OathRules.consentAsks`.
@@ -1768,22 +1768,22 @@ git commit -m "feat(consent): mark a destination askable when only waivable powe
 
 Add `requestDunes` to `ConsentFixture` (its text is in Task 3, Step 1).
 
-Create `src/test/scala/oathdigital/application/ConsentRequestServiceSuite.scala`:
+Create `src/test/scala/distantlands/application/ConsentRequestServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathEvent.{CommandAccepted, ConsentAnswered,
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathEvent.{CommandAccepted, ConsentAnswered,
   ConsentPreferenceSet, ConsentRequestWithdrawn, ConsentRequested}
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.{Look, Outcomes, PlacementPicks}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Asking for consent and answering through the service (consent design,
   * user story, rulings 10 to 14, "Commands"). */
@@ -1966,7 +1966,7 @@ class ConsentRequestServiceSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.ConsentRequestServiceSuite"`
+Run: `./sbtw "testOnly distantlands.application.ConsentRequestServiceSuite"`
 Expected: compilation FAIL, `RequestConsent is not a member of object GameCommand`.
 
 - [ ] **Step 3: Add the commands**
@@ -2117,7 +2117,7 @@ In `PendingWalkerInvariantSuite.everyCommand`, append (both are refused over eve
 
 - [ ] **Step 7: Run the consent suites and the invariants**
 
-Run: `./sbtw "testOnly oathdigital.application.ConsentRequestServiceSuite oathdigital.application.ConsentPreferenceServiceSuite oathdigital.application.PendingWalkerInvariantSuite oathdigital.application.UndoServiceSuite"`
+Run: `./sbtw "testOnly distantlands.application.ConsentRequestServiceSuite distantlands.application.ConsentPreferenceServiceSuite distantlands.application.PendingWalkerInvariantSuite distantlands.application.UndoServiceSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Run the whole server suite**
@@ -2128,7 +2128,7 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/ConsentDesk.scala src/main/scala/oathdigital/application/GameCommands.scala src/main/scala/oathdigital/application/GameApplicationService.scala src/test/scala/oathdigital/application/ConsentFixture.scala src/test/scala/oathdigital/application/PendingWalkerInvariantSuite.scala src/test/scala/oathdigital/application/ConsentRequestServiceSuite.scala
+git add src/main/scala/distantlands/application/ConsentDesk.scala src/main/scala/distantlands/application/GameCommands.scala src/main/scala/distantlands/application/GameApplicationService.scala src/test/scala/distantlands/application/ConsentFixture.scala src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala src/test/scala/distantlands/application/ConsentRequestServiceSuite.scala
 git commit -m "feat(consent): ask a ruler for consent, answer it, and withdraw it with Undo"
 ```
 
@@ -2137,15 +2137,15 @@ git commit -m "feat(consent): ask a ruler for consent, answer it, and withdraw i
 ### Task 6: The consent intents on the wire
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntents.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntentCodec.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandIntentDecoders.scala`
-- Modify: `shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala:8-44`
-- Modify: `src/main/scala/oathdigital/application/GameIntentMapper.scala:13-39`
-- Modify: `src/main/scala/oathdigital/application/Authorization.scala:51-73`
-- Modify: `src/main/scala/oathdigital/server/GameRoutes.scala:28-40`
-- Modify: `src/test/scala/oathdigital/server/CommandRejectionMessageSuite.scala`
-- Test: `src/test/scala/oathdigital/application/ConsentIntentMapperSuite.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntents.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntentCodec.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandIntentDecoders.scala`
+- Modify: `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala:8-44`
+- Modify: `src/main/scala/distantlands/application/GameIntentMapper.scala:13-39`
+- Modify: `src/main/scala/distantlands/application/Authorization.scala:51-73`
+- Modify: `src/main/scala/distantlands/server/GameRoutes.scala:28-40`
+- Modify: `src/test/scala/distantlands/server/CommandRejectionMessageSuite.scala`
+- Test: `src/test/scala/distantlands/application/ConsentIntentMapperSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 3 and 5's commands, `ConsentChoice.fromKey`, `ConsentSetting.fromKey`.
@@ -2167,13 +2167,13 @@ In `CommandProtocolSuite.examples`, append:
     SetConsentPreference("site.narrow-pass.pass", "blue", "case-by-case"),
 ```
 
-Create `src/test/scala/oathdigital/application/ConsentIntentMapperSuite.scala`:
+Create `src/test/scala/distantlands/application/ConsentIntentMapperSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.protocol.{GameIntent, WalkerStartArgWire}
+import distantlands.model._
+import distantlands.protocol.{GameIntent, WalkerStartArgWire}
 
 /** The consent intents bind their sender as requester or granter. */
 class ConsentIntentMapperSuite extends munit.FunSuite:
@@ -2215,7 +2215,7 @@ In `CommandRejectionMessageSuite`, add to the first test:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.CommandProtocolSuite" "testOnly oathdigital.application.ConsentIntentMapperSuite oathdigital.server.CommandRejectionMessageSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.CommandProtocolSuite" "testOnly distantlands.application.ConsentIntentMapperSuite distantlands.server.CommandRejectionMessageSuite"`
 Expected: compilation FAIL, `RequestConsent is not a member of object GameIntent`.
 
 - [ ] **Step 3: Add the intents and their codec**
@@ -2313,20 +2313,20 @@ In `GameIntentMapper.bind`, after the `ResolveWalker` arm:
 In `CommandRejectionMessage.text` (`GameRoutes.scala`), after the `FollowUpPending` arm:
 
 ```scala
-      case oathdigital.model.OathViolation.ConsentPending =>
+      case distantlands.model.OathViolation.ConsentPending =>
         "Waiting for an answer to a consent request"
-      case oathdigital.model.OathViolation.ConsentUnavailable(reason) => reason
+      case distantlands.model.OathViolation.ConsentUnavailable(reason) => reason
 ```
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.CommandProtocolSuite" "testOnly oathdigital.application.ConsentIntentMapperSuite oathdigital.server.CommandRejectionMessageSuite oathdigital.application.GameIntentMapperUndoSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.CommandProtocolSuite" "testOnly distantlands.application.ConsentIntentMapperSuite distantlands.server.CommandRejectionMessageSuite distantlands.application.GameIntentMapperUndoSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/CommandIntents.scala shared/src/main/scala/oathdigital/protocol/CommandIntentCodec.scala shared/src/main/scala/oathdigital/protocol/CommandIntentDecoders.scala shared/src/test/scala/oathdigital/protocol/CommandProtocolSuite.scala src/main/scala/oathdigital/application/GameIntentMapper.scala src/main/scala/oathdigital/application/Authorization.scala src/main/scala/oathdigital/server/GameRoutes.scala src/test/scala/oathdigital/server/CommandRejectionMessageSuite.scala src/test/scala/oathdigital/application/ConsentIntentMapperSuite.scala
+git add shared/src/main/scala/distantlands/protocol/CommandIntents.scala shared/src/main/scala/distantlands/protocol/CommandIntentCodec.scala shared/src/main/scala/distantlands/protocol/CommandIntentDecoders.scala shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala src/main/scala/distantlands/application/GameIntentMapper.scala src/main/scala/distantlands/application/Authorization.scala src/main/scala/distantlands/server/GameRoutes.scala src/test/scala/distantlands/server/CommandRejectionMessageSuite.scala src/test/scala/distantlands/application/ConsentIntentMapperSuite.scala
 git commit -m "feat(consent): carry consent requests, answers and preferences on the wire"
 ```
 
@@ -2335,23 +2335,23 @@ git commit -m "feat(consent): carry consent requests, answers and preferences on
 ### Task 7: What each viewer is shown
 
 **Files:**
-- Create: `shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionDtos.scala`
-- Create: `shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionCodec.scala`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala:146-157` (`DecisionOptionProjection`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala:312-338`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala:3-38`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala:12-22, 74-78, 136-147`
-- Modify: `shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionDtos.scala:72` and `WorldProjectionCodec.scala:47-54`
-- Create: `src/main/scala/oathdigital/application/ConsentProjector.scala`
-- Modify: `src/main/scala/oathdigital/application/WalkerDecisionProjector.scala:333-354` (`optionProjection`)
-- Modify: `src/main/scala/oathdigital/application/GameProjection.scala:13-53`
-- Modify: `src/main/scala/oathdigital/application/GamePresentationProjector.scala:403-406` (`sitePower`)
-- Modify: `shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala`
-- Test: `src/test/scala/oathdigital/application/ConsentProjectionSuite.scala`
+- Create: `shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionDtos.scala`
+- Create: `shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionCodec.scala`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala:146-157` (`DecisionOptionProjection`)
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala:312-338`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala:3-38`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala:12-22, 74-78, 136-147`
+- Modify: `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala:72` and `WorldProjectionCodec.scala:47-54`
+- Create: `src/main/scala/distantlands/application/ConsentProjector.scala`
+- Modify: `src/main/scala/distantlands/application/WalkerDecisionProjector.scala:333-354` (`optionProjection`)
+- Modify: `src/main/scala/distantlands/application/GameProjection.scala:13-53`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala:403-406` (`sitePower`)
+- Modify: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
+- Test: `src/test/scala/distantlands/application/ConsentProjectionSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 3 to 5's service and fixture. Task 4's `OptionReason.Askable`. Task 2's `ConsentPowers`.
-- Produces (shared DTOs, package `oathdigital.protocol.projection`):
+- Produces (shared DTOs, package `distantlands.protocol.projection`):
   - `ConsentAskProjection(granterPlayerIds: Vector[String], powers: Vector[String])`
   - `ConsentWaitingProjection(granterPlayerIds: Vector[String])`
   - `ConsentPromptProjection(requesterPlayerId: String, powers: Vector[String], target: String)`
@@ -2364,17 +2364,17 @@ git commit -m "feat(consent): carry consent requests, answers and preferences on
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/application/ConsentProjectionSuite.scala`:
+Create `src/test/scala/distantlands/application/ConsentProjectionSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powers.travel.NarrowPassSite
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection._
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.travel.NarrowPassSite
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection._
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** What each viewer is shown of consent (consent design, "Projection" and
   * "Testing", hidden information). */
@@ -2519,15 +2519,15 @@ The suite's existing follow-up test shows how `raw` is read; if it reads the enc
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.ConsentProjectionSuite" "sharedJVM/testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.application.ConsentProjectionSuite" "sharedJVM/testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: compilation FAIL, `Not found: ConsentAskProjection`.
 
 - [ ] **Step 3: The DTOs and their codec**
 
-Create `shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionDtos.scala`:
+Create `shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionDtos.scala`:
 
 ```scala
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 /** Whom an askable option would ask, and about which powers, for the
   * client to word its confirmation (consent design, "Projection"). Player
@@ -2553,10 +2553,10 @@ final case class ConsentPreferenceRowProjection(playerId: String,
     setting: String)
 ```
 
-Create `shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionCodec.scala`:
+Create `shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionCodec.scala`:
 
 ```scala
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 import ProjectionCodecSupport._
 
@@ -2666,15 +2666,15 @@ In `GameProjectionCodec`:
 
 In `GamePresentationProjector.sitePower`, pass `handler.value` as the new last argument of both `SitePowerProjection(...)` calls.
 
-Create `src/main/scala/oathdigital/application/ConsentProjector.scala`:
+Create `src/main/scala/distantlands/application/ConsentProjector.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powers.ConsentPowers
-import oathdigital.model._
-import oathdigital.protocol.projection._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.model._
+import distantlands.protocol.projection._
 
 /** A waivable power's name as the panels write it: its source's name, the
   * Narrow Pass for the Pass. */
@@ -2740,7 +2740,7 @@ private[application] object ConsentProjector:
 ```
 
 In `WalkerDecisionProjector`:
-- add `ConsentAskProjection` to the `oathdigital.protocol.projection` import list, and import `oathdigital.gameplay.powers.ConsentPowers` (beside `PhasePowerCatalog, WalkerPowerCatalog`);
+- add `ConsentAskProjection` to the `distantlands.protocol.projection` import list, and import `distantlands.gameplay.powers.ConsentPowers` (beside `PhasePowerCatalog, WalkerPowerCatalog`);
 - add `private lazy val consentNames = new ConsentNames(presentation, ConsentPowers.default(catalog))` after `reasons`;
 - in `optionProjection`, put this arm before the `DecisionOption.Unavailable(inner, reason)` arm:
 
@@ -2756,7 +2756,7 @@ In `WalkerDecisionProjector`:
 ```
 
 In `GameProjection.scala` (`GameProjector`):
-- import `oathdigital.gameplay.powers.ConsentPowers` (beside `PhasePowerCatalog, WalkerPowerCatalog`);
+- import `distantlands.gameplay.powers.ConsentPowers` (beside `PhasePowerCatalog, WalkerPowerCatalog`);
 - after `pendingProjector`, add `private val consent = new ConsentProjector(presentation, walkerDecisions, ConsentPowers.default(catalog))`;
 - replace the `Ready(ready)` arm of `projectFor` with:
 
@@ -2780,7 +2780,7 @@ In `GameProjection.scala` (`GameProjector`):
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.ConsentProjectionSuite oathdigital.application.TravelDestinationRowsSuite oathdigital.application.UndoProjectionSuite oathdigital.application.SitePowerTextSuite" "sharedJVM/testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.application.ConsentProjectionSuite distantlands.application.TravelDestinationRowsSuite distantlands.application.UndoProjectionSuite distantlands.application.SitePowerTextSuite" "sharedJVM/testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Run the whole server and frontend suites**
@@ -2791,7 +2791,7 @@ Expected: PASS. The frontend reads the new fields only from Task 9 on, and every
 - [ ] **Step 7: Commit**
 
 ```bash
-git add shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/ConsentProjectionCodec.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/ActionProjectionCodec.scala shared/src/main/scala/oathdigital/protocol/projection/GameProjectionDto.scala shared/src/main/scala/oathdigital/protocol/projection/GameProjectionCodec.scala shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionDtos.scala shared/src/main/scala/oathdigital/protocol/projection/WorldProjectionCodec.scala src/main/scala/oathdigital/application/ConsentProjector.scala src/main/scala/oathdigital/application/WalkerDecisionProjector.scala src/main/scala/oathdigital/application/GameProjection.scala src/main/scala/oathdigital/application/GamePresentationProjector.scala shared/src/test/scala/oathdigital/protocol/ProjectionProtocolSuite.scala src/test/scala/oathdigital/application/ConsentProjectionSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/ConsentProjectionCodec.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/ActionProjectionCodec.scala shared/src/main/scala/distantlands/protocol/projection/GameProjectionDto.scala shared/src/main/scala/distantlands/protocol/projection/GameProjectionCodec.scala shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala src/main/scala/distantlands/application/ConsentProjector.scala src/main/scala/distantlands/application/WalkerDecisionProjector.scala src/main/scala/distantlands/application/GameProjection.scala src/main/scala/distantlands/application/GamePresentationProjector.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala src/test/scala/distantlands/application/ConsentProjectionSuite.scala
 git commit -m "feat(consent): project askable options, the prompt, the wait and each ruler's own preferences"
 ```
 
@@ -2800,9 +2800,9 @@ git commit -m "feat(consent): project askable options, the prompt, the wait and 
 ### Task 8: The consent lines in the Game Log
 
 **Files:**
-- Create: `src/main/scala/oathdigital/application/gamelog/ConsentLines.scala`
-- Modify: `src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala:22-75, 83-101, 134-177`
-- Test: `src/test/scala/oathdigital/application/gamelog/GameLogConsentSuite.scala`
+- Create: `src/main/scala/distantlands/application/gamelog/ConsentLines.scala`
+- Modify: `src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala:22-75, 83-101, 134-177`
+- Test: `src/test/scala/distantlands/application/gamelog/GameLogConsentSuite.scala`
 
 **Interfaces:**
 - Consumes: Tasks 3 to 5's service and `ConsentFixture`. Task 2's `ConsentPowers.source`.
@@ -2810,17 +2810,17 @@ git commit -m "feat(consent): project askable options, the prompt, the wait and 
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `src/test/scala/oathdigital/application/gamelog/GameLogConsentSuite.scala`:
+Create `src/test/scala/distantlands/application/gamelog/GameLogConsentSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{ConsentFixture, GameAccepted,
+import distantlands.application.{ConsentFixture, GameAccepted,
   GameApplicationService, GameCommand}
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
-import oathdigital.model._
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
+import distantlands.model._
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.{formatter, texts}
 
 /** What the Game Log says about consent, and to whom (consent design,
@@ -2909,19 +2909,19 @@ class GameLogConsentSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogConsentSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogConsentSuite"`
 Expected: FAIL. Task 1's silent arm posts nothing, so `lines.contains(asked)` is false.
 
 - [ ] **Step 3: Write the lines**
 
-Create `src/main/scala/oathdigital/application/gamelog/ConsentLines.scala`:
+Create `src/main/scala/distantlands/application/gamelog/ConsentLines.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.powers.ConsentPowers
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequested}
 import LogSpan.Text
 
@@ -2976,7 +2976,7 @@ private[gamelog] final class ConsentLines(words: LogWords,
 
 In `GameLogFormatter.scala`:
 
-1. Import `oathdigital.gameplay.powers.ConsentPowers` (beside `WalkerPowerCatalog`). After `takenBack`, add:
+1. Import `distantlands.gameplay.powers.ConsentPowers` (beside `WalkerPowerCatalog`). After `takenBack`, add:
 
 ```scala
   private val consent = new ConsentLines(words, choices,
@@ -3020,13 +3020,13 @@ In `GameLogFormatter.scala`:
 
 - [ ] **Step 5: Run the log suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/application/gamelog/ConsentLines.scala src/main/scala/oathdigital/application/gamelog/GameLogFormatter.scala src/test/scala/oathdigital/application/gamelog/GameLogConsentSuite.scala
+git add src/main/scala/distantlands/application/gamelog/ConsentLines.scala src/main/scala/distantlands/application/gamelog/GameLogFormatter.scala src/test/scala/distantlands/application/gamelog/GameLogConsentSuite.scala
 git commit -m "feat(consent): log requests and answers for everyone, preferences for their ruler alone"
 ```
 
@@ -3035,17 +3035,17 @@ git commit -m "feat(consent): log requests and answers for everyone, preferences
 ### Task 9: Askable options ask before they send
 
 **Files:**
-- Modify: `frontend/src/main/scala/oathdigital/frontend/frontend.scala` (aliases)
-- Create: `frontend/src/main/scala/oathdigital/frontend/ConsentAsking.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardInspection.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala:133-139`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardOptionViews.scala:4-11, 93-106`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardOptions.scala:17-18, 64-105, 118-134`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/BoardDecisionPanel.scala:95-115`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala:145-152, 154-215`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala:101-104`
-- Test: `frontend/src/test/scala/oathdigital/frontend/ConsentAskingSuite.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/frontend.scala` (aliases)
+- Create: `frontend/src/main/scala/distantlands/frontend/ConsentAsking.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardInspection.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala:133-139`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardOptionViews.scala:4-11, 93-106`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardOptions.scala:17-18, 64-105, 118-134`
+- Modify: `frontend/src/main/scala/distantlands/frontend/BoardDecisionPanel.scala:95-115`
+- Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala:145-152, 154-215`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala:101-104`
+- Test: `frontend/src/test/scala/distantlands/frontend/ConsentAskingSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 7's DTOs. Task 6's `GameIntent.RequestConsent(decisionId, WalkerStartArgWire)`.
@@ -3060,14 +3060,14 @@ git commit -m "feat(consent): log requests and answers for everyone, preferences
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `frontend/src/test/scala/oathdigital/frontend/ConsentAskingSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/ConsentAskingSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.click
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => Intent, WalkerStartArgWire}
+import distantlands.frontend.Dom.click
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent, WalkerStartArgWire}
 import ParkedDecision.Surface
 import org.scalajs.dom
 
@@ -3180,7 +3180,7 @@ class ConsentAskingSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ConsentAskingSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ConsentAskingSuite"`
 Expected: compilation FAIL, `Not found: ConsentAskState`.
 
 - [ ] **Step 3: Aliases, the confirmation and the asker**
@@ -3245,12 +3245,12 @@ In `GameTableShell`'s `CardInspection.onOpen` handler, add:
       inspector.showConfirm(question, confirm, origin)
 ```
 
-Create `frontend/src/main/scala/oathdigital/frontend/ConsentAsking.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/ConsentAsking.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
+import distantlands.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
 import org.scalajs.dom
 
 /** Asking for consent from the table (consent design, user story steps 1
@@ -3376,7 +3376,7 @@ Adding `Askable` makes the compiler name every other exhaustive match over `Opti
 
 - [ ] **Step 5: Run the frontend suites**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ConsentAskingSuite oathdigital.frontend.BoardOptionsRenderSuite oathdigital.frontend.BoardDecisionPanelSuite oathdigital.frontend.WalkerChoicePanelRenderSuite oathdigital.frontend.CardInspectionOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ConsentAskingSuite distantlands.frontend.BoardOptionsRenderSuite distantlands.frontend.BoardDecisionPanelSuite distantlands.frontend.WalkerChoicePanelRenderSuite distantlands.frontend.CardInspectionOverlaySuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Run the whole frontend suite**
@@ -3387,7 +3387,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/frontend.scala frontend/src/main/scala/oathdigital/frontend/ConsentAsking.scala frontend/src/main/scala/oathdigital/frontend/CardInspection.scala frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala frontend/src/main/scala/oathdigital/frontend/BoardOptionViews.scala frontend/src/main/scala/oathdigital/frontend/BoardOptions.scala frontend/src/main/scala/oathdigital/frontend/BoardDecisionPanel.scala frontend/src/main/scala/oathdigital/frontend/WalkerPanelSupport.scala frontend/src/main/scala/oathdigital/frontend/TableScreen.scala frontend/src/test/scala/oathdigital/frontend/ConsentAskingSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/frontend.scala frontend/src/main/scala/distantlands/frontend/ConsentAsking.scala frontend/src/main/scala/distantlands/frontend/CardInspection.scala frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala frontend/src/main/scala/distantlands/frontend/GameTableShell.scala frontend/src/main/scala/distantlands/frontend/BoardOptionViews.scala frontend/src/main/scala/distantlands/frontend/BoardOptions.scala frontend/src/main/scala/distantlands/frontend/BoardDecisionPanel.scala frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala frontend/src/main/scala/distantlands/frontend/TableScreen.scala frontend/src/test/scala/distantlands/frontend/ConsentAskingSuite.scala
 git commit -m "feat(consent): an askable option asks its ruler through a confirmation"
 ```
 
@@ -3396,11 +3396,11 @@ git commit -m "feat(consent): an askable option asks its ruler through a confirm
 ### Task 10: The granter's prompt, the requester's wait and the withdrawn line
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/ConsentPanels.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala:113-135, 225-231`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala:100-117`
-- Test: `frontend/src/test/scala/oathdigital/frontend/ConsentPromptPanelSuite.scala`
-- Test: `frontend/src/test/scala/oathdigital/frontend/GameLogWithdrawnSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/ConsentPanels.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala:113-135, 225-231`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameLogPane.scala:100-117`
+- Test: `frontend/src/test/scala/distantlands/frontend/ConsentPromptPanelSuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/GameLogWithdrawnSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 7's `consentPrompt` and `consentWaiting`, Task 9's `ConsentAsking`, and Task 8's withdrawn marking.
@@ -3412,15 +3412,15 @@ git commit -m "feat(consent): an askable option asks its ruler through a confirm
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `frontend/src/test/scala/oathdigital/frontend/ConsentPromptPanelSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/ConsentPromptPanelSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.all
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => Intent}
-import oathdigital.protocol.projection.WalkerWaitingProjection
+import distantlands.frontend.Dom.all
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent}
+import distantlands.protocol.projection.WalkerWaitingProjection
 import org.scalajs.dom
 
 /** The asked ruler's prompt and the requester's wait (consent design, user
@@ -3480,12 +3480,12 @@ class ConsentPromptPanelSuite extends munit.FunSuite:
     assertEquals(all(panel, ".consent-prompt"), Vector.empty)
 ```
 
-Create `frontend/src/test/scala/oathdigital/frontend/GameLogWithdrawnSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/GameLogWithdrawnSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.projection.{LogSectionWire, LogTakenBackWire}
+import distantlands.protocol.projection.{LogSectionWire, LogTakenBackWire}
 
 /** A withdrawn consent request in the log: struck through in place, with
   * no group header (consent design, "Game Log"). */
@@ -3510,17 +3510,17 @@ class GameLogWithdrawnSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ConsentPromptPanelSuite oathdigital.frontend.GameLogWithdrawnSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ConsentPromptPanelSuite distantlands.frontend.GameLogWithdrawnSuite"`
 Expected: compilation FAIL, `Not found: ConsentPanels`. Once that compiles, the withdrawn test fails on `line != null`.
 
 - [ ] **Step 3: The prompt and the wait**
 
-Create `frontend/src/main/scala/oathdigital/frontend/ConsentPanels.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/ConsentPanels.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand}
+import distantlands.protocol.{GameIntent => GameCommand}
 import org.scalajs.dom
 import ServerUiSupport.{button, element, text}
 
@@ -3605,13 +3605,13 @@ In `GameLogPane.redraw`, the `entry.takenBack match` gains an arm before `case S
 
 - [ ] **Step 5: Run the frontend suites**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ConsentPromptPanelSuite oathdigital.frontend.GameLogWithdrawnSuite oathdigital.frontend.GameLogTakenBackPaneSuite oathdigital.frontend.StepControlsSuite oathdigital.frontend.BoardDecisionPanelSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ConsentPromptPanelSuite distantlands.frontend.GameLogWithdrawnSuite distantlands.frontend.GameLogTakenBackPaneSuite distantlands.frontend.StepControlsSuite distantlands.frontend.BoardDecisionPanelSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/ConsentPanels.scala frontend/src/main/scala/oathdigital/frontend/ParkedDecision.scala frontend/src/main/scala/oathdigital/frontend/GameLogPane.scala frontend/src/test/scala/oathdigital/frontend/ConsentPromptPanelSuite.scala frontend/src/test/scala/oathdigital/frontend/GameLogWithdrawnSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/ConsentPanels.scala frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala frontend/src/main/scala/distantlands/frontend/GameLogPane.scala frontend/src/test/scala/distantlands/frontend/ConsentPromptPanelSuite.scala frontend/src/test/scala/distantlands/frontend/GameLogWithdrawnSuite.scala
 git commit -m "feat(consent): prompt the asked ruler, show the requester's wait, strike a withdrawn request"
 ```
 
@@ -3620,14 +3620,14 @@ git commit -m "feat(consent): prompt the asked ruler, show the requester's wait,
 ### Task 11: Site power labels open the power, with the ruler's grid
 
 **Files:**
-- Create: `frontend/src/main/scala/oathdigital/frontend/SitePowerLinks.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardInspection.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala:133-139`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala:47-48, 92-103` (`siteDetails`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala:153-156, 210`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TableScreen.scala:105-106`
-- Test: `frontend/src/test/scala/oathdigital/frontend/SitePowerGridSuite.scala`
+- Create: `frontend/src/main/scala/distantlands/frontend/SitePowerLinks.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardInspection.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala:133-139`
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala:47-48, 92-103` (`siteDetails`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala:153-156, 210`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TableScreen.scala:105-106`
+- Test: `frontend/src/test/scala/distantlands/frontend/SitePowerGridSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 7's `consentPreferences` and `SitePowerProjection.id`. Task 6's `GameIntent.SetConsentPreference(powerId, requesterId, setting)`. Task 9's `ConsentAsking.name`.
@@ -3641,15 +3641,15 @@ git commit -m "feat(consent): prompt the asked ruler, show the requester's wait,
 
 - [ ] **Step 1: Write the failing tests**
 
-Create `frontend/src/test/scala/oathdigital/frontend/SitePowerGridSuite.scala`:
+Create `frontend/src/test/scala/distantlands/frontend/SitePowerGridSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.all
-import oathdigital.frontend.TestSites.quietSite
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => Intent}
+import distantlands.frontend.Dom.all
+import distantlands.frontend.TestSites.quietSite
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent}
 import org.scalajs.dom
 
 /** A site power's label opens the power, and its ruler's preferences grid
@@ -3754,17 +3754,17 @@ class SitePowerGridSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SitePowerGridSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SitePowerGridSuite"`
 Expected: compilation FAIL, `Not found: ConsentGridRow`.
 
 - [ ] **Step 3: The links, the grid and the overlay**
 
-Create `frontend/src/main/scala/oathdigital/frontend/SitePowerLinks.scala`:
+Create `frontend/src/main/scala/distantlands/frontend/SitePowerLinks.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand}
+import distantlands.protocol.{GameIntent => GameCommand}
 import org.scalajs.dom
 import ServerUiSupport.{button, element, text}
 
@@ -3885,7 +3885,7 @@ In `GameTableShell`'s `CardInspection.onOpen` handler, add:
     }
 ```
 
-`WorldBoardRenderer.world` takes `submit: GameCommand => Unit = _ => ()` after `options` (import `oathdigital.protocol.{GameIntent => GameCommand}` if the file does not already alias it). It passes `SitePowerLinks.of(value, submit)` as the third argument of `siteDetails(site, options, ...)`.
+`WorldBoardRenderer.world` takes `submit: GameCommand => Unit = _ => ()` after `options` (import `distantlands.protocol.{GameIntent => GameCommand}` if the file does not already alias it). It passes `SitePowerLinks.of(value, submit)` as the third argument of `siteDetails(site, options, ...)`.
 
 `TableScreen.scala`: the world becomes
 
@@ -3896,7 +3896,7 @@ In `GameTableShell`'s `CardInspection.onOpen` handler, add:
 
 - [ ] **Step 5: Run the frontend suites**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SitePowerGridSuite oathdigital.frontend.SiteFaceSuite oathdigital.frontend.BoardOptionsRenderSuite oathdigital.frontend.CardInspectionOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SitePowerGridSuite distantlands.frontend.SiteFaceSuite distantlands.frontend.BoardOptionsRenderSuite distantlands.frontend.CardInspectionOverlaySuite"`
 Expected: PASS. `SiteFaceSuite` reads `.site-power` text and title, which a button keeps.
 
 - [ ] **Step 6: Run the whole frontend suite**
@@ -3907,7 +3907,7 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add frontend/src/main/scala/oathdigital/frontend/SitePowerLinks.scala frontend/src/main/scala/oathdigital/frontend/CardInspection.scala frontend/src/main/scala/oathdigital/frontend/CardInspectionOverlay.scala frontend/src/main/scala/oathdigital/frontend/GameTableShell.scala frontend/src/main/scala/oathdigital/frontend/ServerUiSupport.scala frontend/src/main/scala/oathdigital/frontend/WorldBoardRenderer.scala frontend/src/main/scala/oathdigital/frontend/TableScreen.scala frontend/src/test/scala/oathdigital/frontend/SitePowerGridSuite.scala
+git add frontend/src/main/scala/distantlands/frontend/SitePowerLinks.scala frontend/src/main/scala/distantlands/frontend/CardInspection.scala frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala frontend/src/main/scala/distantlands/frontend/GameTableShell.scala frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala frontend/src/main/scala/distantlands/frontend/TableScreen.scala frontend/src/test/scala/distantlands/frontend/SitePowerGridSuite.scala
 git commit -m "feat(consent): open a site power from its label, with its ruler's preference grid"
 ```
 

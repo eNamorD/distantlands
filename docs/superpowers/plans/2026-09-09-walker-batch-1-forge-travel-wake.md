@@ -128,8 +128,8 @@ actually touch have room: `OathRulesWalker.scala` 362, `OathRules.scala` 396,
 > **Done** at `f9fa243`. The registry entry owns the window; `modifierWindow` is `Option` because not every action has one. Proven by mutation: restoring the hardcoded window fails the two window-dependent tests and leaves the `None` case passing.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/gameplay/walker/WalkerActionRegistry.scala`, `src/main/scala/oathdigital/gameplay/OathRules.scala`, `src/main/scala/oathdigital/application/GameApplicationService.scala`
-- Test: `src/test/scala/oathdigital/gameplay/walker/WalkerActionRegistrySuite.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/WalkerActionRegistry.scala`, `src/main/scala/distantlands/gameplay/OathRules.scala`, `src/main/scala/distantlands/application/GameApplicationService.scala`
+- Test: `src/test/scala/distantlands/gameplay/walker/WalkerActionRegistrySuite.scala`
 
 `OathRules.offerableWalkerPowers` and `validateModifiers` both name `PowerWindow.RecoverModifierSelection` as a literal. With one registered action that reads as harmless; the moment a second action registers, every action's player-selected powers are filtered through Recover's window and a Forge modifier is either wrongly offered or wrongly rejected. This is a known open item and it blocks every later task, so it lands first, alone, while Recover is still the only action and the change is provably behaviour-preserving.
 
@@ -151,8 +151,8 @@ actually touch have room: `OathRulesWalker.scala` 362, `OathRules.scala` 396,
 > **Done** at `9f0f16c`. Verified a pure move byte-for-byte — the extracted block compares identically against the new file but for the trait's closing brace. `OathRules.scala` 800 → 466, `OathRulesWalker.scala` 374. No test file was edited, which was the acceptance criterion.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/OathRulesWalker.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/OathRules.scala`
+- Create: `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`
+- Modify: `src/main/scala/distantlands/gameplay/OathRules.scala`
 
 Inserted after Task 1 reported that `OathRules.scala` now sits at exactly 800 lines — the cap `scripts/check-architecture.py` enforces, which fails at 801. Task 1 reached it by tightening doc comments, which is not a strategy that survives another round. Tasks 3, 5 and 7 all modify this file, and Task 5 in particular must thread a travel destination through `startWalker`. The next line added to `OathRules` fails the build, and the global constraints forbid raising the cap.
 
@@ -175,8 +175,8 @@ The mechanism is the implementer's call — a trait `OathRulesWalker` that `Oath
 > **Done** at `d46f511`, later migrated to the declarative contract by `9e078cc`. **This task answered the batch's central question: the recipe generalises.** No engine change, no new `Operation` case, no new window. The prose above was rewritten afterwards to describe the declarative shape Forge now has.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/forge/ForgeProcedure.scala`
-- Test: `src/test/scala/oathdigital/gameplay/ForgeProcedureSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/forge/ForgeProcedure.scala`
+- Test: `src/test/scala/distantlands/gameplay/ForgeProcedureSuite.scala`
 
 Declared tree, mirroring `Forge.handle`/`Forge.evolve`'s observable flow:
 
@@ -209,10 +209,10 @@ The relic id is the authoritative relic-deck top and is **not** closed over by t
 > **Done** at `4f209b3` → `b0640e8` → `b49ff11`, in the three-commit split R23 allowed. Step 2b (the eligibility window) and Step 2c (the codec branch) both landed here. Two accepted deviations: `OathContinue.AwaitingForgeAssignment` survives because the registry entry's own `continuationFor` returns it, exactly as Recover's continuations survived its cutover; and the per-command decision id became a constant, which is the walker's established model rather than a Forge regression.
 
 **Files:**
-- Modify: `src/main/scala/oathdigital/model/ActionRef.scala`, `WalkerActionRegistry.scala`, `OathRulesWalker.scala`, `OathRules.scala`, `WalkerDecisionProjector.scala`, `GameIntentMapper.scala`, `LegalActionProjector.scala`, `PendingProcedureProjector.scala`, `GameApplicationService.scala`, `frontend/.../ActionDecisionRenderer.scala`
+- Modify: `src/main/scala/distantlands/model/ActionRef.scala`, `WalkerActionRegistry.scala`, `OathRulesWalker.scala`, `OathRules.scala`, `WalkerDecisionProjector.scala`, `GameIntentMapper.scala`, `LegalActionProjector.scala`, `PendingProcedureProjector.scala`, `GameApplicationService.scala`, `frontend/.../ActionDecisionRenderer.scala`
 
 Note (from Task 1b): the walker command surface now lives in `OathRulesWalker.scala`, not `OathRules.scala` — `startWalker`, `buildWalker` and `rollDecisionId`'s call site are all there. `OathRules.scala` keeps `declaredWalkerTree` and `eligibilityRelaxed`.
-- Delete: `src/main/scala/oathdigital/gameplay/actions/Forge.scala`'s `Forge` object (keeping `ForgeRules`, which `ForgeProcedure` consumes), the `ForgeStarted`/`ForgeCompleted` event cases, their `ActionEventCodec` branches and `GameEventWire` types, `PendingProcedure.Forge`, `OathContinue.AwaitingForgeAssignment`, and `ForgeCommand`.
+- Delete: `src/main/scala/distantlands/gameplay/actions/Forge.scala`'s `Forge` object (keeping `ForgeRules`, which `ForgeProcedure` consumes), the `ForgeStarted`/`ForgeCompleted` event cases, their `ActionEventCodec` branches and `GameEventWire` types, `PendingProcedure.Forge`, `OathContinue.AwaitingForgeAssignment`, and `ForgeCommand`.
 
 `ActionRef` gains `Forge` and `ActionRef.all` gains it in the same edit — `WalkerActionRegistrySuite` asserts the registry covers `ActionRef.all`, so a missing entry fails loudly rather than at runtime. The entry declares `fallbackKind = MajorActionKind.Forge`, `modifierWindow = Some(PowerWindow.ForgeModifierSelection)`, no `rollDecisionId` park (Forge has no `Roll` node — see the note below), and `continuationFor` mapping `"forge.assignment"` to its client-facing continuation.
 
@@ -236,9 +236,9 @@ Note (from Task 1b): the walker command surface now lives in `OathRulesWalker.sc
 > **Done** at `d8d6853`, hardened over two review rounds to `2e4a0a6`. **CR1 superseded R29 in one respect:** `PowerCtx` now carries the generic hooked `operation`, so a power can inspect the route without the collector or walker knowing Travel. The prose above already reflects that, and R28 resolved to a single mechanism — Coast declares no priority and `shouldIgnore` does the work.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/travel/TravelSitePowers.scala`
-- Modify: `src/main/scala/oathdigital/gameplay/powers/WalkerPowerCatalog.scala`
-- Test: `src/test/scala/oathdigital/gameplay/TravelSitePowersSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/travel/TravelSitePowers.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`
+- Test: `src/test/scala/distantlands/gameplay/TravelSitePowersSuite.scala`
 
 The terrain powers become `ContributingPower`s before Travel's tree exists, so the reconciliation is proven against the collector in isolation rather than tangled with the tree port.
 
@@ -276,7 +276,7 @@ The route facts each `applicable` needs (which site is source, which is destinat
 > **Done** at `c70ec1a`. The typed-cost vocabulary is retired and Step 4's grep is clean. **Review changed one thing in the design below:** "a typed Travel start argument" resolved to a vector of `DecisionOptionRef`, not a per-action payload type — a sealed family enumerating actions would have put per-action knowledge in the model and the journal codec, which the global constraints forbid. The prose below still says "typed start argument"; read it as the registry entry's builders receiving the player's start *selection*. See **What Task 5 settled** after the steps.
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/actions/travel/TravelProcedure.scala`
+- Create: `src/main/scala/distantlands/gameplay/actions/travel/TravelProcedure.scala`
 - Modify: `ActionRef.scala`, `WalkerActionRegistry.scala`, `OathRulesWalker.scala`, the projectors, the frontend renderer
 - Delete: `actions/Travel.scala`'s `Travel` object and `TravelLegality`, `actions/TravelOperationPolicy.scala`, `powers/travel/TravelCostWindow.scala`, `powerresolver/CostContribution` and `SuppressionRegistry` (`PowerContributions.scala`), `TravelPassBlockedCodec`, the `Traveled` event with its codec branch and wire type, and `TravelCommand`
 
@@ -404,8 +404,8 @@ later batch that retires a legacy oracle should expect the same trade.
 ### Task 6: Take Wealth's once-per-turn limit as a power
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/powers/wake/TakeWealthPowers.scala`
-- Test: `src/test/scala/oathdigital/gameplay/TakeWealthPowerSuite.scala`
+- Create: `src/main/scala/distantlands/gameplay/powers/wake/TakeWealthPowers.scala`
+- Test: `src/test/scala/distantlands/gameplay/TakeWealthPowerSuite.scala`
 
 Take Wealth is a site power used at most once per turn per site, tracked as a `PowerUseRef` in `TurnState.usedPowers`. The spec's standing decision is that this tracking stays state and no walker code reads it. That decision predates any walker action needing it, and this task tests whether it survives contact.
 
@@ -502,7 +502,7 @@ frontend is untouched by this task, so its gate is Task 7's to run.
 ### Task 7: Wake cuts over and its legacy path is deleted
 
 **Files:**
-- Create: `src/main/scala/oathdigital/gameplay/phases/wake/TakeWealthProcedure.scala`
+- Create: `src/main/scala/distantlands/gameplay/phases/wake/TakeWealthProcedure.scala`
 - Modify: `ActionRef.scala`, `WalkerActionRegistry.scala`, the projectors, the frontend renderer
 - Delete: `phases/Wake.scala`'s `Wake` object, `phases/TakeWealthRules.scala`, `phases/WakeOperationPolicy.scala`, the `WealthTaken` event with its codec branch and wire type, and `WakeCommand.TakeWealth`
 
@@ -798,7 +798,7 @@ only.
 | `RestPowerContinuation` | Rest's power integration | `powers/rest/RestPowerIntegration.scala` |
 | `OathkeeperRecipient` | state-based evaluation, no action | `StateBasedEvaluation.scala` |
 
-All paths are under `src/main/scala/oathdigital/gameplay/`; every case is
+All paths are under `src/main/scala/distantlands/gameplay/`; every case is
 also read by `application/PendingProcedureProjector.scala`, and most by
 `LegalActionProjector.scala`. The `CampaignPlan*` types nested in the
 `PendingProcedure` object are Campaign's supporting vocabulary, not cases,

@@ -29,7 +29,7 @@ wearing one description, and they get three different answers.
    the shared face vocabulary is read rather than restated. The two face tables
    in `serialization` stay as they are.
 
-No shared constants object is created. `shared/src/main/scala/oathdigital/protocol`
+No shared constants object is created. `shared/src/main/scala/distantlands/protocol`
 holds the shapes the two sides mail each other and the codecs for them; a
 hand-maintained copy of names the engine owns is a different kind of resident,
 and `scripts/check-architecture.py` keeps that module from reaching the engine's
@@ -74,10 +74,10 @@ group, or drops the whole menu to the generic panel, and nothing fails.
 and `MenuPanel` re-derived it by holding the ids. The split is a printed Oath
 rule, so it gets a name:
 
-- `ActionClass` (`Major`, `Minor`) in `oathdigital.model`, carried by
+- `ActionClass` (`Major`, `Minor`) in `distantlands.model`, carried by
   `ActOffer`.
 - `OptionGroup` (`Major`, `Minor`, `Power`, `Ending`, `Other`) in
-  `oathdigital.model`, carried by a new `DecisionOption.Grouped` decorator
+  `distantlands.model`, carried by a new `DecisionOption.Grouped` decorator
   alongside `Priced`, `Badged`, `Unavailable` and `Warned`.
 - `DecisionOptionProjection.group`, an optional tag on the wire.
 

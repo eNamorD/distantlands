@@ -1,0 +1,28 @@
+package distantlands.frontend
+
+import distantlands.protocol.GameIntent => GameCommand
+
+/** What a panel or the board may do to the session: stage a draft or send a
+  * command. Two members; a renderer reads its drafts as values and never
+  * asks the session for them.
+  */
+private[frontend] trait TableControls:
+  /** Replaces one slot of the draft set and redraws the table. */
+  def stage(draft: Draft): Unit
+  def submitCommand(command: GameCommand): Unit
+
+/** The development toolbar's view of the session: which game and seat,
+  * whether it is connected, and the three ways to change it.
+  */
+private[frontend] trait SessionControls:
+  def currentGameId: String
+  def currentPlayerId: String
+  def displayedProjection: Option[GameProjection]
+  def loadSession(gameId: String, playerId: String): Unit
+  def reconnectSession(): Unit
+  def createGame(): Unit
+  /** Fetches the client the server is now serving. The screen offers it when
+    * this build cannot parse the position; it is the same path Reconnect
+    * takes to the session.
+    */
+  def reloadClient(): Unit

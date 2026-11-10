@@ -18,7 +18,7 @@
 
 **Commands and workflow**
 - Build and test with `./sbtw` from the repo root:
-  - one suite: `./sbtw "root/testOnly oathdigital.testkit.TableSuite"`
+  - one suite: `./sbtw "root/testOnly distantlands.testkit.TableSuite"`
   - everything: `./sbtw root/test`
 - Never use `preview_start`. It hits the live DB.
 - Never stage or commit `docs/ROADMAP.md`. Another session edits it.
@@ -102,9 +102,9 @@ These are part of every migration task.
 
 ## File structure
 
-- **Create** `src/test/scala/oathdigital/testkit/Table.scala`: `Table` (the builder) and `CatalogNames` (name → id resolution with close-match errors).
-- **Create** `src/test/scala/oathdigital/testkit/Look.scala`: the read side.
-- **Create** `src/test/scala/oathdigital/testkit/TableSuite.scala`: the builder's own tests.
+- **Create** `src/test/scala/distantlands/testkit/Table.scala`: `Table` (the builder) and `CatalogNames` (name → id resolution with close-match errors).
+- **Create** `src/test/scala/distantlands/testkit/Look.scala`: the read side.
+- **Create** `src/test/scala/distantlands/testkit/TableSuite.scala`: the builder's own tests.
 - **Modify** `CONTEXT.md`: add **Table**, amend **Situation**.
 - **Modify** each fixture and suite listed in Tasks 2–9. Delete the fixture board builders as they empty.
 - **Modify** `docs/superpowers/specs/2026-09-27-test-table-builder-design.md`: status line at the end (Task 10).
@@ -114,9 +114,9 @@ These are part of every migration task.
 ### Task 1: `Table`, `CatalogNames`, `Look`, `situation`
 
 **Files:**
-- Create: `src/test/scala/oathdigital/testkit/Table.scala`
-- Create: `src/test/scala/oathdigital/testkit/Look.scala`
-- Create: `src/test/scala/oathdigital/testkit/TableSuite.scala`
+- Create: `src/test/scala/distantlands/testkit/Table.scala`
+- Create: `src/test/scala/distantlands/testkit/Look.scala`
+- Create: `src/test/scala/distantlands/testkit/TableSuite.scala`
 - Modify: `CONTEXT.md` (the **Situation** entry, around line 101)
 
 **Interfaces:**
@@ -150,13 +150,13 @@ These are part of every migration task.
 - [ ] **Step 1: Write the failing `TableSuite`**
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.{GameCommand, StartPayload}
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.application.{GameCommand, StartPayload}
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 import Table.{p1, p2, p3}
 
 /** `Table` builds rule-test states from the real game start without the
@@ -293,29 +293,29 @@ class TableSuite extends munit.FunSuite:
     assertEquals(Look(travelled.state).pawn(p1), CatalogNames.site("Dunes"))
 
   test("a journaled situation cannot start at a table, since a stream begins with GameStarted"):
-    val service = oathdigital.application.ParkedServiceFixture.service()
+    val service = distantlands.application.ParkedServiceFixture.service()
     val driver = Situation.journaled(service, catalog, "table")
     intercept[munit.FailException](Table.start.situation(driver))
 ```
 
 Notes:
-- `ParkedServiceFixture.service()` may not exist under that name. Before running, open `src/test/scala/oathdigital/application/ParkedServiceFixture.scala` and use whatever it exposes to build a `GameApplicationService` (for example the helper that `woken` uses). If it has none, build one the way `ParkedServiceFixture` does.
+- `ParkedServiceFixture.service()` may not exist under that name. Before running, open `src/test/scala/distantlands/application/ParkedServiceFixture.scala` and use whatever it exposes to build a `GameApplicationService` (for example the helper that `woken` uses). If it has none, build one the way `ParkedServiceFixture` does.
 - Check the Muster expectation against `EconomyFixture`'s Muster test (`MusterProcedureSuite`, "Muster costs one Supply…"): favor −1, Supply −1, warbands +1 with no matching adviser, and 1 favor on the card.
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.TableSuite"`
+Run: `./sbtw "root/testOnly distantlands.testkit.TableSuite"`
 Expected: compilation fails with "Not found: Table" / "Not found: Look".
 
 - [ ] **Step 3: Write `Table.scala`**
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Names as the catalog prints them, resolved to ids. An unknown name fails
   * the test and lists the five closest names, so a typo reads as one. */
@@ -685,15 +685,15 @@ object Table:
     case other => other.toString
 ```
 
-Before compiling, check `CardIndexProblem.DuplicateCard`'s real field list in `src/main/scala/oathdigital/model/CardIndex.scala` (around line 40). Adjust the pattern in `describe` to match, keeping the card name and its locations in the message.
+Before compiling, check `CardIndexProblem.DuplicateCard`'s real field list in `src/main/scala/distantlands/model/CardIndex.scala` (around line 40). Adjust the pattern in `describe` to match, keeping the card name and its locations in the message.
 
 - [ ] **Step 4: Write `Look.scala`**
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** The reads rule tests make of a state, named the way `Table` names what it
   * places. */
@@ -745,7 +745,7 @@ object Look:
 
 - [ ] **Step 5: Run `TableSuite` and fix until green**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.TableSuite"`
+Run: `./sbtw "root/testOnly distantlands.testkit.TableSuite"`
 Expected: all tests pass.
 
 Where a test fails because of a real game rule, fix the test's staging and keep the intent. For example, if Travel to Dunes is not reachable from Ancient City for Supply reasons, pick a destination the rules accept and name it in the test. Do not weaken the assertions.
@@ -781,7 +781,7 @@ Expected: everything passes (2308 + the new `TableSuite` tests).
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/test/scala/oathdigital/testkit/Table.scala src/test/scala/oathdigital/testkit/Look.scala src/test/scala/oathdigital/testkit/TableSuite.scala CONTEXT.md
+git add src/test/scala/distantlands/testkit/Table.scala src/test/scala/distantlands/testkit/Look.scala src/test/scala/distantlands/testkit/TableSuite.scala CONTEXT.md
 git commit -m "$(cat <<'EOF'
 test(testkit): add a Table builder for rule-test states
 
@@ -807,8 +807,8 @@ EOF
   - `gameplay/powers/economy/`: `CupOfPlentySuite`, `BirdsongSuite`, `AnimalPlaymatesSuite`, `KnightsErrantSuite`, `RowdyPubSuite`
   - `application/`: `GamePresentationProjectorAdviserRedactionSuite`, `SupplyProjectionSuite`, `EconomyProjectionSuite`
 
-  Every path is under `src/test/scala/oathdigital/`.
-- Modify: `src/test/scala/oathdigital/gameplay/EconomyFixture.scala`. Keep `AddAdviserSource` and `FreePayment` (test powers, not a board). Delete `act`, `player`, `spring`, `matchingAdviser`, and the id constants once they are unused.
+  Every path is under `src/test/scala/distantlands/`.
+- Modify: `src/test/scala/distantlands/gameplay/EconomyFixture.scala`. Keep `AddAdviserSource` and `FreePayment` (test powers, not a board). Delete `act`, `player`, `spring`, `matchingAdviser`, and the id constants once they are unused.
 - Consumes: Task 1's `Table`, `Look` and `CatalogNames`.
 
 **What `EconomyFixture.act` hides:**
@@ -864,7 +864,7 @@ Expected: no output. Then delete those members.
 
 - [ ] **Step 4: Run the 13 suites, then the full suite**
 
-Run: `./sbtw "root/testOnly oathdigital.gameplay.*Muster* oathdigital.gameplay.*Trade* oathdigital.gameplay.powers.economy.* oathdigital.application.*Economy* oathdigital.application.*Supply* oathdigital.application.GamePresentationProjectorAdviserRedactionSuite oathdigital.gameplay.EnclosingProcedureSuite oathdigital.gameplay.EconomyWalkerSuite oathdigital.gameplay.SelectionPaymentsSuite"`, then `./sbtw root/test`
+Run: `./sbtw "root/testOnly distantlands.gameplay.*Muster* distantlands.gameplay.*Trade* distantlands.gameplay.powers.economy.* distantlands.application.*Economy* distantlands.application.*Supply* distantlands.application.GamePresentationProjectorAdviserRedactionSuite distantlands.gameplay.EnclosingProcedureSuite distantlands.gameplay.EconomyWalkerSuite distantlands.gameplay.SelectionPaymentsSuite"`, then `./sbtw root/test`
 Expected: all pass, with the same test count per suite as before.
 
 - [ ] **Step 5: Record timings and commit**
@@ -1023,7 +1023,7 @@ Write the Supply arithmetic in the comment, so the reader need not know a defaul
 ### Task 6: Campaign power suites and `PlanDriver`
 
 **Files:**
-- All 19 suites in `src/test/scala/oathdigital/gameplay/powers/campaign/*Suite.scala`, and `PlanDriver.scala`.
+- All 19 suites in `src/test/scala/distantlands/gameplay/powers/campaign/*Suite.scala`, and `PlanDriver.scala`.
 - `CampaignFixture.scala`: delete the board members listed in Task 5.
 
 **Details:**
@@ -1049,8 +1049,8 @@ private def attackerHolds(defenderSecrets: Int): ReadyGame =
 Read `CampaignFixture.againstPlayer` first. Copy exactly what it sets for "defender is a player", such as which site p2 rules, their pawn, and the title, into steps.
 
 - [ ] **Step 2: Migrate the other 18 suites by the shared procedure**
-- [ ] **Step 3: Delete the `Board` family from `CampaignFixture`.** Verify with `grep -rn "Board\b\|board(\|withEnemyAtOrigin\|replacePlayer\|withAdviserFor\|againstPlayer\|raidBoard" src/test/scala/oathdigital/gameplay`: only unrelated hits (for example `PlayerBoardState`).
-- [ ] **Step 4: Run `./sbtw "root/testOnly oathdigital.gameplay.powers.campaign.*"`, then `./sbtw root/test`.** Expected: all pass, and the campaign suites' CPU time drops (record it).
+- [ ] **Step 3: Delete the `Board` family from `CampaignFixture`.** Verify with `grep -rn "Board\b\|board(\|withEnemyAtOrigin\|replacePlayer\|withAdviserFor\|againstPlayer\|raidBoard" src/test/scala/distantlands/gameplay`: only unrelated hits (for example `PlayerBoardState`).
+- [ ] **Step 4: Run `./sbtw "root/testOnly distantlands.gameplay.powers.campaign.*"`, then `./sbtw root/test`.** Expected: all pass, and the campaign suites' CPU time drops (record it).
 - [ ] **Step 5: Commit** as `test(campaign-powers): build battle states with Table`.
 
 ---
@@ -1058,7 +1058,7 @@ Read `CampaignFixture.againstPlayer` first. Copy exactly what it sets for "defen
 ### Task 7: `PowerFixture` family, part 1: `powers/action`
 
 **Files:**
-- The 32 suites and 1 fixture in `src/test/scala/oathdigital/gameplay/powers/action/`, listed by `ls src/test/scala/oathdigital/gameplay/powers/action/`.
+- The 32 suites and 1 fixture in `src/test/scala/distantlands/gameplay/powers/action/`, listed by `ls src/test/scala/distantlands/gameplay/powers/action/`.
 - `PaidActionHarness.scala`, `MovementFixture.scala`.
 
 **Details:**
@@ -1083,7 +1083,7 @@ def use(rules: OathRules, ready: ReadyGame, id: PowerId,
 `DenizenId("93")` becomes `"Gambling Hall"` (verify the name in the catalog JSON). `asAdviser(act(base), id)` becomes `Table.start.adviser(p1, "Gambling Hall").ready`.
 
 - [ ] **Step 3: Migrate the other action suites and `MovementFixture` by the shared procedure**
-- [ ] **Step 4: Run `./sbtw "root/testOnly oathdigital.gameplay.powers.action.*"`, then `./sbtw root/test`.** Expected: all pass.
+- [ ] **Step 4: Run `./sbtw "root/testOnly distantlands.gameplay.powers.action.*"`, then `./sbtw root/test`.** Expected: all pass.
 - [ ] **Step 5: Commit** as `test(action-powers): build states with Table`.
 
 ---
@@ -1176,7 +1176,7 @@ Run:
 ```bash
 grep -rn "execute()\|initialReady" src/test --include=*.scala
 grep -rn "phase = Phase\.\|def inPhase" src/test --include=*.scala
-ls src/test/scala/oathdigital/gameplay/*Fixture.scala src/test/scala/oathdigital/gameplay/powers/*Fixture.scala
+ls src/test/scala/distantlands/gameplay/*Fixture.scala src/test/scala/distantlands/gameplay/powers/*Fixture.scala
 ```
 
 Expected:

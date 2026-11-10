@@ -1,0 +1,28 @@
+package distantlands.application.gamelog
+
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import distantlands.gameplay.powers.action.{Palanquin, PalanquinCard}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2}
+import LogScripts.atTable
+
+/** Journaled Palanquin uses, for the Game Log suites (catalog batch 8,
+  * slice 15). Kept beside `LogScripts`. */
+object PalanquinLogScripts:
+  /** p1 holds Palanquin and 1 favor at Ancient City, where p2 stands too;
+    * p1 sends p2 to Buried Giant. */
+  def palanquinSendsP2ToBuriedGiant(using munit.Location): Script =
+    val table = Table.start.pawn(p2, AncientCitySite)
+      .adviser(p1, PalanquinCard.id).favor(p1, 1).banditsRefilled
+    val (service, act) = atTable("palanquin", table)
+    act.withAnswers {
+      case park if park.decisionId == Palanquin.targetDecisionId =>
+        ChooseOneAnswer(DecisionOptionRef.Player(p2))
+      case park if park.decisionId == Palanquin.destinationDecisionId =>
+        ChooseOneAnswer(DecisionOptionRef.Site(
+          BuriedGiantSite.id))
+    }.after(MenuPlay.start(p1, ActionRef.UsePower(Palanquin.id),
+      Vector(DecisionOptionRef.Denizen(PalanquinCard.id))))
+    Script("palanquin", service, p1)

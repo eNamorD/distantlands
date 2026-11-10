@@ -1,0 +1,99 @@
+package distantlands.frontend
+
+import org.scalajs.dom
+import scala.concurrent.Future
+import scala.scalajs.js
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+
+/** Real jsdom mount with observable browser boundaries.
+  *
+  * jsdom's `window` and `document` cannot be replaced, so the seams the trusted
+  * UI touches (history, timers, clipboard, credential storage) are overridden in
+  * place and restored by `close()`.
+  */
+private[frontend] final class TestBrowser(search: String = ""):
+  private val browser: js.Dynamic = new js.Function("search", """return (() => {
+    const urls = [], timers = [], copied = [];
+    const saved = { href: window.location.href, setTimeout: window.setTimeout,
+      clearTimeout: window.clearTimeout };
+    const mount = document.createElement('main');
+    document.body.appendChild(mount);
+    window.history.replaceState(null, '', search === '' ? window.location.pathname : search);
+    window.history.replaceState = function (_, title, url) { urls.push(url); };
+    window.setTimeout = function (f) { timers.push(f); return timers.length; };
+    window.clearTimeout = function (id) { timers[id - 1] = null; };
+    const define = (target, key, descriptor) =>
+      Object.defineProperty(target, key, Object.assign({ configurable: true }, descriptor));
+    // jsdom has no ResizeObserver; the map viewport only needs it to exist.
+    const stubbedObserver = !window.ResizeObserver;
+    if (stubbedObserver) define(window, 'ResizeObserver', { value: class {
+      observe() {} unobserve() {} disconnect() {} } });
+    define(window.navigator, 'clipboard', { value: {
+      writeText(t) { copied.push(t); return Promise.resolve(); } } });
+    for (const key of ['localStorage', 'sessionStorage'])
+      define(window, key, { get() { throw Error('Unexpected credential storage'); } });
+    define(document, 'cookie', { get() { throw Error('Unexpected cookie access'); } });
+    return { mount, urls, copied,
+      all() { return [mount, ...mount.querySelectorAll('*')]; },
+      tick() { const f = timers.find(f => f); const i = timers.indexOf(f);
+        if (f) { timers[i] = null; f(); } },
+      close() {
+        delete window.history.replaceState;
+        window.setTimeout = saved.setTimeout;
+        window.clearTimeout = saved.clearTimeout;
+        delete window.navigator.clipboard;
+        if (stubbedObserver) delete window.ResizeObserver;
+        delete window.localStorage; delete window.sessionStorage;
+        delete document.cookie;
+        window.history.replaceState(null, '', saved.href);
+        mount.remove();
+      }
+    };
+  })()""").asInstanceOf[js.Function1[String, js.Dynamic]](search)
+  val mount: dom.Element = browser.mount.asInstanceOf[dom.Element]
+  def text: String = mount.textContent
+  def nodes: Vector[dom.Element] = browser.all().asInstanceOf[js.Array[dom.Element]].toVector
+  def byClass(name: String): Vector[dom.Element] =
+    nodes.filter(node => Option(node.getAttribute("class")).exists(_.split(" ").contains(name)))
+  def input(label: String): dom.html.Input =
+    nodes.find(_.getAttribute("aria-label") == label).get.asInstanceOf[dom.html.Input]
+  def click(name: String): Unit =
+    byClass(name).head.asInstanceOf[js.Dynamic].onclick(
+      js.Dynamic.literal(preventDefault = (() => ()): js.Function0[Unit]))
+  def change(name: String): Unit =
+    byClass(name).head.asInstanceOf[js.Dynamic].onchange(
+      js.Dynamic.literal(preventDefault = (() => ()): js.Function0[Unit]))
+  def tick(): Unit = { browser.tick(); () }
+  def urls: Vector[String] = browser.urls.asInstanceOf[js.Array[String]].toVector
+  def copied: Vector[String] = browser.copied.asInstanceOf[js.Array[String]].toVector
+  def close(): Unit = { browser.close(); () }
+  /** Lets the Future callbacks queued so far run: each of 12 chained hops
+    * gives them one more turn of the JS microtask queue. The UI
+    * suites pass with 12; it is not measured as a minimum.
+    */
+  def settle: Future[Unit] = (1 to 12).foldLeft(Future.successful(())):
+    (previous, _) => previous.flatMap(_ => Future.successful(()))
+
+private[frontend] object TestBrowser:
+  /** Runs `body` against a fresh browser opened at `search`, and closes the
+    * browser once the future `body` returns completes, whether it succeeds
+    * or fails. A body that throws before it returns a future closes the
+    * browser too.
+    */
+  def use[A](search: String = "")(body: TestBrowser => Future[A])
+      : Future[A] =
+    val browser = new TestBrowser(search)
+    val finished =
+      try body(browser)
+      catch case failure: Throwable =>
+        browser.close()
+        throw failure
+    finished.andThen { case _ => browser.close() }
+
+  /** Runs `body` against a fresh browser opened at `search`, and closes the
+    * browser when `body` returns or throws.
+    */
+  def useSynchronously[A](search: String = "")(body: TestBrowser => A): A =
+    val browser = new TestBrowser(search)
+    try body(browser)
+    finally browser.close()

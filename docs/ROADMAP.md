@@ -1,4 +1,4 @@
-# Oath Digital Roadmap
+# Distant Lands Roadmap
 
 This is the forward-looking project-level source of truth for planned work.
 When a task is done, it should be deleted from this file.
@@ -9,17 +9,7 @@ specs.
 
 ## Now
 
-**Phase - Cleanup tasks** holds what finished phases left behind. Catalog
-batch 7 (Campaign dice) landed on 2026-10-10; what it left behind is under
-Cleanup tasks. Catalog batch 8 landed on 2026-10-18 and catalog batch 9 on
-2026-11-02; the
-[batch 9 design](superpowers/specs/2026-11-02-catalog-batch-9-design.md)
-records its slices, rulings and what remains engine-blocked.
-
-## Next
-
-Work toward a playable all-Exile alpha before expanding into the Chronicle,
-campaign-continuity and Empire rules.
+**Phase - Cleanup tasks** holds what finished phases left behind.
 
 ### Phase - Cleanup tasks
 
@@ -32,6 +22,22 @@ Left behind by earlier phases:
   proportions are deliberate (DESIGN.md), so the fix is a visible scroll
   cue or a smaller decision header rather than new proportions. Observed in
   the browser during the clean-up run of 2026-10-23.
+- [ ] **Call the pane "Actions" on the desktop too.** The desktop heading
+  says "Action Selection" (`GameTableShell`); the phone tab, DESIGN.md and
+  CONTEXT.md say "Actions" or "action pane". Only the 2026-09-08 Arcs spec
+  uses the long form. Needs the owner's word before the string changes.
+- [ ] **Name the last unnamed design tokens.** DESIGN.md quotes `#e8d9bb`
+  (Control-face text), `#a98b58` (badge border), `#282117` (Action fill),
+  `#bca780` and the 7px control radius as literals with no token name, so
+  the Impeccable detector keeps reporting them (55 advisory findings at
+  `a992ea30`), and it flags 11px as off the type ramp although DESIGN.md
+  sets an 11px floor. Name them in DESIGN.md and its sidecar, then make the
+  stylesheet reference the names.
+- [ ] **Check Plan Aid's steppers at a live Campaign decision.** The
+  2026-11-06 clean-up gave `.plan-aid-step` the Control face and verified
+  the computed style on a synthetic button, but no browser session reached
+  a Plan Aid decision. Confirm the −/+ pair sits level with the amount
+  between them.
 
 Left behind by the
 [consent work](superpowers/specs/2026-10-08-consent-system-design.md):
@@ -47,6 +53,17 @@ Left behind by the
   Recorded in the
   [service log start states design](superpowers/specs/2026-09-28-service-log-start-states-design.md).
   The consent play-test below needs it.
+- [ ] **Keep consent preferences across a one-turn handover.** The reset
+  (consent ruling 17) clears a granter's standing preferences whenever
+  `ConsentPowers.granter` names someone else, and the turn decides that
+  for the Empire's cards: a Citizen's turn and the Grand Mask's wearer's
+  turn each take the cards from the Chancellor, so the Chancellor loses
+  every Always and Never on them, and the turn player loses theirs when
+  the turn ends. Comparing `ConsentDesk.stale` against the ruler outside
+  any turn would keep them. Accepted for now in
+  [catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-2-card-level-ruler)
+  and pinned by `GrandMaskConsentPreferenceSuite`; a change needs the
+  owner's ruling and updates that suite.
 - [ ] **Play-test consent in a browser.** The amber destination, campaign
   target, faceup Vision, Hall-protected card and free option of a toll, the confirmation, the
   ruler's prompt, automatic answers, the preferences grid and withdrawing
@@ -67,46 +84,18 @@ did":
 - [ ] The same summary filling in while a Campaign runs: the dice on each
   side as battle plans are chosen, and the sacrificed warbands.
 
-### Phase - Catalog batch - engine-blocked
-
-Cards that need an engine change first, grouped by the missing mechanism.
-[Catalog batch 9](superpowers/specs/2026-11-02-catalog-batch-9-design.md)
-(landed 2026-11-02) implemented every edifice face whose mechanisms the
-engine had; its [Out of scope](superpowers/specs/2026-11-02-catalog-batch-9-design.md#out-of-scope)
-section describes each seam below in a paragraph.
-
-- **Live terrain:** Grand Canal, Lost Lagoon.
-- **Round advance and the round die:** Great Clock, Broken Clock, Shattered
-  Portal.
-- **Recover source:** Drowned Library.
-- **Discard replacement with a question:** Wild Pastures.
-- **Own-power lock exemption:** Giant's Path.
-- **Dispossessed shuffles:** Great Spire, Fallen Spire, Pilgrimage.
-- **Vision collection:** Desecrated Ground.
-- **As-if ruler:** Bandit Crown.
-- **Favor source redirection:** Vow of Kinship.
-- **An askable Act action:** consent for Relic Patrols and Bandit Patrols.
-- **Challenge** (`legalBanners` is hard-coded, no ribbon adjustment): School
-  of Vines, Sigil of the Eye, Sigil of the Heart, Favored Son, Magician's
-  Code.
-- **Unchanged from batch 8:** Search Party (recorded in the
-  [catalog batch 4 rulings](superpowers/specs/2026-10-05-catalog-batch-4-rulings.md#moved-out-of-the-batch)),
-  Bracken, Cracked Horn and Ring of Devotion (a discard destination),
-  Master of Disguise and Acting Troupe (acting as another card), Relic
-  Hunter and Glamor (new target kinds), Autumn Wind, Tracker, Obsidian
-  Cage and False Prophet (a player-aware off-turn card play).
-
 ### Phase - All-Exile alpha readiness
 
-`0.1.0-alpha.2` and `0.1.0-alpha.3` shipped as GitHub prereleases through the
+`0.1.0-alpha.2`, `0.1.0-alpha.3` and `0.1.0-alpha.4` shipped as GitHub prereleases through the
 [alpha release workflow](operations/releases.md), each with bundled archives
 for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
-[recorded](testing/alpha-acceptance-0.1.0-alpha.2.md); `0.1.0-alpha.3` shipped
-without one. Deferred findings and requested UI changes are in the
+[recorded](testing/alpha-acceptance-0.1.0-alpha.2.md); `0.1.0-alpha.3` and
+`0.1.0-alpha.4` shipped without one. Deferred findings and requested UI changes are in the
 [Phase 5 follow-ups](operations/phase-5-follow-ups.md).
 
 - [ ] **Unanswered off-turn decisions.** A parked decision blocks every
-  command until its owner answers. There are no timeouts, forfeits or host
+  command until its owner answers; a `Simultaneous` park waits on every
+  player who still owes an answer. There are no timeouts, forfeits or host
   resolution. Recorded in the
   [walker ownership and phases design](superpowers/specs/2026-09-12-walker-ownership-and-phases-design.md).
 - [ ] **Reconnection UX.** After a client loses its connection it should
@@ -116,8 +105,8 @@ without one. Deferred findings and requested UI changes are in the
   [follow-ups](operations/phase-5-follow-ups.md#deferred-defects): bracketed
   `[::1]` rejected as loopback, the frontend linker on the test classpath,
   the test `index.html` fixture shadowing the generated one, the hardcoded
-  `oathdigital:root` assertion, and no Docker `HEALTHCHECK`. Also document
-  host bind mounts at `/var/lib/oathdigital` in the configuration guide.
+  `distantlands:root` assertion, and no Docker `HEALTHCHECK`. Also document
+  host bind mounts at `/var/lib/distantlands` in the configuration guide.
 - [ ] **Several seats in one browser.** Opening a second seat's link for the
   same game in one browser profile silently replaces the first seat, because
   `/s/{seat-code}` sets one cookie name scoped to `/games/{game-id}` and
@@ -128,8 +117,8 @@ without one. Deferred findings and requested UI changes are in the
   the redirect avoids, and update the network guide and quick start.
 - [ ] **A lighter way to test separate-machine play.** The manual
   [acceptance record](operations/alpha-acceptance.md) takes two physical
-  machines and a lot of hand-recorded evidence, so `0.1.0-alpha.3` shipped
-  without one. Find a cheaper check for what it covers (LAN reachability,
+  machines and a lot of hand-recorded evidence, so `0.1.0-alpha.3` and
+  `0.1.0-alpha.4` shipped without one. Find a cheaper check for what it covers (LAN reachability,
   seat links opening on another machine, reconnect and restart, HTTPS proxy
   and origin behavior, and the bundled archives' first launch on each OS),
   ideally something a release run can execute or that takes minutes by hand.
@@ -141,7 +130,7 @@ A Negotiation deal holds favor and relic transfers and disclosures only. Add
 promises about future actions, transfers of secrets, advisers, sites and
 banners, remote and private Negotiation, a registry of term kinds, and
 eligibility powers. Record ignored Negotiation rules per participant rather
-than for the actor only. Citizenship offers belong to the Empire phase.
+than for the actor only.
 
 - [ ] **Negotiation cards.** The Gathering and Whispering Stone need a nested
   Negotiation with its own participants. Council Arbiter, Deed Writer and
@@ -151,30 +140,38 @@ than for the actor only. Citizenship offers belong to the Empire phase.
 ### Phase - Chronicle steps
 
 After the all-Exile alpha, implement the Chronicle and persistent campaign:
-generalized later-game setup, Atlas transitions, Chronicle tasks, world
-reconstruction, Reliquary changes, Foundation mutation, Legacy
-activation/scoring, Oathkeeper goal changes, era scoring, saved-campaign
-continuation, and campaign browsing.
+Foundation mutation, Legacy activation and scoring, and era scoring.
 
-- [ ] **End-of-game Chronicle steps.**
-- [ ] **Enduring (Ancient City).** Its cards are not discarded in the
-  Chronicle Phase's Shape Empire step, which the engine does not have yet.
-- [ ] **Chronicle import and export.** The Chronicle string codec for the TTS
-  format, including the sections that format has not defined yet.
-- [ ] **Foundations.**
+- [ ] **Foundations.** Fills the Beacon's empty Shape Foundation window.
+  Game start also sets every foundation to its normal face and ignores the
+  Chronicle's stored faces.
+  Game start also refuses a later game with no Chancellor and no Citizen
+  seated, which needs Foundation I's altered face, Wide Horizons, and its
+  Explore action.
 - [ ] **The Grand Council and Festival banner faces.** Legacies that set
   Foundation V or VI turn the banners to these faces. Their ids are in
   `RuleSourceIndex`, and the faces have no behaviour.
-- [ ] **Legacies.**
-- [ ] **Eras.**
+- [ ] **Legacies.** Fills the Sun's empty steps 2-5 and the legacy bonus in
+  Score Lineage Points. Game start refuses a seated lineage's legacies and
+  starting relics until then.
+- [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
+- [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
+  "Coming in a later release". Edits a saved Chronicle's fields in the
+  browser.
 
-### Phase - Empire
+### Phase - Settings Feature
 
-After the Chronicle steps phase, implement Chancellor/Citizen roles, Imperial
-forces, Grand Scepter and Reliquary behavior, Citizenship through Negotiation,
-Successor goals, forced and self-exile, Imperial setup/turn/end rules, and the
-remaining production authentication work needed for broader hosting. Empire
-defenders in a Campaign are not modelled either.
+Settings players can change during a game.
+
+- [ ] **Ignore Citizenship powers.** Toggle the first-game option that
+  ignores "become a Citizen" powers. Game start sets it, and nothing changes
+  it during a game ([Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md),
+  slice 3).
+- [ ] **Hover warnings.** Show warnings on hover, turn them off, or disable
+  the options that carry a warning.
+- [ ] **Hide disabled options.** Hide options instead of showing them
+  disabled with a reason.
+- [ ] **Names.** Change lineage and player names.
 
 ### Phase - Gameplay completeness gate
 
@@ -193,19 +190,24 @@ one.
 - [ ] **Simultaneous setup effects.** The Chancellor or first player should
   resolve simultaneous setup effects; site order is used until then. Still to
   add: player choices earlier in setup once foundations and legacies exist,
-  such as the Chancellor choosing Recent or Forgotten sites; later-game setup
-  (Empire `world` sites, stored denizens and relics); and WHEN EXPLORED
-  triggers once an explore procedure exists. The Chronicle string codec is
-  under **Phase - Chronicle steps**.
-- [ ] **Desecrated Ground.** E08's ruined face lets an Exile at its
-  site keep any number of revealed Visions, which turns
-  `PlayerState.revealedVision` into a collection across card play, projection,
-  Vision victory, the frontend and the save format. E08 never appears in
-  generated games, since the Nomad homeland becomes E06. Do it when E08 can
-  appear. Recorded in the
-  [rule gaps design](superpowers/specs/2026-09-26-rule-gaps-in-implemented-cards-design.md).
+  such as the Chancellor choosing Recent or Forgotten sites; and WHEN
+  EXPLORED triggers once an explore procedure exists.
+- [ ] **Keyboard focus on the Chronicle pages.** A redraw of the Chronicle
+  page drops the focused control, and the table's save dialog does not trap
+  focus. Do it with the next accessibility pass over the start pages.
 
 ### Game Log deferred items
+
+- [ ] **Phase headlines inside an action.** A power or minor action that
+  ends the Act phase (Murky Fountain, Wizard School, Special Envoy, the
+  Grand Scepter's Action, self-exile) posts its "Rest" headline before the
+  action's own line, so the action reads as part of Rest. Hold a headline
+  raised inside an action until after that action's lines. The
+  `scepter-citizen` and `self-exiled` golden logs show it.
+- [ ] **First-player marker with a Chancellor.** `GameProjection` sends
+  `setup.firstPlayer` as the first player, but with a Chancellor seated
+  rounds start from `tracks.roundStarter`. Send the round's starter so the
+  board's marker points at the player who began the round.
 
 - [ ] **Show a parked action's progress in the waiting message.**
   The Game Log posts a line only once its facts are complete, so an action
@@ -223,14 +225,6 @@ one.
   target is empty, or a bank with no stock. The game should warn the player
   before they commit, without refusing the choice. Recorded while designing
   Catalog batch 2.
-- [ ] **Improve the Game Log lines the wording ledger collects.** The
-  procedures-journal-their-notes migration, done 2026-10-17, kept wording
-  fixed inside its commits, so a golden diff meant one thing. The lines it
-  passed over are listed in the
-  [wording ledger](superpowers/specs/2026-10-16-game-log-wording-ledger.md), each
-  with where it is built and why it is worth a second look. Recorded in the
-  [procedures journal their own notes design](superpowers/specs/2026-10-16-procedures-journal-their-notes-design.md).
-  Audited in the [wording audit](testing/audits/game-log-wording-audit.md).
 - [ ] **A card play's line before the lines its own batch causes.**
   `WalkerSteps.recordBatch` runs `AdviserArrivalPass.after` and an executed
   trigger's follow-up inside the play's own leaf, so a power whose effect
@@ -239,19 +233,20 @@ one.
   front needs it journaled inside that batch, and a `Note` is not a
   `CoreOperation`. See the wording ledger, "A card play's line now follows
   the lines its own batch caused". Recorded in the procedures journal their
-  own notes design of 2026-10-16.
-- [ ] **Check that a split delta's steps bracket their operation.**
-  `DetailLines.deltas` wraps each split part in
-  `OpStep(part, step.before, step.after)`, so every part carries the whole
-  step's before and after states rather than its own. A line that reads
-  visibility from those states may show or hide the wrong thing. Write a test
-  that splits a step with a hidden part before changing anything. Two
-  smaller leftovers sit beside it: `GameLogFormatter.format` re-applies the
-  whole journal once per standing undo marker on every request for every
-  seat, and `formatAppended` takes `stateBefore` and `lastStateAfter`
-  without checking them. Recorded as separate candidates in the
-  [log operation strictness decision](superpowers/specs/2026-10-19-log-operation-strictness-decision.md).
-  Audited in the [split delta audit](testing/audits/split-delta-bracketing-audit.md).
+  own notes design of 2026-10-16. False Prophet shows it most: a claimed
+  Vision's owner's reveal line reads after the claimant's play and the
+  kill, and a nested claim's lines read before the outer claimant's reveal
+  ([catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-8-nested-follow-ups),
+  slices 7 and 8).
+- [ ] **Name whose Vision a claimant discards.** When False Prophet's
+  claimant reveals the claimed Vision off turn, their own discarded Vision
+  posts the generic "Discarded Vision of Sanctuary to the Provinces
+  discard", which names no player. Give the discard line the off-turn
+  variant the reveal and kept lines have. Left by catalog batch 11, slice 8.
+- [ ] **Say which Vision a winner picks when it changes nothing.** Swear
+  an Oath with several revealed Visions asks which goal to set (ruling 30);
+  when the pick is the goal already set, nothing is set and no line says
+  which Vision was picked. Left by catalog batch 11, slice 6.
 
 ### Powers-related deferred items
 
@@ -259,18 +254,6 @@ one.
   builders that still lack them, as playtests find options people wonder
   about. Left by the
   [board decisions design](superpowers/specs/2026-10-03-board-decisions-design.md).
-- [ ] **Walker follow-ups.** Audit the first-game rules the walker actions
-  dropped as gates (exile-only roles, unaltered Foundations, inactive legacies).
-  Add the remaining attacker, defender and bandit battle plan families,
-  non-deterministic loss choices, and the additional Raid, victory, defeat and
-  At End handlers that the Campaign timing windows already expose.
-  At an action's start, window folds and the restriction look-ahead
-  see no walker procedure (`PowerCtx.procedure` is `None`), while every later
-  command sees it. Make them agree before a Restriction reads the procedure.
-  `WalkerDecisionProjector.waiting` reads only a parked decision's heading and
-  Negotiation query, which the look-ahead never narrows, so its second
-  `parkedDecide` could skip the look-ahead like the other identity-only callers.
-  Audited in the [walker follow-ups audit](testing/audits/walker-follow-ups-audit.md).
 - [ ] **Mercenaries' player-chosen sign.** Mercenaries adds attack dice
   when its user attacks and removes defense dice from the attacker when it
   defends. The card lets the player choose the sign, and the plan fixes it by side.
@@ -287,6 +270,28 @@ one.
   the panel shows as a player name, and Sticky Fire asks its question even when a yes
   changes nothing (against bandits it only costs the favor). A board option, and skipping a
   question whose answers are the same, need a small change to the option vocabulary.
+- [ ] **The kept card's discard option under a discard modifier.** With
+  Ring of Devotion, Bracken or Cracked Horn picked, a Search's placement
+  still offers "discard" as the next region out's pile (`CardSlots`
+  `discardPile`), and the "Chose" line repeats it, while the card goes where
+  the modifier sends it. The card-moved line is right. The option should
+  name the real destination, which needs the modifier to reach the
+  placement's options and not only its operations.
+- [ ] **Vow of Kinship's favor source in the cases it skips.** A ruler
+  holding the Vow is asked whether a spend comes from their board or the
+  Nomad bank, but not in four cases, where the board pays first: Wild
+  Pastures' payment (a batch under a question asks nothing again); a cost
+  Vow of Division claims, which runs whole outside the batch-question
+  seam; a cost walked as separate moves, which asks once per move; and a
+  second holder's spend in the same batch, which asks only the first. A
+  draw is also not tied to its spend, so a non-required spend a
+  restriction skips leaves the drawn favor on the board. Left by
+  [catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-5-favor-redirection),
+  slice 5.
+- [ ] **Show a False Prophet claim on the claimant's board.** The claimed
+  Vision's owner's board shows the claimant's warband on it, but the
+  claimant's own board shows nothing, so they cannot see which Visions
+  they claim. Left by catalog batch 11, slice 7.
 
 ### Engine deferred items
 
@@ -354,49 +359,65 @@ one.
 ### Architecture candidates
 
 Found by the two architecture scans of 2026-10-23, after every candidate of
-the 2026-10-13 review had a record. Each is measured, not designed: take one
-through a design conversation, and re-measure it at the current commit first,
-before treating the numbers below as current.
+the 2026-10-13 review had a record, and re-measured on 2026-11-06. Each is
+measured, not designed: take one through a design conversation, and
+re-measure it at the current commit first, before treating the numbers below
+as current.
 
 - [ ] **A walker procedure is its own registry adapter.**
-  `WalkerProcedureRegistry.Entry` has nine columns; of twenty entries one sets
-  `startFacts`, two `optionPricing`, two `rollFeedback`, four
-  `requiresPlayableOption`. Travel's `queuedAnswers` is a hand match outside
-  the table, and `isRegistered` re-enumerates the refs `lookup` enumerates.
-  A procedure object with defaults for the rare members would carry them.
-  Weigh it against the initialisation cycle that made the registry hold
-  function references, which already bit the notes table.
-- [ ] **Narrow `ContributingPower` to capability traits.** The trait has 22
-  members, six of them overridden by one power, and every new engine hook has
-  landed as another defaulted member. Attach the rare ones as traits the way
-  `OfferHost`, `RerollHost` and `SelectedModifier` already work.
+  `WalkerProcedureRegistry.Entry` has nine columns; of 29 fixed entries one
+  sets `startFacts`, two `optionPricing`, two `rollFeedback`, one `status`,
+  four `requiresPlayableOption`, and 13 use `Entry.withoutStartGates`.
+  Travel's `queuedAnswers` is a hand match outside the table. A procedure
+  object filling its own slot would carry the rare members, but holding
+  procedure objects rather than function references loads them while the
+  registry loads: the initialisation cycle that already bit the notes
+  table. Catalog batch 10 slices 8 and 13 changed this area after the
+  2026-11-06 measure.
+- [ ] **Relic and edifice battle plans name their card once.** The 61
+  denizen plans extend `DenizenPlan(card, power)` since 2026-11-06; ten
+  relic plans (`BanditStandard`, `BagOfSiegeworks`, `BlackSword`,
+  `CursedCauldron`, `BrassArmy`, `FearsomeShield`, `GrandScepterPlan`,
+  `ObsidianCage`, `StickyFire`, `WeepingBanner`) and three edifice plans
+  (`CrackedRampart`, `SpiralCastle`, `ToweringRampart`) still spell `id`,
+  `cardId` and `cardRef` themselves. A `RelicPlan` and an `EdificePlan`
+  sibling, built the same way (constructor parameters, so `NoteSet(id)` in
+  the body sees an initialised `id`), would take them.
 - [ ] **Route Recover through the generic surfaces.** The client still holds
-  three Recover decision ids, a `RecoverStep` enum and `renderRecoverPanel`,
-  whose Choice arm computes whether the player has Supply, a legality fact
-  only gameplay should own. Recover would declare Continue unavailable
-  without Supply, with a hover reason, and word its two buttons. Named open
-  by the 2026-09-24 parked-decision route design.
+  three Recover decision ids and the `recover.reroll.` prefix, a
+  `RecoverStep` enum and `renderRecoverPanel`, whose Choice arm computes
+  whether the player has Supply, a legality fact only gameplay should own.
+  Recover would declare Continue unavailable without Supply, with a hover
+  reason, and word its two buttons; its relic step draws card faces with
+  "Take facedown", which no generic panel draws. Named open by the
+  2026-09-24 parked-decision route design.
 - [ ] **Declare a decision's subject card.** `WalkerDecisionProjector`
-  re-spells four `cardplay.*` prefixes that `CardPlayProcedure` keeps private,
-  to recover the subject card that CONTEXT.md defines and no model field
-  carries. The procedure would declare it on the `Decide`.
-- [ ] **Derive the wire codecs.** The shared protocol has 94 DTOs, 86
-  hand-written `exact` key sets, 1,647 codec lines and 1,026 codec-suite
-  lines, and a third of a typical wire commit is codec and codec test. A
-  derived codec must still report a stale client bundle, which strict
-  unknown-field rejection does today. The operation codec co-changed with
-  `CoreOperations` in 13 of 16 commits; count its mechanical arms before
-  deciding it the same way. Design note:
-  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md).
+  re-spells four `cardplay.*` prefixes that `CardPlayProcedure` keeps
+  private, and the game log spells them again in `LogWords.subjectCard`, to
+  recover the subject card that CONTEXT.md defines and no model field
+  carries. The log reads journaled decision ids and never sees the `Decide`,
+  so a field on the `Decide` cannot retire the log's parser; one parser
+  exported by `CardPlayProcedure`, shared by both, can. Catalog batch 10
+  slice 12 changed `CardPlayProcedure.Origin` after the 2026-11-06
+  measure; the four prefixes are still re-spelled at `e44077f7`.
+- [ ] **Derive the wire codecs, with a defaults macro.** The probe of
+  2026-11-03 stopped on the design note's own condition: no Mirror-only
+  deriver reproduces today's wire, because a field's presence follows its
+  case-class default, which a Mirror cannot see, and a few fields are
+  renamed or computed. Deriving now needs the note's `scala.quoted`
+  defaults macro plus per-field overrides, or a wire change in place.
+  Decide when a wire-heavy phase begins. Design note:
+  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md),
+  "Probe result".
 - [ ] **One frontend client (optional).** The development shell still talks
   to `/api/dev/first-games/{gameId}?playerId=` through its own
   `HttpGameClient`; mounting the dev API at `/games/{gameId}/api` with the
   query-parameter resolution would retire the second client. Slice 5 of the
   [one HTTP gateway](superpowers/specs/2026-11-02-one-http-gateway-design.md)
-  note, left for a frontend session.
-- [ ] **`ConsentDesk` settles a batch.** Its seven verbs have one caller,
-  which owns their order at nine sites; the last five consent commits all
-  edited the service. The desk could take a batch and return it settled.
+  note, left for a frontend session. Both transports already share
+  `GameApiRoutes`; what would remain is the dev-only raw-events route and
+  the `development: HttpGameClient` arm of `TableSession`, and the move
+  crosses `DevelopmentTrustBoundary`'s loopback-only rule.
 
 ## Later
 
@@ -411,12 +432,13 @@ before treating the numbers below as current.
     invitation flow first; until then, keep development routes loopback-only.
 - [ ] **L3 — Licensed game assets with permanent visual fallbacks**, including
   suit and restriction icons on card faces.
-- [ ] **L4 — Saved-game browser and replay navigation** (campaign-continuity
-  phase)
+- [ ] **L4 — Saved-game browser and replay navigation.** Saved campaigns
+  are browsable; saved games and replays are not.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**
 - [ ] **L6 — Incremental implementation of remaining phases and rules** (tracked
-  in the phased sequence above; the next denizens and relics come
-  from **Phase - Catalog batch - engine-blocked**)
+  in the phased sequence above; the remaining cards come with
+  **Phase - Negotiation terms and promises** and **Phase - Chronicle
+  steps**)
 - [ ] **L7 — Incremental synchronization transport**
   - Replace complete-snapshot polling with conditional responses, projection
     deltas, long polling, SSE, or another push transport when scale or latency

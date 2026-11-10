@@ -5,7 +5,7 @@
       Runs the gate (root/test frontend/test), reports its wall-clock and
       CPU time, and ranks the root suites and tests by time.
 
-  scripts/profile-tests.py 'oathdigital.gameplay.powers.campaign.*'
+  scripts/profile-tests.py 'distantlands.gameplay.powers.campaign.*'
       Runs the matching root suites under Java Flight Recorder, ranks them,
       and lists the hottest frames.
 
@@ -116,13 +116,13 @@ def frames(recording, top):
 
     Self: the frame on top of the stack, whatever its package.
     Watched: samples with one of WATCHED anywhere on the stack.
-    Inclusive: every oathdigital frame anywhere on the stack, once per sample."""
+    Inclusive: every distantlands frame anywhere on the stack, once per sample."""
     leaf = collections.Counter()
     inclusive = collections.Counter()
     watched = collections.Counter()
     counted = 0
     for names in stacks(recording):
-        if not any(name.startswith("oathdigital.") for name in names):
+        if not any(name.startswith("distantlands.") for name in names):
             continue
         counted += 1
         leaf[names[0]] += 1
@@ -130,18 +130,18 @@ def frames(recording, top):
             if any(fragment in name for name in names):
                 watched[fragment] += 1
         for name in set(names):
-            if name.startswith("oathdigital."):
+            if name.startswith("distantlands."):
                 inclusive[name] += 1
     if counted == 0:
-        return ["No samples ran oathdigital code."]
-    lines = [f"Samples that ran oathdigital code: {counted}", "",
+        return ["No samples ran distantlands code."]
+    lines = [f"Samples that ran distantlands code: {counted}", "",
              f"Top {top} self frames:"]
     lines += [f"{count * 100 / counted:5.1f}%  {name}"
               for name, count in leaf.most_common(top)]
     lines += ["", "Watched frames (samples with the fragment anywhere on the stack):"]
     lines += [f"{watched[fragment] * 100 / counted:5.1f}%  {fragment}"
               for fragment in WATCHED]
-    lines += ["", f"Top {top * 2} inclusive oathdigital frames:"]
+    lines += ["", f"Top {top * 2} inclusive distantlands frames:"]
     lines += [f"{count * 100 / counted:5.1f}%  {name}"
               for name, count in inclusive.most_common(top * 2)]
     return lines

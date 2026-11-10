@@ -18,18 +18,30 @@ other triggered procedure does, with `BeginTurn(firstPlayer, Wake)`.
 
 A `Chronicle` is the between-game record a Chronicle generator produces: the
 ordered atlas box (which sites are in play and their stored edifices), the
-World Deck's denizen pool, the ordinary-relic order, the reliquary, and the
-dispossessed board. `SetupOrders` is the one-time per-game deal drawn from
-it -- participants, first player, and the dealt `worldDeckOrder` -- computed
-by `ChronicleFirstGamePlan.dealOrder` and recorded alongside the Chronicle on
-`GameStarted`, so replay never re-derives either.
+World Deck's denizen pool, the ordinary-relic order, the era scorepad, the
+Oathkeeper goal, the reliquary, and the dispossessed board. `SetupOrders` is the one-time per-game deal drawn from
+it -- participants, first player, the shuffled `denizenOrder` that deals hands
+and regional discards, the `worldDeckOrder` below them, and the shuffled
+`relicOrder` -- built by `ChronicleFirstGamePlan.dealOrder` and recorded
+alongside the Chronicle on `GameStarted`, so replay never re-derives either.
+Setup deals from these orders, never from the Chronicle's deck order: a
+Chronicle is shown to players, so its order must not be the deal.
 
 `GameStartRules.evolve` validates only what Setup itself needs from the
 Chronicle: known and unique atlas/denizen/relic ids, at least 8 atlas sites,
-enough World Deck and relic cards to deal, and one matching edifice per
-Homeland in play. The deeper suit-count and Vision-packet audit a Chronicle
+enough World Deck and relic cards to deal, a deal holding exactly the
+Chronicle's decks, and one matching edifice per Homeland in play. The deeper suit-count and Vision-packet audit a Chronicle
 must satisfy is the generator's own job, checked once at generation time
 (`FirstGameChronicleGenerator.validate`) rather than again at every setup.
+
+Game start keeps the whole Chronicle on `CampaignState.baseline`, including
+lineages of colors that did not play, and takes the era and Oathkeeper goal
+from it; a seated lineage the Chronicle has not scored starts at 0. The
+Chronicle Phase records its result in `CampaignState.evolved`
+([Chronicle steps design](../superpowers/specs/2026-10-27-chronicle-steps-design.md)).
+The phase now runs the Sun and Throne tasks; the recorded Chronicle carries
+their roles, era scores and Oathkeeper goal, while sites, decks and the
+Reliquary stay as in the baseline until the Stars task extracts them.
 
 The completed aggregate includes site resources and bandits, facedown site
 relics, ruined Homeland edifices, regional discards, player advisers, World and
@@ -38,16 +50,16 @@ goal, favor banks, and six unaltered Foundations.
 
 The scope follows Combined Rulebook pp. 6-7 and the New Foundations first-game
 clarification on p. 8. It excludes Legacy selection/effects,
-Chancellor/Citizen/Imperial setup, campaign restoration, altered Foundations,
-and Chronicle progression beyond the first game.
+Chancellor/Citizen/Imperial setup, restoring the rest of a stored campaign
+(roles, legacies, the Empire's sites), and altered Foundations.
 
 ## Application and transport
 
 `GeneratedFirstGamePlanFactory` derives a random Chronicle through
-`FirstGameChronicleGenerator` and shuffles seating; trusted-game
-provisioning, which the development start page also uses, and
-`MembershipBootstrap`, kept for X6, both use it (the dev-only loopback
-bootstrap route and its deterministic
+`FirstGameChronicleGenerator`, or takes a saved one, shuffles seating, and
+shuffles both decks into the deal; trusted-game provisioning, which the
+development start page also uses, and `MembershipBootstrap`, kept for X6,
+both use it (the dev-only loopback bootstrap route and its deterministic
 `DevelopmentFirstGamePlanFactory` fixture were retired once the development
 start page moved onto the same trusted `POST /games` provisioning). Tests
 that need a fixed seating order construct it with an identity (no-shuffle)

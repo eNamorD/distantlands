@@ -23,10 +23,10 @@
 ### Task 1: The server derives the lineage from the color
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/CommandProtocol.scala` (`BootstrapParticipantRequest(playerId, color)`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/BootstrapProtocolCodec.scala`, `TrustedGameProtocolCodec.scala` (participant fields `playerId`, `color`)
-- Modify: `src/main/scala/oathdigital/application/FirstGameBootstrapMapper.scala`
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TrustedHostUi.scala` (drop `lineageId(color)`)
+- Modify: `shared/src/main/scala/distantlands/protocol/CommandProtocol.scala` (`BootstrapParticipantRequest(playerId, color)`)
+- Modify: `shared/src/main/scala/distantlands/protocol/BootstrapProtocolCodec.scala`, `TrustedGameProtocolCodec.scala` (participant fields `playerId`, `color`)
+- Modify: `src/main/scala/distantlands/application/FirstGameBootstrapMapper.scala`
+- Modify: `frontend/src/main/scala/distantlands/frontend/TrustedHostUi.scala` (drop `lineageId(color)`)
 - Test: `TrustedGameProtocolSuite`, `ProjectionProtocolSuite`, `GameHttpWireSuite`, `ServerRoutesSuite`, `AuthenticatedGameBootstrapRoutesSuite`, `TrustedGameProvisioningSuite`, `TrustedSeatRoutesSuite`, `ServerRuntimeSuite`, `ServerModeUiSuite`, new `FirstGameBootstrapMapperSuite`
 
 **Interfaces:**
@@ -34,13 +34,13 @@
 
 - [ ] **Step 1: Write the failing tests**
 
-`src/test/scala/oathdigital/application/FirstGameBootstrapMapperSuite.scala`:
+`src/test/scala/distantlands/application/FirstGameBootstrapMapperSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.{LineageId, PlayerColor, PlayerId}
-import oathdigital.protocol.{BootstrapParticipantRequest, FirstGameBootstrapRequest}
+import distantlands.model.{LineageId, PlayerColor, PlayerId}
+import distantlands.protocol.{BootstrapParticipantRequest, FirstGameBootstrapRequest}
 
 class FirstGameBootstrapMapperSuite extends munit.FunSuite:
   test("each participant's lineage is derived from its color"):
@@ -91,11 +91,11 @@ Run: `./sbtw "test" "frontend/test"`. Expected: PASS.
 ### Task 2: The server generates the game ID
 
 **Files:**
-- Modify: `shared/src/main/scala/oathdigital/protocol/TrustedGameProtocol.scala` (`TrustedGameCreateRequest(participants)`)
-- Modify: `shared/src/main/scala/oathdigital/protocol/TrustedGameProtocolCodec.scala` (root field `participants` only)
-- Modify: `src/main/scala/oathdigital/server/TrustedGameProvisioning.scala`
-- Modify: `src/main/scala/oathdigital/server/ServerRuntime.scala` (`open(..., gameIds: () => String = TrustedGameProvisioning.generateGameId)`)
-- Modify: `frontend/src/main/scala/oathdigital/frontend/TrustedHostUi.scala` (no `gameId` state, no 409 branch)
+- Modify: `shared/src/main/scala/distantlands/protocol/TrustedGameProtocol.scala` (`TrustedGameCreateRequest(participants)`)
+- Modify: `shared/src/main/scala/distantlands/protocol/TrustedGameProtocolCodec.scala` (root field `participants` only)
+- Modify: `src/main/scala/distantlands/server/TrustedGameProvisioning.scala`
+- Modify: `src/main/scala/distantlands/server/ServerRuntime.scala` (`open(..., gameIds: () => String = TrustedGameProvisioning.generateGameId)`)
+- Modify: `frontend/src/main/scala/distantlands/frontend/TrustedHostUi.scala` (no `gameId` state, no 409 branch)
 - Modify: `docs/ROADMAP.md`
 - Test: `TrustedGameProtocolSuite`, `TrustedGameProvisioningSuite`, `TrustedSeatRoutesSuite`, `ServerRuntimeSuite`, `ServerModeUiSuite`
 

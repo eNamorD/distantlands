@@ -37,6 +37,16 @@
   --die-round: #9b59b6;
   /* An option the viewer may ask consent for, and nothing else. */
   --consent-amber: #e8a33d;
+  /* The printed power marks (PowerMarks): a modifier's tab is warm grey,
+     black when persistent, as the card blackens it with its braid; a
+     restriction banner is edged orange for an adviser, gold for a site and
+     parchment for an edifice's face. Shape names each one; these only keep
+     them apart from the card behind. */
+  --mark-modifier: #6e675c;
+  --mark-persistent: #0e0d0b;
+  --restriction-adviser: #e3672b;
+  --restriction-site: #e2b245;
+  --restriction-edifice: #c9bfa9;
   /* The table's surfaces, inks, lines and player colours, named as
      DESIGN.md names them. The one-off colours stay inline where they
      are used. */
@@ -52,8 +62,11 @@
   --brass-bright: #f1c781;
   --brass-label: #d5bd8f;
   --brass-line: #7c694b;
+  --table: #0f0e0c;
   --base: #17140f;
   --pane: #211f1b;
+  --pane-header: #26231d;
+  --panel: #211d17;
   --site: #2b251d;
   --raised: #302a20;
   --pressed: #3b3123;
@@ -62,7 +75,11 @@
   --line-dim: #40382c;
   --line-pane: #443c30;
   --selection-fill: #243442;
+  --pile-back: #493751;
+  --unimplemented: #a15c4a;
   --error-line: #e27f79;
+  --error-text: #ffd0cd;
+  --token-symbol: #d8cdb4;
   --replay: #9ed59e;
   --band-neutral: #b8ab92;
   --player-purple: #d9b8ff;
@@ -94,7 +111,7 @@
 .token-defense-die { color: var(--die-defense); }
 .token-round-die { color: var(--die-round); }
 .token-skull, .token-shield, .token-sword, .token-hollow-sword,
-.token-warband { color: #d8cdb4; }
+.token-warband { color: var(--token-symbol); }
 /* One rolled die: the symbols printed on that face, on a face-shaped chip.
    A blank face is an empty chip, which is what a blank face looks like. */
 .die-faces { display: inline-flex; flex-wrap: wrap; gap: 0.25em;
@@ -122,6 +139,55 @@
   border-color: var(--die); }
 .rules-power { margin: 0 0 0.7em; line-height: 1.5; }
 .rules-power:last-child { margin-bottom: 0; }
+/* The printed marks (PowerMarks). Each is a small SVG: a frame filled from
+   its class, an emblem coloured through currentColor. */
+.mark-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.power-mark, .restriction-mark { display: inline-block; flex: 0 0 auto;
+  width: 1.5em; height: 1.5em; overflow: visible; }
+.power-mark-emblem { color: var(--cream-bright); }
+.power-mark-action .power-mark-frame { fill: var(--mark-modifier); }
+.power-mark-persistent .power-mark-frame { fill: var(--mark-persistent);
+  stroke: var(--line-mid); stroke-width: 0.8; }
+.power-mark-keyline { fill: none; stroke: var(--cream-bright); stroke-width: 0.9;
+  opacity: 0.5; }
+.power-mark-persistent .power-mark-keyline { opacity: 0.85; }
+.power-mark-plan-attack .power-mark-frame { fill: var(--suit-discord); }
+.power-mark-plan-defense .power-mark-frame { fill: var(--suit-order); }
+.power-mark-plan-either .power-mark-frame { fill: url(#mark-either-side); }
+.restriction-mark { --restriction-edge: var(--line-mid); }
+.restriction-mark-adviser { --restriction-edge: var(--restriction-adviser); }
+.restriction-mark-site { --restriction-edge: var(--restriction-site); }
+.restriction-mark-tower, .restriction-mark-tower-ruined {
+  --restriction-edge: var(--restriction-edifice); }
+.restriction-mark-edge { fill: var(--restriction-edge); }
+.restriction-mark-body { fill: var(--mark-persistent); }
+.restriction-mark-disc { fill: var(--cream-bright); }
+.restriction-mark-adviser .power-mark-emblem { color: #24407f; }
+.restriction-mark-site .power-mark-emblem { color: #2e6b3d; }
+.restriction-mark-chain { color: var(--cream-bright); stroke: var(--mark-persistent);
+  stroke-width: 0.6; }
+/* A power under its braid. The braid divides it from the power above, as
+   on the card: a twisted rope, or a black herringbone for a persistent
+   power, with the modifier tab standing on its left and the cost on it. */
+.power-face + .power-face { margin-top: 1em; }
+.power-braid { position: relative; display: flex; align-items: flex-end;
+  gap: 0.25em; min-height: 0.8em; margin: 0 0 0.4em; padding: 0 0.35em; }
+.power-braid::before { content: ""; position: absolute; right: 0; bottom: 0.15em;
+  left: 0; height: 0.5em; border-radius: 0.25em; background-color: #b5a682;
+  background-image: repeating-linear-gradient(120deg, #e6d9b8 0 0.16em,
+    #8a7c5e 0.16em 0.28em, #b5a682 0.28em 0.46em); }
+.power-face-persistent .power-braid::before { background-color: var(--mark-persistent);
+  background-image: linear-gradient(135deg, #7a6e5c 25%, transparent 25%),
+    linear-gradient(225deg, #7a6e5c 25%, transparent 25%);
+  background-size: 0.5em 0.5em; box-shadow: 0 0 0 1px var(--line-mid); }
+.power-braid > * { position: relative; }
+.power-braid .power-mark { width: 2.8em; height: 2.8em; }
+/* The cost sits on the braid's middle, on the overlay's own fill so a gold
+   coin keeps its edge against the rope. */
+.power-cost { display: inline-flex; align-self: center; gap: 0.1em;
+  margin: 0 auto; padding: 0.05em 0.3em; border-radius: 1em; background: #1b1811;
+  box-shadow: 0 0 0 1px var(--brass-line); }
+.power-cost .token-glyph { width: 1.2em; height: 1.2em; }
 
 * { box-sizing: border-box; }
 body { margin: 0; }
@@ -151,6 +217,45 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .add-player-limit { color: var(--brass); }
 .seat-link-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin: 1rem 0; }
 .seat-link { flex: 1 1 20rem; }
+/* Chronicle page (Chronicle browsing design, "Chronicle page"). */
+.chronicle-import, .chronicle-export, .chronicle-saved, .chronicle-loaded {
+  max-width: 40rem; margin: 1.5rem 0; display: grid; gap: 0.75rem; }
+.import-chronicle-tts { font: inherit; min-height: 5rem; padding: 0.5rem;
+  overflow-wrap: anywhere; }
+.import-chronicle-name, .import-new-name { font: inherit; padding: 0.5rem; }
+.import-clash { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.import-clash:empty { display: none; }
+.import-clash > p { flex: 1 0 100%; margin: 0; }
+.chronicle-export-controls { display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0.75rem; }
+.chronicle-export-controls .status { flex: 1 0 100%; margin: 0; }
+.export-tts-text { flex: 1 0 100%; font: inherit; min-height: 4rem;
+  overflow-wrap: anywhere; }
+.chronicle-loaded-heading { display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0.75rem; }
+.chronicle-loaded-name { margin: 0; font-family: Georgia, serif; font-size: 1.6rem;
+  color: var(--cream); }
+.chronicle-rename { font: inherit; padding: 0.5rem; flex: 1 1 14rem; min-width: 0; }
+.chronicle-summary-line { margin: 0; color: var(--brass); }
+.continue-chronicle, .new-chronicle, .edit-chronicle { margin: 0.5rem 0.75rem 0.5rem 0; }
+.chronicle-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.chronicle-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.chronicle-row-name { font-weight: 700; }
+.chronicle-row-details { color: var(--brass); flex: 1 1 14rem; }
+.chronicle-row-controls { display: flex; gap: 0.5rem; align-items: center; }
+.chronicle-back { margin: 0 0 1rem; }
+.chronicle-name { font: inherit; padding: 0.5rem; }
+.chronicle-continued { margin: 0; font-weight: 700; }
+/* The table's Chronicle section and its save dialog. */
+.game-table .table-chronicle { margin: 0 0 12px; display: grid; gap: 6px; }
+.game-table .table-chronicle p { margin: 0; }
+.table-chronicle-note { color: var(--brass); }
+.chronicle-save-prompt { position: fixed; inset: 0; z-index: 60; display: grid;
+  place-items: center; padding: 16px; background: #000a; }
+.chronicle-save-panel { width: min(30rem, 100%); display: grid; gap: 0.75rem;
+  padding: 18px; background: var(--panel); border: 1px solid var(--brass);
+  border-radius: 12px; }
+.chronicle-save-name { font: inherit; padding: 0.5rem; }
 
 #app {
   max-width: 1280px;
@@ -158,22 +263,13 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
   padding: 28px 20px 48px;
 }
 
-.eyebrow {
-  color: var(--brass);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
 h1 { margin: 6px 0; font-family: Georgia, serif; font-size: 2.5rem; }
 h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
-.lede { color: var(--parchment-dim); max-width: 760px; }
 
 .status, .panel {
   border: 1px solid #554a38;
   border-radius: 12px;
-  background: #211d17;
+  background: var(--panel);
 }
 
 .status { padding: 14px 16px; margin: 22px 0; }
@@ -181,8 +277,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .victory-banner { margin: 12px 0; padding: 18px; border: 3px solid currentColor;
   border-radius: 10px; background: var(--base); font-size: 1.25rem; font-weight: 700; }
 .panel { padding: 18px; min-width: 0; }
-.participants, .events { margin: 0; padding-left: 22px; }
-.participant-active { font-weight: 700; }
+.events { margin: 0; padding-left: 22px; }
 
 .debug-toolbar {
   display: flex;
@@ -282,12 +377,23 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .site-readonly { cursor: default; }
 /* Board decisions (spec 2026-10-03): an option drawn where it lies. Nothing
    that is not an option changes, and only an unavailable option is dimmed. */
+/* One mark for everything clickable, on the map, the boards and in the
+   pane: a bright brass ring at rest and a cream one, with a glow, under the
+   pointer. The map is drawn scaled, so there the ring is widened against
+   the scale and stays about `--option-ring` wide on screen. */
+:root { --option-line: var(--brass-bright); --option-ring: 2px;
+  --option-glow: rgba(241, 199, 129, 0.5); }
+.map-content { --option-ring: calc(2px / var(--map-scale, 1)); }
 .board-option { position: relative; cursor: pointer;
-  border-color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass); }
+  border-color: var(--option-line);
+  box-shadow: inset 0 0 0 var(--option-ring) var(--option-line); }
 .board-option:hover, .board-option:focus-visible, .board-option-hover {
-  border-color: var(--cream-bright); box-shadow: 0 0 0 3px rgba(210, 168, 94, 0.35); }
+  border-color: var(--cream-bright);
+  box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),
+    0 0 0 calc(var(--option-ring) * 2) var(--option-glow); }
 .board-option-selected, .board-option-locked, .board-option-played {
-  border-color: var(--selection); box-shadow: inset 0 0 0 2px var(--selection);
+  border-color: var(--selection);
+  box-shadow: inset 0 0 0 var(--option-ring) var(--selection);
   background: var(--selection-fill); }
 .board-option-locked, .board-option-played { cursor: default; }
 .board-option-unavailable { opacity: 0.45; cursor: not-allowed;
@@ -295,10 +401,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* An option the viewer may ask consent for (consent design): amber, not
    brass, and clickable. */
 .board-option-askable { border-color: var(--consent-amber);
-  box-shadow: inset 0 0 0 2px var(--consent-amber); }
+  box-shadow: inset 0 0 0 var(--option-ring) var(--consent-amber); }
 .board-option-askable:hover, .board-option-askable:focus-visible,
 .board-option-askable.board-option-hover {
-  border-color: var(--cream-bright); box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.4); }
+  border-color: var(--cream-bright);
+  box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),
+    0 0 0 calc(var(--option-ring) * 2) rgba(232, 163, 61, 0.5); }
 /* In the pane the Action face paints every button at one class of
    specificity, so these carry the pane's class too. */
 .pane-actions .walker-choice-askable,
@@ -318,9 +426,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   width: 20px; height: 20px; border-radius: 50%;
   background: var(--selection); color: var(--base); font-size: 12px; font-weight: 800; }
 .card-face.board-option-selected::before,
-.site.board-option-selected::before { content: "✓"; }
+.site.board-option-selected::before { content: "✓"; content: "✓" / ""; }
 .card-face.board-option-locked::before,
-.site.board-option-locked::before { content: "🔒"; }
+.site.board-option-locked::before { content: "🔒"; content: "🔒" / ""; }
 /* A played pick is numbered in play order, not locked: the player chose it. */
 .card-face.board-option-played::before,
 .site.board-option-played::before { content: attr(data-played-order); }
@@ -338,9 +446,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .board-option-card > .card-face { width: 100%; }
 .board-option-inspect { position: absolute; right: 4px; bottom: 4px;
   z-index: 1; width: 22px; height: 22px; padding: 0;
-  border: 1px solid var(--brass); border-radius: 50%; background: #211d17;
+  border: 1px solid var(--brass); border-radius: 50%; background: var(--panel);
   color: var(--cream-bright); font: inherit; font-size: 12px; font-weight: 800;
   line-height: 1; cursor: pointer; }
+/* The button stays 22px so it covers no card text; its hit area reaches
+   out to 44px on every side, the touch minimum. */
+.board-option-inspect::after { content: ""; position: absolute; inset: -11px; }
 .board-option-inspect:hover, .board-option-inspect:focus-visible {
   outline: 2px solid var(--cream-bright); outline-offset: 1px; }
 /* A Replace option: the play discards this card. Bottom-left, the one
@@ -350,9 +461,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    button rises to sit above the badge rather than over its word. */
 .board-option-badge { position: absolute; left: 3px; bottom: 3px; z-index: 1;
   padding: 1px 5px; border-radius: 3px; background: var(--brass);
-  color: var(--base); font-size: 10px; font-weight: 800; line-height: 1.3; }
+  color: var(--base); font-size: 11px; font-weight: 800; line-height: 1.3; }
 .board-option-card:has(> .board-option-replace) > .board-option-inspect {
-  bottom: calc(3px + 2px + 10px * 1.3 + 3px); }
+  bottom: calc(3px + 2px + 11px * 1.3 + 3px); }
 /* Three cells so the name is centred on the box, not on what is left over
    after the tokens: equal side columns put it in the middle whether a site
    holds six favor or nothing at all. */
@@ -448,23 +559,26 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   background: var(--base);
   color: #fff;
 }
-.load-game, .adviser {
+/* The Action face on the dev panel's load button and the Chronicle save
+   dialog's choices: the dialog mounts outside the table's panes, so the
+   pane rule below does not reach it. */
+.load-game, .chronicle-save-panel button {
   min-height: 44px;
   padding: 8px 12px;
-  border: 1px solid #bca780;
+  border: var(--option-ring) solid var(--option-line);
   border-radius: 7px;
   background: #282117;
   color: #fff;
   cursor: pointer;
 }
-.adviser { margin: 0 8px 8px 0; }
+.chronicle-save-panel button:focus-visible {
+  outline: 2px solid var(--cream-focus); outline-offset: -3px; }
 /* Undo and Redo (undo design, "Controls"): the Action face like every
    Actions-pane button, side by side under the status line, set apart from
    the controls below them. */
 .step-controls { display: flex; gap: 8px; margin: 0 0 12px; }
 .undo-action, .redo-action { min-height: 44px; }
-.adviser-panel { margin-top: 18px; }
-.error { border-color: var(--error-line); color: #ffd0cd; }
+.error { border-color: var(--error-line); color: var(--error-text); }
 
 .events {
   max-height: 270px;
@@ -474,13 +588,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   font-size: 0.85rem;
 }
 
-.card-decision { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
 /* Every slot shares one grid, so the steppers and the counts line up in
    columns instead of landing wherever each label's width leaves them. */
 .distribute-slots { display: grid; align-items: center;
   grid-template-columns: minmax(0, 1fr) auto 2.5em auto auto; gap: 6px 8px; }
 .distribute-slot { display: contents; }
-.distribute-decrement, .distribute-increment { min-width: 2.2em; }
+.distribute-decrement, .distribute-increment, .plan-aid-step { min-width: 2.2em; }
 .distribute-amount { text-align: center; font-weight: 700;
   font-variant-numeric: tabular-nums; }
 .distribute-maximum { color: #9a8f7c; font-size: 0.85em; white-space: nowrap; }
@@ -495,11 +608,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .card-link:hover { color: var(--cream-bright); text-decoration-color: var(--brass); }
 .card-link:focus-visible { outline: 2px solid var(--cream-focus); outline-offset: 1px; }
 .negotiation-item input[type=number] { width: 5em; }
-.decision-final-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+/* A withheld checkbox (aria-disabled, its reason in the hover note) looks
+   disabled but still takes the tap that shows the reason. */
+.negotiation-item input[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
 .decision-zones { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
 .decision-zone { min-height: 180px; padding: 12px; border: 1px solid var(--line); border-radius: 9px; }
-.decision-zone-heading { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
-.decision-zone-heading h3 { margin-bottom: 0; }
 .decision-zone-helper { margin: 0.25rem 0 0.65rem; color: var(--ink-dim);
   font-size: 0.82rem; font-style: italic; font-weight: 400; }
 /* The temporary hand: context for the decision, not part of it, so it sits
@@ -515,8 +628,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .plans-played { margin-bottom: 0.4em; font-size: 0.85em; }
 .plans-played ul { margin: 0; padding-left: 1.2em; }
 .decision-cards, .board-cards { display: flex; flex-wrap: wrap; gap: 8px; }
-.decision-card { padding: 10px; border: 1px solid var(--line-mid); border-radius: 8px; }
-.decision-card button, .decision-confirm, .decision-back, .resolution-choice,
 .player-selector { min-height: 44px; margin: 5px; }
 /* Zones are as wide as the cards they hold, not as wide as an equal share:
    a Keep-one zone is one card wide and the zones sit side by side while the
@@ -551,14 +662,14 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    baseline. */
 .partition-zone .decision-option { display: flex; flex-direction: column;
   justify-content: flex-end; align-items: center; margin: 0; padding: 0;
-  border: 0; border-radius: 0; width: var(--card-w); }
+  border: 0; border-radius: 0; width: var(--card-w);
+  /* A card is taken by pressing it, so a press neither selects its text
+     nor asks a phone for its callout. */
+  cursor: grab; user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: none; }
 /* The held card stays in the row at the place a drop would put it, faded,
    so the row reads as the answer it would become. */
 .partition-zone .decision-option.dragging { opacity: 0.4; }
-/* A card is taken by pressing it, so a press neither selects its text nor
-   asks a phone for its callout. */
-.partition-zone .decision-option { cursor: grab; user-select: none;
-  -webkit-user-select: none; -webkit-touch-callout: none; }
 /* A finger that has rested long enough sees the card ringed: moving now
    carries it rather than scrolling the pane. */
 .partition-zone .decision-option.partition-pressed > .card-face {
@@ -598,10 +709,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   background: var(--base); color: var(--cream); font: inherit; line-height: 1.15; }
 .card-face-denizen { border-color: var(--line); }
 .card-face-relic { height: var(--card-w); border-color: #7a6a4c; }
-.card-face-unimplemented { border-style: dashed; border-color: #a15c4a; }
+.card-face-unimplemented { border-style: dashed; border-color: var(--unimplemented); }
 /* An empty slot is a place, not a card: nothing to inspect, so no ring. */
 .card-face:not(.card-slot-empty):hover, .card-face:focus-visible {
-  outline: 2px solid var(--cream-focus); outline-offset: -3px; }
+  outline: var(--option-ring) solid var(--cream-focus);
+  outline-offset: calc(var(--option-ring) * -1.5); }
 /* The name sits beside the glyph while it fits and drops under it when it
    does not: a 13ex card leaves a one-word name like Catacombs no room beside
    the glyph, and breaking it mid-word ("Catacom bs") is worse than one more
@@ -624,26 +736,38 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    beside the dice rather than under them. */
 .card-defense { display: flex; flex: 0 0 auto; align-items: flex-start;
   gap: 0.05em; margin-left: auto; font-size: 1em; }
-.card-restriction { margin-top: auto; font-size: max(0.72em, 0.7rem);
-  color: var(--ink-dim); text-transform: capitalize; }
+/* The suit glyph with the restriction banner hung under it, one column at
+   the header's left, as the printed card hangs its banner under the suit. */
+.card-emblems { display: flex; flex: 0 0 auto; flex-direction: column;
+  align-items: center; gap: 0.15em; }
+.card-header .restriction-mark { width: 1.5em; height: 1.5em; }
+/* Each power's modifier tab or battle-plan crown, in the lower-left corner,
+   lifted above the unimplemented band or a Replace badge when either is
+   there. */
+.card-power-marks { position: absolute; left: 0.35em; bottom: 0.35em;
+  display: flex; gap: 0.15em; }
+.card-power-marks .power-mark { width: 1.5em; height: 1.5em; }
+.card-face:has(> .card-unimplemented-badge) > .card-power-marks {
+  bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
+.card-face.board-option-replace > .card-power-marks { bottom: calc(0.35em + 1.6em); }
 /* A band across the card's foot, out to the dashed border, so the word gets
    the card's whole width: at the floor's 0.7rem, mixed case, "Unimplemented"
    fits the smallest card in a pane. The card keeps the band's height free
    at its foot, worked out in the card's own font, so the restriction above
    it never runs under it. */
 .card-unimplemented-badge { position: absolute; right: 0; bottom: 0; left: 0;
-  padding: 0 0.2em; background: #a15c4a; color: var(--cream);
+  padding: 0 0.2em; background: var(--unimplemented); color: var(--cream-bright);
   font-size: max(0.62em, 0.7rem); line-height: 1.35; text-align: center;
   white-space: nowrap; }
 .card-face:has(> .card-unimplemented-badge) {
   padding-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
 .card-face-down { align-items: center; justify-content: center;
-  border-style: solid; background: #2a2333; }
+  border-style: solid; background: #2a2333; container-type: inline-size; }
 /* The letter and the pip are sized off the card as well as the type, so a
    back stays a back wherever the card is small for its font: on the
    zoomed-out map a site's card carries text counter-scaled for reading, and
-   at 1.9em the letter was wider than the card. */
-.card-face-down { container-type: inline-size; }
+   at 1.9em the letter was wider than the card; the back is the container
+   (`container-type` above). */
 .card-back-letter { font-size: min(1.9em, 62cqi); font-weight: 700;
   line-height: 1; color: #cbb7dd; }
 .card-knowable-pip { position: absolute; top: min(0.3em, 7cqi);
@@ -676,12 +800,10 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   gap: 4px; }
 .card-choice button { width: 100%; min-height: 36px; margin: 0;
   padding: 2px 6px; }
-.card-choice button[aria-pressed="true"] { border-color: var(--cream-bright);
-  background: var(--pressed); }
 .walker-many-options { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
 .walker-many-option[aria-pressed="true"] { border-color: var(--cream-bright);
   background: var(--pressed); color: var(--cream-bright); font-weight: 700; }
-.walker-many-option[aria-pressed="true"]::before { content: "✓ "; }
+.walker-many-option[aria-pressed="true"]::before { content: "✓ "; content: "✓ " / ""; }
 .board-decision-summary { margin: 0 0 8px; color: var(--cream-bright); font-weight: 700; }
 .board-decision-summary-empty { color: var(--ink-dim); font-size: .82rem;
   font-weight: 400; }
@@ -773,16 +895,16 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   min-height: 2.3rem; align-items: center; justify-content: center;
   border: 2px solid var(--brass); border-radius: 4px; font-weight: 700;
   line-height: 1; vertical-align: middle; }
-.pile-display > .pile-back { background-color: #493751; color: #fff; }
+.pile-display > .pile-back { background-color: var(--pile-back); color: #fff; }
 .pile-display > .pile-empty { background-color: var(--base); color: transparent; }
 /* The pile and the Supply figure as controls, with the title pill's hover.
    A button resets the text it inherits, so the colour and font are given
    back. The pile keeps the deck body's frame (below). */
 .pile-open, .supply-open { color: inherit; font: inherit; cursor: pointer; }
-.supply-open { border: 0; padding: 0; background: none; }
 /* The figure keeps its place in the row; the hover fill takes the pill's
    shape around it. */
-.supply-open { margin: 0 -0.35em; padding: 0 0.35em; border-radius: 999px; }
+.supply-open { margin: 0 -0.35em; padding: 0 0.35em; border: 0;
+  border-radius: 999px; background: none; }
 .pile-open:disabled { cursor: default; }
 /* The Supply track (SupplyTracker), as the physical board prints it: dark
    spaces on a tan rail, the bands in Georgia over the warband banner. The
@@ -805,7 +927,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   gap: 0.15em; }
 .supply-range-figures { font-size: 1.1em; font-weight: 700;
   white-space: nowrap; }
-.supply-range-to { margin: 0 0.15em; font-size: 0.6em; font-style: italic; }
+.supply-range-to { margin: 0 0.15em; font-size: max(0.6em, 11px); font-style: italic; }
 .supply-range .token-glyph { width: 1.15em; height: 1.15em; color: inherit; }
 .supply-space > :not(.supply-marker) { position: relative; }
 .supply-marker { position: absolute; inset: 0; box-sizing: border-box;
@@ -827,17 +949,16 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    it, and the caption under that, outside the ring the decision draws. The
    body's padding is taken back by its margin, so the card, not the ring,
    is flush with the figure's top and sides. */
-.deck-figure { display: flex; flex: 0 0 auto; flex-direction: column;
-  align-items: center; gap: 3px; }
+.deck-figure { --deck-h: 92px; display: flex; flex: 0 0 auto;
+  flex-direction: column; align-items: center; gap: 3px; }
 .deck-body { display: flex; flex-direction: column; align-items: center;
   gap: 4px; margin: -5px -5px 0; padding: 4px; border-radius: 8px; }
 /* Paint without weight, so a board option's border, ring and fill win. */
 :where(.deck-body) { border: 1px solid transparent; background: none; }
 .deck-body > .target-detail-badge { margin: 0; }
-/* The card's height is named once: the inspect button is placed from it,
-   since a cost badge under the card moves the bottom of the box they
-   share. */
-.deck-figure { --deck-h: 92px; }
+/* The card's height (`--deck-h`) is named once on the figure: the inspect
+   button is placed from it, since a cost badge under the card moves the
+   bottom of the box they share. */
 /* The card's own edge is a quiet Line-mid: brass is the option ring's. The
    letter and count sit a little above the middle, so a two-digit count
    clears the inspect button in the lower right. */
@@ -846,7 +967,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   width: 66px; height: var(--deck-h); padding-bottom: 12px;
   border: 2px solid var(--line-mid); border-radius: 7px; font-size: 1.9rem;
   line-height: 1; }
-.deck-card.pile-back { background: #493751; color: #fff; }
+.deck-card.pile-back { background: var(--pile-back); color: #fff; }
 .deck-card.pile-empty { background: var(--base); }
 .deck-letter { font-weight: 700; }
 .deck-card > .pile-count { color: #e8d9bb; font-size: 0.5em; font-weight: 700; }
@@ -919,11 +1040,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   gap: 10px; margin-top: 10px; }
 .shared-banners .board-option-card { width: 100%; }
 .shared-banners .banner-face { width: 100%; height: auto; aspect-ratio: 1; }
+/* Under the regions, where the physical board keeps them. Their text is set
+   larger than the map's own, as the map is drawn at about half size. */
 .favor-banks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 6px; margin-top: 12px; }
+  gap: 8px; margin-top: 10px; }
 .favor-bank { display: flex; align-items: center; justify-content: center;
-  gap: 0.3em; padding: 7px; border: 1px solid var(--line); border-radius: 6px;
-  text-align: center; font-weight: 700; }
+  gap: 0.3em; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px;
+  text-align: center; font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
 .walker-choice .token-glyph { margin-right: 0.3em; vertical-align: -0.15em; }
 /* A token inside the label sits between words that already space it. */
 .walker-choice-label .token-glyph { margin-right: 0; }
@@ -943,6 +1066,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .plan-side-both {
   background: linear-gradient(90deg, var(--suit-discord), var(--suit-order));
   color: #fff; }
+/* A power option leads with the tab its card prints (PowerMarks): a plan's
+   crown or a modifier's arch, so the two never read alike in one list. */
+.walker-choice .power-mark { width: 1.45em; height: 1.45em; margin-right: 0.35em;
+  vertical-align: -0.38em; }
+/* "or" between two ways to pay, set apart from the amounts on either side. */
+.cost-or { font-size: 0.78em; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-dim); }
 /* A cost chip reads as the board's cost badges do (.target-detail-badge). */
 .option-cost { border: 1px solid #a98b58; background: var(--base); color: var(--brass-bright);
   font-weight: 700; white-space: nowrap; }
@@ -955,8 +1085,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 @media (max-width: 640px) {
   .decision-zones { grid-template-columns: 1fr; }
 }
-
-.replay { color: var(--replay); }
 
 @media (max-width: 760px) {
   #app { padding: 20px 12px 36px; }
@@ -975,19 +1103,42 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* Arcs-inspired persistent table. Existing content styles stay in styles.css. */
 html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
 #app { width: 100%; height: 100vh; height: 100dvh; max-width: none; margin: 0; padding: 0; }
+/* The start pages are documents, not the table: they scroll within #app and
+   keep a gutter. */
+#app.start-page { overflow-y: auto; box-sizing: border-box; padding: 28px 16px 48px; }
 /* Actions lead the table, top left and two rows tall, beside the players
    and the map they are answered on; the Log takes the corner under them. */
 .game-table { width: 100%; height: 100%; display: grid; gap: 4px; padding: 4px;
-  background: #0f0e0c; grid-template-columns: minmax(300px, 1fr) minmax(0, 2.4fr);
+  background: var(--table); grid-template-columns: minmax(300px, 1fr) minmax(0, 2.4fr);
   grid-template-rows: minmax(188px, 21%) minmax(0, 1fr) minmax(120px, 24%);
   grid-template-areas: "actions players" "actions world" "log world"; }
 .game-pane { min-width: 0; min-height: 0; display: flex; flex-direction: column;
   background: var(--pane); border: 1px solid #40382b; overflow: hidden; }
 .pane-players { grid-area: players; }.pane-world { grid-area: world; }
 .pane-actions { grid-area: actions; }.pane-log { grid-area: log; }
+/* The viewer's own width for the left column (SidebarDivider), held between
+   a usable minimum and half the table however the window is resized. The
+   phone layouts below put the columns back. */
+.game-table.sidebar-sized {
+  grid-template-columns: clamp(240px, var(--sidebar-w), 50%) minmax(0, 1fr); }
+/* Over the gap between the columns and a little either side of it, so the
+   edge is easy to catch; a brass line marks it under the pointer. */
+.sidebar-divider { grid-column: 1; grid-row: 1 / -1; justify-self: end;
+  position: relative; z-index: 2; width: 10px; margin-right: -7px;
+  cursor: col-resize; touch-action: none; }
+.sidebar-divider::after { content: ""; position: absolute; top: 0; bottom: 0;
+  left: 4px; width: 2px; background: transparent; }
+.sidebar-divider:hover::after, .sidebar-resizing .sidebar-divider::after {
+  background: var(--brass-line); }
+.sidebar-divider:focus-visible { outline: none; }
+.sidebar-divider:focus-visible::after { background: var(--cream-focus); }
+/* While dragging, the map and the panes do not pick up the pointer. */
+.sidebar-resizing { cursor: col-resize; user-select: none;
+  -webkit-user-select: none; }
+.sidebar-resizing > .game-pane { pointer-events: none; }
 .pane-header { display: flex; align-items: center; justify-content: space-between;
   flex: 0 0 auto; gap: 8px; min-height: 39px; padding: 4px 10px;
-  border-bottom: 1px solid var(--line-pane); background: #26231d; }
+  border-bottom: 1px solid var(--line-pane); background: var(--pane-header); }
 .pane-heading { margin: 0; color: var(--brass-label); font-size: .8rem; font-weight: 700;
   letter-spacing: .06em; text-transform: uppercase; }
 .pane-content { --pane-pad: 12px; flex: 1 1 auto; min-width: 0; min-height: 0;
@@ -1069,6 +1220,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .player-slot-vision > .board-option-badge { position: static;
   margin-left: 0.4em; }
 .player-slot-vision-empty { border-style: dashed; color: #b7a98f; }
+.player-slot-vision-warband { margin-left: 0.3em; font-size: 0.8em; }
 .resources { display: flex; align-items: baseline; flex-wrap: wrap;
   gap: 0 0.45em; color: var(--parchment-muted); font-weight: 400; }
 .resources > * + *::before { content: "·"; margin-right: 0.45em;
@@ -1106,7 +1258,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 /* The regions keep 1500px, as a site's card width is a share of its
    region; the shared bank's column and its gap are added beside them. */
 .map-content { position: absolute; width: calc(1500px + 12px + var(--bank-w));
-  padding: 20px; --bank-w: 360px;
+  padding: 8px; --bank-w: 360px;
   transform-origin: top left; font-size: 1rem; }
 /* The glance layer. Below 0.72 the map's own text falls under 11px on
    screen, so what a player scans the board for (region and site names,
@@ -1171,7 +1323,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    corner glyph is 1.5em, so the face is padded at the top for the name to
    start under it, not behind it. */
 .map-compact .site .card-face { padding: 1.7em 0.25em 0.25em;
-  justify-content: center; align-items: center; text-align: center; }
+  justify-content: center; align-items: center; text-align: center;
+  container-type: inline-size; }
 /* A back has no corner glyph to clear, and at the counter-scaled size any
    padding in em is wider than the card, so a face-down card keeps its
    type's box with none. */
@@ -1180,8 +1333,18 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .map-compact .card-header .token-glyph { position: absolute; top: 0.2em;
   left: 0.2em; width: 1.5em; height: 1.5em; }
 .map-compact .card-tokens { justify-content: center; }
-.map-compact .card-face .card-defense, .map-compact .card-face .card-restriction,
+.map-compact .card-face .card-defense, .map-compact .card-face .card-power-marks,
 .map-compact .card-face .card-unimplemented-badge { display: none; }
+/* The banner takes the corner opposite the suit glyph, in the room the
+   face's top padding already keeps for it. */
+.map-compact .card-emblems { display: contents; }
+.map-compact .card-header .restriction-mark { position: absolute; top: 0.2em;
+  right: 0.2em; }
+/* A compact card too narrow for the glyph and the banner side by side, as
+   a phone's whole-map view makes it, keeps the suit glyph alone; the banner
+   is read on a zoom or in the overlay. The face is the container (above). */
+@container (max-width: 3.6em) {
+  .map-compact .card-header .restriction-mark { display: none; } }
 /* A compact banner shows its name alone, held at the glance size as a
    site's card is: the side and the "Banner of the" prefix are the study
    layer, read on a zoom or in the overlay. The name is set in the face its
@@ -1243,12 +1406,13 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    of size; the faces only paint. A card is a button too, and keeps its own
    face. */
 .pane-actions :where(button:not(.card-face)) { min-height: 44px;
-  padding: 8px 12px; border: 1px solid #bca780; border-radius: 7px;
-  background: #282117; color: #fff; }
-.pane-actions :where(.distribute-decrement, .distribute-increment) {
+  padding: 8px 12px; border: var(--option-ring) solid var(--option-line);
+  border-radius: 7px; background: #282117; color: #fff; }
+.pane-actions :where(.distribute-decrement, .distribute-increment, .plan-aid-step) {
   border-color: var(--brass-line); border-radius: 4px; background: var(--raised); color: #e8d9bb; }
 .pane-actions :where(button:not(.card-face)):hover:not(:disabled, [aria-disabled="true"]) {
-  border-color: var(--cream-bright); background: var(--pressed); }
+  border-color: var(--cream-bright); background: var(--pressed);
+  box-shadow: 0 0 0 var(--option-ring) var(--option-glow); }
 .pane-actions :where(button:not(.card-face)):is(:disabled,
   [aria-disabled="true"]) { opacity: 0.5; cursor: not-allowed; }
 /* The system's input field, on the warband count and a deal's amounts. */
@@ -1260,16 +1424,31 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 :where(.pane-actions h3) { font-size: .95rem; }
 /* Helper lines under a heading or prompt, in the same ink as a partition's
    instruction: what the form allows, not the question itself. */
-.selection-cardinality, .board-draft,
-.walker-many-instruction, .walker-amount-instruction, .informational,
-.walker-waiting, .seat-identity,
-.walker-choice-details, .decision-instruction, .empty-state {
+.walker-many-instruction, .walker-amount-instruction,
+.walker-waiting, .seat-identity, .walker-choice-details, .empty-state {
   color: var(--ink-dim); font-size: .82rem; }
 /* The asked ruler's prompt (consent design). */
 .consent-prompt { display: grid; gap: 8px; }
 .consent-question { margin: 0; }
 .consent-answers { display: flex; flex-wrap: wrap; gap: 6px; }
 .consent-notice { margin: 0; color: var(--ink-dim); font-size: .82rem; }
+/* An Imperial ally's offer panel (Empire phase design, "Offer panel"):
+   a pending removal is struck through, a used item and the amount tags
+   sit in the helper ink. */
+.plan-aid-prompt { display: grid; gap: 8px; }
+.plan-aid-heading { margin: 0; }
+.plan-aid-items { list-style: none; margin: 0; padding: 0; display: grid;
+  gap: 2px; }
+.plan-aid-item { display: flex; gap: 6px; align-items: baseline; }
+.plan-aid-removed .plan-aid-name { text-decoration: line-through;
+  color: var(--ink-dim); }
+.plan-aid-used, .plan-aid-tag, .plan-aid-empty { color: var(--ink-dim);
+  font-size: .82rem; }
+.plan-aid-empty { margin: 0; }
+.plan-aid-amount { display: flex; flex-wrap: wrap; gap: 6px;
+  align-items: center; }
+.plan-aid-amount-name { flex: 1 1 auto; }
+.plan-aid-amount-value { min-width: 1.5em; text-align: center; }
 /* A pane with nothing to show yet says so in the helper ink, at the top of
    the pane like any first line. On the map, which is transform-scaled, the
    line is set against the scale so it reads at one size whatever Fit came
@@ -1279,7 +1458,6 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   font-size: calc(0.82rem / var(--map-scale, 1)); }
 .pane-actions .decision-zones { grid-template-columns: 1fr; gap: 10px; }
 .pane-actions .decision-zone { min-height: 100px; }
-.pane-actions .decision-final-row { flex-wrap: wrap; }
 /* The game log: 13px Ink, one step under the Actions pane's body so the
    two reading surfaces on the right column read as a pair, lines one gutter
    in and dimmed, round and victory headlines in the replay green, a spent
@@ -1419,6 +1597,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
     grid-template-rows: minmax(150px, 34%) auto minmax(0, 1fr)
       minmax(90px, 13%);
     grid-template-areas: "actions" "players" "world" "log"; }
+  .game-table.sidebar-sized { grid-template-columns: minmax(0, 1fr); }
+  .sidebar-divider { display: none; }
   /* Sized to its boards, the strip has nothing below to scroll to; a
      sideways scrollbar's own height is not left to start one. */
   .pane-players > .pane-content { overflow-y: hidden; }
@@ -1626,6 +1806,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    the 44px minimum wherever the main pointer is coarse, desktop or not. */
 @media (pointer: coarse) {
   .map-control, .dev-toggle, .dev-close, .log-new, .log-overlay-close,
-  .card-overlay-close, .pane-switch-option { min-width: 44px; min-height: 44px; }
+  .card-overlay-close, .pane-switch-option, .overlay-confirm button,
+  .consent-grid-choice { min-width: 44px; min-height: 44px; }
   .pane-header { min-height: 52px; }
 }

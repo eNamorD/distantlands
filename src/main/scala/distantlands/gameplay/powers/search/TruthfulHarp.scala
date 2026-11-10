@@ -1,0 +1,61 @@
+package distantlands.gameplay.powers.search
+
+import distantlands.catalog.{ModifierMark, PrintedPower, Relic}
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
+
+object TruthfulHarpCard extends Relic(RelicId("R04"), "Truthful Harp", value = 39, defense = 0):
+  val power = PrintedPower(PowerId("relic.truthful-harp"),
+    persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
+    text = "You may draw 2 more cards. If you do, you **must** reveal " +
+      "every card you draw and the card you keep.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+/** The Truthful Harp (relic R04), a selected Search modifier: a Search draws 2
+  * more cards, and every card drawn is revealed while it is in the player's
+  * hand. The Harp and Augury stack.
+  *
+  * A card in a temporary hand is private to its owner and has no orientation,
+  * so it cannot be turned faceup. It is revealed by recording that every other
+  * player has seen it (`Peek`), which is what a public reveal amounts to in the
+  * recorded state: the identity of a card that later becomes a facedown
+  * adviser is then known to all. The reveal is a node of its own after the
+  * draw, so it covers every card drawn whichever other extension ran.
+  *
+  * Its line names every card revealed, "Revealed {cards}.", and covers the
+  * generic peek lines.
+  */
+case object TruthfulHarp extends SelectedModifier:
+  val id: PowerId = TruthfulHarpCard.power.id
+  val More: Int = 2
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Revealed {cards}." */
+  val revealed: NoteKey = notes.key("revealed", Vector(
+    NotePart.Text("Revealed "), NotePart.Arg(0), NotePart.Text(".")))
+
+  val card: Relic = TruthfulHarpCard
+  def actions: Set[MajorActionType] = Set(MajorActionType.Search)
+
+
+  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.SearchBeforeDraw -> Vector(Transform((ctx, operations) =>
+      DrawExtension.extend(operations, TruthfulHarp.More) :+
+        reveal(ctx.actor) :+
+        Note(id, revealNote(ctx.actor), covers = true))))
+
+  /** The hand the reveal showed. */
+  private def revealNote(actor: PlayerId)(states: NoteStates)
+      : Option[LogNote] =
+    val hand = states.now.game.current.temporaryHands
+      .getOrElse(actor, Vector.empty)
+    Option.when(hand.nonEmpty)(TruthfulHarp.revealed(
+      PowerSourceRef.Card(cardId), NoteArg.Cards(hand)))
+
+  private def reveal(actor: PlayerId): Operation = BuildOps((ready, _) => Right(
+    for
+      viewer <- ready.game.current.players.map(_.player).filter(_ != actor)
+      card <- ready.game.current.temporaryHands.getOrElse(actor, Vector.empty)
+    yield Peek(viewer, card, Location.Hand(actor))))
