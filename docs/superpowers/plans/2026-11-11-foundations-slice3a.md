@@ -10,7 +10,7 @@ goes through the Chronicle Phase into the next game.
 
 **Architecture:** A region's vector in `MapState` may be shorter than its
 slots (`Region.slots`), and game start builds the map from the sites it
-places (`MapState.hinterward`). `EmpireSetupRules.resolve` returns how the
+places (`MapState.inSlots`). `EmpireSetupRules.resolve` returns how the
 game starts, a `SetupMode`: a first game, a game with an Empire, or Setup
 With No Empire. `GameStartRules` reads the mode and Foundation I's face to
 decide how many slots it fills from the atlas, `FirstGameSetupMaterializer`
@@ -46,7 +46,8 @@ Slice 4 is read for the empty slots it reuses.
   covers the subject. A test helper's name says what it builds.
 - Wire and journal changes need not keep old journals decodable. This slice
   journals nothing new. The game projection's region gains `emptySlots`,
-  which a payload without it decodes as 0.
+  a required field: a region payload without it is refused, so every
+  region payload written by hand gains it too (Task 6).
 - Owner rulings (spec, "Rulings" and slice 3), binding here:
   - No Empire sets the Reliquary aside. "Discard all relics from the
     Reliquary. They return in the Chronicle Phase." The Reliquary's relics
@@ -240,8 +241,8 @@ this plan follows the code, and Task 8 corrects the spec.
     with no Empire they make their user the Chancellor (CR p. 34). The
     first-game option ignores these powers today, and game start never
     turns it off, but a table can (`Table.allowingCitizenshipPowers`), and
-    the Settings Feature phase will. Task 4 makes the draw find a set-aside
-    Reliquary empty.
+    the Settings Feature phase will (ruling 10). Task 4 makes the draw find
+    a set-aside Reliquary empty.
 12. **Two server suites expect the old refusal.**
     `TrustedGameProvisioningSuite` and `TrustedSeatRoutesSuite` create a
     game from `EvolvedChronicleFixture.record`, whose Chancellor is not
@@ -270,7 +271,7 @@ this plan follows the code, and Task 8 corrects the spec.
 These fill gaps the spec leaves. None is a rules question.
 
 1. **The slots live on `Region`.** `Region.slots` is 2, 3 and 3,
-   `MapState.slots` their sum, and `MapState.hinterward(placed)` the one
+   `MapState.slots` their sum, and `MapState.inSlots(placed)` the one
    place that lays sites out in slots. `MapState` gains `sitesIn(region)`,
    `emptySlots(region)`, `nextSlot: Option[Region]` and
    `hintermost: Option[SiteId]`. `DomainValidation` keeps
@@ -286,11 +287,14 @@ These fill gaps the spec leaves. None is a rules question.
    sites, and `atlasSites` those same sites with their stored cards, which
    the materializer already sets up as bandit sites with ruined edifices
    and open relic slots filled (`atlasSite`).
-3. **The Reliquary set aside is a flag.**
+3. **The Reliquary set aside is a flag behind one accessor.**
    `CampaignState.reliquarySetAside`, set by `LaterGameSetup` with no
    Empire. The relics stay in `campaign.reliquary` (owner ruling 3), so
-   the card index and the Chronicle's accounting hold them as before, and
-   the one reader in play, `ReliquaryDraws`, asks the flag.
+   the card index and the Chronicle's accounting hold them as before.
+   Whoever takes a relic in play reads `CampaignState.reliquaryInPlay`,
+   which is empty while the Reliquary is set aside: `ReliquaryDraws` and
+   Setup's Reliquary pick today, and Reliquary Raid or a legacy action
+   later, none of which can then forget the flag.
 4. **A first game is a baseline with an empty `world`.**
    `SetupPawnSites.legal` reads `campaign.baseline.world.isEmpty` (finding
    10) rather than carry the mode into the live game.
@@ -306,9 +310,9 @@ These fill gaps the spec leaves. None is a rules question.
    nothing to choose it is cut to a choice of none, which its player can
    confirm.
 6. **The projection counts the empty slots.**
-   `SetupRegionProjection.emptySlots` is `MapState.emptySlots(region)`;
-   the client draws that many frames after the region's sites and holds no
-   slot count of its own. The frame is a `div.site-slot-empty` with
+   `SetupRegionProjection.emptySlots` is `MapState.emptySlots(region)`,
+   a required field on the wire; the client draws that many frames after
+   the region's sites and holds no slot count of its own. The frame is a `div.site-slot-empty` with
    `role="img"` and the label "Empty site slot, Provinces": the height and
    radius of a site, a dashed Line-mid border, no fill, nothing inside. It
    is not a `.site`, so no board option, pawn or selector that reads sites
@@ -385,17 +389,29 @@ changes.
    pawn; the same fallback serves an Imperial player whose Empire holds no
    site with a purple warband, which 24 warbands and six seats cannot
    produce (Task 4, `SetupPawnSites.legal`).
-7. **The set-aside Reliquary is empty to play, and an Exile's win
-   scatters it.** Rulebook: "Discard all relics from the Reliquary. _They
-   return in the Chronicle Phase._" Reading, beside owner ruling 3: a power
-   that takes a Reliquary relic (Bewitch, Ancient Pact, Royal Ambitions)
-   finds none and says "The Reliquary was empty." (R22), even once its
-   user is the Chancellor (Task 4). In the Chronicle Phase the relics
-   return as the Chronicle's own steps have it: Crown Chancellor discards
-   the Reliquary when an Exile wins, so Scatter Relics deals them; they
-   stay in the Reliquary for Stock Reliquary to add to only when a player
-   who became the Chancellor in play wins (finding 6; Task 7 pins the
-   Exile's win).
+7. **The set-aside Reliquary at Crown Chancellor. Of all these rulings
+   this one most needs the owner's eye: it narrows owner ruling 3.**
+   Rulebook, Setup With No Empire (`rules.yml`, line 270): "Discard all
+   relics from the Reliquary. _They return in the Chronicle Phase._"
+   Rulebook, the Sun, Crown Chancellor, "If an Exile won, the Empire
+   breaks" (about line 1288): "Discard all relics in the Reliquary."
+   Owner ruling 3 ends: "the Chronicle's Stock Reliquary step adds to
+   them". Reading: Crown Chancellor runs unchanged. An Exile's win
+   discards the Reliquary, the set-aside relics included, and Scatter
+   Relics deals them to the sites; that is how they return. A Chancellor's
+   win keeps them, and Stock Reliquary adds to them. After Setup With No
+   Empire the winner is an Exile unless a player became the Chancellor in
+   play (CR p. 34), so ruling 3's clause "the Chronicle's Stock Reliquary
+   step adds to them" holds only when a Chancellor made in play wins. The
+   alternative the owner may prefer: Crown Chancellor skips the discard
+   while `campaign.reliquarySetAside`, so the set-aside relics always wait
+   for Stock Reliquary. That would be one condition in
+   `ChronicleCrown.empireBreaks` and a changed expectation in
+   `EmptySlotChronicleSuite` (finding 6; Task 7 pins the reading taken,
+   and Task 8 writes it into the spec). In play, a power that takes a
+   Reliquary relic (Bewitch, Ancient Pact, Royal Ambitions) finds a
+   set-aside Reliquary empty and says "The Reliquary was empty." (R22),
+   even once its user is the Chancellor (Task 4).
 8. **A first game places its eight sites whatever Foundation I's face.**
    Rulebook, Setup for First Game: "Taking from the Recent Sites side of
    the Atlas box, place one site each in the eight site slots on the map."
@@ -412,23 +428,40 @@ changes.
    site in your region", "in the Hinterland") reads the regions of the
    sites on the map: an empty slot holds nothing for it to count or
    affect (Task 5 pins the Portal; no code changes).
+10. **Citizenship powers in a later game with no Empire: a known gap.**
+    Rulebook, Citizenship in Games with No Empire (about line 1197): "In
+    games with no Empire, powers that let a player become a Citizen
+    instead let them become the Chancellor if there isn't one yet. [...]
+    However, if you are playing your very first game, we recommend
+    ignoring these powers." Reading: a later game set up with no Empire is
+    not the very first game, so there these powers should work and make
+    their user the Chancellor. The code does not do so yet, in any later
+    game: game start gives every game `FirstGameSupportState` with
+    `ignoreCitizenshipPowers` on, a later game with an Empire included,
+    and leaves turning it off to the Settings Feature phase
+    (`model/Setup.scala`). Setup With No Empire follows the later-game
+    value, which a test pins (Task 3), and this plan changes no production
+    code for it: turning the option off at game start would change every
+    later game with an Empire too, which is more than this slice's. The
+    owner may want game start to turn it off whenever the Chronicle is not
+    a first game's.
 
 ## File map
 
 | File | Change |
 |---|---|
 | `src/main/scala/distantlands/model/Cards.scala` | `Region.slots` |
-| `src/main/scala/distantlands/model/World.scala` | `MapState`'s slots: `sitesIn`, `emptySlots`, `nextSlot`, `hintermost`, `MapState.slots`, `MapState.hinterward` |
+| `src/main/scala/distantlands/model/World.scala` | `MapState`'s slots: `sitesIn`, `emptySlots`, `nextSlot`, `hintermost`, `MapState.slots`, `MapState.inSlots` |
 | `src/main/scala/distantlands/model/DomainValidation.scala` | a region may be short, never overfull |
 | `src/main/scala/distantlands/model/Setup.scala` | the plan's doc comments |
-| `src/main/scala/distantlands/model/GameState.scala` | `CampaignState.reliquarySetAside` |
-| `src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala` | builds the map with `MapState.hinterward` |
+| `src/main/scala/distantlands/model/GameState.scala` | `CampaignState.reliquarySetAside` and `reliquaryInPlay` |
+| `src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala` | builds the map with `MapState.inSlots` |
 | `src/main/scala/distantlands/gameplay/setup/StartingFoundations.scala` | Foundation I's refusal goes; `eroded` |
 | `src/main/scala/distantlands/gameplay/setup/EmpireSetupRules.scala` | rewritten: `SetupMode` and `resolve` |
 | `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala` | the atlas slots it fills, the atlas it keeps, the mode |
 | `src/main/scala/distantlands/gameplay/setup/LaterGameSetup.scala` | takes the mode; `withoutEmpire` |
 | `src/main/scala/distantlands/gameplay/setup/SetupPawnSites.scala` | pawn sites with no Empire |
-| `src/main/scala/distantlands/gameplay/powers/ReliquaryDraws.scala` | a set-aside Reliquary gives nothing |
+| `src/main/scala/distantlands/gameplay/powers/ReliquaryDraws.scala`, `src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala` | take from `reliquaryInPlay` |
 | `src/main/scala/distantlands/application/GeneratedFirstGamePlanFactory.scala` | the first player with no Chancellor listed |
 | `src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala` | a choose-one with no option is refused |
 | `src/main/scala/distantlands/gameplay/powers/action/ShatteredPortal.scala` | one comment |
@@ -448,6 +481,7 @@ changes.
 | `src/test/scala/distantlands/application/GamePresentationProjectorMapSuite.scala` | new: the projected map |
 | `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala` | the codec |
 | `frontend/src/test/scala/distantlands/frontend/EmptySiteSlotSuite.scala` | new: the frame |
+| `frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala` | its hand-written region payloads gain `emptySlots` |
 | `src/test/scala/distantlands/gameplay/chronicle/EmptySlotChronicleSuite.scala` | new: the Chronicle round trip |
 | `DESIGN.md`, `docs/architecture/game-setup.md`, `docs/rules/implementation-traceability.md`, `docs/rules/ambiguities.md`, `docs/ROADMAP.md`, the spec | docs |
 
@@ -474,8 +508,9 @@ changes.
     `MapState.nextSlot: Option[Region]` (the first region not yet full),
     `MapState.hintermost: Option[SiteId]` (the last site in `hinterward`).
   - `MapState.slots: Int` (8) and
-    `MapState.hinterward(placed: Vector[(SiteId, SiteState)]): MapState`,
-    which lays sites out in slots going Hinterward.
+    `MapState.inSlots(placed: Vector[(SiteId, SiteState)]): MapState`,
+    which lays sites out in slots going Hinterward. It does not share a
+    name with the reader `hinterward`.
   - `DomainProblem.WrongRegionSize` is reported only for a region with more
     sites than slots.
   - Slice 3b's `PlaceAtlasSite` reads `nextSlot`; its Explore gate reads
@@ -491,7 +526,7 @@ Add at the end of `src/test/scala/distantlands/model/WorldModelSuite.scala`:
     Tokens.empty)
 
   /** A map of the sites S1 to S`count`, placed going Hinterward. */
-  private def mapOfSites(count: Int): MapState = MapState.hinterward(
+  private def mapOfSites(count: Int): MapState = MapState.inSlots(
     (1 to count).toVector.map(index => SiteId(s"S$index") -> banditHeldSite))
 
   test("sites fill the Cradle's 2 slots, then the Provinces' 3, then the " +
@@ -567,7 +602,7 @@ the eight sites S1 to S8, with no catalog.
 
 Run: `./sbtw "testOnly distantlands.model.WorldModelSuite distantlands.model.DomainValidationSuite"`
 Expected: the test sources do not compile. The companion's
-`MapState.hinterward`, `Region.slots`, `sitesIn`, `nextSlot`, `emptySlots`
+`MapState.inSlots`, `Region.slots`, `sitesIn`, `nextSlot`, `emptySlots`
 and `hintermost` do not exist yet.
 
 - [ ] **Step 3: Give the regions their slots**
@@ -663,14 +698,13 @@ object MapState:
     * the Cradle, then the Provinces, then the Hinterland. Slots past the
     * last site stay empty. More sites than the map has slots overfill the
     * Hinterland, which `DomainValidation` reports. */
-  def hinterward(placed: Vector[(SiteId, SiteState)]): MapState =
+  def inSlots(placed: Vector[(SiteId, SiteState)]): MapState =
     val (cradle, outer) = placed.map(_._1).splitAt(Region.Cradle.slots)
     val (provinces, hinterland) = outer.splitAt(Region.Provinces.slots)
     MapState(cradle, provinces, hinterland, placed.toMap)
 ```
 
-The companion's `hinterward` builds a map; the method of the same name on a
-`MapState` reads one, in the same order.
+`MapState.inSlots` builds a map in the order `hinterward` reads one.
 
 - [ ] **Step 4: Let a region be short**
 
@@ -740,7 +774,7 @@ with
 
 ```scala
     val atlasSites = plan.atlasSites.map(stored => stored.site -> stored).toMap
-    val map = MapState.hinterward(plan.orderedSites.map { siteId =>
+    val map = MapState.inSlots(plan.orderedSites.map { siteId =>
       val drawn = relicsBySite.getOrElse(siteId, Vector.empty)
       siteId -> empireSites.get(siteId).map(empireSite(_, purple(siteId)))
         .orElse(atlasSites.get(siteId).map(atlasSite(_, drawn)))
@@ -764,7 +798,7 @@ unchanged: the same eight sites lie in the same slots.
 git add src/main/scala/distantlands/model/Cards.scala src/main/scala/distantlands/model/World.scala src/main/scala/distantlands/model/DomainValidation.scala src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala src/test/scala/distantlands/model/WorldModelSuite.scala src/test/scala/distantlands/model/DomainValidationSuite.scala
 git commit -m "feat(map): let a region hold fewer sites than its slots" -m "Region carries its number of slots, 2, 3 and 3. MapState can say which
 slots are empty, where the next one is and which site is Hintermost, and
-MapState.hinterward lays placed sites out in slots, which the materializer
+MapState.inSlots lays placed sites out in slots, which the materializer
 now uses. Domain validation accepts a short region and still reports an
 overfull one." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
 ```
@@ -778,7 +812,7 @@ overfull one." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
 - Test: `src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala`
 
 **Interfaces:**
-- Consumes (Task 1): `MapState.slots`, `MapState.hinterward(placed)`,
+- Consumes (Task 1): `MapState.slots`, `MapState.inSlots(placed)`,
   `sitesIn`, `nextSlot`, `hintermost`. From the base:
   `StartingFoundations.of(chronicle)`, `EmpireSetupRules.resolve(chronicle,
   orders): Either[OathViolation, Option[EmpireSetup]]`,
@@ -1093,7 +1127,7 @@ yet." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
 - Test: `src/test/scala/distantlands/server/TrustedSeatRoutesSuite.scala`
 
 **Interfaces:**
-- Consumes (Tasks 1 and 2): `MapState.slots`, `MapState.hinterward`,
+- Consumes (Tasks 1 and 2): `MapState.slots`, `MapState.inSlots`,
   `sitesIn`, `nextSlot`; `GameStartRules.atlasSlots`. From the base:
   `EmpireSetup(chancellor, imperial, sites, absentChancellor)`,
   `FirstGameSetupPlan.empire`, `atlasSites` and `foundations`,
@@ -1277,6 +1311,29 @@ class NoEmpireSetupSuite extends munit.FunSuite:
     assertEquals(Imperials.chancellor(ready), None)
     assert(!ready.banks.warbandSupply.contains(ForceKind.Imperial))
 
+  test("each favor bank holds 3 favor and 1 more per denizen of its suit " +
+      "on the former Empire's sites, ruined edifices included"):
+    val record = stockedFormerEmpire
+    val onMap = record.world.flatMap(_.items).flatMap {
+      case id: EdificeId => catalog.edifice(id).map(_.suit)
+      case id: DenizenId => catalog.denizen(id).map(_.suit)
+      case _ => None
+    }
+    // Four stored denizens and Deep Woods' edifice.
+    assertEquals(onMap.size, 5)
+    assertEquals(started(record).banks.favor,
+      Suit.all.map(suit => suit -> (3 + onMap.count(_ == suit))).toMap)
+
+  test("the option that ignores citizenship powers stands as in a later " +
+      "game with an Empire"):
+    val withEmpire = LaterGameFixture.chronicle(LineageId("l1"),
+      LineageId("l2"))
+    assertEquals(started(absentEmpireChronicle()).setup
+      .ignoreCitizenshipPowers,
+      accepted(GameStartRules.evolve(catalog, withEmpire,
+        LaterGameFixture.orders(withEmpire, p1))).setup
+        .ignoreCitizenshipPowers)
+
   test("the plan's first player begins, the Usurper Limiter is on, and " +
       "the title and both banners start as in a first game"):
     // The People's Favor goes to the Chancellor under this goal, and there
@@ -1311,7 +1368,11 @@ The fixture's first four sites are Ancient City (capacity 3, no relic
 slot), Broken Peaks and Buried Giant (capacity 1, two relic slots each) and
 Deep Woods (a Homeland of capacity 3 that stores its edifice, no relic
 slot). `LaterGameFixture.orders` deals the Chronicle's decks in their own
-order, so the relic a slot gets is the next of `record.relicDeck`.
+order, so the relic a slot gets is the next of `record.relicDeck`. The
+favor banks are Foundation II's, Powerful Tribes here: 3 favor and 1 more
+per denizen of the suit on the map, where a ruined edifice counts. The
+test of the citizenship option pins ruling 10: Setup With No Empire takes
+whatever a later game with an Empire takes, which today is "ignored".
 
 Which Chronicles start which way belongs to `GameStartRulesSuite`. The
 Empire-less refusal becomes a start, a Chronicle that lists no Chancellor
@@ -1549,7 +1610,7 @@ with
 - [ ] **Step 2: Run them to make sure they fail**
 
 Run: `./sbtw "testOnly distantlands.gameplay.setup.NoEmpireSetupSuite distantlands.gameplay.setup.GameStartRulesSuite distantlands.application.GeneratedFirstGamePlanFactorySuite distantlands.server.TrustedGameProvisioningSuite distantlands.server.TrustedSeatRoutesSuite"`
-Expected: 16 tests FAIL, and the rest pass. All ten of
+Expected: 18 tests FAIL, and the rest pass. All twelve of
 `NoEmpireSetupSuite` and the two new tests of `GameStartRulesSuite` get
 `UnsupportedChronicle(an Empire-less later game requires Wide Horizons)`
 where they expect a game. "a site stored in both the atlas and the Empire
@@ -2065,6 +2126,7 @@ lists no Chancellor lets a seated Citizen take the crown." -m "Co-Authored-By: C
 - Modify: `src/main/scala/distantlands/model/GameState.scala`
 - Modify: `src/main/scala/distantlands/gameplay/setup/LaterGameSetup.scala`
 - Modify: `src/main/scala/distantlands/gameplay/powers/ReliquaryDraws.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala`
 - Modify: `src/main/scala/distantlands/gameplay/setup/SetupPawnSites.scala`
 - Test: `src/test/scala/distantlands/gameplay/setup/NoEmpireSetupSuite.scala`
 - Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/CitizenshipWhenPlayedSuite.scala`
@@ -2079,8 +2141,13 @@ lists no Chancellor lets a seated Citizen take the crown." -m "Co-Authored-By: C
 - Produces:
   - `CampaignState.reliquarySetAside: Boolean` (last field, default
     `false`), `true` after Setup With No Empire.
-  - `ReliquaryDraws.steps` takes nothing from a set-aside Reliquary and
-    writes "The Reliquary was empty."
+  - `CampaignState.reliquaryInPlay: Vector[RelicId]`: the relics a player
+    may take in play, none while the Reliquary is set aside. Every taker
+    reads it: `ReliquaryDraws.steps`, which then writes "The Reliquary was
+    empty.", and Setup's Reliquary pick. Anything that later takes a
+    Reliquary relic in play (Reliquary Raid, a legacy action) must read it
+    too; `campaign.reliquary` stays for the card index and the Chronicle
+    Phase.
   - `SetupPawnSites.legal`: in a later game with no Empire, the sites that
     hold bandits; every site when none qualifies.
   - `Table.reliquarySetAside: Table`.
@@ -2105,6 +2172,7 @@ with
     val game = ready.game
     assertEquals(game.campaign.reliquary, reliquaryRelics)
     assert(game.campaign.reliquarySetAside)
+    assertEquals(game.campaign.reliquaryInPlay, Vector.empty)
     val inPlay = game.current.map.sites.values.flatMap(_.relics.map(_.id)) ++
       game.current.commonCards.relicDeck ++
       game.current.players.flatMap(_.relics.map(_.id))
@@ -2118,10 +2186,15 @@ with
       Some(CardContainer.Reliquary)))
     assertEquals(DomainValidation.validate(game), Vector.empty)
 
-  test("a game with an Empire does not set the Reliquary aside"):
-    val record = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
-    assert(!accepted(GameStartRules.evolve(catalog, record,
-      LaterGameFixture.orders(record, p1))).game.campaign.reliquarySetAside)
+  test("a game with an Empire does not set the Reliquary aside: its " +
+      "relics may be taken in play"):
+    val empire = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
+    val record = empire.copy(relicDeck = empire.relicDeck.drop(2),
+      reliquary = empire.relicDeck.take(2))
+    val campaign = accepted(GameStartRules.evolve(catalog, record,
+      LaterGameFixture.orders(record, p1))).game.campaign
+    assert(!campaign.reliquarySetAside)
+    assertEquals(campaign.reliquaryInPlay, record.reliquary)
     assert(!FirstGameSetupFixture.freshReady.game.campaign.reliquarySetAside)
 
   test("the Grand Scepter is set aside and no one is asked for a " +
@@ -2209,7 +2282,7 @@ with
   test("Ancient Pact asks only the holder of the Darkest Secret"):
 ```
 
-- [ ] **Step 2: Add the flag, so the tests compile**
+- [ ] **Step 2: Add the flag and its accessor, so the tests compile**
 
 In `src/main/scala/distantlands/model/GameState.scala`:
 
@@ -2230,7 +2303,12 @@ with
     // Phase: its relics stay in `reliquary`, and no one can take one in
     // play (Foundations ruling 3).
     reliquarySetAside: Boolean = false
-)
+):
+  /** The Reliquary's relics a player may take in play: none while the
+    * Reliquary is set aside. Every taker reads this, never `reliquary`,
+    * which the card index and the Chronicle Phase read whole. */
+  def reliquaryInPlay: Vector[RelicId] =
+    if reliquarySetAside then Vector.empty else reliquary
 ```
 
 - [ ] **Step 3: Run the tests to make sure they fail**
@@ -2294,6 +2372,8 @@ with
       reliquarySetAside = true))
 ```
 
+Both takers of a Reliquary relic read the accessor, not the field:
+
 In `src/main/scala/distantlands/gameplay/powers/ReliquaryDraws.scala`:
 
 Replace
@@ -2320,21 +2400,56 @@ Then replace
       : Vector[Operation] = Vector(Branch((live, _) =>
     if live.game.campaign.reliquary.isEmpty then
       Vector(Note(power, _ => Some(empty(source))))
+    else Vector(
+      Shuffle(ShufflePile.Reliquary),
+      BuildOps((ready, _) => Right(ready.game.campaign.reliquary.headOption
+        .toVector.map(relic => Move(Piece.Card(relic),
+          PositionedLocation(Location.Reliquary),
 ```
 
 with
 
 ```scala
       : Vector[Operation] = Vector(Branch((live, _) =>
-    if live.game.campaign.reliquary.isEmpty ||
-        live.game.campaign.reliquarySetAside then
+    if live.game.campaign.reliquaryInPlay.isEmpty then
       Vector(Note(power, _ => Some(empty(source))))
+    else Vector(
+      Shuffle(ShufflePile.Reliquary),
+      BuildOps((ready, _) => Right(ready.game.campaign.reliquaryInPlay
+        .headOption.toVector.map(relic => Move(Piece.Card(relic),
+          PositionedLocation(Location.Reliquary),
+```
+
+In `src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala`:
+
+Replace
+
+```scala
+  /** A later game's Chancellor first keeps one Reliquary relic facedown
+    * (CR p. 8, Empire ruling R29). An empty Reliquary asks nothing. */
+  private def reliquaryPick(chancellor: PlayerId): Operation =
+    Branch((state, _) =>
+      val relics = state.game.campaign.reliquary
+      if relics.isEmpty then Vector.empty
+```
+
+with
+
+```scala
+  /** A later game's Chancellor first keeps one Reliquary relic facedown
+    * (CR p. 8, Empire ruling R29). An empty Reliquary asks nothing, nor
+    * does one set aside. */
+  private def reliquaryPick(chancellor: PlayerId): Operation =
+    Branch((state, _) =>
+      val relics = state.game.campaign.reliquaryInPlay
+      if relics.isEmpty then Vector.empty
 ```
 
 The relics stay in `campaign.reliquary`, so `CardIndex` holds them in
 `CardContainer.Reliquary` and the Chronicle's accounting conserves them
 with no change. Setup's Reliquary pick is asked only of a Chancellor
-(`SetupProcedure.tree`), and there is none.
+(`SetupProcedure.tree`), and with no Empire there is none; it reads the
+accessor all the same, so that no taker reads the field.
 
 - [ ] **Step 5: Offer an Exile the sites that hold bandits**
 
@@ -2396,9 +2511,10 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/gameplay/setup/LaterGameSetup.scala src/main/scala/distantlands/gameplay/powers/ReliquaryDraws.scala src/main/scala/distantlands/gameplay/setup/SetupPawnSites.scala src/test/scala/distantlands/gameplay/setup/NoEmpireSetupSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/CitizenshipWhenPlayedSuite.scala src/test/scala/distantlands/testkit/Table.scala
+git add src/main/scala/distantlands/model/GameState.scala src/main/scala/distantlands/gameplay/setup/LaterGameSetup.scala src/main/scala/distantlands/gameplay/powers/ReliquaryDraws.scala src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala src/main/scala/distantlands/gameplay/setup/SetupPawnSites.scala src/test/scala/distantlands/gameplay/setup/NoEmpireSetupSuite.scala src/test/scala/distantlands/gameplay/powers/whenplayed/CitizenshipWhenPlayedSuite.scala src/test/scala/distantlands/testkit/Table.scala
 git commit -m "feat(foundations): set the Reliquary aside with no Empire" -m "Setup With No Empire marks the Reliquary set aside: its relics stay in the
-campaign's Reliquary, and a power that would take one finds it empty. An
+campaign's Reliquary, and whoever would take one in play reads
+CampaignState.reliquaryInPlay, which is empty. An
 Exile places their pawn at a site that holds bandits, not at one with no
 warbands, and anywhere when no site qualifies." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
 ```
@@ -2414,12 +2530,13 @@ warbands, and anywhere when no site qualifies." -m "Co-Authored-By: Claude Fable
 - Test: `src/test/scala/distantlands/gameplay/ShortMapPlaySuite.scala` (new)
 
 **Interfaces:**
-- Consumes (Task 1): `MapState.hinterward(placed)`. From the base:
+- Consumes (Task 1): `MapState.inSlots(placed)`. From the base:
   `WalkerSearch.narrow` and `reach`, `PhaseMenu.offers`,
   `MenuPlay.withoutBand` and `withoutMenu`, `ActPowerHarness.use`, `rules`
   and `roundDie`, `PowerFixture.quietTable` (p1's Act, p1's pawn at
   Ancient City, nothing at any site), `StonePortal`, `ShatteredPortal`,
-  `StonePortalCard`.
+  `StonePortalCard`, `HiddenPassagesCard` (its ruined face is Sinking
+  Passages).
 - Produces:
   - `WalkerSearch.narrow` returns
     `Left(InvalidEventOrder("the decision offers no answer"))` for a
@@ -2456,7 +2573,7 @@ with
           s"${site.value} holds a card or a pawn and cannot be cut")
     }
     update(_.updateCurrent(_.copy(map =
-      MapState.hinterward(kept.map(site => site -> map.sites(site))))))
+      MapState.inSlots(kept.map(site => site -> map.sites(site))))))
 
   /** The Reliquary set aside for the game, as Setup With No Empire leaves
 ```
@@ -2574,6 +2691,7 @@ import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture,
   WalkerPowerCatalog}
 import distantlands.gameplay.powers.action.{ShatteredPortal, StonePortal,
   StonePortalCard}
+import distantlands.gameplay.powers.wake.HiddenPassagesCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.OathState.Ready
@@ -2601,18 +2719,25 @@ class ShortMapPlaySuite extends munit.FunSuite:
       .sitesInPlay(sites).turn(actor, Phase.Act)
       .edifice(StonePortalCard.id, side, at = home).secrets(actor, 1).ready
 
-  /** The Act menu's option `ref` as p1 is offered it. */
-  private def offered(state: ReadyGame, ref: DecisionOptionRef)
-      : DecisionOption =
-    PhaseMenu.offers(PhaseMenu.Menu.Act, catalog, state, actor,
+  /** p1's Wake on a map cut to its first `sites` sites, every pawn at the
+    * first, with 2 favor and the Passages edifice there on `side`. */
+  private def passagesOnMapOf(sites: Int, side: EdificeSide): ReadyGame =
+    Table.from(quietTable).pawn(Table.p2, home).pawn(Table.p3, home)
+      .sitesInPlay(sites).turn(actor, Phase.Wake)
+      .edifice(HiddenPassagesCard.id, side, at = home).favor(actor, 2).ready
+
+  /** The option `ref` of `menu` as p1 is offered it. */
+  private def offered(menu: PhaseMenu.Menu, state: ReadyGame,
+      ref: DecisionOptionRef): DecisionOption =
+    PhaseMenu.offers(menu, catalog, state, actor,
       PhasePowerCatalog.default, walkerPowers)
       .map(offer => MenuPlay.withoutBand(offer.option)).find(_.ref == ref)
-      .getOrElse(fail(s"the Act menu does not list $ref"))
+      .getOrElse(fail(s"the $menu menu does not list $ref"))
 
   test("on a map of one site, Travel is shown unavailable with its reason"):
     val oneSite = portalOnMapOf(1, EdificeSide.Ruined)
     assertEquals(oneSite.game.current.map.inPlay, Vector(home))
-    assertEquals(offered(oneSite,
+    assertEquals(offered(PhaseMenu.Menu.Act, oneSite,
       PhaseMenu.optionFor(ActionRef.Travel, Vector.empty).get),
       DecisionOption.Unavailable(
         DecisionOption.Button(DecisionOptionRef.Button("travel"), "Travel"),
@@ -2621,12 +2746,26 @@ class ShortMapPlaySuite extends munit.FunSuite:
   test("on a map of one site, Stone Portal has no other site to offer: it " +
       "is shown unavailable, and starting it is refused"):
     val oneSite = portalOnMapOf(1, EdificeSide.Intact)
-    assert(!offered(oneSite, portal).available, offered(oneSite, portal))
+    assert(!offered(PhaseMenu.Menu.Act, oneSite, portal).available,
+      offered(PhaseMenu.Menu.Act, oneSite, portal))
     assertEquals(rules.startWalker(Ready(MenuPlay.withoutMenu(oneSite)),
       ActionRef.UsePower(StonePortal.id), actor, Vector(portal)).left.toOption,
       Some(OathViolation.InvalidEventOrder("the decision offers no answer")))
     // With a second site it is offered again.
-    assert(offered(portalOnMapOf(2, EdificeSide.Intact), portal).available)
+    assert(offered(PhaseMenu.Menu.Act,
+      portalOnMapOf(2, EdificeSide.Intact), portal).available)
+
+  test("on a map of one site, Hidden Passages and Sinking Passages have " +
+      "no other site to offer and are shown unavailable"):
+    val passages = DecisionOptionRef.Edifice(HiddenPassagesCard.id)
+    Vector(EdificeSide.Intact, EdificeSide.Ruined).foreach { side =>
+      val oneSite = offered(PhaseMenu.Menu.Wake, passagesOnMapOf(1, side),
+        passages)
+      assert(!oneSite.available, s"$side: $oneSite")
+      // With a second site the same face is offered.
+      assert(offered(PhaseMenu.Menu.Wake, passagesOnMapOf(2, side),
+        passages).available, side)
+    }
 
   test("Shattered Portal counts the sites on the map, not its slots: on " +
       "three sites a 1 moves one site on, a 2 wraps to the last, and a 3 " +
@@ -2645,13 +2784,13 @@ class ShortMapPlaySuite extends munit.FunSuite:
 - [ ] **Step 2: Run them to make sure they fail**
 
 Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerSearchSuite distantlands.gameplay.ProcedureWalkerParkSuite distantlands.gameplay.ShortMapPlaySuite"`
-Expected: three tests FAIL. `WalkerSearchSuite`'s new test obtains
+Expected: four tests FAIL. `WalkerSearchSuite`'s new test obtains
 `Right(Some(...))` from `narrow` where it expects the refusal.
 `ProcedureWalkerParkSuite`'s "a walk does not park on a required
 choose-one that declares no option" obtains a park. `ShortMapPlaySuite`'s
-Stone Portal test finds the Portal offered as available. Its Travel and
-Shattered Portal tests pass already: they pin what holds today (findings 3
-and 4).
+Stone Portal test and its Passages test each find the power offered as
+available on a map of one site. Its Travel and Shattered Portal tests
+pass already: they pin what holds today (findings 3 and 4).
 
 - [ ] **Step 3: Refuse a choose-one that declares no option**
 
@@ -2774,8 +2913,8 @@ search.
 
 ```bash
 git add src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala src/main/scala/distantlands/gameplay/powers/action/ShatteredPortal.scala src/test/scala/distantlands/testkit/Table.scala src/test/scala/distantlands/gameplay/walker/WalkerSearchSuite.scala src/test/scala/distantlands/gameplay/ProcedureWalkerParkSuite.scala src/test/scala/distantlands/gameplay/ShortMapPlaySuite.scala
-git commit -m "fix(walker): refuse a choose-one that declares no option" -m "On a map of one site Stone Portal had no other site to offer, and using
-it parked the walk on a question nothing could answer. The search now
+git commit -m "fix(walker): refuse a choose-one that declares no option" -m "On a map of one site Stone Portal and the Passages had no other site to
+offer, and using one parked the walk on a question nothing could answer. The search now
 refuses such a choose-one where it is asked, as it already did when it
 reached one, so the action is shown unavailable. Tests pin Travel and
 Shattered Portal on a short map: the wrap counts the sites in play." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
@@ -2793,6 +2932,7 @@ Shattered Portal on a short map: the wrap counts the sites in play." -m "Co-Auth
 - Test: `src/test/scala/distantlands/application/GamePresentationProjectorMapSuite.scala` (new)
 - Test: `shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala`
 - Test: `frontend/src/test/scala/distantlands/frontend/EmptySiteSlotSuite.scala` (new)
+- Test: `frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala`
 
 **Interfaces:**
 - Consumes (Tasks 1 and 2): `MapState.sitesIn(region)`,
@@ -2802,8 +2942,9 @@ Shattered Portal on a short map: the wrap counts the sites in play." -m "Co-Auth
   `GameRegion` (an alias of `SetupRegionProjection`), `TestSites.quietSite`,
   `TestProjections.actingProjection`, `Dom.all`.
 - Produces:
-  - `SetupRegionProjection.emptySlots: Int` (last field, default 0), on the
-    wire as `emptySlots`; a payload without it decodes as 0.
+  - `SetupRegionProjection.emptySlots: Int` (last field; the constructor
+    defaults it to 0), on the wire as the required `emptySlots`: a region
+    payload without it is refused.
   - The World pane draws `region.emptySlots` elements
     `div.site-slot-empty` after the region's sites.
   - Slice 3b needs nothing more here: once a site is placed, the
@@ -2873,15 +3014,14 @@ with
 ```scala
       Right(projection.world.map(_ => Vector.empty)))
 
-  test("a region's empty site slots round-trip, and a payload without " +
-      "them decodes to none"):
+  test("a region's empty site slots round-trip, and a region payload " +
+      "without them is refused"):
     val short = projection.copy(world = projection.world.map(
       _.copy(emptySlots = 2)))
     assertRoundTrips(short)
     val raw = ujson.read(GameProjectionCodec.encode(short))
     raw("world").arr.foreach(region => region.obj.remove("emptySlots"))
-    assertEquals(GameProjectionCodec.decode(ujson.write(raw))
-      .map(_.world.map(_.emptySlots)), Right(projection.world.map(_ => 0)))
+    assert(GameProjectionCodec.decode(ujson.write(raw)).isLeft)
 ```
 
 Create `frontend/src/test/scala/distantlands/frontend/EmptySiteSlotSuite.scala`:
@@ -2937,6 +3077,31 @@ class EmptySiteSlotSuite extends munit.FunSuite:
     assertEquals(all(root, ".site-slot-empty button").size, 0)
 ```
 
+`HttpGameClientSuite` writes its region payloads by hand, the only place
+in the repo that does, and the field is required:
+
+In `frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala`:
+
+Replace
+
+```scala
+       |"world":[
+       |{"regionId":"cradle","sites":[${siteJson(siteId, "Printed Site", populated = true)},${siteJson("site:002", "Second")}]},
+       |{"regionId":"provinces","sites":[${siteJson("site:003", "Third")},${siteJson("site:004", "Fourth")},${siteJson("site:005", "Fifth")}]},
+       |{"regionId":"hinterland","sites":[${siteJson("site:006", "Sixth")},${siteJson("site:007", "Seventh")},${siteJson("site:008", "Eighth")}]}
+       |],
+```
+
+with
+
+```scala
+       |"world":[
+       |{"regionId":"cradle","sites":[${siteJson(siteId, "Printed Site", populated = true)},${siteJson("site:002", "Second")}],"emptySlots":0},
+       |{"regionId":"provinces","sites":[${siteJson("site:003", "Third")},${siteJson("site:004", "Fourth")},${siteJson("site:005", "Fifth")}],"emptySlots":0},
+       |{"regionId":"hinterland","sites":[${siteJson("site:006", "Sixth")},${siteJson("site:007", "Seventh")},${siteJson("site:008", "Eighth")}],"emptySlots":0}
+       |],
+```
+
 - [ ] **Step 3: Add the field, so the tests compile**
 
 In `shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala`:
@@ -2965,12 +3130,15 @@ with
 Run: `./sbtw "testOnly distantlands.application.GamePresentationProjectorMapSuite distantlands.protocol.ProjectionProtocolSuite"`
 Expected: two tests FAIL. "a Wide Horizons map projects each region's
 sites and the slots past them" obtains `Vector(0, 0, 0)` empty slots, and
-"a region's empty site slots round-trip" loses them in the codec.
+"a region's empty site slots round-trip, and a region payload without
+them is refused" loses them in the codec.
 
-Run: `./sbtw "frontend/testOnly distantlands.frontend.EmptySiteSlotSuite"`
-Expected: two tests FAIL, "a region draws a frame for each slot that holds
-no site, after its sites" and "a region with no site draws only its
-frames": no frame is drawn. The other two pass, since they expect none.
+Run: `./sbtw "frontend/testOnly distantlands.frontend.EmptySiteSlotSuite distantlands.frontend.HttpGameClientSuite"`
+Expected: nine tests FAIL. In `EmptySiteSlotSuite`, "a region draws a
+frame for each slot that holds no site, after its sites" and "a region
+with no site draws only its frames": no frame is drawn; its other two
+pass, since they expect none. Seven tests of `HttpGameClientSuite` fail
+to decode their projection: the codec does not know `emptySlots` yet.
 
 - [ ] **Step 5: Send the empty slots**
 
@@ -3008,7 +3176,7 @@ with
     cardRaws <- default(value, "discardCards", path, Vector.empty[ujson.Value])(array)
     cards <- traverse(cardRaws, s"$path.discardCards")(decodeCard)
     raws <- array(value, "sites", path); sites <- traverse(raws, s"$path.sites")(decodeSite)
-    emptySlots <- intOr(value, "emptySlots", path, 0)
+    emptySlots <- int(value, "emptySlots", path)
   yield SetupRegionProjection(region, sites, count, top, cards, emptySlots)
 ```
 
@@ -3059,6 +3227,7 @@ with
       current.map.emptySlots(where))
 ```
 
+The field is read with `int`, not `intOr`: it has no default on the wire.
 `Region.key` is the region id the projection already sent: `cradle`,
 `provinces`, `hinterland`.
 
@@ -3186,7 +3355,8 @@ with
 ~~~markdown
 (`--site-h: 21.5rem`) whatever it holds, so a pawn arriving or a preview
 opening never shifts the board. An empty site slot is a frame of that
-height, so a region with fewer sites than slots is as tall as a full one. The card row inside a site is three cards
+height, so a region with fewer sites than slots is as tall as a full one.
+The card row inside a site is three cards
 wide: `--card-w: min(8.6rem, (100% - 2 gaps) / 3)`.
 ~~~
 
@@ -3218,9 +3388,9 @@ Expected: PASS, the four tests of `EmptySiteSlotSuite` among them.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala src/main/scala/distantlands/application/GamePresentationProjector.scala frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala frontend/styles.css DESIGN.md src/test/scala/distantlands/application/GamePresentationProjectorMapSuite.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala frontend/src/test/scala/distantlands/frontend/EmptySiteSlotSuite.scala
+git add shared/src/main/scala/distantlands/protocol/projection/WorldProjectionDtos.scala shared/src/main/scala/distantlands/protocol/projection/WorldProjectionCodec.scala src/main/scala/distantlands/application/GamePresentationProjector.scala frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala frontend/styles.css DESIGN.md src/test/scala/distantlands/application/GamePresentationProjectorMapSuite.scala shared/src/test/scala/distantlands/protocol/ProjectionProtocolSuite.scala frontend/src/test/scala/distantlands/frontend/EmptySiteSlotSuite.scala frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala
 git commit -m "feat(table): draw an empty site slot as an empty frame" -m "The projection gives each region the number of its slots that hold no
-site, and the World pane draws that many frames after the region's sites:
+site, a required field, and the World pane draws that many frames after the region's sites:
 the height and radius of a site, a dashed border, nothing inside. A short
 region keeps the height of a full one." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
 ```
@@ -3453,7 +3623,7 @@ Reliquary and no one can take one in play.
 
 The map's slots fill going Hinterward, 2 in the Cradle and 3 in each other
 region (`Region.slots`), and a region's vector may be shorter than its
-slots (`MapState.hinterward`, `nextSlot`, `hintermost`). The atlas keeps
+slots (`MapState.inSlots`, `nextSlot`, `hintermost`). The atlas keeps
 every atlas site game start did not place, in order. The projection gives
 each region its `emptySlots`, which the table draws as empty frames. No
 action fills an empty slot yet: Explore is slice 3b of the
@@ -3588,7 +3758,9 @@ with
 - [ ] **Step 4: The spec**
 
 The status line, the split of slice 3, the statements finding 1, 3 and 7
-correct, and the readings this plan took.
+correct, and the readings this plan took, with ruling 7, the set-aside
+Reliquary at Crown Chancellor, set apart as the one that narrows an owner
+ruling.
 
 In `docs/superpowers/specs/2026-11-11-foundations-design.md`:
 
@@ -3679,10 +3851,24 @@ with
   filled Cradlemost first while the relic deck lasts, and the rest stay
   empty. If no site holds bandits, an Exile may place their pawn at any
   site. A power that takes a Reliquary relic finds a set-aside Reliquary
-  empty. An Exile's win discards the Reliquary at Crown Chancellor as in
-  any game, so the set-aside relics are scattered; Stock Reliquary adds to
-  them only when a player who became the Chancellor in play wins. A first
-  game places its eight sites whatever Foundation I's face.
+  empty. A first game places its eight sites whatever Foundation I's face.
+  Powers that make a player a Citizen are ignored as in a later game with
+  an Empire: the rulebook sets them aside only in the very first game, but
+  game start leaves that option on in every game until the Settings
+  Feature phase, a known gap.
+- **The reading most in need of the owner's eye: the set-aside Reliquary
+  at Crown Chancellor.** Setup With No Empire says "Discard all relics
+  from the Reliquary. They return in the Chronicle Phase", and the Sun's
+  Crown Chancellor says of an Exile's win "Discard all relics in the
+  Reliquary". Slice 3a leaves Crown Chancellor as it is: an Exile's win
+  discards the Reliquary, the set-aside relics with it, and Scatter Relics
+  deals them; a Chancellor's win keeps them, and Stock Reliquary adds to
+  them. With no Empire the winner is an Exile unless a player became the
+  Chancellor in play, so this narrows ruling 3's clause "the Chronicle's
+  Stock Reliquary step adds to them" to that one case. The alternative is
+  for Crown Chancellor to skip the discard while the Reliquary is set
+  aside (`CampaignState.reliquarySetAside`), so that the relics always
+  wait for Stock Reliquary.
 ~~~
 
 Then replace
@@ -3780,7 +3966,7 @@ ambiguities doc." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
   a site is placed, and `campaign.atlas`, whose head is the Recent end and
   whose last entry is the Forgotten end, holding every unplaced site with
   its stored cards. `MapState` has no method that adds a site to the next
-  slot; 3b writes it beside `MapState.hinterward`. The population of a
+  slot; 3b writes it beside `MapState.inSlots`. The population of a
   placed atlas site (ruined edifice, faceup denizens, facedown stored
   relics, bandits, printed tokens, open slots dealt while the relic deck
   lasts) is `FirstGameSetupMaterializer.atlasSite` and `assignRelics`,
@@ -3798,18 +3984,31 @@ ambiguities doc." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
   "empty slot" and "Hintermost" into `CONTEXT.md`, and offers the eroded
   Foundation I, which has no source, at Shape Foundation. Ruling 4 keeps
   the sources of a face that was already altered, for that offer.
+- **Review changes.** `emptySlots` is a required wire field, and
+  `HttpGameClientSuite`'s hand-written region payloads carry it (Task 6).
+  The map's builder is `MapState.inSlots`, which no longer shares a name
+  with the reader `hinterward` (Task 1). Whoever takes a Reliquary relic
+  in play reads `CampaignState.reliquaryInPlay` (Task 4). Ruling 7 says
+  outright that it narrows owner ruling 3, quotes both rule texts and
+  names the alternative, and the spec says the same (Task 8). Ruling 10
+  records citizenship powers in a later game with no Empire as a known
+  gap, with a test that pins what Setup With No Empire follows (Task 3).
+  `NoEmpireSetupSuite` asserts the favor banks (Task 3), and
+  `ShortMapPlaySuite` holds Hidden Passages and Sinking Passages on a map
+  of one site (Task 5). The overlong line in the `DESIGN.md` block is
+  wrapped (Task 6).
 - **Placeholders.** None.
 - **Verified against a prototype.** The slice was built in a scratch
   worktree on `d8cabe43c`, then rebuilt as one commit per task; every block
   here was cut from those commits, and applying the plan's blocks in order
   to a fresh `d8cabe43c` reproduces each task's commit file for file (43
-  files in all). On the final tree the gates of Task 8 passed: 5745 JVM
-  tests, 929 frontend tests, statement coverage 95.28%, branch coverage
-  89.57%, the architecture check, and no change under
-  `src/test/resources`. The red steps were observed on the per-task
-  commits: Task 2's six failures, Task 3's
-  sixteen, Task 4's three with the flag added, Task 5's three and Task 6's
-  two and two, as their steps say. Task 1's red step is a compile failure
+  files in all, 45 after the review's changes). On the final tree, after
+  the review's changes, the gates of Task 8 passed: 5748 JVM tests, 929
+  frontend tests, statement coverage 95.28%, branch coverage 89.57%, the
+  architecture check, and no change under `src/test/resources`. The red steps were observed on the per-task
+  commits: Task 2's six failures, Task 3's eighteen, Task 4's three with
+  the flag added, Task 5's four and Task 6's two and nine, as their steps
+  say. Task 1's red step is a compile failure
   and was read from the code, not run. Task 7 has no red step: its tests
   pass at once. If a red step fails for another reason, trust the run and
   say so in the task's report.
@@ -3831,13 +4030,14 @@ ambiguities doc." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
   `d8cabe43c`: the Setup greps say where.
 - **Type consistency.** `Region.slots`; `MapState.sitesIn(region)`,
   `emptySlots(region)`, `nextSlot`, `hintermost`, `MapState.slots`,
-  `MapState.hinterward(placed)`; `SetupMode.FirstGame`,
+  `MapState.inSlots(placed)`; `SetupMode.FirstGame`,
   `SetupMode.WithEmpire(empire)`, `SetupMode.NoEmpire(sites, exiled)`;
   `EmpireSetupRules.resolve(chronicle, orders): Either[OathViolation,
   SetupMode]`; `StartingFoundations.eroded(faces)`;
   `GameStartRules.atlasSlots(empire, faces)` in Task 2 and
   `atlasSlots(mode, faces)` from Task 3; `LaterGameSetup.apply(catalog,
-  ready, plan, mode)`; `CampaignState.reliquarySetAside`;
+  ready, plan, mode)`; `CampaignState.reliquarySetAside` and
+  `reliquaryInPlay`;
   `Table.reliquarySetAside`, `Table.sitesInPlay(count)`;
   `SetupRegionProjection.emptySlots`; the CSS class `site-slot-empty`.
   The test helpers keep one name each: `wideHorizonsChronicle(empireSites)`
