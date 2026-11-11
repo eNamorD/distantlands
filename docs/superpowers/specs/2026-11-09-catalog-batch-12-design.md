@@ -457,31 +457,44 @@ panel's secrets box and transfer line.
   the table), skipping players already there: put your pawn here, yes or
   no. A yes moves the pawn with no Travel window.
 - **The loop.** A `Repeat` runs while the Gathering is not ended. Each pass
-  asks one decision, `gathering.<n>.open`, co-owned by every player at the
-  site. Its answers are **Negotiate** with chosen players, **Pass** and
-  **Unpass**. The opener may choose players at the site, and players
-  elsewhere whom `NegotiationReach` lets the opener reach (ruling 5). A
-  Negotiate answer runs one `DealWalk` with prefix `gathering.<n>` and
-  the Gathering's `DealRules`: all four printed kinds between any pair
-  (`secretsOpen` and `advisersOpen` on), site terms under Deed Writer,
-  disclosures, the Citizenship offer, non-binding promises, and binding
-  promises when a participant may use The Tribunal (ruling 5). The reach
-  and the Tribunal's and Deed Writer's users are read when the deal opens,
-  under the walk's power-use restrictions; how a When Played power reaches
-  those restrictions, and keeps what it read for a rebuild, is settled when
-  slice 6b is planned.
+  asks one decision, `gathering.open`, co-owned by every player at the
+  site; the actor owns it when at the site, else the first player there.
+  It keeps one id, so the answer it collects never renames the decision
+  the walk parked at. Its answers are **Negotiate** with chosen players
+  (`DecisionAnswer.OpenDeal`), **Pass** and **Unpass**, answering a new
+  `DecisionQuery.Gathering`. The opener may choose players at the site,
+  and players elsewhere whom `NegotiationReach` lets the opener reach
+  (ruling 5). A Negotiate answer runs one `DealWalk` with prefix
+  `gathering.<n>`, `n` counting the deals opened, and the Gathering's
+  `DealRules`: all four printed kinds between any pair (`secretsOpen` and
+  `advisersOpen` on), site terms under Deed Writer, disclosures, the
+  Citizenship offer, non-binding promises, and binding promises when a
+  participant may use The Tribunal (ruling 5). The reach and the
+  Tribunal's and Deed Writer's users are read when the question is asked
+  and the deal opens, under the walk's power-use restrictions, which
+  `PowerCtx.useRestrictions` hands the power. Nothing is stored for a
+  rebuild: every fold gathers the window with the walk's powers, no state
+  changes while a question or a deal is open, and after a deal settles
+  its walk reads no rule but `privateDeal`, which a Gathering never sets.
 - **Passing during a deal.** The deal's decision is co-owned by every
   player at the site and every named remote participant. Only players at
   the site may pass or unpass. A non-participant may answer only Pass or Unpass,
   which the deal fold ignores and the pass fold counts. Opening a deal
-  clears the opener's pass (ruling 32).
+  clears the opener's pass (ruling 32). `DecisionQuery.Negotiate` carries
+  the deal's `bystanders` and which of them have `passed`, and the deal
+  panel gives a bystander a Pass or Take back pass button.
 - **Ending.** Passes are folded from the answers. The loop ends when every
   player at the site has passed and no deal is open. With fewer than two
   players at the site, the loop is skipped.
-- **Log.** "Gathered at Broken Peaks: Blue and Red." then each deal's
-  opening line, its settlement lines and its promise lines. A deal the
-  actor opens reads "Negotiated with Red."; one another player opens reads
-  "Blue negotiated with Red." (power lines name the actor only off turn).
+- **Log.** "Gathered at Broken Peaks: Blue and Red." after the pawns,
+  or "Nobody gathered at Broken Peaks.", then each deal's opening line,
+  its settlement lines and its promise lines. A deal the actor opens
+  reads "Negotiated with Red", the Negotiate action's line; one another
+  player opens reads "Blue negotiated with Red" (power lines name the
+  actor only off turn). The Gathering's lines are sourceless, as the deal
+  lines are: the card-play line before them names the card. The pawn
+  question writes no "Chose" line, since the Gathered line names who
+  came.
 - **Catalog.** The Gathering leaves holding.
 
 Tests: the pawn question in Chancellor order, and from the first player
@@ -506,7 +519,8 @@ skipping the loop.
 | Site terms and the warband question | 4 | Deed Writer, The Gathering |
 | Private deal projection | 5 | Whispering Stone |
 | Secret terms | 6a | The Gathering |
-| Deal loop inside card play | 6b | The Gathering |
+| Deal loop inside card play, `DecisionQuery.Gathering`, deal bystanders | 6b | The Gathering |
+| `PowerCtx.useRestrictions` | 6b | The Gathering's reach and deal rules |
 
 ## Testing
 
