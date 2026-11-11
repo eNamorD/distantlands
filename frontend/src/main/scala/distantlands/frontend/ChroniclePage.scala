@@ -99,6 +99,12 @@ private[frontend] object ChroniclePage:
     section.appendChild(heading)
     section.appendChild(text("p", "chronicle-summary-line",
       ChronicleText.summaryLine(saved.entry.summary)))
+    // The faces the next game starts on. An entry saved before foundations
+    // were kept lists none, and shows no strip.
+    val foundations = saved.entry.summary.foundations
+    if foundations.nonEmpty then
+      section.appendChild(FoundationStrip.render(
+        FoundationStrip.ofChronicle(foundations)))
     section.appendChild(status)
     section
 

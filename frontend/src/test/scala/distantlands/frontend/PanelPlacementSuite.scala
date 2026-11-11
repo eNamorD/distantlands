@@ -49,6 +49,21 @@ class PanelPlacementSuite extends munit.FunSuite:
     * it is tall, so a column costs nothing at fit and a row below costs the
     * whole map's scale.
     */
+  test("the foundations close the shared bank, and a projection with " +
+      "none draws no strip"):
+    val foundations = Vector(
+      distantlands.protocol.projection.FoundationProjection(1, "normal",
+        "Imperial Maps", "Fill the map."),
+      distantlands.protocol.projection.FoundationProjection(3, "altered",
+        "Public Ambitions", "Deal 4 legacy cards."))
+    val bank = Dom.firstMatch(world(projection().copy(
+      foundations = foundations)), ".shared-bank")
+      .getOrElse(fail("no shared bank"))
+    assertEquals(bank.lastElementChild.getAttribute("class"), "foundations")
+    assertEquals(Dom.all(bank, ".foundation-name").map(_.textContent),
+      Vector("Imperial Maps", "Public Ambitions"))
+    assertEquals(Dom.all(world(projection()), ".foundations").size, 0)
+
   test("the shared bank stands beside the regions and their favor banks"):
     val layout = Dom.firstMatch(world(projection()), ".world-layout")
       .getOrElse(fail("no world layout"))

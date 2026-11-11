@@ -384,4 +384,9 @@ private[frontend] object WorldBoardRenderer:
       value.banners.foreach(banner =>
         banners.appendChild(BannerFace.place(banner, options)))
       section.appendChild(banners)
+    // The setup cards close the bank: they are read once or twice a game,
+    // so they stand under what changes every turn.
+    if value.foundations.nonEmpty then
+      section.appendChild(FoundationStrip.render(
+        FoundationStrip.ofGame(value.foundations)))
     section

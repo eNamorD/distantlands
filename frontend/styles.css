@@ -1046,6 +1046,38 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   gap: 10px; margin-top: 10px; }
 .shared-banners .board-option-card { width: 100%; }
 .shared-banners .banner-face { width: 100%; height: auto; aspect-ratio: 1; }
+/* The six foundation setup cards (Foundations design, slice 1), a card a
+   row: its numeral, the name of the face in use in the serif that names
+   things, and on an altered card the word. The word alone marks it: brass
+   on the board means an option, so the frame stays the neutral line. A row
+   is one line of name and at most one of mark, so the strip's height is
+   fixed and can never raise the map's. The table's cards are buttons that
+   read the face's rules; the Chronicle page's are not. */
+.foundations { margin-top: 12px; }
+.foundations-title { margin: 0 0 6px; font-size: 1rem; }
+.foundation-strip { list-style: none; margin: 0; padding: 0; display: grid;
+  gap: 4px; }
+.foundation-card { box-sizing: border-box; display: grid;
+  grid-template-columns: 1.8em minmax(0, 1fr); column-gap: 6px;
+  align-items: baseline; width: 100%; padding: 4px 8px;
+  border: 1px solid var(--line); border-radius: 4px; background: var(--base);
+  color: var(--cream); font: inherit; text-align: left; }
+button.foundation-card { cursor: pointer; }
+button.foundation-card:hover { background: var(--pressed);
+  border-color: var(--cream-bright); }
+.foundation-number { color: var(--ink-dim); font-weight: 700;
+  text-align: center; }
+.foundation-name { font-family: Georgia, serif; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.foundation-mark { grid-column: 2; color: var(--parchment-dim);
+  font-size: max(0.72em, 0.7rem); font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; }
+/* On the zoomed-out map the cards hold the glance text size, as a site's
+   details do; a name the bank's column cannot hold is cut, never wrapped. */
+.map-compact .foundation-card { font-size: var(--glance-text); }
+/* On the Chronicle page the six stand three abreast. */
+.chronicle-loaded .foundation-strip {
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 0.5rem; }
 /* Under the regions, where the physical board keeps them. Their text is set
    larger than the map's own, as the map is drawn at about half size. */
 .favor-banks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));

@@ -892,6 +892,24 @@ in one row beside the identity column, the board as wide as the row
 figure and a region's discard pile are buttons on the pill hover that open
 the text and card-list overlays: Supply at Rest and the pile's cards.
 
+### Foundation Strip
+The six foundation setup cards, read-only (`FoundationStrip`). On the table
+they close the shared bank's column under the banners, one row a card: Base
+fill, 1px Line border, 4px radius, `4px 8px` padding, the numeral in Ink Dim
+700 and the name of the face in use in Georgia 700. The name holds one line
+and is cut with an ellipsis where the column is too narrow; the whole name
+stays in the hover note and, on the table, in the row's label. An altered
+card adds the word "Altered" under its name, in Parchment Dim uppercase at
+`max(0.72em, 0.7rem)`, 700, 0.1em tracking. The word alone marks it: the
+frame stays Line, because brass on the board means an option. A row is a
+button that opens its face's rules in the text overlay, and answers hover as
+a Control does (Pressed fill, Bright Cream border). On the compact map the
+row takes the glance text size (`--glance-text`), as a site's details do. A
+row never wraps, so the strip's height is fixed and cannot raise the map's
+(The Glance Layer Rule). The Chronicle page lists the same six under the
+loaded Chronicle's summary line, three abreast, as plain rows with nothing
+to open.
+
 ## Do's and Don'ts
 
 ### Do:

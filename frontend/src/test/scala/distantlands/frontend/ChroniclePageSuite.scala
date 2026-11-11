@@ -88,6 +88,29 @@ class ChroniclePageSuite extends munit.FunSuite:
       assert(!browser.byClass("export-chronicle-json").head
         .hasAttribute("aria-disabled"))
 
+  test("a loaded entry lists its six foundations, the altered ones " +
+      "marked, and none is a button"):
+    TestBrowser.useSynchronously(): browser =>
+      val storage = new MemoryChronicleStorage()
+      accepted(new ChronicleShelf(storage, ChronicleFixtures.clock).put(
+        ChronicleFixtures.listingFoundations(entry("Ashen Crown"), 3)))
+      renderChroniclePage(browser, storage)
+      val loaded = browser.byClass("chronicle-loaded").head
+      assertEquals(Dom.all(loaded, ".foundation-name").map(_.textContent),
+        Vector("Imperial Maps", "Powerful Tribes", "Public Ambitions",
+          "Ties of Fellowship", "Mob's Favor", "Wandering Flame"))
+      assertEquals(Dom.all(loaded, ".foundation-card")
+        .filter(card => Dom.all(card, ".foundation-mark").nonEmpty)
+        .map(card => Dom.one(card, ".foundation-number").textContent),
+        Vector("III"))
+      assertEquals(Dom.all(loaded, "button.foundation-card").size, 0)
+
+  test("an entry saved before foundations were kept shows no strip"):
+    TestBrowser.useSynchronously(): browser =>
+      renderChroniclePage(browser, storageHolding(Some("Ashen Crown"),
+        "Ashen Crown"))
+      assert(!shows(browser, "foundations"))
+
   test("the sections run in the spec's order"):
     TestBrowser.useSynchronously(): browser =>
       renderChroniclePage(browser, storageHolding(Some("Ashen Crown"),
