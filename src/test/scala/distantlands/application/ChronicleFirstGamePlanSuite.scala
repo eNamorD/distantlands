@@ -1,6 +1,7 @@
 package distantlands.application
 
-import distantlands.gameplay.setup.{FirstGameRulesData, FirstGameSetupFixture}
+import distantlands.gameplay.setup.{FirstGameRulesData, FirstGameSetupFixture,
+  SetupDeal}
 import distantlands.model._
 
 class ChronicleFirstGamePlanSuite extends munit.FunSuite:
@@ -21,19 +22,32 @@ class ChronicleFirstGamePlanSuite extends munit.FunSuite:
     assert(distantlands.gameplay.setup.GameStartRules
       .evolve(FirstGameSetupFixture.catalog, short, orders).isLeft)
 
+  private val Vector(p1, p2, p3) = config.participants.map(_.playerId)
+
   test("a later game deals hands only to players with no starting advisers"):
     // 3 seats, one with a stored adviser: 6 discards and 2 hands of 3.
     val denizens = chronicle.worldDeck
-    val orders = ChronicleFirstGamePlan.dealOrder(config, 2, denizens,
-      chronicle.relicDeck, identity)
+    val orders = ChronicleFirstGamePlan.dealOrder(config,
+      SetupDeal(FoundationFace.Normal, Vector(p1 -> 3, p2 -> 0, p3 -> 3)),
+      denizens, chronicle.relicDeck, identity)
     assertEquals(orders.worldDeckOrder.collect { case id: DenizenId => id },
       denizens.drop(6 + 2 * 3))
 
   test("a deck of fewer than 25 denizens after the deal mixes all five " +
       "Visions through it"):
     val short = chronicle.worldDeck.take(6 + 3 * 3 + 20)
-    val orders = ChronicleFirstGamePlan.dealOrder(config, 3, short,
-      chronicle.relicDeck, _.reverse)
+    val orders = ChronicleFirstGamePlan.dealOrder(config,
+      SetupDeal.firstGame(config.participants), short, chronicle.relicDeck,
+      _.reverse)
     val rest: Vector[WorldCardId] = short.drop(15)
     assertEquals(orders.worldDeckOrder,
       (rest ++ FirstGameRulesData.visions).reverse)
+
+  test("a Teeming World deal leaves the world deck the five Visions, " +
+      "mixed, and keeps the whole stack as the deal"):
+    val orders = ChronicleFirstGamePlan.dealOrder(config,
+      SetupDeal(FoundationFace.Altered, Vector(p1 -> 3, p2 -> 3, p3 -> 3)),
+      chronicle.worldDeck, chronicle.relicDeck, _.reverse)
+    assertEquals(orders.worldDeckOrder,
+      (FirstGameRulesData.visions: Vector[WorldCardId]).reverse)
+    assertEquals(orders.denizenOrder, chronicle.worldDeck)

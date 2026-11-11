@@ -199,8 +199,9 @@ class GameStartRulesSuite extends munit.FunSuite:
     val record = LaterGameFixture.chronicle(LineageId("l1"))
     val short = record.copy(worldDeck = record.worldDeck.take(6 + 9 + 20))
     val mixed = ChronicleFirstGamePlan.dealOrder(
-      FirstGameBootstrapConfig(orders.participants, PlayerId("p1")), 3,
-      short.worldDeck, short.relicDeck, _.reverse)
+      FirstGameBootstrapConfig(orders.participants, PlayerId("p1")),
+      SetupDeal.of(short, orders.participants), short.worldDeck,
+      short.relicDeck, _.reverse)
     accepted(GameStartRules.evolve(catalog, short, mixed))
     assertEquals(GameStartRules.evolve(catalog, short, mixed.copy(
         worldDeckOrder = mixed.worldDeckOrder.init)),
