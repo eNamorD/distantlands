@@ -1,7 +1,6 @@
 package distantlands.gameplay
 
-import distantlands.catalog.ExecutableCatalog
-import distantlands.catalog.PrintedPower
+import distantlands.catalog.{ExecutableCatalog, FoundationCards, PrintedPower}
 import distantlands.model._
 
 /** Orientation is a factual property only; callers still own activation rules. */
@@ -118,10 +117,7 @@ object RuleSourceIndex:
       ready.game.campaign.foundations.get(number).map { foundation =>
         IndexedRuleSource(
           RuleSourceRef.Foundation(number),
-          foundation.face match {
-            case FoundationFace.Normal => Vector.empty
-            case FoundationFace.Altered => rawIds(Vector("foundation.altered"))
-          },
+          Vector(FoundationCards.face(number, foundation.face).id),
           foundation.face match {
             case FoundationFace.Normal => RuleSourceFace.Normal
             case FoundationFace.Altered => RuleSourceFace.Altered

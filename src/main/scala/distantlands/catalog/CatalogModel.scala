@@ -6,8 +6,9 @@ import distantlands.model.{CardId, DenizenId, EdificeId, LegacyId,
 /**
  * The complete runtime component catalog: card objects indexed by id and by
  * printed power. `gameplay.cards.NewFoundations.catalog` is the production
- * one; a test may `copy` in variant cards. Setup cards, player boards and
- * Visions are rules-owned code, not catalog data.
+ * one; a test may `copy` in variant cards. The six foundation setup cards
+ * are fixed and listed in [[FoundationCards]]; the other setup cards, player
+ * boards and Visions are rules-owned code, not catalog data.
  */
 final case class ExecutableCatalog(
     denizens: Vector[Denizen],

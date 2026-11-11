@@ -77,7 +77,7 @@ class RuleSourceIndexSuite extends munit.FunSuite:
     val base = board
     val arbiter = ArbiterCard.id
     val ironHand = IronHandCard.id
-    // No Table step sets foundations or legacies.
+    // No Table step sets a foundation's sources.
     val altered = base.updateCampaign(_.copy(foundations =
       base.game.campaign.foundations.updated(FoundationNumber.III,
         FoundationState(FoundationFace.Altered, Set(arbiter, ironHand)))))
@@ -88,12 +88,17 @@ class RuleSourceIndexSuite extends munit.FunSuite:
     assertEquals(foundations.map(_.face), Vector(
       RuleSourceFace.Normal, RuleSourceFace.Normal, RuleSourceFace.Altered,
       RuleSourceFace.Normal, RuleSourceFace.Normal, RuleSourceFace.Normal))
-    assertEquals(foundations(2).powerIds, Vector(PowerId("foundation.altered")))
+    // Each foundation carries the id of the face in use.
+    assertEquals(foundations.map(_.powerIds), Vector(
+      "foundation.i.imperial-maps", "foundation.ii.powerful-tribes",
+      "foundation.iii.public-ambitions", "foundation.iv.ties-of-fellowship",
+      "foundation.v.mobs-favor", "foundation.vi.wandering-flame")
+      .map(id => Vector(PowerId(id))))
     // Sorted by id: Iron Hand is L01, Arbiter L23.
     assertEquals(foundations(2).state, RuleSourceState.Foundation(
       Vector(ironHand, arbiter)))
     assert(foundations.zipWithIndex.filterNot(_._2 == 2).forall {
-      case (source, _) => source.powerIds.isEmpty &&
+      case (source, _) =>
         source.state == RuleSourceState.Foundation(Vector.empty)
     })
 
@@ -103,7 +108,7 @@ class RuleSourceIndexSuite extends munit.FunSuite:
     val legacyDefinition = catalog.legacies.head
     val legacy = LegacyState(LegacyId(legacyDefinition.id.value), active = false)
     val lineage = base.game.campaign.lineages(lineageId)
-    // No Table step sets foundations or legacies.
+    // No Table step sets legacies.
     val changed = base.updateCampaign(_.copy(lineages = base.game.campaign.lineages.updated(
         lineageId, lineage.copy(legacies = Vector(legacy)))))
     val indexed = present(RuleSourceIndex.enumerate(catalog, changed).find(
