@@ -2,7 +2,7 @@ package distantlands.application
 
 import distantlands.gameplay.powers.PowerImplementationStatus
 import distantlands.gameplay.setup.{FirstGameRulesData, FirstGameSetupFixture,
-  GameStartRules}
+  GameStartRules, LaterGameFixture}
 import distantlands.model._
 import distantlands.testkit.ChronicleShuffles
 import distantlands.testkit.Unwrap.{accepted, present}
@@ -151,3 +151,29 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     assertEquals(seatedFirst(citizens, ChronicleShuffles.unshuffled),
       PlayerId("p1"))
     assertEquals(seatedFirst(citizens, reversingCitizens), PlayerId("p3"))
+
+  test("a Chronicle that lists no Chancellor still sends a random seated " +
+      "Citizen first"):
+    val citizens = Vector(lineage("l1", Role.Citizen),
+      lineage("l3", Role.Citizen))
+    val reversingCitizens = new distantlands.application.ChronicleRandomPort:
+      def shuffle[A](values: Vector[A]): Vector[A] =
+        if values.size == 2 then values.reverse else values
+    assertEquals(seatedFirst(citizens, ChronicleShuffles.unshuffled),
+      PlayerId("p1"))
+    assertEquals(seatedFirst(citizens, reversingCitizens), PlayerId("p3"))
+
+  test("with no Chancellor and no Citizen seated the first seat of the " +
+      "shuffle goes first, and the game starts with no Empire"):
+    // l9 is the Chancellor and l8 a Citizen; p1 to p3 play l1 to l3.
+    val saved = LaterGameFixture.chronicle(LineageId("l9"), LineageId("l8"))
+    val plan = accepted(new GeneratedFirstGamePlanFactory(catalog,
+      ChronicleShuffles.reversing).build(config, ChronicleChoice.Saved(saved)))
+    assertEquals(plan.resolvedConfig.participants,
+      FirstGameSetupFixture.participants.reverse)
+    assertEquals(plan.resolvedConfig.firstPlayer, PlayerId("p3"))
+    val ready = accepted(GameStartRules.evolve(catalog, plan.chronicle,
+      plan.orders))
+    assertEquals(Imperials.players(ready), Vector.empty)
+    assertEquals(ready.game.current.turn.activePlayer, PlayerId("p3"))
+    assertEquals(ready.game.current.map.inPlay, saved.world.map(_.site))

@@ -145,13 +145,17 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       assertEquals(malformed.statusCode(), 400, malformed.body())
     }
 
-  test("creation refuses an evolved Chronicle with game start's reason"):
+  test("creation refuses a Chronicle game start refuses, with its reason"):
     withServer() { (server, _) =>
+      // The crowned winner's sites go back to the atlas: an Empire with
+      // no site, which game start refuses (R28).
+      val record = EvolvedChronicleFixture.record
       val body = TrustedGameCreateRequestCodec.encode(TrustedGameCreateRequest(
         Vector(BootstrapParticipantRequest("p1", PlayerColor.Red),
           BootstrapParticipantRequest("p2", PlayerColor.Blue)),
-        ChronicleRequest.Saved(conversionEntries.entry(
-          EvolvedChronicleFixture.record).json)))
+        ChronicleRequest.Saved(conversionEntries.entry(record.copy(
+          atlasBox = record.world ++ record.atlasBox,
+          world = Vector.empty)).json)))
       val response = send(server, "/games", Some(body))
       assertEquals(response.statusCode(), 422, response.body())
       assert(response.body().contains("chronicle-refused"), response.body())
