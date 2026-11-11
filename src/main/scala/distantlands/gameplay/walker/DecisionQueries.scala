@@ -352,6 +352,11 @@ object DecisionQueries:
           _ <- require(terms.transfers.map(_.favor.toLong).sum <=
             own.maxFavor.toLong, decisionId,
             s"offers more than ${own.maxFavor} favor")
+          _ <- require(terms.transfers.map(_.secrets.toLong).sum <=
+            own.maxSecrets.toLong && terms.transfers.forall(transfer =>
+              transfer.secrets == 0 ||
+                own.secretRecipients.contains(transfer.recipient)),
+            decisionId, "offers secrets it cannot")
           _ <- require(relics.distinct.size == relics.size &&
             relics.forall(own.relics.contains), decisionId,
             "offers a relic its author does not hold")

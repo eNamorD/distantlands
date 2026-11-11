@@ -132,9 +132,9 @@ object NegotiationDealTree:
           NoteArg.Card(relic), NoteArg.Site(site))
 
   /** One line per transfer, in `NegotiationDeal.transfers`' order: each
-    * author's favor, then relics, then advisers, then sites. A facedown
-    * adviser reads as its back to every player but the two who held it
-    * (`LogWords.seen`). */
+    * author's favor, then secrets, then relics, then advisers, then sites.
+    * A facedown adviser reads as its back to every player but the two who
+    * held it (`LogWords.seen`). */
   private[negotiation] def transferred(deal: DealState): Vector[LogNote] =
     deal.participants.flatMap(author =>
       deal.terms(author).transfers.flatMap(transfer =>
@@ -142,6 +142,10 @@ object NegotiationDealTree:
           NegotiationProcedure.gaveFavor.sourceless(NoteArg.Player(author),
             NoteArg.Number(transfer.favor),
             NoteArg.Player(transfer.recipient))).toVector ++
+          Option.when(transfer.secrets > 0)(
+            NegotiationProcedure.gaveSecrets.sourceless(
+              NoteArg.Player(author), NoteArg.Number(transfer.secrets),
+              NoteArg.Player(transfer.recipient))).toVector ++
           transfer.relics.map(relic =>
             NegotiationProcedure.gaveCard.sourceless(NoteArg.Player(author),
               NoteArg.Card(relic), NoteArg.Player(transfer.recipient))) ++

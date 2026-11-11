@@ -50,6 +50,11 @@ object NegotiationProcedure:
   val gaveFavor: NoteKey = notes.key("gave-favor", Vector(
     NotePart.Arg(0), NotePart.Text(" gave "), NotePart.Arg(1),
     NotePart.Text(" favor to "), NotePart.Arg(2)))
+  /** "p1 gave 2 secrets to p2" (catalog batch 12, ruling 31). */
+  val gaveSecrets: NoteKey = notes.key("gave-secrets", Vector(
+    NotePart.Arg(0), NotePart.Text(" gave "), NotePart.Arg(1),
+    NotePart.Text(" "), NotePart.Plural(1, "secret", "secrets"),
+    NotePart.Text(" to "), NotePart.Arg(2)))
   val gaveCard: NoteKey = notes.key("gave-card", Vector(
     NotePart.Arg(0), NotePart.Text(" gave "), NotePart.Arg(1),
     NotePart.Text(" to "), NotePart.Arg(2)))

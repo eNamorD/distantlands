@@ -117,6 +117,11 @@ final case class NegotiationBounds(
       * them), offered only to `siteRecipients` (catalog batch 12, rulings
       * 18, 19 and 28). */
     sites: Vector[SiteId] = Vector.empty,
-    siteRecipients: Vector[PlayerId] = Vector.empty
+    siteRecipients: Vector[PlayerId] = Vector.empty,
+    /** The faceup secrets the author may give, offered only to
+      * `secretRecipients` (catalog batch 12, rulings 6 and 31). */
+    maxSecrets: Int = 0,
+    secretRecipients: Vector[PlayerId] = Vector.empty
 ):
   require(maxFavor >= 0, "negotiation favor bound must be non-negative")
+  require(maxSecrets >= 0, "negotiation secret bound must be non-negative")
