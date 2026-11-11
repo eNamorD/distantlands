@@ -63,8 +63,14 @@ final case class FirstGameSetupPlan(
       * are all in `orderedSites`. */
     atlasSites: Vector[StoredSite] = Vector.empty,
     /** Each seated player's stored starting advisers (CR p. 11). */
-    startingAdvisers: Map[PlayerId, Vector[AdviserState]] = Map.empty
-)
+    startingAdvisers: Map[PlayerId, Vector[AdviserState]] = Map.empty,
+    /** The foundation faces the game starts with. A number the map does
+      * not list lies normal. */
+    foundations: Map[FoundationNumber, FoundationState] = Map.empty
+):
+  /** Whether foundation `number` starts on its altered face. */
+  def altered(number: FoundationNumber): Boolean =
+    foundations.get(number).exists(_.face == FoundationFace.Altered)
 
 /** The Empire a later game starts with (CR pp. 8-9): its Chancellor, every
   * seated Imperial player, and the Empire's stored sites Cradlemost first.

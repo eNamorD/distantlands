@@ -32,7 +32,7 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     val players = plan.participants.map { participant =>
       PlayerState(participant.playerId, participant.lineageId,
         placementMap.get(participant.playerId),
-        PlayerBoardState(1, 1, 0, 3, SupplyTrack.full),
+        PlayerBoardState(startingFavor(plan), 1, 0, 3, SupplyTrack.full),
         adviserMap.get(participant.playerId).toVector.map(id =>
           DenizenState(id, Orientation.FaceDown, Tokens.empty)),
         Vector.empty, Vector.empty)
@@ -146,13 +146,24 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     else if plan.orderedSites.slice(2, 5).contains(site) then Region.Provinces
     else Region.Hinterland
 
-  /** Foundation II: 3 favor per suit, 1 more with 5 or more players, and 1
-    * more per denizen of that suit on the map, edifices included. */
+  /** The favor on each board: 1, and under Movers and Shakers (altered
+    * Foundation II) 5 more from the shared bank, which has no count. */
+  private def startingFavor(plan: FirstGameSetupPlan): Int =
+    if plan.altered(FoundationNumber.II) then 6 else 1
+
+  /** Foundation II. Powerful Tribes: 3 favor per suit, 1 more with 5 or
+    * more players, and 1 more per denizen of that suit on the map,
+    * edifices included. Movers and Shakers prints neither the 3 nor the
+    * fifth-player favor: each bank holds 1 per denizen of its suit on the
+    * map. */
   private def favorBanks(plan: FirstGameSetupPlan, map: MapState)
       : Map[Suit, Int] =
-    val bonus = if plan.participants.size >= 5 then 1 else 0
+    val printed =
+      if plan.altered(FoundationNumber.II) then 0
+      else if plan.participants.size >= 5 then 4
+      else 3
     val suits = map.sites.values.flatMap(_.denizens).flatMap {
       case EdificeState(id, _, _) => catalog.edifice(id).map(_.suit)
       case DenizenState(id, _, _) => catalog.denizen(id).map(_.suit)
     }.toVector
-    Suit.all.map(suit => suit -> (3 + bonus + suits.count(_ == suit))).toMap
+    Suit.all.map(suit => suit -> (printed + suits.count(_ == suit))).toMap
