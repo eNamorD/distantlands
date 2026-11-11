@@ -44,6 +44,10 @@ object NegotiationProcedure:
   val negotiatedPrivately: NoteKey = notes.key("negotiated-private", Vector(
     NotePart.Text("Negotiated with "), NotePart.Arg(0),
     NotePart.Text(", in private.")))
+  /** "p2 negotiated with p1": a deal another player than the actor opened
+    * in The Gathering (catalog batch 12, slice 6b). */
+  val negotiatedBy: NoteKey = notes.key("negotiated-by", Vector(
+    NotePart.Arg(0), NotePart.Text(" negotiated with "), NotePart.Arg(1)))
   val ended: NoteKey = notes.key("ended", Vector(
     NotePart.Text("Negotiation ended by "), NotePart.Arg(0)))
   /** "p1 gave 1 favor to p2". */

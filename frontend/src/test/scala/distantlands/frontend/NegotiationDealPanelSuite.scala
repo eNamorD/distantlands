@@ -513,3 +513,27 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
     val panel = render(owner(dealWhereBlueHasAccepted().copy(
       privateDeal = true)), new RecordingControls())
     assertEquals(Dom.all(panel, ".negotiation-private").length, 0)
+
+  /** A Gathering deal between blue and green that red watches. */
+  private def watchedByRed(passed: Vector[String] = Vector.empty) =
+    NegotiationDealState(participantPlayerIds = Vector("blue", "green"),
+      acceptedPlayerIds = Vector.empty, transfers = Vector.empty,
+      disclosures = Vector.empty, bystanderPlayerIds = Vector("red"),
+      passedPlayerIds = passed)
+
+  test("a bystander passes, or takes back a pass, from the deal panel"):
+    val ui = new RecordingControls()
+    val passing = render(Surface.Negotiate(watchedByRed(), None,
+      Some("gathering.1.deal")), ui)
+    button(passing, "button.negotiation-pass").click()
+    val passed = render(Surface.Negotiate(watchedByRed(Vector("red")), None,
+      Some("gathering.1.deal")), ui)
+    button(passed, "button.negotiation-unpass").click()
+    assertEquals(ui.submitted, Vector(
+      Intent.ResolveWalker("gathering.1.deal",
+        DecisionAnswerWire.PassGatheringWire),
+      Intent.ResolveWalker("gathering.1.deal",
+        DecisionAnswerWire.UnpassGatheringWire)))
+    // A spectator of the same deal gets no button.
+    assertEquals(render(spectator(watchedByRed()), new RecordingControls())
+      .querySelectorAll("button.negotiation-pass").length, 0)

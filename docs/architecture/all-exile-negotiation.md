@@ -51,6 +51,35 @@ Whispering Stone pays 1 secret onto the relic and queues a Negotiation `Run`, so
 
 A viewer outside a private deal is projected its participants and accepted marks only. The opening line reads "Negotiated with p3, in private." The settlement's lines are public, but each promise line is a `LogNote` read only by the participants (`LogNote.readers`). The formatter numbers every line before it drops one for a viewer outside its readers, so the other lines keep their keys.
 
+## The Gathering
+
+The Gathering's When Played power (`gameplay/powers/whenplayed/`) asks
+each player whose pawn is elsewhere, in the next round's order, whether
+to put it on the card's site, and moves a yes with a plain `Move`. Then
+`GatheringDeals` loops one open question, `gathering.open`, co-owned by
+every player at the site:
+
+```
+Repeat(two or more at the site, one of them not passed) {
+  Branch -> Decide(gathering.open)          -- OpenDeal, PassGathering, UnpassGathering
+  Branch(OpenDeal -> NegotiationDealTree under gathering.<n>)
+}
+```
+
+- Each deal is a `DealWalk` with every printed kind open
+  (`advisersOpen`, `secretsOpen`), site terms under Deed Writer and binding
+  promises under The Tribunal. Its decision is co-owned by its
+  participants and by the players at the site outside it, its
+  bystanders, who may only pass or take back a pass.
+- The opener may name a player elsewhere whom the Negotiate action's
+  reach lets them reach. The reach and each deal's rules are read live,
+  under the walk's power-use restrictions (`PowerCtx.useRestrictions`):
+  nothing is stored, since no state changes while a question or a deal
+  is parked.
+- Passes are folded from every answer under `gathering.`; opening a deal
+  clears the opener's pass only. The loop ends when every player at the
+  site has passed.
+
 ## Visibility
 
 Owners get the full deal with editing inputs, computed from their own bounds. Every other viewer, including the public view, gets a read-only deal through the walker waiting projection: the participants, who has accepted, favor amounts, relic counts, faceup relic details, and each disclosure's kind and recipient. Only an author sees the identity of a facedown relic they offer or of information they promise. A private deal shows a viewer outside it only who negotiates and who has accepted (see Private deals).

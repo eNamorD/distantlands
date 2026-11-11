@@ -53,6 +53,15 @@ class WalkerDecisionWireSuite extends munit.FunSuite:
         red), Vector.empty): OathEvent)
     assertStreamRoundTrips("forge", events)
 
+  test("walker choice steps round trip the Gathering's answers"):
+    val red = PlayerId("red")
+    val events = Vector[DecisionAnswer](
+      DecisionAnswer.OpenDeal(Vector(PlayerId("blue"), PlayerId("green"))),
+      DecisionAnswer.PassGathering, DecisionAnswer.UnpassGathering)
+      .map(answer => WalkerStepRecorded("0.0.0", ChoicePayload(
+        "gathering.open", answer, red), Vector.empty): OathEvent)
+    assertStreamRoundTrips("gathering", events)
+
   test("journalled terms with a promise over the limit are refused"):
     val red = PlayerId("red")
     val event: OathEvent = WalkerStepRecorded("0.0.0", ChoicePayload(

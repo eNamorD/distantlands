@@ -75,7 +75,9 @@ private[application] final class NegotiationDealProjector(
         .map(editing(ready, query, _)),
       authors.flatMap(author => query.terms(author).citizenship
         .map(recipient => NegotiationCitizenshipProjection(author.value,
-          recipient.value))), promises, privateDeal = query.privateDeal)
+          recipient.value))), promises, privateDeal = query.privateDeal,
+      bystanderPlayerIds = query.bystanders.map(_.value),
+      passedPlayerIds = query.passed.map(_.value))
 
   private def editing(ready: ReadyGame, query: DecisionQuery.Negotiate,
       viewer: PlayerId): NegotiationEditingProjection =

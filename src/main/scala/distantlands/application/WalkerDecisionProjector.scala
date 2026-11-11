@@ -308,6 +308,11 @@ private[application] final class WalkerDecisionProjector(
       case negotiate: DecisionQuery.Negotiate =>
         Some(DecisionQueryProjection.Negotiate(
           deals.project(ready, viewer, negotiate), negotiate.heading))
+      case gathering: DecisionQuery.Gathering =>
+        Some(DecisionQueryProjection.Gathering(
+          gathering.present.map(_.value), gathering.passed.map(_.value),
+          viewer.flatMap(gathering.reach.get).getOrElse(Vector.empty)
+            .map(_.value), gathering.heading))
       case DecisionQuery.Inspect(cards, heading, doneLabel) =>
         Some(DecisionQueryProjection.Inspect(
           cards.map(rows.shown(ready, viewer, index, _)),

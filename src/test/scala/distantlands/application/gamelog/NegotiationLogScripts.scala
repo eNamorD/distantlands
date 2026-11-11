@@ -1,24 +1,30 @@
 package distantlands.application.gamelog
 
 import distantlands.application._
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard,
   DeedWriterCard, NegotiationDeal, NegotiationSites, TheTribunalCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.powers.action.{WhisperingStone,
   WhisperingStoneCard}
 import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.whenplayed.{GatheringDeals, TheGathering,
+  TheGatheringCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseAmountAnswer,
-  ChooseManyAnswer, DeclineDeal, ProposeTerms}
-import distantlands.testkit.{MenuPlay, Situation, Table}
+  ChooseManyAnswer, ChooseOneAnswer, DeclineDeal, OpenDeal, PassGathering,
+  ProposeTerms}
+import distantlands.testkit.{MenuPlay, PlacementPicks, Situation, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 import distantlands.testkit.Commands
 
 /** The Negotiation scripts: a deal declined, a deal agreed, a deal of one
   * promise, a binding promise through The Tribunal, a facedown adviser
-  * disclosed, a facedown adviser given, a site given, and a private deal
-  * through Whispering Stone. Reached through `LogScripts`.
+  * disclosed, a facedown adviser given, a site given, a private deal
+  * through Whispering Stone, and The Gathering. Reached through
+  * `LogScripts`.
   */
 object NegotiationLogScripts:
   /** p1 and p2 share Ancient City, so p1 can negotiate with exactly one
@@ -147,3 +153,37 @@ object NegotiationLogScripts:
       .parkedAfter(deal(p3, AcceptDeal))
       .after(deal(p1, AcceptDeal))
     Script("negotiation-whispered", service, p1)
+
+  /** p1 Searches The Gathering off the world deck and plays it at Ancient
+    * City. p2 comes from Broken Peaks; p3 stays at Buried Giant. p2 opens
+    * the one deal: p2 gives p1 a secret, p1 gives p2 a favor, and both
+    * accept. Then both pass (catalog batch 12, slice 6b). */
+  def theGathering(using munit.Location): Script =
+    val (service, act) = atTable("the-gathering", tableWithOnePawnPerSite
+      .worldDeckTop(TheGatheringCard).secrets(p2, faceUp = 1).favor(p1, 1)
+      .banditsRefilled)
+    val dealId = NegotiationDeal.dealId(GatheringDeals.dealPrefix(1))
+    def say(by: PlayerId, answer: DecisionAnswer): GameCommand =
+      Commands.resolveWalker(by, TreeDecision(dealId, answer))
+    def open(by: PlayerId, answer: DecisionAnswer): GameCommand =
+      Commands.resolveWalker(by, TreeDecision(GatheringDeals.openDecisionId,
+        answer))
+    act.withAnswers {
+      case park if park.decisionId ==
+          CardPlayProcedure.placementDecisionId(TheGatheringCard.id) =>
+        ChooseOneAnswer(PlacementPicks.pick(park.decide, PlayedAs.AtSite))
+      case park if park.decisionId == TheGathering.pawnDecisionId =>
+        ChooseOneAnswer(if park.awaiting == p2 then TheGathering.join
+          else TheGathering.stay)
+    }.parkedAt(GatheringDeals.openDecisionId)(
+      MenuPlay.start(p1, ActionRef.Search))
+      .parkedAfter(open(p2, OpenDeal(Vector(p1))))
+      .parkedAfter(say(p2, ProposeTerms(NegotiationTerms(Vector(
+        NegotiationTransfer(p1, 0, Vector.empty, secrets = 1))))))
+      .parkedAfter(say(p1, ProposeTerms(NegotiationTerms(Vector(
+        NegotiationTransfer(p2, 1, Vector.empty))))))
+      .parkedAfter(say(p2, AcceptDeal))
+      .parkedAfter(say(p1, AcceptDeal))
+      .parkedAfter(open(p1, PassGathering))
+      .after(open(p2, PassGathering))
+    Script("the-gathering", service, p1)

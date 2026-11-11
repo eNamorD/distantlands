@@ -599,7 +599,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .distribute-maximum { color: #9a8f7c; font-size: 0.85em; white-space: nowrap; }
 /* One term per row: control and caption together, so a deal reads as a list
    of offers instead of a paragraph of checkboxes. */
-.negotiation-item { display: flex; align-items: center; gap: 8px;
+.negotiation-item, .gathering-item { display: flex; align-items: center; gap: 8px;
   margin: 6px 0; }
 .card-link { display: inline; margin: 0; padding: 0; border: 0;
   background: none; color: inherit; font: inherit; line-height: inherit;

@@ -81,9 +81,15 @@ private[frontend] object ParkedDecision:
     /** The deal summary every viewer sees; `editor` is the decision id and
       * the editable terms for the one viewer who may answer, `None` for an
       * observer of the parked deal or a viewer the deal is waiting on.
+      * `passing` is the decision id for a Gathering bystander in control,
+      * who may only pass or take back a pass.
       */
     case Negotiate(deal: NegotiationDealState,
-        editor: Option[(String, NegotiationEditingState)])
+        editor: Option[(String, NegotiationEditingState)],
+        passing: Option[String] = None)
+    /** The Gathering's open question (catalog batch 12, slice 6b). */
+    case Gathering(decision: WalkerDecisionState,
+        query: DecisionQueryState.Gathering)
     /** A choose-one or choose-many answered on the table (board decisions
       * design): its options are drawn where they lie, by `BoardOptions`,
       * and the action pane states the selection and confirms it. Every
@@ -128,6 +134,8 @@ private[frontend] object ParkedDecision:
         surface, drafts.distribute, canControl, panel, controls)
       case surface: Surface.Negotiate => NegotiationDealPanel.render(
         surface, presentation.playerId, canControl, panel, controls)
+      case surface: Surface.Gathering => GatheringPanel.render(surface,
+        presentation.playerId, canControl, panel, controls)
       case surface: Surface.Selection => WalkerSelectionPanels.render(
         surface, drafts.selection, canControl, panel, controls)
       case surface: Surface.Inspect => InspectPanel.render(
@@ -223,8 +231,15 @@ private[frontend] object ParkedDecision:
       case inspect: DecisionQueryState.Inspect =>
         Some(Surface.Inspect(decision, inspect))
       case negotiate: DecisionQueryState.Negotiate =>
+        // An owner with no editor is a bystander: only a Gathering deal
+        // has owners outside it.
         Some(Surface.Negotiate(negotiate.deal, negotiate.deal.editing
-          .filter(_ => showGameplayControls).map(decision.decisionId -> _)))
+          .filter(_ => showGameplayControls).map(decision.decisionId -> _),
+          Option.when(showGameplayControls &&
+            negotiate.deal.editing.isEmpty &&
+            negotiate.deal.bystanderPlayerIds.nonEmpty)(decision.decisionId)))
+      case gathering: DecisionQueryState.Gathering =>
+        Some(Surface.Gathering(decision, gathering))
 
   private def onTable(decision: WalkerDecisionState,
       options: Vector[DecisionOptionState], value: GameProjection): Boolean =

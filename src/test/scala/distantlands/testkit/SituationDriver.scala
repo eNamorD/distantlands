@@ -47,13 +47,14 @@ sealed trait SituationDriver:
     *
     * A decision is always answered as the player it awaits, its primary
     * owner: a co-owner's answer (a Negotiation deal's acceptor, say) is a
-    * `ResolveWalker` step the test issues itself.
+    * `ResolveWalker` step the test issues itself. With `stopAt`, a park at
+    * that decision is left in place, as a phase menu is.
     */
-  final def run(from: Situation, steps: Seq[Step], settle: Boolean)(
-      using munit.Location): Situation =
+  final def run(from: Situation, steps: Seq[Step], settle: Boolean,
+      stopAt: Option[String] = None)(using munit.Location): Situation =
     if steps.isEmpty then
       if settle then answerParks(from, detail => munit.Assertions.fail(
-        s"settling: $detail"))
+        s"settling: $detail"), stopAt)
       else from
     else steps.zipWithIndex.foldLeft(from) {
       case (situation, (step, index)) =>
@@ -62,15 +63,16 @@ sealed trait SituationDriver:
         val stepped = apply(situation, step)
           .fold(violation => failed(s"rejected: $violation"), identity)
         if !settle && index == steps.size - 1 then stepped
-        else answerParks(stepped, failed)
+        else answerParks(stepped, failed, stopAt)
     }
 
-  private def answerParks(from: Situation, failed: String => Nothing)(
+  private def answerParks(from: Situation, failed: String => Nothing,
+      stopAt: Option[String])(
       using munit.Location): Situation =
     var situation = from
     var answered = 0
     var parked = parkedNode(situation.state).fold(failed, identity)
-      .filterNot(settled)
+      .filterNot(node => settled(node) || stops(node, stopAt))
     while parked.nonEmpty do
       if answered >= SituationDriver.parkLimit then failed(
         s"still parked after ${SituationDriver.parkLimit} answers, on " +
@@ -100,8 +102,15 @@ sealed trait SituationDriver:
         identity)
       answered += 1
       parked = parkedNode(situation.state).fold(failed, identity)
-        .filterNot(settled)
+        .filterNot(node => settled(node) || stops(node, stopAt))
     situation
+
+  /** Whether `node` is the decision a test asked the walk to stop at. */
+  private def stops(node: ParkedNode, stopAt: Option[String]): Boolean =
+    node match
+      case ParkedNode.Decision(_, decide, _) =>
+        stopAt.contains(decide.decisionId)
+      case _ => false
 
   /** A phase menu is where a situation rests: it asks what the player does
     * next, which the test states itself (walker-driven game loop design,

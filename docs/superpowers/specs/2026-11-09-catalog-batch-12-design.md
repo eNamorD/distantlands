@@ -1,6 +1,6 @@
 # Catalog Batch 12: Negotiation
 
-**Status:** designed 2026-11-09. Slices 1 to 5 and 6a landed.
+**Status:** designed 2026-11-09. Every slice landed.
 
 **Builds on** [Catalog batch 11](2026-11-07-catalog-batch-11-design.md),
 [batch 10](2026-11-03-catalog-batch-10-design.md) and
@@ -38,8 +38,8 @@ Slice 6 was split in two on 2026-11-10, for its size. Slices 5, 6a and 6b
 touch the procedure walker's Negotiation subtree and run the walker suites
 in full before landing.
 
-The roadmap's **Phase - Negotiation terms and promises** loses its
-**Negotiation cards** item when slice 6b lands. Its other parts (banner,
+The roadmap's **Phase - Negotiation terms and promises** lost its
+**Negotiation cards** item with slice 6b. Its other parts (banner,
 secret and site transfers as general terms, a registry of term kinds,
 binding promises with consequences) are not needed by any card here, and
 stay with the phase as written, narrowed by what lands.

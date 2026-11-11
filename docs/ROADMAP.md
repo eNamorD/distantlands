@@ -126,14 +126,12 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
 
 ### Phase - Negotiation terms and promises
 
-A Negotiation deal holds favor, relic and adviser transfers, disclosures,
-Citizenship offers and promises. Add transfers of secrets and banners, a
-registry of term kinds, and
-eligibility powers. Record ignored Negotiation rules per participant rather
-than for the actor only.
-
-- [ ] **Negotiation cards.** The Gathering needs a nested Negotiation with
-  its own participants. Catalog batch 8 left it for this phase.
+A Negotiation deal holds favor, secret, relic, adviser and site
+transfers, disclosures, Citizenship offers and promises, and the
+Negotiation cards are implemented. Add banner transfers, and secrets and
+sites as terms outside the powers that open them, a registry of term
+kinds, and binding promises with consequences. Record ignored Negotiation
+rules per participant rather than for the actor only.
 
 ### Phase - Chronicle steps
 

@@ -103,6 +103,14 @@ object DecisionQueryProjection:
       heading: Option[String] = None) extends DecisionQueryProjection:
     def offeredOptions: Vector[DecisionOptionProjection] = Vector.empty
 
+  /** The Gathering's open question, as one viewer may answer it: who is
+    * at the site, who has passed, and whom this viewer may name (empty for
+    * a viewer not at the site). */
+  final case class Gathering(presentPlayerIds: Vector[String],
+      passedPlayerIds: Vector[String], reachablePlayerIds: Vector[String],
+      heading: Option[String] = None) extends DecisionQueryProjection:
+    def offeredOptions: Vector[DecisionOptionProjection] = Vector.empty
+
   /** Look at `cards`, in order, then press `done` (catalog batch 2, N5).
     * Each card is its face if the owner may identify it, else its back.
     * `done` is the one option, answered as a choose-one.
@@ -410,4 +418,8 @@ final case class NegotiationDealProjection(participantPlayerIds: Vector[String],
     promises: Vector[NegotiationPromiseProjection] = Vector.empty,
     /** The deal is private (Whispering Stone): a viewer outside it gets
       * no terms. True for every viewer of such a deal. */
-    privateDeal: Boolean = false)
+    privateDeal: Boolean = false,
+    /** The players outside a Gathering deal who may still pass in it, and
+      * those of them who have. Empty in every other deal. */
+    bystanderPlayerIds: Vector[String] = Vector.empty,
+    passedPlayerIds: Vector[String] = Vector.empty)

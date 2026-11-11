@@ -137,3 +137,16 @@ class GameLogExchangeSuite extends munit.FunSuite:
         val all = texts(format(script, viewer))
         assertEquals(all.count(_ == promise), count, s"$viewer: $all")
     }
+
+  test("a Gathering names who gathered, and a deal another player opens " +
+      "names its opener"):
+    val script = theGathering
+    val all = lines(script)
+    val (actor, opener) = (playerLabel(p1), playerLabel(p2))
+    assert(all.exists(line => line.startsWith("Gathered at ") &&
+      line.endsWith(s": $actor and $opener.")), all)
+    assert(all.contains(s"$opener negotiated with $actor"), all)
+    assert(all.contains(s"$opener gave 1 secret to $actor"), all)
+    assert(all.contains(s"$actor gave 1 favor to $opener"), all)
+    // The pawn question's answer is told by the Gathered line.
+    assert(!all.exists(_.contains(" chose ")), all)

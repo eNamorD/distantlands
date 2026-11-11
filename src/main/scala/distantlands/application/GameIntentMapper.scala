@@ -119,4 +119,10 @@ object GameIntentMapper:
       negotiation(terms).map(DecisionAnswer.ProposeTerms.apply)
     case DecisionAnswerWire.AcceptDealWire => Right(DecisionAnswer.AcceptDeal)
     case DecisionAnswerWire.DeclineDealWire => Right(DecisionAnswer.DeclineDeal)
+    case DecisionAnswerWire.OpenDealWire(playerIds) =>
+      Right(DecisionAnswer.OpenDeal(playerIds.map(PlayerId(_))))
+    case DecisionAnswerWire.PassGatheringWire =>
+      Right(DecisionAnswer.PassGathering)
+    case DecisionAnswerWire.UnpassGatheringWire =>
+      Right(DecisionAnswer.UnpassGathering)
   private def traverse[A,B](values: Vector[A])(f: A => Result[B]): Result[Vector[B]] = values.foldLeft[Result[Vector[B]]](Right(Vector.empty)) { case (Right(acc), v) => f(v).map(acc :+ _); case (l @ Left(_), _) => l }

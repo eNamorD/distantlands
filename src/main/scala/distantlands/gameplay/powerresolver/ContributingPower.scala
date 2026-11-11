@@ -35,7 +35,12 @@ final case class PowerCtx(
       * plans were used) reads them here. Empty when the window is gathered
       * outside a walk.
       */
-    answered: Vector[Answered] = Vector.empty
+    answered: Vector[Answered] = Vector.empty,
+    /** The walk's power-use restrictions (City Wall, Giant Python, Bandit
+      * Forest), for an effect that judges another power's use as it runs:
+      * The Gathering reads its reach and its deals' rules under them
+      * (catalog batch 12, slice 6b). Empty outside a walk. */
+    useRestrictions: Vector[PowerUseRestriction] = Vector.empty
 )
 
 /** The three ways a power may speak at a hooked node (spec decision 9). A
