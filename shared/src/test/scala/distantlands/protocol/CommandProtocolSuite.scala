@@ -32,6 +32,10 @@ class CommandProtocolSuite extends munit.FunSuite:
         Vector("I will not attack you."), Vector("I will not attack you.")))),
     ResolveWalker("negotiation.deal", DecisionAnswerWire.AcceptDealWire),
     ResolveWalker("negotiation.deal", DecisionAnswerWire.DeclineDealWire),
+    ResolveWalker("gathering.open",
+      DecisionAnswerWire.OpenDealWire(Vector("blue", "green"))),
+    ResolveWalker("gathering.open", DecisionAnswerWire.PassGatheringWire),
+    ResolveWalker("gathering.1.deal", DecisionAnswerWire.UnpassGatheringWire),
     RequestConsent("travel.destination", WalkerStartArgWire("site",
       "site:deep-woods")),
     RequestConsent("travel.destination", WalkerStartArgWire("site", "coast"),
@@ -188,3 +192,9 @@ class CommandProtocolSuite extends munit.FunSuite:
     val failure = rejected(ActorlessCommandCodec.decode(json))
     assertEquals(failure.path, "$.intent.type")
     assert(failure.message.contains("unknown intent type"))
+
+  test("an open-deal answer naming a player twice is rejected"):
+    val payload = ujson.Obj("kind" -> "open-deal",
+      "playerIds" -> ujson.Arr("blue", "blue"))
+    assert(CommandNestedCodecs.decodeDecisionAnswerWire(payload, "$.payload")
+      .isLeft)

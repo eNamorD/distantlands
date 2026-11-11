@@ -708,3 +708,15 @@ object DecisionAnswer:
 
   /** Answer to a [[DecisionQuery.Negotiate]]: declines, which ends it. */
   case object DeclineDeal extends DecisionAnswer
+
+  /** Answer to a [[DecisionQuery.Gathering]]: opens a deal with `players`,
+    * named in the order the opener chose them (catalog batch 12, slice
+    * 6b). */
+  final case class OpenDeal(players: Vector[PlayerId]) extends DecisionAnswer
+
+  /** Answer to a [[DecisionQuery.Gathering]], or a bystander's to a
+    * Gathering deal: passes (ruling 4). */
+  case object PassGathering extends DecisionAnswer
+
+  /** As [[PassGathering]]: takes back a pass. */
+  case object UnpassGathering extends DecisionAnswer

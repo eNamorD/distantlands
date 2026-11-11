@@ -603,6 +603,12 @@ class DecisionQuerySuite extends munit.FunSuite:
     assertEquals(acceptsBy(red, DecisionAnswer.AcceptDeal, chooseOne),
       invalid("decision recover.choice expects a single-choice answer"))
 
+  test("the Gathering's answers meet no other query"):
+    assertEquals(accepts(chooseOne, DecisionAnswer.PassGathering),
+      invalid("decision recover.choice expects a single-choice answer"))
+    assertEquals(acceptsBy(red, DecisionAnswer.OpenDeal(Vector(blue))),
+      invalid("decision recover.choice expects a negotiation answer"))
+
   // (k) An unavailable option is shown, and never answerable.
 
   private val withheldStop = DecisionOption.Unavailable(stopOption,

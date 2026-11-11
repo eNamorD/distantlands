@@ -89,6 +89,13 @@ private[protocol] object CommandNestedCodecs:
       ujson.Obj("kind" -> "propose-terms", "terms" -> encodeNegotiation(terms))
     case DecisionAnswerWire.AcceptDealWire => ujson.Obj("kind" -> "accept-deal")
     case DecisionAnswerWire.DeclineDealWire => ujson.Obj("kind" -> "decline-deal")
+    case DecisionAnswerWire.OpenDealWire(playerIds) => ujson.Obj(
+      "kind" -> "open-deal",
+      "playerIds" -> ujson.Arr.from(playerIds.map(ujson.Str(_))))
+    case DecisionAnswerWire.PassGatheringWire =>
+      ujson.Obj("kind" -> "pass-gathering")
+    case DecisionAnswerWire.UnpassGatheringWire =>
+      ujson.Obj("kind" -> "unpass-gathering")
 
   def decodeDecisionAnswerWire(value: ujson.Value, path: String)
       : Either[ProtocolDecodeFailure, DecisionAnswerWire] = obj(value, path).flatMap { root =>
@@ -135,6 +142,16 @@ private[protocol] object CommandNestedCodecs:
         .map(_ => DecisionAnswerWire.AcceptDealWire)
       case "decline-deal" => exact(root, Set("kind"), path)
         .map(_ => DecisionAnswerWire.DeclineDealWire)
+      case "open-deal" => for
+        _ <- exact(root, Set("kind", "playerIds"), path)
+        raw <- field(root, "playerIds", path)
+        playerIds <- strings(raw, s"$path.playerIds")
+        _ <- noDuplicates(playerIds, s"$path.playerIds")
+      yield DecisionAnswerWire.OpenDealWire(playerIds)
+      case "pass-gathering" => exact(root, Set("kind"), path)
+        .map(_ => DecisionAnswerWire.PassGatheringWire)
+      case "unpass-gathering" => exact(root, Set("kind"), path)
+        .map(_ => DecisionAnswerWire.UnpassGatheringWire)
       case kind => Left(InvalidValue(s"$path.kind", s"unknown decision answer '$kind'"))
     }}
 

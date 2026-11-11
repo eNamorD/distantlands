@@ -97,3 +97,16 @@ class GameIntentMapperNegotiationSuite extends munit.FunSuite:
       WireTerms(Vector.empty, Vector.empty, Vector("blue", "blue")))
       .foreach(terms => assertEquals(refused(terms), Left("$.intent.terms"),
         terms))
+
+  test("the Gathering's answers map to the engine's"):
+    def mapped(answer: Wire) =
+      GameIntentMapper.map(Intent.ResolveWalker("gathering.open", answer))
+    def resolved(answer: DecisionAnswer) = Right(PlayerIntent.ResolveWalker(
+      TreeDecision("gathering.open", answer)))
+    assertEquals(mapped(Wire.OpenDealWire(Vector("blue", "green"))),
+      resolved(DecisionAnswer.OpenDeal(Vector(PlayerId("blue"),
+        PlayerId("green")))))
+    assertEquals(mapped(Wire.PassGatheringWire),
+      resolved(DecisionAnswer.PassGathering))
+    assertEquals(mapped(Wire.UnpassGatheringWire),
+      resolved(DecisionAnswer.UnpassGathering))
