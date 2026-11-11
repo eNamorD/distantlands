@@ -31,10 +31,10 @@ _Avoid_: start argument (that is the player's selection), pinned value
 
 **Parked decision**:
 A question the procedure walker has stopped on and is waiting for its owner
-to answer, or, for a Negotiation deal, any of its co-owners. One walk is
-parked per game at a time. That park usually holds one decision; a
-`Simultaneous` node holds one per player, answered in any order, as the
-Throne's Citizenship offer does.
+to answer, or, for a Negotiation deal or The Gathering's open question,
+any of its co-owners. One walk is parked per game at a time. That park
+usually holds one decision; a `Simultaneous` node holds one per player,
+answered in any order, as the Throne's Citizenship offer does.
 _Avoid_: pending decision, walker decision, park
 
 **Phase menu**:
@@ -46,11 +46,11 @@ _Avoid_: action list, phase controls, wake actions
 
 **Form**:
 The kind of answer a parked decision asks for: choose one, choose many, choose
-an amount, partition, distribute, negotiate, or inspect. An inspect shows
-cards in order and takes one answer, Done: it asks for acknowledgement, not a
-choice. A parked decision has exactly one form. The form determines what else
-the question carries: its options, its sections, its slots, its cards, its
-bounds and the name of its confirm control.
+an amount, partition, distribute, negotiate, gathering, or inspect. An
+inspect shows cards in order and takes one answer, Done: it asks for
+acknowledgement, not a choice. A parked decision has exactly one form. The
+form determines what else the question carries: its options, its sections,
+its slots, its cards, its bounds and the name of its confirm control.
 _Avoid_: query type, decision type, panel type
 
 **Surface**:

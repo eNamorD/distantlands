@@ -124,15 +124,6 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
   ideally something a release run can execute or that takes minutes by hand.
   Then decide what happens to the record.
 
-### Phase - Negotiation terms and promises
-
-A Negotiation deal holds favor, secret, relic, adviser and site
-transfers, disclosures, Citizenship offers and promises, and the
-Negotiation cards are implemented. Add banner transfers, and secrets and
-sites as terms outside the powers that open them, a registry of term
-kinds, and binding promises with consequences. Record ignored Negotiation
-rules per participant rather than for the actor only.
-
 ### Phase - Chronicle steps
 
 After the all-Exile alpha, implement the Chronicle and persistent campaign:
@@ -149,7 +140,9 @@ Foundation mutation, Legacy activation and scoring, and era scoring.
   `RuleSourceIndex`, and the faces have no behaviour.
 - [ ] **Legacies.** Fills the Sun's empty steps 2-5 and the legacy bonus in
   Score Lineage Points. Game start refuses a seated lineage's legacies and
-  starting relics until then.
+  starting relics until then. High Priest's When Negotiating power lets its
+  holder give secrets in a deal: a `DealRules` term kind, as Council Arbiter
+  opens advisers.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
@@ -433,8 +426,7 @@ as current.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**
 - [ ] **L6 — Incremental implementation of remaining phases and rules** (tracked
   in the phased sequence above; the remaining cards come with
-  **Phase - Negotiation terms and promises** and **Phase - Chronicle
-  steps**)
+  **Phase - Chronicle steps**)
 - [ ] **L7 — Incremental synchronization transport**
   - Replace complete-snapshot polling with conditional responses, projection
     deltas, long polling, SSE, or another push transport when scale or latency

@@ -86,7 +86,7 @@ Owners get the full deal with editing inputs, computed from their own bounds. Ev
 
 ## Unsupported Negotiation rules
 
-`When Negotiating` handlers the engine does not support (the Grand Scepter and High Priest) are ignored, not blocking, and the start records nothing about them. The engine does not infer mechanics from rules text.
+The one `When Negotiating` handler the engine does not support, High Priest's (a legacy), is ignored, not blocking, and the start records nothing about it. The engine does not infer mechanics from rules text.
 
 ## Journal
 
@@ -94,4 +94,6 @@ Each answer is a `WalkerStepRecorded` carrying a `ChoicePayload`. Negotiation ha
 
 ## Deferred
 
-Citizenship and the Grand Scepter, banner transfers, future-action promises, and the other component-specific Negotiation powers remain deferred. The `NegotiationEligibility` and `NegotiationSettlement` windows and the explicit `participants` of the `Negotiate` query are the hooks those powers will use. The reach cards (Traveling Negotiator, The Tribunal, Bandit Tribunal) hook no window: the start reads `NegotiationReach` directly.
+High Priest's power, "You may give secrets", comes with the legacies (roadmap **Phase - Chronicle steps**). Banners are never terms: New Foundations forbids giving them. The engine records promises and binding promises but enforces none, as the rules leave their penalties to the players.
+
+No power contributes at the `NegotiationEligibility` or `NegotiationSettlement` windows. The reach cards (Traveling Negotiator, The Tribunal, Bandit Tribunal) read `NegotiationReach`, and the term-kind cards (Council Arbiter, Festival District, Deed Writer) and The Gathering set `DealRules`.

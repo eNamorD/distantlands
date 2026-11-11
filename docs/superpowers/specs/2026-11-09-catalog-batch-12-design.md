@@ -41,8 +41,8 @@ in full before landing.
 The roadmap's **Phase - Negotiation terms and promises** lost its
 **Negotiation cards** item with slice 6b. Its other parts (banner,
 secret and site transfers as general terms, a registry of term kinds,
-binding promises with consequences) are not needed by any card here, and
-stay with the phase as written, narrowed by what lands.
+binding promises with consequences) are not needed by any card here or by
+the New Foundations rules, so the phase was deleted with it.
 
 ## Rulings
 
