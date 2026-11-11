@@ -31,7 +31,7 @@ object GameStartRules:
         .materialize(plan, deal)
       // An edifice the Chronicle stores at a site stays there: it is not also
       // in the edifice deck. The materializer only knows the edifices at the
-      // 8 sites in play.
+      // sites in play.
       storedEdifices = (chronicle.atlasBox ++ chronicle.world).flatMap(_.items)
         .collect { case id: EdificeId => id }.toSet
       commonCards = material.commonCards.copy(edificeDeck =
@@ -44,9 +44,12 @@ object GameStartRules:
           LineageState(participant.lineageId, None, Role.Exile, Vector.empty,
             Vector.empty))
       ).toMap
-      // The atlas past the sites in play keeps every stored card, the
-      // inverse of `ChronicleExtraction.extract`'s `carried`.
-      atlas = AtlasState(chronicle.atlasBox.drop(8 - chronicle.world.size)
+      // The atlas sites not placed on the map stay in the atlas, in order,
+      // with every stored card: the inverse of
+      // `ChronicleExtraction.extract`'s `carried`.
+      onMap = plan.orderedSites.toSet
+      atlas = AtlasState(chronicle.atlasBox.filterNot(stored =>
+          onMap(stored.site))
         .map(stored => AtlasEntry.StoredSite(stored.site,
           stored.items.collect { case id: DenizenId =>
             DenizenState(id, Orientation.FaceUp, Tokens.empty) },
@@ -73,7 +76,6 @@ object GameStartRules:
   private def buildPlan(catalog: ExecutableCatalog, chronicle: Chronicle,
       orders: SetupOrders, deal: SetupDeal)
       : Either[OathViolation, FirstGameSetupPlan] =
-    val slots = 8 - chronicle.world.size
     val faces = StartingFoundations.of(chronicle)
     for
       _ <- Either.cond(chronicle.lineages.forall(_.startingRelics.isEmpty), (),
@@ -86,6 +88,7 @@ object GameStartRules:
         .map(UnsupportedChronicle(_)).toLeft(())
       _ <- validateParticipants(orders)
       empire <- EmpireSetupRules.resolve(chronicle, orders)
+      slots = atlasSlots(empire, faces)
       _ <- Either.cond(chronicle.atlasBox.size >= slots, (),
         UnsupportedChronicle(
           s"at least $slots atlas sites are required, got ${chronicle.atlasBox.size}"))
@@ -111,6 +114,17 @@ object GameStartRules:
       orders.worldDeckOrder, orders.relicOrder, homelands,
       chronicle.oathkeeperGoal, empire, if empire.isEmpty then Vector.empty
         else atlasSites, startingAdvisers(chronicle, orders), faces)
+
+  /** The slots game start fills from the Recent end of the atlas. A first
+    * game fills all eight. With an Empire, Imperial Maps fills the slots
+    * past the Empire's sites (R27), and Wide Horizons fills none. */
+  private def atlasSlots(empire: Option[EmpireSetup],
+      faces: Map[FoundationNumber, FoundationState]): Int = empire match
+    case None => MapState.slots
+    case Some(empire)
+        if faces(FoundationNumber.I).face == FoundationFace.Normal =>
+      MapState.slots - empire.sites.size
+    case Some(_) => 0
 
   /** A site's relic slots its stored relics leave open, never fewer than 0
     * (R27). */

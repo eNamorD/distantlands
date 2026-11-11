@@ -122,8 +122,6 @@ class GameStartRulesSuite extends munit.FunSuite:
     def unsupported(face: String, slice: Int) =
       OathViolation.UnsupportedChronicle(
         s"$face is not supported yet: it arrives with Foundations slice $slice")
-    assertEquals(refusalFor(FoundationNumber.I),
-      unsupported("Wide Horizons (altered Foundation I)", 3))
     assertEquals(refusalFor(FoundationNumber.V),
       unsupported("Grand Council (altered Foundation V)", 5))
     assertEquals(refusalFor(FoundationNumber.VI),

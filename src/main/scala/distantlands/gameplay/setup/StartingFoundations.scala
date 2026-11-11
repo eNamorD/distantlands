@@ -16,7 +16,6 @@ object StartingFoundations:
     * The slice that makes a face work deletes its line. Foundation III has
     * none: both its faces wait for Legacies and do nothing (ruling 1). */
   private val arrivesWith: Vector[(FoundationNumber, Int)] = Vector(
-    FoundationNumber.I -> 3,
     FoundationNumber.V -> 5,
     FoundationNumber.VI -> 6)
 
