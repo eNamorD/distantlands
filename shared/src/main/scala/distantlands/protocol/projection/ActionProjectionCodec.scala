@@ -367,7 +367,8 @@ private[projection] object ActionProjectionCodec:
       "relicCount" -> row.relicCount, "relics" -> encoded(row.relics)(encodeCard),
       "adviserCount" -> row.adviserCount,
       "advisers" -> encoded(row.advisers)(encodeCard),
-      "sites" -> encoded(row.sites)(encodeSite))
+      "sites" -> encoded(row.sites)(encodeSite),
+      "secrets" -> row.secrets)
   private def encodeDisclosure(row: NegotiationDisclosureProjection): ujson.Value =
     ujson.Obj("authorPlayerId" -> row.authorPlayerId,
       "recipientPlayerId" -> row.recipientPlayerId, "kind" -> row.kind,
@@ -381,7 +382,8 @@ private[projection] object ActionProjectionCodec:
       : Result[NegotiationTransferProjection] = for
     row <- obj(raw, child)
     _ <- exact(row, Set("authorPlayerId", "recipientPlayerId", "favor",
-      "relicCount", "relics", "adviserCount", "advisers", "sites"), child)
+      "relicCount", "relics", "adviserCount", "advisers", "sites", "secrets"),
+      child)
     author <- string(row, "authorPlayerId", child)
     recipient <- string(row, "recipientPlayerId", child)
     favor <- int(row, "favor", child); count <- int(row, "relicCount", child)
@@ -392,8 +394,9 @@ private[projection] object ActionProjectionCodec:
     advisers <- traverse(adviserRaws, s"$child.advisers")(decodeCard)
     siteRaws <- array(row, "sites", child)
     sites <- traverse(siteRaws, s"$child.sites")(decodeSite)
+    secrets <- int(row, "secrets", child)
   yield NegotiationTransferProjection(author, recipient, favor, count, relics,
-    adviserCount, advisers, sites)
+    adviserCount, advisers, sites, secrets)
   private def decodeDisclosure(raw: ujson.Value, child: String)
       : Result[NegotiationDisclosureProjection] = for
     row <- obj(raw, child)
@@ -438,7 +441,9 @@ private[projection] object ActionProjectionCodec:
       "overAdviserLimit" -> encoded(editing.overAdviserLimit)(ujson.Str(_)),
       "giftableSites" -> encoded(editing.giftableSites)(encodeSite),
       "siteRecipients" -> encoded(editing.siteRecipients)(ujson.Str(_)),
-      "shortOfWarbands" -> encoded(editing.shortOfWarbands)(ujson.Str(_)))),
+      "shortOfWarbands" -> encoded(editing.shortOfWarbands)(ujson.Str(_)),
+      "editableSecrets" -> editing.editableSecrets,
+      "secretRecipients" -> encoded(editing.secretRecipients)(ujson.Str(_)))),
     "citizenship" -> encoded(value.citizenship)(offer => ujson.Obj(
       "authorPlayerId" -> offer.authorPlayerId,
       "recipientPlayerId" -> offer.recipientPlayerId)),
@@ -464,7 +469,8 @@ private[projection] object ActionProjectionCodec:
         "editableSiteRelics", "canAccept", "editableCitizenship",
         "citizenshipRefused", "bindingPromisesOpen", "giftableAdvisers",
         "adviserRecipients", "overAdviserLimit", "giftableSites",
-        "siteRecipients", "shortOfWarbands"), child)
+        "siteRecipients", "shortOfWarbands", "editableSecrets",
+        "secretRecipients"), child)
       favor <- int(row, "editableFavor", child)
       relicRaws <- array(row, "editableRelics", child)
       relics <- traverse(relicRaws, s"$child.editableRelics")(decodeCard)
@@ -485,9 +491,11 @@ private[projection] object ActionProjectionCodec:
         decodeSite)
       siteRecipients <- strings(row, "siteRecipients", child)
       short <- strings(row, "shortOfWarbands", child)
+      secrets <- int(row, "editableSecrets", child)
+      secretRecipients <- strings(row, "secretRecipients", child)
     yield NegotiationEditingProjection(favor, relics, advisers, sites, canAccept,
       offerable, refused, open, giftable, adviserRecipients, overLimit,
-      giftableSites, siteRecipients, short) }
+      giftableSites, siteRecipients, short, secrets, secretRecipients) }
     offerRaws <- array(value, "citizenship", path)
     offers <- traverse(offerRaws, s"$path.citizenship") { (raw, child) => for
       row <- obj(raw, child)

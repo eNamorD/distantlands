@@ -296,10 +296,12 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       bindingPromisesOpen = true, giftableAdvisers = Vector(adviser),
       adviserRecipients = Vector("blue"), overAdviserLimit = Vector("blue"),
       giftableSites = Vector(dunes), siteRecipients = Vector("blue"),
-      shortOfWarbands = Vector("blue"))
+      shortOfWarbands = Vector("blue"), editableSecrets = 2,
+      secretRecipients = Vector("p2"))
     val deal = NegotiationDealProjection(Vector("red", "blue"), Vector("blue"),
       Vector(NegotiationTransferProjection("red", "blue", 3, 1, Vector(card),
-        adviserCount = 1, advisers = Vector(adviser), sites = Vector(dunes))),
+        adviserCount = 1, advisers = Vector(adviser), sites = Vector(dunes),
+        secrets = 1)),
       Vector(NegotiationDisclosureProjection("red", "blue", "held-relic", None)),
       Some(editing), Vector(NegotiationCitizenshipProjection("red", "blue")),
       Vector(NegotiationPromiseProjection("red", "I will not attack you.",

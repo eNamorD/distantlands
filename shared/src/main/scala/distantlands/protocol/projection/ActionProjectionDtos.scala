@@ -345,7 +345,8 @@ final case class NegotiationTransferProjection(authorPlayerId: String,
     recipientPlayerId: String, favor: Int, relicCount: Int,
     relics: Vector[CardDetailsProjection], adviserCount: Int = 0,
     advisers: Vector[CardDetailsProjection] = Vector.empty,
-    sites: Vector[NegotiationSiteProjection] = Vector.empty)
+    sites: Vector[NegotiationSiteProjection] = Vector.empty,
+    secrets: Int = 0)
 final case class NegotiationDisclosureProjection(authorPlayerId: String,
     recipientPlayerId: String, kind: String,
     card: Option[CardDetailsProjection])
@@ -386,7 +387,11 @@ final case class NegotiationEditingProjection(editableFavor: Int,
     siteRecipients: Vector[String] = Vector.empty,
     /** The recipients the current terms would leave with too few warbands
       * to rule every site they receive; while any is, nobody may accept. */
-    shortOfWarbands: Vector[String] = Vector.empty)
+    shortOfWarbands: Vector[String] = Vector.empty,
+    /** The faceup secrets the viewer may give, and to whom (catalog batch
+      * 12, ruling 31). */
+    editableSecrets: Int = 0,
+    secretRecipients: Vector[String] = Vector.empty)
 
 /** A parked negotiation as one viewer sees it. Everyone sees the participants,
   * who has accepted, favor amounts, relic and adviser counts and the details of
