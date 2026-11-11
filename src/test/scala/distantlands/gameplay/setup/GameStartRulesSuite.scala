@@ -82,6 +82,53 @@ class GameStartRulesSuite extends munit.FunSuite:
     assertEquals(GameStartRules.evolve(catalog, keeping, orders),
       Left(OathViolation.UnsupportedChronicle("legacies require Legacies")))
 
+  private val altered = FoundationState(FoundationFace.Altered, Set.empty)
+  private val normal = FoundationState(FoundationFace.Normal, Set.empty)
+
+  test("a Chronicle that lists no foundation starts with six normal faces"):
+    val ready = accepted(GameStartRules.evolve(catalog, chronicle, orders))
+    assertEquals(ready.game.campaign.foundations,
+      FoundationNumber.all.map(_ -> normal).toMap)
+
+  test("game start keeps the Chronicle's foundation faces and their " +
+      "sources, and a number it does not list lies normal"):
+    val sourced = FoundationState(FoundationFace.Altered,
+      Set(LegacyId(catalog.legacies.head.id.value)))
+    val stored = chronicle.copy(foundations = Map(
+      FoundationNumber.III -> sourced, FoundationNumber.V -> normal))
+    val ready = accepted(GameStartRules.evolve(catalog, stored, orders))
+    assertEquals(ready.game.campaign.foundations,
+      FoundationNumber.all.map(_ -> normal).toMap
+        .updated(FoundationNumber.III, sourced))
+
+  test("game start refuses each altered face but Foundation III's, naming " +
+      "the face and the slice it arrives with"):
+    def refusalFor(number: FoundationNumber) = rejected(GameStartRules.evolve(
+      catalog, chronicle.copy(foundations = Map(number -> altered)), orders))
+    def unsupported(face: String, slice: Int) =
+      OathViolation.UnsupportedChronicle(
+        s"$face is not supported yet: it arrives with Foundations slice $slice")
+    assertEquals(refusalFor(FoundationNumber.I),
+      unsupported("Wide Horizons (altered Foundation I)", 3))
+    assertEquals(refusalFor(FoundationNumber.II),
+      unsupported("Movers and Shakers (altered Foundation II)", 2))
+    assertEquals(refusalFor(FoundationNumber.IV),
+      unsupported("Teeming World (altered Foundation IV)", 2))
+    assertEquals(refusalFor(FoundationNumber.V),
+      unsupported("Grand Council (altered Foundation V)", 5))
+    assertEquals(refusalFor(FoundationNumber.VI),
+      unsupported("Festival (altered Foundation VI)", 6))
+
+  test("with several altered faces, game start names the first in " +
+      "foundation order"):
+    val several = chronicle.copy(foundations = Map(
+      FoundationNumber.VI -> altered, FoundationNumber.III -> altered,
+      FoundationNumber.II -> altered))
+    assertEquals(rejected(GameStartRules.evolve(catalog, several, orders)),
+      OathViolation.UnsupportedChronicle("Movers and Shakers (altered " +
+        "Foundation II) is not supported yet: it arrives with Foundations " +
+        "slice 2"))
+
   test("a later game with a seated Chancellor starts"):
     val record = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
     accepted(GameStartRules.evolve(catalog, record,
