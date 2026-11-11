@@ -15,8 +15,9 @@ import distantlands.model._
   *
   * Teeming World, the altered face: each player draws until they hold three
   * starting advisers and keeps every card drawn, then the whole rest of the
-  * stack is dealt to the discard piles one card at a time, and the world
-  * deck gets no denizen.
+  * stack is dealt to the discard piles one card at a time, each card
+  * beneath the ones its pile already holds, and the world deck gets no
+  * denizen.
   */
 final case class SetupDeal(face: FoundationFace,
     draws: Vector[(PlayerId, Int)]):
@@ -50,14 +51,17 @@ final case class SetupDeal(face: FoundationFace,
 
   /** The discard piles the deal leaves, each in stored order, top last.
     * Teeming World deals the rest of the stack to the Cradle, the Provinces
-    * and the Hinterland in turn, so the last card dealt tops its pile. */
+    * and the Hinterland in turn. The first card dealt to a pile is its top
+    * and each later card goes beneath it, so the end of the stack, where
+    * the alpha shuffle puts the unimplemented denizens, lies at the bottoms
+    * of the piles and the first Search of a pile does not draw it. */
   def discards(stack: Vector[DenizenId]): Map[Region, Vector[WorldCardId]] =
     val piles = Region.all.zipWithIndex
     if teeming then
       val rest = stack.drop(drawn).zipWithIndex
       piles.map((region, pile) => region -> rest.collect {
         case (card, dealt) if dealt % piles.size == pile => card
-      }).toMap
+      }.reverse).toMap
     else piles.map((region, pile) =>
       region -> stack.slice(2 * pile, 2 * pile + 2)).toMap
 

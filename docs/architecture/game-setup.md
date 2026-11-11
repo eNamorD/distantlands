@@ -35,8 +35,9 @@ goes under the Visions as the world deck. Under Teeming World each player
 draws until they hold three starting advisers and keeps every card drawn
 facedown, after any adviser their lineage stored, with no hand and no
 adviser choice; the rest of the stack is dealt one card at a time to the
-Cradle, Provinces and Hinterland discard piles; and the world deck is the
-five Visions, shuffled. Foundation II decides the favor: Powerful Tribes
+Cradle, Provinces and Hinterland discard piles, the first card dealt to a
+pile its top and each later card beneath; and the world deck is the five
+Visions, shuffled. Foundation II decides the favor: Powerful Tribes
 gives each bank 3, 1 more with five or more players, and 1 per denizen of
 its suit on the map; Movers and Shakers gives each board 6 favor and each
 bank only the 1 per denizen. Both altered faces are built directly, like the

@@ -155,9 +155,11 @@ journaled. Each removes its refusal.
   stored advisers come before the ones it draws. A site-only denizen drawn
   is kept and cannot be revealed in Setup. Reveal Cards still runs. An
   uneven rest leaves the Cradle pile, then the Provinces pile, one card
-  more, and the last card dealt tops its pile. A Search of the Visions-only
-  deck draws one Vision and stops; once the five are drawn the world deck is
-  empty and cannot be searched.
+  more, and the first card dealt to a pile is its top; later cards go
+  beneath (decided in the slice's review, so that the unimplemented
+  denizens the alpha shuffle puts last in the stack top no pile). A Search
+  of the Visions-only deck draws one Vision and stops; once the five are
+  drawn the world deck is empty and cannot be searched.
 - **Tests.** Bank and board totals at 3 and 5 players; Teeming World with
   and without stored advisers; the discard piles' order; a world deck of
   Visions only, and a first Search drawing a Vision; card accounting still
