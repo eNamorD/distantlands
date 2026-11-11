@@ -2,7 +2,8 @@ package distantlands.protocol.projection
 
 import scala.util.control.NonFatal
 
-import distantlands.protocol.{ChronicleEntryCodec, ProtocolDecodeFailure}
+import distantlands.protocol.{ChronicleEntryCodec, ChronicleFoundation,
+  ProtocolDecodeFailure}
 import distantlands.protocol.ProtocolDecodeFailure.MalformedJson
 import ProjectionCodecSupport._
 import WorldProjectionCodec._
@@ -161,7 +162,10 @@ object GameProjectionCodec:
       : Result[FoundationProjection] = for
     row <- obj(raw, path)
     _ <- exact(row, Set("number", "face", "name", "rulesText"), path)
-    number <- int(row, "number", path); face <- string(row, "face", path)
+    number <- int(row, "number", path)
+    // A face is spelled as a Chronicle's summary spells it.
+    face <- string(row, "face", path).filterOrElse(ChronicleFoundation.faces,
+      ProtocolDecodeFailure.InvalidValue(s"$path.face", "unknown face"))
     name <- string(row, "name", path)
     rulesText <- string(row, "rulesText", path)
   yield FoundationProjection(number, face, name, rulesText)

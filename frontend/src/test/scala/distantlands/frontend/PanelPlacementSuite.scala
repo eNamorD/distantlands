@@ -45,10 +45,6 @@ class PanelPlacementSuite extends munit.FunSuite:
       ".shared-bank .oathkeeper-goal").map(_.textContent),
       Some("Oathkeeper of the People"))
 
-  /** Beside the regions rather than under them: the map pane is wider than
-    * it is tall, so a column costs nothing at fit and a row below costs the
-    * whole map's scale.
-    */
   test("the foundations close the shared bank, and a projection with " +
       "none draws no strip"):
     val foundations = Vector(
@@ -64,6 +60,10 @@ class PanelPlacementSuite extends munit.FunSuite:
       Vector("Imperial Maps", "Public Ambitions"))
     assertEquals(Dom.all(world(projection()), ".foundations").size, 0)
 
+  /** Beside the regions rather than under them: the map pane is wider than
+    * it is tall, so a column costs nothing at fit and a row below costs the
+    * whole map's scale.
+    */
   test("the shared bank stands beside the regions and their favor banks"):
     val layout = Dom.firstMatch(world(projection()), ".world-layout")
       .getOrElse(fail("no world layout"))

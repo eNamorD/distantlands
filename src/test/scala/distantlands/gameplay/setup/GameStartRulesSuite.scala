@@ -101,6 +101,20 @@ class GameStartRulesSuite extends munit.FunSuite:
       FoundationNumber.all.map(_ -> normal).toMap
         .updated(FoundationNumber.III, sourced))
 
+  test("game start refuses a foundation whose alteration source is no " +
+      "legacy it knows, and starts with one it knows"):
+    def sourcedBy(legacy: LegacyId): Chronicle = chronicle.copy(
+      foundations = Map(FoundationNumber.III ->
+        FoundationState(FoundationFace.Altered, Set(legacy))))
+    assertEquals(rejected(GameStartRules.evolve(catalog,
+      sourcedBy(LegacyId("no-such-legacy")), orders)),
+      OathViolation.UnsupportedChronicle("unknown legacy no-such-legacy"))
+    val known = LegacyId(catalog.legacies.head.id.value)
+    val ready = accepted(GameStartRules.evolve(catalog, sourcedBy(known),
+      orders))
+    assertEquals(ready.game.campaign.foundations(FoundationNumber.III),
+      FoundationState(FoundationFace.Altered, Set(known)))
+
   test("game start refuses each altered face but Foundation III's, naming " +
       "the face and the slice it arrives with"):
     def refusalFor(number: FoundationNumber) = rejected(GameStartRules.evolve(

@@ -1049,10 +1049,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* The six foundation setup cards (Foundations design, slice 1), a card a
    row: its numeral, the name of the face in use in the serif that names
    things, and on an altered card the word. The word alone marks it: brass
-   on the board means an option, so the frame stays the neutral line. A row
-   is one line of name and at most one of mark, so the strip's height is
-   fixed and can never raise the map's. The table's cards are buttons that
-   read the face's rules; the Chronicle page's are not. */
+   on the board means an option, so the frame stays the neutral line. On the
+   table a row is one line of name and at most one of mark and never wraps.
+   Its height is not fixed: on the compact map it follows the glance text
+   size, and so the Fit scale. The strip stays shorter than the regions
+   beside it, whose height sets the map's. The table's cards are buttons
+   that read the face's rules; the Chronicle page's are not. */
 .foundations { margin-top: 12px; }
 .foundations-title { margin: 0 0 6px; font-size: 1rem; }
 .foundation-strip { list-style: none; margin: 0; padding: 0; display: grid;
@@ -1075,9 +1077,11 @@ button.foundation-card:hover { background: var(--pressed);
 /* On the zoomed-out map the cards hold the glance text size, as a site's
    details do; a name the bank's column cannot hold is cut, never wrapped. */
 .map-compact .foundation-card { font-size: var(--glance-text); }
-/* On the Chronicle page the six stand three abreast. */
+/* On the Chronicle page the six stand three abreast. The page scrolls, so
+   a name its column cannot hold wraps. */
 .chronicle-loaded .foundation-strip {
   grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 0.5rem; }
+.chronicle-loaded .foundation-name { white-space: normal; }
 /* Under the regions, where the physical board keeps them. Their text is set
    larger than the map's own, as the map is drawn at about half size. */
 .favor-banks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));

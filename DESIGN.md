@@ -905,10 +905,12 @@ frame stays Line, because brass on the board means an option. A row is a
 button that opens its face's rules in the text overlay, and answers hover as
 a Control does (Pressed fill, Bright Cream border). On the compact map the
 row takes the glance text size (`--glance-text`), as a site's details do. A
-row never wraps, so the strip's height is fixed and cannot raise the map's
-(The Glance Layer Rule). The Chronicle page lists the same six under the
-loaded Chronicle's summary line, three abreast, as plain rows with nothing
-to open.
+table row never wraps, but its height is not fixed: on the compact map it
+follows the glance text size, and so the Fit scale. The strip must stay
+shorter than the regions beside it, whose height sets the map's (The Glance
+Layer Rule). The Chronicle page lists the same six under the loaded
+Chronicle's summary line, three abreast, as plain rows with nothing to open;
+there a name too long for its column wraps.
 
 ## Do's and Don'ts
 

@@ -232,6 +232,14 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       Unwrap.rejected(GameProjectionCodec.decode(ujson.write(extra))).path,
       "$.foundations[1].sources")
 
+  test("a foundation whose face is neither normal nor altered is refused"):
+    // The wire spells a face in lower case.
+    val miscased = ujson.read(GameProjectionCodec.encode(projection))
+    miscased("foundations")(1)("face") = "Altered"
+    assertEquals(
+      Unwrap.rejected(GameProjectionCodec.decode(ujson.write(miscased))).path,
+      "$.foundations[1].face")
+
   test("a board payload without its revealed Visions is refused"):
     val raw = ujson.read(GameProjectionCodec.encode(projection))
     raw("playerBoards").arr.foreach(board => board.obj.remove("revealedVisions"))
