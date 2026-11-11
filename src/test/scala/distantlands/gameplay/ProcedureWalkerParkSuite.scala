@@ -80,17 +80,14 @@ class ProcedureWalkerParkSuite extends munit.FunSuite:
 
   test("a malformed query is rejected as a contract failure before the " +
       "submitted answer is even looked at"):
-    // An empty option set, and a partition whose single section takes every
-    // option: both are queries no answer could make meaningful, so the
-    // rejection names the query rather than the submission.
-    val empty = decide.copy(
-      query = DecisionQuery.ChooseOne(Vector.empty))
+    // A partition whose single section takes every option is a query no
+    // answer could make meaningful, so the rejection names the query
+    // rather than the submission.
     val forced = decide.copy(query = DecisionQuery.Partition(
       Vector(DecisionSection("all", "All", 1)),
       Vector(DecisionOption.Button(continueOption, "Continue"))))
 
     Vector(
-      empty -> "declares no options",
       forced -> "declares fewer than two sections"
     ).foreach { case (node, detail) =>
       val tree: Operation = Sequence(node, spendOneSupply)
@@ -102,6 +99,16 @@ class ProcedureWalkerParkSuite extends munit.FunSuite:
           s"decision recover.choice $detail"))
           : Either[OathViolation, WalkerOutcome])
     }
+
+  test("a walk does not park on a required choose-one that declares no " +
+      "option"):
+    // Nothing could answer it, so the command that reaches it is refused
+    // and the state stays as it was.
+    val empty = decide.copy(query = DecisionQuery.ChooseOne(Vector.empty))
+    val tree: Operation = Sequence(empty, spendOneSupply)
+    assertEquals(ProcedureWalker.advance(ready, tree, None, noPowers),
+      Left(OathViolation.InvalidEventOrder("the decision offers no answer"))
+        : Either[OathViolation, WalkerOutcome])
 
   test("a Decide answered by anyone but its owner is rejected as " +
       "the wrong player"):

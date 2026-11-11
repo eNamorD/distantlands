@@ -315,6 +315,22 @@ final case class Table private (private val game: ReadyGame,
       c.commonCards.copy(relicDeck = deck.drop(n))))
       .updateCampaign(c => c.copy(reliquary = c.reliquary ++ deck.take(n))) }
 
+  /** The map cut to its first `count` sites Hinterward, with the slots
+    * past them empty, as Wide Horizons leaves it. A site that is cut must
+    * hold no card and no pawn. */
+  def sitesInPlay(count: Int)(using munit.Location): Table =
+    val map = game.game.current.map
+    val (kept, cut) = map.hinterward.splitAt(count)
+    cut.foreach { site =>
+      val state = map.sites(site)
+      if state.denizens.nonEmpty || state.relics.nonEmpty ||
+          game.game.current.players.exists(_.pawnSite.contains(site)) then
+        munit.Assertions.fail(
+          s"${site.value} holds a card or a pawn and cannot be cut")
+    }
+    update(_.updateCurrent(_.copy(map =
+      MapState.inSlots(kept.map(site => site -> map.sites(site))))))
+
   /** The Reliquary set aside for the game, as Setup With No Empire leaves
     * it: its relics stay where they are. */
   def reliquarySetAside: Table =
