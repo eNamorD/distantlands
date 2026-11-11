@@ -1,5 +1,4 @@
 denizen.reliquary-raid
-denizen.the-gathering
 edifice.e04.intact
 edifice.e04.ruined
 edifice.e05.intact

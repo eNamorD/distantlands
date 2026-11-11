@@ -1,8 +1,7 @@
 package distantlands.gameplay.powers.campaign
 
-import distantlands.catalog.holding.TheGatheringCard
 import distantlands.gameplay.VowOfKinshipCard
-import distantlands.gameplay.powers.whenplayed.SearchPartyCard
+import distantlands.gameplay.powers.whenplayed.{SearchPartyCard, TheGatheringCard}
 import distantlands.gameplay.PledgeToDiscordCard
 import distantlands.gameplay.CampaignFixture._
 import distantlands.gameplay.actions.campaign.CampaignIds
