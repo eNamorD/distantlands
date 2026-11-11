@@ -73,5 +73,5 @@ unimplemented Rest handler is ignored, not blocking, and Begin Rest records
 nothing about it. Mechanics are never inferred from
 rules text or handler-name fragments. Banner faces and Foundations are rule
 sources in `RuleSourceIndex` like any card. The Grand Council and Festival
-banner faces and an altered Foundation have no implemented power, so their
+banner faces and the Foundation faces have no implemented power, so their
 handlers are ignored and recorded the same way at Rest start.

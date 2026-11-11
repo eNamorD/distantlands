@@ -57,7 +57,8 @@ is recorded core operations, so replay applies them without recalculating.
 
 Altered Foundations, Empire-only Vision rules, and the alternate banner faces
 (Grand Council, Festival) have no behaviour. `RuleSourceIndex` lists the
-handler ids of those faces and of an altered Foundation. An applicable handler
+handler ids of those faces and of each Foundation's face in use
+(`catalog.FoundationCards`). An applicable handler
 the engine does not support is ignored, not blocking, and nothing records
 it.
 

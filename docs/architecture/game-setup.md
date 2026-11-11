@@ -46,12 +46,17 @@ Reliquary stay as in the baseline until the Stars task extracts them.
 The completed aggregate includes site resources and bandits, facedown site
 relics, ruined Homeland edifices, regional discards, player advisers, World and
 relic decks, starting Exile boards and Supply, banners, tracks, the Oathkeeper
-goal, favor banks, and six unaltered Foundations.
+goal, favor banks, and the Chronicle's six Foundation faces
+(`StartingFoundations`; a number the Chronicle does not list lies normal).
 
 The scope follows Combined Rulebook pp. 6-7 and the New Foundations first-game
 clarification on p. 8. It excludes Legacy selection/effects,
 Chancellor/Citizen/Imperial setup, restoring the rest of a stored campaign
-(roles, legacies, the Empire's sites), and altered Foundations.
+(roles, legacies, the Empire's sites), and the altered Foundation faces no
+slice of the
+[Foundations design](../superpowers/specs/2026-11-11-foundations-design.md)
+has brought in yet, which game start refuses by name. Foundation III is
+accepted on either face and does nothing until Legacies.
 
 ## Application and transport
 
