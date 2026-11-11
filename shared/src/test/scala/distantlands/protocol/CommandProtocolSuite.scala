@@ -25,7 +25,8 @@ class CommandProtocolSuite extends munit.FunSuite:
     ResolveWalker("challenge.amount", DecisionAnswerWire.ChooseAmountWire(4)),
     ResolveWalker("negotiation.deal", DecisionAnswerWire.ProposeTermsWire(
       NegotiationTerms(Vector(NegotiationTransfer("blue", 2, Vector("r1"),
-        Vector(WorldCard("denizen", "d1")), Vector("site:dunes"))),
+        Vector(WorldCard("denizen", "d1")), Vector("site:dunes"),
+        secrets = 1)),
         Vector(NegotiationDisclosure("blue",
           NegotiationInformation.HeldRelic("red", "r2"))), Vector("blue"),
         Vector("I will not attack you."), Vector("I will not attack you.")))),
@@ -114,17 +115,17 @@ class CommandProtocolSuite extends munit.FunSuite:
       """"decisionId":"travel.destination","target":{"optionKind":"site"}}}"""
     assertEquals(rejected(ActorlessCommandCodec.decode(missing)).path,
       "$.intent.target[0].optionId")
-    val duplicate = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker","decisionId":"negotiation.deal","payload":{"kind":"propose-terms","terms":{"transfers":[{"recipientPlayerId":"p2","favor":1,"relicIds":[],"advisers":[],"siteIds":[]},{"recipientPlayerId":"p2","favor":2,"relicIds":[],"advisers":[],"siteIds":[]}],"disclosures":[]}}}}"""
+    val duplicate = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker","decisionId":"negotiation.deal","payload":{"kind":"propose-terms","terms":{"transfers":[{"recipientPlayerId":"p2","favor":1,"relicIds":[],"advisers":[],"siteIds":[],"secrets":0},{"recipientPlayerId":"p2","favor":2,"relicIds":[],"advisers":[],"siteIds":[],"secrets":0}],"disclosures":[]}}}}"""
     assertEquals(rejected(ActorlessCommandCodec.decode(duplicate)).path,
       "$.intent.payload.terms.transfers")
 
   test("a transfer row that names one adviser twice is refused"):
-    val repeated = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker","decisionId":"negotiation.deal","payload":{"kind":"propose-terms","terms":{"transfers":[{"recipientPlayerId":"p2","favor":0,"relicIds":[],"advisers":[{"kind":"denizen","id":"d1"},{"kind":"denizen","id":"d1"}],"siteIds":[]}],"disclosures":[],"citizenshipPlayerIds":[],"promises":[],"bindingPromises":[]}}}}"""
+    val repeated = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker","decisionId":"negotiation.deal","payload":{"kind":"propose-terms","terms":{"transfers":[{"recipientPlayerId":"p2","favor":0,"relicIds":[],"advisers":[{"kind":"denizen","id":"d1"},{"kind":"denizen","id":"d1"}],"siteIds":[],"secrets":0}],"disclosures":[],"citizenshipPlayerIds":[],"promises":[],"bindingPromises":[]}}}}"""
     assertEquals(rejected(ActorlessCommandCodec.decode(repeated)).path,
       "$.intent.payload.terms.transfers[0].advisers")
 
   test("a transfer row that names one site twice is refused"):
-    val repeated = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker","decisionId":"negotiation.deal","payload":{"kind":"propose-terms","terms":{"transfers":[{"recipientPlayerId":"p2","favor":0,"relicIds":[],"advisers":[],"siteIds":["site:dunes","site:dunes"]}],"disclosures":[],"citizenshipPlayerIds":[],"promises":[],"bindingPromises":[]}}}}"""
+    val repeated = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker","decisionId":"negotiation.deal","payload":{"kind":"propose-terms","terms":{"transfers":[{"recipientPlayerId":"p2","favor":0,"relicIds":[],"advisers":[],"siteIds":["site:dunes","site:dunes"],"secrets":0}],"disclosures":[],"citizenshipPlayerIds":[],"promises":[],"bindingPromises":[]}}}}"""
     assertEquals(rejected(ActorlessCommandCodec.decode(repeated)).path,
       "$.intent.payload.terms.transfers[0].siteIds")
 
@@ -133,6 +134,16 @@ class CommandProtocolSuite extends munit.FunSuite:
     assert(rejected(ActorlessCommandCodec.decode(missing)).path
       .startsWith("$.intent.payload.terms.transfers[0]"),
       rejected(ActorlessCommandCodec.decode(missing)))
+
+  test("a transfer row with no secrets key is refused"):
+    val missing = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker","decisionId":"negotiation.deal","payload":{"kind":"propose-terms","terms":{"transfers":[{"recipientPlayerId":"p2","favor":1,"relicIds":[],"advisers":[],"siteIds":[]}],"disclosures":[],"citizenshipPlayerIds":[],"promises":[],"bindingPromises":[]}}}}"""
+    assertEquals(rejected(ActorlessCommandCodec.decode(missing)).path,
+      "$.intent.payload.terms.transfers[0].secrets")
+
+  test("a transfer row with negative secrets is refused"):
+    val negative = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker","decisionId":"negotiation.deal","payload":{"kind":"propose-terms","terms":{"transfers":[{"recipientPlayerId":"p2","favor":0,"relicIds":[],"advisers":[],"siteIds":[],"secrets":-1}],"disclosures":[],"citizenshipPlayerIds":[],"promises":[],"bindingPromises":[]}}}}"""
+    assertEquals(rejected(ActorlessCommandCodec.decode(negative)).path,
+      "$.intent.payload.terms.transfers[0].secrets")
 
   test("an unknown decision-payload kind decodes to a typed error, not an exception"):
     val json = """{"expectedNextSequence":0,"intent":{"type":"resolveWalker",""" +

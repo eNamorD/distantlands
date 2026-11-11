@@ -9,7 +9,8 @@ private[protocol] object CommandNestedCodecs:
       "recipientPlayerId" -> row.recipientPlayerId, "favor" -> row.favor,
       "relicIds" -> ujson.Arr.from(row.relicIds.map(ujson.Str(_))),
       "advisers" -> ujson.Arr.from(row.advisers.map(world)),
-      "siteIds" -> ujson.Arr.from(row.siteIds.map(ujson.Str(_)))) }),
+      "siteIds" -> ujson.Arr.from(row.siteIds.map(ujson.Str(_))),
+      "secrets" -> row.secrets) }),
     "disclosures" -> ujson.Arr.from(value.disclosures.map { row => ujson.Obj(
       "recipientPlayerId" -> row.recipientPlayerId,
       "information" -> encodeInformation(row.information)) }),
@@ -168,9 +169,10 @@ private[protocol] object CommandNestedCodecs:
     case NegotiationInformation.SiteRelic(site, relic) => ujson.Obj("kind" -> "site-relic", "siteId" -> site, "relicId" -> relic)
   private def decodeTransfer(value: ujson.Value, path: String) = obj(value, path).flatMap { row => for
     _ <- exact(row, Set("recipientPlayerId", "favor", "relicIds", "advisers",
-      "siteIds"), path)
+      "siteIds", "secrets"), path)
     recipient <- string(row, "recipientPlayerId", path)
     favor <- field(row, "favor", path).flatMap(integer(_, s"$path.favor"))
+    secrets <- field(row, "secrets", path).flatMap(integer(_, s"$path.secrets"))
     relics <- field(row, "relicIds", path).flatMap(strings(_, s"$path.relicIds"))
     _ <- noDuplicates(relics, s"$path.relicIds")
     adviserValues <- field(row, "advisers", path).flatMap(array(_, s"$path.advisers"))
@@ -178,7 +180,7 @@ private[protocol] object CommandNestedCodecs:
     _ <- noDuplicates(advisers.map(card => s"${card.kind}/${card.id}"), s"$path.advisers")
     sites <- field(row, "siteIds", path).flatMap(strings(_, s"$path.siteIds"))
     _ <- noDuplicates(sites, s"$path.siteIds")
-  yield NegotiationTransfer(recipient, favor, relics, advisers, sites) }
+  yield NegotiationTransfer(recipient, favor, relics, advisers, sites, secrets) }
   private def decodeDisclosure(value: ujson.Value, path: String) = obj(value, path).flatMap { row => for
     _ <- exact(row, Set("recipientPlayerId", "information"), path)
     recipient <- string(row, "recipientPlayerId", path)

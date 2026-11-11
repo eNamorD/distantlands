@@ -5,9 +5,13 @@ final case class NegotiationTransfer(
     favor: Int,
     relics: Vector[RelicId],
     advisers: Vector[WorldCardId] = Vector.empty,
-    sites: Vector[SiteId] = Vector.empty
+    sites: Vector[SiteId] = Vector.empty,
+    /** Faceup secrets from the author's board (catalog batch 12, rulings 6
+      * and 31). Only a deal whose rules open them takes any. */
+    secrets: Int = 0
 ):
   require(favor >= 0, "Negotiation favor must be non-negative")
+  require(secrets >= 0, "Negotiation secrets must be non-negative")
   require(relics.distinct.size == relics.size,
     "Negotiation relic transfers must be distinct")
   require(advisers.distinct.size == advisers.size,

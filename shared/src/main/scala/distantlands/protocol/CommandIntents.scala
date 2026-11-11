@@ -54,7 +54,8 @@ final case class NegotiationTerms(
 final case class NegotiationTransfer(
     recipientPlayerId: String, favor: Int, relicIds: Vector[String],
     advisers: Vector[WorldCard] = Vector.empty,
-    siteIds: Vector[String] = Vector.empty)
+    siteIds: Vector[String] = Vector.empty,
+    secrets: Int = 0)
 final case class NegotiationDisclosure(
     recipientPlayerId: String, information: NegotiationInformation)
 

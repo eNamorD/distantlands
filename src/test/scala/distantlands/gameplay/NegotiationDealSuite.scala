@@ -74,6 +74,10 @@ class NegotiationDealSuite extends munit.FunSuite:
         Vector(SiteId("site:dunes"))))))))
     assert(deal.hasSubstance)
 
+  test("a transfer row refuses a negative number of secrets"):
+    intercept[IllegalArgumentException](NegotiationTransfer(p2, 0,
+      Vector.empty, secrets = -1))
+
   test("a promise alone is substance, and editing it clears every acceptance"):
     val promise = NegotiationTerms(promises = Vector("I will not attack you."))
     val agreed = fold(said(p1, ProposeTerms(promise)), said(p2, AcceptDeal),

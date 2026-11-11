@@ -60,7 +60,8 @@ final class SameOriginJsonTransport(timeoutMillis: Int = 10000)
 final case class NegotiationTransferInput(recipientPlayerId: String,
     favor: Int, relicIds: Vector[String],
     advisers: Vector[distantlands.protocol.WorldCard] = Vector.empty,
-    siteIds: Vector[String] = Vector.empty)
+    siteIds: Vector[String] = Vector.empty,
+    secrets: Int = 0)
 final case class NegotiationDisclosureInput(recipientPlayerId: String,
     kind: String, ownerPlayerId: Option[String] = None,
     siteId: Option[String] = None, cardKind: Option[String] = None,
