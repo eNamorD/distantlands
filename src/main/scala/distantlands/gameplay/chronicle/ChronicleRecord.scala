@@ -5,9 +5,10 @@ import distantlands.gameplay.setup.ChronicleAccounting
 import distantlands.model._
 
 /** The Chronicle the Chronicle Phase journals (Chronicle steps design,
-  * "Exit and extraction"). Roles, era scores, the Oathkeeper goal and
-  * starting advisers come from the live campaign; sites, decks, the
-  * Dispossessed and the Reliquary from the table (`ChronicleExtraction`). */
+  * "Exit and extraction"). Roles, era scores, the Oathkeeper goal, the
+  * foundation faces and starting advisers come from the live campaign;
+  * sites, decks, the Dispossessed and the Reliquary from the table
+  * (`ChronicleExtraction`). */
 object ChronicleRecord:
   /** The evolved Chronicle, when it passes game start's card accounting
     * and keeps every baseline site and relic. */
@@ -38,4 +39,5 @@ object ChronicleRecord:
       .map(live => LineageState(live.id, seatedBy.get(live.id), live.role,
         Vector.empty, live.startingAdvisers, live.startingRelics))
     campaign.baseline.copy(era = campaign.era,
-      oathkeeperGoal = campaign.oathkeeperGoal, lineages = kept ++ added)
+      oathkeeperGoal = campaign.oathkeeperGoal,
+      foundations = campaign.foundations, lineages = kept ++ added)

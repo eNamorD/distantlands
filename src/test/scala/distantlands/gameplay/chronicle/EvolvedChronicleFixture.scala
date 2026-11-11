@@ -20,16 +20,27 @@ object EvolvedChronicleFixture:
     .oathkeeper(Some(p1), TitleSide.Usurper).state
 
   /** The Rest that ends the game, up to Start Chronicle. */
-  lazy val won: OathTransition = accepted(rules.next(
-    OathTransition(usurperWakes, Vector.empty), PhaseTransitionRef.FinishRest))
+  lazy val won: OathTransition = gameWonFrom(usurperWakes)
 
   /** Start Chronicle and every task, answered. */
-  lazy val done: OathTransition =
+  lazy val done: OathTransition = chronicleAnsweredAfter(won)
+
+  /** The Chronicle the walk journals. */
+  lazy val record: Chronicle = chronicleJournaledBy(done)
+
+  /** The Rest that ends the game `wakes` begins, up to Start Chronicle.
+    * p1 must wake as the Usurper there, as in [[usurperWakes]]. */
+  def gameWonFrom(wakes: OathState): OathTransition = accepted(rules.next(
+    OathTransition(wakes, Vector.empty), PhaseTransitionRef.FinishRest))
+
+  /** Start Chronicle and every task of the game `won` ended, answered. */
+  def chronicleAnsweredAfter(won: OathTransition): OathTransition =
     ChronicleWalk.answeringEverything(rules, accepted(rules.resolveWalker(
       won.state, p1, ChronicleBeginProcedure.decisionId,
       ChooseOneAnswer(ChronicleBeginProcedure.start))))
 
-  /** The Chronicle the walk journals. */
-  lazy val record: Chronicle = RecordedOps.all(done.events).collect {
-    case ChronicleUpdated(chronicle) => chronicle
-  }.last
+  /** The Chronicle the answered walk `done` journals. */
+  def chronicleJournaledBy(done: OathTransition): Chronicle =
+    RecordedOps.all(done.events).collect {
+      case ChronicleUpdated(chronicle) => chronicle
+    }.last
