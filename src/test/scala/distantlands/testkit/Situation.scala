@@ -94,6 +94,15 @@ final case class Situation(state: OathState, events: Vector[OathEvent],
       : Situation =
     driver.run(this, steps.map(Step.of), settle = false)
 
+  /** Issues each step and answers every park it causes until the walk
+    * parks at `decisionId`, which is left for the test: a co-owned
+    * decision the test answers as another owner, say. A walk that never
+    * parks there settles as `after` would. */
+  def parkedAt(decisionId: String)(steps: (GameCommand | Step)*)(
+      using munit.Location): Situation =
+    driver.run(this, steps.map(Step.of), settle = true,
+      stopAt = Some(decisionId))
+
   /** Continue under `overrides` layered over [[Situation.defaultAnswer]],
     * replacing any overrides given earlier. */
   def withAnswers(overrides: Answers): Situation =
