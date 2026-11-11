@@ -76,10 +76,9 @@ Left behind by the
 
 [Design](superpowers/specs/2026-11-11-foundations-design.md), seven slices.
 
-- [ ] **Foundations.** Game start uses the Chronicle's stored faces, and
-  every face but Foundation III's works: Movers and Shakers, Teeming World,
-  Imperial Maps' choice of Recent or Forgotten, Wide Horizons with its
-  Explore action and Setup With No Empire, and the Beacon's Shape Foundation.
+- [ ] **Foundations.** Every face but Foundation III's works: Imperial
+  Maps' choice of Recent or Forgotten, Wide Horizons with its Explore action
+  and Setup With No Empire, and the Beacon's Shape Foundation.
 - [ ] **The Grand Council and Festival banner faces.** Altered Foundations V
   and VI turn the banners to these faces. Their ids are in
   `RuleSourceIndex`, and the faces have no behaviour.
