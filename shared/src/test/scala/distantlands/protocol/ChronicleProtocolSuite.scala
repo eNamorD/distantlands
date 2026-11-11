@@ -31,6 +31,23 @@ class ChronicleProtocolSuite extends munit.FunSuite:
     raw("summary")("scores")(0)("role") = "usurper"
     assert(ChronicleEntryCodec.decodeValue(raw, "$").isLeft)
 
+  test("a summary's foundations round trip, and an entry saved before " +
+      "they were kept has none"):
+    val listed = entry.copy(summary = entry.summary.copy(foundations = Vector(
+      ChronicleFoundation(1, "normal", "Imperial Maps"),
+      ChronicleFoundation(3, "altered", "Public Ambitions"))))
+    assertEquals(roundTripped(listed), Right(listed))
+    val saved = ChronicleEntryCodec.encodeValue(listed)
+    saved("summary").obj.remove("foundations")
+    assertEquals(ChronicleEntryCodec.decodeValue(saved, "$"), Right(entry))
+
+  test("a summary's foundation refuses an unknown face"):
+    val raw = ChronicleEntryCodec.encodeValue(entry.copy(summary =
+      entry.summary.copy(foundations = Vector(
+        ChronicleFoundation(1, "normal", "Imperial Maps")))))
+    raw("summary")("foundations")(0)("face") = "ruined"
+    assert(ChronicleEntryCodec.decodeValue(raw, "$").isLeft)
+
   test("an entry refuses an unknown field"):
     val raw = ChronicleEntryCodec.encodeValue(entry)
     raw("extra") = 1

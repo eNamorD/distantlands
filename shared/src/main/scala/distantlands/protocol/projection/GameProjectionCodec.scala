@@ -20,7 +20,7 @@ object GameProjectionCodec:
     "walkerDecision", "walkerWaiting", "viewerPlayerId",
     "supplyMaximum", "supplyBands", "undo", "redo", "logRevision",
     "consentWaiting", "consentPrompt", "consentPreferences", "chronicle",
-    "planAidPrompt")
+    "planAidPrompt", "foundations")
 
   def encode(value: GameProjection): String = ujson.write(encodeValue(value))
   def decode(json: String): Either[ProtocolDecodeFailure, GameProjection] =
@@ -76,7 +76,10 @@ object GameProjectionCodec:
       ConsentProjectionCodec.encodePrompt),
     "consentPreferences" -> encoded(value.consentPreferences)(
       ConsentProjectionCodec.encodePreferences),
-    "chronicle" -> option(value.chronicle)(encodeChronicle))
+    "chronicle" -> option(value.chronicle)(encodeChronicle),
+    "foundations" -> encoded(value.foundations)(f => ujson.Obj(
+      "number" -> f.number, "face" -> f.face, "name" -> f.name,
+      "rulesText" -> f.rulesText)))
     value.viewerPlayerId.foreach(player => result("viewerPlayerId") = ujson.Str(player))
     value.planAidPrompt.foreach(prompt => result("planAidPrompt") =
       PlanAidProjectionCodec.encodePrompt(prompt))
@@ -142,6 +145,9 @@ object GameProjectionCodec:
     chronicle <- optionalAbsent(value, "chronicle", path)(decodeChronicle)
     planAidPrompt <- optionalAbsent(value, "planAidPrompt", path)(
       PlanAidProjectionCodec.decodePrompt)
+    foundationRaws <- array(value, "foundations", path)
+    foundations <- traverse(foundationRaws, s"$path.foundations")(
+      decodeFoundation)
   yield GameProjection(game, sequence, phase, active, players, world, pawns,
     ready, completed, resources, siteResources,
     deckCount, deckTop, boards, oathkeeper, banners,
@@ -149,7 +155,16 @@ object GameProjectionCodec:
     walkerDecision, walkerWaiting, viewer,
     supplyMaximum, bands, undo, redo, logRevision,
     consentWaiting, consentPrompt, consentPreferences, chronicle,
-    planAidPrompt)
+    planAidPrompt, foundations)
+
+  private def decodeFoundation(raw: ujson.Value, path: String)
+      : Result[FoundationProjection] = for
+    row <- obj(raw, path)
+    _ <- exact(row, Set("number", "face", "name", "rulesText"), path)
+    number <- int(row, "number", path); face <- string(row, "face", path)
+    name <- string(row, "name", path)
+    rulesText <- string(row, "rulesText", path)
+  yield FoundationProjection(number, face, name, rulesText)
 
   private def encodeChronicle(value: ChronicleProjection): ujson.Value =
     val result = ujson.Obj("name" -> value.name,

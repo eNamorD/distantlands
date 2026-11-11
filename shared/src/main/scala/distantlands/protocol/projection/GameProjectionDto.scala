@@ -34,6 +34,8 @@ final case class GameProjection(
     ,consentPreferences: Vector[ConsentPreferencesProjection] = Vector.empty
     ,chronicle: Option[ChronicleProjection] = None
     ,planAidPrompt: Option[PlanAidPromptProjection] = None
+    /** The six foundation setup cards, I to VI; empty before a game. */
+    ,foundations: Vector[FoundationProjection] = Vector.empty
 )
 
 /** Every seat's view of the game's Chronicle (Chronicle browsing design,

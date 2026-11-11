@@ -3,6 +3,7 @@ package distantlands.application.chronicle
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.MessageDigest
 
+import distantlands.application.FoundationPresentation
 import distantlands.model.{Chronicle, Role}
 import distantlands.protocol.{ChronicleEntry, ChronicleScore, ChronicleSummary}
 
@@ -32,4 +33,5 @@ object ChronicleEntries:
           lineage.role match
             case Role.Chancellor => Some("chancellor")
             case Role.Citizen => Some("citizen")
-            case Role.Exile => None)))
+            case Role.Exile => None)),
+      FoundationPresentation.ofChronicle(chronicle))

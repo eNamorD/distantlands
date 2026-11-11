@@ -121,5 +121,11 @@ final case class CurrentSiteResourcesProjection(
     secrets: Int
 )
 final case class FavorBankProjection(suit: String, count: Int)
+/** One foundation setup card as the table shows it (Foundations design,
+  * slice 1): its number, 1 to 6; the face in use, `normal` or `altered`;
+  * that face's printed name; and its rules text in the catalog's markup,
+  * a blank line between paragraphs. */
+final case class FoundationProjection(number: Int, face: String, name: String,
+    rulesText: String)
 final case class GameTracksProjection(round: Int, visionsDrawn: Int,
     usurperLimited: Boolean, limiterRound: Int, firstPlayerId: String)

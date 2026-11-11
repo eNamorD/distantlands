@@ -11,12 +11,22 @@ final case class ChronicleScore(lineage: String, score: Int,
 object ChronicleScore:
   val roles: Set[String] = Set("chancellor", "citizen")
 
+/** One foundation setup card as a Chronicle lists it (Foundations design,
+  * slice 1): its number, 1 to 6; the face the next game starts on, `normal`
+  * or `altered`; and that face's printed name. */
+final case class ChronicleFoundation(number: Int, face: String, name: String)
+
+object ChronicleFoundation:
+  val faces: Set[String] = Set("normal", "altered")
+
 /** What a browser lists for a Chronicle without decoding it (Chronicle
   * browsing design, "Summary"). `game` is the next game's number; it is
   * absent when the Chronicle has lineages but no scorepad, as a TTS import
-  * does. */
+  * does. `foundations` is the six setup cards, I to VI; an entry saved
+  * before they were kept has none. */
 final case class ChronicleSummary(name: String, game: Option[Int],
-    eraTarget: Int, scores: Vector[ChronicleScore])
+    eraTarget: Int, scores: Vector[ChronicleScore],
+    foundations: Vector[ChronicleFoundation] = Vector.empty)
 
 /** A Chronicle as a browser keeps it: canonical JSON, the JSON's SHA-256
   * digest, and its summary. */
@@ -33,7 +43,10 @@ object ChronicleEntryCodec:
         val row = ujson.Obj("lineage" -> score.lineage, "score" -> score.score)
         score.role.foreach(role => row("role") = role)
         row
-      })
+      },
+      "foundations" -> encoded(entry.summary.foundations)(foundation =>
+        ujson.Obj("number" -> foundation.number, "face" -> foundation.face,
+          "name" -> foundation.name)))
     entry.summary.game.foreach(game => summary("game") = game)
     ujson.Obj("json" -> entry.json, "digest" -> entry.digest,
       "summary" -> summary)
@@ -52,8 +65,8 @@ object ChronicleEntryCodec:
       digest <- string(value, "digest", path)
       summaryRaw <- field(value, "summary", path)
       summary <- obj(summaryRaw, summaryPath)
-      _ <- exact(summary, Set("name", "game", "eraTarget", "scores"),
-        summaryPath)
+      _ <- exact(summary, Set("name", "game", "eraTarget", "scores",
+        "foundations"), summaryPath)
       name <- string(summary, "name", summaryPath)
       game <- optionalAbsent(summary, "game", summaryPath)(int)
       target <- int(summary, "eraTarget", summaryPath)
@@ -69,8 +82,23 @@ object ChronicleEntryCodec:
               ProtocolDecodeFailure.InvalidValue(at, "unknown role")))
         yield ChronicleScore(lineage, score, role)
       }
+      // An entry a browser saved before foundations were kept has none.
+      foundationRaws <- default(summary, "foundations", summaryPath,
+        Vector.empty[ujson.Value])(array)
+      foundations <- traverse(foundationRaws, s"$summaryPath.foundations") {
+        (raw, child) =>
+          for
+            row <- obj(raw, child)
+            _ <- exact(row, Set("number", "face", "name"), child)
+            number <- int(row, "number", child)
+            face <- string(row, "face", child).filterOrElse(
+              ChronicleFoundation.faces, ProtocolDecodeFailure.InvalidValue(
+                s"$child.face", "unknown face"))
+            name <- string(row, "name", child)
+          yield ChronicleFoundation(number, face, name)
+      }
     yield ChronicleEntry(json, digest, ChronicleSummary(name, game, target,
-      scores))
+      scores, foundations))
 
 /** `POST /chronicles/convert`'s body: a saved Chronicle's JSON, or a TTS
   * string with the name it is imported under. */
