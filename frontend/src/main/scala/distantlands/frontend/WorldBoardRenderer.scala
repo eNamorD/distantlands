@@ -257,6 +257,9 @@ private[frontend] object WorldBoardRenderer:
           SitePowerLinks.of(value, submit)))
         sites.appendChild(control)
       }
+      // The slots no site fills follow the sites, each a frame the size of
+      // a site, so a region keeps its height whatever it holds.
+      (1 to region.emptySlots).foreach(_ => sites.appendChild(emptySlot(name)))
       section.appendChild(sites)
       // The world deck shares the Cradle's foot with the round tracker, the
       // deck as tall as the tracker's wheel.
@@ -277,6 +280,14 @@ private[frontend] object WorldBoardRenderer:
     layout.appendChild(sharedBank(value, options))
     panel.appendChild(layout)
     panel
+
+  /** A site slot of the region `regionName` that holds no site: a frame
+    * with nothing in it, and nothing to choose or inspect. */
+  private def emptySlot(regionName: String): dom.Element =
+    val slot = element("div", "site-slot-empty")
+    slot.setAttribute("role", "img")
+    slot.setAttribute("aria-label", s"Empty site slot, $regionName")
+    slot
 
   private[frontend] final case class RoundSegment(path: String, labelX: Double,
       labelY: Double, markerX: Double, markerY: Double)

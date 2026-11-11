@@ -67,14 +67,10 @@ private[application] final class GamePresentationProjector(
       case _ => "exile"
 
   def readyWorld(ready: ReadyGame, viewer: Option[PlayerId]) =
-    val current = ready.game.current
-    Vector(
-      region("cradle", Region.Cradle, current.map.cradle, ready, viewer),
-      region("provinces", Region.Provinces, current.map.provinces, ready, viewer),
-      region("hinterland", Region.Hinterland, current.map.hinterland, ready, viewer))
+    Region.all.map(region(_, ready, viewer))
 
-  private def region(id: String, where: Region, sites: Vector[SiteId],
-      ready: ReadyGame, viewer: Option[PlayerId]): SetupRegionProjection =
+  private def region(where: Region, ready: ReadyGame,
+      viewer: Option[PlayerId]): SetupRegionProjection =
     val current = ready.game.current
     // The pile is stored top last; the client reads it top first. A card is
     // a face only to a viewer whose knowledge records it: one who knew it
@@ -85,9 +81,10 @@ private[application] final class GamePresentationProjector(
       then cardDetails(card, None, hidden = false)
       else hiddenCard(cardKind(card))
     }
-    SetupRegionProjection(id, sites.map(site =>
+    SetupRegionProjection(where.key, current.map.sitesIn(where).map(site =>
       siteProjection(site, current.map.sites.get(site), ready, viewer)),
-      cards.size, cards.headOption.map(_.cardKind), cards)
+      cards.size, cards.headOption.map(_.cardKind), cards,
+      current.map.emptySlots(where))
 
   private def siteProjection(siteId: SiteId, state: Option[SiteState],
       ready: ReadyGame, viewer: Option[PlayerId]): SetupSiteProjection =

@@ -510,7 +510,9 @@ narrows its cards to 7.3rem so the forces line fits the fixed box.
 On the map, three regions sit in a 3-column grid with 12px gaps; each region
 lists its sites in one column with 9px gaps. Every site is the same height
 (`--site-h: 21.5rem`) whatever it holds, so a pawn arriving or a preview
-opening never shifts the board. The card row inside a site is three cards
+opening never shifts the board. An empty site slot is a frame of that
+height, so a region with fewer sites than slots is as tall as a full one.
+The card row inside a site is three cards
 wide: `--card-w: min(8.6rem, (100% - 2 gaps) / 3)`.
 
 The Players pane is a horizontal strip of player boards, each `flex: 1 0
@@ -771,7 +773,10 @@ clipped lines of labels with hover notes, on the board at every zoom and
 one line on the compact map. A site offered as a board option gets a brass
 border and inset ring; hover brightens the border to
 Bright Cream with the target halo; selected turns Selection blue on Selection
-Fill.
+Fill. A slot of a region that holds no site is an empty frame after the
+region's sites (`.site-slot-empty`): the site's height and radius, a 1px
+dashed Line-mid border, no fill and nothing inside. It is not an option and
+answers nothing; its label names it for a screen reader.
 
 ### Panes
 Four `section`s with a header strip (Pane Header fill, Line-pane bottom
