@@ -306,3 +306,9 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
       Vector("I will not attack you this round."))
     assert(seen.privateDeal)
     assert(seen.editing.nonEmpty)
+
+  test("the Negotiate action's editor offers no secrets"):
+    val editing = deal(view(parkedDeal(gathered.secrets(p1, faceUp = 2),
+      Vector(p2)), p1)).editing.getOrElse(fail("p1 edits the deal"))
+    assertEquals(editing.editableSecrets, 0)
+    assertEquals(editing.secretRecipients, Vector.empty[String])

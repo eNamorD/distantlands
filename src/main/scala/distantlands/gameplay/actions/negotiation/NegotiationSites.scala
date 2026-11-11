@@ -91,14 +91,16 @@ object NegotiationSites:
       received > 0 && board(ready, player) + returned < received
     }
 
-  /** The question that asks `site`'s new ruler how many warbands to
-    * place. Slice 6 prefixes it with its deal's prefix. */
-  def warbandsDecisionId(site: SiteId): String =
-    s"deed-writer.warbands.${site.value}"
+  /** The question that asks `site`'s new ruler how many warbands to place,
+    * under the deal walk's `prefix`. */
+  def warbandsDecisionId(prefix: String, site: SiteId): String =
+    s"$prefix.warbands.${site.value}"
 
-  /** How many warbands the new ruler placed at `site`, once answered. */
-  def placed(answered: Vector[Answered], site: SiteId): Option[Int] =
-    val id = warbandsDecisionId(site)
+  /** How many warbands the new ruler placed at `site` in the deal under
+    * `prefix`, once answered. */
+  def placed(answered: Vector[Answered], prefix: String,
+      site: SiteId): Option[Int] =
+    val id = warbandsDecisionId(prefix, site)
     answered.collectFirst {
       case Answered(answeredId, ChooseAmountAnswer(count), _)
           if answeredId == id => count
@@ -115,9 +117,9 @@ object NegotiationSites:
     val own = moves(deal).filter(_.recipient == move.recipient)
     val (earlier, rest) = own.span(_ != move)
     val afterReturns = board(ready, move.recipient) +
-      own.flatMap(m => placed(answered, m.site)).sum
+      own.flatMap(m => placed(answered, deal.prefix, m.site)).sum
     math.max(1, afterReturns - earlier.flatMap(m =>
-      placed(answered, m.site)).sum - (rest.size - 1))
+      placed(answered, deal.prefix, m.site)).sum - (rest.size - 1))
 
   /** `count` of the recipient's own warbands, from their board to the
     * site (ruling 20). */

@@ -16,7 +16,8 @@ private[serialization] object NegotiationTermsCodec:
       "relicIds" -> ujson.Arr.from(transfer.relics.map(r => ujson.Str(r.value))),
       "advisers" -> ujson.Arr.from(transfer.advisers.map(encodeCardId)),
       "siteIds" -> ujson.Arr.from(transfer.sites.map(site =>
-        ujson.Str(site.value)))))),
+        ujson.Str(site.value))),
+      "secrets" -> transfer.secrets))),
     "disclosures" -> ujson.Arr.from(terms.disclosures.map { disclosure =>
       val information = disclosure.information match {
         case NegotiationDisclosureRef.Adviser(owner, card) => ujson.Obj(
@@ -42,14 +43,19 @@ private[serialization] object NegotiationTermsCodec:
     for
       transfers <- traverse(value("transfers").arr.toVector) { row =>
         val raw = row("favor").num
+        val rawSecrets = row("secrets").num
         for
           favor <- Either.cond(raw.isValidInt, raw.toInt, InvalidValue(
             s"$path.transfers.favor", s"favor '$raw' is not an integer"))
+          secrets <- Either.cond(rawSecrets.isValidInt, rawSecrets.toInt,
+            InvalidValue(s"$path.transfers.secrets",
+              s"secrets '$rawSecrets' is not an integer"))
           advisers <- traverse(row("advisers").arr.toVector)(card =>
             decodeWorldCardId(card, s"$path.transfers.advisers"))
         yield NegotiationTransfer(PlayerId(row("recipientPlayerId").str),
           favor, row("relicIds").arr.toVector.map(v => RelicId(v.str)),
-          advisers, row("siteIds").arr.toVector.map(v => SiteId(v.str)))
+          advisers, row("siteIds").arr.toVector.map(v => SiteId(v.str)),
+          secrets)
       }
       disclosures <- traverse(value("disclosures").arr.toVector) { row =>
         val info = row("information")

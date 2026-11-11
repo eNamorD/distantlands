@@ -121,7 +121,8 @@ object NegotiationLogScripts:
       .parkedAfter(deal(actor, AcceptDeal))
       .parkedAfter(deal(partner, AcceptDeal))
       .after(Commands.resolveWalker(actor, TreeDecision(
-        NegotiationSites.warbandsDecisionId(peaks), ChooseAmountAnswer(2))))
+        NegotiationSites.warbandsDecisionId(NegotiationDeal.NegotiationPrefix,
+          peaks), ChooseAmountAnswer(2))))
     Script("negotiation-site-given", service, actor)
 
   /** p1 uses Whispering Stone to negotiate in private with p3, whose pawn

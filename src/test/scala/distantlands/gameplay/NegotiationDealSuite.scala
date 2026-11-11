@@ -40,7 +40,8 @@ class NegotiationDealSuite extends munit.FunSuite:
     Answered(dealId, answer, by)
   private val gift = NegotiationTerms(Vector(NegotiationTransfer(p2, 2, Vector.empty)))
   private def fold(answers: Answered*) =
-    NegotiationDeal.fold(Vector(p1, p2), answers.toVector)
+    NegotiationDeal.fold(NegotiationDeal.NegotiationPrefix,
+      Vector(p1, p2), answers.toVector)
 
   test("a fresh deal is empty, open and not agreed"):
     val deal = fold()
@@ -72,6 +73,15 @@ class NegotiationDealSuite extends munit.FunSuite:
       NegotiationTransfer(p2, 0, Vector.empty, Vector.empty,
         Vector(SiteId("site:dunes"))))))))
     assert(deal.hasSubstance)
+
+  test("a secret alone is substance"):
+    val deal = fold(said(p1, ProposeTerms(NegotiationTerms(Vector(
+      NegotiationTransfer(p2, 0, Vector.empty, secrets = 1))))))
+    assert(deal.hasSubstance)
+
+  test("a transfer row refuses a negative number of secrets"):
+    intercept[IllegalArgumentException](NegotiationTransfer(p2, 0,
+      Vector.empty, secrets = -1))
 
   test("a promise alone is substance, and editing it clears every acceptance"):
     val promise = NegotiationTerms(promises = Vector("I will not attack you."))

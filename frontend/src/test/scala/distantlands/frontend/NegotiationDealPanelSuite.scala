@@ -407,6 +407,35 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
     assertEquals(sent.flatMap(_.transfers).flatMap(_.advisers),
       Vector(distantlands.protocol.WorldCard("denizen", "d7")))
 
+  test("secrets are offered only to the recipients the rules allow, and " +
+      "Save sends the amount"):
+    val deal = threeWay(NegotiationEditingState(3, Vector.empty,
+      Vector.empty, Vector.empty, canAccept = false, editableSecrets = 2,
+      secretRecipients = Vector("blue")))
+    val ui = new RecordingControls()
+    val panel = render(owner(deal), ui)
+    assert(Dom.all(panel, "[aria-label='Secrets offered to yellow']")
+      .isEmpty)
+    val secrets = box(panel, "Secrets offered to blue")
+    assertEquals(secrets.max, "2")
+    secrets.value = "2"
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(
+          terms)) => terms }
+    assertEquals(sent.flatMap(_.transfers).map(t =>
+      t.recipientPlayerId -> t.secrets).toMap, Map("blue" -> 2,
+      "yellow" -> 0))
+
+  test("a transfer names the secrets it gives"):
+    val base = dealWhereBlueHasAccepted()
+    val panel = render(spectator(base.copy(transfers = Vector(
+      NegotiationTransferState(authorPlayerId = "blue",
+        recipientPlayerId = "red", favor = 1, relicCount = 0,
+        relics = Vector.empty, secrets = 2)))), new RecordingControls())
+    assertEquals(Dom.one(panel, ".negotiation-transfer").textContent,
+      "blue gives red: 1 favor, 2 secrets")
+
   test("a transfer names the advisers the viewer can see and counts the rest"):
     val base = dealWhereBlueHasAccepted()
     val panel = render(spectator(base.copy(transfers = Vector(

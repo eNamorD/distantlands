@@ -45,8 +45,8 @@ private[frontend] object NegotiationDealPanel:
         s"${if promise.binding then "makes a binding promise" else "promises"}" +
         s": “${promise.text}”")))
 
-  /** What the author gives, named where the viewer can see it: favor, each
-    * relic and adviser the projection carries, a count of the facedown rest
+  /** What the author gives, named where the viewer can see it: favor,
+    * secrets, each relic and adviser the projection carries, a count of the facedown rest
     * of each, and the sites given.
     */
   private def transferLine(t: NegotiationTransferState): dom.Element =
@@ -54,6 +54,8 @@ private[frontend] object NegotiationDealPanel:
     val hiddenAdvisers = t.adviserCount - t.advisers.size
     val parts: Vector[dom.Node] =
       Option.when(t.favor > 0)(textNode(s"${t.favor} favor")).toVector ++
+        Option.when(t.secrets > 0)(textNode(s"${t.secrets} " +
+          s"${if t.secrets == 1 then "secret" else "secrets"}")) ++
         t.relics.map(cardLink) ++
         Option.when(hidden > 0)(textNode(
           s"$hidden facedown ${if hidden == 1 then "relic" else "relics"}")) ++
@@ -98,14 +100,15 @@ private[frontend] object NegotiationDealPanel:
     node.`type` = kind
     node
 
-  /** The favor row: the words that name the number box and the box, in one
-    * `label`. One term per row: a run of bare controls and their trailing
+  /** An amount row (favor, secrets): the words that name the number box
+    * and the box, in one `label`. One term per row: a run of bare controls and their trailing
     * text wraps into a paragraph of offers no one can read.
     */
-  private def favorItem(control: dom.html.Input): dom.Element =
+  private def amountItem(caption: String,
+      control: dom.html.Input): dom.Element =
     val row = dom.document.createElement("label").asInstanceOf[dom.html.Label]
     row.className = "negotiation-item"
-    row.appendChild(text("span", "negotiation-item-label", "Favor"))
+    row.appendChild(text("span", "negotiation-item-label", caption))
     row.appendChild(control)
     row
 
@@ -166,6 +169,8 @@ private[frontend] object NegotiationDealPanel:
       editing: NegotiationEditingState, me: String, canControl: Boolean,
       panel: dom.Element, controls: TableControls): Unit =
     val favors = scala.collection.mutable.ArrayBuffer.empty[(String, dom.html.Input)]
+    val secretBoxes = scala.collection.mutable.Map.empty[String,
+      dom.html.Input]
     val relics = scala.collection.mutable.ArrayBuffer.empty[
       (String, String, dom.html.Input)]
     val advisers = scala.collection.mutable.ArrayBuffer.empty[
@@ -183,8 +188,17 @@ private[frontend] object NegotiationDealPanel:
       favor.value = deal.transfers.find(t => t.authorPlayerId == me &&
         t.recipientPlayerId == recipient).map(_.favor).getOrElse(0).toString
       favor.setAttribute("aria-label", s"Favor offered to $recipient")
-      panel.appendChild(favorItem(favor))
+      panel.appendChild(amountItem("Favor", favor))
       favors += recipient -> favor
+      if editing.secretRecipients.contains(recipient) then
+        val secrets = input("number")
+        secrets.min = "0"; secrets.max = editing.editableSecrets.toString
+        secrets.value = deal.transfers.find(t => t.authorPlayerId == me &&
+          t.recipientPlayerId == recipient).map(_.secrets).getOrElse(0)
+          .toString
+        secrets.setAttribute("aria-label", s"Secrets offered to $recipient")
+        panel.appendChild(amountItem("Secrets", secrets))
+        secretBoxes += recipient -> secrets
       editing.editableRelics.foreach { relic =>
         val check = input("checkbox")
         check.setAttribute("aria-label", s"Offer ${relic.name} to $recipient")
@@ -265,7 +279,9 @@ private[frontend] object NegotiationDealPanel:
               if check.checked => distantlands.protocol.WorldCard(
                 adviser.cardKind, adviser.cardId) }.toVector,
           sites.collect { case (`recipient`, site, check) if check.checked =>
-            site }.toVector)
+            site }.toVector,
+          secretBoxes.get(recipient).flatMap(_.value.toIntOption)
+            .getOrElse(0))
       }.toVector, disclosures.collect { case (recipient, offer, check)
           if check.checked => NegotiationDisclosureInput(recipient, offer.kind,
         Option.when(offer.kind != "site-relic")(me), offer.siteId,

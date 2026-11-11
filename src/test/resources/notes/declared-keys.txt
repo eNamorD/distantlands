@@ -548,6 +548,7 @@ procedure.negotiation became-citizen = {0} became a Citizen.
 procedure.negotiation ended = Negotiation ended by {0}
 procedure.negotiation gave-card = {0} gave {1} to {2}
 procedure.negotiation gave-favor = {0} gave {1} favor to {2}
+procedure.negotiation gave-secrets = {0} gave {1} {1?secret|secrets} to {2}
 procedure.negotiation gave-site = {0} gave {1} to {2}
 procedure.negotiation negotiated = Negotiated with {0}
 procedure.negotiation negotiated-private = Negotiated with {0}, in private.

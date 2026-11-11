@@ -66,7 +66,7 @@ object GameIntentMapper:
         rows.map((v, advisers) => distantlands.model.NegotiationTransfer(
           PlayerId(v.recipientPlayerId), v.favor,
           v.relicIds.map(RelicId.apply), advisers,
-          v.siteIds.map(SiteId.apply))), ds,
+          v.siteIds.map(SiteId.apply), v.secrets)), ds,
         value.citizenshipPlayerIds.map(PlayerId.apply), promises, binding))
       catch case refused: IllegalArgumentException =>
         Left(GameIntentMappingFailure("$.intent.terms",

@@ -10,13 +10,14 @@ import distantlands.gameplay.roles.Citizenship
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 
-/** One deal, derived from the answers recorded so far. */
-final case class DealState(participants: Vector[PlayerId],
+/** One deal, derived from the answers recorded so far under `prefix`, the
+  * deal walk's decision-id prefix ([[DealWalk]]). */
+final case class DealState(prefix: String, participants: Vector[PlayerId],
     terms: Map[PlayerId, NegotiationTerms], accepted: Set[PlayerId],
     declined: Boolean):
   def hasSubstance: Boolean = terms.values.exists(t =>
-    t.transfers.exists(x => x.favor > 0 || x.relics.nonEmpty ||
-      x.advisers.nonEmpty || x.sites.nonEmpty) ||
+    t.transfers.exists(x => x.favor > 0 || x.secrets > 0 ||
+      x.relics.nonEmpty || x.advisers.nonEmpty || x.sites.nonEmpty) ||
       t.disclosures.nonEmpty || t.citizenship.nonEmpty ||
       t.promises.nonEmpty || t.bindingPromises.nonEmpty)
   def unanimous: Boolean =
@@ -32,8 +33,14 @@ final case class DealState(participants: Vector[PlayerId],
   * a deal is open.
   */
 object NegotiationDeal:
-  val negotiatorsDecisionId: String = "negotiation.negotiators"
-  val dealDecisionId: String = "negotiation.deal"
+  /** The Negotiate action's decision-id prefix. */
+  val NegotiationPrefix: String = "negotiation"
+  val negotiatorsDecisionId: String = s"$NegotiationPrefix.negotiators"
+
+  /** The deal decision of the deal walked under `prefix` (catalog batch
+    * 12, "One decision id per deal"). */
+  def dealId(prefix: String): String = s"$prefix.deal"
+  val dealDecisionId: String = dealId(NegotiationPrefix)
 
   /** The players the actor may deal with, in table order: the others whose
     * pawn is at the actor's pawn site, and the others a power lets the
@@ -69,9 +76,12 @@ object NegotiationDeal:
     val picked = chosen(candidates, pending).toSet
     actor +: state.game.current.players.map(_.player).filter(picked)
 
-  def fold(participants: Vector[PlayerId],
+  /** The deal under `prefix`: only the answers to `<prefix>.deal` count, so
+    * one walk may hold several deals. */
+  def fold(prefix: String, participants: Vector[PlayerId],
       answered: Vector[Answered]): DealState =
-    answered.filter(_.decisionId == dealDecisionId).foldLeft(DealState(
+    val id = dealId(prefix)
+    answered.filter(_.decisionId == id).foldLeft(DealState(prefix,
       participants, participants.map(_ -> NegotiationTerms()).toMap,
       Set.empty, declined = false)):
       case (deal, Answered(_, ProposeTerms(terms), by)) =>
@@ -80,10 +90,6 @@ object NegotiationDeal:
         deal.copy(accepted = deal.accepted + by)
       case (deal, Answered(_, DeclineDeal, _)) => deal.copy(declined = true)
       case (deal, _) => deal
-
-  def deal(state: ReadyGame, actor: PlayerId, candidates: Vector[PlayerId],
-      pending: PendingTree): DealState =
-    fold(participants(state, actor, candidates, pending), pending.answered)
 
   /** The question the deal asks now: everyone's terms, who accepted, what
     * each author may still offer under `rules`, and who may accept (anyone
@@ -113,6 +119,7 @@ object NegotiationDeal:
     val adviserRecipients = rules.adviserRecipients(author, participants)
     val siteRecipients = rules.siteRecipients(author, participants)
       .filter(NegotiationSites.mayReceive(state, author, _))
+    val secretRecipients = rules.secretRecipients(author, participants)
     NegotiationBounds(participants.filter(_ != author),
       SpendableFavor.of(state, author),
       player.relics.map(_.id), disclosable(state, player),
@@ -126,7 +133,10 @@ object NegotiationDeal:
       sites = if siteRecipients.isEmpty then Vector.empty
         else NegotiationSites.giftable(state, author).filterNot(
           NegotiationSites.offeredByOthers(deal, author)),
-      siteRecipients = siteRecipients)
+      siteRecipients = siteRecipients,
+      maxSecrets = if secretRecipients.isEmpty then 0
+        else player.board.faceUpSecrets,
+      secretRecipients = secretRecipients)
 
   /** `player`'s advisers that may change hands: those no printed
     * restriction refuses to give, which keeps a faceup locked adviser and
@@ -211,7 +221,7 @@ object NegotiationDeal:
 
   /** What an agreed deal does: every disclosure records knowledge first, while
     * the cards are still where they were disclosed, then every transfer moves:
-    * favor, relics, then advisers, each keeping its face.
+    * favor, secrets, relics, then advisers, each keeping its face.
     * Refused (nothing recorded, the deal stays open) when an author can no
     * longer afford their terms, or a recipient would be short of warbands
     * for the sites they receive. A site's warbands and placements are the
@@ -232,9 +242,13 @@ object NegotiationDeal:
       terms: NegotiationTerms): Either[OathViolation, Unit] =
     val player = state.game.current.player(author).get
     val favor = terms.transfers.map(_.favor).sum
+    val secrets = terms.transfers.map(_.secrets).sum
     for
       _ <- Either.cond(favor <= SpendableFavor.of(state, author), (),
         OathViolation.InsufficientFavor(favor, SpendableFavor.of(state, author)))
+      _ <- Either.cond(secrets <= player.board.faceUpSecrets, (),
+        OathViolation.InsufficientSecrets(secrets,
+          player.board.faceUpSecrets))
       _ <- Either.cond(terms.transfers.flatMap(_.relics).forall(id =>
         player.relics.exists(_.id == id)), (), OathViolation.NegotiationUnavailable(
         "an offered relic is no longer held by its author"))
@@ -275,11 +289,19 @@ object NegotiationDeal:
         val favor = Option.when(transfer.favor > 0)(Give(Piece.Favor(
           transfer.favor), author, Location.PlayArea(author),
           Location.PlayArea(transfer.recipient)): CoreOperation).toVector
+        // Faceup secrets only, which keep their side (rulings 6 and 31):
+        // `Give` names no side, so this is the move a `Give` wraps.
+        val secrets = Option.when(transfer.secrets > 0)(Move(
+          Piece.Secrets(transfer.secrets),
+          PositionedLocation(Location.PlayArea(author),
+            side = Some(SecretSide.FaceUp)),
+          PositionedLocation(Location.PlayArea(transfer.recipient)),
+          by = Some(author)): CoreOperation).toVector
         val relics = transfer.relics.map(relic => Give(Piece.Card(relic),
           author, Location.PlayArea(author),
           Location.PlayArea(transfer.recipient)): CoreOperation)
         val advisers = transfer.advisers.map(
           adviserGive(author, transfer.recipient, _))
-        favor ++ relics ++ advisers
+        favor ++ secrets ++ relics ++ advisers
       }
     }

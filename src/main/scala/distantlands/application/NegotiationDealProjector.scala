@@ -47,7 +47,7 @@ private[application] final class NegotiationDealProjector(
           transfer.favor, transfer.relics.size, relicDetails,
           transfer.advisers.size, advisers,
           transfer.sites.map(site => NegotiationSiteProjection(site.value,
-            presentation.siteLabel(site))))
+            presentation.siteLabel(site))), secrets = transfer.secrets)
       }
     }
     val disclosures = authors.flatMap { author =>
@@ -110,4 +110,6 @@ private[application] final class NegotiationDealProjector(
       giftableSites = own.sites.map(site => NegotiationSiteProjection(
         site.value, presentation.siteLabel(site))),
       siteRecipients = own.siteRecipients.map(_.value),
-      shortOfWarbands = query.shortOfWarbands.map(_.value))
+      shortOfWarbands = query.shortOfWarbands.map(_.value),
+      editableSecrets = own.maxSecrets,
+      secretRecipients = own.secretRecipients.map(_.value))

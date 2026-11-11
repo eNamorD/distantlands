@@ -3,9 +3,9 @@ package distantlands.gameplay.actions.negotiation
 import distantlands.model.PlayerId
 
 /** A kind of term an author may put into a row for one recipient (catalog
-  * batch 12, "The deal model"). Secrets join with slice 6. */
+  * batch 12, "The deal model"). */
 enum TermKind:
-  case Favor, Relic, Adviser, Site
+  case Favor, Relic, Secret, Adviser, Site
 
 /** Who may put what into one deal (catalog batch 12, "The deal model"):
   * the one place that says it. Built when the deal opens, from the
@@ -17,15 +17,17 @@ enum TermKind:
   * promises to every author (The Tribunal, ruling 11). `siteTraders` may
   * give and receive sites with anyone (Deed Writer, ruling 18).
   * `privateDeal` keeps the terms from players outside the deal (Whispering
-  * Stone, ruling 23).
+  * Stone, ruling 23). `secretsOpen` lets every pair trade secrets (The
+  * Gathering, ruling 5).
   */
 final case class DealRules(adviserTraders: Vector[PlayerId] = Vector.empty,
     advisersOpen: Boolean = false, bindingPromises: Boolean = false,
     siteTraders: Vector[PlayerId] = Vector.empty,
-    privateDeal: Boolean = false):
+    privateDeal: Boolean = false, secretsOpen: Boolean = false):
   def kinds(author: PlayerId, recipient: PlayerId): Set[TermKind] =
     val pair = Set(author, recipient)
     Set[TermKind](TermKind.Favor, TermKind.Relic) ++
+      Option.when(secretsOpen)(TermKind.Secret) ++
       Option.when(advisersOpen || adviserTraders.exists(pair))(
         TermKind.Adviser) ++
       Option.when(siteTraders.exists(pair))(TermKind.Site)
@@ -35,6 +37,12 @@ final case class DealRules(adviserTraders: Vector[PlayerId] = Vector.empty,
       participants: Vector[PlayerId]): Vector[PlayerId] =
     participants.filter(recipient => recipient != author &&
       kinds(author, recipient).contains(TermKind.Adviser))
+
+  /** The participants `author` may give secrets, in participant order. */
+  def secretRecipients(author: PlayerId,
+      participants: Vector[PlayerId]): Vector[PlayerId] =
+    participants.filter(recipient => recipient != author &&
+      kinds(author, recipient).contains(TermKind.Secret))
 
   /** The participants `author` may give sites, in participant order,
     * before ruling 19 and the Vow of Wandering narrow them
