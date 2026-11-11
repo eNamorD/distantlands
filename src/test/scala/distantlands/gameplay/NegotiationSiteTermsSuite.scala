@@ -44,8 +44,8 @@ class NegotiationSiteTermsSuite extends munit.FunSuite:
     rules.resolveWalker(state, by, NegotiationDeal.dealDecisionId, answer)
 
   private def place(state: OathState, by: PlayerId, at: SiteId, n: Int) =
-    rules.resolveWalker(state, by, NegotiationSites.warbandsDecisionId(at),
-      ChooseAmountAnswer(n))
+    rules.resolveWalker(state, by, NegotiationSites.warbandsDecisionId(
+      NegotiationDeal.NegotiationPrefix, at), ChooseAmountAnswer(n))
 
   /** A row giving `to` exactly `sites`. */
   private def give(to: PlayerId, sites: SiteId*) =
@@ -137,7 +137,8 @@ class NegotiationSiteTermsSuite extends munit.FunSuite:
     val settled = run(offered, p1 -> AcceptDeal, p2 -> AcceptDeal,
       p3 -> AcceptDeal)
     assertEquals(asked(settled),
-      (NegotiationSites.warbandsDecisionId(dunes), p1, 1, 3))
+      (NegotiationSites.warbandsDecisionId(NegotiationDeal.NegotiationPrefix,
+        dunes), p1, 1, 3))
     val placed = place(settled, p1, dunes, 2).getOrElse(fail("placed")).state
     assertEquals(board(placed, p2), 5)
     assertEquals(ruler(placed, dunes), SiteRuler.Player(p1))
@@ -164,12 +165,14 @@ class NegotiationSiteTermsSuite extends munit.FunSuite:
       p2 -> give(p1, dunes), p1 -> AcceptDeal, p2 -> AcceptDeal)
     // Both boards hold 3 + 2 once the returns run; p1's row comes first.
     assertEquals(asked(agreed),
-      (NegotiationSites.warbandsDecisionId(woods), p2, 1, 5))
+      (NegotiationSites.warbandsDecisionId(NegotiationDeal.NegotiationPrefix,
+        woods), p2, 1, 5))
     assertEquals(forces(agreed, woods), SiteForces.Empty)
     assert(place(agreed, p2, woods, 6).isLeft)
     val first = place(agreed, p2, woods, 4).getOrElse(fail("woods")).state
     assertEquals(asked(first),
-      (NegotiationSites.warbandsDecisionId(dunes), p1, 1, 5))
+      (NegotiationSites.warbandsDecisionId(NegotiationDeal.NegotiationPrefix,
+        dunes), p1, 1, 5))
     val done = place(first, p1, dunes, 5).getOrElse(fail("dunes")).state
     assertEquals(ruler(done, woods), SiteRuler.Player(p2))
     assertEquals(ruler(done, dunes), SiteRuler.Player(p1))
@@ -181,7 +184,9 @@ class NegotiationSiteTermsSuite extends munit.FunSuite:
     val agreed = run(atDeal(two, p2), p2 -> give(p1, dunes, city),
       p1 -> AcceptDeal, p2 -> AcceptDeal)
     assertEquals(asked(agreed),
-      (NegotiationSites.warbandsDecisionId(dunes), p1, 1, 2))
+      (NegotiationSites.warbandsDecisionId(NegotiationDeal.NegotiationPrefix,
+        dunes), p1, 1, 2))
     val first = place(agreed, p1, dunes, 2).getOrElse(fail("dunes")).state
     assertEquals(asked(first),
-      (NegotiationSites.warbandsDecisionId(city), p1, 1, 1))
+      (NegotiationSites.warbandsDecisionId(NegotiationDeal.NegotiationPrefix,
+        city), p1, 1, 1))

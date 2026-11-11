@@ -3,9 +3,7 @@ package distantlands.gameplay.actions.negotiation
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.{AdviserLimits, ProcedureNotes}
 import distantlands.gameplay.powerresolver.PowerUseRestriction
-import distantlands.gameplay.roles.Citizenship
 import distantlands.model._
-import distantlands.model.DecisionAnswer.DeclineDeal
 
 /** Negotiation on the walker: choose who to negotiate with, then loop one
   * deal decision that every participant may answer until the deal closes,
@@ -20,6 +18,9 @@ import distantlands.model.DecisionAnswer.DeclineDeal
   *     per site: Branch -> Decide(warbands), BuildOps(place), note;
   *     Citizenship, promise notes))
   * }}}
+  *
+  * The deal's `Repeat` and its settlement are [[NegotiationDealTree]]'s,
+  * walked under the prefix `negotiation`.
   *
   * The start reads the reach once, under the walk's power-use restrictions,
   * and stores it as walker start facts ([[NegotiationStartFacts]]); a
@@ -171,163 +172,12 @@ object NegotiationProcedure:
           confirm = Some(CountedConfirm("Negotiate with", "player",
             "players"))),
         window = Some(PowerWindow.NegotiationEligibility)))
-    Sequence(choose ++ Vector[Operation](
-      Repeat((ready, pending) =>
-        !NegotiationDeal.deal(ready, actor, candidates, pending).closed,
-        Branch((ready, pending) => {
-          val deal = NegotiationDeal.deal(ready, actor, candidates, pending)
-          Vector(Decide(NegotiationDeal.dealDecisionId, actor,
-            NegotiationDeal.snapshot(catalog, ready, deal,
-              facts.rules(deal.participants).copy(privateDeal = privately),
-              limits),
-            coOwners = deal.participants.filter(_ != actor)))
-        })),
-      Branch((ready, pending) => {
-        val deal = NegotiationDeal.deal(ready, actor, candidates, pending)
-        // The opening line, as the rule posted it: the decline names who
-        // ended the deal, and anything else names who was negotiated with,
-        // whether or not the deal had substance to settle.
-        val opening: Vector[Operation] = Vector(
-          Note(ProcedureNotes.id(ActionRef.Negotiation),
-            if deal.declined then endedNote
-            else _ => Some((if privately then negotiatedPrivately
-              else negotiated).sourceless(NoteArg.Players(
-              NegotiationDeal.chosen(candidates, pending))))))
-        // The settlement's lines, in the order `settle` applies them:
-        // disclosures first, then transfers, then each given site's
-        // warbands home. A refused settlement fails the
-        // command, so nothing is journaled and no note is reached.
-        //
-        // They state the agreement rather than the journal: the deleted
-        // rule read the executed operations, these are derived from the
-        // same `DealState` the settling node is. No power contributes at
-        // `NegotiationSettlement`; a first one that removed an operation
-        // would leave its line standing, so it must not.
-        val returns: Vector[Operation] =
-          Option.when(NegotiationSites.moves(deal).nonEmpty)(
-            // Required: a refused return fails the settlement rather than
-            // leaving two kinds of warband at a site (ruling 20).
-            BuildOps((state, _) => Right(NegotiationSites.returns(state,
-              deal)), required = true)).toVector
-        val settlement: Vector[Operation] =
-          if !deal.agreed then Vector.empty
-          else (BuildOps((state, _) => NegotiationDeal.settle(state, deal),
-            window = Some(PowerWindow.NegotiationSettlement)) +: returns) ++
-            (disclosed(deal) ++ transferred(deal) ++ offered(deal)).map(note =>
-              Note(ProcedureNotes.id(ActionRef.Negotiation), _ => Some(note)))
-        // After every transfer, each new ruler places warbands at each site
-        // they received, in the order the sites moved (rulings 20, 29).
-        val placements: Vector[Operation] =
-          if !deal.agreed then Vector.empty
-          else NegotiationSites.moves(deal).flatMap(placing(catalog, deal, _))
-        // Each Exile offered Citizenship becomes Imperial after the
-        // transfers, in participant order; each may be asked their own
-        // warband split (CR p. 34).
-        val citizenship: Vector[Operation] =
-          if !deal.agreed then Vector.empty
-          else NegotiationDeal.citizens(deal).flatMap(citizen => Vector(
-            Citizenship.become(citizen),
-            Note(ProcedureNotes.id(ActionRef.Negotiation),
-              becameNote(_, citizen))))
-        // Each promise's line, last: the deal's pieces have all moved and
-        // its roles changed by now. The engine enforces none of them. In
-        // private, only the participants read them (ruling 23); every
-        // other line of the settlement is public (rulings 23 and 30).
-        val promises: Vector[Operation] =
-          if !deal.agreed then Vector.empty
-          else promisedLines(deal).map(note =>
-            val read = if privately then note.readBy(deal.participants)
-              else note
-            Note(ProcedureNotes.id(ActionRef.Negotiation), _ => Some(read)))
-        opening ++ settlement ++ placements ++ citizenship ++ promises
-      })))
-
-  private def endedNote(states: NoteStates): Option[LogNote] =
-    states.answered.reverse.collectFirst {
-      case Answered(NegotiationDeal.dealDecisionId, DeclineDeal, by) =>
-        ended.sourceless(NoteArg.Player(by))
-    }
-
-  /** One line per disclosure, in `NegotiationDeal.knowledge`'s order. */
-  private def disclosed(deal: DealState): Vector[LogNote] =
-    deal.participants.flatMap(deal.terms(_).disclosures).map:
-      case NegotiationDisclosure(recipient,
-          NegotiationDisclosureRef.Adviser(owner, card)) =>
-        showed.sourceless(NoteArg.Player(owner), NoteArg.Player(recipient),
-          NoteArg.Card(card))
-      case NegotiationDisclosure(recipient,
-          NegotiationDisclosureRef.HeldRelic(owner, relic)) =>
-        showed.sourceless(NoteArg.Player(owner), NoteArg.Player(recipient),
-          NoteArg.Card(relic))
-      case NegotiationDisclosure(recipient,
-          NegotiationDisclosureRef.SiteRelic(site, relic)) =>
-        wasShown.sourceless(NoteArg.Player(recipient), NoteArg.Card(relic),
-          NoteArg.Site(site))
-
-  /** One line per transfer, in `NegotiationDeal.transfers`' order: each
-    * author's favor, then relics, then advisers, then sites. A facedown adviser reads as
-    * its back to every player but the two who held it (`LogWords.seen`). */
-  private def transferred(deal: DealState): Vector[LogNote] =
-    deal.participants.flatMap(author =>
-      deal.terms(author).transfers.flatMap(transfer =>
-        Option.when(transfer.favor > 0)(gaveFavor.sourceless(
-          NoteArg.Player(author), NoteArg.Number(transfer.favor),
-          NoteArg.Player(transfer.recipient))).toVector ++
-          transfer.relics.map(relic => gaveCard.sourceless(
-            NoteArg.Player(author), NoteArg.Card(relic),
-            NoteArg.Player(transfer.recipient))) ++
-          transfer.advisers.map(card => gaveCard.sourceless(
-            NoteArg.Player(author), NoteArg.Card(card),
-            NoteArg.Player(transfer.recipient))) ++
-          transfer.sites.map(site => gaveSite.sourceless(
-            NoteArg.Player(author), NoteArg.Site(site),
-            NoteArg.Player(transfer.recipient)))))
-
-  /** `move`'s new ruler answers how many warbands to place, from 1 to
-    * `NegotiationSites.most`; the answer places them, a required move, and
-    * writes its line (ruling 20), which covers the generic warband line.
-    * The question sits in a `Branch` so its bound reads the board when it
-    * is asked. */
-  private def placing(catalog: ExecutableCatalog, deal: DealState,
-      move: SiteMove): Vector[Operation] =
-    val id = NegotiationSites.warbandsDecisionId(move.site)
-    val name = catalog.site(move.site).fold(move.site.value)(_.name)
-    Vector(
-      Branch((ready, pending) => Vector(Decide(id, move.recipient,
-        DecisionQuery.ChooseAmount(1, NegotiationSites.most(ready, deal,
-          move, pending.answered),
-          Some(s"Place how many warbands at $name?"), "Place")))),
-      BuildOps((ready, pending) => Right(NegotiationSites.placed(
-        pending.answered, move.site).flatMap(count =>
-        NegotiationSites.placement(ready, move, count)).toVector),
-        required = true),
-      Note(ProcedureNotes.id(ActionRef.Negotiation), states =>
-        NegotiationSites.placed(states.answered, move.site).map(count =>
-          placedWarbands.sourceless(NoteArg.Player(move.recipient),
-            NoteArg.Number(count), NoteArg.Site(move.site))), covers = true))
-
-  /** The line for `citizen`'s new role, once the change has run. */
-  private def becameNote(states: NoteStates, citizen: PlayerId)
-      : Option[LogNote] = Imperials.role(states.now, citizen).collect {
-    case Role.Chancellor => becameChancellor.sourceless(NoteArg.Player(citizen))
-    case Role.Citizen => becameCitizen.sourceless(NoteArg.Player(citizen))
-  }
-
-  /** One line per author who offered Citizenship. */
-  private def offered(deal: DealState): Vector[LogNote] =
-    deal.participants.flatMap(author =>
-      Option.when(deal.terms(author).citizenship.nonEmpty)(
-        offeredCitizenship.sourceless(NoteArg.Player(author),
-          NoteArg.Players(deal.terms(author).citizenship))).toVector)
-
-  /** One line per promise, by author in participant order, the plain
-    * promises before the binding ones. Each names the other participants. */
-  private def promisedLines(deal: DealState): Vector[LogNote] =
-    deal.participants.flatMap { author =>
-      val others = NoteArg.Players(deal.participants.filter(_ != author))
-      val terms = deal.terms(author)
-      terms.promises.map(text => promised.sourceless(NoteArg.Player(author),
-        others, NoteArg.Promise(text))) ++
-        terms.bindingPromises.map(text => promisedBinding.sourceless(
-          NoteArg.Player(author), others, NoteArg.Promise(text)))
-    }
+    Sequence(choose ++ NegotiationDealTree(catalog, limits, DealWalk(
+      NegotiationDeal.NegotiationPrefix, actor,
+      (ready, pending) => NegotiationDeal.participants(ready, actor,
+        candidates, pending),
+      participants => facts.rules(participants)
+        .copy(privateDeal = privately),
+      pending => (if privately then negotiatedPrivately else negotiated)
+        .sourceless(NoteArg.Players(NegotiationDeal.chosen(candidates,
+          pending))))))

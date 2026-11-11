@@ -40,7 +40,8 @@ class NegotiationDealSuite extends munit.FunSuite:
     Answered(dealId, answer, by)
   private val gift = NegotiationTerms(Vector(NegotiationTransfer(p2, 2, Vector.empty)))
   private def fold(answers: Answered*) =
-    NegotiationDeal.fold(Vector(p1, p2), answers.toVector)
+    NegotiationDeal.fold(NegotiationDeal.NegotiationPrefix,
+      Vector(p1, p2), answers.toVector)
 
   test("a fresh deal is empty, open and not agreed"):
     val deal = fold()

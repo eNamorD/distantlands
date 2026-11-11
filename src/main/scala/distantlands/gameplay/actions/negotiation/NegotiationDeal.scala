@@ -10,8 +10,9 @@ import distantlands.gameplay.roles.Citizenship
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 
-/** One deal, derived from the answers recorded so far. */
-final case class DealState(participants: Vector[PlayerId],
+/** One deal, derived from the answers recorded so far under `prefix`, the
+  * deal walk's decision-id prefix ([[DealWalk]]). */
+final case class DealState(prefix: String, participants: Vector[PlayerId],
     terms: Map[PlayerId, NegotiationTerms], accepted: Set[PlayerId],
     declined: Boolean):
   def hasSubstance: Boolean = terms.values.exists(t =>
@@ -32,8 +33,14 @@ final case class DealState(participants: Vector[PlayerId],
   * a deal is open.
   */
 object NegotiationDeal:
-  val negotiatorsDecisionId: String = "negotiation.negotiators"
-  val dealDecisionId: String = "negotiation.deal"
+  /** The Negotiate action's decision-id prefix. */
+  val NegotiationPrefix: String = "negotiation"
+  val negotiatorsDecisionId: String = s"$NegotiationPrefix.negotiators"
+
+  /** The deal decision of the deal walked under `prefix` (catalog batch
+    * 12, "One decision id per deal"). */
+  def dealId(prefix: String): String = s"$prefix.deal"
+  val dealDecisionId: String = dealId(NegotiationPrefix)
 
   /** The players the actor may deal with, in table order: the others whose
     * pawn is at the actor's pawn site, and the others a power lets the
@@ -69,9 +76,12 @@ object NegotiationDeal:
     val picked = chosen(candidates, pending).toSet
     actor +: state.game.current.players.map(_.player).filter(picked)
 
-  def fold(participants: Vector[PlayerId],
+  /** The deal under `prefix`: only the answers to `<prefix>.deal` count, so
+    * one walk may hold several deals. */
+  def fold(prefix: String, participants: Vector[PlayerId],
       answered: Vector[Answered]): DealState =
-    answered.filter(_.decisionId == dealDecisionId).foldLeft(DealState(
+    val id = dealId(prefix)
+    answered.filter(_.decisionId == id).foldLeft(DealState(prefix,
       participants, participants.map(_ -> NegotiationTerms()).toMap,
       Set.empty, declined = false)):
       case (deal, Answered(_, ProposeTerms(terms), by)) =>
@@ -80,10 +90,6 @@ object NegotiationDeal:
         deal.copy(accepted = deal.accepted + by)
       case (deal, Answered(_, DeclineDeal, _)) => deal.copy(declined = true)
       case (deal, _) => deal
-
-  def deal(state: ReadyGame, actor: PlayerId, candidates: Vector[PlayerId],
-      pending: PendingTree): DealState =
-    fold(participants(state, actor, candidates, pending), pending.answered)
 
   /** The question the deal asks now: everyone's terms, who accepted, what
     * each author may still offer under `rules`, and who may accept (anyone

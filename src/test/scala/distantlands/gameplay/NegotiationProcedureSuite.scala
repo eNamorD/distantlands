@@ -125,7 +125,8 @@ class NegotiationProcedureSuite extends munit.FunSuite:
     val three = accepted(say(two.state, p3, gift(p1, 2)))
     val open = present(Outcomes.ready(three.state).game.current.walkerPending,
       "the open deal")
-    val folded = NegotiationDeal.fold(Vector(p1, p2, p3), open.answered)
+    val folded = NegotiationDeal.fold(NegotiationDeal.NegotiationPrefix,
+      Vector(p1, p2, p3), open.answered)
     assertEquals(folded.accepted, Set.empty[PlayerId])
     val closed = Vector(p3, p2, p1).foldLeft(three.state):
       (state, by) => say(state, by, AcceptDeal).getOrElse(fail(s"$by accepts"))

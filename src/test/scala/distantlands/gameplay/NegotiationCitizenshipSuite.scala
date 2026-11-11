@@ -59,7 +59,8 @@ class NegotiationCitizenshipSuite extends munit.FunSuite:
     }
 
   private def bounds(ready: ReadyGame): Map[PlayerId, NegotiationBounds] =
-    val deal = NegotiationDeal.fold(Vector(p1, p2, p3), Vector.empty)
+    val deal = NegotiationDeal.fold(NegotiationDeal.NegotiationPrefix,
+      Vector(p1, p2, p3), Vector.empty)
     NegotiationDeal.snapshot(catalog, ready, deal, DealRules(),
       AdviserLimit).bounds
 
@@ -80,7 +81,8 @@ class NegotiationCitizenshipSuite extends munit.FunSuite:
     assert(say(atDeal(ready), p1, offering(p2)).isLeft)
 
   test("a Citizenship-only deal has substance"):
-    val deal = NegotiationDeal.fold(Vector(p1, p2), Vector(
+    val deal = NegotiationDeal.fold(NegotiationDeal.NegotiationPrefix,
+      Vector(p1, p2), Vector(
       Answered(dealId, offering(p2), p1)))
     assert(deal.hasSubstance)
 
