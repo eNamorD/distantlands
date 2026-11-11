@@ -131,6 +131,8 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
       relicDeckCount = current.commonCards.relicDeck.size)
       .copy(walkerDecision = pending.walkerDecision,
         chronicle = Some(chronicleView(context.ready.game.campaign)),
+        foundations = FoundationPresentation.ofGame(
+          context.ready.game.campaign.foundations),
         walkerWaiting = pending.walkerWaiting,
         temporaryHandPreview = handPreview(context, pending.walkerDecision),
         supplyMaximum = SupplyTrack.Maximum,

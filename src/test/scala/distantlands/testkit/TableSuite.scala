@@ -225,6 +225,14 @@ class TableSuite extends munit.FunSuite:
     val returned = Table.start.boardWarbands(p1, 10).warbandsInBank(p1, 6)
     assertEquals(Look(returned.ready).boardWarbands(p1), 8)
 
+  test("foundation turns one setup card and leaves the other five"):
+    val table = Table.start.foundation(FoundationNumber.III,
+      FoundationFace.Altered)
+    assertEquals(table.ready.game.campaign.foundations,
+      Table.start.ready.game.campaign.foundations.updated(
+        FoundationNumber.III,
+        FoundationState(FoundationFace.Altered, Set.empty)))
+
   test("each step states one fact"):
     val ready = Table.start
       .turn(p2, Phase.Wake)

@@ -45,6 +45,21 @@ class PanelPlacementSuite extends munit.FunSuite:
       ".shared-bank .oathkeeper-goal").map(_.textContent),
       Some("Oathkeeper of the People"))
 
+  test("the foundations close the shared bank, and a projection with " +
+      "none draws no strip"):
+    val foundations = Vector(
+      distantlands.protocol.projection.FoundationProjection(1, "normal",
+        "Imperial Maps", "Fill the map."),
+      distantlands.protocol.projection.FoundationProjection(3, "altered",
+        "Public Ambitions", "Deal 4 legacy cards."))
+    val bank = Dom.firstMatch(world(projection().copy(
+      foundations = foundations)), ".shared-bank")
+      .getOrElse(fail("no shared bank"))
+    assertEquals(bank.lastElementChild.getAttribute("class"), "foundations")
+    assertEquals(Dom.all(bank, ".foundation-name").map(_.textContent),
+      Vector("Imperial Maps", "Public Ambitions"))
+    assertEquals(Dom.all(world(projection()), ".foundations").size, 0)
+
   /** Beside the regions rather than under them: the map pane is wider than
     * it is tall, so a column costs nothing at fit and a row below costs the
     * whole map's scale.

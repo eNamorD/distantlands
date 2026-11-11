@@ -229,7 +229,8 @@ class HttpGameClientSuite extends FunSuite:
        |],
        |"pawnLocations":[],
        |"ready":$ready,
-       |"completed":$completed
+       |"completed":$completed,
+       |"foundations":[]
        |}""".stripMargin
 
   private def siteJson(

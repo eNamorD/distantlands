@@ -1,7 +1,7 @@
 package distantlands.application.gamelog
 
 import distantlands.application.{GamePresentationProjector, RolledFaces}
-import distantlands.catalog.ExecutableCatalog
+import distantlands.catalog.{ExecutableCatalog, FoundationCards}
 import distantlands.gameplay.actions.BannerRules
 import distantlands.model._
 import distantlands.protocol.projection.LogSpan
@@ -95,12 +95,15 @@ private[gamelog] final class LogWords(catalog: ExecutableCatalog,
 
   /** A power named by the card it is printed on, as the modifier decision
     * names it; the card follows the visibility rule on `ready`. A banner's
-    * power, printed on no card, is named by its banner. */
+    * power, printed on no card, is named by its banner, and a foundation
+    * face's by the face's printed name. */
   def power(ready: ReadyGame, actor: PlayerId, id: PowerId,
       viewer: Option[PlayerId]): Vector[LogSpan] =
     printed.printedOn(ready, actor, id.value).fold(
-      Vector[LogSpan](LogWords.bannerOf(id).fold[LogSpan](
-        LogSpan.Text(presentation.safeLabel(id.value)))(banner)))(card =>
+      Vector[LogSpan](LogWords.bannerOf(id).map(banner)
+        .orElse(FoundationCards.faceWithId(id).map(face =>
+          LogSpan.Text(face.name)))
+        .getOrElse(LogSpan.Text(presentation.safeLabel(id.value)))))(card =>
       one(this.card(card, ready, ready, viewer)))
 
 private[gamelog] object LogWords:

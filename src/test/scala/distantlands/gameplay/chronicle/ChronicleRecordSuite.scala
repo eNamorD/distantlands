@@ -8,7 +8,8 @@ import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What the journaled Chronicle carries from the campaign: the live roles,
-  * era scores, Oathkeeper goal and starting advisers over the baseline.
+  * era scores, Oathkeeper goal, foundation faces and starting advisers over
+  * the baseline.
   * `ChronicleExtraction` supplies the table fields. */
 class ChronicleRecordSuite extends munit.FunSuite:
   private val boxed = LineageId("lineage:boxed")
@@ -67,7 +68,24 @@ class ChronicleRecordSuite extends munit.FunSuite:
     val record = ChronicleRecord.campaignFields(ready)
     assertEquals(record.copy(era = baseline.era,
       oathkeeperGoal = baseline.oathkeeperGoal,
+      foundations = baseline.foundations,
       lineages = baseline.lineages), baseline)
+
+  test("the record keeps the live foundation faces, a changed one and its " +
+      "sources included"):
+    val sourced = FoundationState(FoundationFace.Altered, Set(legacy.id))
+    val ready = Table.start
+      .foundation(FoundationNumber.III, FoundationFace.Altered)
+      .update(_.updateCampaign(campaign => campaign.copy(foundations =
+        campaign.foundations.updated(FoundationNumber.VI, sourced)))).ready
+    // The baseline lists no foundation: the record's faces are the game's.
+    assertEquals(ready.game.campaign.baseline.foundations, Map.empty)
+    val normal = FoundationState(FoundationFace.Normal, Set.empty)
+    assertEquals(ChronicleRecord.campaignFields(ready).foundations,
+      FoundationNumber.all.map(_ -> normal).toMap
+        .updated(FoundationNumber.III,
+          FoundationState(FoundationFace.Altered, Set.empty))
+        .updated(FoundationNumber.VI, sourced))
 
   test("a seated lineage takes the starting advisers this Chronicle kept"):
     val start = Table.start.ready

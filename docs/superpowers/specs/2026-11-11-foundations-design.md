@@ -1,6 +1,6 @@
 # Foundations
 
-**Status:** designed 2026-11-11.
+**Status:** designed 2026-11-11. Slice 1 landed.
 
 **Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
@@ -104,7 +104,7 @@ branches with no catalog leave the UI and the Game Log nothing to name.
   with "minor actions are limited to the fixed unaltered foundations".
   `FirstGameFoundationProfile` goes too if nothing else reads it.
 - **Catalog.** `FoundationCards` lists I to VI, each face with its printed
-  name and its text from the rulebook's Foundations section:
+  name and its text as the setup card prints it:
 
   | | Normal | Altered |
   |---|---|---|
@@ -116,12 +116,15 @@ branches with no catalog leave the UI and the Game Log nothing to name.
   | VI | Wandering Flame | Festival |
 
   `RuleSourceIndex` replaces the generic `foundation.altered` id with one
-  id per face (`foundation.i.wide-horizons`), so `PrintedCards` names the
-  card a line comes from.
+  id per face, normal faces included (`foundation.i.wide-horizons`), so
+  `LogWords.power` names the face a line comes from. `PrintedCards` names
+  only cards, and a foundation is none.
 - **Projection and UI.** The game projection gains `foundations`: each
-  number, its face and the face's name. The game info area shows a strip of
-  six setup cards with the altered faces marked, and the Chronicle page lists
-  the same six. Both are read-only; editing waits for **Edit Chronicle**.
+  number, its face, the face's name and its rules text. The shared bank, the
+  table's game info column, shows a strip of six setup cards with the altered
+  faces marked; a click reads a face's rules. The Chronicle page lists the
+  same six from the Chronicle's summary. Both are read-only; editing waits
+  for **Edit Chronicle**.
 - **Tests.** Game start keeps stored faces and refuses the gated ones;
   minor actions run under an altered III; the projection and its codec round
   trip; the TTS mask still imports to faces; a frontend suite for the strip;

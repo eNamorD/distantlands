@@ -65,7 +65,11 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       rollOutcome = Some(WalkerRollOutcomeProjection("campaign.attack",
         Vector(DieFace.TwoSwordsSkull), 2, None, Vector("1 skull loss"))))),
     walkerWaiting = Some(WalkerWaitingProjection(Vector("blue"), Some("Choose the Oathkeeper"))),
-    supplyMaximum = 7)
+    supplyMaximum = 7,
+    foundations = Vector(
+      FoundationProjection(1, "normal", "Imperial Maps", "First.\n\nSecond."),
+      FoundationProjection(3, "altered", "Public Ambitions",
+        "Deal 4 legacy cards.")))
 
 
   test("the projection round trips its Chronicle, with and without the " +
@@ -214,6 +218,27 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       name = "Vision of Conquest")
     assertRoundTrips(projection.copy(playerBoards = projection.playerBoards
       .map(_.copy(revealedVisions = Vector(faith, conquest)))))
+
+  test("a payload without its foundations is refused, and so is a " +
+      "foundation with a field it does not declare"):
+    val missing = ujson.read(GameProjectionCodec.encode(projection))
+    missing.obj.remove("foundations")
+    assertEquals(
+      Unwrap.rejected(GameProjectionCodec.decode(ujson.write(missing))).path,
+      "$.foundations")
+    val extra = ujson.read(GameProjectionCodec.encode(projection))
+    extra("foundations")(1)("sources") = ujson.Arr()
+    assertEquals(
+      Unwrap.rejected(GameProjectionCodec.decode(ujson.write(extra))).path,
+      "$.foundations[1].sources")
+
+  test("a foundation whose face is neither normal nor altered is refused"):
+    // The wire spells a face in lower case.
+    val miscased = ujson.read(GameProjectionCodec.encode(projection))
+    miscased("foundations")(1)("face") = "Altered"
+    assertEquals(
+      Unwrap.rejected(GameProjectionCodec.decode(ujson.write(miscased))).path,
+      "$.foundations[1].face")
 
   test("a board payload without its revealed Visions is refused"):
     val raw = ujson.read(GameProjectionCodec.encode(projection))

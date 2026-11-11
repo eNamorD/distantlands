@@ -106,6 +106,16 @@ class ChronicleAccountingSuite extends munit.FunSuite:
       reliquary = Vector(RelicId("no-such-relic")))),
       Left("unknown relic no-such-relic"))
 
+  test("a foundation's alteration source must be a known legacy"):
+    def sourcedBy(legacy: LegacyId): Chronicle = chronicle.copy(
+      foundations = Map(FoundationNumber.III ->
+        FoundationState(FoundationFace.Altered, Set(legacy))))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog,
+      sourcedBy(LegacyId("no-such-legacy"))),
+      Left("unknown legacy no-such-legacy"))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog,
+      sourcedBy(LegacyId(catalog.legacies.head.id.value))), Right(()))
+
   test("an edifice stored at two sites is refused"):
     val withEdifice = chronicle.atlasBox.find(_.items.nonEmpty).get
     val edifice = withEdifice.items.head

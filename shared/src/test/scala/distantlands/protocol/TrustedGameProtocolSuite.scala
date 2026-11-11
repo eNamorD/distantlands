@@ -105,7 +105,8 @@ class TrustedGameProtocolSuite extends munit.FunSuite:
       """{"playerId":"p2","url":"https://example.test/s/code2"},""" +
       """{"playerId":"p1","url":"https://example.test/s/code1"}],""" +
       """"chronicle":{"json":"{}","digest":"ab12","summary":""" +
-      """{"name":"Ashen Crown","eraTarget":20,"scores":[],"game":1}}}"""
+      """{"name":"Ashen Crown","eraTarget":20,"scores":[],""" +
+      """"foundations":[],"game":1}}}"""
 
   test("response writes ordered game and seat links and decodes them back"):
     assertEquals(TrustedGameCreateResponseCodec.encode(seatResponse),

@@ -94,7 +94,7 @@ class RecoverProcedureSuite extends munit.FunSuite
     val lineage = campaign.lineages(Look(base).player(actor).lineage)
     val altered = FoundationState(FoundationFace.Altered,
       Set(LegacyId("legacy:recover-unrelated")))
-    // No Table step reaches lineage roles or foundations.
+    // No Table step reaches lineage roles or a foundation's sources.
     val ready = base.updateCampaign(_.copy(
       lineages = campaign.lineages.updated(lineage.id,
         lineage.copy(role = Role.Chancellor)),
