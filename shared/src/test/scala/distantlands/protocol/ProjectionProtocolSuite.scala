@@ -304,7 +304,7 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       Some(editing), Vector(NegotiationCitizenshipProjection("red", "blue")),
       Vector(NegotiationPromiseProjection("red", "I will not attack you.",
         binding = false), NegotiationPromiseProjection("blue",
-        "I will give you 1 favor.", binding = true)))
+        "I will give you 1 favor.", binding = true)), privateDeal = true)
     val query = DecisionQueryProjection.Negotiate(deal,
       heading = Some("Negotiation"))
     val waiting = WalkerWaitingProjection(Vector("red", "blue"),

@@ -54,10 +54,15 @@ object NegotiationStartFacts:
   private val Markers: Vector[String] =
     Vector(Marker, ArbiterMarker, FestivalMarker, DeedWriterMarker)
 
+  /** The facts at a fresh start. A private start (Whispering Stone,
+    * ruling 21) offers every other player, wherever their pawn stands. */
   def at(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
-      restrictions: Vector[PowerUseRestriction]): NegotiationStartFacts =
-    val candidates = NegotiationDeal.eligible(catalog, ready, actor,
-      restrictions)
+      restrictions: Vector[PowerUseRestriction],
+      privately: Boolean = false): NegotiationStartFacts =
+    val candidates =
+      if privately then
+        ready.game.current.players.map(_.player).filter(_ != actor)
+      else NegotiationDeal.eligible(catalog, ready, actor, restrictions)
     val players = actor +: candidates
     NegotiationStartFacts(candidates,
       NegotiationReach.tribunalUsers(catalog, ready, players, restrictions),

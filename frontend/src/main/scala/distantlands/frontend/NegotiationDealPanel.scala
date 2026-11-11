@@ -7,7 +7,9 @@ import org.scalajs.dom
   * deal, who has accepted, and the terms as their redaction level allows; the
   * viewer the route gave an editor answers the deal decision through it
   * (`ResolveWalker`: propose terms, accept, decline). An owner also writes
-  * their promises, and binding promises when the bounds open them.
+  * their promises, and binding promises when the bounds open them. A
+  * viewer outside a private deal reads only who negotiates and who has
+  * accepted.
   */
 private[frontend] object NegotiationDealPanel:
   import ServerUiSupport.{button, cardLink, protocolNegotiationTerms, text}
@@ -17,17 +19,22 @@ private[frontend] object NegotiationDealPanel:
 
   def render(surface: ParkedDecision.Surface.Negotiate, playerId: String,
       canControl: Boolean, panel: dom.Element, controls: TableControls): Unit =
-    summary(surface.deal, panel)
+    summary(surface.deal, playerId, panel)
     surface.editor.foreach { case (decisionId, editing) =>
       editor(decisionId, surface.deal, editing, playerId, canControl, panel,
         controls)
     }
 
-  private def summary(deal: NegotiationDealState, panel: dom.Element): Unit =
+  private def summary(deal: NegotiationDealState, playerId: String,
+      panel: dom.Element): Unit =
     panel.appendChild(text("h2", "", "Negotiation"))
     panel.appendChild(text("p", "negotiation-status",
       deal.participantPlayerIds.map(id => s"$id: ${if deal.acceptedPlayerIds
         .contains(id) then "accepted" else "reviewing"}").mkString(" · ")))
+    if deal.privateDeal && !deal.participantPlayerIds.contains(playerId) then
+      panel.appendChild(text("p", "negotiation-private",
+        s"${deal.participantPlayerIds.mkString(" and ")} are negotiating " +
+          "in private."))
     deal.transfers.foreach(t => panel.appendChild(transferLine(t)))
     deal.disclosures.foreach(d => panel.appendChild(disclosureLine(d)))
     deal.citizenship.foreach(offer => panel.appendChild(text("p",

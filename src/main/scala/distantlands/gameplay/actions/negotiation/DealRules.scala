@@ -16,10 +16,13 @@ enum TermKind:
   * (Festival District, ruling 15). `bindingPromises` opens binding
   * promises to every author (The Tribunal, ruling 11). `siteTraders` may
   * give and receive sites with anyone (Deed Writer, ruling 18).
+  * `privateDeal` keeps the terms from players outside the deal (Whispering
+  * Stone, ruling 23).
   */
 final case class DealRules(adviserTraders: Vector[PlayerId] = Vector.empty,
     advisersOpen: Boolean = false, bindingPromises: Boolean = false,
-    siteTraders: Vector[PlayerId] = Vector.empty):
+    siteTraders: Vector[PlayerId] = Vector.empty,
+    privateDeal: Boolean = false):
   def kinds(author: PlayerId, recipient: PlayerId): Set[TermKind] =
     val pair = Set(author, recipient)
     Set[TermKind](TermKind.Favor, TermKind.Relic) ++

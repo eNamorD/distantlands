@@ -116,3 +116,24 @@ class GameLogExchangeSuite extends munit.FunSuite:
     assertEquals(words.power(ready, p1,
       PowerId("banner.darkest-secret.wandering-flame.move"), None)
       .map(_.text).mkString, "Darkest Secret")
+
+  test("a private deal opens in private, and its transfer reads to all"):
+    val script = negotiationWhispered
+    val opened = s"Negotiated with ${playerLabel(p3)}, in private."
+    val gave = s"${playerLabel(script.actor)} gave 1 favor to " +
+      s"${playerLabel(p3)}"
+    Vector(None, Some(p1), Some(p2), Some(p3)).foreach { viewer =>
+      val all = texts(format(script, viewer).filter(_.depth == 1))
+      assertEquals(all.count(_ == opened), 1, s"$viewer: $all")
+      assertEquals(all.count(_ == gave), 1, s"$viewer: $all")
+    }
+
+  test("a private deal's promise reads only to its participants"):
+    val script = negotiationWhispered
+    val promise = s"${playerLabel(script.actor)} promised " +
+      s"${playerLabel(p3)}: “I will not attack you this round.”"
+    Vector(Some(p1) -> 1, Some(p3) -> 1, Some(p2) -> 0, None -> 0).foreach {
+      (viewer, count) =>
+        val all = texts(format(script, viewer))
+        assertEquals(all.count(_ == promise), count, s"$viewer: $all")
+    }

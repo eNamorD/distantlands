@@ -1,6 +1,5 @@
 package distantlands.gameplay
 
-import distantlands.catalog.holding.WhisperingStoneCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
   FairIsleSite}
 import distantlands.gameplay.powers.action.BrassHorseCard
@@ -206,13 +205,6 @@ class NegotiationProcedureSuite extends munit.FunSuite:
       case refill: OathEvent.BanditsRefilled => refill }.size, 1,
       "an agreed deal must run the action boundary and its bandit refill")
     assertEquals(MenuPlay.pendingBeyondMenu(Outcomes.ready(agreed.state)), None)
-
-  test("an unsupported Negotiation rule does not block the Negotiation"):
-    val powered = gathered.relic(p1, WhisperingStoneCard).ready
-    val started = start(powered).getOrElse(
-      fail("an unsupported rule must not block"))
-    parked.assertParked(accepted(choose(started.state, p1, p2)).state,
-      ActionRef.Negotiation, dealId, p1)
 
   test("a completed Negotiation replays exactly from its journal"):
     val SetupResult(setupState, setupEvents) = setupThroughWake()

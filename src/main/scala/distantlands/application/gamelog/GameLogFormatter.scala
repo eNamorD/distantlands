@@ -61,6 +61,18 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
     * "Redo"). */
   def format(steps: Vector[ReplayStep[OathState, OathEvent]],
       viewer: Option[PlayerId]): Vector[LogEntry] =
+    format(steps, viewer, everyLine = false)
+
+  /** Every line, read-restricted ones too, each worded for `viewer`: what
+    * `format` gives before it drops the lines `viewer` may not read. The
+    * Game Log properties compare viewers on it. */
+  private[gamelog] def formatEveryLine(
+      steps: Vector[ReplayStep[OathState, OathEvent]],
+      viewer: Option[PlayerId]): Vector[LogEntry] =
+    format(steps, viewer, everyLine = true)
+
+  private def format(steps: Vector[ReplayStep[OathState, OathEvent]],
+      viewer: Option[PlayerId], everyLine: Boolean): Vector[LogEntry] =
     val markers = steps.indices.toVector
       .filter(at => isVoidMarker(steps(at).event.event))
     // The taken-back markers still standing before `end`, with their
@@ -85,10 +97,10 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
     val applied = LogJournal.sharedOpSteps()
     val stood = standing(steps.size)
     val voided = stood.flatMap((at, marker) =>
-      formatLive(live(at), viewer, applied).filter(entry =>
+      formatLive(live(at), viewer, applied, everyLine).filter(entry =>
         entry.sequence >= marker.from && entry.sequence < marker.until))
     withdrawn(steps, takenBack.mark(stood.map(_._2),
-      (formatLive(live(steps.size), viewer, applied) ++ voided)
+      (formatLive(live(steps.size), viewer, applied, everyLine) ++ voided)
         .sortBy(entry => (entry.sequence, entry.ordinal))))
 
   /** A withdrawn request's line, struck through under no header (consent
@@ -115,8 +127,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
 
   private def formatLive(steps: Vector[ReplayStep[OathState, OathEvent]],
       viewer: Option[PlayerId],
-      applied: ReplayStep[OathState, OathEvent] => Vector[OpStep])
-      : Vector[LogEntry] =
+      applied: ReplayStep[OathState, OathEvent] => Vector[OpStep],
+      everyLine: Boolean): Vector[LogEntry] =
     val journal = new LogJournal(steps, applied)
     (0 until journal.size).foldLeft(
         (Option.empty[Run], Vector.empty[LogEntry])) {
@@ -131,9 +143,13 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
             section = entries.reverseIterator.flatMap(_.section).nextOption()))
           case _ => opened
         val posted = quietWake(entries.lastOption, filed)
-        (next, entries ++ posted.zipWithIndex.map { case (entry, ordinal) =>
-          LogEntry(journal.sequence(at), ordinal, entry.kind,
-            entry.spans, entry.section) })
+        // Numbered first, then dropped for a viewer outside the line's
+        // readers, so every other line keeps its (sequence, ordinal).
+        (next, entries ++ posted.zipWithIndex.collect {
+          case (entry, ordinal) if everyLine ||
+              entry.readers.forall(readers => viewer.exists(readers)) =>
+            LogEntry(journal.sequence(at), ordinal, entry.kind,
+              entry.spans, entry.section) })
     }._2
 
   /** A journal that does not begin with `GameStarted` began at a position

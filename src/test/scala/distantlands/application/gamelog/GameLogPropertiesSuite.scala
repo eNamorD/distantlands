@@ -42,10 +42,11 @@ class GameLogPropertiesSuite extends munit.FunSuite:
       }
     }
 
-  test("every viewer receives the same entries with the same keys"):
+  test("every viewer receives the same entries with the same keys, " +
+      "before the read-restricted lines are dropped"):
     scripts.foreach { script =>
       val shapes = viewers(script).map(viewer => formatter
-        .format(script.history.steps, viewer)
+        .formatEveryLine(script.history.steps, viewer)
         .map(entry => (entry.sequence, entry.ordinal, entry.kind, entry.depth,
           entry.section)))
       shapes.tail.foreach(shape => assertEquals(shape, shapes.head,

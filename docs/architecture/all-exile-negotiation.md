@@ -2,7 +2,7 @@
 
 Design: [negotiation walker design](../superpowers/specs/2026-09-19-negotiation-walker-design.md)
 
-Negotiation implements the Combined Rulebook page 27 and New Foundations page 15 procedure. It is a persistent 0-Supply minor action started by the active player with one or more players at their site or within reach, and it takes no start selection.
+Negotiation implements the Combined Rulebook page 27 and New Foundations page 15 procedure. It is a persistent 0-Supply minor action started by the active player with one or more players at their site or within reach, and it takes no start selection, except the private marker Whispering Stone's queued Negotiation carries.
 
 ## Procedure
 
@@ -41,13 +41,19 @@ Settlement is one recorded step. It validates that every author can still afford
 
 Disclosures are binding deal terms rather than an immediate sharing command. Completion grants selected recipients persistent adviser, held-relic, or site-relic knowledge. Adviser and held-relic knowledge follows card identity; site-relic knowledge remains site-scoped. Any future move into a shuffled or otherwise randomized opaque zone must explicitly clear applicable knowledge.
 
+## Private deals
+
+Whispering Stone pays 1 secret onto the relic and queues a Negotiation `Run`, sourced on the relic, whose one start argument is the private marker (`NegotiationProcedure.privateArgs`). The Negotiation accepts the marker only from such an entry (`queuedPrivately`). Its candidates are then every other player, its negotiators question takes exactly one, and `DealRules.privateDeal` marks the `Negotiate` query private. Every other rule of the deal holds unchanged, its When Negotiating powers and their blockers included.
+
+A viewer outside a private deal is projected its participants and accepted marks only. The opening line reads "Negotiated with p3, in private." The settlement's lines are public, but each promise line is a `LogNote` read only by the participants (`LogNote.readers`). The formatter numbers every line before it drops one for a viewer outside its readers, so the other lines keep their keys.
+
 ## Visibility
 
-Owners get the full deal with editing inputs, computed from their own bounds. Every other viewer, including the public view, gets a read-only deal through the walker waiting projection: the participants, who has accepted, favor amounts, relic counts, faceup relic details, and each disclosure's kind and recipient. Only an author sees the identity of a facedown relic they offer or of information they promise.
+Owners get the full deal with editing inputs, computed from their own bounds. Every other viewer, including the public view, gets a read-only deal through the walker waiting projection: the participants, who has accepted, favor amounts, relic counts, faceup relic details, and each disclosure's kind and recipient. Only an author sees the identity of a facedown relic they offer or of information they promise. A private deal shows a viewer outside it only who negotiates and who has accepted (see Private deals).
 
 ## Unsupported Negotiation rules
 
-`When Negotiating` handlers the engine does not support (the Grand Scepter and High Priest) are ignored, not blocking, and the start records nothing about them. Separate action powers such as Whispering Stone do not modify a base Negotiation merely by being held. The engine does not infer mechanics from rules text.
+`When Negotiating` handlers the engine does not support (the Grand Scepter and High Priest) are ignored, not blocking, and the start records nothing about them. The engine does not infer mechanics from rules text.
 
 ## Journal
 
@@ -55,4 +61,4 @@ Each answer is a `WalkerStepRecorded` carrying a `ChoicePayload`. Negotiation ha
 
 ## Deferred
 
-Citizenship and the Grand Scepter, secrets and banner transfers, Whispering Stone's remote, private Negotiation, future-action promises, and the other component-specific Negotiation powers remain deferred. The `NegotiationEligibility` and `NegotiationSettlement` windows and the explicit `participants` of the `Negotiate` query are the hooks those powers will use. The reach cards (Traveling Negotiator, The Tribunal, Bandit Tribunal) hook no window: the start reads `NegotiationReach` directly.
+Citizenship and the Grand Scepter, secrets and banner transfers, future-action promises, and the other component-specific Negotiation powers remain deferred. The `NegotiationEligibility` and `NegotiationSettlement` windows and the explicit `participants` of the `Negotiate` query are the hooks those powers will use. The reach cards (Traveling Negotiator, The Tribunal, Bandit Tribunal) hook no window: the start reads `NegotiationReach` directly.

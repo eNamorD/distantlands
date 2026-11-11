@@ -624,7 +624,10 @@ object DecisionQuery:
       /** The recipients the terms would leave with too few warbands to rule
         * every site they receive. While it is not empty nobody may accept
         * (ruling 29). */
-      shortOfWarbands: Vector[PlayerId] = Vector.empty) extends DecisionQuery
+      shortOfWarbands: Vector[PlayerId] = Vector.empty,
+      /** The deal is private (Whispering Stone, ruling 23): a viewer
+        * outside it is shown who negotiates, never the terms. */
+      privateDeal: Boolean = false) extends DecisionQuery
 
   /** Look at `cards`, in order, then press Done (catalog batch 2, N5). There
     * is no choice: the one answer is the choose-one answer of the `Done`

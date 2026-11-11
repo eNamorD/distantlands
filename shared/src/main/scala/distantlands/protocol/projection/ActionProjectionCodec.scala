@@ -444,12 +444,14 @@ private[projection] object ActionProjectionCodec:
       "recipientPlayerId" -> offer.recipientPlayerId)),
     "promises" -> encoded(value.promises)(promise => ujson.Obj(
       "authorPlayerId" -> promise.authorPlayerId, "text" -> promise.text,
-      "binding" -> promise.binding)))
+      "binding" -> promise.binding)),
+    "privateDeal" -> value.privateDeal)
 
   def decodeDeal(raw: ujson.Value, path: String): Result[NegotiationDealProjection] = for
     value <- obj(raw, path)
     _ <- exact(value, Set("participantPlayerIds", "acceptedPlayerIds", "transfers",
-      "disclosures", "editing", "citizenship", "promises"), path)
+      "disclosures", "editing", "citizenship", "promises", "privateDeal"),
+      path)
     participants <- strings(value, "participantPlayerIds", path)
     accepted <- strings(value, "acceptedPlayerIds", path)
     transferRaws <- array(value, "transfers", path)
@@ -501,5 +503,6 @@ private[projection] object ActionProjectionCodec:
       text <- string(row, "text", child)
       binding <- bool(row, "binding", child)
     yield NegotiationPromiseProjection(author, text, binding) }
+    privateDeal <- bool(value, "privateDeal", path)
   yield NegotiationDealProjection(participants, accepted, transfers, disclosures,
-    editing, offers, promises)
+    editing, offers, promises, privateDeal = privateDeal)

@@ -393,7 +393,8 @@ final case class NegotiationEditingProjection(editableFavor: Int,
   * faceup relics and advisers, the sites on offer, and
   * each disclosure's kind and recipient, and every promise. Only an author sees the identity of
   * their own facedown relics and of information they promise. `editing` is
-  * present only for a participant.
+  * present only for a participant. In a private deal, a viewer outside it
+  * gets the participants and the accepted marks only.
   */
 final case class NegotiationDealProjection(participantPlayerIds: Vector[String],
     acceptedPlayerIds: Vector[String],
@@ -401,4 +402,7 @@ final case class NegotiationDealProjection(participantPlayerIds: Vector[String],
     disclosures: Vector[NegotiationDisclosureProjection],
     editing: Option[NegotiationEditingProjection] = None,
     citizenship: Vector[NegotiationCitizenshipProjection] = Vector.empty,
-    promises: Vector[NegotiationPromiseProjection] = Vector.empty)
+    promises: Vector[NegotiationPromiseProjection] = Vector.empty,
+    /** The deal is private (Whispering Stone): a viewer outside it gets
+      * no terms. True for every viewer of such a deal. */
+    privateDeal: Boolean = false)
