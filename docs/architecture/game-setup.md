@@ -44,9 +44,10 @@ bank only the 1 per denizen. Both altered faces are built directly, like the
 rest of game start; nothing is journaled.
 
 `GameStartRules.evolve` validates only what Setup itself needs from the
-Chronicle: known and unique atlas/denizen/relic ids, at least 8 atlas sites,
+Chronicle: known and unique atlas/denizen/relic ids, an atlas site for every
+slot it fills from the atlas (8 in a first game),
 enough World Deck and relic cards to deal, a deal holding exactly the
-Chronicle's decks, and one matching edifice per Homeland in play. The deeper suit-count and Vision-packet audit a Chronicle
+Chronicle's decks, and, in a first game, one matching edifice per Homeland in play. The deeper suit-count and Vision-packet audit a Chronicle
 must satisfy is the generator's own job, checked once at generation time
 (`FirstGameChronicleGenerator.validate`) rather than again at every setup.
 
@@ -59,6 +60,28 @@ The phase now runs the Sun and Throne tasks; the recorded Chronicle carries
 their roles, era scores and Oathkeeper goal, while sites, decks and the
 Reliquary stay as in the baseline until the Stars task extracts them.
 
+`EmpireSetupRules.resolve` reads how the game starts, a `SetupMode`. A
+Chronicle that lists no Chancellor, no Citizen and no Empire site starts a
+first game on eight atlas sites. With a Chancellor seated, or a seated
+Citizen standing in for one, the Empire's sites return; Imperial Maps then
+fills the slots past them from the atlas's Recent end, and Wide Horizons,
+the altered Foundation I, fills none. With no Chancellor and no Citizen
+seated, Setup With No Empire erodes Foundation I to Wide Horizons and
+Foundation V to Mob's Favor, places only the former Empire's sites, as
+bandit sites with ruined edifices and every open relic slot filled while
+the relic deck lasts, turns the box's Imperial lineages into Exiles
+(`CampaignState.boxRoles`) and sets the Reliquary aside
+(`CampaignState.reliquarySetAside`): its relics stay in the campaign's
+Reliquary and no one can take one in play.
+
+The map's slots fill going Hinterward, 2 in the Cradle and 3 in each other
+region (`Region.slots`), and a region's vector may be shorter than its
+slots (`MapState.inSlots`, `nextSlot`, `hintermost`). The atlas keeps
+every atlas site game start did not place, in order. The projection gives
+each region its `emptySlots`, which the table draws as empty frames. No
+action fills an empty slot yet: Explore is slice 3b of the
+[Foundations design](../superpowers/specs/2026-11-11-foundations-design.md).
+
 The completed aggregate includes site resources and bandits, facedown site
 relics, ruined Homeland edifices, regional discards, player advisers, World and
 relic decks, starting Exile boards and Supply, banners, tracks, the Oathkeeper
@@ -66,9 +89,9 @@ goal, favor banks, and the Chronicle's six Foundation faces
 (`StartingFoundations`; a number the Chronicle does not list lies normal).
 
 The scope follows Combined Rulebook pp. 6-7 and the New Foundations first-game
-clarification on p. 8. It excludes Legacy selection/effects,
-Chancellor/Citizen/Imperial setup, restoring the rest of a stored campaign
-(roles, legacies, the Empire's sites), and the altered Foundation faces no
+clarification on p. 8, and for later games the New Foundations rulebook's
+"Setup for Later Games". It excludes Legacy selection/effects, the
+Explore action, and the altered Foundation faces no
 slice of the
 [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md)
 has brought in yet, which game start refuses by name. Foundation III is

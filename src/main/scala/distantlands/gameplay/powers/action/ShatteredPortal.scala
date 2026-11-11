@@ -12,10 +12,12 @@ import distantlands.model._
   *
   * The roll is a `RollStep` of one round die; Jinx names only attack and
   * defense dice, so no reroll is offered. The placement is a plain `Move`,
-  * as Stone Portal's is. The map holds 8 sites, so a roll of 1 to 6 never
-  * lands on the starting site. With the pawn elsewhere (the user rules the
-  * site), the option shows unavailable with [[NotHere]]. Its line: "Rolled
-  * 4; {Blue} placed at {site}."
+  * as Stone Portal's is. A full map holds 8 sites, so a roll of 1 to 6
+  * never lands on the starting site. A map with empty slots holds fewer:
+  * the wrap counts the sites on it, and a roll that is a multiple of their
+  * number leaves the pawn where it stands. With the pawn elsewhere (the
+  * user rules the site), the option shows unavailable with [[NotHere]]. Its
+  * line: "Rolled 4; {Blue} placed at {site}."
   */
 case object ShatteredPortal extends PaidAction(StonePortalCard.ruined.power):
   val NotHere: String = "Your pawn is not at this site."

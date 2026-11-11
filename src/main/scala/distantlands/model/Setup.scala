@@ -49,17 +49,23 @@ final case class FirstGameSupportState(
 final case class FirstGameSetupPlan(
     participants: Vector[FirstGameParticipant],
     firstPlayer: PlayerId,
+    /** The sites game start places, in slot order going Hinterward: eight
+      * on a full map, fewer when slots stay empty. */
     orderedSites: Vector[SiteId],
     denizenOrder: Vector[DenizenId],
     worldDeckOrder: Vector[WorldCardId],
     relicOrder: Vector[RelicId],
     homelandEdifices: Vector[(SiteId, EdificeId)],
     oathkeeperGoal: OathkeeperGoal,
-    /** The Empire a later game starts with; a first game has none. */
+    /** The Empire a later game starts with; a first game has none, nor has
+      * a game set up with no Empire. */
     empire: Option[EmpireSetup] = None,
-    /** The atlas sites that fill the slots the Empire leaves, with their
-      * stored cards, Recent end first. Empty for a first game, whose sites
-      * are all in `orderedSites`. */
+    /** The sites placed as bandit sites with their stored cards, their
+      * edifices ruined: the atlas sites that fill the slots the Empire
+      * leaves, Recent end first, or, with no Empire, the former Empire's
+      * sites. Empty for a first game, whose sites are all in
+      * `orderedSites`, and under Wide Horizons with an Empire, which fills
+      * no slot. */
     atlasSites: Vector[StoredSite] = Vector.empty,
     /** Each seated player's stored starting advisers (CR p. 11). */
     startingAdvisers: Map[PlayerId, Vector[AdviserState]] = Map.empty,

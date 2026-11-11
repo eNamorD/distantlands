@@ -100,7 +100,10 @@ final case class SetupRegionProjection(
     /** The pile top first. A card the viewer may not identify is the
       * projector's `hiddenCard`, so the pile's size is always public and
       * its faces are not. */
-    discardCards: Vector[CardDetailsProjection] = Vector.empty
+    discardCards: Vector[CardDetailsProjection] = Vector.empty,
+    /** The region's site slots that hold no site, which follow `sites`:
+      * slots fill going Hinterward. */
+    emptySlots: Int = 0
 )
 /** A site's power: its printed kind, label and text, and `id`, the power's
   * id, which a client keys the power's consent preferences on. */

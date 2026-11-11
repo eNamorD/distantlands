@@ -102,6 +102,10 @@ final case class SiteState(
     tokens: Tokens
 )
 
+/** The sites on the map, by region. A region may hold fewer sites than its
+  * slots: under Wide Horizons and after Setup With No Empire the slots past
+  * the last site placed are empty (Foundations design, slice 3). Slots fill
+  * going Hinterward, so the empty ones follow every site. */
 final case class MapState(
     cradle: Vector[SiteId],
     provinces: Vector[SiteId],
@@ -109,6 +113,24 @@ final case class MapState(
     sites: Map[SiteId, SiteState]
 ):
   def inPlay: Vector[SiteId] = cradle ++ provinces ++ hinterland
+
+  /** The sites in `region`, top slot first. */
+  def sitesIn(region: Region): Vector[SiteId] = region match
+    case Region.Cradle => cradle
+    case Region.Provinces => provinces
+    case Region.Hinterland => hinterland
+
+  /** The slots of `region` that hold no site. */
+  def emptySlots(region: Region): Int =
+    math.max(0, region.slots - sitesIn(region).size)
+
+  /** The region of the next empty slot going Hinterward: the first region
+    * not yet full. None on a full map. */
+  def nextSlot: Option[Region] = Region.all.find(emptySlots(_) > 0)
+
+  /** The Hintermost site: the last site in Hinterward order. None on a map
+    * with no site. */
+  def hintermost: Option[SiteId] = hinterward.lastOption
 
   def regionOf(site: SiteId): Option[Region] =
     if cradle.contains(site) then Some(Region.Cradle)
@@ -119,6 +141,19 @@ final case class MapState(
   /** The map from the Cradle out (CR pp. 9, 45): the order the Chronicle's
     * Stars task archives rival sites in and keeps the Empire's sites in. */
   def hinterward: Vector[SiteId] = inPlay
+
+object MapState:
+  /** The site slots on the map. */
+  val slots: Int = Region.all.map(_.slots).sum
+
+  /** The map with `placed` in its slots going Hinterward: top to bottom in
+    * the Cradle, then the Provinces, then the Hinterland. Slots past the
+    * last site stay empty. More sites than the map has slots overfill the
+    * Hinterland, which `DomainValidation` reports. */
+  def inSlots(placed: Vector[(SiteId, SiteState)]): MapState =
+    val (cradle, outer) = placed.map(_._1).splitAt(Region.Cradle.slots)
+    val (provinces, hinterland) = outer.splitAt(Region.Provinces.slots)
+    MapState(cradle, provinces, hinterland, placed.toMap)
 
 sealed trait AtlasEntry extends Product with Serializable
 object AtlasEntry:

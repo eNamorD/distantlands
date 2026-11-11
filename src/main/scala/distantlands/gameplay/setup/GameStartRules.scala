@@ -13,10 +13,10 @@ import distantlands.model.OathViolation._
  * the orders into the `FirstGameSetupPlan` and the game state.
  *
  * Validation here is only what Setup itself needs: known and unique ids
- * across every Chronicle field (`ChronicleAccounting`), a later game's
- * Empire (`EmpireSetupRules`), foundation faces that work
- * (`StartingFoundations`), enough cards to deal, and, in a first game,
- * one edifice per Homeland in play (Empire ruling R26). The old
+ * across every Chronicle field (`ChronicleAccounting`), how a later game
+ * starts, with an Empire or with none (`EmpireSetupRules`), foundation
+ * faces that work (`StartingFoundations`), enough cards to deal, and, in a
+ * first game, one edifice per Homeland in play (Empire ruling R26). The old
  * plan's suit-count and Vision-packet audit is the generator's own job now
  * (`FirstGameChronicleGenerator.validate`), checked once at generation
  * time rather than again at every setup.
@@ -26,12 +26,13 @@ object GameStartRules:
       orders: SetupOrders): Either[OathViolation, ReadyGame] =
     val deal = SetupDeal.of(chronicle, orders.participants)
     for
-      plan <- buildPlan(catalog, chronicle, orders, deal)
+      planned <- buildPlan(catalog, chronicle, orders, deal)
+      (plan, mode) = planned
       material = new FirstGameSetupMaterializer(catalog)
         .materialize(plan, deal)
       // An edifice the Chronicle stores at a site stays there: it is not also
       // in the edifice deck. The materializer only knows the edifices at the
-      // 8 sites in play.
+      // sites in play.
       storedEdifices = (chronicle.atlasBox ++ chronicle.world).flatMap(_.items)
         .collect { case id: EdificeId => id }.toSet
       commonCards = material.commonCards.copy(edificeDeck =
@@ -44,9 +45,12 @@ object GameStartRules:
           LineageState(participant.lineageId, None, Role.Exile, Vector.empty,
             Vector.empty))
       ).toMap
-      // The atlas past the sites in play keeps every stored card, the
-      // inverse of `ChronicleExtraction.extract`'s `carried`.
-      atlas = AtlasState(chronicle.atlasBox.drop(8 - chronicle.world.size)
+      // The atlas sites not placed on the map stay in the atlas, in order,
+      // with every stored card: the inverse of
+      // `ChronicleExtraction.extract`'s `carried`.
+      onMap = plan.orderedSites.toSet
+      atlas = AtlasState(chronicle.atlasBox.filterNot(stored =>
+          onMap(stored.site))
         .map(stored => AtlasEntry.StoredSite(stored.site,
           stored.items.collect { case id: DenizenId =>
             DenizenState(id, Orientation.FaceUp, Tokens.empty) },
@@ -65,16 +69,14 @@ object GameStartRules:
           material.tracks, None, material.temporaryHands))
       ready = LaterGameSetup(catalog, ReadyGame.start(game,
         plan.participants.map(p => p.playerId -> p.color).toMap,
-        orders.firstPlayer, material.favorBanks), plan)
+        orders.firstPlayer, material.favorBanks), plan, mode)
       problems = DomainValidation.validate(ready.game)
       _ <- Either.cond(problems.isEmpty, (), InvalidAggregate(problems))
     yield ready
 
   private def buildPlan(catalog: ExecutableCatalog, chronicle: Chronicle,
       orders: SetupOrders, deal: SetupDeal)
-      : Either[OathViolation, FirstGameSetupPlan] =
-    val slots = 8 - chronicle.world.size
-    val faces = StartingFoundations.of(chronicle)
+      : Either[OathViolation, (FirstGameSetupPlan, SetupMode)] =
     for
       _ <- Either.cond(chronicle.lineages.forall(_.startingRelics.isEmpty), (),
         UnsupportedChronicle("starting relics require Legacies"))
@@ -82,17 +84,24 @@ object GameStartRules:
       records = chronicle.lineages.filter(lineage => seated(lineage.id))
       _ <- Either.cond(records.forall(_.legacies.isEmpty), (),
         UnsupportedChronicle("legacies require Legacies"))
+      _ <- validateParticipants(orders)
+      mode <- EmpireSetupRules.resolve(chronicle, orders)
+      // Setup With No Empire erodes the faces before the foundations are
+      // resolved, so an eroded face is never refused.
+      faces = mode match
+        case _: SetupMode.NoEmpire =>
+          StartingFoundations.eroded(StartingFoundations.of(chronicle))
+        case _ => StartingFoundations.of(chronicle)
       _ <- StartingFoundations.refusal(faces)
         .map(UnsupportedChronicle(_)).toLeft(())
-      _ <- validateParticipants(orders)
-      empire <- EmpireSetupRules.resolve(chronicle, orders)
+      slots = atlasSlots(mode, faces)
       _ <- Either.cond(chronicle.atlasBox.size >= slots, (),
         UnsupportedChronicle(
           s"at least $slots atlas sites are required, got ${chronicle.atlasBox.size}"))
       atlasSites = chronicle.atlasBox.take(slots)
       // A later game keeps every card stored at its sites (R27); a first
       // game's sites hold only their Homeland edifices (R26).
-      _ <- Either.cond(empire.nonEmpty ||
+      _ <- Either.cond(mode != SetupMode.FirstGame ||
         chronicle.atlasBox.forall(_.items.forall(_.isInstanceOf[EdificeId])), (),
         UnsupportedChronicle(
           "stored denizens or relics on an atlas site are not supported yet"))
@@ -100,7 +109,8 @@ object GameStartRules:
       _ <- Either.cond(
         chronicle.worldDeck.size >= deal.needed, (),
         UnsupportedChronicle("not enough world-deck cards to deal"))
-      homelands <- if empire.isEmpty then homelandEdifices(catalog, atlasSites)
+      homelands <- if mode == SetupMode.FirstGame then
+          homelandEdifices(catalog, atlasSites)
         else Right(Vector.empty)
       _ <- Either.cond(chronicle.relicDeck.size >=
           atlasSites.map(emptyRelicSlots(catalog, _)).sum,
@@ -109,8 +119,26 @@ object GameStartRules:
     yield FirstGameSetupPlan(orders.participants, orders.firstPlayer,
       (chronicle.world ++ atlasSites).map(_.site), orders.denizenOrder,
       orders.worldDeckOrder, orders.relicOrder, homelands,
-      chronicle.oathkeeperGoal, empire, if empire.isEmpty then Vector.empty
-        else atlasSites, startingAdvisers(chronicle, orders), faces)
+      chronicle.oathkeeperGoal, mode match
+        case SetupMode.WithEmpire(empire) => Some(empire)
+        case _ => None,
+      mode match
+        case SetupMode.FirstGame => Vector.empty
+        case _: SetupMode.WithEmpire => atlasSites
+        case SetupMode.NoEmpire(sites, _) => sites,
+      startingAdvisers(chronicle, orders), faces) -> mode
+
+  /** The slots game start fills from the Recent end of the atlas. A first
+    * game fills all eight. With an Empire, Imperial Maps fills the slots
+    * past the Empire's sites (R27), and Wide Horizons fills none. With no
+    * Empire the former Empire's sites are all that is placed. */
+  private def atlasSlots(mode: SetupMode,
+      faces: Map[FoundationNumber, FoundationState]): Int = mode match
+    case SetupMode.FirstGame => MapState.slots
+    case SetupMode.WithEmpire(empire)
+        if faces(FoundationNumber.I).face == FoundationFace.Normal =>
+      MapState.slots - empire.sites.size
+    case _ => 0
 
   /** A site's relic slots its stored relics leave open, never fewer than 0
     * (R27). */

@@ -18,16 +18,12 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     val empireSites = plan.empire.fold(Map.empty[SiteId, StoredSite])(
       _.sites.map(stored => stored.site -> stored).toMap)
     val atlasSites = plan.atlasSites.map(stored => stored.site -> stored).toMap
-    val map = MapState(
-      plan.orderedSites.take(2),
-      plan.orderedSites.slice(2, 5),
-      plan.orderedSites.slice(5, 8),
-      plan.orderedSites.map { siteId =>
-        val drawn = relicsBySite.getOrElse(siteId, Vector.empty)
-        siteId -> empireSites.get(siteId).map(empireSite(_, purple(siteId)))
-          .orElse(atlasSites.get(siteId).map(atlasSite(_, drawn)))
-          .getOrElse(firstGameSite(siteId, edifices.get(siteId), drawn))
-      }.toMap)
+    val map = MapState.inSlots(plan.orderedSites.map { siteId =>
+      val drawn = relicsBySite.getOrElse(siteId, Vector.empty)
+      siteId -> empireSites.get(siteId).map(empireSite(_, purple(siteId)))
+        .orElse(atlasSites.get(siteId).map(atlasSite(_, drawn)))
+        .getOrElse(firstGameSite(siteId, edifices.get(siteId), drawn))
+    })
     val usedRelics = relicsBySite.valuesIterator.flatten.toSet
     val players = plan.participants.map { participant =>
       PlayerState(participant.playerId, participant.lineageId, None,
@@ -52,7 +48,8 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
 
   /** A first game deals every relic slot; a later game deals only the
     * slots an atlas site's stored relics leave open, and none at the
-    * Empire's sites (Empire ruling R27). */
+    * Empire's sites (Empire ruling R27). Slots are dealt Cradlemost first,
+    * and a relic deck that runs out leaves the last ones empty. */
   private def assignRelics(plan: FirstGameSetupPlan): Map[SiteId, Vector[RelicId]] =
     val stored = plan.atlasSites.map(site => site.site -> site).toMap
     val empire = plan.empire.fold(Set.empty[SiteId])(_.sites.map(_.site).toSet)
@@ -92,7 +89,8 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       catalog.site(stored.site).get.startingResources)
 
   /** An atlas site in a later game keeps its stored cards, its edifice
-    * ruined, and fills its open relic slots (Empire ruling R27). */
+    * ruined, and fills its open relic slots (Empire ruling R27). A former
+    * Empire's site is set up the same way with no Empire. */
   private def atlasSite(stored: StoredSite, drawn: Vector[RelicId]): SiteState =
     SiteState(bandits(stored.site), storedDenizens(stored, EdificeSide.Ruined),
       faceDown(storedRelics(stored) ++ drawn),

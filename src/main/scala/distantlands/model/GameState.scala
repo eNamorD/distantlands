@@ -75,8 +75,17 @@ final case class CampaignState(
     evolved: Option[Chronicle] = None,
     // Roles this Chronicle gave to lineages nobody seated, which the
     // baseline holds (Crown Chancellor: "even in the box", CR p. 36).
-    boxRoles: Map[LineageId, Role] = Map.empty
-)
+    boxRoles: Map[LineageId, Role] = Map.empty,
+    // Setup With No Empire discards the Reliquary until the Chronicle
+    // Phase: its relics stay in `reliquary`, and no one can take one in
+    // play (Foundations ruling 3).
+    reliquarySetAside: Boolean = false
+):
+  /** The Reliquary's relics a player may take in play: none while the
+    * Reliquary is set aside. Every taker reads this, never `reliquary`,
+    * which the card index and the Chronicle Phase read whole. */
+  def reliquaryInPlay: Vector[RelicId] =
+    if reliquarySetAside then Vector.empty else reliquary
 
 /** `key` is the phase's wire spelling, carried here rather than in a codec
   * because the phase is now a journalled value: `EnterPhase` records a phase

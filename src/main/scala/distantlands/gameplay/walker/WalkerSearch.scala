@@ -27,9 +27,10 @@ private[walker] object WalkerSearch:
     * tried split by split and kept whole, since no option of it can be
     * dropped: it fails when no split survives. Other kinds are not
     * narrowed. `Left` is a required decision with nothing left, carrying the
-    * first option's rejection. `Right(None)` is an optional one with nothing
-    * left, which is not asked: a choose-many whose minimum is zero, or a
-    * choose-one passed when empty.
+    * first option's rejection, or a required choose-one that declares no
+    * option, which nothing could answer. `Right(None)` is an optional one
+    * with nothing left, which is not asked: a choose-many whose minimum is
+    * zero, or a choose-one passed when empty.
     */
   def narrow(decide: Decide,
       verdict: DecisionAnswer => Either[OathViolation, Unit])
@@ -154,7 +155,19 @@ private[walker] object WalkerSearch:
     val rejected = refs.map(verdicts).collect { case Left(violation) => violation }
     if required && refs.nonEmpty && rejected.size == refs.size then
       Left(rejected.head)
+    else if required && declaresNothing(decide) then Left(noAnswer)
     else Right(narrowed(decide, ref => verdicts(ref).isRight))
+
+  /** Whether `decide` is a choose-one that declares no option at all,
+    * available or not: a question nothing can answer, where a walk that
+    * parked would stay. A choose-many left with nothing is cut to a choice
+    * of none ([[narrowed]]), which its player can confirm. */
+  private def declaresNothing(decide: Decide): Boolean = decide.query match
+    case one: DecisionQuery.ChooseOne => one.options.isEmpty
+    case _ => false
+
+  private val noAnswer: OathViolation =
+    OathViolation.InvalidEventOrder("the decision offers no answer")
 
   /** Every answer `decide` accepts, in the order a search tries them, or
     * `None` for a kind whose answers are not tried.
@@ -212,8 +225,7 @@ private[walker] object WalkerSearch:
   private def survivor(answers: Iterator[DecisionAnswer],
       verdict: DecisionAnswer => Either[OathViolation, Unit],
       first: Option[OathViolation]): Either[OathViolation, Unit] =
-    if !answers.hasNext then Left(first.getOrElse(
-      OathViolation.InvalidEventOrder("the decision offers no answer")))
+    if !answers.hasNext then Left(first.getOrElse(noAnswer))
     else verdict(answers.next()) match
       case Right(()) => Right(())
       case Left(violation) =>

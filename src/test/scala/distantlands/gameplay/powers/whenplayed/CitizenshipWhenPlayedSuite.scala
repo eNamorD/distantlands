@@ -104,6 +104,24 @@ class CitizenshipWhenPlayedSuite extends munit.FunSuite:
       line("reliquary-empty", "The Reliquary was empty."),
       line("used", "Became a Citizen.")))
 
+  test("Bewitch: a Reliquary set aside gives no relic, and the player " +
+      "still becomes the Chancellor"):
+    // Setup With No Empire set the Reliquary aside, so no one is Imperial.
+    val start = p1AtHomeSite.turn(p1, Phase.Act).allowingCitizenshipPowers
+      .secrets(p1, 3).secrets(p2, 0).secrets(p3, 0).reliquaryFromDeck(2)
+      .reliquarySetAside.ready
+    val stocked = start.game.campaign.reliquary
+    assertEquals(stocked.size, 2)
+    val walked = played(start, bewitch, chooseOne(bewitch.become))
+    assertEquals(Imperials.chancellor(walked.end), Some(p1))
+    assertEquals(walked.end.game.campaign.reliquary, stocked)
+    assert(!Look(walked.end).player(p1).relics.exists(relic =>
+      stocked.contains(relic.id)))
+    assertEquals(said(bewitch, walked.events), Vector(
+      line("reliquary-empty", "The Reliquary was empty."),
+      line("used.chancellor", "Became the Chancellor.")))
+    assertJournalRebuilds(start, walked.events, walked.end)
+
   test("Ancient Pact asks only the holder of the Darkest Secret"):
     val start = exileInEmpire.darkestSecret(Some(p1), 0).reliquaryFromDeck(1)
       .ready

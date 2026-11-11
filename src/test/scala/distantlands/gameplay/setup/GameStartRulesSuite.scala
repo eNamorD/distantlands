@@ -4,7 +4,7 @@ import distantlands.application.{ChronicleFirstGamePlan, FirstGameBootstrapConfi
 import distantlands.gameplay.cards.GreatSlumSite
 import distantlands.gameplay.powers.setup.HallOfDebateCard
 import distantlands.model._
-import distantlands.testkit.Unwrap.{accepted, as, rejected}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 class GameStartRulesSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
@@ -122,8 +122,6 @@ class GameStartRulesSuite extends munit.FunSuite:
     def unsupported(face: String, slice: Int) =
       OathViolation.UnsupportedChronicle(
         s"$face is not supported yet: it arrives with Foundations slice $slice")
-    assertEquals(refusalFor(FoundationNumber.I),
-      unsupported("Wide Horizons (altered Foundation I)", 3))
     assertEquals(refusalFor(FoundationNumber.V),
       unsupported("Grand Council (altered Foundation V)", 5))
     assertEquals(refusalFor(FoundationNumber.VI),
@@ -181,12 +179,44 @@ class GameStartRulesSuite extends munit.FunSuite:
       Left(OathViolation.UnsupportedChronicle(
         "the first player must be a seated Citizen")))
 
-  test("game start refuses an Empire-less later game until Wide Horizons"):
+  test("with no Chancellor and no Citizen seated, a later game starts " +
+      "with no Empire, whoever goes first"):
     val record = LaterGameFixture.chronicle(LineageId("l9"), LineageId("l8"))
+    Vector("p1", "p2", "p3").foreach { first =>
+      val ready = accepted(GameStartRules.evolve(catalog, record,
+        LaterGameFixture.orders(record, PlayerId(first))))
+      assertEquals(Imperials.players(ready), Vector.empty)
+      assertEquals(ready.game.current.turn.activePlayer, PlayerId(first))
+    }
+
+  test("a Chronicle that lists no Chancellor makes a seated Citizen the " +
+      "Chancellor, who must go first, and with no Citizen seated starts " +
+      "with no Empire"):
+    val citizen = LineageState(LineageId("l2"), None, Role.Citizen,
+      Vector.empty, Vector.empty)
+    val record = LaterGameFixture.chronicle(LineageId("l9"), world = 2)
+    val seatedCitizen = record.copy(lineages = Vector(citizen))
+    val ready = accepted(GameStartRules.evolve(catalog, seatedCitizen,
+      LaterGameFixture.orders(seatedCitizen, PlayerId("p2"))))
+    assertEquals(Imperials.chancellor(ready), Some(PlayerId("p2")))
+    assertEquals(ready.game.campaign.boxRoles, Map.empty)
+    assertEquals(GameStartRules.evolve(catalog, seatedCitizen,
+        LaterGameFixture.orders(seatedCitizen, PlayerId("p1"))),
+      Left(OathViolation.UnsupportedChronicle(
+        "the first player must be a seated Citizen")))
+    val nobodyListed = record.copy(lineages = Vector.empty)
+    val exiles = accepted(GameStartRules.evolve(catalog, nobodyListed,
+      LaterGameFixture.orders(nobodyListed, PlayerId("p3"))))
+    assertEquals(Imperials.players(exiles), Vector.empty)
+    assertEquals(exiles.game.current.map.inPlay, record.world.map(_.site))
+
+  test("game start refuses a former Empire with no site, as it does an " +
+      "Empire's (R28)"):
+    val record = LaterGameFixture.chronicle(LineageId("l9"), world = 0)
     assertEquals(GameStartRules.evolve(catalog, record,
         LaterGameFixture.orders(record, PlayerId("p1"))),
       Left(OathViolation.UnsupportedChronicle(
-        "an Empire-less later game requires Wide Horizons")))
+        "an Empire needs at least one site")))
 
   test("game start refuses an Empire with no site (R28)"):
     val record = LaterGameFixture.chronicle(LineageId("l1"), world = 0)
@@ -274,11 +304,13 @@ class GameStartRulesSuite extends munit.FunSuite:
       OathViolation.UnsupportedChronicle(
         "the world deck is not the rest of the deal"))
 
-  test("a non-empty world is refused"):
+  test("a site stored in both the atlas and the Empire is refused"):
     // Starts from the Chronicle itself: the start rule is the subject.
-    val withWorld = chronicle.copy(world = chronicle.atlasBox.take(1))
-    as[OathViolation.UnsupportedChronicle](
-      rejected(GameStartRules.evolve(catalog, withWorld, orders)))
+    val stored = chronicle.atlasBox.head
+    val twice = chronicle.copy(world = Vector(stored))
+    assertEquals(rejected(GameStartRules.evolve(catalog, twice, orders)),
+      OathViolation.UnsupportedChronicle(
+        s"duplicate atlas site ${stored.site.value}"))
 
   test("a stored denizen on an atlas site is refused"):
     // Starts from the Chronicle itself: the start rule is the subject.

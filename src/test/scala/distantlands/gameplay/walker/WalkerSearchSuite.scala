@@ -37,6 +37,19 @@ class WalkerSearchSuite extends munit.FunSuite:
     val asked = decide(DecisionQuery.ChooseOne(Vector(button("a"))))
     assertEquals(WalkerSearch.narrow(asked, only(_ => false)), Left(refused))
 
+  test("a required choose-one that declares no option is refused where " +
+      "it is asked, as a search refuses it, and one passed when empty is " +
+      "not asked"):
+    val noAnswer = OathViolation.InvalidEventOrder(
+      "the decision offers no answer")
+    val nothing = DecisionQuery.ChooseOne(Vector.empty)
+    assertEquals(WalkerSearch.narrow(decide(nothing), only(_ => true)),
+      Left(noAnswer))
+    assertEquals(WalkerSearch.reach(decide(nothing), only(_ => true)),
+      Left(noAnswer))
+    assertEquals(WalkerSearch.narrow(passable(nothing), only(_ => true)),
+      Right(None))
+
   test("a choose-many keeps an option that survives only beside another"):
     val asked = decide(DecisionQuery.ChooseMany(1, 2, abc, None))
     val pair = ChooseManyAnswer(Vector(ref("a"), ref("b")))

@@ -339,7 +339,10 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   text-transform: uppercase;
 }
 
-.sites { display: grid; grid-template-columns: 1fr; gap: 9px; }
+/* The height of a site slot, filled or empty, set where both kinds of box
+   inherit it. */
+.sites { display: grid; grid-template-columns: 1fr; gap: 9px;
+  --site-h: 21.5rem; }
 /* One size for every site, whatever it holds this turn. A pawn arriving, a
    Travel preview opening or a site holding forces used to grow the box and
    shift the board under the player, so each of those now has a place that
@@ -361,11 +364,17 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
      The ceiling is what fits the map pane's column, and the percentage takes
      over wherever a site is drawn narrower than that. */
   --card-w: min(8.6rem, calc((100% - 2 * var(--card-gap)) / 3));
-  /* Heading, pawns, three cards and two lines of powers; the box is the
-     same height on the zoomed-out map, where the powers hold the glance
-     size and clamp to one line. */
-  --site-h: 21.5rem;
+  /* Its height, `--site-h` on `.sites`, holds the heading, pawns, three
+     cards and two lines of powers; the box is the same height on the
+     zoomed-out map, where the powers hold the glance size and clamp to one
+     line. */
 }
+/* A slot that holds no site: a frame the size of a site, dashed as every
+   place that is not filled yet, so a short region keeps the height of a
+   full one. */
+.site-slot-empty { min-width: 0; height: var(--site-h);
+  border: 1px dashed var(--line-mid); border-radius: 9px;
+  background: transparent; }
 /* Sized from the width rather than a length of their own, so a card keeps its
    proportions as the row divides up whatever width the site has. */
 .site .card-face { height: auto; aspect-ratio: 1 / 1.4; }
