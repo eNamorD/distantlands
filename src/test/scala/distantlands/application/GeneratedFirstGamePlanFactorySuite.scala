@@ -1,7 +1,8 @@
 package distantlands.application
 
 import distantlands.gameplay.powers.PowerImplementationStatus
-import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.gameplay.setup.{FirstGameRulesData, FirstGameSetupFixture,
+  GameStartRules}
 import distantlands.model._
 import distantlands.testkit.ChronicleShuffles
 import distantlands.testkit.Unwrap.{accepted, present}
@@ -81,6 +82,20 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     assertEquals(plan.orders.relicOrder.sortBy(_.value),
       saved.relicDeck.sortBy(_.value))
     assertEquals(plan.chronicle, saved)
+
+  test("a Teeming World Chronicle is dealt a world deck of the five " +
+      "Visions, shuffled, and the game starts from that deal"):
+    val saved = FirstGameSetupFixture.chronicle.copy(foundations = Map(
+      FoundationNumber.IV -> FoundationState(FoundationFace.Altered,
+        Set.empty)))
+    val plan = accepted(new GeneratedFirstGamePlanFactory(catalog,
+      ChronicleShuffles.reversing).build(config, ChronicleChoice.Saved(saved)))
+    assertEquals(plan.orders.worldDeckOrder,
+      (FirstGameRulesData.visions: Vector[WorldCardId]).reverse)
+    val current = accepted(GameStartRules.evolve(catalog, plan.chronicle,
+      plan.orders)).game.current
+    assertEquals(current.commonCards.worldDeck, plan.orders.worldDeckOrder)
+    assertEquals(current.players.map(_.advisers.size), Vector(3, 3, 3))
 
   private def lineage(id: String, role: Role) =
     LineageState(LineageId(id), None, role, Vector.empty, Vector.empty)

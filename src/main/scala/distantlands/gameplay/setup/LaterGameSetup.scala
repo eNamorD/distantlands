@@ -20,7 +20,10 @@ object LaterGameSetup:
       shortSitesTakeBandits(catalog, imperial(advised, plan, empire)))
 
   /** The advisers go facedown to their players and leave the lineage's
-    * record, so the card index holds each card once (CR p. 11). */
+    * record, so the card index holds each card once (CR p. 11). They come
+    * before any adviser Teeming World dealt the player: a player takes
+    * their stored advisers before Foundation IV, and the order of facedown
+    * advisers cannot change. */
   private def startingAdvisers(ready: ReadyGame, plan: FirstGameSetupPlan)
       : ReadyGame =
     val seated = plan.participants.map(_.lineageId).toSet
@@ -28,8 +31,9 @@ object LaterGameSetup:
       campaign.lineages.map((id, lineage) => id -> (if seated(id) then
         lineage.copy(startingAdvisers = Vector.empty) else lineage))))
       .updateCurrent(current => current.copy(players = current.players.map(
-        state => state.copy(advisers = state.advisers ++ plan.startingAdvisers
-          .getOrElse(state.player, Vector.empty).map(faceDown)))))
+        state => state.copy(advisers = plan.startingAdvisers
+          .getOrElse(state.player, Vector.empty).map(faceDown) ++
+          state.advisers))))
 
   private def imperial(ready: ReadyGame, plan: FirstGameSetupPlan,
       empire: EmpireSetup): ReadyGame =

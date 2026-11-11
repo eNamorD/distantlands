@@ -1,7 +1,10 @@
 package distantlands.gameplay.setup
 
+import distantlands.catalog.SiteOnly
+import distantlands.gameplay.{OathRules, SearchPlay}
 import distantlands.model._
-import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.{Answers, Outcomes, Situation}
+import distantlands.testkit.Unwrap.{accepted, as, rejected}
 
 /** Game start under the two altered faces that only change setup, Movers
   * and Shakers (II) and Teeming World (IV) (Foundations design, slice 2).
@@ -77,3 +80,166 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
     assertEquals(movers.game.current.temporaryHands,
       tribes.game.current.temporaryHands)
     assertEquals(movers.game.current.banners, tribes.game.current.banners)
+
+  private val (p2, p3) = (PlayerId("p2"), PlayerId("p3"))
+
+  /** The first-game Chronicle with Foundation IV on Teeming World. */
+  private val teemingWorldChronicle =
+    withAlteredFoundation(firstGameChronicle, FoundationNumber.IV)
+
+  private def faceDown(denizens: Vector[DenizenId]): Vector[AdviserState] =
+    denizens.map(DenizenState(_, Orientation.FaceDown, Tokens.empty))
+
+  private def advisers(ready: ReadyGame, player: PlayerId)
+      : Vector[AdviserState] = ready.game.current.player(player).get.advisers
+
+  test("under Teeming World each player with no stored adviser starts with " +
+      "three facedown advisers from the top of the stack, and no hand"):
+    val ready = started(teemingWorldChronicle)
+    val stack = firstGameChronicle.worldDeck
+    assertEquals(Vector(p1, p2, p3).map(advisers(ready, _)), Vector(
+      faceDown(stack.slice(0, 3)), faceDown(stack.slice(3, 6)),
+      faceDown(stack.slice(6, 9))))
+    assertEquals(ready.game.current.temporaryHands.values.flatten.toVector,
+      Vector.empty)
+
+  /** The adviser l2 stores in `teemingWorldChronicleWithStoredAdviser`:
+    * the last card of `chronicleWithEmpire`'s world deck. */
+  private val storedAdviser = DenizenState(
+    chronicleWithEmpire.worldDeck.last, Orientation.FaceUp, Tokens.empty)
+
+  /** `chronicleWithEmpire` with Foundation IV on Teeming World and l2
+    * storing `storedAdviser`, which leaves the world deck. */
+  private val teemingWorldChronicleWithStoredAdviser = withAlteredFoundation(
+    chronicleWithEmpire.copy(worldDeck = chronicleWithEmpire.worldDeck.init,
+      lineages = chronicleWithEmpire.lineages.map(lineage =>
+        if lineage.id == LineageId("l2") then
+          lineage.copy(startingAdvisers = Vector(storedAdviser))
+        else lineage)), FoundationNumber.IV)
+
+  test("under Teeming World a lineage with one stored adviser draws two " +
+      "and holds all three facedown, the stored one first"):
+    val ready = started(teemingWorldChronicleWithStoredAdviser)
+    val stack = teemingWorldChronicleWithStoredAdviser.worldDeck
+    assertEquals(advisers(ready, p1), faceDown(stack.slice(0, 3)))
+    // A facedown adviser's place cannot change, and the stored one was
+    // taken before Foundation IV dealt the other two (ruling 8).
+    assertEquals(advisers(ready, p2),
+      faceDown(storedAdviser.id +: stack.slice(3, 5)))
+    assertEquals(advisers(ready, p3), faceDown(stack.slice(5, 8)))
+    assertEquals(ready.game.campaign.lineages(LineageId("l2"))
+      .startingAdvisers, Vector.empty)
+
+  test("Teeming World deals the rest of the stack to the Cradle, the " +
+      "Provinces and the Hinterland discard piles in turn, with no pile " +
+      "seeded"):
+    val ready = started(teemingWorldChronicle)
+    val rest = firstGameChronicle.worldDeck.drop(9)
+    def everyThird(from: Int): Vector[WorldCardId] =
+      rest.indices.filter(_ % 3 == from).map(rest).toVector
+    assertEquals(rest.size, 51)
+    assertEquals(ready.game.current.commonCards.regionalDiscards, Map(
+      Region.Cradle -> everyThird(0), Region.Provinces -> everyThird(1),
+      Region.Hinterland -> everyThird(2)))
+    // A pile's top is its last card: the last three dealt top the piles.
+    assertEquals(Region.all.map(region =>
+      ready.game.current.commonCards.discard(region).last), rest.takeRight(3))
+
+  test("a Teeming World stack that does not divide by three leaves the " +
+      "Cradle pile the odd card"):
+    // 57 denizens less the 8 drawn leave 49.
+    val ready = started(teemingWorldChronicleWithStoredAdviser)
+    assertEquals(Region.all.map(region =>
+      ready.game.current.commonCards.discard(region).size), Vector(17, 16, 16))
+
+  test("under Teeming World the world deck is the five Visions alone"):
+    val ready = started(teemingWorldChronicle)
+    assertEquals(ready.game.current.commonCards.worldDeck,
+      FirstGameRulesData.visions: Vector[WorldCardId])
+
+  test("a Teeming World game holds every card once"):
+    Vector(teemingWorldChronicle, teemingWorldChronicleWithStoredAdviser)
+        .foreach { chronicle =>
+      val ready = started(chronicle)
+      assert(ready.game.cardIndex.isRight, ready.game.cardIndex)
+      // Every denizen of the stack and every stored adviser is an adviser
+      // or in a discard pile.
+      val stored = chronicle.lineages.flatMap(_.startingAdvisers).map(_.id)
+      val held = ready.game.current.players.flatMap(_.advisers.map(_.id)) ++
+        Region.all.flatMap(ready.game.current.commonCards.discard)
+      assertEquals(held.map(_.value).sorted,
+        (chronicle.worldDeck ++ stored).map(_.value).sorted)
+    }
+
+  test("Teeming World refuses a stack too short for every player's draws"):
+    val short = teemingWorldChronicle.copy(
+      worldDeck = firstGameChronicle.worldDeck.take(8))
+    assertEquals(rejected(GameStartRules.evolve(catalog, short,
+        LaterGameFixture.orders(short, p1))),
+      OathViolation.UnsupportedChronicle("not enough world-deck cards to deal"))
+
+  test("Movers and Shakers and Teeming World together each set up their " +
+      "own part"):
+    val ready = started(withAlteredFoundation(
+      teemingWorldChronicleWithStoredAdviser, FoundationNumber.II))
+    assertEquals(ready.game.current.players.map(_.board.favor),
+      Vector(6, 6, 6))
+    val onMap = suitsOnMap(ready)
+    assertEquals(ready.banks.favor,
+      Suit.all.map(suit => suit -> onMap.count(_ == suit)).toMap)
+    assertEquals(ready.game.current.players.map(_.advisers.size),
+      Vector(3, 3, 3))
+    assertEquals(ready.game.current.commonCards.worldDeck,
+      FirstGameRulesData.visions: Vector[WorldCardId])
+
+  /** Every decision id the walk parked on, in order, while it answers each
+    * by default. */
+  private def decisionsAskedDuringSetup(chronicle: Chronicle): Vector[String] =
+    var asked = Vector.empty[String]
+    val recording: Answers =
+      case park if { asked :+= park.decisionId; false } => ???
+    Situation.wake(Situation.rules(catalog).withAnswers(recording), chronicle,
+      LaterGameFixture.orders(chronicle, p1))
+    asked
+
+  test("under Teeming World Setup asks each player for a pawn site and a " +
+      "reveal, and no one to choose an adviser"):
+    val asked = decisionsAskedDuringSetup(teemingWorldChronicle)
+    assertEquals(asked, Vector(p1, p2, p3).flatMap(player => Vector(
+      SetupProcedure.pawnDecisionId(player),
+      SetupProcedure.revealDecisionId(player))))
+
+  test("under Teeming World Reveal Cards offers a player's three facedown " +
+      "advisers, and Setup ends with each player holding three"):
+    var offered = Vector.empty[Int]
+    val countingOffersAndRevealingNothing: Answers =
+      case park if park.decisionId ==
+          SetupProcedure.revealDecisionId(park.awaiting) =>
+        offered :+= as[DecisionQuery.ChooseMany](park.decide.query)
+          .options.size
+        DecisionAnswer.ChooseManyAnswer(Vector.empty)
+    val woken = Situation.wake(Situation.rules(catalog)
+      .withAnswers(countingOffersAndRevealingNothing), teemingWorldChronicle,
+      LaterGameFixture.orders(teemingWorldChronicle, p1))
+    val siteOnly = Vector(p1, p2, p3).map(player =>
+      advisers(woken.ready, player).count {
+        case DenizenState(id, _, _) =>
+          catalog.denizen(id).exists(_.isInstanceOf[SiteOnly])
+        case _ => false
+      })
+    assertEquals(offered, siteOnly.map(3 - _))
+    assertEquals(woken.ready.game.current.players.map(_.advisers.size),
+      Vector(3, 3, 3))
+    assertNotEquals(woken.ready.game.current.turn.phase, Phase.Setup)
+
+  test("the first Search of a Teeming World game draws a Vision from the " +
+      "world deck and stops"):
+    val woken = Situation.wake(Situation.rules(catalog), teemingWorldChronicle,
+      LaterGameFixture.orders(teemingWorldChronicle, p1)).endingWake(p1)
+    val searched = Outcomes.ready(accepted(SearchPlay.searched(
+      new OathRules(catalog), woken.state, p1, SearchSource.WorldDeck)).state)
+    assertEquals(searched.game.current.temporaryHands(p1),
+      Vector[WorldCardId](FirstGameRulesData.visions.head))
+    assertEquals(searched.game.current.tracks.visionsDrawn, 1)
+    assertEquals(searched.game.current.commonCards.worldDeck,
+      FirstGameRulesData.visions.tail: Vector[WorldCardId])

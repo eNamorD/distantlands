@@ -124,8 +124,6 @@ class GameStartRulesSuite extends munit.FunSuite:
         s"$face is not supported yet: it arrives with Foundations slice $slice")
     assertEquals(refusalFor(FoundationNumber.I),
       unsupported("Wide Horizons (altered Foundation I)", 3))
-    assertEquals(refusalFor(FoundationNumber.IV),
-      unsupported("Teeming World (altered Foundation IV)", 2))
     assertEquals(refusalFor(FoundationNumber.V),
       unsupported("Grand Council (altered Foundation V)", 5))
     assertEquals(refusalFor(FoundationNumber.VI),
@@ -135,6 +133,19 @@ class GameStartRulesSuite extends munit.FunSuite:
     val ready = accepted(GameStartRules.evolve(catalog, chronicle.copy(
       foundations = Map(FoundationNumber.II -> altered)), orders))
     assertEquals(ready.game.campaign.foundations(FoundationNumber.II), altered)
+
+  test("game start accepts an altered Foundation IV dealt as Teeming World " +
+      "deals, and refuses it dealt as Ties of Fellowship deals"):
+    val teemingChronicle = chronicle.copy(
+      foundations = Map(FoundationNumber.IV -> altered))
+    val ready = accepted(GameStartRules.evolve(catalog, teemingChronicle,
+      LaterGameFixture.orders(teemingChronicle, orders.firstPlayer)))
+    assertEquals(ready.game.campaign.foundations(FoundationNumber.IV), altered)
+    // `orders` leaves 45 denizens in the world deck.
+    assertEquals(rejected(GameStartRules.evolve(catalog, teemingChronicle,
+        orders)),
+      OathViolation.UnsupportedChronicle(
+        "the world deck is not the rest of the deal"))
 
   test("with several altered faces, game start names the first refused one " +
       "in foundation order"):
