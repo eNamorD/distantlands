@@ -18,16 +18,12 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     val empireSites = plan.empire.fold(Map.empty[SiteId, StoredSite])(
       _.sites.map(stored => stored.site -> stored).toMap)
     val atlasSites = plan.atlasSites.map(stored => stored.site -> stored).toMap
-    val map = MapState(
-      plan.orderedSites.take(2),
-      plan.orderedSites.slice(2, 5),
-      plan.orderedSites.slice(5, 8),
-      plan.orderedSites.map { siteId =>
-        val drawn = relicsBySite.getOrElse(siteId, Vector.empty)
-        siteId -> empireSites.get(siteId).map(empireSite(_, purple(siteId)))
-          .orElse(atlasSites.get(siteId).map(atlasSite(_, drawn)))
-          .getOrElse(firstGameSite(siteId, edifices.get(siteId), drawn))
-      }.toMap)
+    val map = MapState.inSlots(plan.orderedSites.map { siteId =>
+      val drawn = relicsBySite.getOrElse(siteId, Vector.empty)
+      siteId -> empireSites.get(siteId).map(empireSite(_, purple(siteId)))
+        .orElse(atlasSites.get(siteId).map(atlasSite(_, drawn)))
+        .getOrElse(firstGameSite(siteId, edifices.get(siteId), drawn))
+    })
     val usedRelics = relicsBySite.valuesIterator.flatten.toSet
     val players = plan.participants.map { participant =>
       PlayerState(participant.playerId, participant.lineageId, None,

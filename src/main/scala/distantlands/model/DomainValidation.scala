@@ -2,6 +2,8 @@ package distantlands.model
 
 sealed trait DomainProblem extends Product with Serializable
 object DomainProblem:
+  /** `region` holds more sites than its `expected` slots. Fewer is no
+    * problem: a slot may be empty. */
   final case class WrongRegionSize(
       region: Region,
       expected: Int,
@@ -55,13 +57,10 @@ object DomainValidation:
     val problems = Vector.newBuilder[DomainProblem]
     val map = game.current.map
 
-    Vector(
-      (Region.Cradle: Region, 2, map.cradle.size),
-      (Region.Provinces: Region, 3, map.provinces.size),
-      (Region.Hinterland: Region, 3, map.hinterland.size)
-    ).foreach { case (region, expected, actual) =>
-      if actual != expected then
-        problems += WrongRegionSize(region, expected, actual)
+    Region.all.foreach { region =>
+      val actual = map.sitesIn(region).size
+      if actual > region.slots then
+        problems += WrongRegionSize(region, region.slots, actual)
     }
 
     map.inPlay

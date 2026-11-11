@@ -41,10 +41,12 @@ final case class RelicState(
 
 final case class LegacyState(id: LegacyId, active: Boolean) extends CardState
 
-enum Region(val key: String):
-  case Cradle extends Region("cradle")
-  case Provinces extends Region("provinces")
-  case Hinterland extends Region("hinterland")
+/** A region of the map. `slots` is the number of sites it has room for
+  * (rulebook, "The Map at Large"). */
+enum Region(val key: String, val slots: Int):
+  case Cradle extends Region("cradle", 2)
+  case Provinces extends Region("provinces", 3)
+  case Hinterland extends Region("hinterland", 3)
 object Region:
   val all: Vector[Region] = Vector(Cradle, Provinces, Hinterland)
 
