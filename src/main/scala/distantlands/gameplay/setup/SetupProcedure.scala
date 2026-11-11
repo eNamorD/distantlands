@@ -103,8 +103,11 @@ object SetupProcedure:
       steps :+ setupEnd :+ BeginTurn(participants.head.playerId, Phase.Wake))
 
   /** A later game's Chancellor first keeps one Reliquary relic facedown
-    * (CR p. 8, Empire ruling R29). An empty Reliquary asks nothing, nor
-    * does one set aside. */
+    * (CR p. 8, Empire ruling R29). An empty Reliquary asks nothing. The
+    * pick is never asked while the Reliquary is set aside: Setup With No
+    * Empire sets it aside only when there is no Chancellor, and only a
+    * Chancellor is asked. It reads `reliquaryInPlay` all the same, so that
+    * the Reliquary in play is read one way everywhere. */
   private def reliquaryPick(chancellor: PlayerId): Operation =
     Branch((state, _) =>
       val relics = state.game.campaign.reliquaryInPlay

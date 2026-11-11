@@ -156,8 +156,10 @@ class NoEmpireSetupSuite extends munit.FunSuite:
     assertEquals(campaign.reliquaryInPlay, record.reliquary)
     assert(!FirstGameSetupFixture.freshReady.game.campaign.reliquarySetAside)
 
-  test("the Grand Scepter is set aside and no one is asked for a " +
-      "Reliquary relic"):
+  // There is no Chancellor, so Setup has no one to ask for a Reliquary
+  // pick. This does not show that the set-aside flag stops a pick.
+  test("the Grand Scepter is set aside, and with no Chancellor no one is " +
+      "asked for a Reliquary relic"):
     val record = formerEmpireWithReliquary
     var asked = Vector.empty[String]
     val recording: Answers =
@@ -197,15 +199,11 @@ class NoEmpireSetupSuite extends munit.FunSuite:
     assertEquals(started(record).banks.favor,
       Suit.all.map(suit => suit -> (3 + onMap.count(_ == suit))).toMap)
 
-  test("the option that ignores citizenship powers stands as in a later " +
-      "game with an Empire"):
-    val withEmpire = LaterGameFixture.chronicle(LineageId("l1"),
-      LineageId("l2"))
+  test("the option that ignores citizenship powers is on"):
+    // Game start sets it for every game today; the owner has still to rule
+    // on later games.
     assertEquals(started(absentEmpireChronicle()).setup
-      .ignoreCitizenshipPowers,
-      accepted(GameStartRules.evolve(catalog, withEmpire,
-        LaterGameFixture.orders(withEmpire, p1))).setup
-        .ignoreCitizenshipPowers)
+      .ignoreCitizenshipPowers, true)
 
   test("the plan's first player begins, the Usurper Limiter is on, and " +
       "the title and both banners start as in a first game"):
