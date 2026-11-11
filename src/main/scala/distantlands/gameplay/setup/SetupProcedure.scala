@@ -103,10 +103,11 @@ object SetupProcedure:
       steps :+ setupEnd :+ BeginTurn(participants.head.playerId, Phase.Wake))
 
   /** A later game's Chancellor first keeps one Reliquary relic facedown
-    * (CR p. 8, Empire ruling R29). An empty Reliquary asks nothing. */
+    * (CR p. 8, Empire ruling R29). An empty Reliquary asks nothing, nor
+    * does one set aside. */
   private def reliquaryPick(chancellor: PlayerId): Operation =
     Branch((state, _) =>
-      val relics = state.game.campaign.reliquary
+      val relics = state.game.campaign.reliquaryInPlay
       if relics.isEmpty then Vector.empty
       else Vector(
         Decide(reliquaryDecisionId, chancellor, DecisionQuery.ChooseOne(

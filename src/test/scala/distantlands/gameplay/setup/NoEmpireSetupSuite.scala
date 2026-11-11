@@ -124,6 +124,38 @@ class NoEmpireSetupSuite extends munit.FunSuite:
     record.copy(relicDeck = record.relicDeck.drop(2),
       reliquary = reliquaryRelics)
 
+  test("the Reliquary's relics stay set aside: no site, deck or player " +
+      "holds one, and the card index holds every card once"):
+    val record = formerEmpireWithReliquary
+    val ready = started(record)
+    val game = ready.game
+    assertEquals(game.campaign.reliquary, reliquaryRelics)
+    assert(game.campaign.reliquarySetAside)
+    assertEquals(game.campaign.reliquaryInPlay, Vector.empty)
+    val inPlay = game.current.map.sites.values.flatMap(_.relics.map(_.id)) ++
+      game.current.commonCards.relicDeck ++
+      game.current.players.flatMap(_.relics.map(_.id))
+    assert(!inPlay.exists(reliquaryRelics.contains))
+    // Every relic slot on the map is filled, from the relic deck alone.
+    assertEquals(game.current.map.sites.values.map(_.relics.size).sum,
+      record.world.map(stored => catalog.site(stored.site).get.relicSlots).sum)
+    val index = accepted(game.cardIndex)
+    reliquaryRelics.foreach(relic => assertEquals(
+      index.get(relic).map(_.location.container),
+      Some(CardContainer.Reliquary)))
+    assertEquals(DomainValidation.validate(game), Vector.empty)
+
+  test("a game with an Empire does not set the Reliquary aside: its " +
+      "relics may be taken in play"):
+    val empire = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
+    val record = empire.copy(relicDeck = empire.relicDeck.drop(2),
+      reliquary = empire.relicDeck.take(2))
+    val campaign = accepted(GameStartRules.evolve(catalog, record,
+      LaterGameFixture.orders(record, p1))).game.campaign
+    assert(!campaign.reliquarySetAside)
+    assertEquals(campaign.reliquaryInPlay, record.reliquary)
+    assert(!FirstGameSetupFixture.freshReady.game.campaign.reliquarySetAside)
+
   test("the Grand Scepter is set aside and no one is asked for a " +
       "Reliquary relic"):
     val record = formerEmpireWithReliquary
@@ -190,6 +222,25 @@ class NoEmpireSetupSuite extends munit.FunSuite:
       DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)))
     assertEquals(current.players.map(_.board),
       Vector.fill(3)(PlayerBoardState(1, 1, 0, 3, SupplyTrack.full)))
+
+  test("an Exile may place their pawn at any site the bandits rule, and " +
+      "at no site without warbands while one has bandits"):
+    val ready = started(absentEmpireChronicle(empireSites = 3))
+    val sites = ready.game.current.map.hinterward
+    Vector(p1, p2, p3).foreach(player =>
+      assertEquals(SetupPawnSites.legal(ready, player), sites))
+    /** `ready` with `emptied` holding no warbands, as a capacity-0 site
+      * holds none. */
+    def withoutWarbandsAt(emptied: Set[SiteId]): ReadyGame =
+      ready.updateCurrent(current => current.copy(map = current.map.copy(
+        sites = current.map.sites.map((site, state) => site ->
+          (if emptied(site) then state.copy(forces = SiteForces.Empty)
+          else state)))))
+    assertEquals(SetupPawnSites.legal(withoutWarbandsAt(Set(sites(1))), p1),
+      Vector(sites(0), sites(2)))
+    // With no bandits anywhere, any site: Setup must not stall.
+    assertEquals(SetupPawnSites.legal(withoutWarbandsAt(sites.toSet), p1),
+      sites)
 
   test("Setup runs to the first player's turn on the former Empire's sites"):
     val record = absentEmpireChronicle()

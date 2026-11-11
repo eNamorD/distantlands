@@ -315,6 +315,11 @@ final case class Table private (private val game: ReadyGame,
       c.commonCards.copy(relicDeck = deck.drop(n))))
       .updateCampaign(c => c.copy(reliquary = c.reliquary ++ deck.take(n))) }
 
+  /** The Reliquary set aside for the game, as Setup With No Empire leaves
+    * it: its relics stay where they are. */
+  def reliquarySetAside: Table =
+    update(_.updateCampaign(_.copy(reliquarySetAside = true)))
+
   /** A walker procedure for `action`, parked at step `path` of its tree
     * ("0" is the tree's first step), with `answered` already recorded. */
   def parkedWalker(action: ProcedureRef, path: String = "0",

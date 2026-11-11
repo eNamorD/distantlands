@@ -8,9 +8,9 @@ import distantlands.model._
 /** What a Chronicle's lineages bring to the table `FirstGameSetupMaterializer`
   * built (CR pp. 8-11): every seated lineage's starting advisers, and, in a
   * later game, the Empire's roles, purple warbands, Grand Scepter, title and
-  * banners, or, with no Empire, the box's Exiles. The state is built
-  * directly, as game start builds the whole game; nothing here is
-  * journaled. */
+  * banners, or, with no Empire, the box's Exiles and the Reliquary set
+  * aside. The state is built directly, as game start builds the whole
+  * game; nothing here is journaled. */
 object LaterGameSetup:
   /** Each seated lineage's starting advisers move to its player; with an
     * Empire, its table facts follow, and with none, the box's. */
@@ -24,13 +24,15 @@ object LaterGameSetup:
       case SetupMode.NoEmpire(_, exiled) => withoutEmpire(advised, exiled)
 
   /** Setup With No Empire, off the map: every Imperial lineage in the box
-    * becomes an Exile. The title, the banners, the Usurper Limiter and the
-    * first player stay as the materializer set them, as in a first game;
-    * the Grand Scepter stays in the box. */
+    * becomes an Exile, and the Reliquary is set aside until the Chronicle
+    * Phase (Foundations ruling 3). The title, the banners, the Usurper
+    * Limiter and the first player stay as the materializer set them, as in
+    * a first game; the Grand Scepter stays in the box. */
   private def withoutEmpire(ready: ReadyGame, exiled: Vector[LineageId])
       : ReadyGame =
     ready.updateCampaign(campaign => campaign.copy(
-      boxRoles = campaign.boxRoles ++ exiled.map(_ -> Role.Exile)))
+      boxRoles = campaign.boxRoles ++ exiled.map(_ -> Role.Exile),
+      reliquarySetAside = true))
 
   /** The advisers go facedown to their players and leave the lineage's
     * record, so the card index holds each card once (CR p. 11). They come
