@@ -1,0 +1,313 @@
+# Foundations
+
+**Status:** designed 2026-11-11.
+
+**Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
+the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
+[catalog batch 11](2026-11-07-catalog-batch-11-design.md), whose setup,
+Empire and consent rules apply unchanged.
+
+## Goal and scope
+
+New Foundations sets up a later game from six foundation setup cards, each
+with a normal and an altered face (NF rulebook, "Foundations"). Game start
+today forces every foundation to its normal face and ignores the faces a
+Chronicle stores. It also refuses a later game with no Chancellor and no
+Citizen seated, which needs Foundation I's altered face, Wide Horizons, and
+its Explore action.
+
+Before Legacies exist, a face is altered in two ways: an imported Chronicle
+(the TTS string's foundations mask) stores it, or Setup With No Empire erodes
+Foundation I to Wide Horizons. This batch makes every face but Foundation
+III's work, and lets the Beacon restore one. Legacies later only add
+alteration sources; the places that read a face stay the same.
+
+| Slice | Seam | Faces |
+|---|---|---|
+| 1 | Faces reach the game | all six, read and shown |
+| 2 | Setup-only faces | II Movers and Shakers, IV Teeming World |
+| 3 | Empty map slots, Explore, no-Empire setup | I Wide Horizons |
+| 4 | The Chancellor's site choice | I Imperial Maps |
+| 5 | A banner face that opens play sites | V Grand Council |
+| 6 | A banner face with a marker | VI Festival |
+| 7 | Restoring a face in the Chronicle | Beacon's Shape Foundation |
+
+Slices are ordered so that each seam exists before the slice that reuses
+it. Slice 4 reuses slice 3's empty slots and its `PlaceAtlasSite`
+operation. Slice 7 reads the faces slice 1 brings into the game.
+
+Foundation III deals legacy cards on both faces (Quiet Ambitions: each
+player draws 2 and keeps 1; Public Ambitions: a public row of 4). It waits
+for the Legacies item of **Phase - Chronicle steps**. Game start accepts
+either face of III and skips its setup, as it skips Quiet Ambitions today.
+
+The roadmap's **Foundations** item leaves **Phase - Chronicle steps** and
+becomes **Phase - Foundations**. Its **Grand Council and Festival banner
+faces** item folds into slices 5 and 6.
+
+## Rulings
+
+Taken with the owner on 2026-11-10 and 2026-11-11.
+
+1. **Foundation III waits for Legacies.** Both faces are accepted at game
+   start and do nothing. The Beacon may still restore an altered III
+   (slice 7).
+2. **Explore borrows only Recover's dice.** No power that names Recover or
+   recovering applies to Explore: Silver Charm, Relic Patrols and Drowned
+   Library stay out, though Silver Charm's text names only spending Supply to
+   roll defense dice. Jinx ("after you roll [attack-die] or [defense-die] for
+   any reason") applies, through the generic `Reroll` window.
+3. **No Empire sets the Reliquary aside.** "Discard all relics from the
+   Reliquary. They return in the Chronicle Phase." The Reliquary's relics
+   stay `campaign.reliquary` all game and never enter play; the slot fill
+   cannot draw them, and the Chronicle's Stock Reliquary step adds to them.
+4. **Explore's line** is "Explored Forgotten Site: Found Deep Woods" (or
+   "Recent Site").
+5. **The shared bank has no count.** Taking favor from it changes nothing
+   but the taker's board.
+
+Design calls the owner accepted with the slices:
+
+- Any role may Explore.
+- Festival's marker is placed automatically each Rest, with no question,
+  since the face says "must".
+- With no Empire, the Oathkeeper title and both banners start as in a first
+  game.
+
+## Approach
+
+Faces live in `CampaignState.foundations`, and each step reads them where
+that step already lives. Game start resolves the faces (the Chronicle's,
+then erosion). The materializer branches per face for II, IV, V and VI and
+for Foundation I's fill. The setup walker gains only the one choice a face
+needs, Imperial Maps'. In play, Explore is offered while Foundation I is
+altered, and V and VI set the banners' faces, which `BannersState` already
+models.
+
+Two alternatives were set aside. Making each face a contributing power at
+setup windows, like the edifice setup powers, would move the directly built
+II and IV setup into walked operations for no rules gain. Plain `if altered`
+branches with no catalog leave the UI and the Game Log nothing to name.
+
+## Slice 1: faces reach the game
+
+- **Game start.** `GameStartRules.evolve` copies `chronicle.foundations`
+  into `CampaignState.foundations`, a missing number as
+  `FoundationState(Normal, Set.empty)`, sources kept. An altered I, II, IV,
+  V or VI is refused with `UnsupportedChronicle`, naming the face and the
+  slice it arrives with; each later slice deletes its own refusal. III is
+  accepted on either face.
+- **Chronicle record.** `ChronicleRecord` writes `campaign.foundations` into
+  the evolved Chronicle instead of keeping the baseline's, so erosion
+  (slice 3) and restores (slice 7) carry into the next game.
+- **The minor-action gate.** `MinorActionProcedures.started` stops refusing
+  with "minor actions are limited to the fixed unaltered foundations".
+  `FirstGameFoundationProfile` goes too if nothing else reads it.
+- **Catalog.** `FoundationCards` lists I to VI, each face with its printed
+  name and its text from the rulebook's Foundations section:
+
+  | | Normal | Altered |
+  |---|---|---|
+  | I | Imperial Maps | Wide Horizons |
+  | II | Powerful Tribes | Movers and Shakers |
+  | III | Quiet Ambitions | Public Ambitions |
+  | IV | Ties of Fellowship | Teeming World |
+  | V | Mob's Favor | Grand Council |
+  | VI | Wandering Flame | Festival |
+
+  `RuleSourceIndex` replaces the generic `foundation.altered` id with one
+  id per face (`foundation.i.wide-horizons`), so `PrintedCards` names the
+  card a line comes from.
+- **Projection and UI.** The game projection gains `foundations`: each
+  number, its face and the face's name. The game info area shows a strip of
+  six setup cards with the altered faces marked, and the Chronicle page lists
+  the same six. Both are read-only; editing waits for **Edit Chronicle**.
+- **Tests.** Game start keeps stored faces and refuses the gated ones;
+  minor actions run under an altered III; the projection and its codec round
+  trip; the TTS mask still imports to faces; a frontend suite for the strip;
+  the Chronicle record keeps a changed face.
+
+## Slice 2: Movers and Shakers and Teeming World
+
+Both are setup only and built directly by the materializer; nothing is
+journaled. Each removes its refusal.
+
+- **Movers and Shakers (II).** Each player takes 5 more favor from the
+  shared bank. Each suit's bank then gets 1 favor per denizen of that suit on
+  the map, edifices included, with no base 3 and no fifth-player favor, since
+  the face prints neither.
+- **Teeming World (IV).** Each player draws facedown denizens from the
+  starting stack until they hold three facedown starting advisers, so a
+  lineage with one stored adviser draws two. They keep them all: no hand,
+  no Choose Adviser step. The rest of the starting stack is dealt one card at
+  a time to the Cradle, Provinces and Hinterland discard piles in turn, with
+  no seeding of 2 per pile. The world deck is then the five Visions alone,
+  through the existing short-deck mix (fewer than 25 denizens).
+  `SetupDeal.dealt` and the deal validation learn the face.
+- **Tests.** Bank and board totals at 3 and 5 players; Teeming World with
+  and without stored advisers; the discard piles' order; a world deck of
+  Visions only, and a first Search drawing a Vision; card accounting still
+  holds every card once.
+
+## Slice 3: Wide Horizons, Explore and Setup With No Empire
+
+### Empty slots
+
+The map's region vectors may be short. A slot is the next index in the
+Cradle (2 slots), then the Provinces (3), then the Hinterland (3).
+`MapState` gains `hintermost`, the last site in `hinterward`, and
+`nextSlot: Option[Region]`, the first region not yet full. Game start builds
+the map from the sites it places instead of slicing eight. The frontend
+draws an empty slot as an empty frame. One task audits the other readers of
+the map's shape; at design time only the materializer slices eight, and the
+Shattered Portal and Stone Portal wraps already walk `hinterward`.
+
+### Wide Horizons at game start
+
+With a Chancellor, the Empire's sites return as today and no slot past them
+is filled. No Imperial Maps step runs.
+
+### Explore
+
+A new major action, `explore`.
+
+- **Offered when** Foundation I is Wide Horizons, the actor's pawn is at the
+  Hintermost site, a slot is empty, and the Atlas holds a site. Any role may
+  take it. Otherwise the Act menu shows it disabled with its reason.
+- **Tree.** It mirrors Recover's: the modifier choice any major action has
+  (no Recover modifier is offered), then pool `explore` with 2 defense dice
+  per 1 Supply against difficulty 4 and the continue-or-stop choice after a
+  short roll. Its own windows are `ExploreCost` and `ExploreRoll`; the
+  generic `Reroll` window still runs (ruling 2).
+- **Success.** The explorer chooses Recent or Forgotten (`explore.end`),
+  unasked when the Atlas holds one site. `PlaceAtlasSite(end, region)`, a
+  journaled operation, takes that end's site (the Atlas head for Recent, its
+  tail for Forgotten) with its stored cards and puts it in the next slot:
+  its edifice ruined, its denizens faceup, its stored relics facedown,
+  bandits up to its capacity, its printed favor or secrets, and its open
+  relic slots dealt from the relic deck while it lasts. The explorer's pawn
+  goes there; this is not a Travel. Then the `WhenExplored` window runs for
+  that site and its cards. That fills in the When Explored halves the code
+  marks as waiting for an Explore procedure (Ruined Site setup rules), beside
+  the Market, Forge, Proving Grounds and banner setup rules that already
+  share the window.
+- **Stop.** "Failed to explore"; the Supply stays spent.
+- **Log.** "Explored Forgotten Site: Found Deep Woods" (ruling 4); the new
+  site's own power lines follow.
+
+### Setup With No Empire
+
+When the Chronicle has a Chancellor but neither the Chancellor's lineage nor
+any Citizen is seated, game start no longer refuses (`EmpireSetupRules`).
+
+- **Foundations erode.** I becomes Wide Horizons and V becomes Mob's Favor
+  in `campaign.foundations`, with no sources. The Chronicle record carries
+  them forward (slice 1).
+- **Sites.** The former Empire's sites (`chronicle.world`) fill slots going
+  Hinterward: edifices ruined, denizens faceup, relics facedown, bandits up
+  to capacity, and every empty relic slot filled from the relic deck. No
+  other site is placed.
+- **Relics.** The Grand Scepter is set aside, as in a first game. The
+  Reliquary's relics stay set aside (ruling 3).
+- **Roles.** Every Citizen in the box becomes an Exile (`boxRoles`).
+- **Table.** The plan's random first player begins; the Usurper Limiter is
+  on; the Oathkeeper title and both banners start as in a first game.
+- **Pawns.** An Exile may place their pawn at any site ruled by bandits,
+  which here is every site.
+
+### Chronicle
+
+Stars and extraction already walk `hinterward`. Tests cover a map with empty
+slots; the unexplored Atlas sites stay in the Atlas, in order.
+
+### Tests
+
+Game start under Wide Horizons with and without an Empire; each of
+Explore's gates; rolls with a Jinx reroll, with Silver Charm not offered,
+and with a stop; each end, and the one-site Atlas; When Explored powers
+firing on the new site; a full map refusing Explore; the no-Empire state;
+an Explore golden log; a Chronicle round trip from a map with empty slots.
+
+## Slice 4: Imperial Maps' choice
+
+Closes the deferral in ruling R27 (`docs/rules/ambiguities.md`), which
+always took the Recent end.
+
+- **When.** With a Chancellor and Foundation I normal. Game start leaves
+  the slots past the Empire's sites empty.
+- **Question.** The first setup question after the Reliquary pick is the
+  Chancellor's `setup.imperial-maps`: fill from Recent or Forgotten Sites.
+- **Fill.** One `PlaceAtlasSite` per empty slot going Hinterward (slice 3),
+  each also giving 1 favor from the shared bank to the matching suit's bank
+  per denizen it places, because Foundation II follows Foundation I. The
+  Forgotten end takes the Atlas's tail first.
+- **After.** Pawn placement follows and offers the new sites.
+- **Log.** "Filled the map from Forgotten Sites", then a line per site.
+- **Tests.** Each end; bank totals; the relic deal; pawn options; replay
+  equals live.
+
+## Slice 5: Grand Council
+
+- **Setup.** An altered V sets People's Favor to `GrandCouncil`. Its
+  refusal goes.
+- **Power.** `PeoplesFavorGrandCouncil`, the holder's persistent rule at
+  `SearchPlayAdviser` beside Mob's: `openSites` adds every Imperial site as
+  a place to play a card, and a site discard is permitted only when the
+  card goes to an Imperial site. A ruined edifice may be discarded; an
+  intact edifice or a locked card may not (the generic discard rules). The
+  Mob's discard at other sites goes with the Mob face.
+- **Challenge.** `ChallengeProcedure.supportedFaces` stops refusing the
+  face. The plan reads the face's ribbon icons from
+  `reference/2026-03-17-new-foundations-rev1/banners.pdf`.
+- **Tests.** Playing to a distant Imperial site; a discard there and none
+  elsewhere; no Imperial sites in a no-Empire game; a Challenge of the face.
+
+## Slice 6: Festival
+
+- **Setup.** An altered VI sets Darkest Secret to `Festival`. The Wandering
+  Flame's move and place actions go with that face; the action that places
+  secrets on the banner stays. Its refusal goes.
+- **Marker.** `DarkestSecretState.festival: Option[SiteId]`, projected and
+  drawn on the map.
+- **Rest.** At `RestStart` the holder places the marker at their pawn's
+  site, automatically: "Held the festival at Deep Woods".
+- **Persistent power.** At the marked site, the holder's enemies cannot
+  place favor or secrets on denizens and cannot use those denizens' powers
+  unless they are persistent. Peeking at and recovering relics are untouched.
+  It is a power-use restriction of the holder with consent: the holder is
+  the granter, and bandits always enforce. Each refused option shows
+  disabled with its reason.
+- **Removal.** The Challenge ribbon that removes the festival marker clears
+  it; the plan reads the face's ribbons from `banners.pdf`, as in slice 5.
+- **Tests.** Placement each Rest and moving with the pawn; each blocked use;
+  persistent powers still working; consent waiving it; a Challenge clearing
+  it; a golden log.
+
+## Slice 7: Shape Foundation
+
+- **Window.** `ChronicleShapeFoundation`, empty since the Chronicle steps
+  design, gets the Beacon task holder's question: restore one altered face to
+  normal, or keep them all.
+- **Offer.** Every altered face whose `alterationSources` holds no active
+  legacy. Before Legacies that is every altered face, III included. No
+  altered face, no question.
+- **Log.** "Restored Foundation I to Imperial Maps".
+- **Tests.** Each offer; the skip; the restored face reaching
+  `ChronicleUpdated`; a hand-built face with an active legacy as its source
+  is not offered.
+
+### Docs
+
+The slice's last task, for the whole batch:
+
+- `docs/ROADMAP.md`: **Phase - Foundations** is deleted with the batch, and
+  the **Grand Council and Festival banner faces** item goes with slice 6.
+- `docs/rules/chronicle.md`, `docs/rules/ambiguities.md` (rulings 1 to 3,
+  and R27 closed) and `docs/rules/implementation-traceability.md`.
+- `CONTEXT.md`: Explore, Hintermost, empty slot, Festival marker.
+- This spec's status line.
+
+## Out of scope
+
+Foundation III's faces, and every legacy that sets or reads a foundation
+(Legacies). Editing a Chronicle's faces (Edit Chronicle). Eras.

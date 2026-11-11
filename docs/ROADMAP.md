@@ -10,6 +10,7 @@ specs.
 ## Now
 
 **Phase - Cleanup tasks** holds what finished phases left behind.
+**Phase - Foundations** is next.
 
 ### Phase - Cleanup tasks
 
@@ -71,6 +72,18 @@ Left behind by the
   Narrow Pass, Secret Police, Hall of Ministers or toll card needs the journaled
   arranged start.
 
+### Phase - Foundations
+
+[Design](superpowers/specs/2026-11-11-foundations-design.md), seven slices.
+
+- [ ] **Foundations.** Game start uses the Chronicle's stored faces, and
+  every face but Foundation III's works: Movers and Shakers, Teeming World,
+  Imperial Maps' choice of Recent or Forgotten, Wide Horizons with its
+  Explore action and Setup With No Empire, and the Beacon's Shape Foundation.
+- [ ] **The Grand Council and Festival banner faces.** Altered Foundations V
+  and VI turn the banners to these faces. Their ids are in
+  `RuleSourceIndex`, and the faces have no behaviour.
+
 ### Phase - Campaign battle summary
 
 Left out of the Game Log action sections
@@ -127,22 +140,14 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
 ### Phase - Chronicle steps
 
 After the all-Exile alpha, implement the Chronicle and persistent campaign:
-Foundation mutation, Legacy activation and scoring, and era scoring.
+Legacy activation and scoring, and era scoring.
 
-- [ ] **Foundations.** Fills the Beacon's empty Shape Foundation window.
-  Game start also sets every foundation to its normal face and ignores the
-  Chronicle's stored faces.
-  Game start also refuses a later game with no Chancellor and no Citizen
-  seated, which needs Foundation I's altered face, Wide Horizons, and its
-  Explore action.
-- [ ] **The Grand Council and Festival banner faces.** Legacies that set
-  Foundation V or VI turn the banners to these faces. Their ids are in
-  `RuleSourceIndex`, and the faces have no behaviour.
 - [ ] **Legacies.** Fills the Sun's empty steps 2-5 and the legacy bonus in
   Score Lineage Points. Game start refuses a seated lineage's legacies and
   starting relics until then. High Priest's When Negotiating power lets its
   holder give secrets in a deal: a `DealRules` term kind, as Council Arbiter
-  opens advisers.
+  opens advisers. Foundation III's two faces (Quiet Ambitions, Public
+  Ambitions) deal legacies, so game start skips them until then.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
