@@ -16,7 +16,9 @@ the boards and the banks. Foundation IV's deal of the starting stack becomes
 one value, `gameplay.setup.SetupDeal`, which the plan factory
 (`ChronicleFirstGamePlan`), game start's validation (`GameStartRules`) and
 the materializer all read, so the three cannot disagree about how many cards
-are dealt before the deck. Setup's walk and Search do not change: the walk
+are dealt before the deck. `LaterGameSetup` puts a lineage's stored
+advisers before the ones Teeming World deals. Setup's walk and Search do
+not change: the walk
 already asks an adviser choice only of a player with a hand, and a Search
 already stops at a Vision.
 
@@ -217,25 +219,28 @@ These fill gaps the spec leaves. None is a rules question.
    first, in seat order, each player's cards together; the discards follow.
    That is the card's order ("Each player draws [...]. Discard the rest").
    A Ties of Fellowship deal keeps today's layout, the six seeded cards
-   first and then the hands, so no existing deal reads differently.
-5. **Drawn advisers come before stored ones** in a player's adviser row:
-   `LaterGameSetup` appends the stored advisers to what the materializer
-   built, and stays as it is. No rule reads an adviser's slot.
-6. **A stack too short for the draws is refused** with the existing "not
+   first and then the hands, so no existing deal reads differently. The
+   alpha's `ShufflePolicy.implementedFirst` puts unimplemented denizens last
+   in the stack, so today the one unimplemented denizen
+   (`denizen.reliquary-raid`) ends on top of a discard pile under Teeming
+   World; that is accepted.
+5. **A stack too short for the draws is refused** with the existing "not
    enough world-deck cards to deal". A world deck holds dozens of denizens
    against at most 18 drawn.
-7. **A Teeming World deal whose world deck holds a denizen is refused** by
+6. **A Teeming World deal whose world deck holds a denizen is refused** by
    the existing check, "the world deck is not the rest of the deal": the
    rest is empty.
-8. **No Game Log line.** Both faces act before the first event a player
+7. **No Game Log line.** Both faces act before the first event a player
    sees, and slice 1's strip already names them on the table.
-9. **Tests.** `SetupDealSuite` (new) tests the arithmetic of both faces.
+8. **Tests.** `SetupDealSuite` (new) tests the arithmetic of both faces.
    `AlteredFoundationSetupSuite` (new) tests the games the two faces start,
    Setup's walk and the first Search. No existing suite has altered-face
    setup as its subject; `GameStartRulesSuite` keeps only the refusal table.
-10. **Docs.** The readings below go into the spec's slice 2 section. The
-    spec leaves `docs/rules/ambiguities.md` to slice 7 for the whole batch.
-    `docs/ROADMAP.md` loses the words for finished work.
+9. **Docs.** The readings below go into the spec's slice 2 section. The
+   spec leaves `docs/rules/ambiguities.md` to slice 7 for the whole batch,
+   but its Docs list names only "rulings 1 to 3" for that file, so Task 4
+   adds slice 2's readings to that list. `docs/ROADMAP.md` loses the words
+   for finished work.
 
 ## Rulings needing the owner's review
 
@@ -253,8 +258,7 @@ changes.
    all.** Rulebook: "Each player draws facedown denizens from the starting
    denizen stack until they have three facedown starting advisers."
    Reading: a player already holding three or more draws nothing, and
-   nothing is discarded down to three at setup. A stored Vision counts as a
-   starting adviser (Task 2, `SetupDeal.of`).
+   nothing is discarded down to three at setup (Task 2, `SetupDeal.of`).
 3. **Players draw in seat order, each all their cards at once.** The text
    gives no order. The stack is shuffled, so the order changes no
    probability (Task 2).
@@ -284,6 +288,15 @@ changes.
    world deck as a disabled source, "The world deck is empty", and the
    regional discard piles stay searchable (Task 3 pins the first Search; no
    code changes).
+8. **A lineage's stored advisers come first, the drawn ones after.**
+   Decided in the plan's review. Rulebook, Players: "Take its player board,
+   warbands, and any legacies and starting advisers stored with it."
+   Rulebook, private information: "You can't change the order of facedown
+   advisers." Reading: a player takes their stored advisers at the Players
+   step, before Foundation IV deals, so they lie first and the drawn cards
+   follow in the order drawn. `LaterGameSetup` appended the stored advisers
+   after whatever the materializer had placed, which would have put the
+   drawn ones first; Task 3 turns that around.
 
 ## File map
 
@@ -294,6 +307,7 @@ changes.
 | `src/main/scala/distantlands/gameplay/setup/SetupDeal.scala` | rewritten: Foundation IV's deal as a value, both faces |
 | `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala` | reads the faces once; validates against the deal |
 | `src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala` | Foundation II's boards and banks; deals through `SetupDeal` |
+| `src/main/scala/distantlands/gameplay/setup/LaterGameSetup.scala` | stored advisers come before drawn ones |
 | `src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala` | one comment |
 | `src/main/scala/distantlands/application/ChronicleFirstGamePlan.scala`, `GeneratedFirstGamePlanFactory.scala` | deal through `SetupDeal` |
 | `src/test/scala/distantlands/gameplay/setup/AlteredFoundationSetupSuite.scala` | new: the games the two faces start |
@@ -331,7 +345,8 @@ changes.
     and `ReadyGame.banks.favor(suit)` is the number of denizens of `suit` on
     the map, edifices included.
   - `AlteredFoundationSetupSuite` with the helpers `withAlteredFoundation`,
-    `laterGame`, `started` and `suitsOnMap`, which Task 3 extends.
+    `chronicleWithEmpire`, `firstGameChronicle`, `started` and `suitsOnMap`,
+    which Task 3 extends.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -356,10 +371,13 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
     chronicle.copy(foundations = chronicle.foundations.updated(number,
       FoundationState(FoundationFace.Altered, Set.empty)))
 
-  /** A later game of three: l1 is the seated Chancellor and l2 a Citizen,
-    * and each of the Empire's two sites stores a denizen. */
-  private val laterGame =
+  /** A later game's Chronicle for three seats: l1 is the Chancellor and l2
+    * a Citizen, and each of the Empire's two sites stores a denizen. */
+  private val chronicleWithEmpire =
     LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
+
+  /** The fixture's first-game Chronicle: no lineage listed and no Empire. */
+  private val firstGameChronicle = FirstGameSetupFixture.chronicle
 
   /** The game `chronicle` starts for `seats`, p1 first, dealt from the
     * Chronicle's decks in their own order. */
@@ -378,7 +396,8 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
 
   test("Movers and Shakers gives every board 6 favor, and each bank 1 " +
       "favor per denizen of its suit on the map and no more"):
-    val ready = started(withAlteredFoundation(laterGame, FoundationNumber.II))
+    val ready = started(
+      withAlteredFoundation(chronicleWithEmpire, FoundationNumber.II))
     assertEquals(ready.game.current.players.map(_.board),
       Vector.fill(3)(PlayerBoardState(6, 1, 0, 3, SupplyTrack.full)))
     val onMap = suitsOnMap(ready)
@@ -389,10 +408,9 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
   test("with five players Powerful Tribes adds 1 favor to each bank, and " +
       "Movers and Shakers adds none"):
     val fiveSeats = LaterGameFixture.seats(5)
-    val firstGame = FirstGameSetupFixture.chronicle
-    val tribes = started(firstGame, fiveSeats)
-    val movers = started(
-      withAlteredFoundation(firstGame, FoundationNumber.II), fiveSeats)
+    val tribes = started(firstGameChronicle, fiveSeats)
+    val movers = started(withAlteredFoundation(firstGameChronicle,
+      FoundationNumber.II), fiveSeats)
     val onMap = suitsOnMap(movers)
     assert(onMap.nonEmpty, "the Homeland edifices are on the map")
     assertEquals(tribes.banks.favor,
@@ -405,8 +423,9 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
       Vector.fill(5)(6))
 
   test("Movers and Shakers changes nothing else a game starts with"):
-    val tribes = started(laterGame)
-    val movers = started(withAlteredFoundation(laterGame, FoundationNumber.II))
+    val tribes = started(chronicleWithEmpire)
+    val movers = started(
+      withAlteredFoundation(chronicleWithEmpire, FoundationNumber.II))
     assertEquals(movers.game.current.commonCards,
       tribes.game.current.commonCards)
     assertEquals(movers.game.current.map, tribes.game.current.map)
@@ -1011,8 +1030,8 @@ final case class SetupDeal(face: FoundationFace,
 object SetupDeal:
   /** The deal of the game `chronicle` starts for `participants`, under the
     * Chronicle's Foundation IV face. A lineage's stored starting advisers
-    * count toward Teeming World's three, Visions included, and stop a Ties
-    * of Fellowship hand. */
+    * count toward Teeming World's three, and stop a Ties of Fellowship
+    * hand. */
   def of(chronicle: Chronicle, participants: Vector[FirstGameParticipant])
       : SetupDeal =
     val stored = chronicle.lineages.map(lineage =>
@@ -1363,6 +1382,7 @@ face." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
 
 **Files:**
 - Modify: `src/main/scala/distantlands/gameplay/setup/StartingFoundations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/LaterGameSetup.scala`
 - Modify: `src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala` (a comment)
 - Test: `src/test/scala/distantlands/gameplay/setup/AlteredFoundationSetupSuite.scala`
 - Test: `src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala`
@@ -1373,14 +1393,17 @@ face." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
   - Task 2: `SetupDeal.of`, which `GameStartRules`, the plan factory and
     `LaterGameFixture.orders` already deal through, on either face.
   - Task 1: `AlteredFoundationSetupSuite`'s `withAlteredFoundation(chronicle,
-    number)`, `laterGame`, `started(chronicle, seats)`, `catalog` and `p1`.
+    number)`, `chronicleWithEmpire`, `firstGameChronicle`,
+    `started(chronicle, seats)`, `suitsOnMap(ready)`, `catalog` and `p1`.
   - Test kit: `Situation.wake(driver, chronicle, orders)`,
     `Situation.rules(catalog).withAnswers(answers)`, `Answers`, `Park`,
     `Outcomes.ready(state)`, `SearchPlay.searched(rules, state, actor,
     pile)`, `SetupProcedure.pawnDecisionId`, `revealDecisionId`,
     `FirstGameRulesData.visions`.
-- Produces: game start accepts an altered Foundation IV. No new production
-  name: the task deletes the refusal that hid Task 2's arithmetic.
+- Produces: game start accepts an altered Foundation IV, and a player's
+  stored starting advisers come before the advisers Teeming World deals
+  them (ruling 8). No new production name: the task deletes the refusal
+  that hid Task 2's arithmetic and turns one concatenation around.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1409,9 +1432,10 @@ written):
 
 ```scala
   private val (p2, p3) = (PlayerId("p2"), PlayerId("p3"))
-  private val firstGame = FirstGameSetupFixture.chronicle
-  private val teemingFirstGame =
-    withAlteredFoundation(firstGame, FoundationNumber.IV)
+
+  /** The first-game Chronicle with Foundation IV on Teeming World. */
+  private val teemingWorldChronicle =
+    withAlteredFoundation(firstGameChronicle, FoundationNumber.IV)
 
   private def faceDown(denizens: Vector[DenizenId]): Vector[AdviserState] =
     denizens.map(DenizenState(_, Orientation.FaceDown, Tokens.empty))
@@ -1421,32 +1445,37 @@ written):
 
   test("under Teeming World each player with no stored adviser starts with " +
       "three facedown advisers from the top of the stack, and no hand"):
-    val ready = started(teemingFirstGame)
-    val stack = firstGame.worldDeck
+    val ready = started(teemingWorldChronicle)
+    val stack = firstGameChronicle.worldDeck
     assertEquals(Vector(p1, p2, p3).map(advisers(ready, _)), Vector(
       faceDown(stack.slice(0, 3)), faceDown(stack.slice(3, 6)),
       faceDown(stack.slice(6, 9))))
     assertEquals(ready.game.current.temporaryHands.values.flatten.toVector,
       Vector.empty)
 
-  /** `laterGame` under Teeming World, with l2 storing one adviser taken
-    * from the end of the world deck. */
-  private val storedAdviser = DenizenState(laterGame.worldDeck.last,
-    Orientation.FaceUp, Tokens.empty)
-  private val teemingWithStoredAdviser = withAlteredFoundation(
-    laterGame.copy(worldDeck = laterGame.worldDeck.init,
-      lineages = laterGame.lineages.map(lineage =>
+  /** The adviser l2 stores in `teemingWorldChronicleWithStoredAdviser`:
+    * the last card of `chronicleWithEmpire`'s world deck. */
+  private val storedAdviser = DenizenState(
+    chronicleWithEmpire.worldDeck.last, Orientation.FaceUp, Tokens.empty)
+
+  /** `chronicleWithEmpire` with Foundation IV on Teeming World and l2
+    * storing `storedAdviser`, which leaves the world deck. */
+  private val teemingWorldChronicleWithStoredAdviser = withAlteredFoundation(
+    chronicleWithEmpire.copy(worldDeck = chronicleWithEmpire.worldDeck.init,
+      lineages = chronicleWithEmpire.lineages.map(lineage =>
         if lineage.id == LineageId("l2") then
           lineage.copy(startingAdvisers = Vector(storedAdviser))
         else lineage)), FoundationNumber.IV)
 
   test("under Teeming World a lineage with one stored adviser draws two " +
-      "and holds all three facedown"):
-    val ready = started(teemingWithStoredAdviser)
-    val stack = teemingWithStoredAdviser.worldDeck
+      "and holds all three facedown, the stored one first"):
+    val ready = started(teemingWorldChronicleWithStoredAdviser)
+    val stack = teemingWorldChronicleWithStoredAdviser.worldDeck
     assertEquals(advisers(ready, p1), faceDown(stack.slice(0, 3)))
+    // A facedown adviser's place cannot change, and the stored one was
+    // taken before Foundation IV dealt the other two (ruling 8).
     assertEquals(advisers(ready, p2),
-      faceDown(stack.slice(3, 5) :+ storedAdviser.id))
+      faceDown(storedAdviser.id +: stack.slice(3, 5)))
     assertEquals(advisers(ready, p3), faceDown(stack.slice(5, 8)))
     assertEquals(ready.game.campaign.lineages(LineageId("l2"))
       .startingAdvisers, Vector.empty)
@@ -1454,8 +1483,8 @@ written):
   test("Teeming World deals the rest of the stack to the Cradle, the " +
       "Provinces and the Hinterland discard piles in turn, with no pile " +
       "seeded"):
-    val ready = started(teemingFirstGame)
-    val rest = firstGame.worldDeck.drop(9)
+    val ready = started(teemingWorldChronicle)
+    val rest = firstGameChronicle.worldDeck.drop(9)
     def everyThird(from: Int): Vector[WorldCardId] =
       rest.indices.filter(_ % 3 == from).map(rest).toVector
     assertEquals(rest.size, 51)
@@ -1469,17 +1498,18 @@ written):
   test("a Teeming World stack that does not divide by three leaves the " +
       "Cradle pile the odd card"):
     // 57 denizens less the 8 drawn leave 49.
-    val ready = started(teemingWithStoredAdviser)
+    val ready = started(teemingWorldChronicleWithStoredAdviser)
     assertEquals(Region.all.map(region =>
       ready.game.current.commonCards.discard(region).size), Vector(17, 16, 16))
 
   test("under Teeming World the world deck is the five Visions alone"):
-    val ready = started(teemingFirstGame)
+    val ready = started(teemingWorldChronicle)
     assertEquals(ready.game.current.commonCards.worldDeck,
       FirstGameRulesData.visions: Vector[WorldCardId])
 
   test("a Teeming World game holds every card once"):
-    Vector(teemingFirstGame, teemingWithStoredAdviser).foreach { chronicle =>
+    Vector(teemingWorldChronicle, teemingWorldChronicleWithStoredAdviser)
+        .foreach { chronicle =>
       val ready = started(chronicle)
       assert(ready.game.cardIndex.isRight, ready.game.cardIndex)
       // Every denizen of the stack and every stored adviser is an adviser
@@ -1492,10 +1522,25 @@ written):
     }
 
   test("Teeming World refuses a stack too short for every player's draws"):
-    val short = teemingFirstGame.copy(worldDeck = firstGame.worldDeck.take(8))
+    val short = teemingWorldChronicle.copy(
+      worldDeck = firstGameChronicle.worldDeck.take(8))
     assertEquals(rejected(GameStartRules.evolve(catalog, short,
         LaterGameFixture.orders(short, p1))),
       OathViolation.UnsupportedChronicle("not enough world-deck cards to deal"))
+
+  test("Movers and Shakers and Teeming World together each set up their " +
+      "own part"):
+    val ready = started(withAlteredFoundation(
+      teemingWorldChronicleWithStoredAdviser, FoundationNumber.II))
+    assertEquals(ready.game.current.players.map(_.board.favor),
+      Vector(6, 6, 6))
+    val onMap = suitsOnMap(ready)
+    assertEquals(ready.banks.favor,
+      Suit.all.map(suit => suit -> onMap.count(_ == suit)).toMap)
+    assertEquals(ready.game.current.players.map(_.advisers.size),
+      Vector(3, 3, 3))
+    assertEquals(ready.game.current.commonCards.worldDeck,
+      FirstGameRulesData.visions: Vector[WorldCardId])
 
   /** Every decision id the walk parked on, in order, while it answers each
     * by default. */
@@ -1509,7 +1554,7 @@ written):
 
   test("under Teeming World Setup asks each player for a pawn site and a " +
       "reveal, and no one to choose an adviser"):
-    val asked = decisionsAskedDuringSetup(teemingFirstGame)
+    val asked = decisionsAskedDuringSetup(teemingWorldChronicle)
     assertEquals(asked, Vector(p1, p2, p3).flatMap(player => Vector(
       SetupProcedure.pawnDecisionId(player),
       SetupProcedure.revealDecisionId(player))))
@@ -1517,15 +1562,15 @@ written):
   test("under Teeming World Reveal Cards offers a player's three facedown " +
       "advisers, and Setup ends with each player holding three"):
     var offered = Vector.empty[Int]
-    val revealingNothing: Answers =
+    val countingOffersAndRevealingNothing: Answers =
       case park if park.decisionId ==
           SetupProcedure.revealDecisionId(park.awaiting) =>
         offered :+= as[DecisionQuery.ChooseMany](park.decide.query)
           .options.size
         DecisionAnswer.ChooseManyAnswer(Vector.empty)
-    val woken = Situation.wake(
-      Situation.rules(catalog).withAnswers(revealingNothing),
-      teemingFirstGame, LaterGameFixture.orders(teemingFirstGame, p1))
+    val woken = Situation.wake(Situation.rules(catalog)
+      .withAnswers(countingOffersAndRevealingNothing), teemingWorldChronicle,
+      LaterGameFixture.orders(teemingWorldChronicle, p1))
     val siteOnly = Vector(p1, p2, p3).map(player =>
       advisers(woken.ready, player).count {
         case DenizenState(id, _, _) =>
@@ -1539,8 +1584,8 @@ written):
 
   test("the first Search of a Teeming World game draws a Vision from the " +
       "world deck and stops"):
-    val woken = Situation.wake(Situation.rules(catalog), teemingFirstGame,
-      LaterGameFixture.orders(teemingFirstGame, p1)).endingWake(p1)
+    val woken = Situation.wake(Situation.rules(catalog), teemingWorldChronicle,
+      LaterGameFixture.orders(teemingWorldChronicle, p1)).endingWake(p1)
     val searched = Outcomes.ready(accepted(SearchPlay.searched(
       new OathRules(catalog), woken.state, p1, SearchSource.WorldDeck)).state)
     assertEquals(searched.game.current.temporaryHands(p1),
@@ -1551,11 +1596,15 @@ written):
 ```
 
 The fixture's world deck holds 60 denizens. A first game of three under
-Teeming World draws 9 and deals 51, 17 to each pile. `laterGame` moved 2
-denizens to the Empire's sites and `teemingWithStoredAdviser` stores 1, so
-its stack holds 57: p1 draws 3, p2 draws 2, p3 draws 3, and 49 are dealt.
-`LaterGameFixture.orders` mixes with `identity`, so the world deck is the
-five Visions in `FirstGameRulesData.visions`' order. `recording` in
+Teeming World draws 9 and deals 51, 17 to each pile. `chronicleWithEmpire`
+moved 2 denizens to the Empire's sites and
+`teemingWorldChronicleWithStoredAdviser` stores 1, so its stack holds 57:
+p1 draws 3, p2 draws 2, p3 draws 3, and 49 are dealt. p2's stored adviser
+lies first and the two drawn follow (ruling 8). `LaterGameFixture.orders`
+mixes with `identity`, so the world deck is the five Visions in
+`FirstGameRulesData.visions`' order. "Movers and Shakers and Teeming World
+together each set up their own part" turns Foundation II on that same
+Chronicle, so both altered faces set up one game. `recording` in
 `decisionsAskedDuringSetup` never answers: its guard notes the decision and
 fails, so `Situation.defaultAnswer` answers every park.
 
@@ -1582,13 +1631,14 @@ with
 
   test("game start accepts an altered Foundation IV dealt as Teeming World " +
       "deals, and refuses it dealt as Ties of Fellowship deals"):
-    val teeming = chronicle.copy(
+    val teemingChronicle = chronicle.copy(
       foundations = Map(FoundationNumber.IV -> altered))
-    val ready = accepted(GameStartRules.evolve(catalog, teeming,
-      LaterGameFixture.orders(teeming, orders.firstPlayer)))
+    val ready = accepted(GameStartRules.evolve(catalog, teemingChronicle,
+      LaterGameFixture.orders(teemingChronicle, orders.firstPlayer)))
     assertEquals(ready.game.campaign.foundations(FoundationNumber.IV), altered)
     // `orders` leaves 45 denizens in the world deck.
-    assertEquals(rejected(GameStartRules.evolve(catalog, teeming, orders)),
+    assertEquals(rejected(GameStartRules.evolve(catalog, teemingChronicle,
+        orders)),
       OathViolation.UnsupportedChronicle(
         "the world deck is not the rest of the deal"))
 ```
@@ -1637,14 +1687,14 @@ with
 - [ ] **Step 2: Run them to make sure they fail**
 
 Run: `./sbtw "testOnly distantlands.gameplay.setup.AlteredFoundationSetupSuite distantlands.gameplay.setup.GameStartRulesSuite distantlands.application.GeneratedFirstGamePlanFactorySuite"`
-Expected: twelve tests FAIL. The ten new tests of
+Expected: thirteen tests FAIL. The eleven new tests of
 `AlteredFoundationSetupSuite`, "game start accepts an altered Foundation
 IV" and the plan factory's test meet `UnsupportedChronicle(Teeming World
 (altered Foundation IV) is not supported yet: it arrives with Foundations
 slice 2)`. The factory's test fails at game start, after its world-deck
 assertion has passed: Task 2 already deals the face.
 
-- [ ] **Step 3: Game start stops refusing the face**
+- [ ] **Step 3: Stop refusing the face; stored advisers first**
 
 In `src/main/scala/distantlands/gameplay/setup/StartingFoundations.scala`:
 
@@ -1659,6 +1709,41 @@ with
 
 ```scala
     FoundationNumber.I -> 3,
+```
+
+In `src/main/scala/distantlands/gameplay/setup/LaterGameSetup.scala`, a
+lineage's stored advisers go before the advisers the materializer dealt
+(ruling 8). Under Ties of Fellowship the materializer deals none, so
+nothing changes there:
+
+Replace
+
+```scala
+    * record, so the card index holds each card once (CR p. 11). */
+```
+
+with
+
+```scala
+    * record, so the card index holds each card once (CR p. 11). They come
+    * before any adviser Teeming World dealt the player: a player takes
+    * their stored advisers before Foundation IV, and the order of facedown
+    * advisers cannot change. */
+```
+
+Then replace
+
+```scala
+        state => state.copy(advisers = state.advisers ++ plan.startingAdvisers
+          .getOrElse(state.player, Vector.empty).map(faceDown)))))
+```
+
+with
+
+```scala
+        state => state.copy(advisers = plan.startingAdvisers
+          .getOrElse(state.player, Vector.empty).map(faceDown) ++
+          state.advisers))))
 ```
 
 In `src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala`, the
@@ -1679,8 +1764,10 @@ with
 
 - [ ] **Step 4: Run the tests to make sure they pass**
 
-Run: `./sbtw "testOnly distantlands.gameplay.setup.* distantlands.application.GeneratedFirstGamePlanFactorySuite distantlands.application.ChronicleFirstGamePlanSuite"`
-Expected: PASS.
+Run: `./sbtw "testOnly distantlands.gameplay.setup.* distantlands.application.GeneratedFirstGamePlanFactorySuite distantlands.application.ChronicleFirstGamePlanSuite distantlands.application.LaterGameSetupChoicesSuite"`
+Expected: PASS. `LaterGameSetupSuite`'s "a seated lineage takes its starting
+advisers facedown and draws no hand" passes unchanged: under Ties of
+Fellowship a stored adviser is the player's only one.
 
 If "under Teeming World Setup asks each player for a pawn site and a
 reveal" lists a reveal fewer for some player, that player drew three
@@ -1691,10 +1778,10 @@ expected list from the advisers, as the next test does.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/distantlands/gameplay/setup/StartingFoundations.scala src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala src/test/scala/distantlands/gameplay/setup/AlteredFoundationSetupSuite.scala src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala src/test/scala/distantlands/application/GeneratedFirstGamePlanFactorySuite.scala
+git add src/main/scala/distantlands/gameplay/setup/StartingFoundations.scala src/main/scala/distantlands/gameplay/setup/LaterGameSetup.scala src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala src/test/scala/distantlands/gameplay/setup/AlteredFoundationSetupSuite.scala src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala src/test/scala/distantlands/application/GeneratedFirstGamePlanFactorySuite.scala
 git commit -m "feat(foundations): set up Teeming World" -m "Under an altered Foundation IV each player draws until they hold three
-facedown starting advisers and keeps them all, so Setup asks no adviser
-choice. The rest of the starting stack is dealt one card at a time to the
+facedown starting advisers and keeps them all, a stored adviser before
+the ones drawn, so Setup asks no adviser choice. The rest of the starting stack is dealt one card at a time to the
 Cradle, Provinces and Hinterland discard piles, and the world deck is the
 five Visions. Game start no longer refuses the face." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
 ```
@@ -1736,13 +1823,14 @@ materializer. Under Ties of Fellowship the first 6 cards seed the regional
 discards, each player with no stored adviser draws a hand of 3, and the rest
 goes under the Visions as the world deck. Under Teeming World each player
 draws until they hold three starting advisers and keeps every card drawn
-facedown, with no hand and no adviser choice; the rest of the stack is dealt
-one card at a time to the Cradle, Provinces and Hinterland discard piles; and
-the world deck is the five Visions, shuffled. Foundation II decides the
-favor: Powerful Tribes gives each bank 3, 1 more with five or more players,
-and 1 per denizen of its suit on the map; Movers and Shakers gives each board
-6 favor and each bank only the 1 per denizen. Both altered faces are built
-directly, like the rest of game start; nothing is journaled.
+facedown, after any adviser their lineage stored, with no hand and no
+adviser choice; the rest of the stack is dealt one card at a time to the
+Cradle, Provinces and Hinterland discard piles; and the world deck is the
+five Visions, shuffled. Foundation II decides the favor: Powerful Tribes
+gives each bank 3, 1 more with five or more players, and 1 per denizen of
+its suit on the map; Movers and Shakers gives each board 6 favor and each
+bank only the 1 per denizen. Both altered faces are built directly, like the
+rest of game start; nothing is journaled.
 ~~~
 
 - [ ] **Step 2: The traceability table**
@@ -1803,7 +1891,8 @@ with
 - [ ] **Step 4: The spec**
 
 In `docs/superpowers/specs/2026-11-11-foundations-design.md`, the status
-line, the sentence plan-time finding 1 corrects, and the readings:
+line, the sentence plan-time finding 1 corrects, the readings, and a
+pointer for slice 7:
 
 Replace
 
@@ -1833,13 +1922,33 @@ with
 - **Readings taken with the plan,** for the owner to confirm. Under Movers
   and Shakers every board starts with 6 favor, the Chancellor's included.
   Under Teeming World a lineage that stores three or more advisers draws
-  none and keeps them all, and a stored Vision counts as an adviser. Players
-  draw in seat order. A site-only denizen drawn is kept and cannot be
-  revealed in Setup. Reveal Cards still runs. An uneven rest leaves the
-  Cradle pile, then the Provinces pile, one card more, and the last card
-  dealt tops its pile. A Search of the Visions-only deck draws one Vision
-  and stops; once the five are drawn the world deck is empty and cannot be
-  searched.
+  none and keeps them all. Players draw in seat order, and a lineage's
+  stored advisers come before the ones it draws. A site-only denizen drawn
+  is kept and cannot be revealed in Setup. Reveal Cards still runs. An
+  uneven rest leaves the Cradle pile, then the Provinces pile, one card
+  more, and the last card dealt tops its pile. A Search of the Visions-only
+  deck draws one Vision and stops; once the five are drawn the world deck is
+  empty and cannot be searched.
+~~~
+
+Then, in the spec's last section, "Docs", point slice 7 at those readings.
+Its list sends only "rulings 1 to 3" to `docs/rules/ambiguities.md`; slice
+7 must move slice 2's readings there too, as the owner confirms or changes
+them:
+
+Replace
+
+~~~markdown
+- `docs/rules/chronicle.md`, `docs/rules/ambiguities.md` (rulings 1 to 3,
+  and R27 closed) and `docs/rules/implementation-traceability.md`.
+~~~
+
+with
+
+~~~markdown
+- `docs/rules/chronicle.md`, `docs/rules/ambiguities.md` (rulings 1 to 3,
+  slice 2's readings, and R27 closed) and
+  `docs/rules/implementation-traceability.md`.
 ~~~
 
 If the owner has ruled on any reading in "Rulings needing the owner's
@@ -1874,7 +1983,8 @@ git add docs/architecture/game-setup.md docs/rules/implementation-traceability.m
 git commit -m "docs(foundations): record slice 2, the setup-only faces" -m "The setup doc says how each face of Foundations II and IV deals favor and
 the starting stack, the traceability table stops calling the foundations
 blocked, the roadmap drops the finished faces, and the spec records
-slice 2 landed with the readings its plan took." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
+slice 2 landed with the readings its plan took, which slice 7 moves to
+the ambiguities doc." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
 ```
 
 ---
@@ -1893,7 +2003,13 @@ slice 2 landed with the readings its plan took." -m "Co-Authored-By: Claude Fabl
   totals at 3 and 5 players (Task 1); Teeming World with and without stored
   advisers, the discard piles' order, a world deck of Visions only, a first
   Search drawing a Vision, and card accounting holding every card once
-  (Task 3, with the arithmetic in Task 2's `SetupDealSuite`).
+  (Task 3, with the arithmetic in Task 2's `SetupDealSuite`). One test
+  turns both faces in one game (Task 3).
+- **Review changes.** A lineage's stored advisers come before the drawn
+  ones (ruling 8; `LaterGameSetup`, Task 3). Ruling 2 no longer speaks of a
+  stored Vision: one would duplicate a Vision of the world deck, so the case
+  cannot arise, and `SetupDeal.of` simply counts what a lineage stores. The
+  suite's Chronicle helpers are named as Chronicles.
 - **The seam slice 1 left.** `GameStartRulesSuite`'s "with several altered
   faces" named Foundation II; Task 1 rewrites it to expect Grand Council,
   the first face still refused.
@@ -1912,16 +2028,21 @@ slice 2 landed with the readings its plan took." -m "Co-Authored-By: Claude Fabl
   the map's region vectors, which this slice does not touch. Slice 4's
   Imperial Maps fill adds 1 favor per denizen it places on either face of
   Foundation II, which `favorBanks` already counts for the sites placed at
-  game start.
+  game start. Slice 7 writes the batch's rulings into
+  `docs/rules/ambiguities.md`; the spec's Docs list named only "rulings 1
+  to 3", so Task 4 adds slice 2's readings to that list, and slice 7 must
+  move them with whatever the owner decided on each.
 - **Placeholders.** None.
 - **Verified against a prototype.** Every block here was cut from a scratch
-  worktree built on `92fb2e773`, and applying the blocks to that commit in
-  plan order reproduces the worktree file for file (19 files). There the
-  gates of Task 4 passed: 5696 JVM tests, 924 frontend tests, statement
-  coverage 95.25%, branch coverage 89.47%, the architecture check, and no
-  change under `src/test/resources`. The red steps of Tasks 1 and 3 were
-  observed: five failures and twelve, as their steps say. Task 2's red step
-  is a compile failure and was read from the code, not run. If a red step
+  worktree built on `0286b8462`, whose code is `92fb2e773`'s, and applying
+  the blocks to that commit in plan order reproduces the worktree file for
+  file (20 files). There, after the review's changes, the gates of Task 4
+  passed: 5697 JVM tests, 924 frontend tests, statement coverage 95.25%,
+  branch coverage 89.47%, the architecture check, and no change under
+  `src/test/resources`. The red steps of Tasks 1 and 3 were observed: five
+  failures and thirteen, as their steps say; Task 1's was observed before
+  the review renamed its helpers. Task 2's red step is a compile failure
+  and was read from the code, not run. If a red step
   fails for another reason, trust the run and say so in the task's report.
   Not checked in a browser: no frontend or projection source changes, and a
   player's own facedown advisers were already shown to them.
@@ -1933,7 +2054,8 @@ slice 2 landed with the readings its plan took." -m "Co-Authored-By: Claude Fabl
   mix)`; `FirstGameSetupMaterializer.materialize(plan, deal)`;
   `GameStartRules.buildPlan(catalog, chronicle, orders, deal)` and
   `validateDeal(chronicle, orders, deal)`; the suite helpers
-  `withAlteredFoundation`, `laterGame`, `started`, `suitsOnMap`, `faceDown`,
-  `advisers`, `teemingFirstGame`, `teemingWithStoredAdviser`,
+  `withAlteredFoundation`, `chronicleWithEmpire`, `firstGameChronicle`,
+  `started`, `suitsOnMap`, `faceDown`, `advisers`, `teemingWorldChronicle`,
+  `storedAdviser`, `teemingWorldChronicleWithStoredAdviser`,
   `decisionsAskedDuringSetup` and `chronicleStoringAdvisers`. Each is used
   with the same name and shape in every task that reads it.
