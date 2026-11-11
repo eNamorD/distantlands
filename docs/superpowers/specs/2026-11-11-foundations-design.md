@@ -1,6 +1,6 @@
 # Foundations
 
-**Status:** designed 2026-11-11. Slices 1 and 2 landed.
+**Status:** designed 2026-11-11. Slices 1, 2 and 3a landed.
 
 **Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
@@ -167,6 +167,10 @@ journaled. Each removes its refusal.
 
 ## Slice 3: Wide Horizons, Explore and Setup With No Empire
 
+Planned in two parts. Slice 3a, landed, is the empty slots, Wide Horizons
+at game start, Setup With No Empire and the Chronicle. Slice 3b is Explore,
+so until it lands a map with empty slots never grows.
+
 ### Empty slots
 
 The map's region vectors may be short. A slot is the next index in the
@@ -175,8 +179,15 @@ Cradle (2 slots), then the Provinces (3), then the Hinterland (3).
 `nextSlot: Option[Region]`, the first region not yet full. Game start builds
 the map from the sites it places instead of slicing eight. The frontend
 draws an empty slot as an empty frame. One task audits the other readers of
-the map's shape; at design time only the materializer slices eight, and the
-Shattered Portal and Stone Portal wraps already walk `hinterward`.
+the map's shape. Slice 3a's audit found more than the materializer:
+`GameStartRules` counted eight twice, `DomainValidation` required full
+regions, and the projection read the region vectors alone. In play every
+reader counts the sites on the map. Shattered Portal's wrap walks
+`hinterward`, so it skips empty slots, and a roll that is a multiple of the
+number of sites leaves the pawn where it stands. Stone Portal has no wrap:
+it offers every other site, and on a map of one site it parked the walk on
+a question with no option. The walker now refuses a required choose-one
+that declares no option, so such an action is shown unavailable.
 
 ### Wide Horizons at game start
 
@@ -215,6 +226,10 @@ A new major action, `explore`.
 
 When the Chronicle has a Chancellor but neither the Chancellor's lineage nor
 any Citizen is seated, game start no longer refuses (`EmpireSetupRules`).
+The same holds for a Chronicle that lists no Chancellor: a seated Citizen
+becomes the Chancellor, and with none seated the game has no Empire. Only a
+Chronicle with no Chancellor, no Citizen and no Empire site starts a first
+game.
 
 - **Foundations erode.** I becomes Wide Horizons and V becomes Mob's Favor
   in `campaign.foundations`, with no sources. The Chronicle record carries
@@ -229,7 +244,33 @@ any Citizen is seated, game start no longer refuses (`EmpireSetupRules`).
 - **Table.** The plan's random first player begins; the Usurper Limiter is
   on; the Oathkeeper title and both banners start as in a first game.
 - **Pawns.** An Exile may place their pawn at any site ruled by bandits,
-  which here is every site.
+  which here is every site that holds bandits: a site of capacity 0 holds
+  no warband and is ruled by nobody (R25).
+- **Readings taken with the plan,** for the owner to confirm. The absent
+  Chancellor's lineage becomes an Exile in the box with the Citizens. A
+  former Empire with no site is refused, as an Empire's is (R28). A
+  Foundation I already on Wide Horizons keeps its sources. Relic slots are
+  filled Cradlemost first while the relic deck lasts, and the rest stay
+  empty. If no site holds bandits, an Exile may place their pawn at any
+  site. A power that takes a Reliquary relic finds a set-aside Reliquary
+  empty. A first game places its eight sites whatever Foundation I's face.
+  Powers that make a player a Citizen are ignored as in a later game with
+  an Empire: the rulebook sets them aside only in the very first game, but
+  game start leaves that option on in every game until the Settings
+  Feature phase, a known gap.
+- **The reading most in need of the owner's eye: the set-aside Reliquary
+  at Crown Chancellor.** Setup With No Empire says "Discard all relics
+  from the Reliquary. They return in the Chronicle Phase", and the Sun's
+  Crown Chancellor says of an Exile's win "Discard all relics in the
+  Reliquary". Slice 3a leaves Crown Chancellor as it is: an Exile's win
+  discards the Reliquary, the set-aside relics with it, and Scatter Relics
+  deals them; a Chancellor's win keeps them, and Stock Reliquary adds to
+  them. With no Empire the winner is an Exile unless a player became the
+  Chancellor in play, so this narrows ruling 3's clause "the Chronicle's
+  Stock Reliquary step adds to them" to that one case. The alternative is
+  for Crown Chancellor to skip the discard while the Reliquary is set
+  aside (`CampaignState.reliquarySetAside`), so that the relics always
+  wait for Stock Reliquary.
 
 ### Chronicle
 
@@ -319,7 +360,7 @@ The slice's last task, for the whole batch:
 - `docs/ROADMAP.md`: **Phase - Foundations** is deleted with the batch, and
   the **Grand Council and Festival banner faces** item goes with slice 6.
 - `docs/rules/chronicle.md`, `docs/rules/ambiguities.md` (rulings 1 to 3,
-  slice 2's readings, and R27 closed) and
+  the readings of slices 2 and 3a, and R27 closed) and
   `docs/rules/implementation-traceability.md`.
 - `CONTEXT.md`: Explore, Hintermost, empty slot, Festival marker.
 - This spec's status line.
