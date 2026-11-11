@@ -1,6 +1,7 @@
 package distantlands.serialization
 
 import distantlands.gameplay.setup.FirstGameSetupFixture.{chronicle, orders}
+import distantlands.gameplay.setup.LaterGameFixture
 import distantlands.model._
 import distantlands.model.OathEvent.{RoundEnded, WarExhaustionResolved}
 import distantlands.serialization.WalkerWireEvents.{assertStreamRoundTrips,
@@ -78,6 +79,14 @@ class GameEventFactsWireSuite extends munit.FunSuite:
     val encoded = accepted(GameEventWire.encodeEvent("goal", 0L, event))
     assertEquals(encoded("payload")("chronicle")("worldDeck").arr.size,
       chronicle.worldDeck.size)
+    assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
+
+  test("GameStarted round trips a Teeming World Chronicle and its deal"):
+    val teemingWorld = chronicle.copy(foundations = Map(FoundationNumber.IV ->
+      FoundationState(FoundationFace.Altered, Set.empty)))
+    val event = OathEvent.GameStarted(teemingWorld,
+      LaterGameFixture.orders(teemingWorld, orders.firstPlayer))
+    val encoded = accepted(GameEventWire.encodeEvent("teeming", 0L, event))
     assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
 
   test("a GameStarted Chronicle round trips its era scores and Oathkeeper goal"):

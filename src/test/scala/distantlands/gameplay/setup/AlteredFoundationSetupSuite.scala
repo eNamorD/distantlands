@@ -130,6 +130,52 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
     assertEquals(ready.game.campaign.lineages(LineageId("l2"))
       .startingAdvisers, Vector.empty)
 
+  /** The advisers l2 and l3 store in
+    * `teemingWorldChronicleStoringTwoAndThree`: the last five cards of
+    * `chronicleWithEmpire`'s world deck, two and then three. */
+  private val (twoStored, threeStored) =
+    chronicleWithEmpire.worldDeck.takeRight(5).splitAt(2)
+
+  /** `chronicleWithEmpire` with Foundation IV on Teeming World, l2 storing
+    * `twoStored` and a new Exile lineage l3 storing `threeStored`, all five
+    * out of the world deck. */
+  private val teemingWorldChronicleStoringTwoAndThree =
+    def storing(lineage: LineageState, advisers: Vector[DenizenId]) =
+      lineage.copy(startingAdvisers = advisers.map(
+        DenizenState(_, Orientation.FaceUp, Tokens.empty)))
+    withAlteredFoundation(chronicleWithEmpire.copy(
+      worldDeck = chronicleWithEmpire.worldDeck.dropRight(5),
+      lineages = chronicleWithEmpire.lineages.map(lineage =>
+        if lineage.id == LineageId("l2") then storing(lineage, twoStored)
+        else lineage) :+ storing(LineageState(LineageId("l3"), None,
+          Role.Exile, Vector.empty, Vector.empty), threeStored)),
+      FoundationNumber.IV)
+
+  test("under Teeming World a lineage with two stored advisers draws one " +
+      "and one with three draws none, each holding three facedown, the " +
+      "stored ones first"):
+    val ready = started(teemingWorldChronicleStoringTwoAndThree)
+    val stack = teemingWorldChronicleStoringTwoAndThree.worldDeck
+    assertEquals(advisers(ready, p1), faceDown(stack.slice(0, 3)))
+    assertEquals(advisers(ready, p2), faceDown(twoStored :+ stack(3)))
+    assertEquals(advisers(ready, p3), faceDown(threeStored))
+    // The four drawn leave the rest of the stack to the discard piles.
+    assertEquals(Region.all.flatMap(
+      ready.game.current.commonCards.discard).size, stack.size - 4)
+    assertEquals(Vector("l2", "l3").flatMap(lineage => ready.game.campaign
+      .lineages(LineageId(lineage)).startingAdvisers), Vector.empty)
+
+  test("a Teeming World game's recorded events replay to the same state"):
+    val rules = new OathRules(catalog)
+    val transition = accepted(rules.beginGame(OathState.NoGame,
+      teemingWorldChronicleWithStoredAdviser,
+      LaterGameFixture.orders(teemingWorldChronicleWithStoredAdviser, p1)))
+    val replayed = transition.events
+      .foldLeft[Either[OathViolation, OathState]](Right(OathState.NoGame)):
+        case (Right(state), event) => rules.evolve(state, event)
+        case (left, _) => left
+    assertEquals(replayed, Right(transition.state))
+
   test("Teeming World deals the rest of the stack to the Cradle, the " +
       "Provinces and the Hinterland discard piles in turn, with no pile " +
       "seeded"):
