@@ -11,7 +11,7 @@ and does nothing.
 
 **Architecture:** A new catalog listing, `catalog.FoundationCards`, names
 the twelve faces, gives each a power id (`foundation.i.wide-horizons`) and
-holds its rulebook text. `gameplay.setup.StartingFoundations` reads the
+holds its printed text. `gameplay.setup.StartingFoundations` reads the
 Chronicle's faces for `GameStartRules` and holds the one table of refused
 faces, a line per later slice. `ChronicleRecord` writes
 `campaign.foundations` back. `application.FoundationPresentation` turns the
@@ -72,6 +72,8 @@ slices are read only for the seams they need from this one.
   `git stash`.
 - Commit messages and docs are plain prose. Every commit message ends with
   the trailer `Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>`.
+  Use exactly that trailer whatever model you run on: the plan's trailer
+  overrides your own.
 
 ---
 
@@ -91,12 +93,15 @@ leave it untracked: never add it.
 Check the base before Task 1:
 
 ```bash
+git merge-base --is-ancestor 8fc747b8c HEAD && echo base-ok
 git grep -n "FoundationState(FoundationFace.Normal, Set.empty)).toMap" -- src/main/scala/distantlands/gameplay/setup/GameStartRules.scala
 git grep -n "foundation.altered" -- src/main/scala/distantlands/gameplay/RuleSourceIndex.scala
 ```
 
-Each must print one line. If either prints nothing, the base has moved:
-stop and report.
+The first must print `base-ok`. If it does not, the worktree was cut from a
+stale branch, such as `origin/main`: stop and report, even if the greps
+pass, since they pass there too. Each grep must print one line. If either
+prints nothing, the base has moved: stop and report.
 
 The shared sources compile in the root project; there is no `sharedJVM`
 project. A shared suite runs as `./sbtw "testOnly distantlands.protocol.X"`.
@@ -193,12 +198,19 @@ These fill gaps the spec leaves. None is a rules question.
    fit by its height, and DESIGN.md forbids anything that changes that
    height. A row is one line of name and, on an altered card, one line of
    mark; a name too long for the column is cut with an ellipsis and stays
-   whole in the label and the hover note. On the compact map the text is
-   set against the scale and capped at 1.6rem.
-6. **An altered card is marked by a word and a frame**: "Altered" under the
-   name and a Brass border. No new color.
+   whole in the hover note. On the compact map a row takes
+   `--glance-text`, one of the two named glance sizes, and no size of its
+   own. Measured on the prototype: at 1440x900 every name fits; at 1024x768
+   only the shortest do, and the rest are cut. Whole names there would need
+   a second line, and six two-line rows with their marks can outgrow the
+   regions at phone scales, so the row stays one line.
+6. **An altered card is marked by the word alone**: "Altered" under the
+   name, in Parchment Dim. The frame stays the neutral Line: Brass on the
+   board means an option (DESIGN.md, "Brass"), so the strip uses no brass.
 7. **The Chronicle page shows the strip for the loaded Chronicle only**,
-   under its summary line. Saved rows keep their one line.
+   under its summary line. Saved rows keep their one line. Its rows are
+   plain text with no `aria-label`, which a `span` would ignore; a table
+   row is a button and carries one.
 8. **`Table.foundation(number, face)`** is a new test step. Several suites
    already reach into the campaign under the comment "No Table step reaches
    lineage roles or foundations", and every later slice starts its tests
@@ -209,18 +221,20 @@ These fill gaps the spec leaves. None is a rules question.
 ## Rulings needing the owner's review
 
 No reading in this slice changes play: every altered face that would is
-refused at game start. Three readings of the rules text need a look.
+refused at game start. The owner decided ruling 1 in review; rulings 2 and
+3 still need a look.
 
-1. **A face's text is the rulebook's Foundations section, not a
-   transcription of the printed card.** The spec asks for "its text from
-   the rulebook's Foundations section". Rule text, Altered Foundation I:
-   "You may spend 1 Supply to Explore if your pawn is at the **Hintermost**
-   site. _This is the site furthest in Hinterward order (`rule:4.3`)._"
-   Reading chosen: the rulebook's words, with `symbol:favor` written
-   `[favor]`, the layout breaks dropped, Imperial Maps' four bullets as four
-   paragraphs, and a cross-reference written "(rule 4.3)". If a printed
-   card words a face differently, the catalog should follow the card.
-2. **"Players usually start with 6."** Rule text, Altered Foundation II:
+1. **Face text follows the printed setup cards (bgs-cards), which differ
+   in wording from the rulebook's Foundations section; mechanics follow the
+   rulebook where it says more (for example what an Atlas site keeps).**
+   The owner decided this in review; the spec had asked for the rulebook's
+   text. Printed card, Foundation I: "Edifices start **ruined**." Rulebook,
+   Foundation I: "Edifices stored with it flip to their **ruined side**
+   [...]. Other denizens start faceup." and "Relics stored with it start
+   facedown." The catalog holds the card's words; slices 3 and 4 implement
+   the rulebook's.
+2. **"Players usually start with 6."** Printed card and rulebook, Altered
+   Foundation II:
    "Each player takes 5 more favor [...] from the shared bank. _Players
    usually start with 6._" The player board rule says each player "Places 1
    favor [...] and 1 secret [...] on their player board". Reading chosen:
@@ -336,15 +350,21 @@ class FoundationCardsSuite extends munit.FunSuite:
     assertEquals(FoundationCards.faceWithId(
       PowerId("banner.darkest-secret.festival")), None)
 
-  test("a face's text is the rulebook's, a blank line between paragraphs"):
+  test("a face's text is the printed card's, a blank line between " +
+      "paragraphs"):
     assertEquals(FoundationCards.face(FoundationNumber.V,
       FoundationFace.Altered).text,
-      "Flip the People's Favor to its **Grand Council** side.\n\n" +
-        "Otherwise, set it up exactly as in Foundation V.")
+      "Flip the People's Favor to its **Grand Council** side. Place " +
+        "[favor] on it from the shared bank.\n\n" +
+        "If the Oathkeeper goal is the People's Favor, give the banner to " +
+        "the Chancellor, if any. Otherwise, place it in the shared bank.")
+    assertEquals(FoundationCards.face(FoundationNumber.I,
+      FoundationFace.Altered).text.split("\n\n").last,
+      "_Keep this card out as a reminder._")
     assertEquals(FoundationCards.all.map(card =>
       (card.normal.text.split("\n\n").length,
         card.altered.text.split("\n\n").length)),
-      Vector((8, 5), (2, 2), (1, 2), (3, 2), (2, 2), (2, 2)))
+      Vector((5, 5), (3, 2), (1, 2), (3, 2), (2, 2), (2, 2)))
 ```
 
 In `src/test/scala/distantlands/gameplay/RuleSourceIndexSuite.scala`, in
@@ -500,11 +520,17 @@ Expected: compile failure, `Not found: FoundationCards` in
 
 - [ ] **Step 3: The catalog listing**
 
-Create `src/main/scala/distantlands/catalog/FoundationCards.scala`. The
-text is the rulebook's Foundations section
-(`~/projects/bgs-rules/content/rules/oathnf/en-US/p1/rules.yml`, "Foundations"),
-in the catalog's markup: `**bold**`, `_italic_`, `[favor]` and `[secret]`
-for the symbols, a blank line between paragraphs.
+Create `src/main/scala/distantlands/catalog/FoundationCards.scala`. Each
+face's text is its printed setup card's, as every other card's text is
+(ruling 1). The source is
+`~/projects/bgs-cards/content/card-data/oath/en-US/oath-newfoundations.yml`,
+ids `OATH-SETUP04a-NF` to `OATH-SETUP09b-NF`: `a` is the normal face and
+`b` the altered one. In that file an entry's `text:` comes before its
+`name:`, so read an entry by its `id`, never by the lines after a name. The
+text below is already transcribed: `symbol:favor` and `symbol:secret` are
+written `[favor]` and `[secret]`, bold and italic markup is kept, and a
+blank line parts the paragraphs. Check it against the file if you doubt a
+word; do not reword it.
 
 ```scala
 package distantlands.catalog
@@ -512,10 +538,11 @@ package distantlands.catalog
 import distantlands.model.{FoundationFace, FoundationNumber, PowerId}
 
 /** One face of a foundation setup card: the id rule sources and the Game
-  * Log know it by, its printed name, and its text from the rulebook's
-  * Foundations section, in the catalog's markup with a blank line between
-  * paragraphs. Gameplay never reads `text`: behaviour lives in setup and in
-  * the procedures that read the face in use.
+  * Log know it by, its printed name, and its text as the card prints it, in
+  * the catalog's markup with a blank line between paragraphs. Gameplay
+  * never reads `text`: behaviour lives in setup and in the procedures that
+  * read the face in use, and follows the rulebook where it says more than
+  * the card.
   */
 final case class FoundationCardFace(id: PowerId, name: String, text: String):
   require(name.trim.nonEmpty, "a foundation face needs its printed name")
@@ -538,51 +565,43 @@ object FoundationCards:
     FoundationCardFace(PowerId(s"foundation.$number.$slug"), name,
       paragraphs.mkString("\n\n"))
 
-  /** How a placed site is populated; Wide Horizons points back at it. */
-  private val populate = Vector(
-    "When you place a site, populate it as follows:",
-    "Edifices stored with it flip to their **ruined side** _(icon with no " +
-      "chain in top-left corner)_. Other denizens start faceup.",
-    "Relics stored with it start facedown.",
-    "**Bandits** are placed equal to its capacity.",
-    "**Fill all of its empty relic slots** by drawing relics from the relic " +
-      "deck.")
+  /** Both faces of V, and of VI, end with the same paragraph. */
+  private def bannerGoes(banner: String): String =
+    s"If the Oathkeeper goal is the $banner, give the banner to the " +
+      "Chancellor, if any. Otherwise, place it in the shared bank."
 
   val all: Vector[FoundationCard] = Vector(
     FoundationCard(FoundationNumber.I,
       printed("i", "imperial-maps", "Imperial Maps",
-        (Vector(
-          "Resolve this only if the Chancellor is in play.",
-          "The Chancellor fills the remaining empty site slots going " +
-            "**Hinterward**, _same order as in rule 4.3._",
-          "They fill **all** these slots from either the Recent or " +
-            "Forgotten Sites side of the Atlas box, but not both.") ++
-          populate)*),
+        "The Chancellor fills the remaining empty site slots going " +
+          "Hinterward.",
+        "They must fill these slots with Recent Sites or Forgotten Sites " +
+          "from the Atlas, but not both.",
+        "**Bandits** are placed on the site equal to its capacity.",
+        "Edifices start **ruined**.",
+        "**Fill the site's empty relic slots** by drawing relics from the " +
+          "relic deck."),
       printed("i", "wide-horizons", "Wide Horizons",
-        "**Do not fill the remaining empty site slots!**",
-        "In this game, players can take the **Explore** action, which " +
-          "works as follows. _It is not a Travel action!_",
-        "You may spend 1 Supply to Explore if your pawn is at the " +
-          "**Hintermost** site. _This is the site furthest in Hinterward " +
-          "order (rule 4.3)._",
-        "Resolve this like the Recover action (rule 7.7) with a " +
-          "**difficulty of 4**. _Roll two defense dice. Any number of " +
-          "times, you may spend 1 Supply again to roll two more defense " +
-          "dice and add them to the previously rolled dice._",
-        "If you succeed, place a site _(from Recent or Forgotten)_ in the " +
-          "next Hinterward slot, populate it as in Foundation I, and place " +
-          "your pawn on that site.")),
+        "**Do not fill empty site slots!**",
+        "In this game, players can spend 1 Supply to **Explore** if their " +
+          "pawn is at the Hintermost site card (rulebook page 9).",
+        "Explore works like a Recover action with a **difficulty of 4**.",
+        "If you succeed, place a site on the next Hinterward slot, " +
+          "populate it as described on the back of this card, and then " +
+          "place your pawn on the site.",
+        "_Keep this card out as a reminder._")),
     FoundationCard(FoundationNumber.II,
       printed("ii", "powerful-tribes", "Powerful Tribes",
-        "Place 3 favor [favor] [favor] [favor] on each suit's favor bank. " +
-          "Add 1 extra favor [favor] with five or more players.",
-        "Then, for each denizen on the map, add 1 extra favor [favor] to " +
-          "the matching favor bank."),
+        "Place [favor] [favor] [favor] on each suit's favor bank.",
+        "If you have five or more players, add an extra [favor] to each " +
+          "favor bank.",
+        "Then, for each denizen on the map, add an extra [favor] to the " +
+          "matching favor bank."),
       printed("ii", "movers-and-shakers", "Movers and Shakers",
         "Each player takes 5 more favor [favor] [favor] [favor] [favor] " +
           "[favor] from the shared bank. _Players usually start with 6._",
-        "Then, for each denizen on the map, add 1 extra favor [favor] to " +
-          "the matching favor bank.")),
+        "Then, for each denizen on the map, place [favor] on the matching " +
+          "favor bank.")),
     FoundationCard(FoundationNumber.III,
       printed("iii", "quiet-ambitions", "Quiet Ambitions",
         "Each player draws 2 legacy cards, keeps one facedown in their " +
@@ -597,37 +616,34 @@ object FoundationCards:
       printed("iv", "ties-of-fellowship", "Ties of Fellowship",
         "Each player who has no starting advisers draws 3 denizens " +
           "facedown from the starting denizen stack.",
-        "_You will choose one as a starting adviser later. Players " +
-          "sometimes carry over advisers from the previous game._",
+        "_You will choose one as an adviser later. Players sometimes carry " +
+          "over advisers from the previous game._",
         "Then, deal 2 denizens from the starting denizen stack facedown to " +
           "each discard pile."),
       printed("iv", "teeming-world", "Teeming World",
         "Each player draws facedown denizens from the starting denizen " +
-          "stack until they have three facedown starting advisers.",
+          "stack until they have three starting advisers.",
         "Discard the rest of the starting denizen stack as evenly as " +
           "possible, going from Cradle to Provinces to Hinterland. _The " +
           "world deck will only have Visions!_")),
     FoundationCard(FoundationNumber.V,
       printed("v", "mobs-favor", "Mob's Favor",
-        "Set the People's Favor on its **Mob** side. Place 1 favor [favor] " +
-          "on it from the shared bank.",
-        "If the Oathkeeper goal is the People's Favor, give the People's " +
-          "Favor to the Chancellor, if there is one. Otherwise, place it " +
-          "in the shared bank."),
+        "Set the People's Favor on its **Mob** side. Place [favor] on it " +
+          "from the shared bank.",
+        bannerGoes("People's Favor")),
       printed("v", "grand-council", "Grand Council",
-        "Flip the People's Favor to its **Grand Council** side.",
-        "Otherwise, set it up exactly as in Foundation V.")),
+        "Flip the People's Favor to its **Grand Council** side. Place " +
+          "[favor] on it from the shared bank.",
+        bannerGoes("People's Favor"))),
     FoundationCard(FoundationNumber.VI,
       printed("vi", "wandering-flame", "Wandering Flame",
-        "Set the Darkest Secret on its **Wandering Flame** side. Place 1 " +
-          "secret [secret] on it from the shared bank.",
-        "If the Oathkeeper goal is the Darkest Secret, give the Darkest " +
-          "Secret to the Chancellor, if there is one. Otherwise, place it " +
-          "in the shared bank."),
+        "Set the Darkest Secret on its **Wandering Flame** side. Place " +
+          "[secret] on it from the shared bank.",
+        bannerGoes("Darkest Secret")),
       printed("vi", "festival", "Festival",
-        "Flip the Darkest Secret to its **Festival side** and place the " +
-          "Festival marker near the area of play.",
-        "Otherwise, set it up exactly as in Foundation VI.")))
+        "Flip the Darkest Secret to its **Festival side**. Place [secret] " +
+          "on it from the shared bank. Place the Festival marker nearby.",
+        bannerGoes("Darkest Secret"))))
 
   private val byNumber: Map[FoundationNumber, FoundationCard] =
     all.map(card => card.number -> card).toMap
@@ -812,7 +828,7 @@ git add src/main/scala/distantlands/catalog/FoundationCards.scala src/main/scala
 git commit -m "$(cat <<'EOF'
 feat(foundations): list the six foundation cards and give each face an id
 
-FoundationCards names the twelve faces and holds their rulebook text.
+FoundationCards names the twelve faces and holds their printed text.
 The rule-source index lists each foundation by the id of its face in
 use, in place of the shared foundation.altered id, and the Game Log
 names such an id by its face.
@@ -1265,6 +1281,17 @@ with
     accepted(rules.startWalker(altered.state, ActionRef.MoveWarbands, p1))
     accepted(rules.startWalker(altered.state, ActionRef.TransferWarbands, p1))
 
+  test("a normal foundation that carries an alteration source gates " +
+      "neither the transfer nor a move"):
+    val sourced = FoundationState(FoundationFace.Normal,
+      Set(LegacyId("legacy:any")))
+    // No Table step sets a foundation's sources.
+    val kept = imperialsTogether.warbandsAt(BrokenPeaksSite, p1, 2)
+      .update(_.updateCampaign(campaign => campaign.copy(foundations =
+        campaign.foundations.updated(FoundationNumber.II, sourced))))
+    accepted(rules.startWalker(kept.state, ActionRef.MoveWarbands, p1))
+    accepted(rules.startWalker(kept.state, ActionRef.TransferWarbands, p1))
+
   test("with no Imperial at the site the transfer is unavailable"):
     val table = imperialsTogether.pawn(p2, at = AncientCitySite)
 ```
@@ -1272,10 +1299,13 @@ with
 - [ ] **Step 2: Run them to make sure the gate fails the new test**
 
 Run: `./sbtw "testOnly distantlands.testkit.TableSuite distantlands.gameplay.WarbandTransfersSuite"`
-Expected: `TableSuite` passes. `WarbandTransfersSuite` fails in "an
-altered Foundation III gates neither the transfer nor a move" with
-`expected a Right, got Left(MinorActionUnavailable(minor actions are
-limited to the fixed unaltered foundations))`.
+Expected: `TableSuite` passes. `WarbandTransfersSuite` fails in two
+tests, "an altered Foundation III gates neither the transfer nor a move"
+and "a normal foundation that carries an alteration source gates neither
+the transfer nor a move", each with `expected a Right, got
+Left(MinorActionUnavailable(minor actions are limited to the fixed
+unaltered foundations))`. They are the old gate's two conditions: an
+altered face, and any alteration source.
 
 - [ ] **Step 3: Delete the gate**
 
@@ -2857,15 +2887,18 @@ EOF
     `FoundationStrip.numeral`, `title`, `label`.
   - DOM: `section.foundations` holding `h3.foundations-title` and
     `ol.foundation-strip`; each `li` holds one `.foundation-card`, a
-    `button` when it has rules and a `span` when not, with
-    `.foundation-number`, `.foundation-name` and, when altered, the class
-    `foundation-altered` and a `.foundation-mark`.
+    `button` with an `aria-label` when it has rules and a plain `span`
+    with none when not, with `.foundation-number`, `.foundation-name` and,
+    when altered, a `.foundation-mark`. An altered card has no class of
+    its own.
   - `ChronicleFixtures.listingFoundations(entry, altered: Int*)`.
 
-Read `DESIGN.md` before this task: "Named Rules" under Colors and
-Typography, "Layout", and "Hover Note". The strip follows them: no new
-color, Georgia for the card's name, no transition, a hover note in place of
-`title`, and nothing that changes the map's height.
+Read `DESIGN.md` before this task: "Primary" and "Named Rules" under
+Colors, "Named Rules" under Typography, "Layout", and "Hover Note". The
+strip follows them: no new color and no brass, since Brass on the board
+means an option; Georgia for the card's name; no transition; a hover note
+in place of `title`; one of the two named glance sizes on the compact map;
+and nothing that changes the map's height.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -2920,13 +2953,11 @@ class FoundationStripSuite extends munit.FunSuite:
       Vector("Imperial Maps", "Powerful Tribes", "Public Ambitions",
         "Ties of Fellowship", "Mob's Favor", "Wandering Flame"))
 
-  test("an altered card is marked by word, class and label; a normal card " +
-      "carries no mark"):
+  test("an altered card is marked by word and label, never by a class of " +
+      "its own; a normal card carries no mark"):
     val cards = all(tableStrip, ".foundation-card")
-    assertEquals(cards.map(_.getAttribute("class")), Vector(
-      "foundation-card", "foundation-card",
-      "foundation-card foundation-altered", "foundation-card",
-      "foundation-card", "foundation-card"))
+    assertEquals(cards.map(_.getAttribute("class")).distinct,
+      Vector("foundation-card"))
     assertEquals(cards.map(card => all(card, ".foundation-mark")
       .map(_.textContent)), Vector(Vector.empty, Vector.empty,
       Vector("Altered"), Vector.empty, Vector.empty, Vector.empty))
@@ -2952,9 +2983,12 @@ class FoundationStripSuite extends munit.FunSuite:
       ChronicleFoundation(2, "normal", "Powerful Tribes"))))
     assertEquals(all(strip, "button").size, 0)
     val cards = all(strip, "span.foundation-card")
-    assertEquals(cards.map(_.getAttribute("aria-label")), Vector(
-      "Foundation I, Wide Horizons, altered",
-      "Foundation II, Powerful Tribes"))
+    // A plain row is read as its text, so it carries no label to ignore.
+    assertEquals(cards.map(_.hasAttribute("aria-label")),
+      Vector(false, false))
+    assertEquals(cards.map(card => all(card, "span").map(_.textContent)),
+      Vector(Vector("I", "Wide Horizons", "Altered"),
+        Vector("II", "Powerful Tribes")))
     click(cards.head)
     assertEquals(opened, Vector.empty)
 
@@ -3096,8 +3130,10 @@ with
       assertEquals(Dom.all(loaded, ".foundation-name").map(_.textContent),
         Vector("Imperial Maps", "Powerful Tribes", "Public Ambitions",
           "Ties of Fellowship", "Mob's Favor", "Wandering Flame"))
-      assertEquals(Dom.all(loaded, ".foundation-altered .foundation-number")
-        .map(_.textContent), Vector("III"))
+      assertEquals(Dom.all(loaded, ".foundation-card")
+        .filter(card => Dom.all(card, ".foundation-mark").nonEmpty)
+        .map(card => Dom.one(card, ".foundation-number").textContent),
+        Vector("III"))
       assertEquals(Dom.all(loaded, "button.foundation-card").size, 0)
 
   test("an entry saved before foundations were kept shows no strip"):
@@ -3160,7 +3196,7 @@ private[frontend] object FoundationStrip:
   def title(card: Card): String =
     s"Foundation ${numeral(card.number)} · ${card.name}"
 
-  /** "Foundation I, Wide Horizons, altered". */
+  /** "Foundation I, Wide Horizons, altered": a table card's label. */
   def label(card: Card): String =
     s"Foundation ${numeral(card.number)}, ${card.name}" +
       (if card.altered then ", altered" else "")
@@ -3181,15 +3217,16 @@ private[frontend] object FoundationStrip:
   private def face(card: Card): dom.Element =
     val node = card.rules match
       case Some(rules) =>
-        val button = ServerUiSupport.button("", "")
+        val button = ServerUiSupport.button("", "foundation-card")
         button.`type` = "button"
+        // A control is named in one phrase; its parts alone open with "I".
+        button.setAttribute("aria-label", label(card))
         button.onclick = _ =>
           CardInspection.openText(title(card), Vector(rules), button)
         button
-      case None => element("span", "")
-    node.setAttribute("class", if card.altered then
-      "foundation-card foundation-altered" else "foundation-card")
-    node.setAttribute("aria-label", label(card))
+      // A plain row is read as its own text: numeral, name and mark. A
+      // label on a span is ignored, so it carries none.
+      case None => element("span", "foundation-card")
     // The name is cut to one line on a small map; the note keeps it whole.
     HoverTip.set(node, title(card))
     node.appendChild(text("span", "foundation-number", numeral(card.number)))
@@ -3284,10 +3321,11 @@ with
 .shared-banners .banner-face { width: 100%; height: auto; aspect-ratio: 1; }
 /* The six foundation setup cards (Foundations design, slice 1), a card a
    row: its numeral, the name of the face in use in the serif that names
-   things, and on an altered card the word, with the brass frame. A row is
-   one line of name and at most one of mark, so the strip's height is fixed
-   and can never raise the map's. The table's cards are buttons that read
-   the face's rules; the Chronicle page's are not. */
+   things, and on an altered card the word. The word alone marks it: brass
+   on the board means an option, so the frame stays the neutral line. A row
+   is one line of name and at most one of mark, so the strip's height is
+   fixed and can never raise the map's. The table's cards are buttons that
+   read the face's rules; the Chronicle page's are not. */
 .foundations { margin-top: 12px; }
 .foundations-title { margin: 0 0 6px; font-size: 1rem; }
 .foundation-strip { list-style: none; margin: 0; padding: 0; display: grid;
@@ -3300,18 +3338,16 @@ with
 button.foundation-card { cursor: pointer; }
 button.foundation-card:hover { background: var(--pressed);
   border-color: var(--cream-bright); }
-.foundation-altered { border-color: var(--brass); }
-.foundation-number { color: var(--brass-label); font-weight: 700;
+.foundation-number { color: var(--ink-dim); font-weight: 700;
   text-align: center; }
 .foundation-name { font-family: Georgia, serif; font-weight: 700;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.foundation-mark { grid-column: 2; color: var(--brass-bright);
+.foundation-mark { grid-column: 2; color: var(--parchment-dim);
   font-size: max(0.72em, 0.7rem); font-weight: 700; letter-spacing: 0.1em;
   text-transform: uppercase; }
-/* On the zoomed-out map the cards hold the glance size up to a cap that
-   keeps a name on one line of the bank's column. */
-.map-compact .foundation-card { font-size: clamp(1rem,
-  calc(11.6px / var(--map-scale, 1)), 1.6rem); }
+/* On the zoomed-out map the cards hold the glance text size, as a site's
+   details do; a name the bank's column cannot hold is cut, never wrapped. */
+.map-compact .foundation-card { font-size: var(--glance-text); }
 /* On the Chronicle page the six stand three abreast. */
 .chronicle-loaded .foundation-strip {
   grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 0.5rem; }
@@ -3322,9 +3358,10 @@ button.foundation-card:hover { background: var(--pressed);
 
 Every custom property used here is already declared on `:root`. The
 table's focus ring comes from the existing `.game-table
-button:focus-visible` rule. Do not let a row wrap or grow: the strip was
-measured on the prototype (Self-review), and a taller shared bank can
-raise the map's height and move its Fit scale.
+button:focus-visible` rule. Do not let a row wrap or grow, and do not
+give the strip a compact size of its own: a taller shared bank can raise
+the map's height and move its Fit scale (design decision 5, and the
+measurements in Self-review).
 
 - [ ] **Step 7: Record the component in the design system**
 
@@ -3350,19 +3387,20 @@ the text and card-list overlays: Supply at Rest and the pile's cards.
 ### Foundation Strip
 The six foundation setup cards, read-only (`FoundationStrip`). On the table
 they close the shared bank's column under the banners, one row a card: Base
-fill, 1px Line border, 4px radius, `4px 8px` padding, the numeral in Brass
-Label 700 and the name of the face in use in Georgia 700. The name holds one
-line and is cut with an ellipsis where the column is too narrow; the whole
-name stays in the row's label and hover note. An altered card takes a Brass
-border and the word "Altered" under its name, in Bright Brass uppercase at
-`max(0.72em, 0.7rem)`, 700, 0.1em tracking, so the state is a word and a
-frame and never the frame alone. A row is a button that opens its face's
-rules in the text overlay, and answers hover as a Control does (Pressed
-fill, Bright Cream border). On the compact map the row's text is set against
-the scale and capped at 1.6rem. A row never wraps, so the strip's height is
-fixed and cannot raise the map's (The Glance Layer Rule). The Chronicle page
-lists the same six under the loaded Chronicle's summary line, three abreast,
-as plain rows with nothing to open.
+fill, 1px Line border, 4px radius, `4px 8px` padding, the numeral in Ink Dim
+700 and the name of the face in use in Georgia 700. The name holds one line
+and is cut with an ellipsis where the column is too narrow; the whole name
+stays in the hover note and, on the table, in the row's label. An altered
+card adds the word "Altered" under its name, in Parchment Dim uppercase at
+`max(0.72em, 0.7rem)`, 700, 0.1em tracking. The word alone marks it: the
+frame stays Line, because brass on the board means an option. A row is a
+button that opens its face's rules in the text overlay, and answers hover as
+a Control does (Pressed fill, Bright Cream border). On the compact map the
+row takes the glance text size (`--glance-text`), as a site's details do. A
+row never wraps, so the strip's height is fixed and cannot raise the map's
+(The Glance Layer Rule). The Chronicle page lists the same six under the
+loaded Chronicle's summary line, three abreast, as plain rows with nothing
+to open.
 
 ## Do's and Don'ts
 
@@ -3497,8 +3535,9 @@ handlers are ignored and recorded the same way at Rest start.
 
 - [ ] **Step 2: The spec**
 
-In `docs/superpowers/specs/2026-11-11-foundations-design.md`, the status
-line and the two sentences of slice 1 the code contradicts (plan-time
+In `docs/superpowers/specs/2026-11-11-foundations-design.md`: the status
+line, the catalog sentence (a face's text follows its printed card, ruling
+1) and the two sentences of slice 1 the code contradicts (plan-time
 findings 1 and 5, design decision 1):
 
 Replace
@@ -3521,6 +3560,30 @@ with
 
 **Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
+~~~
+
+Then replace
+
+~~~markdown
+  with "minor actions are limited to the fixed unaltered foundations".
+  `FirstGameFoundationProfile` goes too if nothing else reads it.
+- **Catalog.** `FoundationCards` lists I to VI, each face with its printed
+  name and its text from the rulebook's Foundations section:
+
+  | | Normal | Altered |
+  |---|---|---|
+~~~
+
+with
+
+~~~markdown
+  with "minor actions are limited to the fixed unaltered foundations".
+  `FirstGameFoundationProfile` goes too if nothing else reads it.
+- **Catalog.** `FoundationCards` lists I to VI, each face with its printed
+  name and its text as the setup card prints it:
+
+  | | Normal | Altered |
+  |---|---|---|
 ~~~
 
 Then replace
@@ -3605,11 +3668,12 @@ EOF
   or VI by face and slice while accepting III (Task 2). The Chronicle
   record writes `campaign.foundations` (Task 4). The minor-action gate and
   `FirstGameFoundationProfile` go (Task 3). `FoundationCards` lists I to VI
-  with names and rulebook text, and `RuleSourceIndex` carries one id per
+  with names and printed text, and `RuleSourceIndex` carries one id per
   face (Task 1). The projection gains `foundations` (Task 5); the strip in
   the shared bank and the six on the Chronicle page, read only (Task 6).
   The spec's tests: game start keeps stored faces and refuses the gated
-  ones (Task 2); minor actions run under an altered III (Task 3); the
+  ones (Task 2); minor actions run under an altered III and under a
+  sourced normal face (Task 3); the
   projection and its codec round trip (Task 5); the TTS mask still imports
   to faces (Task 2, beside the existing round trip); a frontend suite for
   the strip (Task 6); the Chronicle record keeps a changed face (Task 4,
@@ -3622,6 +3686,14 @@ EOF
   `FoundationCards`. The strip redraws from the projection, so a face that
   changes in play needs no frontend work. Slices 3 to 6 start their tests
   from `Table.foundation`.
+- **Tests later slices must touch.** Slice 2 rewrites
+  `GameStartRulesSuite`'s "with several altered faces, game start names the
+  first in foundation order": it expects Foundation II's refusal, which
+  slice 2 deletes. Slice 7's Shape Foundation question may change
+  `ChronicleEndToEndSuite`'s "a foundation face game 1 holds is journaled,
+  and game 2 starts with it": it answers every Chronicle task through
+  `ChronicleWalk.answeringEverything` with Foundation III altered, and an
+  answer that restores a face would journal III as normal.
 - **Placeholders.** None.
 - **Verified against a prototype.** Every block here was cut from a
   scratch worktree built on `8fc747b8c`, and applying the blocks to that
@@ -3630,11 +3702,18 @@ EOF
   statement coverage 95.22%, branch coverage 89.36%, the architecture check,
   and no change under `src/test/resources`. The five suites whose comments
   Tasks 1 and 3 correct were edited after that run and rerun on their own.
-  The strip was looked at on a scratch server at 1024x768: the map's layout
-  stayed as tall as its regions (1278px, against a 641px shared bank with
-  the 305px strip in it), every name fit its row at the 1.6rem cap, a click
-  opened the face's rules in the text overlay, and the Chronicle page drew
-  the six three abreast. The prototype ran each task's tests after its
+  After the plan's review the face texts, the strip's marking, labels and
+  compact size, and the sourced-face test changed; the eight suites they
+  touch were rerun (59 tests) and the architecture check passed, but the
+  full gates were not run again.
+  The revised strip was looked at on a scratch server. At 1024x768 (Fit
+  0.34) the map's layout stayed as tall as its regions, 1278px, against a
+  778px shared bank with two cards marked altered; the glance text is
+  11.6px on screen there and cuts every name but the shortest. At 1440x900
+  (Fit 0.51) all twelve names fit their row. A click opened a face's rules
+  in the text overlay, and the Chronicle page drew the six three abreast
+  (seen before the review's changes). The prototype ran each task's tests
+  after its
   code, so the "make sure they fail" outputs are read from the code, not
   observed. If a red step fails for another reason, trust the run and say
   so in the task's report.
