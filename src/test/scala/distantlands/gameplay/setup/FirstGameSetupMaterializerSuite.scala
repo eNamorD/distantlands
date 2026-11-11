@@ -28,7 +28,8 @@ class FirstGameSetupMaterializerSuite extends munit.FunSuite:
       relicOrder = relicOrder,
       homelandEdifices = Vector.empty,
       oathkeeperGoal = OathkeeperGoal.Supremacy)
-    val material = materializer.materialize(plan, Vector.empty, Vector.empty)
+    val material = materializer.materialize(plan,
+      SetupDeal.firstGame(plan.participants))
 
     val placedRelics = sites.flatMap(id => material.map.sites(id).relics.map(_.id))
     assertEquals(placedRelics.toSet, relicOrder.take(totalSlots).toSet)

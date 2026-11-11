@@ -27,6 +27,22 @@ alongside the Chronicle on `GameStarted`, so replay never re-derives either.
 Setup deals from these orders, never from the Chronicle's deck order: a
 Chronicle is shown to players, so its order must not be the deal.
 
+Foundation IV decides how `denizenOrder` is dealt, and `SetupDeal` holds that
+arithmetic for the plan factory, game start's validation and the
+materializer. Under Ties of Fellowship the first 6 cards seed the regional
+discards, each player with no stored adviser draws a hand of 3, and the rest
+goes under the Visions as the world deck. Under Teeming World each player
+draws until they hold three starting advisers and keeps every card drawn
+facedown, after any adviser their lineage stored, with no hand and no
+adviser choice; the rest of the stack is dealt one card at a time to the
+Cradle, Provinces and Hinterland discard piles, the first card dealt to a
+pile its top and each later card beneath; and the world deck is the five
+Visions, shuffled. Foundation II decides the favor: Powerful Tribes
+gives each bank 3, 1 more with five or more players, and 1 per denizen of
+its suit on the map; Movers and Shakers gives each board 6 favor and each
+bank only the 1 per denizen. Both altered faces are built directly, like the
+rest of game start; nothing is journaled.
+
 `GameStartRules.evolve` validates only what Setup itself needs from the
 Chronicle: known and unique atlas/denizen/relic ids, at least 8 atlas sites,
 enough World Deck and relic cards to deal, a deal holding exactly the

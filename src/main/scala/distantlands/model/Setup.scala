@@ -6,8 +6,6 @@ final case class FirstGameParticipant(
     color: PlayerColor
 )
 
-final case class PawnPlacement(playerId: PlayerId, siteId: SiteId)
-
 /** The concrete per-game deal derived from a Chronicle: who is seated and in
   * what order, and the dealt orders of the two decks a Chronicle's own
   * order is not meaningful for (2026-09-21 Chronicle design, slice 2,
@@ -42,10 +40,11 @@ final case class FirstGameSupportState(
   * longer a command payload, so it carries no `catalog` field -- Chronicle
   * validation now checks ids directly against the live catalog.
   *
-  * `denizenOrder` deals hands and the six seeded regional discards (CR pp.
-  * 6-7); it never contains a Vision. `worldDeckOrder` is `denizenOrder`
-  * with the five fixed Vision identities spliced into the 10+2/15+3
-  * packets, and becomes the draw deck once dealing is done.
+  * `denizenOrder` is the starting denizen stack Foundation IV deals from
+  * (`SetupDeal`; CR pp. 6-7 and 11); it never contains a Vision.
+  * `worldDeckOrder` is what that deal leaves of it, with the five fixed
+  * Vision identities spliced into the 10+2/15+3 packets or mixed through a
+  * short deck, and becomes the draw deck once dealing is done.
   */
 final case class FirstGameSetupPlan(
     participants: Vector[FirstGameParticipant],
@@ -63,8 +62,14 @@ final case class FirstGameSetupPlan(
       * are all in `orderedSites`. */
     atlasSites: Vector[StoredSite] = Vector.empty,
     /** Each seated player's stored starting advisers (CR p. 11). */
-    startingAdvisers: Map[PlayerId, Vector[AdviserState]] = Map.empty
-)
+    startingAdvisers: Map[PlayerId, Vector[AdviserState]] = Map.empty,
+    /** The foundation faces the game starts with. A number the map does
+      * not list lies normal. */
+    foundations: Map[FoundationNumber, FoundationState] = Map.empty
+):
+  /** Whether foundation `number` starts on its altered face. */
+  def altered(number: FoundationNumber): Boolean =
+    foundations.get(number).exists(_.face == FoundationFace.Altered)
 
 /** The Empire a later game starts with (CR pp. 8-9): its Chancellor, every
   * seated Imperial player, and the Empire's stored sites Cradlemost first.

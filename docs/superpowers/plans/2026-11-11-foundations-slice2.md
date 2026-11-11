@@ -221,9 +221,13 @@ These fill gaps the spec leaves. None is a rules question.
    A Ties of Fellowship deal keeps today's layout, the six seeded cards
    first and then the hands, so no existing deal reads differently. The
    alpha's `ShufflePolicy.implementedFirst` puts unimplemented denizens last
-   in the stack, so today the one unimplemented denizen
-   (`denizen.reliquary-raid`) ends on top of a discard pile under Teeming
-   World; that is accepted.
+   in the stack. As first written, this plan dealt each card onto the top
+   of its pile, which left the one unimplemented denizen
+   (`denizen.reliquary-raid`) on top of a discard pile under Teeming World.
+   The slice's review changed that: the first card dealt to a pile is its
+   top and later cards go beneath, so the stack's end lies at the bottoms
+   of the piles (ruling 6). The task blocks below show the deal as it was
+   first written.
 5. **A stack too short for the draws is refused** with the existing "not
    enough world-deck cards to deal". A world deck holds dozens of denizens
    against at most 18 drawn.
@@ -274,11 +278,15 @@ changes.
    World no one did. Reveal Cards names no foundation, so each player is
    asked it with their three advisers (Task 3).
 6. **"As evenly as possible": an uneven rest leaves the Cradle pile, then
-   the Provinces pile, one card more, and the last card dealt tops its
-   pile.** Card: "Discard the rest of the starting denizen stack as evenly
-   as possible, going from Cradle to Provinces to Hinterland." Reading: one
-   card at a time in that order, starting with the Cradle, each card onto
-   the top of its pile, facedown and known to no one (Task 2).
+   the Provinces pile, one card more, and the first card dealt to a pile is
+   its top; later cards go beneath.** Card: "Discard the rest of the
+   starting denizen stack as evenly as possible, going from Cradle to
+   Provinces to Hinterland." Reading: one card at a time in that order,
+   starting with the Cradle, facedown and known to no one (Task 2). Decided
+   in the slice's review: each card goes beneath the ones its pile already
+   holds, where this plan first put it on top. The stack is shuffled, so
+   the piles' distribution is the same, and the unimplemented denizens the
+   alpha shuffle puts last in the stack top no pile.
 7. **A Search of the Visions-only deck draws one Vision and stops; once the
    five are drawn the world deck cannot be searched.** Rulebook, Search:
    "Draw them one at a time. **If you draw a Vision card from the world

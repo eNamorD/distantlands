@@ -40,5 +40,5 @@ object LaterGameFixture:
         FirstGameSetupFixture.participants): SetupOrders =
     ChronicleFirstGamePlan.dealOrder(
       FirstGameBootstrapConfig(participants, firstPlayer),
-      SetupDeal.drawers(chronicle, participants), chronicle.worldDeck,
+      SetupDeal.of(chronicle, participants), chronicle.worldDeck,
       chronicle.relicDeck, identity)

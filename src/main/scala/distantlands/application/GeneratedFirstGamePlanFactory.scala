@@ -41,7 +41,7 @@ final class GeneratedFirstGamePlanFactory(
     chronicle.map { chronicle =>
       val seated = seating(config, chronicle)
       FirstGamePlan(chronicle, seated, ChronicleFirstGamePlan.dealOrder(
-        seated, SetupDeal.drawers(chronicle, seated.participants),
+        seated, SetupDeal.of(chronicle, seated.participants),
         policy.order(chronicle.worldDeck,
           ImplementedCardCatalog.denizens(catalog, implemented), random),
         policy.order(chronicle.relicDeck,

@@ -168,7 +168,8 @@ object SetupProcedure:
         Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
           placedPawnNote(participant.playerId))),
         Some(PowerWindow.SetupPawnPlaced)),
-      // A player with starting advisers drew no hand (CR p. 11).
+      // A player with starting advisers drew no hand (CR p. 11), and under
+      // Teeming World no one did: every card drawn is already an adviser.
       Branch((_, _) =>
         if hand.isEmpty then Vector.empty
         else Vector(

@@ -115,8 +115,8 @@ class GameStartRulesSuite extends munit.FunSuite:
     assertEquals(ready.game.campaign.foundations(FoundationNumber.III),
       FoundationState(FoundationFace.Altered, Set(known)))
 
-  test("game start refuses each altered face but Foundation III's, naming " +
-      "the face and the slice it arrives with"):
+  test("game start refuses each altered face no slice has brought in yet, " +
+      "naming the face and the slice it arrives with"):
     def refusalFor(number: FoundationNumber) = rejected(GameStartRules.evolve(
       catalog, chronicle.copy(foundations = Map(number -> altered)), orders))
     def unsupported(face: String, slice: Int) =
@@ -124,24 +124,39 @@ class GameStartRulesSuite extends munit.FunSuite:
         s"$face is not supported yet: it arrives with Foundations slice $slice")
     assertEquals(refusalFor(FoundationNumber.I),
       unsupported("Wide Horizons (altered Foundation I)", 3))
-    assertEquals(refusalFor(FoundationNumber.II),
-      unsupported("Movers and Shakers (altered Foundation II)", 2))
-    assertEquals(refusalFor(FoundationNumber.IV),
-      unsupported("Teeming World (altered Foundation IV)", 2))
     assertEquals(refusalFor(FoundationNumber.V),
       unsupported("Grand Council (altered Foundation V)", 5))
     assertEquals(refusalFor(FoundationNumber.VI),
       unsupported("Festival (altered Foundation VI)", 6))
 
-  test("with several altered faces, game start names the first in " +
-      "foundation order"):
+  test("game start accepts an altered Foundation II"):
+    val ready = accepted(GameStartRules.evolve(catalog, chronicle.copy(
+      foundations = Map(FoundationNumber.II -> altered)), orders))
+    assertEquals(ready.game.campaign.foundations(FoundationNumber.II), altered)
+
+  test("game start accepts an altered Foundation IV dealt as Teeming World " +
+      "deals, and refuses it dealt as Ties of Fellowship deals"):
+    val teemingChronicle = chronicle.copy(
+      foundations = Map(FoundationNumber.IV -> altered))
+    val ready = accepted(GameStartRules.evolve(catalog, teemingChronicle,
+      LaterGameFixture.orders(teemingChronicle, orders.firstPlayer)))
+    assertEquals(ready.game.campaign.foundations(FoundationNumber.IV), altered)
+    // `orders` leaves 45 denizens in the world deck.
+    assertEquals(rejected(GameStartRules.evolve(catalog, teemingChronicle,
+        orders)),
+      OathViolation.UnsupportedChronicle(
+        "the world deck is not the rest of the deal"))
+
+  test("with several altered faces, game start names the first refused one " +
+      "in foundation order"):
+    // II and III are accepted, so V is the first refused.
     val several = chronicle.copy(foundations = Map(
       FoundationNumber.VI -> altered, FoundationNumber.III -> altered,
-      FoundationNumber.II -> altered))
+      FoundationNumber.II -> altered, FoundationNumber.V -> altered))
     assertEquals(rejected(GameStartRules.evolve(catalog, several, orders)),
-      OathViolation.UnsupportedChronicle("Movers and Shakers (altered " +
-        "Foundation II) is not supported yet: it arrives with Foundations " +
-        "slice 2"))
+      OathViolation.UnsupportedChronicle("Grand Council (altered " +
+        "Foundation V) is not supported yet: it arrives with Foundations " +
+        "slice 5"))
 
   test("a later game with a seated Chancellor starts"):
     val record = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
@@ -195,8 +210,9 @@ class GameStartRulesSuite extends munit.FunSuite:
     val record = LaterGameFixture.chronicle(LineageId("l1"))
     val short = record.copy(worldDeck = record.worldDeck.take(6 + 9 + 20))
     val mixed = ChronicleFirstGamePlan.dealOrder(
-      FirstGameBootstrapConfig(orders.participants, PlayerId("p1")), 3,
-      short.worldDeck, short.relicDeck, _.reverse)
+      FirstGameBootstrapConfig(orders.participants, PlayerId("p1")),
+      SetupDeal.of(short, orders.participants), short.worldDeck,
+      short.relicDeck, _.reverse)
     accepted(GameStartRules.evolve(catalog, short, mixed))
     assertEquals(GameStartRules.evolve(catalog, short, mixed.copy(
         worldDeckOrder = mixed.worldDeckOrder.init)),

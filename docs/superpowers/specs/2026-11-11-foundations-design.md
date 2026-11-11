@@ -1,6 +1,6 @@
 # Foundations
 
-**Status:** designed 2026-11-11. Slice 1 landed.
+**Status:** designed 2026-11-11. Slices 1 and 2 landed.
 
 **Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
@@ -146,7 +146,20 @@ journaled. Each removes its refusal.
   a time to the Cradle, Provinces and Hinterland discard piles in turn, with
   no seeding of 2 per pile. The world deck is then the five Visions alone,
   through the existing short-deck mix (fewer than 25 denizens).
-  `SetupDeal.dealt` and the deal validation learn the face.
+  `SetupDeal` holds both faces' arithmetic for the plan factory, the deal
+  validation and the materializer.
+- **Readings taken with the plan,** for the owner to confirm. Under Movers
+  and Shakers every board starts with 6 favor, the Chancellor's included.
+  Under Teeming World a lineage that stores three or more advisers draws
+  none and keeps them all. Players draw in seat order, and a lineage's
+  stored advisers come before the ones it draws. A site-only denizen drawn
+  is kept and cannot be revealed in Setup. Reveal Cards still runs. An
+  uneven rest leaves the Cradle pile, then the Provinces pile, one card
+  more, and the first card dealt to a pile is its top; later cards go
+  beneath (decided in the slice's review, so that the unimplemented
+  denizens the alpha shuffle puts last in the stack top no pile). A Search
+  of the Visions-only deck draws one Vision and stops; once the five are
+  drawn the world deck is empty and cannot be searched.
 - **Tests.** Bank and board totals at 3 and 5 players; Teeming World with
   and without stored advisers; the discard piles' order; a world deck of
   Visions only, and a first Search drawing a Vision; card accounting still
@@ -306,7 +319,8 @@ The slice's last task, for the whole batch:
 - `docs/ROADMAP.md`: **Phase - Foundations** is deleted with the batch, and
   the **Grand Council and Festival banner faces** item goes with slice 6.
 - `docs/rules/chronicle.md`, `docs/rules/ambiguities.md` (rulings 1 to 3,
-  and R27 closed) and `docs/rules/implementation-traceability.md`.
+  slice 2's readings, and R27 closed) and
+  `docs/rules/implementation-traceability.md`.
 - `CONTEXT.md`: Explore, Hintermost, empty slot, Festival marker.
 - This spec's status line.
 

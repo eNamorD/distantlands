@@ -5,11 +5,11 @@ import distantlands.model._
 
 final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
 
-  def materialize(plan: FirstGameSetupPlan,
-      placements: Vector[PawnPlacement],
-      adviserChoices: Vector[(PlayerId, DenizenId)]): FirstGameSetupMaterial =
-    val placementMap = placements.map(p => p.playerId -> p.siteId).toMap
-    val adviserMap = adviserChoices.toMap
+  /** The table `plan` sets up, with Foundation IV's cards dealt as `deal`
+    * says. No pawn is placed and no adviser chosen: Setup's walk does
+    * both. */
+  def materialize(plan: FirstGameSetupPlan, deal: SetupDeal)
+      : FirstGameSetupMaterial =
     val relicsBySite = assignRelics(plan)
     val edifices = plan.homelandEdifices.toMap
     val purple = plan.empire.fold(Set.empty[SiteId])(empire =>
@@ -30,10 +30,9 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       }.toMap)
     val usedRelics = relicsBySite.valuesIterator.flatten.toSet
     val players = plan.participants.map { participant =>
-      PlayerState(participant.playerId, participant.lineageId,
-        placementMap.get(participant.playerId),
-        PlayerBoardState(1, 1, 0, 3, SupplyTrack.full),
-        adviserMap.get(participant.playerId).toVector.map(id =>
+      PlayerState(participant.playerId, participant.lineageId, None,
+        PlayerBoardState(startingFavor(plan), 1, 0, 3, SupplyTrack.full),
+        deal.kept(plan.denizenOrder, participant.playerId).map(id =>
           DenizenState(id, Orientation.FaceDown, Tokens.empty)),
         Vector.empty, Vector.empty)
     }
@@ -41,24 +40,15 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       CardZones(plan.worldDeckOrder, plan.relicOrder.filterNot(usedRelics),
         catalog.edifices.map(e => EdificeId(e.id.value))
           .filterNot(edificesOn(map)), Vector.empty,
-        initialDiscards(plan, placementMap, adviserMap)),
+        deal.discards(plan.denizenOrder)),
       BannersState(
         PeoplesFavorState(PeoplesFavorFace.Mob, None, 1),
         DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)),
       // The first player begins round 1: in a later game, the Chancellor.
       GameTracks(1, 0, usurperLimited = true,
         roundStarter = plan.firstPlayer), favorBanks(plan, map),
-      temporaryHands = plan.participants.map(p =>
-        p.playerId -> handFor(plan, p.playerId)).toMap)
-
-  /** A player's 3 cards in Foundation IV, dealt in seat order to the
-    * players with no starting advisers; none for a player with them. */
-  def handFor(plan: FirstGameSetupPlan, playerId: PlayerId): Vector[DenizenId] =
-    val index = plan.participants
-      .filterNot(p => plan.startingAdvisers.contains(p.playerId))
-      .indexWhere(_.playerId == playerId)
-    if index < 0 then Vector.empty
-    else plan.denizenOrder.slice(6 + index * 3, 9 + index * 3)
+      temporaryHands = plan.participants.map(p => p.playerId ->
+        deal.hand(plan.denizenOrder, p.playerId)).toMap)
 
   /** A first game deals every relic slot; a later game deals only the
     * slots an atlas site's stored relics leave open, and none at the
@@ -122,37 +112,24 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       case EdificeState(id, _, _) => id
     }.toSet
 
-  private def initialDiscards(plan: FirstGameSetupPlan,
-      placements: Map[PlayerId, SiteId],
-      choices: Map[PlayerId, DenizenId]): Map[Region, Vector[WorldCardId]] =
-    val seeded = Map[Region, Vector[WorldCardId]](
-      Region.Cradle -> plan.denizenOrder.slice(0, 2),
-      Region.Provinces -> plan.denizenOrder.slice(2, 4),
-      Region.Hinterland -> plan.denizenOrder.slice(4, 6))
-    plan.participants.foldLeft(seeded) { (discards, participant) =>
-      (placements.get(participant.playerId), choices.get(participant.playerId)) match
-        case (Some(site), Some(choice)) =>
-          val rejected = handFor(plan, participant.playerId).filterNot(_ == choice)
-          val destination = regionOf(plan, site) match
-            case Region.Cradle => Region.Provinces
-            case Region.Provinces => Region.Hinterland
-            case Region.Hinterland => Region.Cradle
-          discards.updated(destination, discards(destination) ++ rejected)
-        case _ => discards
-    }
+  /** The favor on each board: 1, and under Movers and Shakers (altered
+    * Foundation II) 5 more from the shared bank, which has no count. */
+  private def startingFavor(plan: FirstGameSetupPlan): Int =
+    if plan.altered(FoundationNumber.II) then 6 else 1
 
-  private def regionOf(plan: FirstGameSetupPlan, site: SiteId): Region =
-    if plan.orderedSites.take(2).contains(site) then Region.Cradle
-    else if plan.orderedSites.slice(2, 5).contains(site) then Region.Provinces
-    else Region.Hinterland
-
-  /** Foundation II: 3 favor per suit, 1 more with 5 or more players, and 1
-    * more per denizen of that suit on the map, edifices included. */
+  /** Foundation II. Powerful Tribes: 3 favor per suit, 1 more with 5 or
+    * more players, and 1 more per denizen of that suit on the map,
+    * edifices included. Movers and Shakers prints neither the 3 nor the
+    * fifth-player favor: each bank holds 1 per denizen of its suit on the
+    * map. */
   private def favorBanks(plan: FirstGameSetupPlan, map: MapState)
       : Map[Suit, Int] =
-    val bonus = if plan.participants.size >= 5 then 1 else 0
+    val printed =
+      if plan.altered(FoundationNumber.II) then 0
+      else if plan.participants.size >= 5 then 4
+      else 3
     val suits = map.sites.values.flatMap(_.denizens).flatMap {
       case EdificeState(id, _, _) => catalog.edifice(id).map(_.suit)
       case DenizenState(id, _, _) => catalog.denizen(id).map(_.suit)
     }.toVector
-    Suit.all.map(suit => suit -> (3 + bonus + suits.count(_ == suit))).toMap
+    Suit.all.map(suit => suit -> (printed + suits.count(_ == suit))).toMap
