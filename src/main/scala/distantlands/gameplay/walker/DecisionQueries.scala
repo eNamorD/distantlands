@@ -92,6 +92,7 @@ object DecisionQueries:
         (negotiate.participants, negotiate.terms, negotiate.accepted,
           negotiate.bounds, negotiate.acceptors)
       val members = participants.toSet
+      val bystanders = negotiate.bystanders
       for
         _ <- require(participants.size >= 2 &&
           participants.distinct.size == participants.size, decisionId,
@@ -102,6 +103,30 @@ object DecisionQueries:
           "declares terms for players outside the deal")
         _ <- require(accepted.subsetOf(members) && acceptors.subsetOf(members),
           decisionId, "declares an acceptance from outside the deal")
+        _ <- require(bystanders.distinct.size == bystanders.size &&
+          !bystanders.exists(members), decisionId,
+          "declares a bystander inside the deal")
+        _ <- require(negotiate.passed.forall(bystanders.contains), decisionId,
+          "declares a pass from outside its bystanders")
+      yield ()
+
+    case gathering: DecisionQuery.Gathering =>
+      val (present, reach, passed) =
+        (gathering.present, gathering.reach, gathering.passed)
+      for
+        _ <- require(present.size >= 2 &&
+          present.distinct.size == present.size, decisionId,
+          "declares fewer than two distinct players present")
+        _ <- require(reach.keySet == present.toSet, decisionId,
+          "declares reach for other players than those present")
+        _ <- require(reach.forall((player, named) => named.nonEmpty &&
+          !named.contains(player) && named.distinct.size == named.size),
+          decisionId,
+          "declares a reach naming its own player, nobody, or a player twice")
+        _ <- require(passed.forall(present.contains), decisionId,
+          "declares a pass from a player not present")
+        _ <- require(!present.forall(passed.contains), decisionId,
+          "declares every player passed, leaving nothing to decide")
       yield ()
 
     case many: DecisionQuery.ChooseMany =>
@@ -307,8 +332,38 @@ object DecisionQueries:
         case DecisionAnswer.DeclineDeal =>
           require(participants.contains(by), decisionId,
             "is not open to this player")
+        case DecisionAnswer.PassGathering =>
+          require(negotiate.bystanders.contains(by) &&
+            !negotiate.passed.contains(by), decisionId,
+            "does not let this player pass now")
+        case DecisionAnswer.UnpassGathering =>
+          require(negotiate.passed.contains(by), decisionId,
+            "does not let this player take back a pass")
         case _ =>
           reject(decisionId, "expects a negotiation answer")
+
+    case gathering: DecisionQuery.Gathering => answer match
+      case DecisionAnswer.OpenDeal(players) =>
+        val reach = gathering.reach.getOrElse(by, Vector.empty)
+        for
+          _ <- require(gathering.present.contains(by), decisionId,
+            "is not open to this player")
+          _ <- require(players.nonEmpty, decisionId,
+            "names nobody to negotiate with")
+          _ <- require(players.distinct.size == players.size, decisionId,
+            "names a player twice")
+          _ <- require(players.forall(reach.contains), decisionId,
+            "names a player out of this player's reach")
+        yield ()
+      case DecisionAnswer.PassGathering =>
+        require(gathering.present.contains(by) &&
+          !gathering.passed.contains(by), decisionId,
+          "does not let this player pass now")
+      case DecisionAnswer.UnpassGathering =>
+        require(gathering.passed.contains(by), decisionId,
+          "does not let this player take back a pass")
+      case _ =>
+        reject(decisionId, "expects a Gathering answer")
 
   private def acceptsDistribution(decisionId: String,
       slots: Vector[DistributeSlot], minTotal: Int, maxTotal: Int,

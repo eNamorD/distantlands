@@ -417,6 +417,23 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       projection.walkerDecision.map(_.copy(query = Some(distribute))))
     assertRoundTrips(carrying)
 
+  test("a Gathering's open question round-trips who is there, who passed " +
+      "and whom the viewer may name"):
+    val gathering = DecisionQueryProjection.Gathering(Vector("p1", "p2", "p3"),
+      Vector("p3"), Vector("p2", "p3"),
+      heading = Some("The Gathering at Ancient City"))
+    val carrying = projection.copy(walkerDecision =
+      projection.walkerDecision.map(_.copy(query = Some(gathering))))
+    assertRoundTrips(carrying)
+
+  test("a deal round-trips its bystanders and their passes"):
+    val watched = DecisionQueryProjection.Negotiate(NegotiationDealProjection(
+      Vector("p1", "p2"), Vector.empty, Vector.empty, Vector.empty,
+      bystanderPlayerIds = Vector("p3"), passedPlayerIds = Vector("p3")))
+    val carrying = projection.copy(walkerDecision =
+      projection.walkerDecision.map(_.copy(query = Some(watched))))
+    assertRoundTrips(carrying)
+
   test("an inspect query round-trips its cards, its done button and its heading"):
     val inspect = DecisionQueryProjection.Inspect(Vector(known, hidden),
       DecisionOptionProjection("button", "done", "Done"),

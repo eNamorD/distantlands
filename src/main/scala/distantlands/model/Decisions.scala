@@ -627,7 +627,23 @@ object DecisionQuery:
       shortOfWarbands: Vector[PlayerId] = Vector.empty,
       /** The deal is private (Whispering Stone, ruling 23): a viewer
         * outside it is shown who negotiates, never the terms. */
-      privateDeal: Boolean = false) extends DecisionQuery
+      privateDeal: Boolean = false,
+      /** Players outside the deal who may still answer it, only to pass or
+        * take back a pass: The Gathering's players at its site (catalog
+        * batch 12, ruling 4). Empty in every other deal. */
+      bystanders: Vector[PlayerId] = Vector.empty,
+      /** The bystanders who have passed. */
+      passed: Vector[PlayerId] = Vector.empty) extends DecisionQuery
+
+  /** The Gathering's open question (catalog batch 12, slice 6b): each
+    * player at its site may open a deal with players their reach lets them
+    * name, pass, or take back a pass (rulings 3 to 5 and 32). `present` is
+    * who is at the site, in the Gathering's order; `reach` gives each of
+    * them the players they may name; `passed` is who has passed. As in a
+    * deal, legality depends on who answers. */
+  final case class Gathering(present: Vector[PlayerId],
+      reach: Map[PlayerId, Vector[PlayerId]], passed: Vector[PlayerId],
+      heading: Option[String] = None) extends DecisionQuery
 
   /** Look at `cards`, in order, then press Done (catalog batch 2, N5). There
     * is no choice: the one answer is the choose-one answer of the `Done`

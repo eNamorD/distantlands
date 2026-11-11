@@ -24,6 +24,26 @@ private[frontend] object NegotiationDealPanel:
       editor(decisionId, surface.deal, editing, playerId, canControl, panel,
         controls)
     }
+    surface.passing.filter(_ => surface.deal.bystanderPlayerIds
+      .contains(playerId)).foreach(decisionId =>
+      passButton(decisionId, surface.deal, playerId, canControl, panel,
+        controls))
+
+  /** A Gathering bystander's one control (ruling 4): Pass, or Take back
+    * pass once passed. */
+  private def passButton(decisionId: String, deal: NegotiationDealState,
+      playerId: String, canControl: Boolean, panel: dom.Element,
+      controls: TableControls): Unit =
+    val passed = deal.passedPlayerIds.contains(playerId)
+    val toggle =
+      if passed then button("Take back pass", "negotiation-unpass")
+      else button("Pass", "negotiation-pass")
+    toggle.disabled = !canControl
+    toggle.onclick = _ => controls.submitCommand(GameCommand.ResolveWalker(
+      decisionId,
+      if passed then DecisionAnswerWire.UnpassGatheringWire
+      else DecisionAnswerWire.PassGatheringWire))
+    panel.appendChild(toggle)
 
   private def summary(deal: NegotiationDealState, playerId: String,
       panel: dom.Element): Unit =

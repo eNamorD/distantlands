@@ -169,3 +169,21 @@ class ParkedDecisionSuite extends munit.FunSuite:
     assertEquals(notice(WalkerWaitingState(Vector("blue"), Some("Choose the Oathkeeper"))),
       None)
     assertEquals(notice(WalkerWaitingState(Vector("blue"))), None)
+
+  test("a Gathering's open question routes to its panel, for a viewer in " +
+      "control only"):
+    val gathering = DecisionQueryState.Gathering(Vector("red", "blue"),
+      Vector.empty, Vector("blue"), heading)
+    val open = parked("search", "gathering.open", gathering)
+    assertEquals(routeOf(open).surface, Some(Surface.Gathering(open, gathering)))
+    assertEquals(routeOf(open, observer).surface, None)
+
+  test("a bystander's deal routes with its pass control"):
+    val watched = NegotiationDealState(Vector("blue", "green"), Vector.empty,
+      Vector.empty, Vector.empty, None, bystanderPlayerIds = Vector("red"))
+    val dealt = parked("search", "gathering.1.deal",
+      DecisionQueryState.Negotiate(watched, heading))
+    assertEquals(routeOf(dealt).surface,
+      Some(Surface.Negotiate(watched, None, Some("gathering.1.deal"))))
+    assertEquals(routeOf(dealt, observer).surface,
+      Some(Surface.Negotiate(watched, None, None)))

@@ -690,3 +690,83 @@ class DecisionQuerySuite extends munit.FunSuite:
       Right(()))
     assertEquals(wellFormed(chooseOne.copy(confirmVerb = Some(" "))),
       invalid(s"decision $decisionId declares a blank confirm verb"))
+
+  private val gatheringQuery = DecisionQuery.Gathering(
+    Vector(red, blue, green), Map(red -> Vector(blue, green),
+      blue -> Vector(red, green), green -> Vector(red, blue)),
+    Vector(green), Some("The Gathering"))
+
+  test("a Gathering question needs two players present, reach for each " +
+      "and passes from among them"):
+    assertEquals(wellFormed(gatheringQuery), Right(()))
+    assertEquals(wellFormed(gatheringQuery.copy(present = Vector(red),
+      reach = Map(red -> Vector(blue)), passed = Vector.empty)),
+      invalid("decision recover.choice declares fewer than two distinct " +
+        "players present"))
+    assertEquals(wellFormed(gatheringQuery.copy(
+      reach = gatheringQuery.reach - green)),
+      invalid("decision recover.choice declares reach for other players " +
+        "than those present"))
+    assertEquals(wellFormed(gatheringQuery.copy(
+      reach = gatheringQuery.reach.updated(red, Vector(red, blue)))),
+      invalid("decision recover.choice declares a reach naming its own " +
+        "player, nobody, or a player twice"))
+    assertEquals(wellFormed(gatheringQuery.copy(
+      passed = Vector(PlayerId("purple")))),
+      invalid("decision recover.choice declares a pass from a player not " +
+        "present"))
+    assertEquals(wellFormed(gatheringQuery.copy(
+      passed = Vector(red, blue, green))),
+      invalid("decision recover.choice declares every player passed, " +
+        "leaving nothing to decide"))
+
+  test("a Gathering question opens a deal within the answerer's reach, " +
+      "and passes by who has not passed"):
+    def by(player: PlayerId, answer: DecisionAnswer) =
+      acceptsBy(player, answer, gatheringQuery)
+    assertEquals(by(red, DecisionAnswer.OpenDeal(Vector(blue))), Right(()))
+    // A passed player may open a deal (ruling 32).
+    assertEquals(by(green, DecisionAnswer.OpenDeal(Vector(red, blue))),
+      Right(()))
+    assertEquals(by(PlayerId("purple"), DecisionAnswer.OpenDeal(Vector(red))),
+      invalid("decision recover.choice is not open to this player"))
+    assertEquals(by(red, DecisionAnswer.OpenDeal(Vector.empty)),
+      invalid("decision recover.choice names nobody to negotiate with"))
+    assertEquals(by(red, DecisionAnswer.OpenDeal(Vector(blue, blue))),
+      invalid("decision recover.choice names a player twice"))
+    assertEquals(by(red, DecisionAnswer.OpenDeal(Vector(PlayerId("purple")))),
+      invalid("decision recover.choice names a player out of this " +
+        "player's reach"))
+    assertEquals(by(red, DecisionAnswer.PassGathering), Right(()))
+    assertEquals(by(green, DecisionAnswer.PassGathering),
+      invalid("decision recover.choice does not let this player pass now"))
+    assertEquals(by(green, DecisionAnswer.UnpassGathering), Right(()))
+    assertEquals(by(red, DecisionAnswer.UnpassGathering),
+      invalid("decision recover.choice does not let this player take back " +
+        "a pass"))
+    assertEquals(by(red, DecisionAnswer.AcceptDeal),
+      invalid("decision recover.choice expects a Gathering answer"))
+
+  test("a deal's bystander may only pass or take back a pass, and a " +
+      "participant may do neither"):
+    val watched = deal(acceptors = Set(red, blue))
+      .copy(bystanders = Vector(green))
+    assertEquals(wellFormed(watched), Right(()))
+    assertEquals(wellFormed(watched.copy(bystanders = Vector(blue))),
+      invalid("decision recover.choice declares a bystander inside the deal"))
+    assertEquals(wellFormed(watched.copy(passed = Vector(red))),
+      invalid("decision recover.choice declares a pass from outside its " +
+        "bystanders"))
+    assertEquals(acceptsBy(green, DecisionAnswer.PassGathering, watched),
+      Right(()))
+    assertEquals(acceptsBy(green, DecisionAnswer.UnpassGathering, watched),
+      invalid("decision recover.choice does not let this player take back " +
+        "a pass"))
+    assertEquals(acceptsBy(green, DecisionAnswer.UnpassGathering,
+      watched.copy(passed = Vector(green))), Right(()))
+    assertEquals(acceptsBy(blue, DecisionAnswer.PassGathering, watched),
+      invalid("decision recover.choice does not let this player pass now"))
+    assertEquals(acceptsBy(green, DecisionAnswer.AcceptDeal, watched),
+      invalid("decision recover.choice does not let this player accept now"))
+    assertEquals(acceptsBy(green, DecisionAnswer.DeclineDeal, watched),
+      invalid("decision recover.choice is not open to this player"))
