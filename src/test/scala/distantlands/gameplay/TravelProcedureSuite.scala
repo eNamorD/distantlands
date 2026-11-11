@@ -200,7 +200,8 @@ class TravelProcedureSuite extends munit.FunSuite:
 
   test("role and Foundation changes do not gate Travel"):
     val ready = passRuled(travelBoard(supply = 7))
-    // No Table step reaches lineage roles or foundations.
+    // No Table step reaches lineage roles, and none turns all six
+    // foundations at once.
     val citizen = ready.updateCampaign(_.copy(lineages = ready.game.campaign.lineages.map {
         case (id, lineage) => id -> lineage.copy(role = Role.Citizen)
       }))

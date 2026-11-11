@@ -83,7 +83,8 @@ class NegotiationProcedureSuite extends munit.FunSuite:
         ActionRef.Negotiation, WalkerPowers.empty))
 
   test("no first-game gate: an Imperial player or an altered Foundation still negotiates"):
-    // No Table step reaches lineage roles or foundations.
+    // No Table step reaches lineage roles, and none turns all six
+    // foundations at once.
     val ready = gathered.ready
     val lineage = ready.game.campaign.lineages(Look(ready).player(p2).lineage)
     val campaign = ready.game.campaign

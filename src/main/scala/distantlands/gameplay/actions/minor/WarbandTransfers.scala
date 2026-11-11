@@ -53,8 +53,7 @@ object WarbandTransfers:
 
   val build: MinorActionProcedures.Build = (_, ready, actor, args) =>
     for
-      _ <- MinorActionProcedures.started(ready, actor, args,
-        ActionRef.TransferWarbands)
+      _ <- MinorActionProcedures.started(args, ActionRef.TransferWarbands)
       _ <- Either.cond(Imperials.isImperial(ready, actor), (),
         MinorActionUnavailable("Only an Imperial player transfers warbands"))
       _ <- Either.cond(partners(ready, actor).nonEmpty, (),

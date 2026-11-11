@@ -87,17 +87,23 @@ class WarbandTransfersSuite extends munit.FunSuite:
       .left.map(ActOffers.reason(ActionRef.TransferWarbands, _)),
       Left("Only an Imperial player transfers warbands"))
 
-  test("an altered foundation refuses the transfer as it refuses a move"):
-    val altered = imperialsTogether.update(ready => ready.updateCampaign(
-      campaign => campaign.copy(foundations = campaign.foundations.map {
-        case (number, foundation) =>
-          number -> foundation.copy(face = FoundationFace.Altered)
-      })))
-    val refusal = rules.startWalker(altered.state, ActionRef.MoveWarbands, p1)
-    assertEquals(refusal.left.toOption, Some(OathViolation.MinorActionUnavailable(
-      "minor actions are limited to the fixed unaltered foundations")))
-    assertEquals(rules.startWalker(altered.state, ActionRef.TransferWarbands,
-      p1).left.toOption, refusal.left.toOption)
+  test("an altered Foundation III gates neither the transfer nor a move"):
+    // p1's warbands hold Broken Peaks, so a move has a way to go.
+    val altered = imperialsTogether.warbandsAt(BrokenPeaksSite, p1, 2)
+      .foundation(FoundationNumber.III, FoundationFace.Altered)
+    accepted(rules.startWalker(altered.state, ActionRef.MoveWarbands, p1))
+    accepted(rules.startWalker(altered.state, ActionRef.TransferWarbands, p1))
+
+  test("a normal foundation that carries an alteration source gates " +
+      "neither the transfer nor a move"):
+    val sourced = FoundationState(FoundationFace.Normal,
+      Set(LegacyId("legacy:any")))
+    // No Table step sets a foundation's sources.
+    val kept = imperialsTogether.warbandsAt(BrokenPeaksSite, p1, 2)
+      .update(_.updateCampaign(campaign => campaign.copy(foundations =
+        campaign.foundations.updated(FoundationNumber.II, sourced))))
+    accepted(rules.startWalker(kept.state, ActionRef.MoveWarbands, p1))
+    accepted(rules.startWalker(kept.state, ActionRef.TransferWarbands, p1))
 
   test("with no Imperial at the site the transfer is unavailable"):
     val table = imperialsTogether.pawn(p2, at = AncientCitySite)

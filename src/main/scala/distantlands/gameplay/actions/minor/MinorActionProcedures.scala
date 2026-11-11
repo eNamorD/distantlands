@@ -13,9 +13,8 @@ import distantlands.model.OathViolation.{InvalidEventOrder,
   * and Move Warbands. Their rules are the legacy handler's, moved into
   * walker trees.
   *
-  * A start checks the first-game rules gate, as the handler did, and
-  * takes no start selection: what the player picks is
-  * asked inside the walk. Every operation is required, so a restriction
+  * A start takes no start selection: what the player picks is asked
+  * inside the walk. Every operation is required, so a restriction
   * that refuses one refuses the action with its own reason. A resume
   * rebuilds the same tree without the start's gates.
   */
@@ -62,7 +61,7 @@ object MinorActionProcedures:
 
   val buildPeek: Build = (_, ready, actor, args) =>
     for
-      _ <- started(ready, actor, args, ActionRef.PeekSiteRelics)
+      _ <- started(args, ActionRef.PeekSiteRelics)
       site <- pawnSite(ready, actor)
       _ <- Either.cond(site.relics.nonEmpty, (),
         MinorActionUnavailable("the pawn's site has no relics"))
@@ -72,7 +71,7 @@ object MinorActionProcedures:
 
   val buildReveal: Build = (_, ready, actor, args) =>
     for
-      _ <- started(ready, actor, args, ActionRef.RevealOwnedRelic)
+      _ <- started(args, ActionRef.RevealOwnedRelic)
       _ <- Either.cond(facedownRelics(ready, actor).nonEmpty, (),
         MinorActionUnavailable("no facedown relic to reveal"))
     yield revealTree(ready, actor)
@@ -82,7 +81,7 @@ object MinorActionProcedures:
 
   val buildMove: Build = (_, ready, actor, args) =>
     for
-      _ <- started(ready, actor, args, ActionRef.MoveWarbands)
+      _ <- started(args, ActionRef.MoveWarbands)
       _ <- pawnSite(ready, actor)
       blocked = Vector(toSite, toBoard).flatMap(way =>
         most(ready, actor, way).left.toOption)
@@ -287,22 +286,11 @@ object MinorActionProcedures:
       .flatMap(_ => sitedPawn(ready, actor).map(_._2).toRight(
         MinorActionUnavailable("pawn site is not in play")))
 
-  /** The legacy handler's gates: no start selection, and the first-game
-    * rules. */
-  private[minor] def started(ready: ReadyGame, actor: PlayerId,
-      args: Vector[DecisionOptionRef], action: ActionRef)
-      : Either[OathViolation, Unit] =
-    for
-      _ <- Either.cond(args.isEmpty, (), InvalidEventOrder(
-        s"walker procedure ${action.key} takes no start selection, got " +
-          args.map(_.kind).mkString(", ")))
-      _ <- Either.cond(supported(ready), (), MinorActionUnavailable(
-        "minor actions are limited to the fixed unaltered foundations"))
-    yield ()
-
-  private def supported(ready: ReadyGame): Boolean =
-    ready.setup.foundationProfile ==
-      FirstGameFoundationProfile.FixedUnaltered &&
-      ready.game.campaign.foundations.values.forall(foundation =>
-        foundation.face == FoundationFace.Normal &&
-          foundation.alterationSources.isEmpty)
+  /** The legacy handler's gate: a start takes no selection. Foundation
+    * faces gate nothing here; game start refuses the ones that do not work
+    * yet (`StartingFoundations`). */
+  private[minor] def started(args: Vector[DecisionOptionRef],
+      action: ActionRef): Either[OathViolation, Unit] =
+    Either.cond(args.isEmpty, (), InvalidEventOrder(
+      s"walker procedure ${action.key} takes no start selection, got " +
+        args.map(_.kind).mkString(", ")))

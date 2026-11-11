@@ -198,11 +198,8 @@ class RestSuite extends munit.FunSuite:
       face = PeoplesFavorFace.GrandCouncil).ready
     accepted(rest(Ready(banner), p1))
 
-    val number = base.game.campaign.foundations.keys.head
-    // No Table step reaches foundations.
-    val foundation = base.updateCampaign(_.copy(foundations =
-      base.game.campaign.foundations.updated(number,
-        FoundationState(FoundationFace.Altered, Set.empty))))
+    val foundation = Table.from(base).foundation(FoundationNumber.III,
+      FoundationFace.Altered).ready
     accepted(rest(Ready(foundation), p1))
 
   test("last player of round eight finishes the game by War Exhaustion, and " +

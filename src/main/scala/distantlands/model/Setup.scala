@@ -28,14 +28,11 @@ final case class SetupOrders(
     relicOrder: Vector[RelicId]
 )
 
-enum FirstGameFoundationProfile { case FixedUnaltered }
-
 /** `ignoreCitizenshipPowers` is the first-game option that ignores
   * "become a Citizen" powers (CR p. 34, ambiguity F8). It is on by default,
   * and game start never turns it off; the Settings Feature phase will let
   * players change it. */
 final case class FirstGameSupportState(
-    foundationProfile: FirstGameFoundationProfile,
     firstPlayer: PlayerId,
     ignoreCitizenshipPowers: Boolean = true
 )

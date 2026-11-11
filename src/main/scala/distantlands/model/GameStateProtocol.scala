@@ -56,14 +56,12 @@ object ReadyGame:
       game: OathGame,
       colors: Map[PlayerId, PlayerColor],
       firstPlayer: PlayerId,
-      favorBanks: Map[Suit, Int],
-      profile: FirstGameFoundationProfile =
-        FirstGameFoundationProfile.FixedUnaltered
+      favorBanks: Map[Suit, Int]
   ): ReadyGame =
     ReadyGame(
       game,
       colors,
-      FirstGameSupportState(profile, firstPlayer),
+      FirstGameSupportState(firstPlayer),
       MaterialBankState(
         favorBanks,
         MaterialBankState.printedWarbandSupply(

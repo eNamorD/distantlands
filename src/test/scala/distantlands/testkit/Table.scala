@@ -264,6 +264,12 @@ final case class Table private (private val game: ReadyGame,
       c.banners.darkestSecret.copy(active = face, holder = holder,
         secrets = secrets)))))
 
+  /** Foundation `number` showing `face`, with no alteration source; the
+    * quiet table shows every normal face. */
+  def foundation(number: FoundationNumber, face: FoundationFace): Table =
+    update(_.updateCampaign(campaign => campaign.copy(foundations =
+      campaign.foundations.updated(number, FoundationState(face, Set.empty)))))
+
   /** `viewer` knows `card`, a relic lying at `at`, as a peek records it. */
   def knowsRelicAt(viewer: PlayerId, card: RelicRef,
       at: SiteRef)(using munit.Location): Table =
