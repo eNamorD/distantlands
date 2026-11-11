@@ -26,7 +26,7 @@ object TheGatheringCard extends Denizen(DenizenId("27"), "The Gathering", Suit.N
   * here; a yes moves it with a plain `Move`, not Travel (ruling 2), and it
   * stays. Every player keeps the same place in the tree whether or not
   * they are asked, so a later player's question resumes where it parked.
-  * One line then names who is here.
+  * One line then names who is here. Then the deals ([[GatheringDeals]]).
   *
   * The site is the hook's: a site-only card's play names it in its
   * `RuleSourceRef.SiteCard`.
@@ -56,8 +56,9 @@ case object TheGathering extends WhenPlayedPower:
     case CardPlayedFaceup(_, _, RuleSourceRef.SiteCard(site, _), _) =>
       val order = TurnOrder.nextRoundOrder(ctx.state)
       val name = ctx.catalog.site(site).fold(site.value)(_.name)
-      order.flatMap(pawn(site, name, _)) :+
-        Note(id, states => Some(line(states.now, site, order)))
+      order.flatMap(pawn(site, name, _)) ++ Vector(
+        Note(id, states => Some(line(states.now, site, order))),
+        GatheringDeals.loop(ctx, site, order))
     case _ => Vector.empty
 
   /** The players whose pawns stand at `site`, in `order`. */

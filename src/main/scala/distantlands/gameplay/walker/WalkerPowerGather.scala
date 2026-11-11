@@ -65,7 +65,7 @@ private[walker] object WalkerPowerGather:
         def ctxFor(power: ContributingPower): PowerCtx =
           PowerCtx(powers.catalog, state, actor, power.source, w, path,
             operation,
-            procedure, answered)
+            procedure, answered, powers.useRestrictions)
         /** Why `power` may not be used here, when a power-use restriction
           * refuses it (catalog batch 8, slice 10). */
         def refused(power: ContributingPower): Option[OptionReason] =
@@ -227,7 +227,7 @@ private[walker] object WalkerPowerGather:
         def ctxFor(power: ContributingPower): PowerCtx =
           PowerCtx(powers.catalog, state, actor, power.source, window, path,
             decide,
-            procedure, answered)
+            procedure, answered, powers.useRestrictions)
         val forbids = forbidding(decide, ContributionCollector.gather(window,
           powers.windowIndex, ctxFor, power =>
             deniedUse(powers)(power, ctxFor(power))).optionRestrictions,
@@ -315,7 +315,7 @@ private[walker] object WalkerPowerGather:
     def ctxFor(window: PowerWindow, path: Vector[String], operation: Operation)
         : ContributingPower => PowerCtx =
       power => PowerCtx(powers.catalog, state, actor, power.source, window,
-        path, operation, procedure, answered)
+        path, operation, procedure, answered, powers.useRestrictions)
     def windowsIn(node: Operation, path: Vector[String])
         : Vector[(PowerWindow, Vector[String], Operation)] =
       val own = node.window.map(w => Vector((w, path, node))).getOrElse(Vector.empty)

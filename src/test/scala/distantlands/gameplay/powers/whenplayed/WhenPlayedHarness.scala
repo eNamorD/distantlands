@@ -43,6 +43,15 @@ object WhenPlayedHarness:
       WalkerPowers(power +: others.toVector,
         restrictionSet = OperationRestrictions.forCatalog(catalog)))
 
+  /** `power` registered beside `others`, with every production note key
+    * declared: a test that needs another power's rule, such as City
+    * Wall's, names it here. */
+  def powersBeside(power: ContributingPower,
+      others: ContributingPower*): WalkerPowers =
+    WalkerPowers(power +: others.toVector,
+      restrictionSet = OperationRestrictions.forCatalog(catalog),
+      declared = PowerRules.declared)
+
   /** Walks `hook`, for a card played to a site or as an adviser. */
   def fire(ready: ReadyGame, power: ContributingPower, hook: CardPlayedFaceup,
       dice: WalkerDice = WalkerDice.unavailable)
@@ -115,6 +124,55 @@ object WhenPlayedHarness:
             next, parked.owner, dice)), reached, asked :+ parked, left.drop(1))
     go(accepted(fire(ready, power, hook, dice)), Vector.empty, Vector.empty,
       answers.toList)
+
+  /** Where a walk stands once it parks with no answer left: the state it
+    * reached, its parked tree and question, and its events so far. */
+  final case class ParkedAt(at: ReadyGame, tree: PendingTree,
+      question: Decide, events: Vector[OathEvent])
+
+  /** Fires `hook` under `powers` and answers each park with the next of
+    * `answers`, as the player named beside it, so a co-owned decision is
+    * answered by the owner the test names. `Left` is where the walk parks
+    * once the answers run out; `Right` is the finished walk, which fails
+    * when answers are left over. */
+  private def driveAs(ready: ReadyGame, powers: WalkerPowers,
+      hook: CardPlayedFaceup, answers: Seq[(PlayerId, DecisionAnswer)])(
+      using munit.Location): Either[ParkedAt, Walked] =
+    def go(outcome: WalkerOutcome, events: Vector[OathEvent],
+        asked: Vector[Decide], left: List[(PlayerId, DecisionAnswer)])
+        : Either[ParkedAt, Walked] = outcome match
+      case WalkerOutcome.Finished(end, more) =>
+        if left.nonEmpty then munit.Assertions.fail(
+          s"${left.size} answers were left over")
+        Right(Walked(asked, events ++ more, end))
+      case WalkerOutcome.Parked(tree, more) =>
+        val reached = events ++ more
+        val at = reachedFrom(ready, reached)
+        val parked = present(ProcedureWalker.parkedDecide(at, hook, tree,
+          powers), "the parked question")
+        left match
+          case Nil => Left(ParkedAt(at, tree, parked, reached))
+          case (by, next) :: rest =>
+            go(accepted(ProcedureWalker.resolve(at, hook, tree,
+              Answered(parked.decisionId, next, by), powers,
+              WalkerDice.unavailable)), reached, asked :+ parked, rest)
+    go(accepted(ProcedureWalker.advance(ready, hook, None, powers,
+      WalkerDice.unavailable)), Vector.empty, Vector.empty, answers.toList)
+
+  /** `driveAs` to the walk's end. */
+  def walkAnsweringAs(ready: ReadyGame, powers: WalkerPowers,
+      hook: CardPlayedFaceup, answers: (PlayerId, DecisionAnswer)*)(
+      using munit.Location): Walked =
+    driveAs(ready, powers, hook, answers).fold(parked =>
+      munit.Assertions.fail(s"the walk parked at " +
+        s"${parked.question.decisionId} with no answer left"), identity)
+
+  /** `driveAs` to the park after the last answer. */
+  def parkAfterAs(ready: ReadyGame, powers: WalkerPowers,
+      hook: CardPlayedFaceup, answers: (PlayerId, DecisionAnswer)*)(
+      using munit.Location): ParkedAt =
+    driveAs(ready, powers, hook, answers).fold(identity, _ =>
+      munit.Assertions.fail("the walk finished where it should have parked"))
 
   /** The state `events` reach from `ready`: `ready` itself while no step
     * has run, since `replayed` refuses an empty batch. */

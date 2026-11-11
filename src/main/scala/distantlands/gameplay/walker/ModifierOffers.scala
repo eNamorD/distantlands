@@ -28,7 +28,7 @@ object ModifierOffers:
         power.applicable(PowerCtx(powers.catalog, ready, actor, power.source,
           window,
           Vector.empty, Sequence(Vector.empty, Some(window)),
-          Some(procedure))) &&
+          Some(procedure), useRestrictions = powers.useRestrictions)) &&
         paying(powers, ready, actor, Vector(power)).isRight)
 
   /** [[offerable]] against the production registry. */

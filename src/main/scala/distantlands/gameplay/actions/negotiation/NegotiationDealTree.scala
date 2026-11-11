@@ -11,11 +11,16 @@ import distantlands.model.DecisionAnswer.DeclineDeal
   * far give them, its participants, its rules and the line that opens a
   * deal nobody declined. The Negotiate action walks one under
   * `NegotiationDeal.NegotiationPrefix`; The Gathering walks one per deal
-  * (slice 6b). */
+  * (slice 6b), with `bystanders`, its players at the site outside the
+  * deal, who co-own the decision only to pass, and `passed`, who has
+  * passed. */
 final case class DealWalk(prefix: String, owner: PlayerId,
     participants: (ReadyGame, PendingTree) => Vector[PlayerId],
     rules: Vector[PlayerId] => DealRules,
-    opened: PendingTree => LogNote)
+    opened: PendingTree => LogNote,
+    bystanders: (ReadyGame, PendingTree) => Vector[PlayerId] =
+      (_, _) => Vector.empty,
+    passed: PendingTree => Vector[PlayerId] = _ => Vector.empty)
 
 /** One deal's walk, as the operations a procedure puts in its tree:
   *
@@ -36,10 +41,14 @@ object NegotiationDealTree:
     Repeat((ready, pending) => !deal(walk, ready, pending).closed,
       Branch((ready, pending) => {
         val now = deal(walk, ready, pending)
+        val bystanders = walk.bystanders(ready, pending)
         Vector(Decide(NegotiationDeal.dealId(walk.prefix), walk.owner,
           NegotiationDeal.snapshot(catalog, ready, now,
-            walk.rules(now.participants), limits),
-          coOwners = now.participants.filter(_ != walk.owner)))
+            walk.rules(now.participants), limits).copy(
+            bystanders = bystanders,
+            passed = walk.passed(pending).filter(bystanders.contains)),
+          coOwners = (now.participants ++ bystanders)
+            .filter(_ != walk.owner)))
       })),
     Branch((ready, pending) => settlement(catalog, walk, ready, pending)))
 
