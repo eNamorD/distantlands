@@ -194,8 +194,18 @@ The spec was checked against slice 3b's code at `1a5c130dd`, and the
 slice was prototyped there. The blocks below were then applied in order to
 a fresh worktree at `abc801d62`, slice 3b's branch head once its first
 review fixes landed (they touch none of this plan's files), where each
-task's tests and the full gates pass. Where the spec and the code differ, this plan follows the code, and
-Task 4 corrects the spec.
+task's tests and the full gates pass. Where the spec and the code differ,
+this plan follows the code, and Task 4 corrects the spec.
+
+The plan was revised after its review. The owner decided ruling 4: the
+Recent option now names the Atlas's first site, which the rulebook makes
+public, and a test pins that nothing else about the Atlas shows. Design
+decision 8 and finding 7 say that a one-site Atlas makes the Reliquary
+pick never undoable, the barrier test's note no longer claims a Reliquary
+its Setup lacks, and the moved R27 test again pins that only empty relic
+slots are filled. The revised blocks were applied in order to a fresh
+worktree at `7ce70b8bb` (code unchanged since `f3136fb3e`), where the
+touched suites and the goldens pass.
 
 1. **Game start placed the fill.** `GameStartRules.buildPlan` took
    `atlasSlots` sites from the Atlas's Recent end and handed them to the
@@ -248,7 +258,9 @@ Task 4 corrects the spec.
    now parks first at the Chancellor's question (or at the Reliquary pick
    before it), its first pawn question comes one park later, the Game Log
    gains a line for the end and one per site, and the Reliquary pick can
-   no longer be undone once the map is filled (Design decision 8).
+   no longer be undone once the map is filled; with one site in the Atlas
+   nothing is asked, the fill runs in the pick's own command, and the pick
+   can never be undone (Design decision 8).
    Journals recorded before this slice do not replay. First games, Setup
    With No Empire, and Wide Horizons with an Empire are unchanged: their
    trees, logs and states are as before (`ImperialMapsSetupSuite`).
@@ -290,7 +302,10 @@ These fill gaps the spec leaves. None is a rules question.
 4. **The question.** `setup.imperial-maps`, owned by the Chancellor,
    heading "Imperial Maps: fill the map from", options "Recent Sites"
    (`recent`) and "Forgotten Sites" (`forgotten`), the words Explore uses.
-   It names no site (Ruling 4).
+   The Recent label adds the Atlas's first site, which the rulebook makes
+   public: "Recent Sites (Buried Giant first)", parenthesised as "Roll 2
+   more dice (1 Supply)" is. The answer keys stay the end keys, and
+   nothing else names an Atlas site before the fill (Ruling 4).
 5. **When nothing is asked.** The step runs only with a Chancellor seated,
    Foundation I normal and at least one slot past the Empire's sites. The
    question is asked while the Chronicle's Atlas holds two sites or more;
@@ -307,8 +322,13 @@ These fill gaps the spec leaves. None is a rules question.
    wherever it runs (`HiddenOutcomes`): the fill shows the sites and what
    they store and deals relics nobody saw. Undo therefore cannot take back
    the Chancellor's answer, nor the Reliquary pick before it, which undo
-   could take back until now. Making Setup an exception would let a
-   Chancellor see one end's sites and choose again.
+   could take back until now. With one site in the Atlas nothing is asked,
+   so the fill runs inside the Reliquary pick's own command, and that pick
+   can never be undone. Making Setup an exception would let a Chancellor
+   see one end's sites and choose again, and no order of the steps keeps
+   the pick undoable without breaking the rulebook's order (the Chancellor
+   takes the relic under Players, before the Foundations resolve) or
+   showing the placed sites before the pick.
 9. **Tests.** `AtlasPlacementSuite` takes the shared words and the favor
    moves (Task 1). `ImperialMapsSetupSuite` (new) takes the step: the
    question, each end, the stored cards, the relic deal and a short relic
@@ -349,14 +369,22 @@ changes.
    relic deck could not fill the Recent end's slots was refused with "not
    enough relics to fill site slots"; it now starts. A first game is still
    refused (Task 2, "a relic deck too short for the placed sites ...").
-4. **The Chancellor chooses without seeing the Atlas.** Rulebook, Public
-   and Private Information: "In the Atlas box, all information is private
-   except the first site on the Recent Sites side and denizens and
-   edifices stored with it." Reading: the question names the two ends and
-   no site. The Recent end's first site is public by that text, but the
-   table shows no Atlas yet, for the Chancellor or anyone; that view is a
-   gap slice 3b left too ("a view of the Atlas for the explorer"), not a
-   rule this slice withholds (Task 3).
+4. **The Recent option names the Atlas's first site; nothing else is
+   shown. Decided with the owner in the plan's review; implemented.**
+   Rulebook, Public and Private Information: "In the Atlas box, all
+   information is private except the first site on the Recent Sites side
+   and denizens and edifices stored with it. _Not relics!_" The Recent
+   option reads "Recent Sites (Buried Giant first)". The Forgotten end's
+   site is private by the same text, so "Forgotten Sites" names none, and
+   no other Atlas site, stored card or relic appears in the question, its
+   answer keys (`recent`, `forgotten`), its projection or the log before
+   the fill. The front site's stored denizens and edifice are public too,
+   but are not shown: the option is a text button, and a list of cards in
+   its label would crowd it; they wait for a view of the Atlas, which
+   would serve Explore too. Explore's own question still names no site
+   (Tasks 2 and 3: "the question names only the Atlas's first Recent
+   site ...", "the parked Imperial Maps question is the Chancellor's
+   ...").
 5. **Foundation II's per-denizen favor counts ruined edifices.** Cards:
    "for each denizen on the map, add an extra [favor] to the matching
    favor bank" (Powerful Tribes) and "place [favor] on the matching favor
@@ -782,10 +810,29 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
     assertEquals(asked.owner, p1)
     assertEquals(asked.query, DecisionQuery.ChooseOne(Vector(
       DecisionOption.Button(DecisionOptionRef.Button("recent"),
-        "Recent Sites"),
+        "Recent Sites (Buried Giant first)"),
       DecisionOption.Button(DecisionOptionRef.Button("forgotten"),
         "Forgotten Sites")),
       heading = Some("Imperial Maps: fill the map from")))
+
+  test("the question names only the Atlas's first Recent site, which is " +
+      "public: no other site, in no option, line or answer key"):
+    val begun = Situation.start(Situation.rules(catalog))
+      .parkedAfter(GameCommand.Begin(chronicleWithGreatSlumAtForgottenEnd,
+        orders(chronicleWithGreatSlumAtForgottenEnd)))
+    val asked = parkedDecide(begun)
+    assertEquals(asked.decisionId, ImperialMaps.decisionId)
+    val hidden = atlasSites.tail.flatMap(site =>
+      Vector(site.value, catalog.site(site).get.name))
+    val shown = asked.toString
+    hidden.foreach(words => assert(!shown.contains(words), words))
+    assert(!begun.events.exists {
+      case LogNoted(_, note, _) => note.args.exists {
+        case NoteArg.Site(site) => atlasSites.contains(site)
+        case _ => false
+      }
+      case _ => false
+    })
 
   test("Recent Sites fill every empty slot going Hinterward from the " +
       "Atlas's head, and the rest stays in the Atlas"):
@@ -825,6 +872,8 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
       assertEquals(site.denizens, Vector(
         EdificeState(edifice, EdificeSide.Ruined, Tokens.empty),
         DenizenState(denizen, Orientation.FaceUp, Tokens.empty)), end)
+      assertEquals(site.relics.size,
+        math.max(1, catalog.site(stocked.site).get.relicSlots), end)
       assertEquals(site.relics.head,
         RelicState(relic, Orientation.FaceDown, Tokens.empty), end)
     }
@@ -1007,6 +1056,9 @@ import distantlands.model.DecisionAnswer.ChooseOneAnswer
   *       Note(placed the site))))
   * }}}
   *
+  * The Recent option names the Atlas's first site, which the rulebook
+  * makes public; nothing else about the Atlas is shown before the fill.
+  *
   * The step's shape reads only what game start fixed, the Chronicle's
   * Empire and Atlas, so a walk resumed past it finds every node where it
   * was once the map is full and the Atlas shorter.
@@ -1064,7 +1116,7 @@ object ImperialMaps:
     val question = Option.when(atlas.sizeIs >= 2)(
       Decide(decisionId, chancellor, DecisionQuery.ChooseOne(
         AtlasEnd.all.map(end => DecisionOption.Button(
-          AtlasPlacement.endOption(end), AtlasPlacement.endLabel(end))),
+          AtlasPlacement.endOption(end), optionLabel(catalog, ready, end))),
         heading = Some(heading))))
     val filledNote = Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
       states => Some(filledFrom(chosenEnd(states.answered))
@@ -1073,6 +1125,19 @@ object ImperialMaps:
       Repeat((state, _) => state.game.current.map.nextSlot.nonEmpty &&
           state.game.campaign.atlas.sites.nonEmpty,
         Sequence(place(catalog), placedNote(chancellor)))))
+
+  /** The words of `end`'s option. "In the Atlas box, all information is
+    * private except the first site on the Recent Sites side and denizens
+    * and edifices stored with it" (rulebook, "Public and Private
+    * Information"), so Recent names that site, "Recent Sites (Buried Giant
+    * first)", and Forgotten names none. */
+  private def optionLabel(catalog: ExecutableCatalog, ready: ReadyGame,
+      end: AtlasEnd): String =
+    val words = AtlasPlacement.endLabel(end)
+    val front = ready.game.campaign.atlas.site(AtlasEnd.Recent)
+      .filter(_ => end == AtlasEnd.Recent)
+    front.fold(words)(stored => s"$words (${catalog.site(stored.id)
+      .fold(stored.id.value)(_.name)} first)")
 
   /** The next site from the chosen end goes to the next slot, and each
     * suit's bank takes 1 favor from the shared bank per denizen it places:
@@ -1310,7 +1375,7 @@ with
 - [ ] **Step 5: Run the new suite to see it pass**
 
 Run: `./sbtw "testOnly distantlands.gameplay.setup.ImperialMapsSetupSuite"`
-Expected: PASS, 16 tests.
+Expected: PASS, 17 tests.
 
 - [ ] **Step 6: Run the suites that read game start, and see the old reads fail**
 
@@ -1669,7 +1734,7 @@ with
       None)
 
   test("the parked Imperial Maps question is the Chancellor's, and names " +
-      "the two ends and no site"):
+      "the two ends and only the first Recent site"):
     val parked = begin(record).ready
     val projector = new WalkerDecisionProjector(catalog,
       new GamePresentationProjector(catalog))
@@ -1678,7 +1743,11 @@ with
     assertEquals(own.decisionId, ImperialMaps.decisionId)
     assertEquals(own.query.toVector.flatMap(_.offeredOptions)
       .map(option => option.id -> option.label), Vector(
-        "recent" -> "Recent Sites", "forgotten" -> "Forgotten Sites"))
+        "recent" -> "Recent Sites (Buried Giant first)",
+        "forgotten" -> "Forgotten Sites"))
+    // The Forgotten end's site, Golden Valley, is private.
+    assert(!own.toString.contains("Golden Valley"), own)
+    assert(!own.toString.contains("golden-valley"), own)
     assertEquals(projector.project(ScopedProjectionContext(parked, Some(p2))),
       None)
 
@@ -1750,8 +1819,9 @@ with
     nothingToUndo(service, "imperial-maps", filled.nextSequence, p1)
 ```
 
-The barrier test is not empty: in this same Setup an undo after the
-Reliquary pick, before the fill, is accepted (checked at plan time).
+The barrier test is not empty: in a Setup whose Reliquary holds a relic,
+an undo after the Reliquary pick, before the fill, is accepted (checked at
+plan time).
 
 **In** `src/test/scala/distantlands/application/gamelog/LaterGameLogScripts.scala`:
 
@@ -1886,7 +1956,7 @@ answer).
 
 ```bash
 git add src/test/scala/distantlands/application/LaterGameSetupChoicesSuite.scala src/test/scala/distantlands/application/UndoBarrierPlaySuite.scala src/test/scala/distantlands/application/gamelog/LaterGameLogScripts.scala src/test/resources/gamelog/later-game-forgotten-sites.actor.log src/test/resources/gamelog/later-game-forgotten-sites.other.log
-git commit -m "test(setup): pin Imperial Maps' question, replay and undo at the table" -m "The projected question is the Chancellor's alone and names the two ends and no site, a Setup filled from Forgotten Sites replays its journal to the same game with no empty slot, the fill is an undo barrier, and a golden log records a Forgotten fill." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git commit -m "test(setup): pin Imperial Maps' question, replay and undo at the table" -m "The projected question is the Chancellor's alone and names the two ends and only the Atlas's public first Recent site, a Setup filled from Forgotten Sites replays its journal to the same game with no empty slot, the fill is an undo barrier, and a golden log records a Forgotten fill." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ---
@@ -2129,6 +2199,10 @@ with
   its player, so these name the Chancellor.
 - **Tests.** Each end; bank totals; the relic deal; pawn options; replay
   equals live.
+- **The question, decided with the owner.** The Recent option names the
+  Atlas's first site, which the rulebook makes public: "Recent Sites
+  (Buried Giant first)". The Forgotten end's site is private and is not
+  named, and nothing else about the Atlas is shown before the fill.
 - **As built.** Game start places only the Empire's sites, so the fill's
   relic deal and its denizens' favor move from the materializer into the
   walk; a Recent fill gives the same sites, relics and bank totals as the
@@ -2137,14 +2211,13 @@ with
   its sites when it is asked. The favor is a `Move` from the shared bank
   beside each `PlaceAtlasSite`, so an Explore still adds none. The fill is
   an undo barrier, as an Explore is, so the Reliquary pick before it can no
-  longer be undone once the map is filled.
+  longer be undone once the map is filled, and with one site in the Atlas,
+  which asks nothing, never.
 - **Readings taken with the plan,** for the owner to confirm. An Atlas too
   short to fill every slot is refused at game start, as before. A Citizen
   standing in for an absent Chancellor answers. A relic deck that runs
   short leaves the last relic slots open, so game start no longer refuses
-  such a game. The question names the two ends and no site; the Recent
-  end's first site is public by the rulebook, but the table shows no Atlas
-  yet. Foundation II's favor counts a placed site's ruined edifice, as
+  such a game. Foundation II's favor counts a placed site's ruined edifice, as
   "denizens" covers edifices, and is added as each site is placed, which
   gives the same totals as counting after the fill. One answer fills every
   slot, the Forgotten end placing the Atlas's last site in the Cradlemost
@@ -2195,8 +2268,9 @@ git commit -m "docs(foundations): record slice 4, Imperial Maps' choice" -m "Emp
   fill site slots, using any mix of Recent and Forgotten Sites". When
   Legacies arrive, its holder's question is asked per pass of the fill's
   `Repeat`, and `ImperialMaps.chosenEnd` reads that pass's answer.
-- A view of the Atlas's Recent end, which the rulebook makes public, would
-  serve both Imperial Maps and Explore.
+- A view of the Atlas's Recent end, which the rulebook makes public with
+  its stored denizens and edifice, would serve both Imperial Maps and
+  Explore; Explore's question could then name its front site too.
 
 ## Self-review
 
