@@ -166,7 +166,7 @@ Without Empire, round 8 uses War Exhaustion while skipping Stable Regime and Cha
 - **The Grand Scepter in negotiation.** Its holder may offer Citizenship to Exiles among the negotiators, never to themself; accepting the deal is the Exile's consent (CR p. 34).
 - **The Grand Scepter's battle plan.** For 3 burnt favor, an Imperial player victorious against a Citizen may exile them (CR p. 34, ruling R23).
 - **"Become a Citizen" denizens.** Martial Culture (defeating another Exile), Long-Lost Heir, Bewitch (the most secrets), Ancient Pact (the Darkest Secret) and Royal Ambitions (the most sites); the last three also take a random relic from the Reliquary (rulings R21-R23).
-- **First game.** A group's first game is advised to ignore "become a Citizen" powers (CR p. 34, ambiguity F8); a setup option does so, on by default.
+- **First game.** A group's first game is advised to ignore "become a Citizen" powers (CR p. 34, ambiguity F8); a setup option does so, which game start turns on for a first game only.
 
 ## Rules precedence and timing
 

@@ -110,13 +110,19 @@ class EmptySlotChronicleSuite extends munit.FunSuite:
     (OathTransition(state, Vector.empty), held)
 
   /** The set-aside Reliquary's relics are scattered, the journaled
-    * Reliquary holds only the relic Stock Reliquary added, and every card
-    * is accounted for once. */
+    * Reliquary holds only the relic Stock Reliquary added, every card is
+    * accounted for once, and the Chronicle's events replay to its state.
+    * The roles are set on the won state itself, which no event records, so
+    * the replay starts there. */
   private def assertSetAsideRelicsScattered(roles: Map[PlayerId, Role])(
       using munit.Location): Unit =
     val (wonByRole, held) = wonWithRolesMadeInPlay(roles)
-    val record = EvolvedChronicleFixture.chronicleJournaledBy(
-      EvolvedChronicleFixture.chronicleAnsweredAfter(wonByRole))
+    val answered = EvolvedChronicleFixture.chronicleAnsweredAfter(wonByRole)
+    val record = EvolvedChronicleFixture.chronicleJournaledBy(answered)
+    assertEquals(accepted(answered.events
+      .foldLeft[Either[OathViolation, OathState]](Right(wonByRole.state))(
+        (state, event) => state.flatMap(rules.evolve(_, event)))),
+      answered.state)
     val scattered = record.relicDeck ++
       (record.world ++ record.atlasBox).flatMap(_.items)
     absentEmpireChronicle.reliquary.foreach(relic =>

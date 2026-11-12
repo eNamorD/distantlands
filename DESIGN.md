@@ -645,7 +645,8 @@ controls are 30px.
 - **Festival marker**: the first player badge's pill, at the end of a site's
   pawn row (Sites). The Darkest Secret's Festival inspection repeats it, as
   a picture with no hover, after the face's rules: "Festival marker: at Deep
-  Woods", or "beside the map" before the holder's first Rest.
+  Woods", or "beside the map" before the holder's first Rest and after a
+  ribbon removes it (a Challenge, a Raid or the Conspiracy).
 - **Vision slot**: pill, `currentColor` border, 0.85em, no fill.
 - **Plan side**: 1em pill, `0 0.6em` padding, 0.75em; Discord fill for attack,
   Order fill for defense, a Discord-to-Order gradient for both; white text.
