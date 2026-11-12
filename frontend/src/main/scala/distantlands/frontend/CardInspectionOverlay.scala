@@ -67,6 +67,19 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     body.appendChild(panel)
     open(origin)
 
+  /** The Darkest Secret's Festival face: its printed lines, then a copy of
+    * the map's Festival pill and where the marker lies, so players see it
+    * while it is off the map without its being in the shared bank. The copy
+    * is a picture, not the map's control. */
+  def showFestival(title: String, lines: Vector[String], at: Option[String],
+      origin: dom.html.Element): Unit =
+    showText(title, lines, origin)
+    val copy = element("p", "rules-power festival-copy")
+    copy.appendChild(text("span", "festival-marker", "Festival"))
+    copy.appendChild(dom.document.createTextNode(
+      " marker: " + at.fold("beside the map")(site => s"at $site")))
+    body.querySelector(".card-overlay-details").appendChild(copy)
+
   /** A board's Supply: the bank above the track, as the physical board
     * prints it, with where the rest of the warbands are on the bank's next
     * line, and what the next Rest returns under the track. */

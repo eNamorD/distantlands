@@ -153,7 +153,8 @@ private[frontend] object WorldBoardRenderer:
           at, BoardOptionViews.key("adviser-slot", s"${player.playerId}:$at"))))
       // A banner matters more than a relic, so it comes first of the two.
       board.banners.foreach(banner =>
-        cards.appendChild(BannerFace.place(banner, options)))
+        cards.appendChild(BannerFace.place(banner, options,
+          BannerFace.festivalSite(value))))
       board.relics.zipWithIndex.foreach((card, at) => cards.appendChild(
         options.card(CardFace.render(card), card,
           boardCardKeys("relic-slot", player.playerId, at, card))))
@@ -413,7 +414,8 @@ private[frontend] object WorldBoardRenderer:
     if value.banners.nonEmpty then
       val banners = element("div", "shared-banners")
       value.banners.foreach(banner =>
-        banners.appendChild(BannerFace.place(banner, options)))
+        banners.appendChild(BannerFace.place(banner, options,
+          BannerFace.festivalSite(value))))
       section.appendChild(banners)
     // The setup cards close the bank: they are read once or twice a game,
     // so they stand under what changes every turn.

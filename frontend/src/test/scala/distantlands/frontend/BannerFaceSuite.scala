@@ -11,22 +11,32 @@ class BannerFaceSuite extends munit.FunSuite:
   private val mob = BannerState("peoples-favor", "mob", None, 3)
   private val flame = BannerState("darkest-secret", "wandering-flame",
     Some("red"), 1)
+  private val festival = BannerState("darkest-secret", "festival",
+    Some("red"), 2)
 
   /** The title and rules lines of every text the inspector was asked to
     * open, in order. */
   private var opened = Vector.empty[(String, Vector[String])]
 
+  /** The title, rules lines and marker site of every Festival inspection
+    * asked for, in order. */
+  private var festivalsOpened =
+    Vector.empty[(String, Vector[String], Option[String])]
+
   override def beforeEach(context: BeforeEach): Unit =
     opened = Vector.empty
+    festivalsOpened = Vector.empty
     CardInspection.onOpen:
       case CardInspection.Request.Text(title, lines, _) =>
         opened :+= title -> lines
+      case CardInspection.Request.Festival(title, lines, at, _) =>
+        festivalsOpened :+= (title, lines, at)
       case _ => ()
 
   override def afterEach(context: AfterEach): Unit = CardInspection.clear()
 
   test("a banner's face shows its side, its whole name, its initials and its favor"):
-    val face = BannerFace.render(mob)
+    val face = BannerFace.render(mob, None)
     assertEquals(face.getAttribute("class"),
       "card-face card-face-relic banner-face banner-peoples-favor")
     assertEquals(one(face, ".banner-side").textContent, "Mob")
@@ -40,7 +50,7 @@ class BannerFaceSuite extends munit.FunSuite:
       "Banner of the People's Favor, Mob, 3 favor")
 
   test("the Darkest Secret holds secrets, and a two-word side is spaced"):
-    val face = BannerFace.render(flame)
+    val face = BannerFace.render(flame, None)
     assertEquals(one(face, ".banner-side").textContent, "Wandering Flame")
     assertEquals(one(face, ".card-name-short").textContent, "DS")
     assertEquals(all(face, ".card-tokens .token-secret").size, 1)
@@ -50,18 +60,37 @@ class BannerFaceSuite extends munit.FunSuite:
   /** The compact face fits the short name, not the whole title: the prefix
     * is hidden there. */
   test("the compact name is measured on the short name"):
-    val face = BannerFace.render(mob).asInstanceOf[org.scalajs.dom.html.Element]
+    val face = BannerFace.render(mob, None).asInstanceOf[org.scalajs.dom.html.Element]
     assertEquals(face.style.getPropertyValue("--name-em").toDouble,
       math.round(CardFace.nameWidthEm("People's Favor") * 100) / 100.0)
 
   test("a click on a banner reads the rules its side prints"):
-    click(BannerFace.render(flame))
+    click(BannerFace.render(flame, None))
     assertEquals(opened.map(_._1),
       Vector("Banner of the Darkest Secret · Wandering Flame"))
     assertEquals(opened.head._2, Vector(
       "**Action:** Place your pawn at a site with [secret] on it. " +
         "_You may do this multiple times per turn._",
       "**Action:** Place [secret] on the banner or on your site."))
+
+  test("a click on the Festival face reads its rules and where the " +
+      "festival marker lies"):
+    click(BannerFace.render(festival, Some("Deep Woods")))
+    assertEquals(festivalsOpened, Vector((
+      "Banner of the Darkest Secret · Festival",
+      BannerFace.rules("festival"), Some("Deep Woods"))))
+    assertEquals(opened, Vector.empty)
+
+  test("before the festival marker first goes on the map, the Festival " +
+      "face says so"):
+    click(BannerFace.render(festival, None))
+    assertEquals(festivalsOpened.map(_._3), Vector(None))
+
+  test("the Wandering Flame reads no marker, wherever the festival lies"):
+    click(BannerFace.render(flame, Some("Deep Woods")))
+    assertEquals(festivalsOpened, Vector.empty)
+    assertEquals(opened.map(_._1),
+      Vector("Banner of the Darkest Secret · Wandering Flame"))
 
   test("every side of both banners has its rules"):
     Vector("mob", "grand-council").foreach(side =>
@@ -72,7 +101,7 @@ class BannerFaceSuite extends munit.FunSuite:
   test("a banner on offer is picked by its face and read by its inspect button"):
     val offered = option("banner", "peoples-favor")
     val shown = recording(available(offered))
-    val placed = BannerFace.place(mob, shown.options)
+    val placed = BannerFace.place(mob, shown.options, None)
     click(one(placed, ".banner-face"))
     assertEquals(shown.picks, Vector(offered))
     assertEquals(opened, Vector.empty)

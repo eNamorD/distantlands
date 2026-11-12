@@ -54,14 +54,27 @@ private[frontend] object BannerFace:
     case "darkest-secret" => "secret"
     case _ => "favor"
 
-  private def inspect(banner: BannerState)
+  /** The site the festival marker lies at, by its label: `None` while it
+    * lies beside the map, before the holder's first Rest or after a ribbon
+    * removed it. */
+  def festivalSite(value: GameProjection): Option[String] =
+    value.world.flatMap(_.sites).find(_.festival).map(_.label)
+
+  /** The banner's rules in the inspector. The Festival face adds a copy of
+    * the festival marker and `festivalAt`, where it lies. */
+  private def inspect(banner: BannerState, festivalAt: Option[String])
       : Option[(String, dom.html.Element => Unit)] =
     val lines = rules(banner.face)
+    val heading = s"${title(banner)} · ${side(banner.face)}"
     Option.when(lines.nonEmpty)(title(banner) -> (origin =>
-      CardInspection.openText(s"${title(banner)} · ${side(banner.face)}",
-        lines, origin)))
+      if banner.face == "festival" then
+        CardInspection.openFestival(heading, lines, festivalAt, origin)
+      else CardInspection.openText(heading, lines, origin)))
 
-  def render(banner: BannerState): dom.html.Button =
+  /** The face; `festivalAt` is [[festivalSite]], which only the Festival
+    * face reads. */
+  def render(banner: BannerState, festivalAt: Option[String])
+      : dom.html.Button =
     val name = bannerLabel(banner.key)
     val node = dom.document.createElement("button").asInstanceOf[dom.html.Button]
     node.`type` = "button"
@@ -88,11 +101,14 @@ private[frontend] object BannerFace:
     tokens.appendChild(text("span", "card-token-count",
       banner.resources.toString))
     node.appendChild(tokens)
-    inspect(banner).foreach((_, open) => node.onclick = _ => open(node))
+    inspect(banner, festivalAt).foreach((_, open) =>
+      node.onclick = _ => open(node))
     node
 
   /** The face, marked when it is an option: then the face picks it and an
     * inspect button beside it reads its rules. */
-  def place(banner: BannerState, options: BoardOptions): dom.Element =
-    options.control(render(banner),
-      Vector(BoardOptionViews.key("banner", banner.key)), inspect(banner))
+  def place(banner: BannerState, options: BoardOptions,
+      festivalAt: Option[String]): dom.Element =
+    options.control(render(banner, festivalAt),
+      Vector(BoardOptionViews.key("banner", banner.key)),
+      inspect(banner, festivalAt))

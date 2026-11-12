@@ -551,6 +551,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   border-radius: 999px; padding: 0 0.45em; color: var(--brass-bright);
   font-size: 0.72rem; font-weight: 700; line-height: 1.15;
   white-space: nowrap; background: none; cursor: pointer; }
+/* Its copy in the Festival's inspection is a picture of the marker, not a
+   control. */
+.festival-copy .festival-marker { display: inline-block; cursor: default; }
 
 .player-ref { font-weight: 700; }
 .player-purple { color: var(--player-purple); }
@@ -1302,7 +1305,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .card-overlay-close:hover, .log-new:hover,
 .log-overlay-close:hover { border-color: var(--cream-bright); background: var(--pressed); }
 .player-title:hover, .player-slot-vision:hover, .supply-open:hover,
-.festival-marker:hover,
+button.festival-marker:hover,
 .pile-open:not(:disabled):hover { background: var(--raised); }
 .zoom-label { font-size: .72rem; color: #c0b398; min-width: 35px; text-align: center; }
 /* One draggable surface, like the Arcs map: the wheel zooms, the drag pans,
