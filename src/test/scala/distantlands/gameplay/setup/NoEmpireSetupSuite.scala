@@ -207,11 +207,10 @@ class NoEmpireSetupSuite extends munit.FunSuite:
     assertEquals(started(record).banks.favor,
       Suit.all.map(suit => suit -> (3 + onMap.count(_ == suit))).toMap)
 
-  test("the option that ignores citizenship powers is on"):
-    // Game start sets it for every game today; the owner has still to rule
-    // on later games.
+  test("the option that ignores citizenship powers is off, as in every " +
+      "game but the first"):
     assertEquals(started(absentEmpireChronicle()).setup
-      .ignoreCitizenshipPowers, true)
+      .ignoreCitizenshipPowers, false)
 
   test("the plan's first player begins, the Usurper Limiter is on, and " +
       "the title and both banners start as in a first game"):

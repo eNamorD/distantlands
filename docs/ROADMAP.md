@@ -158,8 +158,8 @@ Legacy activation and scoring, and era scoring.
 Settings players can change during a game.
 
 - [ ] **Ignore Citizenship powers.** Toggle the first-game option that
-  ignores "become a Citizen" powers. Game start sets it, and nothing changes
-  it during a game ([Empire phase design](superpowers/specs/2026-10/2026-10-29-empire-phase-design.md),
+  ignores "become a Citizen" powers. Game start turns it on for a first game
+  and off for every later game, and nothing changes it during a game ([Empire phase design](superpowers/specs/2026-10/2026-10-29-empire-phase-design.md),
   slice 3).
 - [ ] **Hover warnings.** Show warnings on hover, turn them off, or disable
   the options that carry a warning.

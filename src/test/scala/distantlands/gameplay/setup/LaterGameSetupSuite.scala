@@ -47,6 +47,10 @@ class LaterGameSetupSuite extends munit.FunSuite:
       })
     }
 
+  test("the option that ignores citizenship powers is off: the rulebook " +
+      "recommends it for the very first game only"):
+    assertEquals(started(record).setup.ignoreCitizenshipPowers, false)
+
   test("an Empire site keeps its stored relics facedown and fills no empty " +
       "slot"):
     val relic = record.relicDeck.head

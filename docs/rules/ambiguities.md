@@ -34,7 +34,7 @@ These are not claimed errors in the rulebook. They are places where an implement
    resolver; legacy, Vision exhaustion, era, and other ties remain unresolved
    in their own contexts (CR pp. 16, 19, 36-37).
 8. **First game exception.** CR recommends ignoring "become Citizen" powers in the first game, wording this as a recommendation rather than a strict prohibition. Product rules need a configurable or explicit interpretation (CR p. 30; CR p. 34 uses similar guidance).
-    Resolved in part: a setup option, on by default, ignores these powers and shows them disabled (Empire slice 3a); the Settings Feature phase lets players change it.
+    Resolved in part: a setup option ignores these powers and shows them disabled (Empire slice 3a). Game start turns it on for a first game only, as the rulebook recommends it for "your very first game" (owner's ruling, 2026-11-12); the Settings Feature phase lets players change it.
 9. **Campaign target legality under Pass and zero-capacity sites.** Target generation must combine campaign type, ruler, region Pass consent, and special no-capacity cases (CR pp. 21-22, 30-31).
 10. **Chronicle actor availability.** Banner task assignment can target "anyone"; player attendance may change between games. Define whether absent/stored lineages can be assigned tasks or whether "anyone" means current participants (CR p. 36).
     Resolved: only players seated for the game receive tasks ([Chronicle rulings](#chronicle-rulings), ruling 1).

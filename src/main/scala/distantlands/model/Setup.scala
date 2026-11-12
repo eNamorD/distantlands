@@ -27,12 +27,13 @@ final case class SetupOrders(
 )
 
 /** `ignoreCitizenshipPowers` is the first-game option that ignores
-  * "become a Citizen" powers (CR p. 34, ambiguity F8). It is on by default,
-  * and game start never turns it off; the Settings Feature phase will let
-  * players change it. */
+  * "become a Citizen" powers (CR p. 34, ambiguity F8). The rulebook
+  * recommends it for the very first game only, so game start turns it on
+  * for a first game and off for every later game; the Settings Feature
+  * phase will let players change it. */
 final case class FirstGameSupportState(
     firstPlayer: PlayerId,
-    ignoreCitizenshipPowers: Boolean = true
+    ignoreCitizenshipPowers: Boolean
 )
 
 /** The validated shape `FirstGameSetupMaterializer` builds a table from.

@@ -67,9 +67,12 @@ object GameStartRules:
           material.banners, OathkeeperState(None, TitleSide.Oathkeeper),
           TurnState(orders.firstPlayer, Phase.Setup, Set.empty),
           material.tracks, None, material.temporaryHands))
+      // "If you are playing your very first game, we recommend ignoring
+      // these powers": only a first game ignores Citizenship powers.
       ready = LaterGameSetup(catalog, ReadyGame.start(game,
         plan.participants.map(p => p.playerId -> p.color).toMap,
-        orders.firstPlayer, material.favorBanks), plan, mode)
+        orders.firstPlayer, material.favorBanks,
+        ignoreCitizenshipPowers = mode == SetupMode.FirstGame), plan, mode)
       problems = DomainValidation.validate(ready.game)
       _ <- Either.cond(problems.isEmpty, (), InvalidAggregate(problems))
     yield ready
