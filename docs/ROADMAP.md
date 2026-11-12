@@ -82,6 +82,17 @@ Left behind by the
   [Foundations](superpowers/specs/2026-11-11-foundations-design.md) slice 6
   review.
 
+Left behind by the
+[Foundations work](superpowers/specs/2026-11-11-foundations-design.md):
+
+- [ ] **Show the Atlas's first site.** The rulebook makes the front Recent
+  site public, so players can always view it, with its edifice, its
+  denizens and its relic count; its relics stay facedown. Then the Imperial
+  Maps choice and an Explore can be weighed. The Imperial Maps question
+  already names that site ("Recent Sites (Buried Giant first)"); nothing
+  else shows it. Asked by the owner in the review of the Foundations
+  rulings, 2026-11-12.
+
 ### Phase - Campaign battle summary
 
 Left out of the Game Log action sections
