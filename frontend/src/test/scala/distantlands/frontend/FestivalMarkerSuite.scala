@@ -1,7 +1,7 @@
 package distantlands.frontend
 
 import distantlands.model.PlayerColor
-import Dom.all
+import Dom.{all, click, one}
 import TestProjections.actingProjection
 import TestSites.quietSite
 import org.scalajs.dom
@@ -11,6 +11,18 @@ import org.scalajs.dom
 class FestivalMarkerSuite extends munit.FunSuite:
   private val woods = quietSite("site:woods", "Deep Woods")
   private val peaks = quietSite("site:peaks", "Broken Peaks")
+
+  /** The title and lines of every text the inspector was asked to open. */
+  private var opened = Vector.empty[(String, Vector[String])]
+
+  override def beforeEach(context: BeforeEach): Unit =
+    opened = Vector.empty
+    CardInspection.onOpen:
+      case CardInspection.Request.Text(title, lines, _) =>
+        opened :+= title -> lines
+      case _ => ()
+
+  override def afterEach(context: AfterEach): Unit = CardInspection.clear()
 
   /** The World pane of a table whose Provinces hold `sites`, with Red's
     * pawn at Deep Woods. */
@@ -44,6 +56,15 @@ class FestivalMarkerSuite extends munit.FunSuite:
 
   test("with the marker beside the map no site draws it"):
     assertEquals(all(world(woods, peaks), ".festival-marker").size, 0)
+
+  test("the marker is a button, so a keyboard reaches it, and pressing it " +
+      "opens the Festival's power in the inspector"):
+    val root = world(woods.copy(festival = true))
+    val marker = one(root, ".festival-marker")
+    assertEquals(marker.tagName, "BUTTON")
+    click(marker)
+    assertEquals(opened, Vector("Festival marker" ->
+      Vector(WorldBoardRenderer.festivalNote)))
 
   test("the marker is no board option"):
     val root = world(woods.copy(festival = true))
