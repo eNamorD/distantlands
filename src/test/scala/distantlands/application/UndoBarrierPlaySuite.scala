@@ -5,12 +5,13 @@ import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.testkit.MenuPlay
 import distantlands.gameplay.setup.{AtlasPlacement, ImperialMaps,
-  LaterGameFixture}
+  LaterGameFixture, SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
-import distantlands.testkit.{Dice, Situation, Table}
+import distantlands.testkit.{Dice, ParkedNode, Situation, Table}
 import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Commands
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Real batches that undo never takes back (undo design, "Barriers"). */
 class UndoBarrierPlaySuite extends munit.FunSuite:
@@ -80,3 +81,31 @@ class UndoBarrierPlaySuite extends munit.FunSuite:
         AtlasPlacement.endOption(AtlasEnd.Forgotten)))))
     assertEquals(filled.ready.game.current.map.inPlay.size, 8)
     nothingToUndo(service, "imperial-maps", filled.nextSequence, p1)
+
+  test("before the fill the Reliquary pick can still be taken back, " +
+      "returning to the Reliquary question"):
+    // p1, the Chancellor, keeps the Reliquary's one relic and is then asked
+    // Recent or Forgotten; nothing has been placed yet.
+    val base = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
+    val relic = base.relicDeck.head
+    val record = base.copy(relicDeck = base.relicDeck.tail,
+      reliquary = Vector(relic))
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository)
+    val begun = Situation.start(Situation.journaled(service, catalog,
+        repository, "reliquary"))
+      .parkedAfter(GameCommand.Begin(record,
+        LaterGameFixture.orders(record, p1)))
+    def parkedDecision(state: OathState): String =
+      present(accepted(ParkedNode.of(state, catalog)), "a park").decisionId
+    assertEquals(parkedDecision(begun.state),
+      SetupProcedure.reliquaryDecisionId)
+    val picked = begun.parkedAfter(Commands.resolveWalker(p1, TreeDecision(
+      SetupProcedure.reliquaryDecisionId,
+      DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Relic(relic)))))
+    assertEquals(parkedDecision(picked.state), ImperialMaps.decisionId)
+    val undone = accepted(service.handle("reliquary", picked.nextSequence,
+      Commands.undo(p1)))
+    assertEquals(undone.state, begun.state)
+    assertEquals(parkedDecision(undone.state),
+      SetupProcedure.reliquaryDecisionId)

@@ -359,7 +359,11 @@ always took the Recent end.
   walk; a Recent fill gives the same sites, relics and bank totals as the
   old game start. The step (`ImperialMaps`) is declared from what game
   start fixed, so a resumed walk finds its nodes; the pawn question reads
-  its sites when it is asked. The favor is a `Move` from the shared bank
+  its sites when it is asked. That question now sits inside a `Branch` in
+  every Setup, a first game's included, so each pawn node lies one level
+  deeper than before (a first game's moved from `0.0` to `0.0.0`) and a
+  journal parked mid-Setup before this slice resumes at a different path;
+  old journals need not replay. The favor is a `Move` from the shared bank
   beside each `PlaceAtlasSite`, so an Explore still adds none. The fill is
   an undo barrier, as an Explore is, so the Reliquary pick before it can no
   longer be undone once the map is filled, and with one site in the Atlas,

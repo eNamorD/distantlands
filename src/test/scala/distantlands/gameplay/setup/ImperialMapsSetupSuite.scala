@@ -211,6 +211,21 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
     assertEquals(ready.banks.favor,
       Suit.all.map(suit => suit -> onMap.count(_ == suit)).toMap)
 
+  test("with five players Powerful Tribes leaves each bank 4 favor and 1 " +
+      "per denizen of its suit on the map once the map is filled"):
+    val record = chronicleWithGreatSlumAtForgottenEnd
+    val fiveSeats = LaterGameFixture.seats(5)
+    AtlasEnd.all.foreach { end =>
+      val ready = Situation.start(Situation.rules(catalog)
+          .withAnswers(answering(end)))
+        .parkedAt(SetupProcedure.pawnDecisionId(p1))(GameCommand.Begin(
+          record, LaterGameFixture.orders(record, p1, fiveSeats))).ready
+      assertEquals(ready.game.current.map.nextSlot, None, end)
+      val onMap = suitsOnMap(ready)
+      assertEquals(ready.banks.favor, Suit.all.map(suit =>
+        suit -> (4 + onMap.count(_ == suit))).toMap, end)
+    }
+
   test("the filled game holds every card once"):
     AtlasEnd.all.foreach(end =>
       assert(filledFrom(end).game.cardIndex.isRight, end))
@@ -260,6 +275,22 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
       case LogNoted(_, note, _) if ImperialMaps.noteKeys.exists(
         _.name == note.key) => note.key
     }, Vector("filled-from-recent", "placed-site"))
+
+  test("an Empire of one site or of three has every slot past it filled " +
+      "going Hinterward, from either end"):
+    Vector(1, 3).foreach { size =>
+      val record = LaterGameFixture.chronicle(l1, Vector(l2), size)
+      val atlas = record.atlasBox.map(_.site)
+      assertEquals(record.world.size + atlas.size, MapState.slots, size)
+      Vector(AtlasEnd.Recent -> atlas, AtlasEnd.Forgotten -> atlas.reverse)
+        .foreach { (end, placed) =>
+          val map = filledFrom(end, record).game.current.map
+          assertEquals(map.hinterward, record.world.map(_.site) ++ placed,
+            (size, end))
+          assertEquals(Region.all.map(map.sitesIn(_).size), Vector(2, 3, 3),
+            (size, end))
+        }
+    }
 
   test("an Empire of eight sites leaves no slot: nothing is asked or " +
       "placed"):

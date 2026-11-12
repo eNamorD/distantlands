@@ -10,7 +10,8 @@ one `GameStarted` event carrying both, and runs Setup as an ordinary
 there. There is no separate setup state machine or command payload; the
 walker's tree -- in a later game the Chancellor's Reliquary pick and
 Imperial Maps' fill (`gameplay/setup/ImperialMaps.scala`), then per player
-`Decide` a site, place the pawn, `Decide` an
+`Decide` a site (inside a `Branch`, so the legal sites are read when the
+question is reached), place the pawn, `Decide` an
 adviser, keep/discard, a `SetupEnd` window that folds the six batch-1 edifice
 powers (`gameplay/powers/setup/`: Great Market/Bandit Market, Great
 Forge/Broken Forge, Proving Grounds/Empty Grounds) -- ends the same way every
