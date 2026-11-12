@@ -2,6 +2,7 @@ package distantlands.frontend
 
 import distantlands.model.PlayerColor
 import Dom.{all, click, one}
+import TestBoardOptions.{available, option, recording}
 import TestProjections.actingProjection
 import TestSites.quietSite
 import org.scalajs.dom
@@ -27,11 +28,16 @@ class FestivalMarkerSuite extends munit.FunSuite:
   /** The World pane of a table whose Provinces hold `sites`, with Red's
     * pawn at Deep Woods. */
   private def world(sites: GameSite*): dom.Element =
+    worldWith(BoardOptions.none, sites*)
+
+  /** `world`, drawn with `options` on the table. */
+  private def worldWith(options: BoardOptions, sites: GameSite*)
+      : dom.Element =
     WorldBoardRenderer.world(actingProjection(
       players = Vector(GamePlayer("red", "Red", "Exile", PlayerColor.Red)),
       world = Vector(GameRegion("provinces", sites.toVector)))
       .copy(pawnLocations = Vector(GamePawn("red", "site:woods"))),
-      BoardOptions.none)
+      options)
 
   /** The class of each item in the pawn row of the site named `label`. */
   private def pawnRow(root: dom.Element, label: String): Vector[String] =
@@ -65,6 +71,17 @@ class FestivalMarkerSuite extends munit.FunSuite:
     click(marker)
     assertEquals(opened, Vector("Festival marker" ->
       Vector(WorldBoardRenderer.festivalNote)))
+
+  test("pressing the marker on a site that is an option leaves the site " +
+      "unpicked"):
+    val woodsSite = option("site", "site:woods")
+    val shown = recording(available(woodsSite))
+    val root = worldWith(shown.options, woods.copy(festival = true))
+    click(one(root, ".festival-marker"))
+    assertEquals(shown.picks, Vector.empty)
+    assertEquals(opened.map(_._1), Vector("Festival marker"))
+    click(one(root, ".site[aria-label='Deep Woods']"))
+    assertEquals(shown.picks, Vector(woodsSite))
 
   test("the marker is no board option"):
     val root = world(woods.copy(festival = true))

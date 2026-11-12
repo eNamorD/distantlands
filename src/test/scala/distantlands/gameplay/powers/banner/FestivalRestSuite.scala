@@ -1,5 +1,7 @@
 package distantlands.gameplay.powers.banner
 
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.NoteText
@@ -14,7 +16,7 @@ import distantlands.model.OathState.Ready
 import distantlands.testkit.{ActPowerHarness, MenuPlay, Outcomes,
   PhasePowerHarness, PowerRules, Table}
 import distantlands.testkit.Outcomes.assertWireRoundTrips
-import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 
 /** Festival, the Darkest Secret's altered face: "REST: You must place the
@@ -149,3 +151,20 @@ class FestivalRestSuite extends munit.FunSuite:
     val done = accepted(ActPowerHarness.use(withPowers, ready,
       GrandScepterAction.id, DecisionOptionRef.Relic(TheGrandScepterCard.id)))
     placedOnceAt(done.events, done.state, home)
+
+  test("a role change that parks on a False Prophet claim still ends the " +
+      "Act into a Rest that places the marker once"):
+    // p1, an Exile with p2's warband claiming p1's Conquest, becomes a
+    // Citizen by the Grand Scepter: the discard asks p2 first, and the
+    // walk resumes after the role change has moved the turn to Rest.
+    val conquest = VisionRules.Conquest
+    val ready = festivalHolderActingAtHome.festival(peaks).imperial(p3)
+      .relic(p1, TheGrandScepterCard).boardWarbands(p1, 2)
+      .pawn(p2, at = peaks).revealedVision(p1, conquest)
+      .warbandsOnCard(conquest, p2, 1).allowingCitizenshipPowers.ready
+    val parked = accepted(ActPowerHarness.use(withPowers, ready,
+      GrandScepterAction.id, DecisionOptionRef.Relic(TheGrandScepterCard.id)))
+    val done = accepted(withPowers.resolveWalker(parked.state, p2,
+      CardPlayProcedure.placementDecisionId(conquest),
+      DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.RevealedVision(p2))))
+    placedOnceAt(parked.events ++ done.events, done.state, home)
