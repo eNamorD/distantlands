@@ -77,8 +77,9 @@ final case class CampaignState(
     // baseline holds (Crown Chancellor: "even in the box", CR p. 36).
     boxRoles: Map[LineageId, Role] = Map.empty,
     // Setup With No Empire discards the Reliquary until the Chronicle
-    // Phase: its relics stay in `reliquary`, and no one can take one in
-    // play (Foundations ruling 3).
+    // Phase: its relics stay in `reliquary`, no one can take one in play,
+    // and Crown Chancellor discards them whoever wins (Foundations ruling
+    // 3).
     reliquarySetAside: Boolean = false
 ):
   /** The Reliquary's relics a player may take in play: none while the

@@ -20,6 +20,11 @@ private[frontend] object CardInspection:
         extends Request
     final case class Text(title: String, lines: Vector[String],
         origin: dom.html.Element) extends Request
+    /** The Darkest Secret on its Festival face: its printed lines, then a
+      * copy of the festival marker and the site it lies at, `None` while
+      * it lies beside the map. */
+    final case class Festival(title: String, lines: Vector[String],
+        at: Option[String], origin: dom.html.Element) extends Request
     /** A board's Supply: the bank, the Supply track, then the Rest. */
     final case class Supply(panel: SupplyAtRest.Panel,
         origin: dom.html.Element) extends Request
@@ -56,6 +61,10 @@ private[frontend] object CardInspection:
   def openText(title: String, lines: Vector[String],
       origin: dom.html.Element): Unit =
     handler.foreach(_(Request.Text(title, lines, origin)))
+
+  def openFestival(title: String, lines: Vector[String], at: Option[String],
+      origin: dom.html.Element): Unit =
+    handler.foreach(_(Request.Festival(title, lines, at, origin)))
 
   def openSupply(panel: SupplyAtRest.Panel, origin: dom.html.Element): Unit =
     handler.foreach(_(Request.Supply(panel, origin)))

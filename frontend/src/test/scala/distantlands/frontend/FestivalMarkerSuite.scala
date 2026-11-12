@@ -16,11 +16,17 @@ class FestivalMarkerSuite extends munit.FunSuite:
   /** The title and lines of every text the inspector was asked to open. */
   private var opened = Vector.empty[(String, Vector[String])]
 
+  /** The marker site of every Festival inspection asked for. */
+  private var festivalsOpened = Vector.empty[Option[String]]
+
   override def beforeEach(context: BeforeEach): Unit =
     opened = Vector.empty
+    festivalsOpened = Vector.empty
     CardInspection.onOpen:
       case CardInspection.Request.Text(title, lines, _) =>
         opened :+= title -> lines
+      case CardInspection.Request.Festival(_, _, at, _) =>
+        festivalsOpened :+= at
       case _ => ()
 
   override def afterEach(context: AfterEach): Unit = CardInspection.clear()
@@ -87,3 +93,15 @@ class FestivalMarkerSuite extends munit.FunSuite:
     val root = world(woods.copy(festival = true))
     assertEquals(all(root, ".festival-marker[data-option-ref]").size, 0)
     assertEquals(all(root, ".festival-marker button").size, 0)
+
+  test("the Festival banner in the shared bank names the site the marker " +
+      "lies at, and the map keeps its own marker"):
+    val festival = BannerState("darkest-secret", "festival", None, 0)
+    val root = WorldBoardRenderer.world(actingProjection(
+      players = Vector(GamePlayer("red", "Red", "Exile", PlayerColor.Red)),
+      world = Vector(GameRegion("provinces",
+        Vector(woods, peaks.copy(festival = true)))))
+      .copy(banners = Vector(festival)), BoardOptions.none)
+    click(one(root, ".shared-banners .banner-face"))
+    assertEquals(festivalsOpened, Vector(Some("Broken Peaks")))
+    assertEquals(pawnRow(root, "Broken Peaks"), Vector("festival-marker"))

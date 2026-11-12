@@ -17,8 +17,9 @@ object ChronicleCrown:
           s"${player.lineage.value} has no lineage state"))
     yield GrandScepterSource.take(ready, winner) ++ (lineage.role match
       case Role.Exile => empireBreaks(ready, player)
-      case Role.Citizen => newDynasty(ready, player.lineage)
-      case Role.Chancellor => Vector.empty)
+      case Role.Citizen =>
+        setAsideReliquaryDiscarded(ready) ++ newDynasty(ready, player.lineage)
+      case Role.Chancellor => setAsideReliquaryDiscarded(ready))
 
   /** Every lineage's current role: seated ones from the live campaign, the
     * rest from the baseline as this Chronicle has changed them. */
@@ -53,9 +54,7 @@ object ChronicleCrown:
       case (lineage, role) if role.isImperial && lineage != player.lineage =>
         RoleChanged(lineage, Role.Exile)
     }
-    val reliquary = ready.game.campaign.reliquary.map(id =>
-      Move(Piece.Card(id), PositionedLocation(Location.Reliquary),
-        PositionedLocation(Location.SetAsideRelics)))
+    val reliquary = reliquaryDiscarded(ready)
     def at(site: SiteId) = PositionedLocation(Location.Site(site))
     val forces = current.map.inPlay.flatMap(site =>
       current.map.sites.get(site).map(site -> _.forces))
@@ -93,6 +92,19 @@ object ChronicleCrown:
       Vector(ImperialWarbandsTaken(current.map.inPlay.size)) ++
       imperialRemoved ++ held ++ board ++ replaced :+
       RoleChanged(player.lineage, Role.Chancellor)
+
+  /** Every relic in the Reliquary to the discarded relics, which Scatter
+    * Relics deals. */
+  private def reliquaryDiscarded(ready: ReadyGame): Vector[CoreOperation] =
+    ready.game.campaign.reliquary.map(id =>
+      Move(Piece.Card(id), PositionedLocation(Location.Reliquary),
+        PositionedLocation(Location.SetAsideRelics)))
+
+  /** The Reliquary discarded if Setup With No Empire set it aside. */
+  private def setAsideReliquaryDiscarded(ready: ReadyGame)
+      : Vector[CoreOperation] =
+    if ready.game.campaign.reliquarySetAside then reliquaryDiscarded(ready)
+    else Vector.empty
 
   /** If a Citizen won: the former Chancellor becomes a Citizen. */
   private def newDynasty(ready: ReadyGame, winner: LineageId)

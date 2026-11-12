@@ -38,7 +38,8 @@ class CitizenshipSuite extends munit.FunSuite:
     val rows = Vector(DistributeAmount(DecisionOptionRef.Player(p1), 1))
     assert(Citizenship.kept(p3, rows).isLeft)
 
-  test("the first-game option is on unless a table turns it off"):
+  test("a first game starts with the option on, and a table may turn it " +
+      "off"):
     assert(Citizenship.ignored(Table.start.ready))
     assert(!Citizenship.ignored(Table.start.allowingCitizenshipPowers.ready))
 

@@ -82,6 +82,17 @@ Left behind by the
   [Foundations](superpowers/specs/2026-11-11-foundations-design.md) slice 6
   review.
 
+Left behind by the
+[Foundations work](superpowers/specs/2026-11-11-foundations-design.md):
+
+- [ ] **Show the Atlas's first site.** The rulebook makes the front Recent
+  site public, so players can always view it, with its edifice, its
+  denizens and its relic count; its relics stay facedown. Then the Imperial
+  Maps choice and an Explore can be weighed. The Imperial Maps question
+  already names that site ("Recent Sites (Buried Giant first)"); nothing
+  else shows it. Asked by the owner in the review of the Foundations
+  rulings, 2026-11-12.
+
 ### Phase - Campaign battle summary
 
 Left out of the Game Log action sections
@@ -158,8 +169,8 @@ Legacy activation and scoring, and era scoring.
 Settings players can change during a game.
 
 - [ ] **Ignore Citizenship powers.** Toggle the first-game option that
-  ignores "become a Citizen" powers. Game start sets it, and nothing changes
-  it during a game ([Empire phase design](superpowers/specs/2026-10/2026-10-29-empire-phase-design.md),
+  ignores "become a Citizen" powers. Game start turns it on for a first game
+  and off for every later game, and nothing changes it during a game ([Empire phase design](superpowers/specs/2026-10/2026-10-29-empire-phase-design.md),
   slice 3).
 - [ ] **Hover warnings.** Show warnings on hover, turn them off, or disable
   the options that carry a warning.

@@ -329,9 +329,8 @@ _Avoid_: festival token, festival site
 
 **Set-aside Reliquary**:
 The Reliquary of a game Setup With No Empire started. Its relics stay in the
-campaign all game, no one can take one in play, and the Chronicle's Stock
-Reliquary step adds to them. When an Exile wins, the Sun's Crown Chancellor
-step discards them with the rest of the Reliquary.
+campaign all game and no one can take one in play. Whoever wins, the Sun's
+Crown Chancellor step discards them, so Stock Reliquary never adds to them.
 _Avoid_: discarded Reliquary, empty Reliquary
 
 ### Undo

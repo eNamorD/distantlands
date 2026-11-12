@@ -56,12 +56,13 @@ object ReadyGame:
       game: OathGame,
       colors: Map[PlayerId, PlayerColor],
       firstPlayer: PlayerId,
-      favorBanks: Map[Suit, Int]
+      favorBanks: Map[Suit, Int],
+      ignoreCitizenshipPowers: Boolean
   ): ReadyGame =
     ReadyGame(
       game,
       colors,
-      FirstGameSupportState(firstPlayer),
+      FirstGameSupportState(firstPlayer, ignoreCitizenshipPowers),
       MaterialBankState(
         favorBanks,
         MaterialBankState.printedWarbandSupply(

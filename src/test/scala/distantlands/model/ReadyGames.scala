@@ -24,5 +24,6 @@ object ReadyGames:
         player.player -> seatColors(seat)
       }.toMap,
       firstPlayer = game.current.turn.activePlayer,
-      favorBanks = Suit.all.map(_ -> favorPerSuit).toMap
+      favorBanks = Suit.all.map(_ -> favorPerSuit).toMap,
+      ignoreCitizenshipPowers = true
     )

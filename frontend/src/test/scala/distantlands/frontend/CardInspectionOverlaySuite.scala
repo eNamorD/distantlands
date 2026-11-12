@@ -47,6 +47,27 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
     dom.document.body.appendChild(node)
     node
 
+  test("the Festival's inspection shows a copy of the map's Festival pill " +
+      "and the site the marker lies at"):
+    val MountedOverlay(root, overlay) = mountedOverlay()
+    overlay.showFestival("Banner of the Darkest Secret · Festival",
+      Vector("**Action:** Place [secret] on the banner."), Some("Deep Woods"),
+      focusableOpener())
+    val copies = all(root, ".card-overlay-details .festival-copy")
+    assertEquals(copies.map(_.textContent),
+      Vector("Festival marker: at Deep Woods"))
+    val pill = all(root, ".festival-copy .festival-marker")
+    assertEquals(pill.map(_.textContent), Vector("Festival"))
+    // A copy to look at, not the map's control.
+    assertEquals(pill.map(_.tagName), Vector("SPAN"))
+
+  test("before the first Rest the copy says the marker lies beside the map"):
+    val MountedOverlay(root, overlay) = mountedOverlay()
+    overlay.showFestival("Banner of the Darkest Secret · Festival",
+      Vector.empty, None, focusableOpener())
+    assertEquals(all(root, ".festival-copy").map(_.textContent),
+      Vector("Festival marker: beside the map"))
+
   test("each power sits under its braid, with its modifier tab and its cost"):
     val waystation = CardDetails("169", "denizen", "Way Station",
       orientation = Some("face-up"), powers = Vector(

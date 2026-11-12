@@ -258,6 +258,8 @@ class PlayerBoardSuite extends munit.FunSuite:
     var opened = Vector.empty[String]
     CardInspection.onOpen:
       case CardInspection.Request.Text(title, _, _) => opened = opened :+ title
+      case CardInspection.Request.Festival(title, _, _, _) =>
+        opened = opened :+ title
       case CardInspection.Request.Supply(_, _) =>
         opened = opened :+ SupplyAtRest.title
       case CardInspection.Request.Card(card, _) => opened = opened :+ card.name

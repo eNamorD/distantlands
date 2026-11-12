@@ -65,6 +65,7 @@ meets the goal, even when tied with the Empire.
    - If an Exile won, the Empire breaks. The winner's newly dormant legacies become active. The former Chancellor and all Citizens, even those in the box, become Exiles. Discard all relics in the Reliquary. Remove all Imperial warbands from sites, without adding bandits. Then, on each site the winner rules, replace their warbands with one Imperial warband. The winner rules these sites for the rest of the Chronicle.
    - Digital: once the Imperial warbands are removed, each site that held them takes one warband of a seated former Chancellor's colour, so the former Chancellor rules it as an Exile, their bank topped up when short; a boxed one places none ([ruling 20](ambiguities.md#chronicle-rulings), a deviation).
    - If a Citizen won, a new dynasty begins: the former Chancellor becomes a Citizen.
+   - Digital: a Reliquary Setup With No Empire set aside is discarded whoever wins, as an Exile's win discards it ([Foundations ruling 3](ambiguities.md#foundations-rulings)).
 
 **Assign Tasks**
 

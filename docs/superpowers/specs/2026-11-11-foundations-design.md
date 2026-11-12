@@ -1,7 +1,7 @@
 # Foundations
 
 **Status:** designed 2026-11-11. Every slice landed: 1, 2, 3a, 3b, 4, 5, 6
-and 7.
+and 7. The owner reviewed the rulings and readings on 2026-11-12.
 
 **Builds on** the [Chronicle steps design](2026-10/2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09/2026-09-21-chronicle-setup-design.md) and
@@ -61,11 +61,17 @@ Taken with the owner on 2026-11-10 and 2026-11-11.
 3. **No Empire sets the Reliquary aside.** "Discard all relics from the
    Reliquary. They return in the Chronicle Phase." The Reliquary's relics
    stay `campaign.reliquary` all game and never enter play; the slot fill
-   cannot draw them, and the Chronicle's Stock Reliquary step adds to them.
+   cannot draw them. Setting them aside is akin to discarding them, so
+   Crown Chancellor discards them whoever wins, as an Exile's win does,
+   and Stock Reliquary never adds to them (owner, 2026-11-12).
 4. **Explore's line** is "Explored Forgotten Site: Found Deep Woods" (or
    "Recent Site").
 5. **The shared bank has no count.** Taking favor from it changes nothing
    but the taker's board.
+
+The owner reviewed the slices' readings and undo barriers on 2026-11-12 and
+approved them, but for ruling 3 above and the Citizenship option (slice
+3a), which changed.
 
 Design calls the owner accepted with the slices:
 
@@ -149,7 +155,7 @@ journaled. Each removes its refusal.
   through the existing short-deck mix (fewer than 25 denizens).
   `SetupDeal` holds both faces' arithmetic for the plan factory, the deal
   validation and the materializer.
-- **Readings taken with the plan,** for the owner to confirm. Under Movers
+- **Readings taken with the plan,** approved by the owner. Under Movers
   and Shakers every board starts with 6 favor, the Chancellor's included.
   Under Teeming World a lineage that stores three or more advisers draws
   none and keeps them all. Players draw in seat order, and a lineage's
@@ -242,7 +248,7 @@ A new major action, `explore`.
   site's own power lines follow. A second Supply writes "Continued
   exploring", as Recover writes "Continued recovering". The lines sit on
   the Game Log's Neutral band.
-- **Readings taken with the plan,** for the owner to confirm. Only a power
+- **Readings taken with the plan,** approved by the owner. Only a power
   that hooks one of Explore's own windows changes an Explore, and none
   does: no modifier is offered, and no power changes its Supply cost. What
   holds for every operation still holds, so Brass Army asks its holder as
@@ -293,7 +299,7 @@ game.
 - **Pawns.** An Exile may place their pawn at any site ruled by bandits,
   which here is every site that holds bandits: a site of capacity 0 holds
   no warband and is ruled by nobody (R25).
-- **Readings taken with the plan,** for the owner to confirm. The absent
+- **Readings taken with the plan,** approved by the owner. The absent
   Chancellor's lineage becomes an Exile in the box with the Citizens. A
   former Empire with no site is refused, as an Empire's is (R28). A
   Foundation I already on Wide Horizons keeps its sources. Relic slots are
@@ -301,23 +307,12 @@ game.
   empty. If no site holds bandits, an Exile may place their pawn at any
   site. A power that takes a Reliquary relic finds a set-aside Reliquary
   empty. A first game places its eight sites whatever Foundation I's face.
-  Powers that make a player a Citizen are ignored as in a later game with
-  an Empire: the rulebook sets them aside only in the very first game, but
-  game start leaves that option on in every game until the Settings
-  Feature phase, a known gap.
-- **The reading most in need of the owner's eye: the set-aside Reliquary
-  at Crown Chancellor.** Setup With No Empire says "Discard all relics
-  from the Reliquary. They return in the Chronicle Phase", and the Sun's
-  Crown Chancellor says of an Exile's win "Discard all relics in the
-  Reliquary". Slice 3a leaves Crown Chancellor as it is: an Exile's win
-  discards the Reliquary, the set-aside relics with it, and Scatter Relics
-  deals them; a Chancellor's win keeps them, and Stock Reliquary adds to
-  them. With no Empire the winner is an Exile unless a player became the
-  Chancellor in play, so this narrows ruling 3's clause "the Chronicle's
-  Stock Reliquary step adds to them" to that one case. The alternative is
-  for Crown Chancellor to skip the discard while the Reliquary is set
-  aside (`CampaignState.reliquarySetAside`), so that the relics always
-  wait for Stock Reliquary.
+  Powers that make a player a Citizen apply: the rulebook sets them aside
+  only in the very first game, so game start turns that option on for a
+  first game alone (owner, 2026-11-12).
+- **The set-aside Reliquary at Crown Chancellor, decided with the owner.**
+  A set-aside Reliquary is discarded whoever wins, as an Exile's win
+  discards the Reliquary, and Scatter Relics deals it (ruling 3).
 
 ### Chronicle
 
@@ -369,7 +364,7 @@ always took the Recent end.
   an undo barrier, as an Explore is, so the Reliquary pick before it can no
   longer be undone once the map is filled, and with one site in the Atlas,
   which asks nothing, never.
-- **Readings taken with the plan,** for the owner to confirm. An Atlas too
+- **Readings taken with the plan,** approved by the owner. An Atlas too
   short to fill every slot is refused at game start, as before. A Citizen
   standing in for an absent Chancellor answers. A relic deck that runs
   short leaves the last relic slots open, so game start no longer refuses
@@ -413,7 +408,7 @@ always took the Recent end.
   ribbon") all follow it, and a Raid's defender then burns half their
   favor, the returned half included. The frontend already drew and read
   both faces.
-- **Readings taken with the plan,** for the owner to confirm. Every card
+- **Readings taken with the plan,** approved by the owner. Every card
   play the engine plans is "playing a card": a Search's, the facedown
   adviser play's and a power's own, as for the Mob. A card goes to a
   distant Imperial site only as it could go to the pawn site: a Vision or
@@ -476,7 +471,7 @@ always took the Recent end.
   and `OathViolation.UnsupportedBannerState` are gone. The projection gives
   each site a required `festival` flag, and the World pane ends that site's
   pawn row with a Festival pill.
-- **Readings taken with the plan,** for the owner to confirm. Every other
+- **Readings taken with the plan,** approved by the owner. Every other
   player is the holder's enemy, whatever their role. "Their powers" are the
   powers of the denizens at the marked site, edifices included, not the
   enemies' own powers used there; relics and the site's own powers are
@@ -500,13 +495,10 @@ always took the Recent end.
   step, and the Lake stays deactivated once the holder refuses. Jinx at the
   festival, though persistent, is refused to an enemy who rules it, since
   its secret would go onto the card.
-- **Open for the owner.** The Conspiracy (`OATH-V1-NF`) says to "adjust its
-  [favor]/[secret] as shown by its right ribbon". Read literally, only the
-  ribbon's HALF burn adjusts favor or secrets, so the text does not decide
-  whether a Conspiracy that takes the Festival also removes the festival
-  marker. The code removes it, as a Raid does; if the owner rules that it
-  stays, `ConspiracyWhenPlayed` burns the half without
-  `BannerRules.festivalRemoval`.
+- **The Conspiracy, decided with the owner.** The Conspiracy (`OATH-V1-NF`)
+  says to "adjust its [favor]/[secret] as shown by its right ribbon", and
+  that ribbon ends with the remove-festival icon, so a Conspiracy that takes
+  the Festival removes the festival marker, as a Raid does (2026-11-12).
 
 ## Slice 7: Shape Foundation
 
@@ -533,7 +525,7 @@ always took the Recent end.
   always reaches the one normal face, and the line names the holder, as
   every Beacon decision line does: "p3 restored Foundation I to Imperial
   Maps". Keeping writes no line.
-- **Readings taken with the plan,** for the owner to confirm. An active
+- **Readings taken with the plan,** approved by the owner. An active
   legacy is one that a lineage this Chronicle records, seated or in the box,
   holds active; a source legacy that no lineage holds active does not stop
   the restore. A restore clears the face's sources. A face Setup With No
