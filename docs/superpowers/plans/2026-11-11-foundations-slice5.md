@@ -63,7 +63,9 @@ plan follows.
   keys from the shared `CardPlayRules` set (`discard-first`,
   `bury-first`). A Raid on the People's Favor now records one `Move` of 1
   favor per favor returned to the banks, where it recorded one `Move` per
-  suit; the totals are unchanged (Plan-time finding 5).
+  suit. The recorded operations are the replay authority, so a new
+  journal's bytes differ while the state reached is the same, and no Game
+  Log line reads these moves (Plan-time findings 5 and 10).
 - New Foundations rules only. The printed setup cards are
   `OATH-SETUP08a-NF` (Mob's Favor) and `OATH-SETUP08b-NF` (Grand Council)
   in `~/projects/bgs-cards/content/card-data/oath/en-US/oath-newfoundations.yml`
@@ -73,7 +75,9 @@ plan follows.
   victory" (about line 778), "Taking Banners" and "Banner Powers" (about
   lines 1102 to 1127) and "Imperial sites" (about line 1178). The banner's
   image is page 1 of
-  `reference/2026-03-17-new-foundations-rev1/banners.pdf`, and the same
+  `/Users/roman/projects/oathdigital/reference/2026-03-17-new-foundations-rev1/banners.pdf`
+  (`reference/` is gitignored, so a worktree has no copy; read the main
+  checkout's file and change nothing there), and the same
   face at full size is
   `~/projects/bgs-cards/content/card-images/oath/en-US/Banner of the People's Favor - Grand Council (NF).png`.
   Read them there; make no web call.
@@ -158,6 +162,7 @@ Check the base before Task 1, by content:
 ```bash
 git merge-base --is-ancestor f3136fb3e HEAD && echo slice3b-ok
 git merge-base --is-ancestor b3226f6f1 HEAD && echo slice4-ok
+git merge-base --is-ancestor 3a19d633a HEAD && echo slice4-fix-ok
 git grep -n "object ImperialMaps" -- src/main/scala/distantlands/gameplay/setup/ImperialMaps.scala
 git grep -n "AtlasPlacement.suitOf(catalog, _)" -- src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala
 git grep -n "PeoplesFavorState(PeoplesFavorFace.Mob, None, 1)," -- src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala
@@ -174,7 +179,10 @@ git grep -c "PeoplesFavorGrandCouncil" -- src/main/scala
 The first must print `slice3b-ok`: `f3136fb3e` is the merge of slice 3b
 into `0.2.0-alpha`, and a worktree without it was cut from a stale branch:
 stop and report. The second must print `slice4-ok`: `b3226f6f1` is slice
-4's head, which this plan was applied to. Each grep but the last must print
+4's head, which this plan was first applied to. The third should print
+`slice4-fix-ok`: `3a19d633a` is slice 4's last review fix (tests and docs
+only), merged into this branch at `2470926a3`, where the revised plan was
+applied; if only it is missing, go on. Each grep but the last must print
 one line. They name what this plan stands on: slice 4's `ImperialMaps` and
 `AtlasPlacement.suitOf`, the banners game start builds, the refusal Task 1
 deletes, the Mob's registration, the Imperial-site test, Baron's
@@ -227,6 +235,15 @@ its right ribbon") read the same ribbons.
 
 ## Plan-time findings
 
+The plan was revised after its review: Task 4 also corrects
+`docs/rules/ambiguities.md`, `docs/architecture/game-setup.md` and one more
+cell of the traceability table, Task 2 adds a Temple of Ancestors test
+(Ruling 1), finding 10 says how replay treats the Raid's moves, and the
+banner image's path is absolute. The revised blocks were applied in order
+to a fresh export of `2470926a3` (this plan's first commit merged with
+slice 4's last fix), where the touched suites and the note-key snapshot
+pass.
+
 The spec was checked against the code at `b3226f6f1`, and the slice was
 prototyped there, one commit per task. The blocks below were then applied
 in order to a fresh worktree at `b3226f6f1`, where each task's tests and
@@ -268,8 +285,9 @@ the code, and Task 4 records it in the spec.
    returned every favor to the banks, the Raid grouping its moves by suit.
    Task 3 makes one `BannerRules.peoplesFavorRibbon` that reads the face,
    and all four call it. The Raid's moves become one favor each, in the
-   same order and totals; no golden reads them, and the Raid's lines read
-   the state (`CampaignNotes.spoilsNote`).
+   same order and totals. No Game Log line reads these moves: the Raid's
+   lines read the state (`CampaignNotes.spoilsNote`), and a delta's own
+   line (`DetailLines.delta`) does not name them.
 6. **Challenge refused both altered faces at once.**
    `ChallengeProcedure.supportedFaces` refused the start unless the
    People's Favor showed the Mob and the Darkest Secret the Wandering
@@ -292,9 +310,13 @@ the code, and Task 4 records it in the spec.
    therefore a quiet table with the face set by hand, and Task 1 adds a
    game-start test that the erosion still starts the Mob.
 10. **What changes for existing games.** None can have the face: game
-    start refused it until now. A journal with a Raid or a Conspiracy that
-    took the Mob replays to the same state with different recorded moves,
-    which the replay recomputes.
+    start refused it until now. Replay does not recompute a step's moves:
+    a `DeltaPayload`'s recorded operations are the replay authority
+    (`gameplay/walker/WalkerEvents.scala`, `WalkerStepRecorded`), so an old
+    journal with a Raid on the Mob replays its grouped moves as recorded.
+    A Raid recorded after this slice journals one 1-favor `Move` per favor
+    instead: its journal bytes differ, the state it reaches does not, and
+    no Game Log line reads these moves (`DetailLines.delta`).
 
 ## Design decisions
 
@@ -341,9 +363,13 @@ changes.
 1. **"When playing a card" is every card play.** Banner: "When playing a
    card, you may play it to any Imperial site on the map". Reading: a
    Search's play, the Play Facedown Adviser action and a power's own play
-   (Search Party, Temple of Ancestors, Oracle) all count, as they do for
+   (Search Party, Oracle, Temple of Ancestors) all count, as they do for
    the Mob (Task 2, "it applies to a facedown adviser played to a site as
-   well").
+   well"). A power that limits where its own card goes still limits it:
+   Temple of Ancestors plays only to the advisers (its `PlacementLimit`
+   refuses every site placement), so under the Grand Council its distant
+   Imperial sites are shown, disabled with the Temple's reason, as its
+   pawn site is (Task 2, `TempleOfAncestorsSuite`).
 2. **A card goes to a distant Imperial site only as it could go to the
    pawn site.** Reading: a Vision and an adviser-only card are never
    offered a site; a site-only card may go to any Imperial site; each site
@@ -413,9 +439,10 @@ changes.
 | `src/main/scala/distantlands/gameplay/powers/whenplayed/FavoredSon.scala`, `ConspiracyWhenPlayed.scala` | call the shared ribbon |
 | `src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala`, `AlteredFoundationSetupSuite.scala`, `NoEmpireSetupSuite.scala` | game start (Task 1) |
 | `src/test/scala/distantlands/gameplay/powers/banner/PeoplesFavorGrandCouncilSuite.scala` | new: the power (Task 2) |
+| `src/test/scala/distantlands/gameplay/powers/action/TempleOfAncestorsSuite.scala` | the Temple's own play under the Grand Council (Task 2) |
 | `src/test/resources/notes/declared-keys.txt` | rewritten by its command (Task 2) |
 | `src/test/scala/distantlands/gameplay/ChallengeProcedureSuite.scala`, `CampaignRaidSuite.scala`, `VisionPlaySuite.scala`, `src/test/scala/distantlands/gameplay/powers/whenplayed/FavoredSonSuite.scala` | the ribbons (Task 3) |
-| `docs/ROADMAP.md`, `docs/architecture/bounded-banners.md`, `docs/architecture/bounded-visions-and-conspiracy.md`, `docs/architecture/all-exile-round-endings.md`, `docs/rules/implementation-traceability.md`, the spec | docs (Task 4) |
+| `docs/ROADMAP.md`, `docs/architecture/bounded-banners.md`, `docs/architecture/bounded-visions-and-conspiracy.md`, `docs/architecture/all-exile-round-endings.md`, `docs/architecture/game-setup.md`, `docs/rules/ambiguities.md`, `docs/rules/implementation-traceability.md`, the spec | docs (Task 4) |
 
 ---
 
@@ -648,6 +675,7 @@ git commit -m "feat(setup): Grand Council turns the People's Favor at game start
 - Create: `src/main/scala/distantlands/gameplay/powers/banner/PeoplesFavorGrandCouncil.scala`
 - Modify: `src/main/scala/distantlands/gameplay/powers/banner/BannerFacePowers.scala`
 - Test: `src/test/scala/distantlands/gameplay/powers/banner/PeoplesFavorGrandCouncilSuite.scala` (new)
+- Test: `src/test/scala/distantlands/gameplay/powers/action/TempleOfAncestorsSuite.scala`
 - Rewritten: `src/test/resources/notes/declared-keys.txt`
 
 **Interfaces:**
@@ -729,7 +757,7 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
 
   /** Searches with no modifier and keeps `played`, parked on its
     * placement. The events are the whole Search's so far. */
-  private def toPlacement(ready: ReadyGame): OathTransition = accepted(for
+  private def searchedAndParkedOnPlacement(ready: ReadyGame): OathTransition = accepted(for
     started <- start(ready)
     kept <- keep(started, played)
   yield kept.copy(events = started.events ++ kept.events))
@@ -756,7 +784,7 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
       "and to no site another player or nobody rules"):
     val ready = councilHolderBesideTheEmpire(Vector.empty).ready
     assertEquals(SiteRulers.imperialSites(ready), Vector(peaks, shore))
-    assertEquals(slotsOf(toPlacement(ready)), Vector(
+    assertEquals(slotsOf(searchedAndParkedOnPlacement(ready)), Vector(
       DecisionOptionRef.SiteSlot(home, 0) -> None,
       DecisionOptionRef.SiteSlot(peaks, 0) -> None,
       DecisionOptionRef.SiteSlot(shore, 0) -> None))
@@ -770,7 +798,7 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
     def slot(site: SiteId) =
       DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(site, 0))
     assertEquals(PlacementPicks.siteSlotOptions(PlacementPicks.parkedOptions(
-      toPlacement(ready).state, walkerPowers)), Vector(slot(home),
+      searchedAndParkedOnPlacement(ready).state, walkerPowers)), Vector(slot(home),
       DecisionOption.Replacing(slot(peaks), fillers(0)),
       DecisionOption.Replacing(slot(shore), ToweringRampartCard.id),
       DecisionOption.Unavailable(DecisionOption.Replacing(slot(dunes),
@@ -782,14 +810,14 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
     val ready = fillers.foldLeft(councilHolderBesideTheEmpire(Vector.empty))(
       (table, card) => table.denizen(card, at = home)).ready
     assert(!SiteRulers.isImperialSite(ready, home))
-    assertEquals(slotsOf(toPlacement(ready)), Vector(
+    assertEquals(slotsOf(searchedAndParkedOnPlacement(ready)), Vector(
       DecisionOptionRef.SiteSlot(peaks, 0) -> None,
       DecisionOptionRef.SiteSlot(shore, 0) -> None))
 
   test("its discard holds at a pawn site the Empire holds too"):
     val ready = councilHolderBesideTheEmpire(Vector.empty)
       .warbandsAt(home, p2, 1).denizen(fillers(1), at = home).ready
-    assertEquals(slotsOf(toPlacement(ready)).take(2), Vector(
+    assertEquals(slotsOf(searchedAndParkedOnPlacement(ready)).take(2), Vector(
       DecisionOptionRef.SiteSlot(home, 1) -> None,
       DecisionOptionRef.SiteSlot(home, 0) -> Some(fillers(1))))
 
@@ -797,7 +825,7 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
       "that card to the pile after the site's region, with the Grand " +
       "Council's line"):
     val ready = councilHolderBesideTheEmpire(fillers.take(1)).ready
-    val asked = toPlacement(ready)
+    val asked = searchedAndParkedOnPlacement(ready)
     assertEquals(councilSaid(asked.events), Vector.empty)
     val done = accepted(placeReplacing(asked, played, PlayedAs.AtSite,
       fillers(0)))
@@ -814,7 +842,7 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
 
   test("a play to an Imperial site's empty slot discards nothing and " +
       "writes no line"):
-    val asked = toPlacement(councilHolderBesideTheEmpire(Vector.empty).ready)
+    val asked = searchedAndParkedOnPlacement(councilHolderBesideTheEmpire(Vector.empty).ready)
     val done = accepted(placeAt(asked, played,
       DecisionOptionRef.SiteSlot(shore, 0)))
     assertEquals(Look(SearchFixture.after(done)).cardsAt(shore),
@@ -827,7 +855,7 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
       .peoplesFavor(Some(p1), 1, PeoplesFavorFace.GrandCouncil)
       .denizen(fillers(0), at = home).ready
     assertEquals(SiteRulers.imperialSites(ready), Vector.empty)
-    assertEquals(slotsOf(toPlacement(ready)), Vector(
+    assertEquals(slotsOf(searchedAndParkedOnPlacement(ready)), Vector(
       DecisionOptionRef.SiteSlot(home, 1) -> None))
 
   test("nobody else plays to the Imperial sites: not another holder, not " +
@@ -839,7 +867,7 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
       "Mob face" -> (_.peoplesFavor(Some(p1), 1)))
     others.foreach { case (label, favor) =>
       val ready = favor(councilHolderBesideTheEmpire(Vector.empty)).ready
-      assertEquals(slotsOf(toPlacement(ready)),
+      assertEquals(slotsOf(searchedAndParkedOnPlacement(ready)),
         Vector(DecisionOptionRef.SiteSlot(home, 0) -> None), label)
     }
 
@@ -858,17 +886,61 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
       "still play to them"):
     val ready = councilHolderBesideTheEmpire(Vector.empty)
       .relic(p1, GrandMaskCard).ready
-    assertEquals(slotsOf(toPlacement(ready)), Vector(
+    assertEquals(slotsOf(searchedAndParkedOnPlacement(ready)), Vector(
       DecisionOptionRef.SiteSlot(home, 0) -> None,
       DecisionOptionRef.SiteSlot(peaks, 0) -> None,
       DecisionOptionRef.SiteSlot(shore, 0) -> None))
 ```
 
+**In** `src/test/scala/distantlands/gameplay/powers/action/TempleOfAncestorsSuite.scala`
+(a power's own play that only goes to the advisers still shows the Grand
+Council's sites, refused with the power's reason; Ruling 1):
+
+Replace
+
+```scala
+import distantlands.gameplay.cards.AncientCitySite
+```
+
+with
+
+```scala
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+```
+
+Then replace
+
+```scala
+  test("played faceup it becomes an adviser; replay and the wire agree"):
+```
+
+with
+
+```scala
+  test("a Grand Council holder's distant Imperial site is shown, refused " +
+      "with the Temple's reason as the pawn site is"):
+    val ready = Table.from(staged()).imperial(Table.p2)
+      .peoplesFavor(Some(actor), 1, PeoplesFavorFace.GrandCouncil)
+      .warbandsAt(BrokenPeaksSite, Table.p2, 1).ready
+    val t = accepted(start(ready))
+    val refused = OptionReason.Written(TempleOfAncestors.toAdvisers)
+    assertEquals(PlacementPicks.siteSlotOptions(options(t)).map {
+      case DecisionOption.Unavailable(option, reason) =>
+        option.ref -> Some(reason)
+      case option => option.ref -> None
+    }, Vector(
+      DecisionOptionRef.SiteSlot(AncientCitySite.id, 1) -> Some(refused),
+      DecisionOptionRef.SiteSlot(BrokenPeaksSite.id, 0) -> Some(refused)))
+
+  test("played faceup it becomes an adviser; replay and the wire agree"):
+```
+
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly distantlands.gameplay.powers.banner.PeoplesFavorGrandCouncilSuite"`
-Expected: FAIL. The suite does not compile: `PeoplesFavorGrandCouncil` is
-not found.
+Run: `./sbtw "testOnly distantlands.gameplay.powers.banner.PeoplesFavorGrandCouncilSuite distantlands.gameplay.powers.action.TempleOfAncestorsSuite"`
+Expected: FAIL. The test sources do not compile: `PeoplesFavorGrandCouncil`
+is not found. (Once they compile without the power, the Temple test fails
+too: only Ancient City's slot is shown.)
 
 - [ ] **Step 3: Implement**
 
@@ -955,8 +1027,8 @@ with
 
 - [ ] **Step 4: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly distantlands.gameplay.powers.banner.PeoplesFavorGrandCouncilSuite"`
-Expected: PASS (11 tests).
+Run: `./sbtw "testOnly distantlands.gameplay.powers.banner.PeoplesFavorGrandCouncilSuite distantlands.gameplay.powers.action.TempleOfAncestorsSuite"`
+Expected: PASS (11 Grand Council tests and every Temple test).
 
 - [ ] **Step 5: Rewrite the note-key snapshot**
 
@@ -983,14 +1055,14 @@ before the Mob's:
 
 - [ ] **Step 6: Run the neighbours**
 
-Run: `./sbtw "testOnly distantlands.gameplay.powers.banner.* distantlands.gameplay.powers.search.BaronSuite distantlands.gameplay.PhasePowerSuite distantlands.gameplay.RuleSourceIndexSuite distantlands.gameplay.BackendArchitectureSuite distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.banner.* distantlands.gameplay.powers.action.TempleOfAncestorsSuite distantlands.gameplay.powers.search.BaronSuite distantlands.gameplay.PhasePowerSuite distantlands.gameplay.RuleSourceIndexSuite distantlands.gameplay.BackendArchitectureSuite distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected: PASS. `PeoplesFavorMobSuite`'s "nobody else may replace: ... not
 the Grand Council face" still passes: its pawn site is not Imperial.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/main/scala/distantlands/gameplay/powers/banner/PeoplesFavorGrandCouncil.scala src/main/scala/distantlands/gameplay/powers/banner/BannerFacePowers.scala src/test/scala/distantlands/gameplay/powers/banner/PeoplesFavorGrandCouncilSuite.scala src/test/resources/notes/declared-keys.txt
+git add src/main/scala/distantlands/gameplay/powers/banner/PeoplesFavorGrandCouncil.scala src/main/scala/distantlands/gameplay/powers/banner/BannerFacePowers.scala src/test/scala/distantlands/gameplay/powers/banner/PeoplesFavorGrandCouncilSuite.scala src/test/scala/distantlands/gameplay/powers/action/TempleOfAncestorsSuite.scala src/test/resources/notes/declared-keys.txt
 git commit -m "feat(banner): the Grand Council plays to any Imperial site" -m "The People's Favor's Grand Council face is a persistent rule of its holder at the card play's SearchPlayAdviser window, beside the Mob's: every Imperial site opens as a place to play the card, and a discard there is permitted, a ruined edifice included and an intact edifice or a locked card not. The discard writes the Grand Council's line, as the Mob's writes its own." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
@@ -1465,20 +1537,23 @@ git commit -m "feat(challenge): the Grand Council's ribbons return half its favo
 - Modify: `docs/architecture/bounded-banners.md`
 - Modify: `docs/architecture/bounded-visions-and-conspiracy.md`
 - Modify: `docs/architecture/all-exile-round-endings.md`
+- Modify: `docs/architecture/game-setup.md`
+- Modify: `docs/rules/ambiguities.md`
 - Modify: `docs/rules/implementation-traceability.md`
 - Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
 
 **Interfaces:**
 - Consumes: everything Tasks 1 to 3 built; nothing new is produced.
 
-Docs are plain prose. `docs/rules/implementation-traceability.md` holds
-very long lines (table rows), so its blocks below are parts of a line, not
+Docs are plain prose. `docs/rules/ambiguities.md` and
+`docs/rules/implementation-traceability.md` hold very long lines (numbered
+items and table rows), so their blocks below are parts of a line, not
 whole lines, and several blocks in the other docs start or end inside a
 line too: replace exactly the text shown and leave the rest of the line.
 The roadmap deletes finished work outright: no checked box and no "landed"
 note.
 
-- [ ] **Step 1: The roadmap, the architecture docs and the traceability table**
+- [ ] **Step 1: The roadmap, the architecture docs, the ambiguities and the traceability table**
 
 **In** `docs/ROADMAP.md`:
 
@@ -1503,6 +1578,7 @@ with
 Replace
 
 ~~~markdown
+pp. 12 and 15 for the fixed first-game banner faces: Mob and Wandering Flame.
 The face identities are typed state. The Grand Council and Festival faces have
 no implemented power: `RuleSourceIndex` lists their handler ids, and they are
 ignored and recorded like any other unimplemented power.
@@ -1511,12 +1587,13 @@ ignored and recorded like any other unimplemented power.
 with
 
 ~~~markdown
-The face identities are typed state. Altered Foundation V starts the People's
-Favor on its Grand Council face
+pp. 12 and 15 for the first-game banner faces, Mob and Wandering Flame, and
+for the Grand Council: an altered Foundation V starts the People's Favor on
+its Grand Council face
 ([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md),
-slice 5). The Festival face has no implemented power: `RuleSourceIndex` lists
-its handler id, and it is ignored and recorded like any other unimplemented
-power.
+slice 5). The face identities are typed state. The Festival face has no
+implemented power: `RuleSourceIndex` lists its handler id, and it is
+ignored and recorded like any other unimplemented power.
 ~~~
 
 Then replace
@@ -1622,9 +1699,54 @@ The Festival
 banner face and the Foundation faces have no implemented Rest power
 ~~~
 
+**In** `docs/architecture/game-setup.md`:
+
+Replace
+
+~~~markdown
+bank only the 1 per denizen. Both altered faces are built directly, like the
+rest of game start; nothing is journaled. The sites Imperial Maps places in
+~~~
+
+with
+
+~~~markdown
+bank only the 1 per denizen. Both altered faces are built directly, like the
+rest of game start; nothing is journaled. An altered Foundation V, Grand
+Council, starts the People's Favor on its Grand Council face, as Mob's
+Favor starts it on the Mob. The sites Imperial Maps places in
+~~~
+
+**In** `docs/rules/ambiguities.md` (item 2 of "Component-data
+dependencies"):
+
+Replace
+
+~~~markdown
+The altered faces of V and VI are refused at game start until their slices of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md), and
+~~~
+
+with
+
+~~~markdown
+An altered V, Grand Council, starts the People's Favor on its Grand Council face; the altered face of VI is refused at game start until its slice of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md), and
+~~~
+
 **In** `docs/rules/implementation-traceability.md`:
 
 Replace
+
+~~~markdown
+The altered faces of Foundations V and VI; legacies
+~~~
+
+with
+
+~~~markdown
+The altered face of Foundation VI; legacies
+~~~
+
+Then replace
 
 ~~~markdown
 its discard piles dealt in turn and its Visions-only world deck (`gameplay/setup/SetupDealSuite.scala`, `AlteredFoundationSetupSuite.scala`).
@@ -1802,15 +1924,15 @@ Run: `git status --short src/test/resources`
 Expected: clean. The note-key snapshot was committed with Task 2, and
 nothing else changed.
 
-Run: `git grep -n "Grand Council and Festival\|alternate banner faces\|fixed first-game Mob and Wandering Flame\|Altered Foundations V and VI\|peoplesFavorReturns" -- docs/rules docs/architecture docs/ROADMAP.md src`
+Run: `git grep -n "Grand Council and Festival\|alternate banner faces\|fixed first-game Mob and Wandering Flame\|fixed first-game banner faces\|Altered Foundations V and VI\|altered faces of Foundations V and VI\|altered faces of V and VI\|peoplesFavorReturns" -- docs/rules docs/architecture docs/ROADMAP.md src`
 Expected: no output. Nothing still says the Grand Council is missing, and
 nothing names the deleted method.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/ROADMAP.md docs/architecture/bounded-banners.md docs/architecture/bounded-visions-and-conspiracy.md docs/architecture/all-exile-round-endings.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11-11-foundations-design.md
-git commit -m "docs(foundations): record slice 5, the Grand Council" -m "The roadmap keeps only the Festival face, the banner and Conspiracy docs describe the Grand Council's power and ribbons, the traceability table stops calling the face missing, and the spec records slice 5 landed, the ribbons as printed, what was built and the readings taken." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git add docs/ROADMAP.md docs/architecture/bounded-banners.md docs/architecture/bounded-visions-and-conspiracy.md docs/architecture/all-exile-round-endings.md docs/architecture/game-setup.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11-11-foundations-design.md
+git commit -m "docs(foundations): record slice 5, the Grand Council" -m "The roadmap keeps only the Festival face, the banner and Conspiracy docs describe the Grand Council's power and ribbons, the setup doc says what an altered V starts, the ambiguities and the traceability table stop calling the face refused or missing, and the spec records slice 5 landed, the ribbons as printed, what was built and the readings taken." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ---
@@ -1865,5 +1987,5 @@ the file written by a command shows its expected diff.
 `PeoplesFavorGrandCouncil.id`, `imperialSite` (Task 2);
 `BannerRules.favorToPreviousHolder`, `BannerRules.peoplesFavorRibbon`
 (Task 3). The suites' helpers name what they build:
-`councilHolderBesideTheEmpire`, `toPlacement`, `slotsOf`, `councilSaid`,
-`enemyHolds`. Each is spelled the same wherever it appears.
+`councilHolderBesideTheEmpire`, `searchedAndParkedOnPlacement`, `slotsOf`, `councilSaid`,
+`enemyHolds`, and the Temple suite's existing `staged`. Each is spelled the same wherever it appears.
