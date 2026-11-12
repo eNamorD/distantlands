@@ -6,9 +6,10 @@ import distantlands.model._
 import distantlands.testkit.{Answers, Outcomes, Situation}
 import distantlands.testkit.Unwrap.{accepted, as, rejected}
 
-/** Game start under the two altered faces that only change setup, Movers
-  * and Shakers (II) and Teeming World (IV) (Foundations design, slice 2).
-  * Every test starts from a Chronicle: game start is the subject. */
+/** Game start under the altered faces that change setup: Movers and
+  * Shakers (II) and Teeming World (IV) (Foundations design, slice 2), and
+  * the face Grand Council (V) turns the People's Favor to (slice 5). Every
+  * test starts from a Chronicle: game start is the subject. */
 class AlteredFoundationSetupSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
   private val p1 = PlayerId("p1")
@@ -82,6 +83,35 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
     assertEquals(movers.game.current.temporaryHands,
       tribes.game.current.temporaryHands)
     assertEquals(movers.game.current.banners, tribes.game.current.banners)
+
+  test("Grand Council flips the People's Favor to its Grand Council face " +
+      "with 1 favor, and gives it to the Chancellor when the Oathkeeper " +
+      "goal is the People's Favor, as Mob's Favor does"):
+    val people = chronicleWithEmpire.copy(
+      oathkeeperGoal = OathkeeperGoal.ThePeople)
+    val council = started(withAlteredFoundation(people, FoundationNumber.V))
+    assertEquals(council.game.current.banners.peoplesFavor,
+      PeoplesFavorState(PeoplesFavorFace.GrandCouncil, Some(p1), 1))
+    assertEquals(council.game.campaign.foundations(FoundationNumber.V),
+      FoundationState(FoundationFace.Altered, Set.empty))
+    assertEquals(started(people).game.current.banners.peoplesFavor,
+      PeoplesFavorState(PeoplesFavorFace.Mob, Some(p1), 1))
+
+  test("under another Oathkeeper goal, or with no Chancellor, the Grand " +
+      "Council starts in the shared bank, and nothing else changes"):
+    val supremacy = chronicleWithEmpire.copy(
+      oathkeeperGoal = OathkeeperGoal.Supremacy)
+    val mob = started(supremacy)
+    val council = started(withAlteredFoundation(supremacy, FoundationNumber.V))
+    assertEquals(council.game.current.banners.peoplesFavor,
+      PeoplesFavorState(PeoplesFavorFace.GrandCouncil, None, 1))
+    assertEquals(council.game.current.copy(banners = mob.game.current.banners),
+      mob.game.current)
+    assertEquals(council.banks, mob.banks)
+    val firstGame = started(withAlteredFoundation(firstGameChronicle.copy(
+      oathkeeperGoal = OathkeeperGoal.ThePeople), FoundationNumber.V))
+    assertEquals(firstGame.game.current.banners.peoplesFavor,
+      PeoplesFavorState(PeoplesFavorFace.GrandCouncil, None, 1))
 
   private val (p2, p3) = (PlayerId("p2"), PlayerId("p3"))
 
