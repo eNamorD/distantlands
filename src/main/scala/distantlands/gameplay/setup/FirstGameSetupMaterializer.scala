@@ -57,8 +57,8 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     plan.orderedSites.map { site =>
       val slots = catalog.site(site).get.relicSlots
       val count = if empire(site) then 0
-        else stored.get(site).fold(slots)(atlas => math.max(0,
-          slots - atlas.items.count(_.isInstanceOf[RelicId])))
+        else stored.get(site).fold(slots)(atlas => SiteState.openRelicSlots(
+          slots, atlas.items.count(_.isInstanceOf[RelicId])))
       val assigned = plan.relicOrder.slice(offset, offset + count)
       offset += count
       site -> assigned
@@ -92,9 +92,9 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     * ruined, and fills its open relic slots (Empire ruling R27). A former
     * Empire's site is set up the same way with no Empire. */
   private def atlasSite(stored: StoredSite, drawn: Vector[RelicId]): SiteState =
-    SiteState(bandits(stored.site), storedDenizens(stored, EdificeSide.Ruined),
-      faceDown(storedRelics(stored) ++ drawn),
-      catalog.site(stored.site).get.startingResources)
+    val printed = catalog.site(stored.site).get
+    SiteState.banditSite(printed.capacity, printed.startingResources,
+      storedDenizens(stored, EdificeSide.Ruined), storedRelics(stored) ++ drawn)
 
   private def storedDenizens(stored: StoredSite, side: EdificeSide)
       : Vector[SiteDenizenState] = stored.items.collect {

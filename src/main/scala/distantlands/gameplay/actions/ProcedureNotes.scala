@@ -8,6 +8,7 @@ import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
 import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.actions.forge.ForgeProcedure
 import distantlands.gameplay.actions.minor.{MinorActionProcedures,
   SelfExile, WarbandTransfers}
@@ -79,6 +80,7 @@ object ProcedureNotes:
       case ActionRef.Muster => MusterProcedure.noteKeys
       case ActionRef.Trade => TradeProcedure.noteKeys
       case ActionRef.Recover => RecoverProcedure.noteKeys
+      case ActionRef.Explore => ExploreProcedure.noteKeys
       case ActionRef.PlayFacedownAdviser => CardPlayProcedure.noteKeys
       case ActionRef.Search => SearchProcedure.noteKeys
       case ActionRef.Travel => TravelProcedure.noteKeys

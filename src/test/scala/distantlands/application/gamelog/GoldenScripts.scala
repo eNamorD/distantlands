@@ -6,6 +6,7 @@ package distantlands.application.gamelog
 object GoldenScripts:
   val named: Vector[(String, () => Script)] =
     LogScripts.named ++ CampaignLogScripts.named ++ ChronicleLogScripts.named ++
-      ImperialLogScripts.named ++ LaterGameLogScripts.named
+      ImperialLogScripts.named ++ LaterGameLogScripts.named ++
+      ExploreLogScripts.named
 
   def all: Vector[Script] = named.map(_._2())

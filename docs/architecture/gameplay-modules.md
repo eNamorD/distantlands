@@ -34,8 +34,8 @@ distantlands/gameplay/
                            cardplay/, rest/, travel/, ...) and the catalogs
   actions/                 action trees by family: search/, travel/,
                            campaign/, economy/ (Muster, Trade), forge/,
-                           recover/, challenge/, negotiation/, minor/,
-                           cardplay/, dice/; shared rules beside them
+                           recover/, explore/, challenge/, negotiation/,
+                           minor/, cardplay/, dice/; shared rules beside them
                            (SearchRules, TravelRules, CardPlay, ...)
   phases/                  PhaseMenu, ActOffers, PhasePowerProcedure,
                            RestCleanup; wake/ and rest/ procedures

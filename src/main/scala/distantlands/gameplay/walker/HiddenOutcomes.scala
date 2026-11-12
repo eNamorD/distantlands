@@ -1,10 +1,12 @@
 package distantlands.gameplay.walker
 
-import distantlands.model.{Draw, Flip, Operation, Orientation, Peek, Reroll,
-  Reveal, Roll, Shuffle}
+import distantlands.model.{Draw, Flip, Operation, Orientation, Peek,
+  PlaceAtlasSite, Reroll, Reveal, Roll, Shuffle}
 
 /** Operations that show a player something the chooser cannot see yet:
-  * dice, a reroll, a draw, a shuffle, a peek, or a card turned faceup. The
+  * dice, a reroll, a draw, a shuffle, a peek, a card turned faceup, or a
+  * site placed from the Atlas, whose stored cards and dealt relics nobody
+  * saw before (Foundations design, slice 3). The
   * legality search stops there, since pruning past one would leak the
   * outcome, and undo never takes one back (undo design, "Barriers").
   *
@@ -27,8 +29,8 @@ import distantlands.model.{Draw, Flip, Operation, Orientation, Peek, Reroll,
 object HiddenOutcomes:
   /** Whether `operation` itself shows something the chooser cannot see. */
   private[walker] def hides(operation: Operation): Boolean = operation match
-    case _: Roll | _: Reroll | _: Shuffle | _: Draw | _: Peek | _: Reveal =>
-      true
+    case _: Roll | _: Reroll | _: Shuffle | _: Draw | _: Peek | _: Reveal |
+        _: PlaceAtlasSite => true
     case flip: Flip => flip.orientation == Orientation.FaceUp
     case _ => false
 

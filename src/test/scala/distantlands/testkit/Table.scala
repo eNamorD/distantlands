@@ -331,6 +331,40 @@ final case class Table private (private val game: ReadyGame,
     update(_.updateCurrent(_.copy(map =
       MapState.inSlots(kept.map(site => site -> map.sites(site))))))
 
+  /** The map cut to its first `kept` sites Hinterward, and each site cut
+    * stored in the Atlas with no card on it, the first one cut at the
+    * Recent end: a map Explore can add to. A site that is cut must hold no
+    * card and no pawn. */
+  def mapCutIntoAtlas(kept: Int)(using munit.Location): Table =
+    val cut = game.game.current.map.hinterward.drop(kept)
+    sitesInPlay(kept).update(_.updateCampaign(campaign => campaign.copy(
+      atlas = AtlasState(cut.map(AtlasEntry.StoredSite(_, Vector.empty,
+        Vector.empty)) ++ campaign.atlas.entries))))
+
+  /** `cards` stored on `site` in the Atlas, after any it already stores,
+    * as a Chronicle stores them: an edifice, denizens faceup and relics
+    * facedown. */
+  def storedInAtlas(site: SiteRef, cards: CardRef*)(
+      using munit.Location): Table =
+    val id = CardRefs.siteId(site)
+    if !game.game.campaign.atlas.sites.exists(_.id == id) then
+      munit.Assertions.fail(s"${id.value} is not in the Atlas")
+    def storing(stored: AtlasEntry.StoredSite, card: CardId)
+        : AtlasEntry.StoredSite = card match
+      case edifice: EdificeId => stored.copy(edifice = Some(edifice))
+      case denizen: DenizenId => stored.copy(denizens = stored.denizens :+
+        DenizenState(denizen, Orientation.FaceUp, Tokens.empty))
+      case relic: RelicId => stored.copy(relics = stored.relics :+
+        RelicState(relic, Orientation.FaceDown, Tokens.empty))
+      case other => munit.Assertions.fail(s"$other cannot be stored on a site")
+    cards.map(CardRefs.cardId).foldLeft(this)((table, card) =>
+      table.moving(card).update(_.updateCampaign(campaign => campaign.copy(
+        atlas = AtlasState(campaign.atlas.entries.map {
+          case stored: AtlasEntry.StoredSite if stored.id == id =>
+            storing(stored, card)
+          case other => other
+        })))))
+
   /** The Reliquary set aside for the game, as Setup With No Empire leaves
     * it: its relics stay where they are. */
   def reliquarySetAside: Table =

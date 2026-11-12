@@ -108,8 +108,8 @@ some path from it reaches the end of the action with every required operation
 accepted and no `Restriction` violated. A required decision with nothing left
 refuses the action, so its menu option shows as unavailable. The search stops
 at any operation that would reveal hidden information
-(`HiddenOutcomes.hides`: rolls, draws, shuffles, peeks and reveals) and
-counts that path as legal. `SearchMemo` caches verdicts per `WalkerPowers`
+(`HiddenOutcomes.hides`: rolls, rerolls, draws, shuffles, peeks, reveals, a
+faceup flip and an Atlas site's placement) and counts that path as legal. `SearchMemo` caches verdicts per `WalkerPowers`
 instance.
 `WalkerPowers.quiet` turns the search off inside a search.
 

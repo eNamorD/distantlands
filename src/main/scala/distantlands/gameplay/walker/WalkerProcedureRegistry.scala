@@ -6,6 +6,7 @@ import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure, PlaceBannerResourceProcedure}
 import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.actions.forge.ForgeProcedure
 import distantlands.gameplay.actions.campaign.CampaignProcedure
 import distantlands.gameplay.actions.minor.{MinorActionProcedures,
@@ -65,8 +66,8 @@ object WalkerProcedureRegistry:
     * `ContributingPower`s, and at which `ModifierOffers.offerable` looks.
     *
     * It is `Option` because not every procedure has such a window:
-    * `PowerWindow` carries a `*ModifierSelection` case for each of the eight
-    * [[distantlands.model.MajorActionType]]s and Take Wealth
+    * `PowerWindow` carries a `*ModifierSelection` case for each
+    * [[distantlands.model.MajorActionType]] and Take Wealth
     * is not one of them -- its only window is `WakeTakeWealth`, an
     * `OtherWindow` whose `associatedMajorAction` is `None`. `None` here means
     * the procedure offers no player-selected powers at all: `offerableWalkerPowers`
@@ -219,6 +220,15 @@ object WalkerProcedureRegistry:
       modifierWindow = Some(PowerWindow.ChallengeModifierSelection),
       build = ChallengeProcedure.build,
       rebuild = ChallengeProcedure.rebuild),
+
+    /** Explore. Its gates are start gates, and its first step after the
+      * modifier decision spends the Supply, so it cannot use the
+      * playable-option gate. Its rolls are automatic, so no roll parks. */
+    ActionRef.Explore -> Entry(
+      modifierWindow = Some(PowerWindow.ExploreModifierSelection),
+      build = withoutStartArgs(ActionRef.Explore, ExploreProcedure.build),
+      rebuild = withoutStartArgs(ActionRef.Explore, ExploreProcedure.rebuild),
+      rollFeedback = ExploreProcedure.rollFeedback),
 
     /** Place Banner Resource is not a major action: it has no fallback kind
       * and, like Take Wealth, no modifier window.

@@ -159,8 +159,9 @@ case object BrokenHorn extends RuinedSetupRule:
   *
   * The advance is [[RoundMarker]]'s. At Setup the marker is on round 1, so
   * it always moves. Its line reads the step: "Advanced the round marker to
-  * round 2." The WHEN EXPLORED half waits for an Explore procedure. Great
-  * Clock, the intact face, is an action (catalog batch 10, slice 2).
+  * round 2." WHEN EXPLORED it advances the marker the same way, and on
+  * round 8 it does nothing and writes no line. Great Clock, the intact
+  * face, is an action (catalog batch 10, slice 2).
   */
 case object BrokenClock extends RuinedSetupRule:
   val edifice: EdificeId = GreatClockCard.id
@@ -194,8 +195,9 @@ case object BrokenClock extends RuinedSetupRule:
   * line.
   *
   * Its line: "Swapped 2 cards between the Dispossessed and the Cradle
-  * discard pile, then shuffled the pile." The WHEN EXPLORED half waits for
-  * an Explore procedure. Great Spire, the intact face, is an action.
+  * discard pile, then shuffled the pile." WHEN EXPLORED it swaps the pile
+  * of the explored site's region the same way. Great Spire, the intact
+  * face, is an action.
   */
 case object FallenSpire extends RuinedSetupSteps:
   val edifice: EdificeId = GreatSpireCard.id

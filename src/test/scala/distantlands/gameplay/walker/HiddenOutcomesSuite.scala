@@ -24,6 +24,11 @@ class HiddenOutcomesSuite extends munit.FunSuite:
       Orientation.FaceDown)))
     assert(!HiddenOutcomes.hides(GainSupply(p1, 1)))
 
+  test("a site placed from the Atlas hides its outcome: its stored cards " +
+      "and the relics dealt to it"):
+    assert(HiddenOutcomes.hides(PlaceAtlasSite(AtlasEnd.Recent,
+      Region.Provinces, capacity = 1, relicSlots = 2, Tokens.empty)))
+
   test("a composite carrying a hidden operation hides at no node of its " +
       "own, and hides anywhere beneath it"):
     val take = Take(Piece.Favor(1), p1, Location.FavorBank(Suit.Discord),

@@ -7,11 +7,11 @@ import distantlands.gameplay.powers.action.{EldersCard, MessengerCard,
 import distantlands.gameplay.powers.whenplayed.{BewitchCard, DazzleCard,
   ThreateningRoarCard}
 import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
-import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure,
-  SetupWalkDriver}
+import distantlands.gameplay.setup.{FirstGameSetupFixture, LaterGameFixture,
+  SetupProcedure, SetupWalkDriver}
 import distantlands.gameplay.walker.{WalkerDice, WalkerPowers}
 import distantlands.model._
-import distantlands.testkit.{Look, Table}
+import distantlands.testkit.{Look, Situation, Table}
 import distantlands.testkit.Unwrap.accepted
 
 /** The SETUP (END) rules of catalog batch 9, slice 1 (Hall of Mockery, Lost
@@ -83,6 +83,60 @@ class RuinedSetupRulesSuite extends munit.FunSuite:
     assertEquals(Look(walked.ready).favorOnPeoplesFavor,
       staged.game.current.banners.peoplesFavor.favor)
     assertEquals(said(HallOfMockery, walked.events), Vector.empty)
+
+  /** A later game's Setup, run to the first turn, from a Chronicle whose
+    * Oathkeeper goal is `goal` and whose first atlas site, placed ruined,
+    * stores `edifice`: l1, seated as p1, is the Chancellor, who starts with
+    * the goal's banner. */
+  private def laterGameSetUpWith(edifice: EdificeId,
+      goal: OathkeeperGoal): ReadyGame =
+    val record = LaterGameFixture.chronicle(LineageId("l1"),
+      LineageId("l2"))
+    val chronicle = record.copy(oathkeeperGoal = goal,
+      atlasBox = record.atlasBox.updated(0,
+        record.atlasBox(0).copy(items = Vector(edifice))))
+    Situation.wake(Situation.rules(catalog,
+        WalkerPowerCatalog.default(catalog)), chronicle,
+      LaterGameFixture.orders(chronicle, PlayerId("p1"))).ready
+
+  test("in a later game Hall of Mockery takes the People's Favor from the " +
+      "Chancellor, who started with it, back to the shared bank"):
+    val ready = laterGameSetUpWith(HallOfDebateCard.id,
+      OathkeeperGoal.ThePeople)
+    assertEquals(Look(ready).peoplesFavorHolder, None)
+    assertEquals(Look(ready).favorOnPeoplesFavor, 1 + HallOfMockery.Favor)
+
+  test("in a later game Lost Guardians takes the Darkest Secret from the " +
+      "Chancellor back to the shared bank"):
+    val ready = laterGameSetUpWith(TomeGuardiansCard.id,
+      OathkeeperGoal.Devotion)
+    assertEquals(Look(ready).darkestSecretHolder, None)
+    assertEquals(Look(ready).secretsOnDarkestSecret, 1 + LostGuardians.Secrets)
+
+  test("Hall of Mockery's line says it moved a held banner"):
+    val staged = stagedWith(HallOfDebateCard.id)
+      .peoplesFavor(Some(PlayerId("p1")), favor = 1).ready
+    val walked = finish(staged)
+    assertEquals(Look(walked.ready).peoplesFavorHolder, None)
+    assertEquals(said(HallOfMockery, walked.events), Vector(NoteText.Said(
+      "placed-moved-and-burned", "Placed 4 favor on the People's Favor, " +
+        s"moved it to the shared bank and burned ${Suit.all.size} favor " +
+        "from the banks.", covers = false)))
+    val unburned = Suit.all.foldLeft(stagedWith(HallOfDebateCard.id)
+      .peoplesFavor(Some(PlayerId("p1")), favor = 1))(
+      (table, suit) => table.bankFavor(suit, 0)).ready
+    assertEquals(said(HallOfMockery, finish(unburned).events),
+      Vector(NoteText.Said("placed-and-moved", "Placed 4 favor on the " +
+        "People's Favor and moved it to the shared bank.", covers = false)))
+
+  test("Lost Guardians' line says it moved a held banner"):
+    val staged = stagedWith(TomeGuardiansCard.id)
+      .darkestSecret(Some(PlayerId("p1")), secrets = 1).ready
+    val walked = finish(staged)
+    assertEquals(Look(walked.ready).darkestSecretHolder, None)
+    assertEquals(said(LostGuardians, walked.events), Vector(NoteText.Said(
+      "placed-and-moved", "Placed 3 secrets on the Darkest Secret and " +
+        "moved it to the shared bank.", covers = false)))
 
   // ---- Lost Guardians ----
 

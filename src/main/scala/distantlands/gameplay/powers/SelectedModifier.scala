@@ -123,7 +123,8 @@ object SelectedModifier:
     PowerWindow.TradeModifierSelection -> MajorActionType.Trade,
     PowerWindow.ForgeModifierSelection -> MajorActionType.Forge,
     PowerWindow.RecoverModifierSelection -> MajorActionType.Recover,
-    PowerWindow.ChallengeModifierSelection -> MajorActionType.Challenge)
+    PowerWindow.ChallengeModifierSelection -> MajorActionType.Challenge,
+    PowerWindow.ExploreModifierSelection -> MajorActionType.Explore)
 
   /** The action a modifier-selection window belongs to, or `None` for any
     * other window.

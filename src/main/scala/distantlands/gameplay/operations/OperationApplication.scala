@@ -252,6 +252,8 @@ private[gameplay] object OperationApplication:
           points))
       case (result, EdificeBuilt(edifice, site)) =>
         result.flatMap(ChronicleStateOperations.edificeBuilt(_, edifice, site))
+      case (result, placement: PlaceAtlasSite) =>
+        result.flatMap(AtlasOperations.placeSite(_, placement))
       case (result, RecordCampaignResult(fact)) =>
         result.map(TurnStateOperations.recordCampaignResult(_, fact))
       case (result, QueueProcedure(entry, atFront)) =>

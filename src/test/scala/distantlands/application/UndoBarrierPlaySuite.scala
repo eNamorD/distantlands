@@ -1,11 +1,12 @@
 package distantlands.application
 
-import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.actions.explore.ExploreProcedure
+import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.testkit.MenuPlay
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
-import distantlands.testkit.{Situation, Table}
+import distantlands.testkit.{Dice, Situation, Table}
 import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Commands
 
@@ -42,3 +43,21 @@ class UndoBarrierPlaySuite extends munit.FunSuite:
     assertEquals(passed.ready.game.current.turn.activePlayer, p2)
     nothingToUndo(service, "rest", passed.nextSequence, p1)
     nothingToUndo(service, "rest", passed.nextSequence, p2)
+
+  test("an Explore's placement shows the site and what it stores, so the " +
+      "end chosen before it cannot be taken back"):
+    // p1 explores under Wide Horizons from Buried Giant, the Hintermost of
+    // three sites; the dice reach 4 at once, and five sites wait in the
+    // Atlas.
+    val table = Table.start
+      .foundation(FoundationNumber.I, FoundationFace.Altered)
+      .mapCutIntoAtlas(3).pawn(p1, BuriedGiantSite).banditsRefilled
+    val (service, repository) = table.service(campaignDice = Dice.steady)
+    val act = table.situation(Situation.journaled(service, catalog,
+      repository, "explore"))
+    val asked = act.parkedAfter(MenuPlay.start(p1, ActionRef.Explore))
+    val placed = asked.after(Commands.resolveWalker(p1, TreeDecision(
+      ExploreProcedure.endDecisionId, DecisionAnswer.ChooseOneAnswer(
+        ExploreProcedure.endOption(AtlasEnd.Forgotten)))))
+    assertEquals(placed.ready.game.current.map.inPlay.size, 4)
+    nothingToUndo(service, "explore", placed.nextSequence, p1)

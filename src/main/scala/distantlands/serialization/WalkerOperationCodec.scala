@@ -45,7 +45,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     OpenPick | ClosePick | TrackPawn | ClearTrackedPawn
   private type ChronicleOperation = RoleChanged | ChronicleTaskAssigned |
     GrandScepterFromBox | ImperialWarbandsTaken | WarbandsAdded |
-    LineagePointsScored | EdificeBuilt | SuitedReserveFromBox
+    LineagePointsScored | EdificeBuilt | SuitedReserveFromBox | PlaceAtlasSite
 
   protected final def encodeOperation(operation: CoreOperation): ujson.Value =
     operation match
@@ -77,6 +77,10 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     case SuitedReserveFromBox(suit, cards) => ujson.Obj(
       "kind" -> "suited-reserve-from-box", "suit" -> suit.key,
       "cards" -> cards.map(card => ujson.Str(card.value)))
+    case PlaceAtlasSite(end, region, capacity, relicSlots, resources) =>
+      ujson.Obj("kind" -> "place-atlas-site", "end" -> end.key,
+        "region" -> region.key, "capacity" -> capacity,
+        "relicSlots" -> relicSlots, "resources" -> encodeTokens(resources))
 
   private def encodeCardOperation(operation: CardOperation): ujson.Value =
     operation match
@@ -655,11 +659,27 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       _ <- Either.cond(cards.nonEmpty, (), InvalidValue(s"$path.cards",
         "a suited reserve takes at least one boxed card"))
     yield SuitedReserveFromBox(suit, cards)
+    case "place-atlas-site" =>
+      val end = value("end").str
+      for
+        from <- AtlasEnd.fromKey(end).toRight(
+          InvalidValue(s"$path.end", s"unknown Atlas end '$end'"))
+        region <- decodeRegion(value("region").str, s"$path.region")
+        capacity <- nonNegative(value, "capacity", path)
+        relicSlots <- nonNegative(value, "relicSlots", path)
+        resources <- decodeTokens(value("resources"), s"$path.resources")
+      yield PlaceAtlasSite(from, region, capacity, relicSlots, resources)
 
   private def positive(value: ujson.Value, name: String, path: String)
       : Either[WireError, Int] =
     safeIntField(value.obj, name, path).flatMap(number => Either.cond(
       number > 0, number, InvalidValue(s"$path.$name", "must be positive")))
+
+  private def nonNegative(value: ujson.Value, name: String, path: String)
+      : Either[WireError, Int] =
+    safeIntField(value.obj, name, path).flatMap(number => Either.cond(
+      number >= 0, number,
+      InvalidValue(s"$path.$name", "must not be negative")))
 
   private def decodeTurnOperation(value: ujson.Value,
       path: String): DecodedOperation =

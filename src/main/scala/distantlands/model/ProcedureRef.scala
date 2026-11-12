@@ -106,6 +106,8 @@ object ActionRef:
   case object Muster extends ActionRef { val key = "muster" }
   case object Trade extends ActionRef { val key = "trade" }
   case object Challenge extends ActionRef { val key = "challenge" }
+  /** Wide Horizons' action (Foundations design, slice 3). */
+  case object Explore extends ActionRef { val key = "explore" }
   case object PlaceBannerResource extends ActionRef:
     val key = "place-banner-resource"
   case object Negotiation extends ActionRef { val key = "negotiation" }
@@ -132,7 +134,7 @@ object ActionRef:
     * action.
     */
   val all: Vector[ActionRef] = Vector(Search, PlayFacedownAdviser,
-    Recover, Forge, Travel, TakeWealth, Muster, Trade, Challenge,
+    Recover, Forge, Travel, TakeWealth, Muster, Trade, Challenge, Explore,
     PlaceBannerResource, Negotiation, Campaign, PeekSiteRelics,
     RevealOwnedRelic, MoveWarbands,
     TransferWarbands, SelfExile)

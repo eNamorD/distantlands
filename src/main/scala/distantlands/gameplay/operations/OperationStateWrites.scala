@@ -112,6 +112,8 @@ private[operations] object OperationStateWrites:
       case stored: AtlasEntry.StoredSite => stored
     }.toRight(AmbiguousLocation(Location.Atlas,
       "stored Atlas site is unavailable")).flatMap { stored =>
+      // A stored site's edifice has no state to update: it is found among
+      // neither the denizens nor the relics, and no operation changes it.
       val updated = container.area match
         case SiteCardArea.Denizens =>
           stored.denizens.find(_.id == id).toRight(UnknownCard(id)).flatMap:

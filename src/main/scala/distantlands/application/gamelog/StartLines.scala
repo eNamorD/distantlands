@@ -2,6 +2,7 @@ package distantlands.application.gamelog
 
 import distantlands.gameplay.actions.campaign.CampaignSetup
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.actions.recover.RecoverProcedure
 import distantlands.gameplay.powerresolver.ModifierPicks
 import distantlands.gameplay.walker.{ChoicePayload, ProcedureDequeued,
@@ -67,11 +68,20 @@ private[gamelog] final class StartLines(words: LogWords,
   /** Recover spends Supply again each time the player continues rolling. */
   def continuedRecover(journal: LogJournal, run: Run, at: Int,
       viewer: Option[PlayerId]): Option[Posted] =
+    continuedRolling("Continued recovering", journal, run, at)
+
+  /** Explore spends Supply again as Recover does. */
+  def continuedExplore(journal: LogJournal, run: Run, at: Int,
+      viewer: Option[PlayerId]): Option[Posted] =
+    continuedRolling("Continued exploring", journal, run, at)
+
+  private def continuedRolling(words: String, journal: LogJournal, run: Run,
+      at: Int): Option[Posted] =
     if !run.started.exists(_ != journal.segmentEnd(at)) then None
     else
       val spent = journal.supplySpent(at, run.actor)
       Option.when(spent > 0)(Posted(LogKind.Action,
-        Vector(Text("Continued recovering"), LogSpan.Cost(spent))))
+        Vector(Text(words), LogSpan.Cost(spent))))
 
   private def completing(journal: LogJournal, at: Int): Boolean =
     journal.event(at).isInstanceOf[WalkerCompleted]
@@ -80,8 +90,8 @@ private[gamelog] final class StartLines(words: LogWords,
   val paysCost: Anchor = (journal, run, at) =>
     paysCostAt(journal, run, at) || completing(journal, at)
 
-  /** Recover: the step that opens its dice pool, after its modifier
-    * decision. */
+  /** Recover and Explore: the step that opens the action's dice pool,
+    * after its modifier decision. */
   val opensDicePool: Anchor = (journal, run, at) =>
     opensDicePoolAt(journal, at) || completing(journal, at)
 
@@ -126,7 +136,8 @@ private[gamelog] final class StartLines(words: LogWords,
   private def opensDicePoolAt(journal: LogJournal, at: Int): Boolean =
     journal.ops(at).exists {
       case OpStep(pool: ModifyDicePool, _, _) =>
-        pool.pool == RecoverProcedure.recoverPool
+        pool.pool == RecoverProcedure.recoverPool ||
+          pool.pool == ExploreProcedure.explorePool
       case _ => false
     }
 
