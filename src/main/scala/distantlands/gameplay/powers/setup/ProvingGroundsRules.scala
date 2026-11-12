@@ -74,10 +74,11 @@ case object EmptyGrounds extends ContributingPower:
   val edifice: EdificeId = ProvingGroundsCard.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
 
-  private def at(ready: ReadyGame): Option[SiteId] =
-    ready.game.current.edificeSite(edifice, EdificeSide.Ruined)
+  private def at(ctx: PowerCtx): Option[SiteId] =
+    ctx.state.game.current.edificeSite(edifice, EdificeSide.Ruined)
+      .filter(EdificeSetupSupport.resolvesAt(ctx, _))
 
-  override def applicable(ctx: PowerCtx): Boolean = at(ctx.state).isDefined
+  override def applicable(ctx: PowerCtx): Boolean = at(ctx).isDefined
 
   private val notes = NoteSet(id)
   notes.include(EdificeSetupSupport.notes)
@@ -130,7 +131,7 @@ case object EmptyGrounds extends ContributingPower:
     }
 
   def contributions: Map[PowerWindow, Vector[Contribution]] =
-    val effect = Vector(Transform((ctx, ops) => at(ctx.state) match {
+    val effect = Vector(Transform((ctx, ops) => at(ctx) match {
       case Some(site) => ops :+
         BuildOps((ready, _) => build(ctx.catalog, ready, site)) :+
         Note(id, discardNote(ctx.state, site), covers = true)

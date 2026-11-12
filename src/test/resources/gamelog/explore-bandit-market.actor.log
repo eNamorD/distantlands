@@ -1,0 +1,9 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+5.0 section 1 explore@4 | Explore[cost:1 Supply]
+7.0 roll 1 explore@4 | Rolled [dice:defense blank blank|blank, blank]
+11.0 action 1 explore@4 | Continued exploring[cost:1 Supply]
+12.0 roll 1 explore@4 | Rolled [dice:defense two-shields two-shields|two shields, two shields]
+17.0 action 1 explore@4 | Explored Recent Site: Found [site:site:deep-woods|Deep Woods]
+19.0 trigger 1 explore@4 | [card:E02|Bandit Market]: Placed [amount:4 favor] on the bandit sites and burned [amount:6 favor] from the banks.

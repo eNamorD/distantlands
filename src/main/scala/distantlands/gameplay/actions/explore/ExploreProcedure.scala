@@ -9,6 +9,15 @@ import distantlands.gameplay.walker.{ModifierChoice, WalkerRollFeedback}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
+/** The node the `WhenExplored` window is folded on, right after an Explore
+  * places a site: "it triggers when the card is placed on the map by the
+  * Explore action" (rulebook, "Setup / When Explored"). It names the placed
+  * site, so a power resolves only for a card that lies there, and it walks
+  * nothing but what the powers add. */
+final case class ExploredSite(site: SiteId) extends Operation:
+  override val window: Option[PowerWindow] = Some(PowerWindow.WhenExplored)
+  val children: Vector[Operation] = Vector.empty
+
 /** Declared Explore procedure tree for the
   * [[distantlands.gameplay.walker.ProcedureWalker]]: the action Wide
   * Horizons, altered Foundation I, gives every player (Foundations design,
@@ -30,7 +39,8 @@ import distantlands.model.DecisionAnswer.ChooseOneAnswer
   *     Branch(if success ->
   *       Vector(Branch(Decide("explore.end")), // asked with 2 or more sites
   *         BuildOps(PlaceAtlasSite, pawn Move),
-  *         Note(explored)),
+  *         Note(explored),
+  *         Branch(ExploredSite(site))),        // window = WhenExplored
   *       else if stopped -> Vector(Note(failed)))))
   * }}}
   *
@@ -210,7 +220,7 @@ object ExploreProcedure:
       * the first empty slot going Hinterward. It is read from the live
       * state, never from the step before: a power may ask its own question
       * as the pawn is placed (Brass Army), and the walk then comes back to
-      * the note below in a later command. */
+      * the nodes below in a later command. */
     def placedSite(ready: ReadyGame): Option[SiteId] =
       ready.game.current.map.hintermost
 
@@ -219,11 +229,15 @@ object ExploreProcedure:
       placedSite(states.now).map(site => explored(chosenEnd(states.answered))
         .sourceless(NoteArg.Site(site))))
 
+    val whenExplored = Branch((ready, _) =>
+      placedSite(ready).toVector.map(ExploredSite(_)))
+
     val failedNote = Note(ProcedureNotes.id(ActionRef.Explore),
       _ => Some(failed.sourceless()))
 
     val afterLoop = Branch((ready, pending) =>
-      if succeeded(ready) then Vector(endChoice, place, exploredNote)
+      if succeeded(ready) then
+        Vector(endChoice, place, exploredNote, whenExplored)
       else if stopped(pending) then Vector(failedNote)
       else Vector.empty)
 

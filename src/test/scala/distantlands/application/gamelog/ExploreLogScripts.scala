@@ -2,7 +2,8 @@ package distantlands.application.gamelog
 
 import distantlands.application._
 import distantlands.gameplay.actions.explore.ExploreProcedure
-import distantlands.gameplay.cards.BuriedGiantSite
+import distantlands.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
+import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.{Dice, MenuPlay, Situation, Table}
@@ -51,6 +52,14 @@ object ExploreLogScripts:
     }.after(MenuPlay.start(p1, ActionRef.Explore))
     Script("explore-stopped", service, p1)
 
+  /** p1 explores the Recent end and finds Deep Woods, which stores the
+    * Great Market: placed ruined, Bandit Market resolves WHEN EXPLORED. */
+  def exploreBanditMarket(using munit.Location): Script =
+    Script("explore-bandit-market", exploring("explore-bandit-market",
+      p1AtHintermostOfThree.storedInAtlas(DeepWoodsSite, GreatMarketCard),
+      AtlasEnd.Recent)._1, p1)
+
   val named: Vector[(String, () => Script)] = Vector(
     "explore" -> (() => explore),
-    "explore-stopped" -> (() => exploreStopped))
+    "explore-stopped" -> (() => exploreStopped),
+    "explore-bandit-market" -> (() => exploreBanditMarket))

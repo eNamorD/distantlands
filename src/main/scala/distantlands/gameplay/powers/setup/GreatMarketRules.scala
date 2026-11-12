@@ -21,9 +21,10 @@ object GreatMarketCard extends Edifice(EdificeId("E02"), Suit.Discord):
     val powers: Vector[PrintedPower] = Vector(power)
 
 /** E02, both faces (2026-09-21 Chronicle design, "Setup powers"). Each names
-  * `PowerWindow.WhenExplored` alongside `SetupEnd` so the same contribution
-  * will serve WHEN EXPLORED once an explore procedure exists to fire it;
-  * nothing folds that window yet, so only the SETUP path runs or is tested.
+  * `PowerWindow.WhenExplored` alongside `SetupEnd`, so the same contribution
+  * serves WHEN EXPLORED: an Explore folds that window for the site it
+  * places, where a face resolves only if it stands there
+  * (`EdificeSetupSupport.resolvesAt`).
   */
 sealed abstract class MarketRule extends ContributingPower:
   def edifice: EdificeId
@@ -31,10 +32,11 @@ sealed abstract class MarketRule extends ContributingPower:
 
   final def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
 
-  private def at(ready: ReadyGame): Option[SiteId] =
-    ready.game.current.edificeSite(edifice, side)
+  private def at(ctx: PowerCtx): Option[SiteId] =
+    ctx.state.game.current.edificeSite(edifice, side)
+      .filter(EdificeSetupSupport.resolvesAt(ctx, _))
 
-  override def applicable(ctx: PowerCtx): Boolean = at(ctx.state).isDefined
+  override def applicable(ctx: PowerCtx): Boolean = at(ctx).isDefined
 
   protected def build(ready: ReadyGame, at: SiteId)
       : Either[OathViolation, Vector[CoreOperation]]
@@ -43,7 +45,7 @@ sealed abstract class MarketRule extends ContributingPower:
   protected def note(at: SiteId): Note
 
   final def contributions: Map[PowerWindow, Vector[Contribution]] =
-    val effect = Vector(Transform((ctx, ops) => at(ctx.state) match {
+    val effect = Vector(Transform((ctx, ops) => at(ctx) match {
       case Some(site) =>
         ops :+ BuildOps((ready, _) => build(ready, site)) :+ note(site)
       case None => ops

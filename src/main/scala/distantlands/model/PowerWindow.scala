@@ -246,11 +246,10 @@ object PowerWindow:
     val key = "chronicle.stars.clean-up"
   case object ChronicleStore extends OtherWindow:
     val key = "chronicle.stars.store"
-  /** Where an explored site's effects resolve, once an explore procedure
-    * exists to fire it (2026-09-21 Chronicle design, "Setup powers" --
-    * out of scope until then). Slice 3's E02/E06/E22 powers already name
-    * this window alongside their SETUP window so the same contribution
-    * serves both without branching; nothing folds it yet.
+  /** Where a WHEN EXPLORED power resolves: Explore folds it on its
+    * `ExploredSite` node, right after it places a site (Foundations design,
+    * slice 3). A SETUP power with a WHEN EXPLORED half names this window
+    * beside its Setup window, so one contribution serves both.
     */
   case object WhenExplored extends OtherWindow { val key = "explore.when-explored" }
   case object NegotiationOffer extends OtherWindow { val key = "negotiation.offer" }

@@ -43,9 +43,10 @@ object TomeGuardiansCard extends Edifice(EdificeId("E18"), Suit.Order):
 
 /** A ruined edifice face that adds steps at SETUP (END), in the shape of
   * E02's `MarketRule` (catalog batch 9, slice 1). It names `WhenExplored`
-  * beside `SetupEnd`, so the same contribution serves an explore procedure
-  * once one folds that window. It applies only while its face stands on the
-  * map.
+  * beside `SetupEnd`, so the same contribution serves an Explore, which
+  * folds that window for the site it places. It applies only while its
+  * face stands on the map, and at an Explore only at the explored site
+  * (`EdificeSetupSupport.resolvesAt`).
   *
   * Most faces are a [[RuinedSetupRule]]: one batch, then a line. Fallen
   * Spire returns its own steps, since its shuffles are tree nodes the
@@ -56,16 +57,17 @@ abstract class RuinedSetupSteps extends ContributingPower:
 
   final def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
 
-  protected def at(ready: ReadyGame): Option[SiteId] =
-    ready.game.current.edificeSite(edifice, EdificeSide.Ruined)
+  private def at(ctx: PowerCtx): Option[SiteId] =
+    ctx.state.game.current.edificeSite(edifice, EdificeSide.Ruined)
+      .filter(EdificeSetupSupport.resolvesAt(ctx, _))
 
-  override def applicable(ctx: PowerCtx): Boolean = at(ctx.state).isDefined
+  override def applicable(ctx: PowerCtx): Boolean = at(ctx).isDefined
 
   /** The steps this face adds at its window, for the face at `site`. */
   protected def steps(site: SiteId): Vector[Operation]
 
   final def contributions: Map[PowerWindow, Vector[Contribution]] =
-    val effect = Vector(Transform((ctx, ops) => at(ctx.state) match {
+    val effect = Vector(Transform((ctx, ops) => at(ctx) match {
       case Some(site) => ops ++ steps(site)
       case None => ops
     }))
