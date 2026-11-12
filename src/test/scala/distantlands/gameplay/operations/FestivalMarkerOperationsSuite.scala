@@ -11,7 +11,8 @@ class FestivalMarkerOperationsSuite extends munit.FunSuite:
   private val home = AncientCitySite.id
   private val peaks = BrokenPeaksSite.id
 
-  private def run(ready: ReadyGame, ops: CoreOperation*) =
+  /** `ready` after `ops` run as one raw batch. */
+  private def executedOps(ready: ReadyGame, ops: CoreOperation*) =
     RawOperationBatch.executeAll(ready, ops.toVector)
 
   /** The quiet table with the Darkest Secret unheld on its Festival face,
@@ -24,21 +25,21 @@ class FestivalMarkerOperationsSuite extends munit.FunSuite:
 
   test("placing the marker puts it over a site on the map, and placing it " +
       "again moves it"):
-    val placed = accepted(run(festivalUnplaced.ready,
+    val placed = accepted(executedOps(festivalUnplaced.ready,
       SetFestivalMarker(Some(home))))
     assertEquals(marker(placed), Some(home))
-    assertEquals(marker(accepted(run(placed, SetFestivalMarker(Some(peaks))))),
-      Some(peaks))
-    assertEquals(marker(accepted(run(placed, SetFestivalMarker(Some(home))))),
-      Some(home))
+    assertEquals(marker(accepted(executedOps(placed,
+      SetFestivalMarker(Some(peaks))))), Some(peaks))
+    assertEquals(marker(accepted(executedOps(placed,
+      SetFestivalMarker(Some(home))))), Some(home))
 
   test("removing takes it off the map, and needs it on the map"):
     val placed = festivalUnplaced.festival(home).ready
-    val removed = accepted(run(placed, SetFestivalMarker(None)))
+    val removed = accepted(executedOps(placed, SetFestivalMarker(None)))
     assertEquals(marker(removed), None)
-    rejected(run(removed, SetFestivalMarker(None)))
+    rejected(executedOps(removed, SetFestivalMarker(None)))
 
   test("it goes only on a site on the map, and only on the Festival face"):
-    rejected(run(festivalUnplaced.ready,
+    rejected(executedOps(festivalUnplaced.ready,
       SetFestivalMarker(Some(SiteId("no-such-site")))))
-    rejected(run(Table.start.ready, SetFestivalMarker(Some(home))))
+    rejected(executedOps(Table.start.ready, SetFestivalMarker(Some(home))))

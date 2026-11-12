@@ -15,11 +15,11 @@ import distantlands.model.OathViolation._
  * Validation here is only what Setup itself needs: known and unique ids
  * across every Chronicle field (`ChronicleAccounting`), how a later game
  * starts, with an Empire or with none (`EmpireSetupRules`), the foundation
- * faces it starts with (`StartingFoundations`), enough cards to deal, and, in a
- * first game, one edifice per Homeland in play (Empire ruling R26). The old
- * plan's suit-count and Vision-packet audit is the generator's own job now
- * (`FirstGameChronicleGenerator.validate`), checked once at generation
- * time rather than again at every setup.
+ * faces it starts with (`StartingFoundations`), enough cards to deal, and,
+ * in a first game, one edifice per Homeland in play (Empire ruling R26).
+ * The old plan's suit-count and Vision-packet audit is the generator's own
+ * job now (`FirstGameChronicleGenerator.validate`), checked once at
+ * generation time rather than again at every setup.
  */
 object GameStartRules:
   def evolve(catalog: ExecutableCatalog, chronicle: Chronicle,

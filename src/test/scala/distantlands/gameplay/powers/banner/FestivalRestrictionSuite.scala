@@ -1,16 +1,27 @@
 package distantlands.gameplay.powers.banner
 
-import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import distantlands.gameplay.operations.PowerUseRules
-import distantlands.gameplay.powerresolver.PowerUse
-import distantlands.gameplay.powers.ConsentPowers
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  FairIsleSite}
+import distantlands.gameplay.operations.{BoilingLakeCard, PowerUseRules}
+import distantlands.gameplay.powerresolver.{PowerUse, PowerUseStep}
+import distantlands.gameplay.powers.{ConsentPowers, NoteText,
+  WalkerPowerCatalog}
 import distantlands.gameplay.powers.action.{DowsingSticksCard, RovingTerror,
   RovingTerrorCard}
 import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.dice.JinxCard
 import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.gameplay.powers.travel.{BoilingLakeTravel, TravelFixture,
+  WayStation, WayStationCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
-import distantlands.testkit.{MenuPlay, PhasePowerHarness, Table}
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, MenuPlay, Outcomes, PhasePowerHarness,
+  Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 
@@ -150,3 +161,72 @@ class FestivalRestrictionSuite extends munit.FunSuite:
     assert(powers.ruledBy(ready, p2).contains(festival.id))
     assert(!powers.ruledBy(ready, p1).contains(festival.id))
     assertEquals(powers.source(festival.id), Some(source))
+
+  // ---- the real powers ----------------------------------------------------
+
+  test("an enemy's Jinx at the festival shows its reroll disabled, askable " +
+      "of the holder, since its secret would go onto the card"):
+    // p1 recovers at Fair Isle, which p1 rules and where Jinx stands under
+    // p2's festival marker; the first roll fails and parks on the reroll.
+    val isle = FairIsleSite.id
+    val start = Table.start.turn(p1, Phase.Act).pawn(p1, at = isle)
+      .relicAt(DowsingSticksCard.id, at = isle).denizen(JinxCard, at = isle)
+      .warbandsAt(isle, p1, 1).secrets(p1, faceUp = 2)
+      .darkestSecret(Some(p2), 1, DarkestSecretFace.Festival).festival(isle)
+      .ready
+    val game = new OathRules(catalog,
+      walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
+      walkerDice = scripted(Vector(DefenseDieFace.Blank, DefenseDieFace.Blank)))
+    val rolled = accepted(game.startWalker(Ready(start), ActionRef.Recover,
+      p1))
+    val firstReroll = RerollChoice.decisionId(RecoverProcedure.recoverPool, 1)
+    assert(PhasePowerHarness.awaits(rolled, firstReroll))
+    val shown = PhasePowerHarness.queryOf(rolled, p1).flatMap(_.offeredOptions
+      .find(_.id == RerollChoice.optionRef(JinxCard.id).key))
+    assertEquals(shown.map(option => option.state -> option.reason), Some(
+      "askable" -> Some("Darkest Secret: Cannot place favor or secrets on " +
+        "denizens at the festival without the Darkest Secret holder's " +
+        "consent.")))
+
+  /** The Travel board with the actor, p1, holding 1 favor at the Cradle's
+    * plains, and `card` at the coast under the festival marker of p2, who
+    * rules the coast and holds the Darkest Secret on its Festival face. */
+  private def festivalOfP2AtTheCoastWith(card: Table => Table): ReadyGame =
+    import TravelFixture.{board, coast, on}
+    on(board(supply = 7))(table => card(table).warbandsAt(coast, p2, 1)
+      .favor(p1, 1).boardWarbands(p1, 3)
+      .darkestSecret(Some(p2), 1, DarkestSecretFace.Festival).festival(coast))
+
+  test("an enemy may still use Way Station's persistent power at the " +
+      "festival, giving its ruler favor and spending no Supply"):
+    import TravelFixture.{coast, travel}
+    val ready = festivalOfP2AtTheCoastWith(_.denizen(WayStationCard.id,
+      at = coast))
+    val asked = accepted(travel(ready, coast))
+    assertEquals(TravelFixture.parkedDecision(asked.state).decisionId,
+      WayStation.decisionId)
+    val done = Outcomes.ready(accepted(TravelFixture.rules.resolveWalker(
+      asked.state, p1, WayStation.decisionId,
+      DecisionAnswer.ChooseOneAnswer(WayStation.favorOption))).state)
+    assertEquals(Look(done).pawn(p1), coast)
+    assertEquals(Look(done).supply(p1), 7)
+    assertEquals(Look(done).favor(p2), Look(ready).favor(p2) + 1)
+
+  test("an enemy's arrival at the festival waits at Boiling Lake's step, " +
+      "and a refusal the holder gave this turn leaves the Lake deactivated"):
+    import TravelFixture.{coast, travel}
+    val lake = BoilingLakeCard.id
+    val ready = festivalOfP2AtTheCoastWith(_.edifice(lake, EdificeSide.Intact,
+      at = coast))
+    val waiting = accepted(travel(ready, coast))
+    assertEquals(TravelFixture.parkedDecision(waiting.state).decisionId,
+      PowerUseStep.decisionId(BoilingLakeTravel.id))
+    val refused = ready.copy(consent = ConsentState(answers = Map(
+      ConsentKey(festival.id, p1, PowerUseRules.useKey, PowerUseRules.target(
+        PowerUse.automatic(p1, BoilingLakeTravel.id, lake))) ->
+        ConsentAnswer.Refused.by(p2)), turn = Some(ConsentTurn.of(ready))))
+    val done = accepted(travel(refused, coast))
+    assertEquals(Look(Outcomes.ready(done.state)).boardWarbands(p1), 3)
+    assertEquals(NoteText.said(festival.id, festival.noteKeys, done.events),
+      Vector(NoteText.Said("stays-deactivated",
+        s"${lake.value} stays deactivated.", covers = false)))
