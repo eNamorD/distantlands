@@ -78,9 +78,14 @@ The map's slots fill going Hinterward, 2 in the Cradle and 3 in each other
 region (`Region.slots`), and a region's vector may be shorter than its
 slots (`MapState.inSlots`, `nextSlot`, `hintermost`). The atlas keeps
 every atlas site game start did not place, in order. The projection gives
-each region its `emptySlots`, which the table draws as empty frames. No
-action fills an empty slot yet: Explore is slice 3b of the
-[Foundations design](../superpowers/specs/2026-11-11-foundations-design.md).
+each region its `emptySlots`, which the table draws as empty frames. In
+play, under Wide Horizons, the Explore action fills the next empty slot:
+`PlaceAtlasSite` takes the site at the Recent or the Forgotten end of the
+atlas and populates it as game start populates an atlas site
+(`SiteState.banditSite`), and the `WhenExplored` window then resolves the
+site's ruined edifice
+([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md),
+slice 3).
 
 The completed aggregate includes site resources and bandits, facedown site
 relics, ruined Homeland edifices, regional discards, player advisers, World and
@@ -90,9 +95,8 @@ goal, favor banks, and the Chronicle's six Foundation faces
 
 The scope follows Combined Rulebook pp. 6-7 and the New Foundations first-game
 clarification on p. 8, and for later games the New Foundations rulebook's
-"Setup for Later Games". It excludes Legacy selection/effects, the
-Explore action, and the altered Foundation faces no
-slice of the
+"Setup for Later Games". It excludes Legacy selection/effects and the
+altered Foundation faces no slice of the
 [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md)
 has brought in yet, which game start refuses by name. Foundation III is
 accepted on either face and does nothing until Legacies.

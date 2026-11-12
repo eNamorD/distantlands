@@ -1,6 +1,6 @@
 # Foundations
 
-**Status:** designed 2026-11-11. Slices 1, 2 and 3a landed.
+**Status:** designed 2026-11-11. Slices 1, 2, 3a and 3b landed.
 
 **Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
@@ -167,9 +167,9 @@ journaled. Each removes its refusal.
 
 ## Slice 3: Wide Horizons, Explore and Setup With No Empire
 
-Planned in two parts. Slice 3a, landed, is the empty slots, Wide Horizons
-at game start, Setup With No Empire and the Chronicle. Slice 3b is Explore,
-so until it lands a map with empty slots never grows.
+Landed in two parts. Slice 3a is the empty slots, Wide Horizons at game
+start, Setup With No Empire and the Chronicle. Slice 3b is Explore, which
+fills an empty slot in play.
 
 ### Empty slots
 
@@ -204,23 +204,65 @@ A new major action, `explore`.
 - **Tree.** It mirrors Recover's: the modifier choice any major action has
   (no Recover modifier is offered), then pool `explore` with 2 defense dice
   per 1 Supply against difficulty 4 and the continue-or-stop choice after a
-  short roll. Its own windows are `ExploreCost` and `ExploreRoll`; the
-  generic `Reroll` window still runs (ruling 2).
+  short roll. Its own windows are `ExploreModifierSelection`, which the
+  modifier choice needs and where no card offers anything, `ExploreCost`
+  and `ExploreRoll`; the generic `Reroll` window still runs (ruling 2).
+  Explore is a `MajorActionType` of its own, so a modifier of another
+  action is never offered for it.
 - **Success.** The explorer chooses Recent or Forgotten (`explore.end`),
   unasked when the Atlas holds one site. `PlaceAtlasSite(end, region)`, a
   journaled operation, takes that end's site (the Atlas head for Recent, its
   tail for Forgotten) with its stored cards and puts it in the next slot:
   its edifice ruined, its denizens faceup, its stored relics facedown,
   bandits up to its capacity, its printed favor or secrets, and its open
-  relic slots dealt from the relic deck while it lasts. The explorer's pawn
-  goes there; this is not a Travel. Then the `WhenExplored` window runs for
-  that site and its cards. That fills in the When Explored halves the code
-  marks as waiting for an Explore procedure (Ruined Site setup rules), beside
-  the Market, Forge, Proving Grounds and banner setup rules that already
-  share the window.
+  relic slots dealt from the relic deck while it lasts. An operation is
+  applied with no catalog, so `PlaceAtlasSite` also carries the site's
+  printed capacity, relic slots and resources, which `AtlasPlacement`
+  copies from the catalog; `SiteState.banditSite` populates the site, for
+  game start too. The card index now holds a stored site's edifice:
+  placing one it did not hold would have changed the card inventory, which
+  the operation pipeline refuses. The explorer's pawn goes there; this is
+  not a Travel. Then the `WhenExplored` window runs on a node that names the
+  explored site, `ExploredSite`. Every setup rule with a WHEN EXPLORED half
+  already named the window, but applied wherever its face stood on the
+  map; each now resolves at an Explore only for a face at the explored
+  site (`EdificeSetupSupport.resolvesAt`). An explored edifice is placed
+  ruined, so only ruined faces resolve: Hall of Mockery, Bandit Market,
+  Broken Forge, Fallen Spire, Broken Clock, Lost Guardians, Empty Grounds,
+  Ruined School and Broken Horn. The placement shows the site and what it
+  stores, so it is a hidden outcome (`HiddenOutcomes`): undo never takes it
+  back, nor the choice of end before it.
 - **Stop.** "Failed to explore"; the Supply stays spent.
 - **Log.** "Explored Forgotten Site: Found Deep Woods" (ruling 4); the new
-  site's own power lines follow.
+  site's own power lines follow. A second Supply writes "Continued
+  exploring", as Recover writes "Continued recovering". The lines sit on
+  the Game Log's Neutral band.
+- **Readings taken with the plan,** for the owner to confirm. Only a power
+  that hooks one of Explore's own windows changes an Explore, and none
+  does: no modifier is offered, and no power changes its Supply cost. What
+  holds for every operation still holds, so Brass Army asks its holder as
+  their pawn is placed. The next slot is the first empty slot going
+  Hinterward, so when the Hintermost site's region is full the site goes
+  to the top slot of the next region. Who rules the Hintermost site does
+  not matter. The explorer chooses the end after the roll succeeds, at
+  each Explore, without seeing either site, and a later Explore may take
+  the other end; one site left is not asked about and is logged as a
+  Recent Site. The site is populated as Foundation I prints: a relic deck
+  that runs out leaves slots open, and a bandit bank that runs out leaves
+  the site short. Its denizens add no favor to the suit banks, since
+  Foundation II's count is a setup step. WHEN EXPLORED resolves after the
+  pawn is placed, so "if you place your pawn here" holds for the explorer,
+  and no ruler is asked to consent, as at Setup. Broken Clock advances the
+  round marker at once and does nothing on round 8. An Explore, stopped or
+  not, is an action: the action boundary follows it. Lost Doors and Ruined
+  Temple wait for Legacies.
+- **The banner move, decided with the owner.** Hall of Mockery and Lost
+  Guardians "move it to the shared bank": a held banner goes back to the
+  shared bank, when explored and at Setup alike. This changes a later
+  game's Setup: a Chancellor who starts with the People's Favor or the
+  Darkest Secret loses it at Setup's end when the matching ruined edifice
+  is on the map, as the card says. The first game, where both banners
+  start in the shared bank, does not change.
 
 ### Setup With No Empire
 
