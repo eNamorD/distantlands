@@ -281,6 +281,59 @@ sites), plus one stated fact per step. A rule test states every fact it relies
 on and inherits nothing incidental from Setup.
 _Avoid_: board fixture, base state, initial ready
 
+### Foundations
+
+**Face**:
+One of a foundation setup card's two sides, normal or altered. The campaign
+keeps one for each of the six cards, and the next game's Setup reads them.
+Shape Foundation restores an altered face to normal.
+The same word names the two faces of a banner, the People's Favor or the
+Darkest Secret.
+_Avoid_: side (an edifice, the Oathkeeper title and a secret have sides),
+variant
+
+**Alteration source**:
+A legacy that keeps a foundation's face altered. Shape Foundation cannot
+restore a face while one of its sources is active. A face that Setup With No
+Empire eroded, or that an imported Chronicle stored altered, has none.
+_Avoid_: lock, altering legacy
+
+**Empty slot**:
+A place on the map that holds no site. The Cradle has two slots and the
+Provinces and the Hinterland three each. The table draws an empty slot as an
+empty frame, and Explore or Imperial Maps fills the next one going
+Hinterward.
+_Avoid_: gap, hole, missing site
+
+**Hintermost site**:
+The last site in Hinterward order; empty slots do not count. Under Wide
+Horizons a pawn there may Explore, and with an Empire an Exile may start at
+the Hintermost Empire site.
+_Avoid_: last site, edge site
+
+**Explore**:
+The major action Wide Horizons gives. From the Hintermost site the explorer
+rolls 2 defense dice per Supply against a difficulty of 4, then takes the
+site at the Recent or Forgotten end of the Atlas and places it in the next
+empty slot, and moves their pawn there. It borrows Recover's dice and
+nothing else: only powers on its own windows and the generic reroll window
+change it, so Jinx applies and Silver Charm does not (Foundations design,
+ruling 2).
+_Avoid_: recover a site, expand
+
+**Festival marker**:
+The token the Festival's holder places over the cards at their pawn's site
+at the start of each Rest; that site is the marked site. A marker beside the
+map guards nothing. Both of the Festival's ribbons remove it.
+_Avoid_: festival token, festival site
+
+**Set-aside Reliquary**:
+The Reliquary of a game Setup With No Empire started. Its relics stay in the
+campaign all game, no one can take one in play, and the Chronicle's Stock
+Reliquary step adds to them. When an Exile wins, the Sun's Crown Chancellor
+step discards them with the rest of the Reliquary.
+_Avoid_: discarded Reliquary, empty Reliquary
+
 ### Undo
 
 **Command batch**:

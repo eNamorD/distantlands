@@ -17,7 +17,7 @@ cards are slightly older than the CR; where they disagree, the CR wins (see
 - Chancellor/Citizen/Exile roles and color ownership.
 - Active/dormant legacy faces and each player's starting adviser.
 - Current Oathkeeper goal.
-- Six foundation faces, including whether an active legacy locks an altered face.
+- Six foundation faces, including which legacies alter an altered face (its alteration sources).
 - Atlas ordering: Recent vs Forgotten site stacks, Empire divider, and cards stored on each site.
 - World deck composition, Dispossessed denizens, and suited reserves. The digital version derives the world deck remainder and suited reserves ("every card not accounted for elsewhere") rather than storing them.
 - Reliquary pile (max 5 after Chronicle) and player-held/stored cards. The Chancellor's pieces, the Grand Scepter and the Reliquary are stored apart from the players; the Grand Scepter always goes to the Chancellor, so the digital version does not record its holder.
@@ -108,7 +108,7 @@ The player holding the Beacon task resolves these steps.
    - Digital: the holder chooses the suit for three draws, then two, then one. Each chosen suit's boxed denizens join its live reserve before the draw. A suit still short after the return draws what remains ([ruling 15](ambiguities.md#chronicle-rulings)).
 2. **Welcome a Stranger.** Look at the drawn denizens. Keep one as a facedown starting adviser for the next game, and add the other five facedown to the world deck. **Actor:** the Beacon task holder.
 3. **Shape Foundation.** You may flip one foundation setup card from its altered side to its normal side, unless an active legacy is altering it. **Actor:** the Beacon task holder.
-   - Digital: an empty window until Foundations exist.
+   - Digital: the holder is asked whenever a foundation lies altered. Keep every foundation comes first, then each altered face, I to VI. A face an active legacy alters is shown unavailable, naming the legacy, even when every altered face is held and only Keep may be chosen ([Foundations rulings](ambiguities.md#foundations-rulings), items 1 and 15). The restored face is normal in the journaled Chronicle, with no alteration source, and one log line names it: "p3 restored Foundation I to Imperial Maps".
 
 ### 5. The Stars
 

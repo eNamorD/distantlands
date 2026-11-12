@@ -322,6 +322,18 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assert(refusedPath(ImperialWarbandsTaken(8), _("count") = -1)
       .endsWith(".count"))
 
+  test("a foundation restore names its number, and an unknown number " +
+      "decodes to a typed WireError"):
+    val encoded = encodedStreamThatRoundTrips("foundation-restored",
+      Vector(recordedOperation(FoundationRestored(FoundationNumber.I))))
+    assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
+      ujson.Obj("kind" -> "foundation-restored", "number" -> 1))
+    val injected = ujson.read(encoded).arr
+    injected(0)("payload")("step")("ops")(0)("number") = 7
+    assertEquals(GameEventWire.decodeStream(ujson.write(injected)),
+      Left(WireError.InvalidValue("$[0].payload.step.ops[0].number",
+        "unknown Foundation number 7")))
+
   test("a site placement names its Atlas end, its region and the site's " +
       "printed facts, and an unknown end, an unknown region or a negative " +
       "capacity decodes to a typed WireError"):
@@ -566,6 +578,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       UsurperLimiterRemoved,
       LineagePointsScored(LineageId("lineage:red"), 3),
       EdificeBuilt(GreatMarketCard.id, site),
+      FoundationRestored(FoundationNumber.III),
       PlaceAtlasSite(AtlasEnd.Forgotten, Region.Provinces, capacity = 2,
         relicSlots = 1, Tokens(3, 0)),
       SuitedReserveFromBox(Suit.Beast,

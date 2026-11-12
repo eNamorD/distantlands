@@ -10,7 +10,6 @@ specs.
 ## Now
 
 **Phase - Cleanup tasks** holds what finished phases left behind.
-**Phase - Foundations** is next.
 
 ### Phase - Cleanup tasks
 
@@ -83,13 +82,6 @@ Left behind by the
   [Foundations](superpowers/specs/2026-11-11-foundations-design.md) slice 6
   review.
 
-### Phase - Foundations
-
-[Design](superpowers/specs/2026-11-11-foundations-design.md), seven slices.
-
-- [ ] **Foundations.** Every face but Foundation III's works: the Beacon's
-  Shape Foundation.
-
 ### Phase - Campaign battle summary
 
 Left out of the Game Log action sections
@@ -153,7 +145,9 @@ Legacy activation and scoring, and era scoring.
   starting relics until then. High Priest's When Negotiating power lets its
   holder give secrets in a deal: a `DealRules` term kind, as Council Arbiter
   opens advisers. Foundation III's two faces (Quiet Ambitions, Public
-  Ambitions) deal legacies, so game start skips them until then.
+  Ambitions) deal legacies, so game start skips them until then. A legacy
+  that alters a foundation adds itself to the face's alteration sources,
+  which the Beacon's Shape Foundation already reads.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the

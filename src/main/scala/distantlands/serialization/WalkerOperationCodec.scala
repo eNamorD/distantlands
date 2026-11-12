@@ -45,7 +45,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     OpenPick | ClosePick | TrackPawn | ClearTrackedPawn | SetFestivalMarker
   private type ChronicleOperation = RoleChanged | ChronicleTaskAssigned |
     GrandScepterFromBox | ImperialWarbandsTaken | WarbandsAdded |
-    LineagePointsScored | EdificeBuilt | SuitedReserveFromBox | PlaceAtlasSite
+    LineagePointsScored | EdificeBuilt | SuitedReserveFromBox | PlaceAtlasSite |
+    FoundationRestored
 
   protected final def encodeOperation(operation: CoreOperation): ujson.Value =
     operation match
@@ -74,6 +75,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       "points" -> points)
     case EdificeBuilt(edifice, site) => ujson.Obj("kind" -> "edifice-built",
       "edifice" -> edifice.value, "site" -> site.value)
+    case FoundationRestored(number) => ujson.Obj(
+      "kind" -> "foundation-restored", "number" -> number.value)
     case SuitedReserveFromBox(suit, cards) => ujson.Obj(
       "kind" -> "suited-reserve-from-box", "suit" -> suit.key,
       "cards" -> cards.map(card => ujson.Str(card.value)))
@@ -656,6 +659,11 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     yield LineagePointsScored(LineageId(value("lineage").str), points)
     case "edifice-built" => Right(EdificeBuilt(
       EdificeId(value("edifice").str), SiteId(value("site").str)))
+    case "foundation-restored" => for
+      number <- safeIntField(value.obj, "number", path)
+      foundation <- FoundationNumber.all.find(_.value == number).toRight(
+        InvalidValue(s"$path.number", s"unknown Foundation number $number"))
+    yield FoundationRestored(foundation)
     case "suited-reserve-from-box" => for
       suit <- decodeSuit(value("suit").str, s"$path.suit")
       cards = value("cards").arr.toVector.map(card => DenizenId(card.str))

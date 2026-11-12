@@ -1,6 +1,7 @@
 # Foundations
 
-**Status:** designed 2026-11-11. Slices 1, 2, 3a, 3b, 4, 5 and 6 landed.
+**Status:** designed 2026-11-11. Every slice landed: 1, 2, 3a, 3b, 4, 5, 6
+and 7.
 
 **Builds on** the [Chronicle steps design](2026-10/2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09/2026-09-21-chronicle-setup-design.md) and
@@ -519,6 +520,25 @@ always took the Recent end.
 - **Tests.** Each offer; the skip; the restored face reaching
   `ChronicleUpdated`; a hand-built face with an active legacy as its source
   is not offered.
+- **As built.** `ShapeFoundation` builds the step in the Beacon's last
+  window. Keep every foundation is the first option, as Decline is at the
+  Throne, and each altered face follows, I to VI. A face an active legacy
+  alters is shown unavailable, naming the legacy, rather than left out as
+  "not offered" above might read; the holder is asked whenever a face is
+  altered, even when every altered face is held and only Keep may be
+  chosen (decided with the owner, 2026-11-11). The restore is a
+  journaled `FoundationRestored`, which turns the face normal and clears
+  its alteration sources, and `ChronicleRecord` carries it into
+  `ChronicleUpdated`. Each foundation has its own line, since a restore
+  always reaches the one normal face, and the line names the holder, as
+  every Beacon decision line does: "p3 restored Foundation I to Imperial
+  Maps". Keeping writes no line.
+- **Readings taken with the plan,** for the owner to confirm. An active
+  legacy is one that a lineage this Chronicle records, seated or in the box,
+  holds active; a source legacy that no lineage holds active does not stop
+  the restore. A restore clears the face's sources. A face Setup With No
+  Empire eroded has no source and may be restored. The step runs after
+  Welcome a Stranger, in the printed order.
 
 ### Docs
 
@@ -526,8 +546,8 @@ The slice's last task, for the whole batch:
 
 - `docs/ROADMAP.md`: **Phase - Foundations** is deleted with the batch, and
   the **Grand Council and Festival banner faces** item goes with slice 6.
-- `docs/rules/chronicle.md`, `docs/rules/ambiguities.md` (rulings 1 to 3,
-  the readings of slices 2 and 3a, and R27 closed) and
+- `docs/rules/chronicle.md`, `docs/rules/ambiguities.md` (rulings 1 to 5,
+  the readings of slices 2 to 7, and R27 closed) and
   `docs/rules/implementation-traceability.md`.
 - `CONTEXT.md`: Explore, Hintermost, empty slot, Festival marker.
 - This spec's status line.

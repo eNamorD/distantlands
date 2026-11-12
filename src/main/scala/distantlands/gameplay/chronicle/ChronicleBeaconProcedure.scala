@@ -14,12 +14,13 @@ object ChronicleBeaconProcedure:
 
   /** The notes the Beacon's steps write. */
   def noteKeys: Vector[NoteKey] =
-    IntroduceNewcomers.noteKeys ++ WelcomeStranger.noteKeys
+    IntroduceNewcomers.noteKeys ++ WelcomeStranger.noteKeys ++
+      ShapeFoundation.noteKeys
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     ChronicleWindows.step(PowerWindow.ChronicleIntroduceNewcomers,
       IntroduceNewcomers.steps(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleWelcomeStranger,
       WelcomeStranger.steps),
-    // Shape Foundation (CR p. 39) waits for Foundations.
-    ChronicleWindows.step(PowerWindow.ChronicleShapeFoundation, Vector.empty))
+    ChronicleWindows.step(PowerWindow.ChronicleShapeFoundation,
+      ShapeFoundation.steps(catalog)))

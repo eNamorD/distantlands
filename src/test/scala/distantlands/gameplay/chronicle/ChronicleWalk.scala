@@ -98,6 +98,13 @@ object ChronicleWalk:
       .find(step => parked(step.state).forall(_.decisionId == decisionId))
       .get
 
+  /** `table`'s Beacon, which the driver starts where the World ends,
+    * walked as [[walkedTo]] walks to `decisionId`. */
+  def beaconWalkedTo(rules: OathRules, table: Table, decisionId: String)(
+      using munit.Location): OathTransition =
+    walkedTo(rules, accepted(rules.next(OathTransition(table.state,
+      Vector.empty), TriggeredProcedureRef.ChronicleWorld)), decisionId)
+
   /** The state when `procedure` completed: `transition`, walked from
     * `base`, with every parked decision answered plainly, then replayed
     * from `base` only up to that completion. A Throne test reads the table

@@ -129,6 +129,21 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     rejected(run(ready, EdificeBuilt(GreatMarketCard.id,
       BrokenPeaksSite.id)))
 
+  test("a restored foundation turns to its normal face and loses its " +
+      "alteration sources"):
+    val sourced = FoundationState(FoundationFace.Altered,
+      Set(LegacyId("L05")))
+    val ready = Table.start.update(_.updateCampaign(campaign => campaign.copy(
+      foundations = campaign.foundations.updated(FoundationNumber.I,
+        sourced)))).ready
+    val after = accepted(run(ready, FoundationRestored(FoundationNumber.I)))
+    assertEquals(after.game.campaign.foundations,
+      ready.game.campaign.foundations.updated(FoundationNumber.I,
+        FoundationState(FoundationFace.Normal, Set.empty)))
+
+  test("a foundation on its normal face cannot be restored"):
+    rejected(run(Table.start.ready, FoundationRestored(FoundationNumber.II)))
+
   /** Denizens of `suit` the quiet table does not have in play. */
   private def boxedOf(ready: ReadyGame, suit: Suit): Vector[DenizenId] =
     val inPlay = ready.game.cardIndex.toOption.get.ids
