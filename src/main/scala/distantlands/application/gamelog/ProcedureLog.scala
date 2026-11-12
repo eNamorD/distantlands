@@ -2,8 +2,8 @@ package distantlands.application.gamelog
 
 import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   ChronicleSunProcedure, BuildEdifice, IntroduceNewcomers, LineageScoring,
-  OfferCitizenship, ProtectAndDispossess, ShapeEmpire, SwearOath,
-  WelcomeStranger,
+  OfferCitizenship, ProtectAndDispossess, ShapeEmpire, ShapeFoundation,
+  SwearOath, WelcomeStranger,
   ChronicleStarsProcedure}
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
@@ -375,7 +375,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       lines = ActionLineSource.Notes(Map(
         IntroduceNewcomers.choseSuits -> LogKind.Decision,
         IntroduceNewcomers.returned -> LogKind.Delta,
-        WelcomeStranger.keptAdviser -> LogKind.Decision)),
+        WelcomeStranger.keptAdviser -> LogKind.Decision) ++
+        ShapeFoundation.restored.values.map(_ -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.beacon."), isSection = false)
     case TriggeredProcedureRef.ChronicleStars => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
