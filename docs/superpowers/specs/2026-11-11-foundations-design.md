@@ -500,13 +500,10 @@ always took the Recent end.
   step, and the Lake stays deactivated once the holder refuses. Jinx at the
   festival, though persistent, is refused to an enemy who rules it, since
   its secret would go onto the card.
-- **Open for the owner.** The Conspiracy (`OATH-V1-NF`) says to "adjust its
-  [favor]/[secret] as shown by its right ribbon". Read literally, only the
-  ribbon's HALF burn adjusts favor or secrets, so the text does not decide
-  whether a Conspiracy that takes the Festival also removes the festival
-  marker. The code removes it, as a Raid does; if the owner rules that it
-  stays, `ConspiracyWhenPlayed` burns the half without
-  `BannerRules.festivalRemoval`.
+- **The Conspiracy, decided with the owner.** The Conspiracy (`OATH-V1-NF`)
+  says to "adjust its [favor]/[secret] as shown by its right ribbon", and
+  that ribbon ends with the remove-festival icon, so a Conspiracy that takes
+  the Festival removes the festival marker, as a Raid does (2026-11-12).
 
 ## Slice 7: Shape Foundation
 
