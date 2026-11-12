@@ -66,7 +66,8 @@ object ShapeFoundation:
 
   /** The active legacies among `number`'s alteration sources: those a
     * lineage this Chronicle records, seated or in the box, holds active. */
-  def lockedBy(state: ReadyGame, number: FoundationNumber): Vector[LegacyId] =
+  def activeSourcesOf(state: ReadyGame, number: FoundationNumber)
+      : Vector[LegacyId] =
     val active = ChronicleRecord.campaignFields(state).lineages
       .flatMap(_.legacies).filter(_.active).map(_.id).toSet
     state.game.campaign.foundations.get(number).toVector
@@ -77,7 +78,7 @@ object ShapeFoundation:
       number: FoundationNumber): DecisionOption =
     val shown = DecisionOption.Button(restore(number),
       s"Restore Foundation $number to ${normalName(number)}")
-    lockedBy(state, number) match
+    activeSourcesOf(state, number) match
       case Vector() => shown
       case legacies => DecisionOption.Unavailable(shown, OptionReason.Written(
         "An active legacy alters it: " + legacies.map(legacy =>
@@ -100,7 +101,7 @@ object ShapeFoundation:
     case None => Right(Vector.empty)
     case Some(foundation) => Either.cond(
       altered(state).contains(foundation) &&
-        lockedBy(state, foundation).isEmpty,
+        activeSourcesOf(state, foundation).isEmpty,
       Vector(FoundationRestored(foundation)),
       OathViolation.InvalidEventOrder(
         s"Foundation $foundation cannot be restored"))
