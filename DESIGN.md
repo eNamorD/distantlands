@@ -783,8 +783,9 @@ marker, on the site whose cards it lies over, ends the pawn row as a pill
 (`.festival-marker`): the First player badge's `#a98b58` border, no fill,
 Bright Brass 0.72rem 700, reading "Festival", with the Festival's power in
 its hover note. The pawn row keeps its line, so the marker moves nothing; on
-the compact map it takes the glance size with the pawns. It is not an
-option and answers nothing.
+the compact map it takes the glance size with the pawns. It is a button,
+as a player's title pill is, so a keyboard reaches it and its note shows on
+focus; pressing it opens the power in the inspector. It is no board option.
 
 ### Panes
 Four `section`s with a header strip (Pane Header fill, Line-pane bottom
