@@ -249,6 +249,9 @@ private[frontend] object WorldBoardRenderer:
             Vector(BoardOptionViews.key("player", pawn.playerId)))
           pawns.appendChild(marker)
         }
+        // The festival marker lies over this site's cards; it ends the pawn
+        // row, so drawing it moves nothing on the board.
+        if site.festival then pawns.appendChild(festivalMarker)
         // Appended whether or not anyone stands here: the row holds its line
         // of height either way, so the cards below it sit at the same place in
         // every site on the board.
@@ -280,6 +283,19 @@ private[frontend] object WorldBoardRenderer:
     layout.appendChild(sharedBank(value, options))
     panel.appendChild(layout)
     panel
+
+  /** The festival marker over a site's cards (Foundations design, slice
+    * 6): a pill naming it, its power in its hover note. It is not an
+    * option and answers nothing. */
+  private def festivalMarker: dom.Element =
+    val marker = text("span", "festival-marker", "Festival")
+    marker.setAttribute("aria-label", "Festival marker")
+    HoverTip.set(marker, festivalNote)
+    marker
+
+  private[frontend] val festivalNote: String = "Festival: enemies of the " +
+    "Darkest Secret's holder cannot place resources on these cards or use " +
+    "their powers, unless they're persistent powers."
 
   /** A site slot of the region `regionName` that holds no site: a frame
     * with nothing in it, and nothing to choose or inspect. */

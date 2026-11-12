@@ -121,7 +121,8 @@ private[application] final class GamePresentationProjector(
       state.flatMap(_.forces match {
         case value: SiteForces.Occupied => Some(forceProjection(value, ready))
         case SiteForces.Empty => None
-      }))
+      }),
+      ready.game.current.banners.darkestSecret.festival.contains(siteId))
 
   private def forceProjection(forces: SiteForces.Occupied,
       ready: ReadyGame): SiteForcesProjection =
