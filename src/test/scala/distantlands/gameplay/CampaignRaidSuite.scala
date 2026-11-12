@@ -124,17 +124,28 @@ class CampaignRaidSuite extends munit.FunSuite:
   test("a Raid victory over the Grand Council gives the defender back " +
       "half its favor, rounded down, before they burn half of theirs"):
     val RaidBoard(raided, relic) = raidBoard()
+    // Arcane, Order and Hearth tie as the least banks, with none.
     val b = on(raided)(_.peoplesFavor(Some(raided.rival), favor = 3,
-      face = PeoplesFavorFace.GrandCouncil))
-    val sacrificed = walk(b, relic, attack = 4).sacrificed
+      face = PeoplesFavorFace.GrandCouncil).banksHoldingOnly(
+      Suit.Discord -> 2, Suit.Beast -> 2, Suit.Nomad -> 2))
+    val walked = walk(b, relic, attack = 4)
+    val sacrificed = walked.sacrificed
     val after = ready(sacrificed.state)
     assertEquals(after.game.current.banners.peoplesFavor,
       PeoplesFavorState(PeoplesFavorFace.GrandCouncil, Some(b.actor), 0))
-    // 3 / 2 = 1 of the banner's favor goes back to the rival, 2 to the banks.
-    assertEquals(favorInBanks(sacrificed.state),
-      favorInBanks(Ready(b.ready)) + 2)
+    // 3 / 2 = 1 of the banner's favor goes back to the rival, and the other
+    // 2 return one at a time to the leftmost least bank: Arcane, then Order.
+    assertEquals(after.banks.favor, Map(Suit.Discord -> 2, Suit.Arcane -> 1,
+      Suit.Order -> 1, Suit.Hearth -> 0, Suit.Beast -> 2, Suit.Nomad -> 2))
     // The rival's 5 favor and the 1 returned: they burn half of 6.
     assertEquals(Look(sacrificed.state).player(b.rival).board.favor, 6 - 6 / 2)
+    val destination = present(after.game.current.map.inPlay.find(
+      _ != b.origin), "another site in play")
+    val done = accepted(walked.game.resolveWalker(sacrificed.state, b.actor,
+      CampaignIds.relocation,
+      ChooseOneAnswer(DecisionOptionRef.Site(destination))))
+    assertEquals(ActPowerHarness.replayed(walked.game, b.ready,
+      walked.events ++ done.events), ready(done.state))
 
   test("the pawn cannot be relocated to its own site"):
     val RaidBoard(b, relic) = raidBoard()

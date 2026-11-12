@@ -4,10 +4,10 @@ Search runs on the procedure walker, like every other action. This note
 states the rules it follows, the tree it walks, the windows its powers hook
 and how its hidden draw stays private.
 
-Design history: [search walker design](../superpowers/specs/2026-09-16-search-walker-design.md),
-[search source design](../superpowers/specs/2026-10-07-search-source-walker-design.md),
-[card play slots design](../superpowers/specs/2026-10-04-card-play-slots-design.md)
-and the [modifier walker design](../superpowers/specs/2026-10-09-modifier-walker-design.md).
+Design history: [search walker design](../superpowers/specs/2026-09/2026-09-16-search-walker-design.md),
+[search source design](../superpowers/specs/2026-10/2026-10-07-search-source-walker-design.md),
+[card play slots design](../superpowers/specs/2026-10/2026-10-04-card-play-slots-design.md)
+and the [modifier walker design](../superpowers/specs/2026-10/2026-10-09-modifier-walker-design.md).
 
 ## Rules
 

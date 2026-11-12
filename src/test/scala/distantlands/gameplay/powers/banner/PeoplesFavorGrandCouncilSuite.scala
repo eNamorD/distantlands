@@ -47,12 +47,20 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
     * stand, and Desolate Shore. p3 rules Buried Giant. */
   private def councilHolderBesideTheEmpire(atPeaks: Vector[DenizenId])
       : Table =
-    atPeaks.foldLeft(Table.start.imperial(p2).pawn(p1, home)
-      .worldDeckTop(played).supply(p1, 5)
+    atPeaks.foldLeft(councilHolderWithEmpireSeated(_.imperial(p2), p2))(
+      (table, card) => table.denizen(card, at = peaks))
+
+  /** p1 in Act at Ancient City with 5 Supply and `played` on the world
+    * deck, holding the People's Favor on its Grand Council face, with the
+    * Empire's roles set by `seat`. One warband of `imperial`, who plays for
+    * the Empire, holds Broken Peaks and one holds Desolate Shore. p3 rules
+    * Buried Giant. */
+  private def councilHolderWithEmpireSeated(seat: Table => Table,
+      imperial: PlayerId): Table =
+    seat(Table.start).pawn(p1, home).worldDeckTop(played).supply(p1, 5)
       .peoplesFavor(Some(p1), 1, PeoplesFavorFace.GrandCouncil)
-      .warbandsAt(peaks, p2, 1).warbandsAt(shore, p2, 1)
-      .warbandsAt(giant, p3, 1))((table, card) =>
-        table.denizen(card, at = peaks))
+      .warbandsAt(peaks, imperial, 1).warbandsAt(shore, imperial, 1)
+      .warbandsAt(giant, p3, 1)
 
   /** Searches with no modifier and keeps `played`, parked on its
     * placement. The events are the whole Search's so far. */
@@ -103,6 +111,24 @@ class PeoplesFavorGrandCouncilSuite extends munit.FunSuite:
       DecisionOption.Unavailable(DecisionOption.Replacing(slot(dunes),
         WildPasturesCard.id),
         OptionReason.Written("Locked: cannot be discarded"))))
+
+  test("a Citizen holder plays to every Imperial site, as an Exile does"):
+    val ready = councilHolderWithEmpireSeated(_.imperial(p2, p1), p2).ready
+    assertEquals(Imperials.role(ready, p1), Some(Role.Citizen))
+    assertEquals(slotsOf(searchedAndParkedOnPlacement(ready)), Vector(
+      DecisionOptionRef.SiteSlot(home, 0) -> None,
+      DecisionOptionRef.SiteSlot(peaks, 0) -> None,
+      DecisionOptionRef.SiteSlot(shore, 0) -> None))
+
+  test("the Chancellor holder plays to every Imperial site, their own " +
+      "warbands' sites"):
+    val ready = councilHolderWithEmpireSeated(_.imperial(p1), p1).ready
+    assertEquals(Imperials.role(ready, p1), Some(Role.Chancellor))
+    assertEquals(SiteRulers.imperialSites(ready), Vector(peaks, shore))
+    assertEquals(slotsOf(searchedAndParkedOnPlacement(ready)), Vector(
+      DecisionOptionRef.SiteSlot(home, 0) -> None,
+      DecisionOptionRef.SiteSlot(peaks, 0) -> None,
+      DecisionOptionRef.SiteSlot(shore, 0) -> None))
 
   test("its discard holds only at Imperial sites: a full pawn site the " +
       "Empire does not hold offers no Replace"):

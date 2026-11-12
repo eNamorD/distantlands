@@ -4,11 +4,11 @@ Every card power that runs is a typed Scala object. Catalog `rulesText` is
 documentation and is never executed. Gameplay code must not read `rulesText`
 or printed power `.text`; `scripts/check-architecture.py` enforces this.
 
-Design history: [powers design](../superpowers/specs/2026-09-20-powers-design.md),
-[global operation restrictions](../superpowers/specs/2026-09-30-global-operation-restrictions-design.md),
-[operation rewrite](../superpowers/specs/2026-10-09-operation-rewrite-design.md),
-[consent system](../superpowers/specs/2026-10-08-consent-system-design.md)
-and [automatic power consent](../superpowers/specs/2026-10-15-automatic-power-consent-design.md).
+Design history: [powers design](../superpowers/specs/2026-09/2026-09-20-powers-design.md),
+[global operation restrictions](../superpowers/specs/2026-09/2026-09-30-global-operation-restrictions-design.md),
+[operation rewrite](../superpowers/specs/2026-10/2026-10-09-operation-rewrite-design.md),
+[consent system](../superpowers/specs/2026-10/2026-10-08-consent-system-design.md)
+and [automatic power consent](../superpowers/specs/2026-10/2026-10-15-automatic-power-consent-design.md).
 
 ## Sources and access
 
@@ -156,7 +156,7 @@ registered powers, so an unimplemented automatic power has no effect and an
 unimplemented player-selected power is simply not offered. Nothing records
 the omission; the reviewed stub registries that once produced an
 `IgnoredRulesRecorded` diagnostic were retired on 2026-10-23
-([decision](../superpowers/specs/2026-10-23-reviewed-catalog-retirement-decision.md)).
+([decision](../superpowers/specs/2026-10/2026-10-23-reviewed-catalog-retirement-decision.md)).
 
 ## Replay
 

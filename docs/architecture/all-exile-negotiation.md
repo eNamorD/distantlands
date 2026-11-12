@@ -1,6 +1,6 @@
 # Negotiation
 
-Design: [negotiation walker design](../superpowers/specs/2026-09-19-negotiation-walker-design.md)
+Design: [negotiation walker design](../superpowers/specs/2026-09/2026-09-19-negotiation-walker-design.md)
 
 Negotiation implements the Combined Rulebook page 27 and New Foundations page 15 procedure. It is a persistent 0-Supply minor action started by the active player with one or more players at their site or within reach, and it takes no start selection, except the private marker Whispering Stone's queued Negotiation carries.
 

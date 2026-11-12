@@ -3547,8 +3547,8 @@ Replace
 
 **Status:** designed 2026-11-11.
 
-**Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
-the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
+**Builds on** the [Chronicle steps design](../specs/2026-10/2026-10-27-chronicle-steps-design.md),
+the [Chronicle setup design](../specs/2026-09/2026-09-21-chronicle-setup-design.md) and
 ~~~
 
 with
@@ -3558,8 +3558,8 @@ with
 
 **Status:** designed 2026-11-11. Slice 1 landed.
 
-**Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
-the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
+**Builds on** the [Chronicle steps design](../specs/2026-10/2026-10-27-chronicle-steps-design.md),
+the [Chronicle setup design](../specs/2026-09/2026-09-21-chronicle-setup-design.md) and
 ~~~
 
 Then replace

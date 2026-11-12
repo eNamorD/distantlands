@@ -179,6 +179,27 @@ class ChallengeProcedureSuite extends munit.FunSuite:
     assertEquals(after.game.current.banners.peoplesFavor,
       PeoplesFavorState(PeoplesFavorFace.GrandCouncil, Some(p1), 4))
 
+  test("Grand Council: a holder with Vow of Kinship faceup gets their half " +
+      "in the Nomad bank, and the rest returns to the banks that are least " +
+      "after it"):
+    // Nomad's bank is empty and every other holds 2: p2's half, 2, lands in
+    // Nomad first, so every bank holds 2 when the rest returns, to Discord
+    // and then Arcane, leftmost first.
+    val board = challenger.adviser(p2, VowOfKinshipCard)
+      .peoplesFavor(Some(p2), favor = 4, face = PeoplesFavorFace.GrandCouncil)
+      .pawn(p2, at = Table.quietPawnSite(p1))
+      .banksHoldingOnly(Suit.Discord -> 2, Suit.Arcane -> 2, Suit.Order -> 2,
+        Suit.Hearth -> 2, Suit.Beast -> 2).ready
+    val started = accepted(start(board))
+    val chosen = accepted(chooseBanner(started.state, peoplesFavorOption))
+    val done = accepted(chooseAmount(chosen.state, 6))
+    val after = Outcomes.ready(done.state)
+    assertEquals(Look(after).favor(p2), Look(board).favor(p2))
+    assertEquals(after.banks.favor, Map(Suit.Discord -> 3, Suit.Arcane -> 3,
+      Suit.Order -> 2, Suit.Hearth -> 2, Suit.Beast -> 2, Suit.Nomad -> 2))
+    assertEquals(ActPowerHarness.replayed(rules, board,
+      started.events ++ chosen.events ++ done.events), after)
+
   test("the Festival face still refuses the start"):
     val board = challenger.peoplesFavor(None, favor = 2)
       .darkestSecret(None, 1, face = DarkestSecretFace.Festival).ready

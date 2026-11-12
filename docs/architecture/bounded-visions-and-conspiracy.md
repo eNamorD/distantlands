@@ -1,6 +1,6 @@
 # Bounded Visions and Conspiracy
 
-Design: [visions and conspiracy walker design](../superpowers/specs/2026-09-19-visions-conspiracy-walker-design.md)
+Design: [visions and conspiracy walker design](../superpowers/specs/2026-09/2026-09-19-visions-conspiracy-walker-design.md)
 
 This slice implements the fixed, unaltered, all-Exile rules from Combined
 Rulebook pp. 16-17, 20, 27, and 30, the New Foundations booklet p. 16, and the

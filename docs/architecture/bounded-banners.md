@@ -1,6 +1,6 @@
 # Bounded banners and Challenge
 
-Design: [challenge walker design](../superpowers/specs/2026-09-19-challenge-walker-design.md)
+Design: [challenge walker design](../superpowers/specs/2026-09/2026-09-19-challenge-walker-design.md)
 
 This slice implements Combined Rulebook pp. 26 and 32 and New Foundations
 pp. 12 and 15 for the first-game banner faces, Mob and Wandering Flame, and

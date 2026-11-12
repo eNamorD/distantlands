@@ -20,7 +20,7 @@
 >
 > Written as a read-only audit, 2026-11-02, of the ROADMAP item "Walker
 > follow-ups" under Powers-related deferred items. The item was recorded by
-> the [campaign walker design](../../superpowers/specs/2026-09-19-campaign-walker-design.md)
+> the [campaign walker design](../../superpowers/specs/2026-09/2026-09-19-campaign-walker-design.md)
 > ("Deferred, and recorded") and
 > [bounded-campaign.md](../../architecture/bounded-campaign.md) ("Deferred").
 > Nothing here changes code. Line numbers are those of the tree at commit

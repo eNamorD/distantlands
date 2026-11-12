@@ -1,6 +1,6 @@
 # Campaign
 
-Design: [campaign walker design](../superpowers/specs/2026-09-19-campaign-walker-design.md)
+Design: [campaign walker design](../superpowers/specs/2026-09/2026-09-19-campaign-walker-design.md)
 
 Campaign implements the Combined Rulebook and New Foundations procedure for
 Conquest against bandits or a player, and Raid against a co-located player. It
@@ -134,7 +134,7 @@ sacrifice and before the defense roll. `CampaignLosses` kills half the
 survivors, rounded down, on a defeat, and the defender's dead. With a queued
 origin's warbands in the force, each kill asks its own split question over
 the board and the site as that kill finds them ([catalog batch 8, item
-13b](../superpowers/specs/2026-10-17-campaign-kills-at-their-moment-design.md)).
+13b](../superpowers/specs/2026-10/2026-10-17-campaign-kills-at-their-moment-design.md)).
 On a victory every warband at every target dies. A player defender keeps
 half the killed force, rounded up, returned from the supply to their board.
 Losses are plain operations in named windows, not a policy registry.
@@ -175,7 +175,7 @@ receives the durable recipient decision before normal Act controls resume.
   only site options are considered. The Pass's ruler is never blocked. Anyone else
   may ask that ruler for consent: the restriction carries a waiver, worded
   `NarrowPassSitePower.noTargetConsent` (consent design,
-  `docs/superpowers/specs/2026-10-08-consent-system-design.md`).
+  `docs/superpowers/specs/2026-10/2026-10-08-consent-system-design.md`).
 - `OptionRestriction` is the general channel for a power that forbids a choice. The
   walker removes the forbidden options in the window fold, so the projector, the
   answer check and simulation all see the filtered set. An optional decision left
