@@ -231,6 +231,11 @@ object CardIndex:
             SiteCardArea.Relics
           )
         )
+        // The site's stored edifice lies with its denizens, after them: it
+        // has no side until the site is placed.
+        stored.edifice.foreach(edifice => addId(edifice,
+          CardContainer.AtlasSite(atlasPosition, stored.id,
+            SiteCardArea.Denizens), stored.denizens.size))
       case (AtlasEntry.EmpireDivider, _) => ()
 
     val allLocated = located.result()

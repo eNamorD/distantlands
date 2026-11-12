@@ -277,6 +277,9 @@ private[operations] object CardMovementOperations:
       campaign => campaign.copy(suitedReserves = campaign.suitedReserves
         .updated(suit, campaign.suitedReserves.getOrElse(suit, Vector.empty)
           .filterNot(_ == located.id)))))
+    // A stored site's edifice, which the card index also lists under its
+    // denizens, leaves the Atlas only with its site (`PlaceAtlasSite`): no
+    // operation moves it alone.
     case CardContainer.AtlasSite(position, _, area) =>
       val entries = ready.game.campaign.atlas.entries.updated(position,
         ready.game.campaign.atlas.entries(position) match {

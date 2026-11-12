@@ -92,3 +92,64 @@ class WorldModelSuite extends munit.FunSuite:
     assertEquals(mapOfSites(2).hintermost, Some(SiteId("S2")))
     assertEquals(mapOfSites(0).hintermost, None)
     assertEquals(mapOfSites(0).nextSlot, Some(Region.Cradle))
+
+  test("a site placed in a region takes its next slot, after its sites"):
+    val four = mapOfSites(4)
+    val placed = four.withSite(Region.Provinces, SiteId("S9"), banditHeldSite)
+    assertEquals(placed.provinces.map(_.value), Vector("S3", "S4", "S9"))
+    assertEquals(placed.hintermost, Some(SiteId("S9")))
+    assertEquals(placed.sites(SiteId("S9")), banditHeldSite)
+    assertEquals(placed.nextSlot, Some(Region.Hinterland))
+    assertEquals(mapOfSites(1).withSite(Region.Cradle, SiteId("S9"),
+      banditHeldSite).cradle.map(_.value), Vector("S1", "S9"))
+    assertEquals(mapOfSites(5).withSite(Region.Hinterland, SiteId("S9"),
+      banditHeldSite).hinterland.map(_.value), Vector("S9"))
+
+  /** An Atlas of the sites A1 to A`count` around an Empire divider, A1 at
+    * the Recent end. */
+  private def atlasOfSites(count: Int): AtlasState = AtlasState(
+    (1 to count).toVector.flatMap(index => Vector[AtlasEntry](
+      AtlasEntry.StoredSite(SiteId(s"A$index"), Vector.empty, Vector.empty),
+      AtlasEntry.EmpireDivider)))
+
+  test("the Recent end of the Atlas is its first site and the Forgotten " +
+      "end its last, and one site is both"):
+    assertEquals(AtlasEnd.all.map(_.key), Vector("recent", "forgotten"))
+    assertEquals(AtlasEnd.all.flatMap(end => AtlasEnd.fromKey(end.key)),
+      AtlasEnd.all)
+    assertEquals(AtlasEnd.fromKey("middle"), None)
+    val three = atlasOfSites(3)
+    assertEquals(three.sites.map(_.id.value), Vector("A1", "A2", "A3"))
+    assertEquals(three.site(AtlasEnd.Recent).map(_.id.value), Some("A1"))
+    assertEquals(three.site(AtlasEnd.Forgotten).map(_.id.value), Some("A3"))
+    assertEquals(AtlasEnd.all.map(atlasOfSites(1).site(_).map(_.id.value)),
+      Vector(Some("A1"), Some("A1")))
+    assertEquals(AtlasEnd.all.map(atlasOfSites(0).site), Vector(None, None))
+    val taken = three.without(SiteId("A2"))
+    assertEquals(taken.sites.map(_.id.value), Vector("A1", "A3"))
+    assertEquals(taken.entries.count(_ == AtlasEntry.EmpireDivider), 3)
+
+  test("a bandit site holds its bandits, its printed tokens and its relics " +
+      "facedown, and a stored site's edifice is placed ruined before its " +
+      "denizens, faceup"):
+    val edifice = EdificeId("E-test")
+    val denizen = DenizenId("D-test")
+    val stored = AtlasEntry.StoredSite(SiteId("A1"),
+      Vector(DenizenState(denizen, Orientation.FaceDown, Tokens.empty),
+        EdificeState(EdificeId("E-other"), EdificeSide.Intact, Tokens.empty)),
+      Vector.empty, Some(edifice))
+    assertEquals(stored.placedDenizens, Vector[SiteDenizenState](
+      EdificeState(edifice, EdificeSide.Ruined, Tokens.empty),
+      DenizenState(denizen, Orientation.FaceUp, Tokens.empty),
+      EdificeState(EdificeId("E-other"), EdificeSide.Ruined, Tokens.empty)))
+    val relics = Vector(RelicId("R-a"), RelicId("R-b"))
+    assertEquals(SiteState.banditSite(2, Tokens(3, 0), stored.placedDenizens,
+      relics), SiteState(SiteForces.Occupied(ForceKind.Bandit, 2),
+      stored.placedDenizens,
+      relics.map(RelicState(_, Orientation.FaceDown, Tokens.empty)),
+      Tokens(3, 0)))
+    assertEquals(SiteState.banditSite(0, Tokens.empty, Vector.empty,
+      Vector.empty).forces, SiteForces.Empty)
+    assertEquals(Vector(0, 1, 2, 3).map(SiteState.openRelicSlots(2, _)),
+      Vector(2, 1, 0, 0))
+

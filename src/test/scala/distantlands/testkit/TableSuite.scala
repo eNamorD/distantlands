@@ -418,3 +418,25 @@ class TableSuite extends munit.FunSuite:
       Vector[WorldCardId](DazzleCard.id, ScryerCard.id))
     assertEquals(ready.game.current.commonCards.worldDeck.lastOption,
       Some(EldersCard.id))
+
+  test("a map cut into the Atlas keeps its first sites and stores the " +
+      "rest, the first one cut at the Recent end, and a stored card leaves " +
+      "its zone"):
+    import distantlands.gameplay.powers.setup.GreatMarketCard
+    val whole = Table.start.ready.game.current.map.hinterward
+    val table = Table.start.mapCutIntoAtlas(3)
+      .storedInAtlas(whole(3), GreatMarketCard, EldersCard, StickyFireCard)
+    val ready = table.ready
+    assertEquals(ready.game.current.map.hinterward, whole.take(3))
+    assertEquals(ready.game.campaign.atlas.sites.map(_.id), whole.drop(3))
+    assertEquals(ready.game.campaign.atlas.site(AtlasEnd.Recent),
+      Some(AtlasEntry.StoredSite(whole(3),
+        Vector(DenizenState(EldersCard.id, Orientation.FaceUp, Tokens.empty)),
+        Vector(RelicState(StickyFireCard.id, Orientation.FaceDown,
+          Tokens.empty)), Some(GreatMarketCard.id))))
+    val zones = ready.game.current.commonCards
+    assert(!zones.edificeDeck.contains(GreatMarketCard.id))
+    assert(!zones.worldDeck.contains(EldersCard.id))
+    assert(!zones.relicDeck.contains(StickyFireCard.id))
+    intercept[munit.FailException](
+      Table.start.storedInAtlas(whole(3), EldersCard))

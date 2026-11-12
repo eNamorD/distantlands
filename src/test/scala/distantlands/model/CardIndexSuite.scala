@@ -40,6 +40,21 @@ class CardIndexSuite extends munit.FunSuite:
       )
     )
 
+  test("a stored site's edifice is indexed in the Atlas, after its " +
+      "denizens, with no state"):
+    val edifice = EdificeId("E-stored")
+    // Patched with copy: no Table is built on this fixture's game.
+    val storing = game.copy(campaign = game.campaign.copy(atlas = AtlasState(
+      game.campaign.atlas.entries.map {
+        case stored: AtlasEntry.StoredSite =>
+          stored.copy(edifice = Some(edifice))
+        case other => other
+      })))
+    val index = accepted(CardIndex.from(storing))
+    assertEquals(index.locationOf(edifice), Some(CardLocation(
+      CardContainer.AtlasSite(0, SiteId("S9"), SiteCardArea.Denizens), 1)))
+    assertEquals(index.stateOf(edifice), None)
+
   test("the derived index rejects a card present in two containers"):
     // Patched with copy, not a Table step: the test makes an illegal state
     // on purpose.
