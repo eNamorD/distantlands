@@ -79,13 +79,15 @@ being altered by an active legacy." Read it there; make no web call.
   report.
 - An unavailable option is shown disabled with its reason, never hidden: a
   face an active legacy alters is listed, unavailable, with "An active
-  legacy alters it: The Needle". A face on its normal face is no option at
-  all (there is nothing to restore), so it is not listed.
-- A Game Log line keeps the wording of the lines beside it. Every Chronicle
-  line names its player, the actor included ("p1 chose Discord, Arcane and
-  Order", "p1 welcomed Naysayers as a starting adviser"), so the restore
-  line names the Beacon task holder: "p3 restored Foundation I to Imperial
-  Maps". Keeping every foundation writes no line, as offering Citizenship
+  legacy alters it: The Needle", and the question is asked even when every
+  altered face is held, so only Keep may be chosen (decided with the owner,
+  2026-11-11). A face on its normal face is no option at all (there is
+  nothing to restore), so it is not listed.
+- A Game Log line keeps the wording of the lines beside it. Every Beacon
+  decision line names the holder, even when the holder is the active
+  player ("p1 chose Discord, Arcane and Order", "p1 welcomed Naysayers as a
+  starting adviser"), so the restore line names the Beacon task holder:
+  "p3 restored Foundation I to Imperial Maps". Keeping every foundation writes no line, as offering Citizenship
   to nobody writes none.
 - Note keys change in Task 2, and one golden pair is added in Task 3,
   exactly as those tasks show. The rewrite commands are
@@ -97,6 +99,10 @@ being altered by an active legacy." Read it there; make no web call.
   task shows. If anything else changed, stop and report: do not commit a
   file you cannot explain. Never run the golden rewrite except in Task 3,
   Step 3: if `GameLogGoldenSuite` fails anywhere else, stop and report.
+- Test counts quoted as "in the plan's own run" come from the revised
+  plan applied at `2306d272b` (the review's run of the first plan there
+  passed 5922 JVM and 937 frontend tests). A later merge may change them;
+  a different count is not a failure, a failing test is.
 - `python3 scripts/check-markdown-links.py` reports 34 broken links that an
   unrelated docs move left in older specs (listed in Task 4, Step 3). Do not
   fix them, and add none: the run after Task 4 must print exactly those 34.
@@ -108,14 +114,14 @@ being altered by an active legacy." Read it there; make no web call.
   for the option that restores nothing.
 - The package is `distantlands`. Every edit below is anchored by code, not
   by line number: each "Replace" block is cut from the file as it stands at
-  `552aa27f6` (slice 6's branch head) with the earlier tasks of this plan
+  `2306d272b` (this plan's first commit merged with `0.2.0-alpha`, which
+  holds slice 6 and its review fixes) with the earlier tasks of this plan
   applied, and occurs once in its file. "Then replace" is the next block in
   the same file. A "with" block repeats the unchanged lines of its
   "Replace" block, so an edit that only adds lines still shows where they
   go. "Create" gives a file's full text. If a block does not match because
-  slice 6's review fixes moved the text, find the same code by its content
-  and make the same change; if the code itself is different, stop and
-  report.
+  a later merge moved the text, find the same code by its content and make
+  the same change; if the code itself is different, stop and report.
 - Shell is zsh: never write a bare `===` or `=word` token in a command, and
   quote globs (`--include='*.scala'`).
 - Never `git add -A` or `git add .`; add files by path. Never push. No bare
@@ -133,7 +139,9 @@ being altered by an active legacy." Read it there; make no web call.
 
 Work in the worktree `/Users/roman/projects/oathdigital/.worktrees/foundations-s7`,
 on the branch `foundations-slice7`, cut from `foundations-slice6` at
-`552aa27f6`. Slice 6's review fixes may have been merged into it since.
+`552aa27f6`. Its head was `2306d272b` when this plan was revised: the
+plan's first commit merged with `0.2.0-alpha`, which holds slice 6 and its
+review fixes, then this revision. More merges may follow.
 Never run a git command that changes state in the main checkout,
 `/Users/roman/projects/oathdigital`, which holds another session's work,
 and do not touch `/Users/roman/projects/oathdigital/.worktrees/foundations-s6`,
@@ -156,6 +164,7 @@ Check the base before Task 1, by content:
 ```bash
 git merge-base --is-ancestor f3136fb3e HEAD && echo slice3b-ok
 git merge-base --is-ancestor 552aa27f6 HEAD && echo slice6-ok
+git merge-base --is-ancestor 2306d272b HEAD && echo merged-ok
 git grep -n "ChronicleWindows.step(PowerWindow.ChronicleShapeFoundation, Vector.empty))" -- src/main/scala/distantlands/gameplay/chronicle/ChronicleBeaconProcedure.scala
 git grep -n "foundations = campaign.foundations, lineages = kept ++ added)" -- src/main/scala/distantlands/gameplay/chronicle/ChronicleRecord.scala
 git grep -n "final case class EdificeBuilt(edifice: EdificeId, site: SiteId)" -- src/main/scala/distantlands/model/CoreOperations.scala
@@ -173,18 +182,20 @@ git grep -c "FoundationRestored" -- src/main
 The first must print `slice3b-ok`: `f3136fb3e` is the merge of slice 3b
 into `0.2.0-alpha`, and a worktree without it was cut from a stale branch:
 stop and report. The second must print `slice6-ok`: `552aa27f6` is slice
-6's head, which this plan was written and applied against. The next nine
+6's head, which this plan was first written against. The third must print
+`merged-ok`: `2306d272b` holds slice 6's review fixes, and the revised plan
+was applied there. The next nine
 greps must each print one line, and the `Phase - Foundations` grep two (the
 "Now" intro and the phase heading). They name what this plan stands on:
 the empty Shape Foundation window Task 2 fills, the Chronicle record that
 already writes the live faces, the operation Task 1 adds beside, its wire
 group, the Game Log's Beacon entry, the legacy state the offer reads, the
 test table's face setter, the spec's status line, and the two docs lines
-Task 4 replaces. `wc` must print 791 lines (slice 6's review may have
-moved this by a line or two; more than 795 leaves no room for Task 1's
-five lines, so stop and report). The last must print nothing and exit
-with status 1: no restore exists yet. If a grep prints nothing while the
-others print, slice 6's review moved or renamed that code: read the file,
+Task 4 replaces. `wc` must print 791 lines (a later merge may move this
+by a line or two; more than 795 leaves no room for Task 1's five lines,
+so stop and report). The last must print nothing and exit with status 1:
+no restore exists yet. If a grep prints nothing while the others print, a
+later merge moved or renamed that code: read the file,
 and go on only if the code the tasks edit is still there in substance,
 adapting the blocks that name it.
 
@@ -209,7 +220,8 @@ The spec was checked against the code at `552aa27f6`, and the slice was
 prototyped there, one commit per task. The blocks below were then applied
 in order, step by step, to a fresh worktree at `552aa27f6`, where each "see
 it fail" step failed as written, each task's tree matched the prototype's,
-and the full gates passed. Where the spec and the code differ, this plan
+and the full gates passed. After review the plan was revised, and the
+revised blocks were applied again to a fresh export of `2306d272b`. Where the spec and the code differ, this plan
 follows the code, and Task 4 records it in the spec.
 
 1. **The window is there and empty.** `ChronicleBeaconProcedure.steps` ends
@@ -237,10 +249,12 @@ follows the code, and Task 4 records it in the spec.
    lineage in the box may hold them. `ChronicleRecord.campaignFields(ready)
    .lineages` is every lineage the Chronicle records, seated and boxed, so
    the offer reads active legacies there.
-5. **Chronicle lines name their player.** Every Beacon line names the
-   holder ("{0} chose {1}, {2} and {3}", "{0} welcomed {1} as a starting
-   adviser"), as Setup's lines do (slice 4), even for the winner who is the
-   active player. The spec's "Restored Foundation I to Imperial Maps" omits
+5. **Beacon decision lines name the holder.** Each Beacon decision line
+   names the holder ("{0} chose {1}, {2} and {3}", "{0} welcomed {1} as a
+   starting adviser"), even for the winner who is the active player. Not
+   every Chronicle line names a player: the Throne's "The Oathkeeper goal
+   became {0}" names none, and the Beacon's "{0} returned to the box" names
+   cards. The spec's "Restored Foundation I to Imperial Maps" omits
    the actor; this plan writes "p3 restored Foundation I to Imperial Maps",
    and Task 4 says so in the spec's "As built".
 6. **No note argument names a foundation.** `NoteArg` has no foundation or
@@ -287,9 +301,10 @@ These fill gaps the spec leaves. None is a rules question.
    legacies named by their catalog names, sorted by id and joined with
    ", ". The answer check refuses an unavailable option, and the restore's
    `BuildOps` checks again.
-4. **When nothing is asked.** No altered face, or every altered face held
-   by an active legacy: the step builds no node, as Imperial Maps asks
-   nothing with one Atlas site.
+4. **When nothing is asked.** Only with no altered face: the step builds
+   no node. With altered faces that active legacies all hold, the question
+   is still asked, Keep available and each held face unavailable with its
+   reason (decided with the owner, 2026-11-11).
 5. **The line** is built from the recorded answer, inside the `Branch`
    that knows the holder, as Imperial Maps' line reads `states.answered`.
 6. **A test helper for the walk.** `ChronicleWalk.beaconWalkedTo(rules,
@@ -325,12 +340,13 @@ them; if the owner decides otherwise, the task named changes.
    Foundations I and V with no source, and an imported Chronicle's altered
    face has none, so before Legacies every altered face may be restored
    (Task 2).
-4. **Nothing is asked when nothing may be restored.** "You may flip one"
-   is a choice only while some altered face is free. Reading: with no
-   altered face, or with every altered face held by an active legacy, the
-   holder is not asked (Task 2, "with every altered face held by an active
-   legacy the holder is not asked"). The alternative is to ask with only
-   Keep available, showing the held faces' reasons.
+4. **Decided with the owner (2026-11-11): the holder is asked whenever a
+   face is altered.** When altered faces exist but active legacies hold
+   every one, the question still shows Keep and each held face, disabled
+   with its reason, since the project shows unavailable options disabled
+   with a reason rather than skipping them. Only with no altered face is
+   nothing asked (Task 2, "with every altered face held by an active legacy
+   the holder is still asked, and only Keep may be chosen").
 5. **Keep comes first, and keeping writes no line.** As Decline comes
    first at the Throne (Chronicle ruling 21). Reading: the holder may
    always decline the flip ("You may"), and declining tells nothing (Task
@@ -345,8 +361,8 @@ them; if the owner decides otherwise, the task named changes.
 8. **The holder is always a seated player.** Chronicle ruling 1 gives tasks
    only to players seated for the game, so a lineage in the box never
    restores; its active legacies still hold a face (ruling 1 above).
-9. **The line names the holder.** As every Chronicle line names its player:
-   "p3 restored Foundation I to Imperial Maps". The spec wrote it without
+9. **The line names the holder.** As every Beacon decision line names the
+   holder: "p3 restored Foundation I to Imperial Maps". The spec wrote it without
    the actor; Task 4 corrects the spec.
 
 ## File map
@@ -709,14 +725,15 @@ class ShapeFoundationSuite extends munit.FunSuite:
   /** The walk from the end of the World, every Beacon question before
     * Shape Foundation answered plainly: parked on Shape Foundation, or on
     * nothing when it asks nothing. */
-  private def shaping(table: Table)(using munit.Location): OathTransition =
+  private def walkedToShapeFoundation(table: Table)(using munit.Location)
+      : OathTransition =
     ChronicleWalk.beaconWalkedTo(rules, table, ShapeFoundation.decisionId)
 
   /** `table`'s Shape Foundation answered `answer`, then the rest of the
     * Chronicle answered plainly to its record. */
   private def answeredThenRecorded(table: Table, answer: DecisionOptionRef)(
       using munit.Location): OathTransition =
-    val at = shaping(table)
+    val at = walkedToShapeFoundation(table)
     val next = accepted(rules.resolveWalker(at.state, p3,
       ShapeFoundation.decisionId, ChooseOneAnswer(answer)))
     ChronicleWalk.answeringEverything(rules,
@@ -739,20 +756,21 @@ class ShapeFoundationSuite extends munit.FunSuite:
       ChronicleBeaconProcedure.noteKeys, transition.events)
       .filter(_.key.startsWith("restored-foundation-")).map(_.text)
 
-  private def journaled(transition: OathTransition): Chronicle =
+  /** The last Chronicle `transition` journaled with `ChronicleUpdated`. */
+  private def recordedChronicle(transition: OathTransition): Chronicle =
     RecordedOps.all(transition.events).collect {
       case ChronicleUpdated(chronicle) => chronicle
     }.last
 
   test("with no foundation altered the holder is not asked"):
-    val walked = shaping(tasksAssigned)
+    val walked = walkedToShapeFoundation(tasksAssigned)
     assertEquals(ChronicleWalk.parked(walked.state), None)
     assert(!RecordedOps.all(walked.events)
       .exists(_.isInstanceOf[FoundationRestored]), walked.events)
 
   test("the holder may keep every face or restore any altered one, III " +
       "included, and Keep comes first"):
-    val walked = shaping(wideHorizonsAndPublicAmbitions)
+    val walked = walkedToShapeFoundation(wideHorizonsAndPublicAmbitions)
     val parked = ChronicleWalk.parked(walked.state).get
     assertEquals(parked.owner, p3)
     assertEquals(options(walked).map(_.ref), Vector(ShapeFoundation.keep,
@@ -777,7 +795,7 @@ class ShapeFoundationSuite extends munit.FunSuite:
       .foundations(FoundationNumber.I), normal)
     assertEquals(restoredLines(done),
       Vector("p3 restored Foundation I to Imperial Maps"))
-    val record = journaled(done)
+    val record = recordedChronicle(done)
     assertEquals(record.foundations.get(FoundationNumber.I), Some(normal))
     assertEquals(record.foundations.get(FoundationNumber.III), Some(altered))
 
@@ -787,12 +805,12 @@ class ShapeFoundationSuite extends munit.FunSuite:
     assert(!RecordedOps.all(done.events)
       .exists(_.isInstanceOf[FoundationRestored]), done.events)
     assertEquals(restoredLines(done), Vector.empty)
-    assertEquals(journaled(done).foundations,
+    assertEquals(recordedChronicle(done).foundations,
       wideHorizonsAndPublicAmbitions.ready.game.campaign.foundations)
 
   test("a face an active legacy alters is shown unavailable with the " +
       "legacy's name, and cannot be restored; an inactive legacy's face can"):
-    val walked = shaping(alteredByBoxedLegacies)
+    val walked = walkedToShapeFoundation(alteredByBoxedLegacies)
     assertEquals(options(walked), Vector(
       DecisionOption.Button(ShapeFoundation.keep,
         "Keep every foundation as it lies"),
@@ -812,12 +830,17 @@ class ShapeFoundationSuite extends munit.FunSuite:
       FoundationState(FoundationFace.Normal, Set.empty))
 
   test("with every altered face held by an active legacy the holder is " +
-      "not asked"):
+      "still asked, and only Keep may be chosen"):
     val needleOnly = alteredByBoxedLegacies
       .foundation(FoundationNumber.VI, FoundationFace.Normal)
-    val walked = shaping(needleOnly)
-    assertEquals(ChronicleWalk.parked(walked.state), None)
-    assertEquals(journaled(walked).foundations(FoundationNumber.I),
+    val walked = walkedToShapeFoundation(needleOnly)
+    assertEquals(ChronicleWalk.parked(walked.state).map(_.decisionId),
+      Some(ShapeFoundation.decisionId))
+    assertEquals(options(walked).map(option => option.ref -> option.available),
+      Vector(ShapeFoundation.keep -> true,
+        ShapeFoundation.restore(FoundationNumber.I) -> false))
+    val done = answeredThenRecorded(needleOnly, ShapeFoundation.keep)
+    assertEquals(recordedChronicle(done).foundations(FoundationNumber.I),
       FoundationState(FoundationFace.Altered, Set(needle)))
 
   test("a restore replays from its journal to the same game"):
@@ -853,15 +876,16 @@ import distantlands.model._
 
 /** Shape Foundation, the Beacon's third step (CR p. 39): "You may flip one
   * foundation setup card from its altered side to its normal side unless
-  * it's being altered by an active legacy." While some altered face may be
-  * restored, the Beacon task holder chooses one altered face to restore,
-  * or keeps them all, which is the first option. A face whose alteration
+  * it's being altered by an active legacy." While a foundation lies
+  * altered, the Beacon task holder chooses one altered face to restore, or
+  * keeps them all, which is the first option. A face whose alteration
   * sources name a legacy that a lineage of this Chronicle holds active is
-  * shown unavailable, naming that legacy. Before Legacies no face has such
-  * a source, so every altered face may be restored, III included
+  * shown unavailable, naming that legacy, even when every altered face is
+  * held and only Keep may be chosen. Before Legacies no face has such a
+  * source, so every altered face may be restored, III included
   * (Foundations ruling 1).
   *
-  * Line, as the Beacon's other steps name their player: "p3 restored
+  * Line, as every Beacon decision line names the holder: "p3 restored
   * Foundation I to Imperial Maps".
   */
 object ShapeFoundation:
@@ -894,8 +918,7 @@ object ShapeFoundation:
     Branch((state, _) =>
       ChronicleTasks.forHolder(state, ChronicleTask.Beacon)(holder =>
         altered(state) match
-          case faces if faces.forall(lockedBy(state, _).nonEmpty) =>
-            Vector.empty
+          case Vector() => Vector.empty
           case faces => Vector(
             Decide(decisionId, holder, DecisionQuery.ChooseOne(
               DecisionOption.Button(keep, keepLabel) +:
@@ -1274,6 +1297,7 @@ git commit -m "test(chronicle): pin Shape Foundation at the table" -m "The proje
 - Modify: `docs/rules/chronicle.md`
 - Modify: `docs/rules/ambiguities.md`
 - Modify: `docs/rules/implementation-traceability.md`
+- Modify: `docs/architecture/game-setup.md`
 - Modify: `CONTEXT.md`
 - Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
 
@@ -1360,7 +1384,7 @@ Replace
 with
 
 ~~~markdown
-   - Digital: the holder is asked while some altered face may be restored. Keep every foundation comes first, then each altered face, I to VI. A face an active legacy alters is shown unavailable, naming the legacy ([Foundations rulings](ambiguities.md#foundations-rulings), items 1 and 14). The restored face is normal in the journaled Chronicle, with no alteration source, and one log line names it: "p3 restored Foundation I to Imperial Maps".
+   - Digital: the holder is asked whenever a foundation lies altered. Keep every foundation comes first, then each altered face, I to VI. A face an active legacy alters is shown unavailable, naming the legacy, even when every altered face is held and only Keep may be chosen ([Foundations rulings](ambiguities.md#foundations-rulings), items 1 and 14). The restored face is normal in the journaled Chronicle, with no alteration source, and one log line names it: "p3 restored Foundation I to Imperial Maps".
 ~~~
 
 **In** `docs/rules/ambiguities.md`:
@@ -1388,13 +1412,13 @@ with
 ~~~markdown
 ## Foundations rulings
 
-Rulings and readings for the six foundation setup cards ([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md)). Items 1 to 7 were taken with the project owner on 2026-11-10 and 2026-11-11. Items 8 to 14 are the readings each slice's plan took, the most literal reading of the New Foundations text; they await the owner's confirmation.
+Rulings and readings for the six foundation setup cards ([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md)). Items 1 to 7 were taken with the project owner on 2026-11-10 and 2026-11-11. Items 8 to 14 are the readings each slice's plan took, the most literal reading of the New Foundations text; they await the owner's confirmation, except where an item says a point was decided with the owner.
 
 1. **Foundation III waits for Legacies.** Both faces are accepted at game start and do nothing. The Beacon may still restore an altered III (Foundations design, ruling 1).
-2. **Explore borrows only Recover's dice.** No power that names Recover or recovering applies to Explore: Silver Charm, Relic Patrols and Drowned Library stay out, though Silver Charm's text names only spending Supply to roll defense dice. Jinx ("after you roll [attack-die] or [defense-die] for any reason") applies, through the generic reroll window (ruling 2).
-3. **No Empire sets the Reliquary aside.** "Discard all relics from the Reliquary. They return in the Chronicle Phase." The Reliquary's relics stay in the campaign all game and never enter play; the slot fill cannot draw them, and the Chronicle's Stock Reliquary step adds to them (ruling 3).
-4. **The shared bank has no count.** Taking favor from it changes nothing but the taker's board (ruling 5).
-5. **Explore, the Festival and a game with no Empire.** Any role may Explore. The Festival's marker is placed automatically at each of its holder's Rests, with no question, since the face says "must". With no Empire, the Oathkeeper title and both banners start as in a first game.
+2. **Explore borrows only Recover's dice.** No power that names Recover or recovering applies to Explore: Silver Charm, Relic Patrols and Drowned Library stay out, though Silver Charm's text names only spending Supply to roll defense dice. Jinx ("after you roll [attack-die] or [defense-die] for any reason") applies, through the generic reroll window (Foundations design, ruling 2).
+3. **No Empire sets the Reliquary aside.** "Discard all relics from the Reliquary. They return in the Chronicle Phase." The Reliquary's relics stay in the campaign all game and never enter play; the slot fill cannot draw them, and the Chronicle's Stock Reliquary step adds to them (Foundations design, ruling 3).
+4. **The shared bank has no count.** Taking favor from it changes nothing but the taker's board (Foundations design, ruling 5).
+5. **Explore, the Festival and a game with no Empire.** Any role may Explore. The Festival's marker is placed automatically at each of its holder's Rests, with no question, since the face says "must". With no Empire, the Oathkeeper title and both banners start as in a first game. Under Wide Horizons the Act menu shows Explore disabled with its reason while it cannot be taken; under Imperial Maps no one can ever take it, since Foundation I never changes during a game, so the menu leaves it out, as it leaves out an option the player's role can never use (slice 3b review).
 6. **A banner moved to the shared bank.** Hall of Mockery and Lost Guardians "move it to the shared bank": a held banner goes back to the shared bank, when the site is explored and at Setup alike. A Chancellor who starts with the People's Favor or the Darkest Secret loses it at Setup's end when the matching ruined edifice is on the map (slice 3b).
 7. **Imperial Maps' question.** The Recent option names the Atlas's first site, which the rulebook makes public: "Recent Sites (Buried Giant first)". The Forgotten end's site is not named, and nothing else about the Atlas is shown before the fill. This closes the deferral [R27](#empire-rulings) recorded (slice 4).
 8. **Movers and Shakers and Teeming World** (slice 2). Under Movers and Shakers every board starts with 6 favor, the Chancellor's included. Under Teeming World a lineage that stores three or more advisers draws none and keeps them all. Players draw in seat order, and a lineage's stored advisers come before the ones it draws. A site-only denizen drawn is kept and cannot be revealed in Setup. Reveal Cards still runs. An uneven rest leaves the Cradle pile, then the Provinces pile, one card more, and the first card dealt to a pile is its top. A Search of the Visions-only deck draws one Vision and stops; once the five are drawn the world deck is empty and cannot be searched.
@@ -1403,7 +1427,7 @@ Rulings and readings for the six foundation setup cards ([Foundations design](..
 11. **Imperial Maps** (slice 4). An Atlas too short to fill every slot is refused at game start. A Citizen standing in for an absent Chancellor answers. A relic deck that runs short leaves the last relic slots open. Foundation II's favor counts a placed site's ruined edifice and is added as each site is placed. One answer fills every slot, the Forgotten end placing the Atlas's last site in the Cradlemost empty slot. With one site in the Atlas nothing is asked and the line says Recent; an Empire of eight sites asks nothing. A placed site's SETUP half resolves at Setup's end.
 12. **Grand Council** (slice 5). Every card play the engine plans is "playing a card". A card goes to a distant Imperial site only as it could go to the pawn site, and a full Imperial site takes it only in place of one discarded there. The discard is optional, one card per play, stacks with the Homeland's, and holds at the pawn site only when it is Imperial. Nobody is asked to consent, and printed protections and locks still apply. An Imperial site is one the Empire's warbands hold when the play is planned. The holder's role does not matter. An unheld Grand Council has no previous holder, so all its favor goes to the banks. A first game with an altered V starts the Grand Council in the shared bank.
 13. **Festival** (slice 6). Every other player is the holder's enemy, whatever their role. "Their powers" are the powers of the denizens at the marked site, edifices included; relics and the site's own powers are untouched, and a denizen's action modifier is one of its powers. "Persistent" is the power as printed. Placing favor or secrets on a denizen is what City Wall's ban reads. Consent is asked outside a Campaign only. The marker starts beside the map, first goes on it at the holder's first Rest, and each Rest places it at the pawn's site, even where it already lies; a holder with no pawn on the map places nothing. With nobody holding the banner the marker guards nothing and stays where it lies. A take that walks no ribbon leaves the marker, which then guards for the new holder. "ONE" on an empty banner burns nothing. Under Secret Testament the holder takes every secret, and the marker still leaves the map. A first game with an altered VI starts the Festival in the shared bank. An automatic power of a guarded card is refused for an enemy like any other non-persistent use, and Jinx at the festival is refused to an enemy who rules it. Open: whether a Conspiracy that takes the Festival also removes the marker; the code removes it, as a Raid does.
-14. **Shape Foundation** (slice 7). "You may flip one foundation setup card from its altered side to its normal side unless it's being altered by an active legacy." An active legacy is one that a lineage this Chronicle records, seated or in the box, holds active; a source legacy that no lineage holds active does not stop the restore. The holder is asked only while some altered face may be restored, and Keep every foundation comes first. A restore clears the face's alteration sources. A face Setup With No Empire eroded has no source and may be restored. The step runs after Welcome a Stranger, in the printed order.
+14. **Shape Foundation** (slice 7). "You may flip one foundation setup card from its altered side to its normal side unless it's being altered by an active legacy." An active legacy is one that a lineage this Chronicle records, seated or in the box, holds active; a source legacy that no lineage holds active does not stop the restore. The holder is asked whenever a foundation lies altered, and Keep every foundation comes first; a face an active legacy alters is shown unavailable with its reason, even when every altered face is held and only Keep may be chosen (decided with the owner, 2026-11-11). A restore clears the face's alteration sources. A face Setup With No Empire eroded has no source and may be restored. The step runs after Welcome a Stranger, in the printed order.
 
 ## Source relationship cautions
 ~~~
@@ -1412,8 +1436,7 @@ The new section moves the spec's rulings 1 to 3 and 5, the design calls
 the owner accepted, the two calls decided with the owner in slices 3b and
 4, and every slice's readings to the rules docs, as the spec's "Docs" list
 asks. Ruling 4 (Explore's log line) is wording, not a rule, and stays in
-the spec. [R27](#empire-rulings) was already closed by slice 4; item 7
-points at it.
+the spec. R27 was already closed by slice 4; item 7 links to it.
 
 **In** `docs/rules/implementation-traceability.md`:
 
@@ -1439,6 +1462,52 @@ with
 
 ~~~markdown
 Imperial Maps fills from the end the Chancellor chooses ([R27](ambiguities.md#empire-rulings)). The Beacon's Shape Foundation restores one altered face (the Beacon task row). Foundation III's faces wait for Legacies; the batch's rulings are the [Foundations rulings](ambiguities.md#foundations-rulings). |
+~~~
+
+Then replace (part of the Search row, which no longer depends on a foundation face)
+
+~~~markdown
+documents the exile-only, unaltered-Foundation procedure.
+~~~
+
+with
+
+~~~markdown
+documents the exile-only procedure. Under Teeming World the world deck is the five Visions, and the first Search draws one (`AlteredFoundationSetupSuite`).
+~~~
+
+Then replace (the same row's last column)
+
+~~~markdown
+| Individual component powers, altered Foundations, Imperials, later turns
+~~~
+
+with
+
+~~~markdown
+| Individual component powers, Imperials, later turns
+~~~
+
+**In** `docs/architecture/game-setup.md` (stale since slice 6, after which
+game start refuses no face):
+
+Replace
+
+~~~markdown
+"Setup for Later Games". It excludes Legacy selection/effects and the
+altered Foundation faces no slice of the
+[Foundations design](../superpowers/specs/2026-11-11-foundations-design.md)
+has brought in yet, which game start refuses by name. Foundation III is
+accepted on either face and does nothing until Legacies.
+~~~
+
+with
+
+~~~markdown
+"Setup for Later Games". It excludes Legacy selection/effects. Game start
+accepts every face of every foundation
+([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md));
+Foundation III is accepted on either face and does nothing until Legacies.
 ~~~
 
 **In** `CONTEXT.md`, a new subsection before "Undo":
@@ -1481,10 +1550,12 @@ _Avoid_: last site, edge site
 
 **Explore**:
 The major action Wide Horizons gives. From the Hintermost site the explorer
-rolls 2 defense dice per Supply against a difficulty of 4, then places the
-site at the Recent or Forgotten end of the Atlas in the next empty slot and
-moves their pawn there. It borrows Recover's dice and nothing else: only
-powers on its own windows change it.
+rolls 2 defense dice per Supply against a difficulty of 4, then takes the
+site at the Recent or Forgotten end of the Atlas and places it in the next
+empty slot, and moves their pawn there. It borrows Recover's dice and
+nothing else: only powers on its own windows and the generic reroll window
+change it, so Jinx applies and Silver Charm does not (Foundations design,
+ruling 2).
 _Avoid_: recover a site, expand
 
 **Festival marker**:
@@ -1533,19 +1604,21 @@ with
   is not offered.
 - **As built.** `ShapeFoundation` builds the step in the Beacon's last
   window. Keep every foundation is the first option, as Decline is at the
-  Throne, and each altered face follows, I to VI; a face an active legacy
-  alters is shown unavailable, naming the legacy. The restore is a
+  Throne, and each altered face follows, I to VI. A face an active legacy
+  alters is shown unavailable, naming the legacy, rather than left out as
+  "not offered" above might read; the holder is asked whenever a face is
+  altered, even when every altered face is held and only Keep may be
+  chosen (decided with the owner, 2026-11-11). The restore is a
   journaled `FoundationRestored`, which turns the face normal and clears
   its alteration sources, and `ChronicleRecord` carries it into
   `ChronicleUpdated`. Each foundation has its own line, since a restore
   always reaches the one normal face, and the line names the holder, as
-  every Beacon line names its player: "p3 restored Foundation I to Imperial
+  every Beacon decision line does: "p3 restored Foundation I to Imperial
   Maps". Keeping writes no line.
 - **Readings taken with the plan,** for the owner to confirm. An active
   legacy is one that a lineage this Chronicle records, seated or in the box,
   holds active; a source legacy that no lineage holds active does not stop
-  the restore. The holder is asked only while some altered face may be
-  restored. A restore clears the face's sources. A face Setup With No
+  the restore. A restore clears the face's sources. A face Setup With No
   Empire eroded has no source and may be restored. The step runs after
   Welcome a Stranger, in the printed order.
 ~~~
@@ -1580,8 +1653,8 @@ working, add it to both.
 
 Run: `./sbtw clean coverage test coverageReport`
 Expected: PASS, statement coverage at or above 92% and branch coverage at
-or above 84.4%. The plan's own run of these tasks at `552aa27f6` passed
-5915 tests at 95.34% statements and 89.68% branches.
+or above 84.4%. The revised plan's own run of these tasks at `2306d272b`
+passed 5922 tests at 95.34% statements and 89.69% branches.
 
 One test is slow under coverage: in the plan's first full run,
 `GameLogDecisionSuite`'s "decisions an action line already tells post no
@@ -1594,7 +1667,7 @@ timeout in this slice.
 
 Run: `./sbtw "frontend/test"` (the frontend suites, which the full run
 skips)
-Expected: PASS (935 tests in the plan's own run).
+Expected: PASS (937 tests in the plan's own run).
 
 Run: `python3 scripts/check-architecture.py`
 Expected: `architecture check passed`; every Scala file stays under 800
@@ -1604,9 +1677,9 @@ Run: `git status --short src/test/resources`
 Expected: clean. The note-key snapshot and the golden pair were committed
 with Tasks 2 and 3, and nothing else changed.
 
-Run: `git grep -n "Phase - Foundations\|an empty window until Foundations\|Shape Foundation is an empty window\|waits for Foundations" -- docs/ROADMAP.md docs/rules docs/architecture CONTEXT.md src`
-Expected: no output. Nothing still calls Shape Foundation empty or points
-at the deleted phase.
+Run: `git grep -n "Phase - Foundations\|an empty window until Foundations\|Shape Foundation is an empty window\|waits for Foundations\|refuses by name\|unaltered-Foundation" -- docs/ROADMAP.md docs/rules docs/architecture CONTEXT.md src`
+Expected: no output. Nothing still calls Shape Foundation empty, points
+at the deleted phase, or says game start refuses a face.
 
 Run: `python3 scripts/check-markdown-links.py`
 Expected: it fails with exactly these 34 pre-existing broken links, all in
@@ -1655,8 +1728,8 @@ If any other line appears, a link this task wrote is broken: fix it.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/ROADMAP.md docs/rules/chronicle.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md CONTEXT.md docs/superpowers/specs/2026-11-11-foundations-design.md
-git commit -m "docs(foundations): record slice 7 and close the phase" -m "The roadmap drops Phase - Foundations, the Chronicle rules describe Shape Foundation, the ambiguities gather the batch's rulings and readings, the traceability table marks the Beacon tested, CONTEXT.md gains the batch's terms, and the spec records every slice landed with slice 7 as built and its readings." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git add docs/ROADMAP.md docs/rules/chronicle.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/architecture/game-setup.md CONTEXT.md docs/superpowers/specs/2026-11-11-foundations-design.md
+git commit -m "docs(foundations): record slice 7 and close the phase" -m "The roadmap drops Phase - Foundations, the Chronicle rules describe Shape Foundation, the ambiguities gather the batch's rulings and readings, the traceability table marks the Beacon tested and drops the Search row's Foundation caveat, the setup doc stops saying game start refuses a face, CONTEXT.md gains the batch's terms, and the spec records every slice landed with slice 7 as built and its readings." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ---
@@ -1669,6 +1742,12 @@ git commit -m "docs(foundations): record slice 7 and close the phase" -m "The ro
   (`ShapeFoundation.lockedBy`) already refuses a face an active source
   holds. Foundation III's faces wait there too.
 - **Edit Chronicle** may edit a face directly; it needs no Beacon.
+- **`CoreOperations.scala` is full.** It reaches 796 of its 800 lines with
+  `FoundationRestored`, and it cannot be split: `CoreOperation` and
+  `PrimitiveOperation` are sealed, so every operation must stay in that
+  file. The Legacies phase, which adds operations, needs a plan of its own
+  for it (for example shorter doc comments, or moving the operations'
+  long prose to `docs/architecture`).
 
 ## Self-review
 
@@ -1678,7 +1757,7 @@ git commit -m "docs(foundations): record slice 7 and close the phase" -m "The ro
 |---|---|
 | `ChronicleShapeFoundation` gets the Beacon task holder's question: restore one altered face, or keep them all | 2 (`ShapeFoundation.steps`, `ChronicleBeaconProcedure`) |
 | Offer: every altered face whose sources hold no active legacy; III included before Legacies | 2 ("... III included ...", "a face an active legacy alters ..."; rulings 1 to 3) |
-| No altered face, no question | 2 ("with no foundation altered the holder is not asked"; ruling 4 extends it) |
+| No altered face, no question | 2 ("with no foundation altered the holder is not asked"; with every face held the question is still asked, ruling 4) |
 | Log: "Restored Foundation I to Imperial Maps" | 2, 3 (the line names the holder; finding 5, ruling 9) |
 | The restored face reaches `ChronicleUpdated` | 2 ("... the journaled Chronicle carries it") |
 | Tests: each offer; the skip; `ChronicleUpdated`; a hand-built active-legacy source is not offered | 2 |
@@ -1688,13 +1767,16 @@ git commit -m "docs(foundations): record slice 7 and close the phase" -m "The ro
 | Full gates | 4, Step 3 |
 
 **Verified by running:** the prototype was committed per task in a
-scratch worktree at `552aa27f6`; the plan's blocks were then applied in
-order, step by step, to a second fresh worktree at `552aa27f6`. Each "see
-it fail" step failed exactly as written, each task's tree matched the
-prototype's, and the final tree passed `./sbtw clean coverage test
-coverageReport` (5915 tests at 95.34% statements and 89.68% branches), `./sbtw "frontend/test"`
-(935 tests), `scripts/check-architecture.py` and the link
-check's 34 pre-existing failures, with `src/test/resources` clean.
+scratch worktree at `552aa27f6`, and the plan's blocks were applied in
+order, step by step, to a second fresh worktree there. After review the
+revised plan was applied the same way to a fresh export of `2306d272b`.
+Each "see it fail" step failed exactly as written, the code and tests
+matched the revised prototype, the snapshot diff and the golden matched
+the text shown, and the final tree passed `./sbtw clean coverage test
+coverageReport` (5922 tests at 95.34% statements and 89.69% branches),
+`./sbtw "frontend/test"` (937 tests), `scripts/check-architecture.py`
+and the link check's 34 pre-existing failures, with the revised plan in
+the tree and `src/test/resources` clean.
 
 **Placeholders:** none. Every step that changes code shows the code, and
 each file written by a command shows its expected text or diff.
@@ -1705,6 +1787,7 @@ each file written by a command shows its expected text or diff.
 noteKeys, steps, lockedBy}`, `ChronicleWalk.beaconWalkedTo` (Task 2, used
 again in Task 3). The suites' helpers name what they build:
 `tasksAssigned`, `wideHorizonsAndPublicAmbitions`, `alteredByBoxedLegacies`,
-`shaping`, `answeredThenRecorded`, `restoredLines`, `journaled`,
+`walkedToShapeFoundation`, `answeredThenRecorded`, `restoredLines`,
+`recordedChronicle`,
 `parkedOnShapeFoundation`, `beaconRestoredFoundation`. Each is spelled the
 same wherever it appears.
