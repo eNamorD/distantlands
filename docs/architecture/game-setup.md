@@ -44,7 +44,9 @@ Visions, shuffled. Foundation II decides the favor: Powerful Tribes
 gives each bank 3, 1 more with five or more players, and 1 per denizen of
 its suit on the map; Movers and Shakers gives each board 6 favor and each
 bank only the 1 per denizen. Both altered faces are built directly, like the
-rest of game start; nothing is journaled. The sites Imperial Maps places in
+rest of game start; nothing is journaled. An altered Foundation V, Grand
+Council, starts the People's Favor on its Grand Council face, as Mob's
+Favor starts it on the Mob. The sites Imperial Maps places in
 Setup's walk add their denizens' favor as they are placed
 (`AtlasPlacement.suitFavor`).
 

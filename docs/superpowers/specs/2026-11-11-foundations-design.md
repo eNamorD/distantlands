@@ -1,6 +1,6 @@
 # Foundations
 
-**Status:** designed 2026-11-11. Slices 1, 2, 3a, 3b and 4 landed.
+**Status:** designed 2026-11-11. Slices 1, 2, 3a, 3b, 4 and 5 landed.
 
 **Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
@@ -391,10 +391,41 @@ always took the Recent end.
   intact edifice or a locked card may not (the generic discard rules). The
   Mob's discard at other sites goes with the Mob face.
 - **Challenge.** `ChallengeProcedure.supportedFaces` stops refusing the
-  face. The plan reads the face's ribbon icons from
-  `reference/2026-03-17-new-foundations-rev1/banners.pdf`.
+  face; it still refuses the Festival. The face's ribbons, read from
+  `reference/2026-03-17-new-foundations-rev1/banners.pdf`, print the same
+  on the left (Challenge) and the right (Campaign): "HALF" over the
+  return-favor icon, then "REST" over the bank-favor icon. Half the favor,
+  rounded down, goes back to the banner's previous holder, and the rest
+  to the least-favor banks one at a time. The Mob prints "ALL" over the
+  bank-favor icon on both ribbons.
 - **Tests.** Playing to a distant Imperial site; a discard there and none
   elsewhere; no Imperial sites in a no-Empire game; a Challenge of the face.
+- **As built.** Game start reads Foundation V from the faces it resolved
+  (`FirstGameSetupMaterializer`), so Setup With No Empire, which erodes V
+  first, always starts the Mob. `PeoplesFavorGrandCouncil` sits beside
+  `PeoplesFavorMob` in `BannerFacePowers` and uses Baron's seam: one
+  `PlaySites` and one `DiscardPermission`, both holding at Imperial sites
+  (`SiteRulers.isImperialSite`). Its discard writes the Mob's line,
+  credited to the Grand Council. The ribbon is
+  `BannerRules.peoplesFavorRibbon`, which reads the face, so a Challenge,
+  Favored Son ("its left ribbon"), a Raid and the Conspiracy ("its right
+  ribbon") all follow it, and a Raid's defender then burns half their
+  favor, the returned half included. The frontend already drew and read
+  both faces.
+- **Readings taken with the plan,** for the owner to confirm. Every card
+  play the engine plans is "playing a card": a Search's, the facedown
+  adviser play's and a power's own, as for the Mob. A card goes to a
+  distant Imperial site only as it could go to the pawn site: a Vision or
+  an adviser-only card never, a site-only card yes. A full Imperial site
+  takes the card only in place of one discarded there. The discard is
+  optional, one card per play, stacks with the Homeland's, and holds at
+  the pawn site only when it is Imperial. Nobody is asked to consent, and
+  printed protections and locks still apply. An Imperial site is one the
+  Empire's warbands hold when the play is planned; the Grand Mask changes
+  who rules its cards, not the site. The holder's role does not matter.
+  An unheld Grand Council has no previous holder, so all its favor goes to
+  the banks. A first game with an altered V starts the Grand Council in
+  the shared bank.
 
 ## Slice 6: Festival
 
