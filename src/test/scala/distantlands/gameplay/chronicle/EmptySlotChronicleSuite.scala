@@ -6,7 +6,7 @@ import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.WalkerCompleted
 import distantlands.model._
 import distantlands.testkit.{MenuPlay, Outcomes, Situation, Table}
-import distantlands.testkit.Table.p1
+import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Unwrap.accepted
 
 /** A game on a map with empty slots, through the Chronicle Phase and into
@@ -91,6 +91,50 @@ class EmptySlotChronicleSuite extends munit.FunSuite:
       (journaled.world ++ journaled.atlasBox).flatMap(_.items)
     reliquary.foreach(relic => assert(scattered.contains(relic), relic))
     assert(!journaled.reliquary.exists(reliquary.contains))
+
+  /** The no-Empire game p1 has just won, with each player's lineage given
+    * the role `roles` names, as though it had become that in play, and p1
+    * holding the relic deck's first relic for Stock Reliquary to add. A role
+    * made in play brings the Imperial supply an Empire in play would have. */
+  private def wonWithRolesMadeInPlay(roles: Map[PlayerId, Role])
+      : (OathTransition, RelicId) =
+    val table = Table.from(Outcomes.ready(won.state))
+    val held = table.ready.game.current.commonCards.relicDeck.head
+    val state = table.relic(p1, held).update(ready => ready
+      .updateCampaign(campaign => campaign.copy(lineages =
+        campaign.lineages.map((id, lineage) => id -> ready.game.current
+          .players.find(_.lineage == id).flatMap(seat => roles.get(
+            seat.player)).fold(lineage)(role => lineage.copy(role = role)))))
+      .copy(banks = ready.banks.copy(warbandSupply =
+        ready.banks.warbandSupply.updated(ForceKind.Imperial, 24)))).state
+    (OathTransition(state, Vector.empty), held)
+
+  /** The set-aside Reliquary's relics are scattered, the journaled
+    * Reliquary holds only the relic Stock Reliquary added, and every card
+    * is accounted for once. */
+  private def assertSetAsideRelicsScattered(roles: Map[PlayerId, Role])(
+      using munit.Location): Unit =
+    val (wonByRole, held) = wonWithRolesMadeInPlay(roles)
+    val record = EvolvedChronicleFixture.chronicleJournaledBy(
+      EvolvedChronicleFixture.chronicleAnsweredAfter(wonByRole))
+    val scattered = record.relicDeck ++
+      (record.world ++ record.atlasBox).flatMap(_.items)
+    absentEmpireChronicle.reliquary.foreach(relic =>
+      assert(scattered.contains(relic), relic))
+    assertEquals(record.reliquary, Vector(held))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog, record),
+      Right(()))
+    assertEquals(ChronicleAccounting.conserves(absentEmpireChronicle,
+      record), Right(()))
+
+  test("with no Empire, a Chancellor made in play who wins discards the " +
+      "set-aside Reliquary as an Exile's win does"):
+    assertSetAsideRelicsScattered(Map(p1 -> Role.Chancellor))
+
+  test("with no Empire, a Citizen who wins discards the set-aside " +
+      "Reliquary as an Exile's win does"):
+    assertSetAsideRelicsScattered(Map(p1 -> Role.Citizen,
+      p2 -> Role.Chancellor))
 
   test("the next game starts from the journaled Chronicle under Wide " +
       "Horizons: the Empire's one site returns and no other slot is filled"):
