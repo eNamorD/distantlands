@@ -121,6 +121,21 @@ class CampaignRaidSuite extends munit.FunSuite:
     parked.assertResumed(done.state, Phase.Act, b.actor)
     assertEquals(MenuPlay.pendingBeyondMenu(ready(done.state)), None)
 
+  test("a Raid victory over the Grand Council gives the defender back " +
+      "half its favor, rounded down, before they burn half of theirs"):
+    val RaidBoard(raided, relic) = raidBoard()
+    val b = on(raided)(_.peoplesFavor(Some(raided.rival), favor = 3,
+      face = PeoplesFavorFace.GrandCouncil))
+    val sacrificed = walk(b, relic, attack = 4).sacrificed
+    val after = ready(sacrificed.state)
+    assertEquals(after.game.current.banners.peoplesFavor,
+      PeoplesFavorState(PeoplesFavorFace.GrandCouncil, Some(b.actor), 0))
+    // 3 / 2 = 1 of the banner's favor goes back to the rival, 2 to the banks.
+    assertEquals(favorInBanks(sacrificed.state),
+      favorInBanks(Ready(b.ready)) + 2)
+    // The rival's 5 favor and the 1 returned: they burn half of 6.
+    assertEquals(Look(sacrificed.state).player(b.rival).board.favor, 6 - 6 / 2)
+
   test("the pawn cannot be relocated to its own site"):
     val RaidBoard(b, relic) = raidBoard()
     val walked = walk(b, relic, attack = 4)

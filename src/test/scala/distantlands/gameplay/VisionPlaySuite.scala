@@ -118,6 +118,30 @@ class VisionPlaySuite extends munit.FunSuite:
     assertEquals(MenuPlay.pendingBeyondMenu(after), None)
     assert(!accepted(CardIndex.from(after.game)).ids.contains(conspiracy))
 
+  test("a Conspiracy that takes the Grand Council gives its holder back " +
+      "half the favor, rounded down, by its right ribbon"):
+    // p2, the enemy, shares p1's site and holds the People's Favor on its
+    // Grand Council face with 3 favor.
+    val enemy = p2
+    val initial = atHome.pawn(enemy, at = home)
+      .peoplesFavor(Some(enemy), favor = 3,
+        face = PeoplesFavorFace.GrandCouncil)
+      .darkestSecret(None, secrets = 1).worldDeckTop(conspiracy).ready
+    val started = accepted(
+      SearchPlay.searched(rules, OathState.Ready(initial), actor))
+    val parked = accepted(
+      rules.resolveWalker(started.state, actor, placeId(conspiracy),
+        faceup(started.state)))
+    val resolved = accepted(rules.resolveWalker(parked.state, actor,
+      "cardplay.conspiracy.target", DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.Banner(Banner.PeoplesFavor))))
+    val after = Outcomes.ready(resolved.state)
+    assertEquals(after.game.current.banners.peoplesFavor,
+      PeoplesFavorState(PeoplesFavorFace.GrandCouncil, Some(actor), 0))
+    assertEquals(Look(after).favor(enemy), Look(initial).favor(enemy) + 1)
+    assertEquals(after.banks.favor.values.sum,
+      initial.banks.favor.values.sum + 2)
+
   test("Reveal is a facedown Vision played faceup: it replaces the revealed " +
       "Vision and costs no Supply"):
     val old = VisionRules.Conquest

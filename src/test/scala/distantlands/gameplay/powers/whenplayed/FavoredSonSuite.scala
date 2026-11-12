@@ -38,6 +38,17 @@ class FavoredSonSuite extends munit.FunSuite:
     assertJournalRebuilds(ready, done.events, done.treeless)
     assertWireRoundTrips(done.events)
 
+  test("takes the Grand Council from its holder, who gets back half its " +
+      "favor, rounded down, by its left ribbon"):
+    val ready = Table.start.adviser(p1, son).peoplesFavor(Some(p2),
+      favor = 3, face = PeoplesFavorFace.GrandCouncil).ready
+    val done = Outcomes.finished(play(ready, power, son))
+    assertEquals(Look(done.treeless).peoplesFavorHolder, Some(p1))
+    assertEquals(Look(done.treeless).favorOnPeoplesFavor, 0)
+    assertEquals(Look(done.treeless).favor(p2), Look(ready).favor(p2) + 1)
+    assertEquals(done.treeless.banks.favor, banksAfterRibbon(ready, 2))
+    assertJournalRebuilds(ready, done.events, done.treeless)
+
   test("takes an unheld People's Favor from the shared bank"):
     val ready = Table.start.adviser(p1, son).peoplesFavor(None, favor = 2)
       .ready

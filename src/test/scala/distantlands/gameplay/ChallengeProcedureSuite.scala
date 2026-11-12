@@ -15,8 +15,8 @@ import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
 import distantlands.model._
 import distantlands.model.OathState.Ready
 import distantlands.model.OathViolation.NoPlayableOption
-import distantlands.testkit.{EmptyWindowModifier, Journal, Look, MenuPlay,
-  Outcomes, Table}
+import distantlands.testkit.{ActPowerHarness, EmptyWindowModifier, Journal,
+  Look, MenuPlay, Outcomes, Table}
 import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Unwrap.{accepted, rejected}
 
@@ -143,6 +143,47 @@ class ChallengeProcedureSuite extends munit.FunSuite:
     val after = Outcomes.ready(done.state).game.current
     assertEquals(after.banners.peoplesFavor.holder, Some(p1))
     assertEquals(after.banners.peoplesFavor.favor, 3)
+
+  test("Grand Council: an enemy holder takes back half the favor, rounded " +
+      "down, and the rest returns to the least banks; on the Mob they take " +
+      "back none"):
+    def enemyHolds(face: PeoplesFavorFace): ReadyGame =
+      challenger.peoplesFavor(Some(p2), favor = 5, face = face)
+        .pawn(p2, at = Table.quietPawnSite(p1)).ready
+    val board = enemyHolds(PeoplesFavorFace.GrandCouncil)
+    val started = accepted(start(board))
+    val chosen = accepted(chooseBanner(started.state, peoplesFavorOption))
+    val done = accepted(chooseAmount(chosen.state, 6))
+    val after = Outcomes.ready(done.state)
+    assertEquals(Look(after).favor(p2), Look(board).favor(p2) + 5 / 2)
+    assertEquals(after.banks.favor, BannerRules.addFavor(board.banks.favor,
+      BannerRules.raidFavorReturn(board.banks.favor, 5 - 5 / 2)))
+    assertEquals(after.game.current.banners.peoplesFavor,
+      PeoplesFavorState(PeoplesFavorFace.GrandCouncil, Some(p1), 6))
+    assertEquals(Look(after).favor(p1), 0)
+    assertEquals(ActPowerHarness.replayed(rules, board,
+      started.events ++ chosen.events ++ done.events), after)
+    val mob = enemyHolds(PeoplesFavorFace.Mob)
+    val mobDone = Outcomes.ready(accepted(chooseAmount(
+      atAmount(mob, peoplesFavorOption), 6)).state)
+    assertEquals(Look(mobDone).favor(p2), Look(mob).favor(p2))
+
+  test("Grand Council: an unclaimed banner has no previous holder, so all " +
+      "its favor returns to the least banks"):
+    val board = challenger.peoplesFavor(None, favor = 3,
+      face = PeoplesFavorFace.GrandCouncil).ready
+    val after = Outcomes.ready(accepted(chooseAmount(
+      atAmount(board, peoplesFavorOption), 4)).state)
+    assertEquals(after.banks.favor, BannerRules.addFavor(board.banks.favor,
+      BannerRules.raidFavorReturn(board.banks.favor, 3)))
+    assertEquals(after.game.current.banners.peoplesFavor,
+      PeoplesFavorState(PeoplesFavorFace.GrandCouncil, Some(p1), 4))
+
+  test("the Festival face still refuses the start"):
+    val board = challenger.peoplesFavor(None, favor = 2)
+      .darkestSecret(None, 1, face = DarkestSecretFace.Festival).ready
+    assertEquals(start(board).left.toOption, Some(
+      OathViolation.UnsupportedBannerState("unsupported active banner face")))
 
   test("Wandering Flame: an unclaimed banner places half on a unique least site one at a time and burns the rest"):
     val board = siteSecrets(challenger.secrets(p1, faceUp = 8, faceDown = 4)

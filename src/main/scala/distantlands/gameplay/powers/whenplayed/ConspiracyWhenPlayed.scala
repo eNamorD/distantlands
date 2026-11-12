@@ -128,11 +128,7 @@ case object ConspiracyWhenPlayed extends ContributingPower:
       case DecisionOptionRef.Banner(held) =>
         BannerRules.holder(current, held).toVector.flatMap { owner =>
           val leaving: Vector[CoreOperation] = held match
-            case Banner.PeoplesFavor => BannerRules.raidFavorReturn(
-              ready.banks.favor, BannerRules.resources(current, held))
-              .map(suit => Move(Piece.Favor(1),
-                PositionedLocation(Location.OnBanner(held)),
-                PositionedLocation(Location.FavorBank(suit))))
+            case Banner.PeoplesFavor => BannerRules.peoplesFavorRibbon(ready)
             case Banner.DarkestSecret =>
               val secrets = BannerRules.resources(current, held)
               Option.when(secrets > 0)(Burn.secrets(secrets,

@@ -98,12 +98,13 @@ object ChallengeProcedure:
       s"walker procedure ${ActionRef.Challenge.key} takes no start selection, " +
         s"got ${args.map(_.kind).mkString(", ")}"))
 
-  /** The ribbon rules below are the printed ones for People's Favor `Mob` and
-    * Darkest Secret `WanderingFlame` only.
+  /** The ribbon rules below are the printed ones for both People's Favor
+    * faces and for the Darkest Secret's `WanderingFlame` only: the Festival
+    * arrives with Foundations slice 6.
     */
   private def supportedFaces(state: ReadyGame): Either[OathViolation, Unit] =
     val banners = state.game.current.banners
-    Either.cond(banners.peoplesFavor.active == PeoplesFavorFace.Mob &&
+    Either.cond(
       banners.darkestSecret.active == DarkestSecretFace.WanderingFlame, (),
       OathViolation.UnsupportedBannerState("unsupported active banner face"))
 
