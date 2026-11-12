@@ -458,9 +458,12 @@ always took the Recent end.
   it; a golden log.
 - **As built.** Game start reads Foundation VI from the faces it resolved
   (`FirstGameSetupMaterializer`), so the marker starts beside the map, and
-  `StartingFoundations` has no refusal left. Begin Rest now folds the
-  `RestStart` window, declared since the Rest walker and folded by no
-  procedure until now. `DarkestSecretFestival`, beside the Grand Council in
+  `StartingFoundations` has no refusal left. Every way into Rest now
+  folds the `RestStart` window once, declared since the Rest walker and
+  folded by no procedure until now: `RestEntry` is the phase change, its
+  lines and the window, which Begin Rest, Wizard School, Murky Fountain,
+  Tracker and Special Envoy take, and `Citizenship` folds the window after
+  a role change that ends the player's own Act. `DarkestSecretFestival`, beside the Grand Council in
   `BannerFacePowers`, is both the Rest contribution and the power-use
   restriction, in City Wall's shape: one `PowerUseRestriction` and one
   operation restriction on placements, its waiver granted by the holder.

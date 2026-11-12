@@ -74,5 +74,7 @@ nothing about it. Mechanics are never inferred from
 rules text or handler-name fragments. Banner faces and Foundations are rule
 sources in `RuleSourceIndex` like any card. The Foundation
 faces have no implemented Rest power, so their handlers are ignored and
-recorded the same way at Rest start. Begin Rest folds the `RestStart` window,
-where the Festival's holder places its marker (`DarkestSecretFestival`).
+recorded the same way at Rest start. Every way into Rest folds the
+`RestStart` window once (`RestEntry`: Begin Rest, the powers that end the Act
+and a role change on the player's own Act), where the Festival's holder places
+its marker (`DarkestSecretFestival`).
