@@ -322,6 +322,28 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assert(refusedPath(ImperialWarbandsTaken(8), _("count") = -1)
       .endsWith(".count"))
 
+  test("a site placement names its Atlas end, its region and the site's " +
+      "printed facts, and an unknown end, an unknown region or a negative " +
+      "capacity decodes to a typed WireError"):
+    val placement = PlaceAtlasSite(AtlasEnd.Recent, Region.Hinterland,
+      capacity = 3, relicSlots = 2, Tokens(1, 2))
+    val encoded = encodedStreamThatRoundTrips("place-atlas-site",
+      Vector(recordedOperation(placement)))
+    assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
+      ujson.Obj("kind" -> "place-atlas-site", "end" -> "recent",
+        "region" -> "hinterland", "capacity" -> 3, "relicSlots" -> 2,
+        "resources" -> ujson.Obj("favor" -> 1, "secrets" -> 2)))
+    def refusedPath(edit: ujson.Value => Unit): String =
+      val injected = ujson.read(encoded).arr
+      edit(injected(0)("payload")("step")("ops")(0))
+      GameEventWire.decodeStream(ujson.write(injected)) match
+        case Left(WireError.InvalidValue(path, _)) => path
+        case other => fail(other.toString)
+    assert(refusedPath(_("end") = "middle").endsWith(".end"))
+    assert(refusedPath(_("region") = "sea").endsWith(".region"))
+    assert(refusedPath(_("capacity") = -1).endsWith(".capacity"))
+    assert(refusedPath(_("relicSlots") = -1).endsWith(".relicSlots"))
+
   test("a draw written before it had a position decodes as a draw from the " +
       "top, and a draw of no position is refused"):
     val player = PlayerId("red")
@@ -544,6 +566,8 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       UsurperLimiterRemoved,
       LineagePointsScored(LineageId("lineage:red"), 3),
       EdificeBuilt(GreatMarketCard.id, site),
+      PlaceAtlasSite(AtlasEnd.Forgotten, Region.Provinces, capacity = 2,
+        relicSlots = 1, Tokens(3, 0)),
       SuitedReserveFromBox(Suit.Beast,
         Vector(FaeMerchantCard.id)),
       TrackPawn(PlayerId("red"), PlayerId("blue")),

@@ -605,6 +605,19 @@ final case class LineagePointsScored(lineage: LineageId, points: Int)
 final case class EdificeBuilt(edifice: EdificeId, site: SiteId)
     extends PrimitiveOperation
 
+/** Takes the site at `end` of the Atlas, with the cards stored on it, and
+  * places it in the next slot, which is in `region`, as a bandit site
+  * (Foundation I, "populate"): its edifice ruined, its denizens faceup, its
+  * stored relics facedown, bandits up to `capacity`, its printed
+  * `resources`, and the relic slots its stored relics leave open, of
+  * `relicSlots`, dealt facedown from the top of the relic deck while it
+  * lasts. Applying an operation reads no catalog, so the walk that builds
+  * this copies the site's three printed facts onto it. */
+final case class PlaceAtlasSite(end: AtlasEnd, region: Region, capacity: Int,
+    relicSlots: Int, resources: Tokens) extends PrimitiveOperation:
+  require(capacity >= 0 && relicSlots >= 0,
+    "a placed site's capacity and relic slots must be non-negative")
+
 /** Records the result of the Campaign just fought as the public
   * `lastCampaignResult`, replacing the previous one.
   */
