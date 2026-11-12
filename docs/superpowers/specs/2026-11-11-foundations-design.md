@@ -1,6 +1,6 @@
 # Foundations
 
-**Status:** designed 2026-11-11. Slices 1, 2, 3a and 3b landed.
+**Status:** designed 2026-11-11. Slices 1, 2, 3a, 3b and 4 landed.
 
 **Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
@@ -78,9 +78,9 @@ Design calls the owner accepted with the slices:
 
 Faces live in `CampaignState.foundations`, and each step reads them where
 that step already lives. Game start resolves the faces (the Chronicle's,
-then erosion). The materializer branches per face for II, IV, V and VI and
-for Foundation I's fill. The setup walker gains only the one choice a face
-needs, Imperial Maps'. In play, Explore is offered while Foundation I is
+then erosion). The materializer branches per face for II, IV, V and VI.
+The setup walker gains only the one choice a face needs, Imperial Maps',
+and the fill that follows it. In play, Explore is offered while Foundation I is
 altered, and V and VI set the banners' faces, which `BannersState` already
 models.
 
@@ -345,9 +345,36 @@ always took the Recent end.
   per denizen it places, because Foundation II follows Foundation I. The
   Forgotten end takes the Atlas's tail first.
 - **After.** Pawn placement follows and offers the new sites.
-- **Log.** "Filled the map from Forgotten Sites", then a line per site.
+- **Log.** "p1 filled the map from Forgotten Sites", then "p1 placed Golden
+  Valley on the map" per site. Setup has no turn and every Setup line names
+  its player, so these name the Chancellor.
 - **Tests.** Each end; bank totals; the relic deal; pawn options; replay
   equals live.
+- **The question, decided with the owner.** The Recent option names the
+  Atlas's first site, which the rulebook makes public: "Recent Sites
+  (Buried Giant first)". The Forgotten end's site is private and is not
+  named, and nothing else about the Atlas is shown before the fill.
+- **As built.** Game start places only the Empire's sites, so the fill's
+  relic deal and its denizens' favor move from the materializer into the
+  walk; a Recent fill gives the same sites, relics and bank totals as the
+  old game start. The step (`ImperialMaps`) is declared from what game
+  start fixed, so a resumed walk finds its nodes; the pawn question reads
+  its sites when it is asked. The favor is a `Move` from the shared bank
+  beside each `PlaceAtlasSite`, so an Explore still adds none. The fill is
+  an undo barrier, as an Explore is, so the Reliquary pick before it can no
+  longer be undone once the map is filled, and with one site in the Atlas,
+  which asks nothing, never.
+- **Readings taken with the plan,** for the owner to confirm. An Atlas too
+  short to fill every slot is refused at game start, as before. A Citizen
+  standing in for an absent Chancellor answers. A relic deck that runs
+  short leaves the last relic slots open, so game start no longer refuses
+  such a game. Foundation II's favor counts a placed site's ruined edifice, as
+  "denizens" covers edifices, and is added as each site is placed, which
+  gives the same totals as counting after the fill. One answer fills every
+  slot, the Forgotten end placing the Atlas's last site in the Cradlemost
+  empty slot. With one site in the Atlas nothing is asked and the line says
+  Recent; an Empire of eight sites asks nothing. A placed site's SETUP half
+  resolves at Setup's end, as before.
 
 ## Slice 5: Grand Council
 
