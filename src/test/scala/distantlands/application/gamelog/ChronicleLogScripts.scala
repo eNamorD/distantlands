@@ -2,7 +2,7 @@ package distantlands.application.gamelog
 
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import distantlands.gameplay.chronicle.OfferCitizenship
+import distantlands.gameplay.chronicle.{OfferCitizenship, ShapeFoundation}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import distantlands.testkit.{MenuPlay, Table}
@@ -39,6 +39,22 @@ object ChronicleLogScripts:
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("throne-offered", service, p1)
 
+  /** The first game, with Foundation I on Wide Horizons: at the Beacon
+    * p1, who holds it, restores it to Imperial Maps (Foundations design,
+    * slice 7). */
+  def beaconRestoredFoundation(using munit.Location): Script =
+    val (service, acting) = atTable("beacon-restored-foundation", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .foundation(FoundationNumber.I, FoundationFace.Altered)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.withAnswers {
+      case park if park.decisionId == ShapeFoundation.decisionId =>
+        ChooseOneAnswer(ShapeFoundation.restore(FoundationNumber.I))
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("beacon-restored-foundation", service, p1)
+
   val named: Vector[(String, () => Script)] =
     Vector("chronicle-started" -> (() => chronicleStarted),
-      "throne-offered" -> (() => throneOffered))
+      "throne-offered" -> (() => throneOffered),
+      "beacon-restored-foundation" -> (() => beaconRestoredFoundation))
