@@ -29,3 +29,35 @@ object AtlasPlacement:
         s"${stored.id.value} is not a site the catalog prints"))
   yield Planned(stored, PlaceAtlasSite(end, region, printed.capacity,
     printed.relicSlots, printed.startingResources))
+
+  /** The answer that names `end`, wherever a player chooses one. */
+  def endOption(end: AtlasEnd): DecisionOptionRef.Button =
+    DecisionOptionRef.Button(end.key)
+
+  /** The end an answer names, if it names one. */
+  def endOf(ref: DecisionOptionRef): Option[AtlasEnd] =
+    AtlasEnd.all.find(endOption(_) == ref)
+
+  /** The words of `end`'s option. */
+  def endLabel(end: AtlasEnd): String = end match
+    case AtlasEnd.Recent => "Recent Sites"
+    case AtlasEnd.Forgotten => "Forgotten Sites"
+
+  /** The suit of a card in a site's denizen slots, an edifice's included:
+    * the bank Foundation II adds its favor to. */
+  def suitOf(catalog: ExecutableCatalog, card: SiteDenizenState)
+      : Option[Suit] = card match
+    case EdificeState(id, _, _) => catalog.edifice(id).map(_.suit)
+    case DenizenState(id, _, _) => catalog.denizen(id).map(_.suit)
+
+  /** Foundation II's favor for a site Imperial Maps places: 1 from the
+    * shared bank to the matching suit's bank per card the site puts in its
+    * denizen slots, its ruined edifice included, one move per suit in suit
+    * order. An Explore adds none: the count is a setup step. */
+  def suitFavor(catalog: ExecutableCatalog, planned: Planned): Vector[Move] =
+    val suits = planned.stored.placedDenizens.flatMap(suitOf(catalog, _))
+    Suit.all.map(suit => suit -> suits.count(_ == suit)).collect {
+      case (suit, count) if count > 0 => Move(Piece.Favor(count),
+        PositionedLocation(Location.SharedBank),
+        PositionedLocation(Location.FavorBank(suit)))
+    }

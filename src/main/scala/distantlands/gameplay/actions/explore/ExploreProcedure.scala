@@ -90,7 +90,7 @@ object ExploreProcedure:
 
   /** The two answers of the `explore.end` decision. */
   def endOption(end: AtlasEnd): DecisionOptionRef.Button =
-    DecisionOptionRef.Button(end.key)
+    AtlasPlacement.endOption(end)
 
   private val notes = NoteSet(ProcedureNotes.id(ActionRef.Explore))
   /** "Explored Recent Site: Found Deep Woods". */
@@ -153,7 +153,7 @@ object ExploreProcedure:
   def chosenEnd(answered: Vector[Answered]): AtlasEnd =
     answered.reverse.collectFirst {
       case Answered(`endDecisionId`, ChooseOneAnswer(ref), _) => ref
-    }.flatMap(ref => AtlasEnd.all.find(endOption(_) == ref))
+    }.flatMap(AtlasPlacement.endOf)
       .getOrElse(AtlasEnd.Recent)
 
   /** Tree closes only over the command-stable actor; everything else is
@@ -201,7 +201,7 @@ object ExploreProcedure:
       if ready.game.campaign.atlas.sites.sizeIs < 2 then Vector.empty
       else Vector(Decide(endDecisionId, actor, DecisionQuery.ChooseOne(
         AtlasEnd.all.map(end => DecisionOption.Button(endOption(end),
-          endLabel(end))), heading = Some(endHeading)))))
+          AtlasPlacement.endLabel(end))), heading = Some(endHeading)))))
 
     /** The site leaves its end of the Atlas for the next slot, and the
       * explorer's pawn is placed there. This is not a Travel. */
@@ -246,7 +246,3 @@ object ExploreProcedure:
       Repeat((ready, pending) => !succeeded(ready) && !stopped(pending),
         round),
       afterLoop)
-
-  private def endLabel(end: AtlasEnd): String = end match
-    case AtlasEnd.Recent => "Recent Sites"
-    case AtlasEnd.Forgotten => "Forgotten Sites"
