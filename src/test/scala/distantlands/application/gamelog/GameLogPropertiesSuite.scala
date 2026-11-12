@@ -61,7 +61,8 @@ class GameLogPropertiesSuite extends munit.FunSuite:
     }
 
   private val tagged = Set("search", "play-facedown-adviser", "recover",
-    "forge", "travel", "muster", "trade", "challenge", "campaign")
+    "forge", "travel", "muster", "trade", "challenge", "campaign",
+    "explore")
 
   test("an action with a tag opens with it, once; no other action has one"):
     scripts.foreach { script =>
@@ -242,7 +243,7 @@ class GameLogPropertiesSuite extends munit.FunSuite:
     assertEquals(noting.map(_.key),
       Vector("search", "play-facedown-adviser", "recover", "forge", "travel",
         "take-wealth",
-        "muster", "trade", "challenge", "place-banner-resource",
+        "muster", "trade", "challenge", "explore", "place-banner-resource",
         "negotiation", "campaign", "peek-site-relics", "reveal-owned-relic",
         "move-warbands", "transfer-warbands", "self-exile", "finish-rest",
         "oathkeeper",

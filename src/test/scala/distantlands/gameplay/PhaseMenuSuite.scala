@@ -179,7 +179,8 @@ class PhaseMenuSuite extends munit.FunSuite:
         act(ActionRef.SelfExile))) :+ PhaseMenu.Menu.Act.endingOption)
     assertEquals(ActOffers.all.map(_.ref.wireId), Vector("search", "travel",
       "campaign", "muster", "trade.favor", "trade.secret", "forge",
-      "recover", "challenge", "place-banner-resource", "negotiation",
+      "recover", "challenge", "explore", "place-banner-resource",
+      "negotiation",
       "play-facedown-adviser", "peek-site-relics", "reveal-owned-relic",
       "move-warbands", "transfer-warbands", "self-exile"))
 

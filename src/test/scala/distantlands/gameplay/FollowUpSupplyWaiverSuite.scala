@@ -83,11 +83,12 @@ class FollowUpSupplyWaiverSuite extends munit.FunSuite:
     import distantlands.gameplay.walker.FollowUpSupplyWaiver.costWindow
     assertEquals(Vector(ActionRef.Campaign, ActionRef.Travel, ActionRef.Search,
       ActionRef.Muster, ActionRef.Trade, ActionRef.Forge, ActionRef.Challenge,
-      ActionRef.Recover).map(costWindow), Vector(
+      ActionRef.Recover, ActionRef.Explore).map(costWindow), Vector(
       Some(PowerWindow.CampaignCost), Some(PowerWindow.TravelCost),
       Some(PowerWindow.SearchCost), Some(PowerWindow.MusterCost),
       Some(PowerWindow.TradeCost), Some(PowerWindow.ForgeCost),
-      Some(PowerWindow.ChallengeCost), Some(PowerWindow.RecoverCost)))
+      Some(PowerWindow.ChallengeCost), Some(PowerWindow.RecoverCost),
+      Some(PowerWindow.ExploreCost)))
 
   test("a queued Recover spends no Supply on its roll"):
     // p1 has no Supply, so a Recover started normally cannot pay its roll.

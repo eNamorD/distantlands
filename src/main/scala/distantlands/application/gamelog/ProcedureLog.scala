@@ -10,6 +10,7 @@ import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
 import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.actions.forge.ForgeProcedure
 import distantlands.gameplay.actions.minor.{MinorActionProcedures,
   WarbandTransfers}
@@ -180,6 +181,15 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       narrated = Vector(Told(RecoverProcedure.choiceDecisionId),
         Told(RecoverProcedure.relicDecisionId,
           Some(RecoverProcedure.recovered))))
+    // The explored line names the end the site came from, in one of two
+    // wordings, so no single key tells that pick. The continue-or-stop
+    // answer is told by the band's "Continued exploring" line and, for a
+    // stop, by the failed line.
+    case ActionRef.Explore => ProcedureLog(tag = Some("Explore"),
+      lines = ActionLineSource.Notes(),
+      anchor = starts.opensDicePool, continued = starts.continuedExplore,
+      narrated = Vector(Told(ExploreProcedure.choiceDecisionId),
+        Told(ExploreProcedure.endDecisionId)))
     // The payment line tells the assignment, in one of three wordings, so
     // no single key names it.
     case ActionRef.Forge => ProcedureLog(tag = Some("Forge"),

@@ -33,12 +33,13 @@ object FollowUpSupplyWaiver extends ContributingPower:
       case ActionRef.Forge => Some(PowerWindow.ForgeCost)
       case ActionRef.Challenge => Some(PowerWindow.ChallengeCost)
       case ActionRef.Recover => Some(PowerWindow.RecoverCost)
+      case ActionRef.Explore => Some(PowerWindow.ExploreCost)
       case _ => None
 
   private val windows: Vector[PowerWindow] = Vector(PowerWindow.CampaignCost,
     PowerWindow.TravelCost, PowerWindow.SearchCost, PowerWindow.MusterCost,
     PowerWindow.TradeCost, PowerWindow.ForgeCost, PowerWindow.ChallengeCost,
-    PowerWindow.RecoverCost)
+    PowerWindow.RecoverCost, PowerWindow.ExploreCost)
 
   lazy val contributions: Map[PowerWindow, Vector[Contribution]] =
     windows.map(window => window -> Vector[Contribution](Transform(

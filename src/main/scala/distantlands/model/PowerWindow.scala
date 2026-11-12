@@ -9,9 +9,13 @@ enum MajorActionType(val key: String):
   case Forge extends MajorActionType("forge")
   case Recover extends MajorActionType("recover")
   case Challenge extends MajorActionType("challenge")
+  /** The action Wide Horizons, altered Foundation I, adds (Foundations
+    * design, slice 3). No card prints a modifier for it. */
+  case Explore extends MajorActionType("explore")
 object MajorActionType:
   val all: Vector[MajorActionType] = Vector(
-    Search, Travel, Campaign, Muster, Trade, Forge, Recover, Challenge)
+    Search, Travel, Campaign, Muster, Trade, Forge, Recover, Challenge,
+    Explore)
 
 /** A procedure point, not a persistence or relevance category. The stable key
   * is presentation/serialization data; semantic validation uses the typed
@@ -29,6 +33,7 @@ object PowerWindow:
   sealed trait ForgeWindow extends PowerWindow { final val associatedMajorAction: Option[MajorActionType] = Some(MajorActionType.Forge) }
   sealed trait RecoverWindow extends PowerWindow { final val associatedMajorAction: Option[MajorActionType] = Some(MajorActionType.Recover) }
   sealed trait ChallengeWindow extends PowerWindow { final val associatedMajorAction: Option[MajorActionType] = Some(MajorActionType.Challenge) }
+  sealed trait ExploreWindow extends PowerWindow { final val associatedMajorAction: Option[MajorActionType] = Some(MajorActionType.Explore) }
   sealed trait OtherWindow extends PowerWindow { final val associatedMajorAction: Option[MajorActionType] = None }
 
   case object SearchActionEligibility extends SearchWindow { val key = "search.action-eligibility" }
@@ -171,6 +176,16 @@ object PowerWindow:
     * rerolls after it. */
   case object RecoverRoll extends RecoverWindow:
     val key = "recover.roll"
+  /** Explore's modifier decision. No card prints an Explore modifier, so
+    * nothing is offered there yet (Foundations design, slice 3). */
+  case object ExploreModifierSelection extends ExploreWindow:
+    val key = "explore.modifier-selection"
+  /** The Supply each Explore roll costs. */
+  case object ExploreCost extends ExploreWindow { val key = "explore.cost" }
+  /** Each Explore roll, before its reroll choice. Explore borrows only
+    * Recover's dice: a power that names Recover hooks `RecoverRoll`, never
+    * this (Foundations ruling 2). */
+  case object ExploreRoll extends ExploreWindow { val key = "explore.roll" }
   case object RestStart extends OtherWindow { val key = "rest.start" }
   case object RestReturnFavor extends OtherWindow { val key = "rest.return-favor" }
   /** Where the placing player's site is fixed for this player's Setup turn

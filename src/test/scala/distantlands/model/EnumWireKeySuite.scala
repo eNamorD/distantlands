@@ -10,7 +10,8 @@ class EnumWireKeySuite extends munit.FunSuite:
     assertEquals(Region.all.map(_.key),
       Vector("cradle", "provinces", "hinterland"))
     assertEquals(MajorActionType.all.map(_.key), Vector("search", "travel",
-      "campaign", "muster", "trade", "forge", "recover", "challenge"))
+      "campaign", "muster", "trade", "forge", "recover", "challenge",
+      "explore"))
 
   test("triggered procedure keys stay as journaled walker events spell them"):
     assertEquals(TriggeredProcedureRef.all.map(_.key),

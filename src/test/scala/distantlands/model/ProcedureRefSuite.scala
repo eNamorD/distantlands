@@ -16,7 +16,7 @@ class ProcedureRefSuite extends munit.FunSuite:
     // journal and sent by clients, so a renamed key breaks saved games.
     assertEquals(ActionRef.all.map(_.key),
       Vector("search", "play-facedown-adviser", "recover", "forge",
-        "travel", "take-wealth", "muster", "trade", "challenge",
+        "travel", "take-wealth", "muster", "trade", "challenge", "explore",
         "place-banner-resource", "negotiation", "campaign",
         "peek-site-relics", "reveal-owned-relic", "move-warbands",
         "transfer-warbands", "self-exile"))

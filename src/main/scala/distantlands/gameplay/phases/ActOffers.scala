@@ -43,6 +43,7 @@ object ActOffers:
     major(ActionRef.Forge, "Forge"),
     major(ActionRef.Recover, "Recover"),
     major(ActionRef.Challenge, "Challenge"),
+    major(ActionRef.Explore, "Explore"),
     minor(ActionRef.PlaceBannerResource,
       "Place favor or secrets on a banner"),
     minor(ActionRef.Negotiation, "Negotiate"),
@@ -102,6 +103,7 @@ object ActOffers:
       case (ActionRef.Forge, _) => "Cannot forge here"
       case (ActionRef.Recover, _) => "Cannot recover here"
       case (ActionRef.Challenge, _) => "Cannot challenge now"
+      case (ActionRef.Explore, _) => "Cannot explore now"
       case (ActionRef.PlaceBannerResource, _) => "No banner to place on"
       case (ActionRef.Negotiation, _) => "Cannot negotiate now"
       case _ => "Cannot start now"
