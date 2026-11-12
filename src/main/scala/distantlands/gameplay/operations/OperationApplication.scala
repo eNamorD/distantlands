@@ -254,6 +254,8 @@ private[gameplay] object OperationApplication:
           points))
       case (result, EdificeBuilt(edifice, site)) =>
         result.flatMap(ChronicleStateOperations.edificeBuilt(_, edifice, site))
+      case (result, FoundationRestored(number)) =>
+        result.flatMap(ChronicleStateOperations.foundationRestored(_, number))
       case (result, placement: PlaceAtlasSite) =>
         result.flatMap(AtlasOperations.placeSite(_, placement))
       case (result, RecordCampaignResult(fact)) =>

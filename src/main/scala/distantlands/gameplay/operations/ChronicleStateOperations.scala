@@ -109,3 +109,14 @@ private[operations] object ChronicleStateOperations:
         map = current.map.copy(sites = current.map.sites.updated(site,
           state.copy(denizens = state.denizens :+
             EdificeState(edifice, EdificeSide.Intact, Tokens.empty)))))))
+
+  /** Only an altered face turns back: restoring a normal face would be a
+    * doubled or reordered journal. */
+  def foundationRestored(ready: ReadyGame, number: FoundationNumber)
+      : Either[OperationError, ReadyGame] =
+    val foundations = ready.game.campaign.foundations
+    Either.cond(
+      foundations.get(number).exists(_.face == FoundationFace.Altered),
+      ready.updateCampaign(_.copy(foundations = foundations.updated(number,
+        FoundationState(FoundationFace.Normal, Set.empty)))),
+      InvalidDescription(s"Foundation $number is not altered"))

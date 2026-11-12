@@ -605,6 +605,11 @@ final case class LineagePointsScored(lineage: LineageId, points: Int)
 final case class EdificeBuilt(edifice: EdificeId, site: SiteId)
     extends PrimitiveOperation
 
+/** Turns Foundation `number` from its altered face to its normal face and
+  * clears its alteration sources (Shape Foundation, CR p. 39). */
+final case class FoundationRestored(number: FoundationNumber)
+    extends PrimitiveOperation
+
 /** Takes the site at `end` of the Atlas, with the cards stored on it, and
   * places it in the next slot, which is in `region`, as a bandit site
   * (Foundation I, "populate"): its edifice ruined, its denizens faceup, its
