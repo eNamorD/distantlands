@@ -3,6 +3,7 @@ package distantlands.gameplay.chronicle
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
@@ -132,6 +133,47 @@ class ShapeFoundationSuite extends munit.FunSuite:
     assertEquals(restoredLines(done), Vector.empty)
     assertEquals(recordedChronicle(done).foundations,
       wideHorizonsAndPublicAmbitions.ready.game.campaign.foundations)
+
+  test("the next game starts from the journaled Chronicle with the " +
+      "restored face normal"):
+    // The game EvolvedChronicleFixture wins for real, whose Chronicle keeps
+    // an Empire, with Foundation I on Wide Horizons before p1 wakes.
+    val wideHorizonsWakes = Table.from(Outcomes.ready(
+      EvolvedChronicleFixture.usurperWakes))
+      .foundation(FoundationNumber.I, FoundationFace.Altered).state
+    val won = EvolvedChronicleFixture.gameWonFrom(wideHorizonsWakes)
+    val at = ChronicleWalk.walkedTo(rules, accepted(rules.resolveWalker(
+      won.state, Table.p1, ChronicleBeginProcedure.decisionId,
+      ChooseOneAnswer(ChronicleBeginProcedure.start))),
+      ShapeFoundation.decisionId)
+    val holder = ChronicleWalk.parked(at.state).get.owner
+    val restored = accepted(rules.resolveWalker(at.state, holder,
+      ShapeFoundation.decisionId,
+      ChooseOneAnswer(ShapeFoundation.restore(FoundationNumber.I))))
+    val record = recordedChronicle(ChronicleWalk.answeringEverything(rules,
+      OathTransition(restored.state, at.events ++ restored.events)))
+    val next = accepted(GameStartRules.evolve(catalog, record,
+      LaterGameFixture.orders(record, Table.p1)))
+    assertEquals(next.game.campaign.foundations(FoundationNumber.I),
+      FoundationState(FoundationFace.Normal, Set.empty))
+
+  test("a source legacy that no lineage holds does not stop the restore"):
+    val unheld = tasksAssigned.update(_.updateCampaign(campaign =>
+      campaign.copy(foundations = campaign.foundations.updated(
+        FoundationNumber.I,
+        FoundationState(FoundationFace.Altered, Set(needle))))))
+    val walked = walkedToShapeFoundation(unheld)
+    assertEquals(options(walked), Vector(
+      DecisionOption.Button(ShapeFoundation.keep,
+        "Keep every foundation as it lies"),
+      DecisionOption.Button(ShapeFoundation.restore(FoundationNumber.I),
+        "Restore Foundation I to Imperial Maps")))
+    val restored = accepted(rules.resolveWalker(walked.state, p3,
+      ShapeFoundation.decisionId,
+      ChooseOneAnswer(ShapeFoundation.restore(FoundationNumber.I))))
+    assertEquals(Outcomes.ready(restored.state).game.campaign
+      .foundations(FoundationNumber.I),
+      FoundationState(FoundationFace.Normal, Set.empty))
 
   test("a face an active legacy alters is shown unavailable with the " +
       "legacy's name, and cannot be restored; an inactive legacy's face can"):
