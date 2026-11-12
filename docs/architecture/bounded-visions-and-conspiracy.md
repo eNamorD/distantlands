@@ -55,9 +55,9 @@ target is checked again against the live legal targets
 (`ConspiracyUnavailable`). The answer is a recorded walker step and the take
 is recorded core operations, so replay applies them without recalculating.
 
-Foundation III's faces, Empire-only Vision rules, and the Festival banner
-face have no behaviour. A Conspiracy that takes the People's Favor adjusts it
-by its face's right ribbon (`BannerRules.peoplesFavorRibbon`). `RuleSourceIndex` lists the
+Foundation III's faces and Empire-only Vision rules have no behaviour. A
+Conspiracy that takes a banner adjusts it by its face's right ribbon
+(`BannerRules.peoplesFavorRibbon`, `BannerRules.darkestSecretRibbon`). `RuleSourceIndex` lists the
 handler ids of those faces and of each Foundation's face in use
 (`catalog.FoundationCards`). An applicable handler
 the engine does not support is ignored, not blocking, and nothing records

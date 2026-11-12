@@ -78,9 +78,6 @@ Left behind by the
 
 - [ ] **Foundations.** Every face but Foundation III's works: the Beacon's
   Shape Foundation.
-- [ ] **The Festival banner face.** Altered Foundation VI turns the
-  Darkest Secret to it. Its id is in `RuleSourceIndex`, and the face has
-  no behaviour.
 
 ### Phase - Campaign battle summary
 

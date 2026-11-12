@@ -1,6 +1,6 @@
 # Foundations
 
-**Status:** designed 2026-11-11. Slices 1, 2, 3a, 3b, 4 and 5 landed.
+**Status:** designed 2026-11-11. Slices 1, 2, 3a, 3b, 4, 5 and 6 landed.
 
 **Builds on** the [Chronicle steps design](2026-10/2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09/2026-09-21-chronicle-setup-design.md) and
@@ -431,7 +431,8 @@ always took the Recent end.
 
 - **Setup.** An altered VI sets Darkest Secret to `Festival`. The Wandering
   Flame's move and place actions go with that face; the action that places
-  secrets on the banner stays. Its refusal goes.
+  secrets on the banner stays. Its refusal goes, the last one: game start
+  now refuses no altered face.
 - **Marker.** `DarkestSecretState.festival: Option[SiteId]`, projected and
   drawn on the map.
 - **Rest.** At `RestStart` the holder places the marker at their pawn's
@@ -442,11 +443,66 @@ always took the Recent end.
   It is a power-use restriction of the holder with consent: the holder is
   the granter, and bandits always enforce. Each refused option shows
   disabled with its reason.
-- **Removal.** The Challenge ribbon that removes the festival marker clears
-  it; the plan reads the face's ribbons from `banners.pdf`, as in slice 5.
+- **Removal.** Both of the face's ribbons, read from
+  `reference/2026-03-17-new-foundations-rev1/banners.pdf`, end with the
+  remove-festival icon. The left (Challenge) prints "ONE" over the burn
+  icon, then "REST" over the return-secrets icon: one secret burns, and the
+  rest go to the previous holder, or burn when the banner was in the shared
+  bank. The right (Campaign) prints "HALF" over the burn icon: half the
+  secrets, rounded down, burn, and the rest stay on the banner. The
+  Wandering Flame prints "HALF" over the scatter icon and "REST" over the
+  return-secrets icon on the left, and "ALL" over the burn icon on the
+  right.
 - **Tests.** Placement each Rest and moving with the pawn; each blocked use;
   persistent powers still working; consent waiving it; a Challenge clearing
   it; a golden log.
+- **As built.** Game start reads Foundation VI from the faces it resolved
+  (`FirstGameSetupMaterializer`), so the marker starts beside the map, and
+  `StartingFoundations` has no refusal left. Begin Rest now folds the
+  `RestStart` window, declared since the Rest walker and folded by no
+  procedure until now. `DarkestSecretFestival`, beside the Grand Council in
+  `BannerFacePowers`, is both the Rest contribution and the power-use
+  restriction, in City Wall's shape: one `PowerUseRestriction` and one
+  operation restriction on placements, its waiver granted by the holder.
+  The marker moves by a journaled `SetFestivalMarker`. Challenge walks the
+  left ribbon (`ChallengeRibbon`), and the marker's removal after the ribbon
+  window, so Secret Testament, which replaces the ribbon's resources there,
+  leaves it; a Raid and the Conspiracy walk the right ribbon
+  (`BannerRules.darkestSecretRibbon`). `ChallengeProcedure.supportedFaces`
+  and `OathViolation.UnsupportedBannerState` are gone. The projection gives
+  each site a required `festival` flag, and the World pane ends that site's
+  pawn row with a Festival pill.
+- **Readings taken with the plan,** for the owner to confirm. Every other
+  player is the holder's enemy, whatever their role. "Their powers" are the
+  powers of the denizens at the marked site, edifices included, not the
+  enemies' own powers used there; relics and the site's own powers are
+  untouched, and a denizen's action modifier is one of its powers.
+  "Persistent" is the power as printed. Placing favor or secrets on a
+  denizen is what City Wall's ban reads: a cost paid onto it on the payer's
+  turn, a gift onto it, or a forced placement from the placer's board, and
+  a persistent power whose cost places on it. Consent is asked outside a
+  Campaign only. The marker starts beside the map and first goes on it at
+  the holder's first Rest; each Rest places it at the pawn's site, even
+  where it already lies. A holder with no pawn on the map places nothing.
+  With nobody holding the banner the marker guards nothing and stays where
+  it lies. A take that walks no ribbon (Wizard's Conclave, or Hall of
+  Mockery and Lost Guardians moving the banner to the shared bank) leaves
+  the marker, which then guards for the new holder. "ONE" on an empty banner
+  burns nothing. Under Secret Testament the holder takes every secret, and
+  the marker still leaves the map. A first game with an altered VI starts
+  the Festival in the shared bank. An automatic power of a guarded card is
+  refused for an enemy like any other non-persistent use, even one that
+  harms them: an enemy arriving at the festival waits at Boiling Lake's
+  step, and the Lake stays deactivated once the holder refuses. Jinx at the
+  festival, though persistent, is refused to an enemy who rules it, since
+  its secret would go onto the card.
+- **Open for the owner.** The Conspiracy (`OATH-V1-NF`) says to "adjust its
+  [favor]/[secret] as shown by its right ribbon". Read literally, only the
+  ribbon's HALF burn adjusts favor or secrets, so the text does not decide
+  whether a Conspiracy that takes the Festival also removes the festival
+  marker. The code removes it, as a Raid does; if the owner rules that it
+  stays, `ConspiracyWhenPlayed` burns the half without
+  `BannerRules.festivalRemoval`.
 
 ## Slice 7: Shape Foundation
 
