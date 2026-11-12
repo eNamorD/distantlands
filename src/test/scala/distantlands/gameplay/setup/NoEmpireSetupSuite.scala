@@ -225,7 +225,8 @@ class NoEmpireSetupSuite extends munit.FunSuite:
     assertEquals(current.title, OathkeeperState(None, TitleSide.Oathkeeper))
     assertEquals(current.banners, BannersState(
       PeoplesFavorState(PeoplesFavorFace.Mob, None, 1),
-      DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)))
+      DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1,
+        festival = None)))
     assertEquals(current.players.map(_.board),
       Vector.fill(3)(PlayerBoardState(1, 1, 0, 3, SupplyTrack.full)))
 

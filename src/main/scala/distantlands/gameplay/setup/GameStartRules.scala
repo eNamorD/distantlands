@@ -14,8 +14,8 @@ import distantlands.model.OathViolation._
  *
  * Validation here is only what Setup itself needs: known and unique ids
  * across every Chronicle field (`ChronicleAccounting`), how a later game
- * starts, with an Empire or with none (`EmpireSetupRules`), foundation
- * faces that work (`StartingFoundations`), enough cards to deal, and, in a
+ * starts, with an Empire or with none (`EmpireSetupRules`), the foundation
+ * faces it starts with (`StartingFoundations`), enough cards to deal, and, in a
  * first game, one edifice per Homeland in play (Empire ruling R26). The old
  * plan's suit-count and Vision-packet audit is the generator's own job now
  * (`FirstGameChronicleGenerator.validate`), checked once at generation
@@ -87,21 +87,19 @@ object GameStartRules:
       _ <- validateParticipants(orders)
       mode <- EmpireSetupRules.resolve(chronicle, orders)
       // Setup With No Empire erodes the faces before the foundations are
-      // resolved, so an eroded face is never refused.
+      // resolved. Every face of every foundation starts a game.
       faces = mode match
         case _: SetupMode.NoEmpire =>
           StartingFoundations.eroded(StartingFoundations.of(chronicle))
         case _ => StartingFoundations.of(chronicle)
-      _ <- StartingFoundations.refusal(faces)
-        .map(UnsupportedChronicle(_)).toLeft(())
       slots = atlasSlots(mode, faces)
       _ <- Either.cond(chronicle.atlasBox.size >= slots, (),
         UnsupportedChronicle(
           s"at least $slots atlas sites are required, got ${chronicle.atlasBox.size}"))
       // Only a first game's sites are placed here; Imperial Maps fills its
       // slots in Setup's walk.
-      atlasSites = if mode == SetupMode.FirstGame then
-          chronicle.atlasBox.take(slots)
+      atlasSites =
+        if mode == SetupMode.FirstGame then chronicle.atlasBox.take(slots)
         else Vector.empty
       // A later game keeps every card stored at its sites (R27); a first
       // game's sites hold only their Homeland edifices (R26).
@@ -113,8 +111,8 @@ object GameStartRules:
       _ <- Either.cond(
         chronicle.worldDeck.size >= deal.needed, (),
         UnsupportedChronicle("not enough world-deck cards to deal"))
-      homelands <- if mode == SetupMode.FirstGame then
-          homelandEdifices(catalog, atlasSites)
+      homelands <-
+        if mode == SetupMode.FirstGame then homelandEdifices(catalog, atlasSites)
         else Right(Vector.empty)
       _ <- Either.cond(chronicle.relicDeck.size >=
           atlasSites.map(emptyRelicSlots(catalog, _)).sum,

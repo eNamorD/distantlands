@@ -115,15 +115,10 @@ class GameStartRulesSuite extends munit.FunSuite:
     assertEquals(ready.game.campaign.foundations(FoundationNumber.III),
       FoundationState(FoundationFace.Altered, Set(known)))
 
-  test("game start refuses each altered face no slice has brought in yet, " +
-      "naming the face and the slice it arrives with"):
-    def refusalFor(number: FoundationNumber) = rejected(GameStartRules.evolve(
-      catalog, chronicle.copy(foundations = Map(number -> altered)), orders))
-    def unsupported(face: String, slice: Int) =
-      OathViolation.UnsupportedChronicle(
-        s"$face is not supported yet: it arrives with Foundations slice $slice")
-    assertEquals(refusalFor(FoundationNumber.VI),
-      unsupported("Festival (altered Foundation VI)", 6))
+  test("game start accepts an altered Foundation VI"):
+    val ready = accepted(GameStartRules.evolve(catalog, chronicle.copy(
+      foundations = Map(FoundationNumber.VI -> altered)), orders))
+    assertEquals(ready.game.campaign.foundations(FoundationNumber.VI), altered)
 
   test("game start accepts an altered Foundation II"):
     val ready = accepted(GameStartRules.evolve(catalog, chronicle.copy(
@@ -143,16 +138,14 @@ class GameStartRulesSuite extends munit.FunSuite:
       OathViolation.UnsupportedChronicle(
         "the world deck is not the rest of the deal"))
 
-  test("with several altered faces, game start names the first refused one " +
-      "in foundation order"):
-    // II, III and V are accepted, so VI is the first refused.
+  test("game start accepts several altered faces at once and keeps each"):
     val several = chronicle.copy(foundations = Map(
       FoundationNumber.VI -> altered, FoundationNumber.III -> altered,
       FoundationNumber.II -> altered, FoundationNumber.V -> altered))
-    assertEquals(rejected(GameStartRules.evolve(catalog, several, orders)),
-      OathViolation.UnsupportedChronicle("Festival (altered " +
-        "Foundation VI) is not supported yet: it arrives with Foundations " +
-        "slice 6"))
+    val ready = accepted(GameStartRules.evolve(catalog, several, orders))
+    assertEquals(Vector(FoundationNumber.II, FoundationNumber.III,
+      FoundationNumber.V, FoundationNumber.VI).map(
+        ready.game.campaign.foundations), Vector.fill(4)(altered))
 
   test("a later game with a seated Chancellor starts"):
     val record = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))

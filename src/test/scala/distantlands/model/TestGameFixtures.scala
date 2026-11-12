@@ -140,7 +140,8 @@ object TestGameFixtures:
       DarkestSecretState(
         DarkestSecretFace.WanderingFlame,
         holder = None,
-        secrets = 1
+        secrets = 1,
+        festival = None
       )
     ),
     title = OathkeeperState(None, TitleSide.Oathkeeper),
