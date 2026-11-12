@@ -108,7 +108,7 @@ The player holding the Beacon task resolves these steps.
    - Digital: the holder chooses the suit for three draws, then two, then one. Each chosen suit's boxed denizens join its live reserve before the draw. A suit still short after the return draws what remains ([ruling 15](ambiguities.md#chronicle-rulings)).
 2. **Welcome a Stranger.** Look at the drawn denizens. Keep one as a facedown starting adviser for the next game, and add the other five facedown to the world deck. **Actor:** the Beacon task holder.
 3. **Shape Foundation.** You may flip one foundation setup card from its altered side to its normal side, unless an active legacy is altering it. **Actor:** the Beacon task holder.
-   - Digital: an empty window until Foundations exist.
+   - Digital: the holder is asked whenever a foundation lies altered. Keep every foundation comes first, then each altered face, I to VI. A face an active legacy alters is shown unavailable, naming the legacy, even when every altered face is held and only Keep may be chosen ([Foundations rulings](ambiguities.md#foundations-rulings), items 1 and 14). The restored face is normal in the journaled Chronicle, with no alteration source, and one log line names it: "p3 restored Foundation I to Imperial Maps".
 
 ### 5. The Stars
 
