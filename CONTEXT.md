@@ -287,7 +287,10 @@ _Avoid_: board fixture, base state, initial ready
 One of a foundation setup card's two sides, normal or altered. The campaign
 keeps one for each of the six cards, and the next game's Setup reads them.
 Shape Foundation restores an altered face to normal.
-_Avoid_: side (a banner has sides), variant
+The same word names the two faces of a banner, the People's Favor or the
+Darkest Secret.
+_Avoid_: side (an edifice, the Oathkeeper title and a secret have sides),
+variant
 
 **Alteration source**:
 A legacy that keeps a foundation's face altered. Shape Foundation cannot
@@ -327,7 +330,8 @@ _Avoid_: festival token, festival site
 **Set-aside Reliquary**:
 The Reliquary of a game Setup With No Empire started. Its relics stay in the
 campaign all game, no one can take one in play, and the Chronicle's Stock
-Reliquary step adds to them.
+Reliquary step adds to them. When an Exile wins, the Sun's Crown Chancellor
+step discards them with the rest of the Reliquary.
 _Avoid_: discarded Reliquary, empty Reliquary
 
 ### Undo

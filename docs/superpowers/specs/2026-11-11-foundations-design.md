@@ -546,7 +546,7 @@ The slice's last task, for the whole batch:
 
 - `docs/ROADMAP.md`: **Phase - Foundations** is deleted with the batch, and
   the **Grand Council and Festival banner faces** item goes with slice 6.
-- `docs/rules/chronicle.md`, `docs/rules/ambiguities.md` (rulings 1 to 3,
+- `docs/rules/chronicle.md`, `docs/rules/ambiguities.md` (rulings 1 to 5,
   the readings of slices 2 to 7, and R27 closed) and
   `docs/rules/implementation-traceability.md`.
 - `CONTEXT.md`: Explore, Hintermost, empty slot, Festival marker.
