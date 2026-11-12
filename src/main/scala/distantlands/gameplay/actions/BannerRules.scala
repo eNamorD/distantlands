@@ -5,7 +5,8 @@ import distantlands.model._
 
 /** Shared printed banner invariants. The People's Favor's ribbons, on
   * both faces, use the printed deterministic leftmost policy. Wandering
-  * Flame site ties belong to the player.
+  * Flame site ties belong to the player. The Festival's ribbons remove its
+  * marker from the map.
   */
 object BannerRules:
   def holder(current: CurrentGameState, banner: Banner): Option[PlayerId] = banner match
@@ -88,3 +89,25 @@ object BannerRules:
       raidFavorReturn(banks, favor.favor - kept).map(suit =>
         Move(Piece.Favor(1), banner,
           PositionedLocation(Location.FavorBank(suit))))
+
+  /** The Darkest Secret's right ribbon, as a Raid and the Conspiracy
+    * adjust it: the Wandering Flame prints ALL over the burn icon, so every
+    * secret on it burns; the Festival prints HALF over the burn icon, then
+    * the remove-festival icon, so half its secrets, rounded down, burn and
+    * the marker leaves the map. What is not burnt stays on the banner.
+    * `taker` burns them. */
+  def darkestSecretRibbon(ready: ReadyGame, taker: PlayerId)
+      : Vector[CoreOperation] =
+    val secret = ready.game.current.banners.darkestSecret
+    val burned = secret.active match
+      case DarkestSecretFace.WanderingFlame => secret.secrets
+      case DarkestSecretFace.Festival => secret.secrets / 2
+    Option.when(burned > 0)(Burn.secrets(burned,
+      PositionedLocation(Location.OnBanner(Banner.DarkestSecret)),
+      Some(taker)): CoreOperation).toVector ++ festivalRemoval(ready)
+
+  /** The remove-festival icon both Festival ribbons end with: the marker
+    * leaves the map, when it is on it. */
+  def festivalRemoval(ready: ReadyGame): Vector[CoreOperation] =
+    Option.when(ready.game.current.banners.darkestSecret.festival.nonEmpty)(
+      SetFestivalMarker(None)).toVector

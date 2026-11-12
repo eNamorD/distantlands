@@ -149,6 +149,29 @@ class VisionPlaySuite extends munit.FunSuite:
     assertEquals(ActPowerHarness.replayed(rules, initial,
       started.events ++ parked.events ++ resolved.events), after)
 
+  test("a Conspiracy that takes the Festival burns half its secrets, " +
+      "rounded down, by its right ribbon and removes the marker"):
+    // p2, the enemy, shares p1's site and holds the Darkest Secret on its
+    // Festival face with 3 secrets, its marker at their site.
+    val enemy = p2
+    val initial = atHome.pawn(enemy, at = home)
+      .darkestSecret(Some(enemy), secrets = 3,
+        face = DarkestSecretFace.Festival).festival(home)
+      .worldDeckTop(conspiracy).ready
+    val started = accepted(
+      SearchPlay.searched(rules, OathState.Ready(initial), actor))
+    val parked = accepted(
+      rules.resolveWalker(started.state, actor, placeId(conspiracy),
+        faceup(started.state)))
+    val resolved = accepted(rules.resolveWalker(parked.state, actor,
+      "cardplay.conspiracy.target", DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.Banner(Banner.DarkestSecret))))
+    val after = Outcomes.ready(resolved.state)
+    // 3 / 2 = 1 burns, and 2 stay on the banner.
+    assertEquals(after.game.current.banners.darkestSecret,
+      DarkestSecretState(DarkestSecretFace.Festival, Some(actor), 2,
+        festival = None))
+
   test("Reveal is a facedown Vision played faceup: it replaces the revealed " +
       "Vision and costs no Supply"):
     val old = VisionRules.Conquest

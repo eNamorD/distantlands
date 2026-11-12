@@ -56,12 +56,11 @@ private[campaign] object CampaignRaid:
         OathViolation.InvalidEventOrder("the Raid's origin has no region"))
     yield (defender, CardPlay.nextRegion(region))
 
-  /** What the attacker targeted, taken: the relics, then the banners. A
-    * banner's favor and secrets leave with it. */
+  /** What the attacker targeted, taken: the relics, then the banners, each
+    * banner adjusted by its face's right ribbon as it leaves. */
   def takes(ready: ReadyGame, result: CampaignResult)
       : Either[OathViolation, Vector[CoreOperation]] =
     defeated(ready, result).map { (defender, _) =>
-      val current = ready.game.current
       val defenderId = defender.player
       val attacker = result.attacker
       val relics = result.raidTargets.collect {
@@ -71,16 +70,13 @@ private[campaign] object CampaignRaid:
       val relicTakes: Vector[CoreOperation] = relics.map(id => Take(
         Piece.Card(id), attacker, Location.PlayArea(defenderId),
         Location.PlayArea(attacker)))
-      // A banner's favor and secrets leave as its Take's children, so a
-      // refused Take leaves the banner whole.
+      // A banner's ribbon runs as its Take's children, so a refused Take
+      // leaves the banner whole, and the festival marker where it lies.
       val bannerOps: Vector[CoreOperation] = banners.map { banner =>
         val leaving: Vector[CoreOperation] = banner match
           case Banner.PeoplesFavor => BannerRules.peoplesFavorRibbon(ready)
           case Banner.DarkestSecret =>
-            val secrets = BannerRules.resources(current, banner)
-            Option.when(secrets > 0)(Burn.secrets(secrets,
-              PositionedLocation(Location.OnBanner(banner)),
-              Some(attacker))).toVector
+            BannerRules.darkestSecretRibbon(ready, attacker)
         Take(Piece.Banner(banner), attacker, Location.PlayArea(defenderId),
           Location.PlayArea(attacker), leaving = leaving)
       }

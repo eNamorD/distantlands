@@ -79,7 +79,6 @@ object OathViolation:
   final case class CampaignUnavailable(reason: String) extends OathViolation
   final case class RecoverUnavailable(detail: String) extends OathViolation
   final case class ForgeUnavailable(detail: String) extends OathViolation
-  final case class UnsupportedBannerState(reason: String) extends OathViolation
   final case class UnsupportedRestState(reason: String)
       extends OathViolation
   /** A Chronicle shape Setup does not support yet: a non-empty `world`

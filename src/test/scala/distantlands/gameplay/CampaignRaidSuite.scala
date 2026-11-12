@@ -33,10 +33,12 @@ class CampaignRaidSuite extends munit.FunSuite:
     def events: Vector[OathEvent] =
       Vector(started, kind, targeted, forced, sacrificed).flatMap(_.events)
 
-  /** Raids the rival with `attack` swords against blank defense dice,
-    * sacrificing `sacrifice`, under `rulesFor`'s rules. */
+  /** Raids the rival's relic and `banner` with `attack` swords against
+    * blank defense dice, sacrificing `sacrifice`, under `rulesFor`'s
+    * rules. */
   private def walk(b: Board, relic: RelicId, attack: Int, sacrifice: Int = 0,
-      rulesFor: WalkerDice => OathRules = rules(_)): RaidWalk =
+      rulesFor: WalkerDice => OathRules = rules(_),
+      banner: Banner = Banner.PeoplesFavor): RaidWalk =
     // The printed defense: 2 dice for the pawn, the relic's own defense, and
     // 3 for the banner.
     val relicDefense =
@@ -52,7 +54,7 @@ class CampaignRaidSuite extends munit.FunSuite:
     val targeted = accepted(game.resolveWalker(kind.state, b.actor,
       CampaignIds.targets, ChooseManyAnswer(Vector(
         DecisionOptionRef.Relic(relic),
-        DecisionOptionRef.Banner(Banner.PeoplesFavor)))))
+        DecisionOptionRef.Banner(banner)))))
     val forced = accepted(game.resolveWalker(targeted.state, b.actor,
       CampaignIds.force, ChooseAmountAnswer(attack)))
     val sacrificed = accepted(game.resolveWalker(forced.state, b.actor,
@@ -146,6 +148,27 @@ class CampaignRaidSuite extends munit.FunSuite:
       ChooseOneAnswer(DecisionOptionRef.Site(destination))))
     assertEquals(ActPowerHarness.replayed(walked.game, b.ready,
       walked.events ++ done.events), ready(done.state))
+
+  test("a Raid victory over the Festival burns half its secrets, rounded " +
+      "down, keeps the rest on it and removes the marker from the map"):
+    val RaidBoard(raided, relic) = raidBoard()
+    val b = on(raided)(_.darkestSecret(Some(raided.rival), secrets = 5,
+      face = DarkestSecretFace.Festival).festival(raided.origin))
+    val after = ready(walk(b, relic, attack = 4,
+      banner = Banner.DarkestSecret).sacrificed.state)
+    // 5 / 2 = 2 burn, and 3 stay on the banner the attacker takes.
+    assertEquals(after.game.current.banners.darkestSecret,
+      DarkestSecretState(DarkestSecretFace.Festival, Some(b.actor), 3,
+        festival = None))
+
+  test("a Raid victory over the Wandering Flame still burns every secret"):
+    val RaidBoard(raided, relic) = raidBoard()
+    val b = on(raided)(_.darkestSecret(Some(raided.rival), secrets = 5))
+    val after = ready(walk(b, relic, attack = 4,
+      banner = Banner.DarkestSecret).sacrificed.state)
+    assertEquals(after.game.current.banners.darkestSecret,
+      DarkestSecretState(DarkestSecretFace.WanderingFlame, Some(b.actor), 0,
+        festival = None))
 
   test("the pawn cannot be relocated to its own site"):
     val RaidBoard(b, relic) = raidBoard()

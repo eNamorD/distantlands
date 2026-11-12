@@ -47,14 +47,12 @@ object ChallengeProcedure:
       NotePart.Text(" "), NotePart.Plural(1, "secret", "secrets")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  /** The start checks only the banner faces: whether a banner is in reach
+  /** The start checks nothing of the board: whether a banner is in reach
     * depends on the modifiers the walk picks first, so the banner question
     * refuses the walk instead (`bannerQuestion`). */
   def build(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
-      args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] = for
-    _ <- noStartArgs(args)
-    _ <- supportedFaces(state)
-  yield tree(actor)
+      args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
+    noStartArgs(args).map(_ => tree(actor))
 
   def rebuild(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
@@ -97,16 +95,6 @@ object ChallengeProcedure:
     OathViolation.InvalidEventOrder(
       s"walker procedure ${ActionRef.Challenge.key} takes no start selection, " +
         s"got ${args.map(_.kind).mkString(", ")}"))
-
-  /** The ribbon rules below are the printed ones for both People's Favor
-    * faces and for the Darkest Secret's `WanderingFlame` only: the Festival
-    * arrives with Foundations slice 6.
-    */
-  private def supportedFaces(state: ReadyGame): Either[OathViolation, Unit] =
-    val banners = state.game.current.banners
-    Either.cond(
-      banners.darkestSecret.active == DarkestSecretFace.WanderingFlame, (),
-      OathViolation.UnsupportedBannerState("unsupported active banner face"))
 
   private def challenge(actor: PlayerId): Operation = Sequence(Vector[Operation](
     Sequence(Vector[Operation](SpendSupply(actor, 1)),
@@ -180,7 +168,8 @@ object ChallengeProcedure:
       val bonus = ChallengeReach.bonus(picks(pending), banner)
       Vector[Operation](
         Sequence(ChallengeRibbon.steps(actor, banner),
-          Some(PowerWindow.ChallengeRibbon)),
+          Some(PowerWindow.ChallengeRibbon))) ++
+      ChallengeRibbon.markerRemoval(banner) ++ Vector[Operation](
         Sequence(gained(actor, bonus) ++ Vector[Operation](
           payment(actor, banner, amount + bonus),
           // Directly after the payment, so `previous` is the payment and the
