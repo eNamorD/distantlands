@@ -4,6 +4,8 @@ import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.testkit.MenuPlay
+import distantlands.gameplay.setup.{AtlasPlacement, ImperialMaps,
+  LaterGameFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.{Dice, Situation, Table}
@@ -61,3 +63,20 @@ class UndoBarrierPlaySuite extends munit.FunSuite:
         ExploreProcedure.endOption(AtlasEnd.Forgotten)))))
     assertEquals(placed.ready.game.current.map.inPlay.size, 4)
     nothingToUndo(service, "explore", placed.nextSequence, p1)
+
+  test("Imperial Maps' fill shows the placed sites, so the Chancellor's " +
+      "choice of end cannot be taken back"):
+    // A later game's Setup: p1, the Chancellor, is asked Recent or
+    // Forgotten first, and the Reliquary is empty.
+    val record = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository)
+    val asked = Situation.start(Situation.journaled(service, catalog,
+        repository, "imperial-maps"))
+      .parkedAfter(GameCommand.Begin(record,
+        LaterGameFixture.orders(record, p1)))
+    val filled = asked.parkedAfter(Commands.resolveWalker(p1, TreeDecision(
+      ImperialMaps.decisionId, DecisionAnswer.ChooseOneAnswer(
+        AtlasPlacement.endOption(AtlasEnd.Forgotten)))))
+    assertEquals(filled.ready.game.current.map.inPlay.size, 8)
+    nothingToUndo(service, "imperial-maps", filled.nextSequence, p1)

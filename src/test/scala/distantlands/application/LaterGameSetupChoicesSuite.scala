@@ -1,7 +1,8 @@
 package distantlands.application
 
-import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules,
-  ImperialMaps, LaterGameFixture, SetupPawnSites, SetupProcedure}
+import distantlands.gameplay.setup.{AtlasPlacement, FirstGameSetupFixture,
+  GameStartRules, ImperialMaps, LaterGameFixture, SetupPawnSites,
+  SetupProcedure}
 import distantlands.model._
 import distantlands.model.OathState.Ready
 import distantlands.testkit.{Answers, ParkedNode, Situation}
@@ -124,3 +125,41 @@ class LaterGameSetupChoicesSuite extends munit.FunSuite:
     assertEquals(own.query.toVector.flatMap(_.offeredOptions).size, 2)
     assertEquals(projector.project(ScopedProjectionContext(ready, Some(p2))),
       None)
+
+  test("the parked Imperial Maps question is the Chancellor's, and names " +
+      "the two ends and only the first Recent site"):
+    val parked = begin(record).ready
+    val projector = new WalkerDecisionProjector(catalog,
+      new GamePresentationProjector(catalog))
+    val own = present(projector.project(ScopedProjectionContext(parked,
+      Some(p1))), "p1's decision")
+    assertEquals(own.decisionId, ImperialMaps.decisionId)
+    assertEquals(own.query.toVector.flatMap(_.offeredOptions)
+      .map(option => option.id -> option.label), Vector(
+        "recent" -> "Recent Sites (Buried Giant first)",
+        "forgotten" -> "Forgotten Sites"))
+    // The Forgotten end's site, Golden Valley, is private.
+    assert(!own.toString.contains("Golden Valley"), own)
+    assert(!own.toString.contains("golden-valley"), own)
+    assertEquals(projector.project(ScopedProjectionContext(parked, Some(p2))),
+      None)
+
+  test("a Setup filled from Forgotten Sites replays its journal to the " +
+      "same game, and the projected map has no empty slot"):
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository)
+    val filled = Situation.start(Situation.journaled(service, catalog,
+        repository, "forgotten").withAnswers {
+        case park if park.decisionId == ImperialMaps.decisionId =>
+          DecisionAnswer.ChooseOneAnswer(
+            AtlasPlacement.endOption(AtlasEnd.Forgotten))
+      }).parkedAt(SetupProcedure.pawnDecisionId(p1))(GameCommand.Begin(
+        record, LaterGameFixture.orders(record, p1)))
+    val loaded = present(accepted(service.load("forgotten")), "the game")
+    assertEquals(loaded.state, filled.state)
+    assertEquals(filled.ready.game.current.map.hinterward,
+      (record.world ++ record.atlasBox.reverse).map(_.site))
+    val world = new GameProjector(catalog).project("forgotten", loaded, p1)
+      .world
+    assertEquals(world.map(_.sites.size), Vector(2, 3, 3))
+    assertEquals(world.map(_.emptySlots), Vector(0, 0, 0))
