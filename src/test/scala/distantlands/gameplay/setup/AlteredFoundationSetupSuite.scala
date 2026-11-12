@@ -48,8 +48,10 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
       withAlteredFoundation(chronicleWithEmpire, FoundationNumber.II))
     assertEquals(ready.game.current.players.map(_.board),
       Vector.fill(3)(PlayerBoardState(6, 1, 0, 3, SupplyTrack.full)))
+    // Game start places the Empire's sites; the sites Imperial Maps adds
+    // in Setup's walk add their own (ImperialMapsSetupSuite).
     val onMap = suitsOnMap(ready)
-    assert(onMap.size > 2, "the Empire's denizens are on the map")
+    assert(onMap.nonEmpty, "the Empire's denizens are on the map")
     assertEquals(ready.banks.favor,
       Suit.all.map(suit => suit -> onMap.count(_ == suit)).toMap)
 

@@ -76,8 +76,8 @@ Left behind by the
 
 [Design](superpowers/specs/2026-11-11-foundations-design.md), seven slices.
 
-- [ ] **Foundations.** Every face but Foundation III's works: Imperial
-  Maps' choice of Recent or Forgotten, and the Beacon's Shape Foundation.
+- [ ] **Foundations.** Every face but Foundation III's works: the Beacon's
+  Shape Foundation.
 - [ ] **The Grand Council and Festival banner faces.** Altered Foundations V
   and VI turn the banners to these faces. Their ids are in
   `RuleSourceIndex`, and the faces have no behaviour.
@@ -181,8 +181,7 @@ one.
 
 - [ ] **Simultaneous setup effects.** The Chancellor or first player should
   resolve simultaneous setup effects; site order is used until then. Still to
-  add: player choices earlier in setup once foundations and legacies exist,
-  such as the Chancellor choosing Recent or Forgotten sites.
+  add: player choices earlier in setup once legacies exist.
 - [ ] **Keyboard focus on the Chronicle pages.** A redraw of the Chronicle
   page drops the focused control, and the table's save dialog does not trap
   focus. Do it with the next accessibility pass over the start pages.

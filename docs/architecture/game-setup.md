@@ -8,7 +8,10 @@ from a `Chronicle` and `SetupOrders`: it begins at `OathState.NoGame`, records
 one `GameStarted` event carrying both, and runs Setup as an ordinary
 `TriggeredProcedureRef` walker (`gameplay/setup/SetupProcedure.scala`) from
 there. There is no separate setup state machine or command payload; the
-walker's per-player tree -- `Decide` a site, place the pawn, `Decide` an
+walker's tree -- in a later game the Chancellor's Reliquary pick and
+Imperial Maps' fill (`gameplay/setup/ImperialMaps.scala`), then per player
+`Decide` a site (inside a `Branch`, so the legal sites are read when the
+question is reached), place the pawn, `Decide` an
 adviser, keep/discard, a `SetupEnd` window that folds the six batch-1 edifice
 powers (`gameplay/powers/setup/`: Great Market/Bandit Market, Great
 Forge/Broken Forge, Proving Grounds/Empty Grounds) -- ends the same way every
@@ -41,12 +44,15 @@ Visions, shuffled. Foundation II decides the favor: Powerful Tribes
 gives each bank 3, 1 more with five or more players, and 1 per denizen of
 its suit on the map; Movers and Shakers gives each board 6 favor and each
 bank only the 1 per denizen. Both altered faces are built directly, like the
-rest of game start; nothing is journaled.
+rest of game start; nothing is journaled. The sites Imperial Maps places in
+Setup's walk add their denizens' favor as they are placed
+(`AtlasPlacement.suitFavor`).
 
 `GameStartRules.evolve` validates only what Setup itself needs from the
 Chronicle: known and unique atlas/denizen/relic ids, an atlas site for every
-slot it fills from the atlas (8 in a first game),
-enough World Deck and relic cards to deal, a deal holding exactly the
+slot the atlas fills (8 in a first game; under Imperial Maps, every slot
+past the Empire's sites), enough World Deck cards to deal and, in a first
+game, enough relics for every relic slot, a deal holding exactly the
 Chronicle's decks, and, in a first game, one matching edifice per Homeland in play. The deeper suit-count and Vision-packet audit a Chronicle
 must satisfy is the generator's own job, checked once at generation time
 (`FirstGameChronicleGenerator.validate`) rather than again at every setup.
@@ -63,9 +69,14 @@ Reliquary stay as in the baseline until the Stars task extracts them.
 `EmpireSetupRules.resolve` reads how the game starts, a `SetupMode`. A
 Chronicle that lists no Chancellor, no Citizen and no Empire site starts a
 first game on eight atlas sites. With a Chancellor seated, or a seated
-Citizen standing in for one, the Empire's sites return; Imperial Maps then
-fills the slots past them from the atlas's Recent end, and Wide Horizons,
-the altered Foundation I, fills none. With no Chancellor and no Citizen
+Citizen standing in for one, the Empire's sites return. Under Imperial Maps
+Setup's walk then asks the Chancellor, right after the Reliquary pick,
+whether the Recent or the Forgotten end fills the slots past them, and
+places one site per slot going Hinterward from that end with
+`PlaceAtlasSite`, populated as a bandit site (`SiteState.banditSite`) and
+dealt its relic slots while the relic deck lasts; the placement is an undo
+barrier. Wide Horizons, the
+altered Foundation I, fills none. With no Chancellor and no Citizen
 seated, Setup With No Empire erodes Foundation I to Wide Horizons and
 Foundation V to Mob's Favor, places only the former Empire's sites, as
 bandit sites with ruined edifices and every open relic slot filled while

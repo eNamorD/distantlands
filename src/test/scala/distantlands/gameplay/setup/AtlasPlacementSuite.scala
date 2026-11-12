@@ -2,7 +2,10 @@ package distantlands.gameplay.setup
 
 import distantlands.gameplay.cards.{DeepWoodsSite, FairIsleSite,
   GoldenValleySite}
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.economy.MapLibraryCard
 import distantlands.gameplay.powers.setup.GreatMarketCard
+import distantlands.gameplay.powers.whenplayed.WizardsConclaveCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
@@ -53,3 +56,33 @@ class AtlasPlacementSuite extends munit.FunSuite:
     assertEquals(rejected(AtlasPlacement.at(catalog, unprinted,
       AtlasEnd.Recent)), OathViolation.InvalidEventOrder(
         "site:nowhere is not a site the catalog prints"))
+
+  test("an end is answered by its key and reads as Recent Sites or " +
+      "Forgotten Sites"):
+    assertEquals(AtlasEnd.all.map(AtlasPlacement.endOption), Vector(
+      DecisionOptionRef.Button("recent"),
+      DecisionOptionRef.Button("forgotten")))
+    assertEquals(AtlasEnd.all.map(AtlasPlacement.endLabel),
+      Vector("Recent Sites", "Forgotten Sites"))
+    assertEquals(AtlasEnd.all.map(end =>
+      AtlasPlacement.endOf(AtlasPlacement.endOption(end))),
+      AtlasEnd.all.map(Some(_)))
+    assertEquals(AtlasPlacement.endOf(DecisionOptionRef.Button("stop")), None)
+
+  test("a placed site gives each suit's bank 1 favor from the shared bank " +
+      "per card in its denizen slots, its edifice included, and none for " +
+      "a relic"):
+    // Deep Woods stores the Great Market (Discord), Wizard's Conclave and
+    // Map Library (both Arcane) and Sticky Fire.
+    val ready = threeSitesAndAnAtlas.storedInAtlas(DeepWoodsSite,
+      GreatMarketCard, WizardsConclaveCard, MapLibraryCard, StickyFireCard)
+      .ready
+    val planned = accepted(AtlasPlacement.at(catalog, ready, AtlasEnd.Recent))
+    def fromSharedBank(favor: Int, suit: Suit): Move = Move(Piece.Favor(favor),
+      PositionedLocation(Location.SharedBank),
+      PositionedLocation(Location.FavorBank(suit)))
+    assertEquals(AtlasPlacement.suitFavor(catalog, planned), Vector(
+      fromSharedBank(1, Suit.Discord), fromSharedBank(2, Suit.Arcane)))
+    val bare = accepted(AtlasPlacement.at(catalog, threeSitesAndAnAtlas.ready,
+      AtlasEnd.Recent))
+    assertEquals(AtlasPlacement.suitFavor(catalog, bare), Vector.empty)

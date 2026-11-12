@@ -98,7 +98,11 @@ object GameStartRules:
       _ <- Either.cond(chronicle.atlasBox.size >= slots, (),
         UnsupportedChronicle(
           s"at least $slots atlas sites are required, got ${chronicle.atlasBox.size}"))
-      atlasSites = chronicle.atlasBox.take(slots)
+      // Only a first game's sites are placed here; Imperial Maps fills its
+      // slots in Setup's walk.
+      atlasSites = if mode == SetupMode.FirstGame then
+          chronicle.atlasBox.take(slots)
+        else Vector.empty
       // A later game keeps every card stored at its sites (R27); a first
       // game's sites hold only their Homeland edifices (R26).
       _ <- Either.cond(mode != SetupMode.FirstGame ||
@@ -123,15 +127,16 @@ object GameStartRules:
         case SetupMode.WithEmpire(empire) => Some(empire)
         case _ => None,
       mode match
-        case SetupMode.FirstGame => Vector.empty
-        case _: SetupMode.WithEmpire => atlasSites
-        case SetupMode.NoEmpire(sites, _) => sites,
+        case SetupMode.NoEmpire(sites, _) => sites
+        case _ => Vector.empty,
       startingAdvisers(chronicle, orders), faces) -> mode
 
-  /** The slots game start fills from the Recent end of the atlas. A first
-    * game fills all eight. With an Empire, Imperial Maps fills the slots
-    * past the Empire's sites (R27), and Wide Horizons fills none. With no
-    * Empire the former Empire's sites are all that is placed. */
+  /** The slots filled from the atlas. A first game's eight are placed at
+    * game start from the Recent end. With an Empire, Imperial Maps fills
+    * the slots past the Empire's sites in Setup's walk, from the end the
+    * Chancellor chooses (Foundations design, slice 4), and Wide Horizons
+    * fills none. With no Empire the former Empire's sites are all that is
+    * placed. */
   private def atlasSlots(mode: SetupMode,
       faces: Map[FoundationNumber, FoundationState]): Int = mode match
     case SetupMode.FirstGame => MapState.slots

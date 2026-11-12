@@ -93,7 +93,7 @@ R25. **Exile pawn sites.** With an Empire, an Exile places their pawn at the Hin
 
 R26. **Homelands in later games.** The check that each Homeland in play has a stored edifice of its suit applies only to a Chronicle with no Empire, a first game. Later-game setup places only the edifices stored with each site (CR p. 9, Foundation I; Empire slice 4).
 
-R27. **Stored cards at the remaining sites.** A site filled from the atlas in a later game keeps its stored cards: its edifice on the ruined side, its denizens faceup, its relics facedown. Its empty relic slots, its relic slots less its stored relics and never fewer than 0, are filled from the relic deck. Sites always come from the Recent end; the Chancellor's choice of Recent or Forgotten sites waits for simultaneous setup effects (Empire slice 4).
+R27. **Stored cards at the remaining sites.** A site filled from the atlas in a later game keeps its stored cards: its edifice on the ruined side, its denizens faceup, its relics facedown. Its empty relic slots, its relic slots less its stored relics and never fewer than 0, are filled from the relic deck. Under Imperial Maps the Chancellor chooses at Setup, right after the Reliquary pick, whether every empty slot is filled from the Recent or the Forgotten end; the sites are placed one at a time going Hinterward, each adding Foundation II's favor for its denizens (Empire slice 4; [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md), slice 4).
 
 R28. **The Empire always holds a site.** The Throne's Shape Empire step gives a winner who rules no site the site their pawn stands on, so a Chronicle with a Chancellor and an empty Empire is malformed. Game start refuses it, and an Empire of more than 8 sites (Empire slice 4).
 

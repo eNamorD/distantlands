@@ -46,10 +46,12 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       temporaryHands = plan.participants.map(p => p.playerId ->
         deal.hand(plan.denizenOrder, p.playerId)).toMap)
 
-  /** A first game deals every relic slot; a later game deals only the
-    * slots an atlas site's stored relics leave open, and none at the
-    * Empire's sites (Empire ruling R27). Slots are dealt Cradlemost first,
-    * and a relic deck that runs out leaves the last ones empty. */
+  /** A first game deals every relic slot. With no Empire, the former
+    * Empire's sites take the slots their stored relics leave open, and an
+    * Empire's sites take none (Empire ruling R27); Imperial Maps' sites
+    * are dealt theirs as Setup's walk places them (`PlaceAtlasSite`). Slots
+    * are dealt Cradlemost first, and a relic deck that runs out leaves the
+    * last ones empty. */
   private def assignRelics(plan: FirstGameSetupPlan): Map[SiteId, Vector[RelicId]] =
     val stored = plan.atlasSites.map(site => site.site -> site).toMap
     val empire = plan.empire.fold(Set.empty[SiteId])(_.sites.map(_.site).toSet)
@@ -88,9 +90,9 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       storedDenizens(stored, EdificeSide.Intact), faceDown(storedRelics(stored)),
       catalog.site(stored.site).get.startingResources)
 
-  /** An atlas site in a later game keeps its stored cards, its edifice
-    * ruined, and fills its open relic slots (Empire ruling R27). A former
-    * Empire's site is set up the same way with no Empire. */
+  /** A former Empire's site with no Empire keeps its stored cards, its
+    * edifice ruined, and fills its open relic slots, as an atlas site
+    * Imperial Maps places does (Empire ruling R27). */
   private def atlasSite(stored: StoredSite, drawn: Vector[RelicId]): SiteState =
     val printed = catalog.site(stored.site).get
     SiteState.banditSite(printed.capacity, printed.startingResources,
@@ -119,15 +121,14 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     * more players, and 1 more per denizen of that suit on the map,
     * edifices included. Movers and Shakers prints neither the 3 nor the
     * fifth-player favor: each bank holds 1 per denizen of its suit on the
-    * map. */
+    * map. A site Imperial Maps places in Setup's walk adds its own
+    * (`AtlasPlacement.suitFavor`). */
   private def favorBanks(plan: FirstGameSetupPlan, map: MapState)
       : Map[Suit, Int] =
     val printed =
       if plan.altered(FoundationNumber.II) then 0
       else if plan.participants.size >= 5 then 4
       else 3
-    val suits = map.sites.values.flatMap(_.denizens).flatMap {
-      case EdificeState(id, _, _) => catalog.edifice(id).map(_.suit)
-      case DenizenState(id, _, _) => catalog.denizen(id).map(_.suit)
-    }.toVector
+    val suits = map.sites.values.flatMap(_.denizens)
+      .flatMap(AtlasPlacement.suitOf(catalog, _)).toVector
     Suit.all.map(suit => suit -> (printed + suits.count(_ == suit))).toMap
