@@ -118,6 +118,18 @@ class OperationApplicationSuite extends munit.FunSuite:
       Some(OperationError.InsufficientPieces(Piece.Banner(Banner.PeoplesFavor),
         Location.SharedBank, 0)))
 
+  test("a held banner returns to the shared bank, and only from its " +
+      "holder"):
+    // Red holds the People's Favor.
+    def returned(from: PlayerId) = Move(Piece.Banner(Banner.PeoplesFavor),
+      PositionedLocation(Location.PlayArea(from)),
+      PositionedLocation(Location.SharedBank))
+    val after = accepted(RawOperationBatch.executeAll(ready,
+      Vector(returned(playerId))))
+    assertEquals(after.game.current.banners.peoplesFavor.holder, None)
+    assertEquals(codes(OperationApplication.validate(ready,
+      returned(blueId))), Vector("missing-piece"))
+
   test("moving a pawn that is not at the source site is a missing-piece"):
     // Red's pawn stands at S1, not S3.
     val operation = Move(Piece.Pawn(playerId),

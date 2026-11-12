@@ -89,13 +89,13 @@ abstract class RuinedSetupRule extends RuinedSetupSteps:
   *
   * The favor comes from the shared supply, as Bandit Market's does, and each
   * favor bank burns one with no burner, a bank already empty burning none.
-  * The banner is not moved: in the all-Exile first game both banners start
-  * in the shared bank, and "players cannot start with it" undoes a
-  * later-game setup step the engine does not have (catalog batch 9, "Catalog
-  * and roadmap corrections").
+  * A held banner goes back to the shared bank: in a later game the
+  * Chancellor may start with it, and when explored anyone may hold it. A
+  * banner already in the shared bank stays there.
   *
-  * Its line reads the step: "Placed 4 favor on the People's Favor and burned
-  * 6 favor from the banks.", or only the placement when no bank held favor.
+  * Its line reads the step: "Placed 4 favor on the People's Favor, moved it
+  * to the shared bank and burned 6 favor from the banks.", leaving out the
+  * move when nobody held the banner and the burn when no bank held favor.
   */
 case object HallOfMockery extends RuinedSetupRule:
   val edifice: EdificeId = HallOfDebateCard.id
@@ -111,11 +111,23 @@ case object HallOfMockery extends RuinedSetupRule:
   /** "Placed {4 favor} on the People's Favor." */
   val placed: NoteKey = notes.key("placed", Vector(NotePart.Text("Placed "),
     NotePart.Arg(0), NotePart.Text(" on the People's Favor.")))
+  /** "Placed {4 favor} on the People's Favor, moved it to the shared bank
+    * and burned {6 favor} from the banks." */
+  val placedMovedAndBurned: NoteKey = notes.key("placed-moved-and-burned",
+    Vector(NotePart.Text("Placed "), NotePart.Arg(0),
+      NotePart.Text(" on the People's Favor, moved it to the shared bank " +
+        "and burned "), NotePart.Arg(1), NotePart.Text(" from the banks.")))
+  /** "Placed {4 favor} on the People's Favor and moved it to the shared
+    * bank." */
+  val placedAndMoved: NoteKey = notes.key("placed-and-moved", Vector(
+    NotePart.Text("Placed "), NotePart.Arg(0),
+    NotePart.Text(" on the People's Favor and moved it to the shared bank.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
   protected def build(ready: ReadyGame, at: SiteId): Vector[CoreOperation] =
-    Move(Piece.Favor(Favor), PositionedLocation(Location.SharedBank),
+    (Move(Piece.Favor(Favor), PositionedLocation(Location.SharedBank),
       PositionedLocation(Location.OnBanner(Banner.PeoplesFavor))) +:
+      BannerToSharedBank.move(ready, Banner.PeoplesFavor).toVector) ++
       Suit.all.map(bank =>
         Burn.favor(1, PositionedLocation(Location.FavorBank(bank)), None))
 
@@ -125,20 +137,45 @@ case object HallOfMockery extends RuinedSetupRule:
         before.game.current.banners.peoplesFavor.favor
       val burned = Suit.all.map(suit => before.banks.favor.getOrElse(suit, 0) -
         after.banks.favor.getOrElse(suit, 0)).sum
+      val moved = BannerToSharedBank.moved(before, after, Banner.PeoplesFavor)
       val card = PowerSourceRef.Card(edifice)
-      if gained > 0 && burned > 0 then Some(placedAndBurned(card,
-        MarketRule.favor(gained), MarketRule.favor(burned)))
-      else if gained > 0 then Some(placed(card, MarketRule.favor(gained)))
-      else None
+      val (favor, bank) = (MarketRule.favor(gained), MarketRule.favor(burned))
+      if gained == 0 then None
+      else if moved && burned > 0 then
+        Some(placedMovedAndBurned(card, favor, bank))
+      else if moved then Some(placedAndMoved(card, favor))
+      else if burned > 0 then Some(placedAndBurned(card, favor, bank))
+      else Some(placed(card, favor))
     })
+
+/** "Move it to the shared bank", as Hall of Mockery and Lost Guardians
+  * print: a held banner leaves its holder for the shared bank, which holds
+  * a banner nobody holds. One the shared bank already holds stays. */
+object BannerToSharedBank:
+  /** The move, while a player holds `banner`. */
+  def move(ready: ReadyGame, banner: Banner): Option[CoreOperation] =
+    holder(ready, banner).map(player => Move(Piece.Banner(banner),
+      PositionedLocation(Location.PlayArea(player)),
+      PositionedLocation(Location.SharedBank)))
+
+  /** Whether the step from `before` to `after` returned `banner`. */
+  def moved(before: ReadyGame, after: ReadyGame, banner: Banner): Boolean =
+    holder(before, banner).nonEmpty && holder(after, banner).isEmpty
+
+  private def holder(ready: ReadyGame, banner: Banner): Option[PlayerId] =
+    banner match
+      case Banner.PeoplesFavor => ready.game.current.banners.peoplesFavor.holder
+      case Banner.DarkestSecret =>
+        ready.game.current.banners.darkestSecret.holder
 
 /** Lost Guardians (E18, ruined): "SETUP (END): Place 3 secrets on the
   * Darkest Secret and move it to the shared bank. Players cannot start with
   * it."
   *
-  * The secrets come from the shared supply. The banner is not moved, for
-  * the reason Hall of Mockery's doc gives. Its line reads the step: "Placed
-  * 3 secrets on the Darkest Secret."
+  * The secrets come from the shared supply, and a held banner goes back to
+  * the shared bank, as Hall of Mockery's does. Its line reads the step:
+  * "Placed 3 secrets on the Darkest Secret and moved it to the shared
+  * bank.", or only the placement when nobody held the banner.
   */
 case object LostGuardians extends RuinedSetupRule:
   val edifice: EdificeId = TomeGuardiansCard.id
@@ -148,17 +185,27 @@ case object LostGuardians extends RuinedSetupRule:
   /** "Placed {3 secrets} on the Darkest Secret." */
   val placed: NoteKey = notes.key("placed", Vector(NotePart.Text("Placed "),
     NotePart.Arg(0), NotePart.Text(" on the Darkest Secret.")))
+  /** "Placed {3 secrets} on the Darkest Secret and moved it to the shared
+    * bank." */
+  val placedAndMoved: NoteKey = notes.key("placed-and-moved", Vector(
+    NotePart.Text("Placed "), NotePart.Arg(0),
+    NotePart.Text(" on the Darkest Secret and moved it to the shared bank.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
   protected def build(ready: ReadyGame, at: SiteId): Vector[CoreOperation] =
-    Vector(Move(Piece.Secrets(Secrets),
+    Move(Piece.Secrets(Secrets),
       PositionedLocation(Location.SharedBank),
-      PositionedLocation(Location.OnBanner(Banner.DarkestSecret))))
+      PositionedLocation(Location.OnBanner(Banner.DarkestSecret))) +:
+      BannerToSharedBank.move(ready, Banner.DarkestSecret).toVector
 
   protected def note(at: SiteId): Note = Note(id, states => for
     (before, after) <- states.previous
     gained = after.game.current.banners.darkestSecret.secrets -
       before.game.current.banners.darkestSecret.secrets
     if gained > 0
-  yield placed(PowerSourceRef.Card(edifice),
-    NoteArg.Amount(gained, NoteUnit.Secret)))
+  yield
+    val secrets = NoteArg.Amount(gained, NoteUnit.Secret)
+    val card = PowerSourceRef.Card(edifice)
+    if BannerToSharedBank.moved(before, after, Banner.DarkestSecret) then
+      placedAndMoved(card, secrets)
+    else placed(card, secrets))

@@ -17,7 +17,7 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.model.OathState.Ready
 import distantlands.testkit.{Look, Outcomes, Table}
-import distantlands.testkit.Table.p1
+import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Unwrap.accepted
 
 /** WHEN EXPLORED (rulebook, "Setup / When Explored"): the power of a card
@@ -140,6 +140,26 @@ class WhenExploredSuite extends munit.FunSuite:
     assertEquals(said(HallOfMockery.id, HallOfMockery.noteKeys,
       explored.events), Vector("Placed 4 favor on the People's Favor and " +
         "burned 6 favor from the banks."))
+
+  test("Hall of Mockery on the explored site takes the People's Favor from " +
+      "its holder back to the shared bank"):
+    val table = deepWoodsStoring(HallOfDebateCard.id)
+      .peoplesFavor(Some(p2), favor = 1)
+    val explored = exploredDeepWoods(table)
+    assertEquals(Look(explored.state).peoplesFavorHolder, None)
+    assertEquals(said(HallOfMockery.id, HallOfMockery.noteKeys,
+      explored.events), Vector("Placed 4 favor on the People's Favor, moved " +
+        "it to the shared bank and burned 6 favor from the banks."))
+
+  test("Lost Guardians on the explored site takes the Darkest Secret from " +
+      "its holder, the explorer, back to the shared bank"):
+    val table = deepWoodsStoring(TomeGuardiansCard.id)
+      .darkestSecret(Some(p1), secrets = 1)
+    val explored = exploredDeepWoods(table)
+    assertEquals(Look(explored.state).darkestSecretHolder, None)
+    assertEquals(said(LostGuardians.id, LostGuardians.noteKeys,
+      explored.events), Vector("Placed 3 secrets on the Darkest Secret and " +
+        "moved it to the shared bank."))
 
   test("Lost Guardians on the explored site places 3 secrets on the " +
       "Darkest Secret"):
