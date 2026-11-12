@@ -69,6 +69,9 @@ slice stands on.
   - Ruling 4. Explore's line is "Explored Forgotten Site: Found Deep
     Woods" (or "Recent Site").
   - Any role may Explore.
+  - Hall of Mockery and Lost Guardians move a held banner to the shared
+    bank, as the cards say, when explored and at a later game's Setup
+    alike (decided with the plan's review; ruling 8, Task 5).
 - New Foundations rules only. The printed setup card is `OATH-SETUP04b-NF`
   (Wide Horizons) in
   `~/projects/bgs-cards/content/card-data/oath/en-US/oath-newfoundations.yml`
@@ -80,7 +83,7 @@ slice stands on.
   Resources" (about line 1057). Read them there; make no web call.
 - If a rule is unclear while you work, do not guess silently and do not
   stop: take the most literal reading of the New Foundations text, add it
-  to the spec's Explore readings (Task 7, Step 2), and name it in your
+  to the spec's Explore readings (Task 8, Step 2), and name it in your
   report.
 - An unavailable option is shown disabled with its reason, never hidden.
   Explore is listed in every Act menu, and shown unavailable with its
@@ -88,8 +91,8 @@ slice stands on.
 - A Game Log line omits the actor on their own turn, and its wording stays
   parallel to the lines beside it: "Failed to explore" beside "Failed to
   recover at ...", "Continued exploring" beside "Continued recovering".
-- Note keys and Game Log goldens change in Tasks 3 and 4 only, and only as
-  those tasks show. Their rewrite commands are
+- Note keys change in Tasks 3 and 5 only, and Game Log goldens in Tasks 3
+  and 4 only, and only as those tasks show. Their rewrite commands are
   `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
   and
   `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`.
@@ -119,7 +122,7 @@ slice stands on.
 - Never `git add -A` or `git add .`; add files by path. Never push. No bare
   `git stash`.
 - Commit messages and docs are plain prose. Every commit message ends with
-  the trailer `Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>`.
+  the trailer `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
   Use exactly that trailer whatever model you run on: the plan's trailer
   overrides your own. Each commit command below passes the subject, the
   body and the trailer as three `-m` arguments; keep that form, which needs
@@ -201,7 +204,16 @@ The spec was checked against the code of slice 3a and the slice was
 prototyped on it. The blocks below were then applied in order to a fresh
 worktree at `bbfb403a7`, the merge of slice 3a into `0.2.0-alpha`, where
 each task's tests and the full gates pass. Where the spec and the code
-differ, this plan follows the code, and Task 7 corrects the spec.
+differ, this plan follows the code, and Task 8 corrects the spec.
+
+The plan was revised after its review. The placement became an undo
+barrier (finding 13), the owner decided that Hall of Mockery and Lost
+Guardians move their banner (ruling 8, Task 5), and the review's smaller
+points were taken: a second Brass Army test, the placed site read as the
+Hintermost site, a stale comment, two comments on the stored edifice, test
+helpers named for what they build, and a golden for a stopped Explore. The
+revised blocks were applied in order to a fresh worktree at `219f325fe`,
+where each task's tests and the full gates pass.
 
 1. **An operation is applied with no catalog.** The spec writes
    `PlaceAtlasSite(end, region)`. `OperationApplication.mutate(ready,
@@ -256,7 +268,9 @@ differ, this plan follows the code, and Task 7 corrects the spec.
    returns to the nodes after the placement in a later command, where a
    note that read "the step before" would find Brass Army's step. The
    Explore line and the `WhenExplored` node read the placed site from the
-   live state: it is where the explorer's pawn stands. A `Branch` is
+   live state, as the map's Hintermost site: the placement takes the first
+   empty slot going Hinterward, so the site it placed is the last one
+   Hinterward until something else places a site. A `Branch` is
    selected again on every resume, so the node that asks Recent or
    Forgotten is a branch of its own and the nodes after it keep their
    places once the Atlas is one site shorter.
@@ -288,7 +302,15 @@ differ, this plan follows the code, and Task 7 corrects the spec.
     that cut the map into the Atlas and store cards on an Atlas site.
 12. **The Chronicle Phase needs no change.** `ChronicleExtraction` reads
     the map and the Atlas as they are, and the explored site is on the
-    map. Task 6 is tests only.
+    map. Task 7 is tests only.
+13. **Undo would have leaked both ends of the Atlas** (found in the plan's
+    review). Undo refuses a batch that shows a hidden outcome
+    (`UndoBarrier.reveals`, which asks `HiddenOutcomes.hidesAnywhere`).
+    `PlaceAtlasSite` puts a site and its stored cards on the map and deals
+    relics nobody saw, but `HiddenOutcomes.hides` did not list it: an
+    explorer could answer Forgotten, see the site, undo and answer Recent.
+    Task 2 lists it, so the legality search stops before the placement and
+    undo never takes it back, nor the end's answer it ran on.
 
 ## Design decisions
 
@@ -347,8 +369,10 @@ These fill gaps the spec leaves. None is a rules question.
    the model and table steps; `AtlasOperationsSuite` (new) the operation;
    `AtlasPlacementSuite` (new) its builder; `ExploreProcedureSuite` (new)
    the gates, the rolls, the ends and replay; `WhenExploredSuite` (new)
-   each power on the explored site; `ExploreLogScripts` (new) two goldens,
-   `explore` and `explore-bandit-market`; `ExploreGameSuite` (new) the
+   each power on the explored site, and with `RuinedSetupRulesSuite` the
+   banner's return; `UndoBarrierPlaySuite` the undo barrier;
+   `ExploreLogScripts` (new) three goldens, `explore`, `explore-stopped`
+   and `explore-bandit-market`; `ExploreGameSuite` (new) the
    projection of a game started from a Chronicle; and
    `ExploredSiteChronicleSuite` (new) the Chronicle round trip. Two
    test-table steps are added: `Table.mapCutIntoAtlas(kept)` and
@@ -356,8 +380,7 @@ These fill gaps the spec leaves. None is a rules question.
 10. **Docs.** The readings below go into the spec's Explore subsection, as
     slices 2 and 3a put theirs in the spec, and slice 7 moves them to
     `docs/rules/ambiguities.md`. `CONTEXT.md` stays for slice 7, as the
-    spec's Docs list says. The roadmap loses what this slice finishes and
-    gains one deferred item, the banner move of ruling 8.
+    spec's Docs list says. The roadmap loses what this slice finishes.
 
 ## Rulings needing the owner's review
 
@@ -394,7 +417,9 @@ changes.
    has succeeded, and a later Explore may take the other end: "not both"
    is Imperial Maps' limit on filling all the slots at Setup. The question
    names the two ends and shows neither site. With one site left it is not
-   asked, and the line calls it a Recent Site (Task 3).
+   asked, and the line calls it a Recent Site. The placement is an undo
+   barrier: once the site is seen, the end cannot be chosen again (finding
+   13; Tasks 2 and 3).
 5. **The site is populated as Foundation I prints, while supplies last.**
    Rulebook, Foundation I: "Edifices stored with it flip to their **ruined
    side** [...]. Other denizens start faceup. Relics stored with it start
@@ -425,19 +450,21 @@ changes.
    the automatic power consent design's ruling 7 says Setup rules are
    never refused and leaves an Explore's filtering to this change (Task
    4).
-8. **Hall of Mockery and Lost Guardians leave the banner with its holder.
-   This is a gap in the engine, not a reading, and of these rulings it
-   most needs the owner's eye.** Cards: "Place [4 favor] on the People's
-   Favor and move it to the shared bank—players **cannot** start with it",
-   and the same for the Darkest Secret with 3 secrets. The literal reading
-   at an Explore is that the banner leaves its holder for the shared bank.
-   No operation returns a held banner to the bank
-   (`BoardControlOperations.moveBanner` accepts a play area as its
-   destination), and the same step is missing at Setup in a later game,
-   where the Chancellor may start with the banner (catalog batch 9,
-   "Catalog and roadmap corrections"). This slice places the tokens, burns
-   the bank favor and leaves the banner where it is, as Setup does, and
-   Task 7 adds a roadmap item. A test pins the holder staying (Task 4).
+8. **Hall of Mockery and Lost Guardians move a held banner to the shared
+   bank. Decided with the owner in the plan's review; implemented.**
+   Cards: "Place [4 favor] on the People's Favor and move it to the shared
+   bank—players **cannot** start with it", and the same for the Darkest
+   Secret with 3 secrets. The banner leaves its holder for the shared
+   bank, which holds a banner nobody holds, when explored and at Setup's
+   end alike; one already there stays. Until now no operation returned a
+   held banner (`BoardControlOperations.moveBanner` accepted a play area
+   only), so the step was missing at a later game's Setup too (catalog
+   batch 9, "Catalog and roadmap corrections"). **This changes a later
+   game's Setup:** a Chancellor who starts with the People's Favor (goal
+   the People) or the Darkest Secret (Devotion) loses it at Setup's end
+   when the matching ruined edifice is on the map, as the card says. The
+   first game, where both banners start in the shared bank, does not
+   change, nor does any golden log. The lines say the move (Task 5).
 9. **Broken Clock advances the round marker at once.** Card: "Advance the
    round marker once, if possible. _Do not roll [the round die]. This
    cannot end the game._" Reading: the marker moves in the middle of the
@@ -456,30 +483,37 @@ changes.
 |---|---|
 | `src/main/scala/distantlands/model/World.scala` | `AtlasEnd`; `AtlasState.sites`, `site`, `without`; `StoredSite.placedDenizens`; `SiteState.banditSite`, `openRelicSlots`; `MapState.withSite` |
 | `src/main/scala/distantlands/model/CardIndex.scala` | a stored site's edifice is indexed |
+| `src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala`, `OperationStateWrites.scala` | comments: no operation moves or changes a stored edifice |
 | `src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala` | an atlas site is built by `SiteState.banditSite` |
 | `src/main/scala/distantlands/model/CoreOperations.scala` | `PlaceAtlasSite` |
 | `src/main/scala/distantlands/gameplay/operations/AtlasOperations.scala` | new: applies `PlaceAtlasSite` |
 | `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala` | dispatches it |
 | `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala` | `place-atlas-site` on the wire |
 | `src/main/scala/distantlands/gameplay/setup/AtlasPlacement.scala` | new: builds the operation from the catalog |
+| `src/main/scala/distantlands/gameplay/walker/HiddenOutcomes.scala` | the placement is a hidden outcome, so an undo barrier |
 | `src/main/scala/distantlands/model/PowerWindow.scala` | `MajorActionType.Explore`; `ExploreModifierSelection`, `ExploreCost`, `ExploreRoll` |
 | `src/main/scala/distantlands/model/ProcedureRef.scala` | `ActionRef.Explore` |
 | `src/main/scala/distantlands/gameplay/actions/explore/ExploreProcedure.scala` | new: the tree, its gates and notes, and `ExploredSite` |
-| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, `FollowUpSupplyWaiver.scala` | Explore's entry and cost window |
+| `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, `FollowUpSupplyWaiver.scala` | Explore's entry and cost window; a stale count in a comment |
 | `src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala`, `src/main/scala/distantlands/gameplay/phases/ActOffers.scala`, `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala` | its note keys, its Act menu offer, its modifier window |
 | `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`, `StartLines.scala` | its Game Log entry, tag anchor and "Continued exploring" |
 | `src/main/scala/distantlands/gameplay/powers/setup/EdificeSetupSupport.scala`, `GreatMarketRules.scala`, `ProvingGroundsRules.scala`, `BannerSetupRules.scala`, `RuinedSiteSetupRules.scala` | WHEN EXPLORED resolves at the explored site |
+| `src/main/scala/distantlands/gameplay/operations/BoardControlOperations.scala` | a held banner may return to the shared bank |
+| `src/main/scala/distantlands/gameplay/powers/setup/BannerSetupRules.scala` | also: Hall of Mockery and Lost Guardians move a held banner (`BannerToSharedBank`) |
 | `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala` | the Explore pool reads as shields |
 | `src/test/scala/distantlands/testkit/Table.scala`, `TableSuite.scala` | `mapCutIntoAtlas`, `storedInAtlas` |
 | `src/test/scala/distantlands/model/WorldModelSuite.scala`, `CardIndexSuite.scala` | the model |
 | `src/test/scala/distantlands/gameplay/operations/AtlasOperationsSuite.scala` | new: the operation |
 | `src/test/scala/distantlands/gameplay/setup/AtlasPlacementSuite.scala` | new: its builder |
+| `src/test/scala/distantlands/gameplay/walker/HiddenOutcomesSuite.scala` | the placement hides its outcome |
+| `src/test/scala/distantlands/application/UndoBarrierPlaySuite.scala` | an Explore's end cannot be taken back |
 | `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala` | its wire form |
 | `src/test/scala/distantlands/gameplay/ExploreProcedureSuite.scala` | new: gates, rolls, ends, replay |
-| `src/test/scala/distantlands/application/gamelog/ExploreLogScripts.scala`, `GoldenScripts.scala` | new: the two Explore scripts, registered |
-| `src/test/resources/gamelog/explore.*.log`, `explore-bandit-market.*.log`, `src/test/resources/notes/declared-keys.txt` | goldens and the note-key snapshot, written by their commands |
+| `src/test/scala/distantlands/application/gamelog/ExploreLogScripts.scala`, `GoldenScripts.scala` | new: the three Explore scripts, registered |
+| `src/test/resources/gamelog/explore.*.log`, `explore-stopped.*.log`, `explore-bandit-market.*.log`, `src/test/resources/notes/declared-keys.txt` | goldens and the note-key snapshot, written by their commands |
 | `src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala`, `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala`, `FollowUpSupplyWaiverSuite.scala`, `src/test/scala/distantlands/model/EnumWireKeySuite.scala`, `ProcedureRefSuite.scala` | their hand lists gain Explore |
 | `src/test/scala/distantlands/gameplay/powers/setup/WhenExploredSuite.scala` | new: each power on the explored site |
+| `src/test/scala/distantlands/gameplay/OperationApplicationSuite.scala`, `src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala` | the banner's return, at Setup too |
 | `src/test/scala/distantlands/application/ExploreGameSuite.scala` | new: the projection of a game from a Chronicle |
 | `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala` | the Explore question's panel |
 | `src/test/scala/distantlands/gameplay/chronicle/ExploredSiteChronicleSuite.scala` | new: the Chronicle round trip |
@@ -493,6 +527,8 @@ changes.
 - Modify: `src/main/scala/distantlands/model/World.scala`
 - Modify: `src/main/scala/distantlands/model/CardIndex.scala`
 - Modify: `src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/operations/OperationStateWrites.scala`
 - Modify: `src/test/scala/distantlands/testkit/Table.scala`
 - Test: `src/test/scala/distantlands/model/WorldModelSuite.scala`
 - Test: `src/test/scala/distantlands/model/CardIndexSuite.scala`
@@ -740,7 +776,9 @@ has no `sites`.
 site in a region's next slot, the Atlas's two ends and the stored site's
 placed cards. The materializer builds an atlas site through the shared
 builder, so Setup and `PlaceAtlasSite` (Task 2) cannot populate a site
-differently. The card index reads a stored site's edifice (finding 2).
+differently. The card index reads a stored site's edifice (finding 2). The
+two writers that read the index's Atlas locations ignore that edifice,
+which no operation moves or changes on its own: each says so in a comment.
 
 **In** `src/main/scala/distantlands/model/World.scala`:
 
@@ -945,6 +983,51 @@ with
   private def storedDenizens(stored: StoredSite, side: EdificeSide)
 ```
 
+**In** `src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala`:
+
+Replace
+
+```scala
+        .updated(suit, campaign.suitedReserves.getOrElse(suit, Vector.empty)
+          .filterNot(_ == located.id)))))
+    case CardContainer.AtlasSite(position, _, area) =>
+      val entries = ready.game.campaign.atlas.entries.updated(position,
+```
+
+with
+
+```scala
+        .updated(suit, campaign.suitedReserves.getOrElse(suit, Vector.empty)
+          .filterNot(_ == located.id)))))
+    // A stored site's edifice, which the card index also lists under its
+    // denizens, leaves the Atlas only with its site (`PlaceAtlasSite`): no
+    // operation moves it alone.
+    case CardContainer.AtlasSite(position, _, area) =>
+      val entries = ready.game.campaign.atlas.entries.updated(position,
+```
+
+**In** `src/main/scala/distantlands/gameplay/operations/OperationStateWrites.scala`:
+
+Replace
+
+```scala
+    }.toRight(AmbiguousLocation(Location.Atlas,
+      "stored Atlas site is unavailable")).flatMap { stored =>
+      val updated = container.area match
+        case SiteCardArea.Denizens =>
+```
+
+with
+
+```scala
+    }.toRight(AmbiguousLocation(Location.Atlas,
+      "stored Atlas site is unavailable")).flatMap { stored =>
+      // A stored site's edifice has no state to update: it is found among
+      // neither the denizens nor the relics, and no operation changes it.
+      val updated = container.area match
+        case SiteCardArea.Denizens =>
+```
+
 - [ ] **Step 4: Run the tests to see them pass**
 
 Run: `./sbtw "testOnly distantlands.model.WorldModelSuite distantlands.model.CardIndexSuite distantlands.testkit.TableSuite"`
@@ -958,8 +1041,8 @@ index with the stored edifices in it.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala src/main/scala/distantlands/model/CardIndex.scala src/main/scala/distantlands/model/World.scala src/test/scala/distantlands/model/CardIndexSuite.scala src/test/scala/distantlands/model/WorldModelSuite.scala src/test/scala/distantlands/testkit/Table.scala src/test/scala/distantlands/testkit/TableSuite.scala
-git commit -m "feat(atlas): the Atlas's ends and a shared bandit-site builder" -m "AtlasState gives the site at its Recent or Forgotten end, MapState puts a site in a region's next slot, and SiteState.banditSite populates a site placed from the Atlas, for game start too. The card index holds a stored site's edifice. The test table can cut its map into the Atlas and store cards there." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
+git add src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala src/main/scala/distantlands/gameplay/operations/OperationStateWrites.scala src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala src/main/scala/distantlands/model/CardIndex.scala src/main/scala/distantlands/model/World.scala src/test/scala/distantlands/model/CardIndexSuite.scala src/test/scala/distantlands/model/WorldModelSuite.scala src/test/scala/distantlands/testkit/Table.scala src/test/scala/distantlands/testkit/TableSuite.scala
+git commit -m "feat(atlas): the Atlas's ends and a shared bandit-site builder" -m "AtlasState gives the site at its Recent or Forgotten end, MapState puts a site in a region's next slot, and SiteState.banditSite populates a site placed from the Atlas, for game start too. The card index holds a stored site's edifice. The test table can cut its map into the Atlas and store cards there." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ---
@@ -972,9 +1055,11 @@ git commit -m "feat(atlas): the Atlas's ends and a shared bandit-site builder" -
 - Modify: `src/main/scala/distantlands/gameplay/operations/OperationApplication.scala`
 - Modify: `src/main/scala/distantlands/serialization/WalkerOperationCodec.scala`
 - Create: `src/main/scala/distantlands/gameplay/setup/AtlasPlacement.scala`
+- Modify: `src/main/scala/distantlands/gameplay/walker/HiddenOutcomes.scala`
 - Test: `src/test/scala/distantlands/gameplay/operations/AtlasOperationsSuite.scala` (new)
 - Test: `src/test/scala/distantlands/gameplay/setup/AtlasPlacementSuite.scala` (new)
 - Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/walker/HiddenOutcomesSuite.scala`
 
 **Interfaces:**
 - Consumes: Task 1's `AtlasEnd`, `AtlasState.site`/`without`,
@@ -994,6 +1079,10 @@ git commit -m "feat(atlas): the Atlas's ends and a shared bandit-site builder" -
     AtlasEnd): Either[OathViolation, AtlasPlacement.Planned]`, with
     `Planned(stored: AtlasEntry.StoredSite, operation: PlaceAtlasSite)`
     and `Planned.site: SiteId`. Task 3 calls it; slice 4 will.
+  - `HiddenOutcomes.hides(PlaceAtlasSite(...))` is true: the placement
+    shows a site and cards nobody saw, so the legality search stops before
+    it and undo never takes it back (`UndoBarrier`, finding 13). Task 3
+    pins the undo.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1251,9 +1340,34 @@ with
         Vector(FaeMerchantCard.id)),
 ```
 
+**In** `src/test/scala/distantlands/gameplay/walker/HiddenOutcomesSuite.scala`:
+
+Replace
+
+```scala
+    assert(!HiddenOutcomes.hides(GainSupply(p1, 1)))
+
+  test("a composite carrying a hidden operation hides at no node of its " +
+      "own, and hides anywhere beneath it"):
+```
+
+with
+
+```scala
+    assert(!HiddenOutcomes.hides(GainSupply(p1, 1)))
+
+  test("a site placed from the Atlas hides its outcome: its stored cards " +
+      "and the relics dealt to it"):
+    assert(HiddenOutcomes.hides(PlaceAtlasSite(AtlasEnd.Recent,
+      Region.Provinces, capacity = 1, relicSlots = 2, Tokens.empty)))
+
+  test("a composite carrying a hidden operation hides at no node of its " +
+      "own, and hides anywhere beneath it"):
+```
+
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly distantlands.gameplay.operations.AtlasOperationsSuite distantlands.gameplay.setup.AtlasPlacementSuite distantlands.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.AtlasOperationsSuite distantlands.gameplay.setup.AtlasPlacementSuite distantlands.serialization.WalkerOperationWireSuite distantlands.gameplay.walker.HiddenOutcomesSuite"`
 Expected: FAIL. The tests do not compile: `PlaceAtlasSite` and
 `AtlasPlacement` do not exist.
 
@@ -1264,6 +1378,7 @@ copies a site's printed facts onto it. `CoreOperation` is sealed and the
 codec's groups are unions of its cases, so the operation compiles only
 once the codec's Chronicle group names it; `OperationApplication` matches
 with a wildcard, so its line is the one the compiler will not ask for.
+Last, `HiddenOutcomes` lists the placement beside the draws and the dice.
 
 **In** `src/main/scala/distantlands/model/CoreOperations.scala`:
 
@@ -1499,9 +1614,63 @@ object AtlasPlacement:
     printed.relicSlots, printed.startingResources))
 ```
 
+**In** `src/main/scala/distantlands/gameplay/walker/HiddenOutcomes.scala`:
+
+Replace
+
+```scala
+package distantlands.gameplay.walker
+
+import distantlands.model.{Draw, Flip, Operation, Orientation, Peek, Reroll,
+  Reveal, Roll, Shuffle}
+
+/** Operations that show a player something the chooser cannot see yet:
+  * dice, a reroll, a draw, a shuffle, a peek, or a card turned faceup. The
+  * legality search stops there, since pruning past one would leak the
+  * outcome, and undo never takes one back (undo design, "Barriers").
+```
+
+with
+
+```scala
+package distantlands.gameplay.walker
+
+import distantlands.model.{Draw, Flip, Operation, Orientation, Peek,
+  PlaceAtlasSite, Reroll, Reveal, Roll, Shuffle}
+
+/** Operations that show a player something the chooser cannot see yet:
+  * dice, a reroll, a draw, a shuffle, a peek, a card turned faceup, or a
+  * site placed from the Atlas, whose stored cards and dealt relics nobody
+  * saw before (Foundations design, slice 3). The
+  * legality search stops there, since pruning past one would leak the
+  * outcome, and undo never takes one back (undo design, "Barriers").
+```
+
+Then replace
+
+```scala
+  /** Whether `operation` itself shows something the chooser cannot see. */
+  private[walker] def hides(operation: Operation): Boolean = operation match
+    case _: Roll | _: Reroll | _: Shuffle | _: Draw | _: Peek | _: Reveal =>
+      true
+    case flip: Flip => flip.orientation == Orientation.FaceUp
+    case _ => false
+```
+
+with
+
+```scala
+  /** Whether `operation` itself shows something the chooser cannot see. */
+  private[walker] def hides(operation: Operation): Boolean = operation match
+    case _: Roll | _: Reroll | _: Shuffle | _: Draw | _: Peek | _: Reveal |
+        _: PlaceAtlasSite => true
+    case flip: Flip => flip.orientation == Orientation.FaceUp
+    case _ => false
+```
+
 - [ ] **Step 4: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly distantlands.gameplay.operations.AtlasOperationsSuite distantlands.gameplay.setup.AtlasPlacementSuite distantlands.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.AtlasOperationsSuite distantlands.gameplay.setup.AtlasPlacementSuite distantlands.serialization.WalkerOperationWireSuite distantlands.gameplay.walker.*"`
 Expected: PASS.
 
 Run: `python3 scripts/check-architecture.py`
@@ -1511,8 +1680,8 @@ lines and `WalkerOperationCodec.scala` at 756, both under 800.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/distantlands/gameplay/operations/AtlasOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/gameplay/setup/AtlasPlacement.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/gameplay/operations/AtlasOperationsSuite.scala src/test/scala/distantlands/gameplay/setup/AtlasPlacementSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
-git commit -m "feat(atlas): place an Atlas site in the next slot" -m "PlaceAtlasSite, a journaled operation, takes the site at an end of the Atlas with its stored cards and puts it in the map's next slot as a bandit site. It carries the site's printed capacity, relic slots and resources, which AtlasPlacement copies from the catalog, since an operation is applied with none." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
+git add src/main/scala/distantlands/gameplay/operations/AtlasOperations.scala src/main/scala/distantlands/gameplay/operations/OperationApplication.scala src/main/scala/distantlands/gameplay/setup/AtlasPlacement.scala src/main/scala/distantlands/gameplay/walker/HiddenOutcomes.scala src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/test/scala/distantlands/gameplay/operations/AtlasOperationsSuite.scala src/test/scala/distantlands/gameplay/setup/AtlasPlacementSuite.scala src/test/scala/distantlands/gameplay/walker/HiddenOutcomesSuite.scala src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
+git commit -m "feat(atlas): place an Atlas site in the next slot" -m "PlaceAtlasSite, a journaled operation, takes the site at an end of the Atlas with its stored cards and puts it in the map's next slot as a bandit site. It carries the site's printed capacity, relic slots and resources, which AtlasPlacement copies from the catalog, since an operation is applied with none. It shows what nobody saw, so it is a hidden outcome and an undo barrier." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ---
@@ -1538,8 +1707,10 @@ git commit -m "feat(atlas): place an Atlas site in the next slot" -m "PlaceAtlas
 - Test: `src/test/scala/distantlands/gameplay/FollowUpSupplyWaiverSuite.scala`
 - Test: `src/test/scala/distantlands/model/EnumWireKeySuite.scala`
 - Test: `src/test/scala/distantlands/model/ProcedureRefSuite.scala`
+- Test: `src/test/scala/distantlands/application/UndoBarrierPlaySuite.scala`
 - Written by their commands: `src/test/resources/notes/declared-keys.txt`,
-  `src/test/resources/gamelog/explore.actor.log`, `explore.other.log`
+  `src/test/resources/gamelog/explore.actor.log`, `explore.other.log`,
+  `explore-stopped.actor.log`, `explore-stopped.other.log`
 
 **Interfaces:**
 - Consumes: Task 2's `AtlasPlacement.at` and `PlaceAtlasSite`; Task 1's
@@ -1573,15 +1744,20 @@ git commit -m "feat(atlas): place an Atlas site in the next slot" -m "PlaceAtlas
 The tree's shape is the load-bearing part. Read the file's doc comment and
 findings 6 and 7 before changing it: the modifier loop stands first though
 it asks nothing, the Supply is spent before each roll, the end question is
-a branch of its own, and the Explore line reads the site from the pawn.
+a branch of its own, and the Explore line reads the site as the map's
+Hintermost site, live: the placed site takes the first empty slot going
+Hinterward, and Brass Army may park the walk between the placement and the
+line.
 
 - [ ] **Step 1: Write the failing tests**
 
-`ExploreProcedureSuite` drives `OathRules` with scripted dice from the
-frontier table: the quiet map cut to three sites under Wide Horizons, p1 at
-the Hintermost. `ExploreLogScripts` plays one Explore through the service
-for the golden log, and `GoldenScripts` registers it. The five suites after
-them list the actions by hand and gain Explore.
+`ExploreProcedureSuite` drives `OathRules` with scripted dice from
+`p1AtHintermostOfThree`: the quiet map cut to three sites under Wide
+Horizons, p1 at the Hintermost. `ExploreLogScripts` plays an Explore that
+succeeds and one that stops through the service for the golden logs, and
+`GoldenScripts` registers them. The five suites after them list the
+actions by hand and gain Explore. `UndoBarrierPlaySuite` pins finding 13:
+once the end is answered, undo is refused.
 
 **Create** `src/test/scala/distantlands/gameplay/ExploreProcedureSuite.scala`:
 
@@ -1595,6 +1771,7 @@ import distantlands.gameplay.cards.{BuriedGiantSite, DeepWoodsSite,
   GoldenValleySite}
 import distantlands.gameplay.phases.ActOffers
 import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.action.StonePortalCard
 import distantlands.gameplay.powers.campaign.BrassArmyCard
 import distantlands.gameplay.powers.dice.JinxCard
 import distantlands.gameplay.powers.recover.SilverCharmCard
@@ -1632,15 +1809,17 @@ class ExploreProcedureSuite extends munit.FunSuite:
     * Recent end, then Desolate Shore, Dunes, Fair Isle, and Golden Valley
     * at its Forgotten end. Every site on the map holds its bandits, so the
     * check after an action places none. */
-  private def frontier: Table = Table.start
+  private def p1AtHintermostOfThree: Table = Table.start
     .foundation(FoundationNumber.I, FoundationFace.Altered)
     .mapCutIntoAtlas(3).pawn(p1, BuriedGiantSite).banditsRefilled
 
-  /** The frontier with one site, Deep Woods, left in the Atlas. */
-  private def frontierWithOneAtlasSite: ReadyGame =
+  /** [[p1AtHintermostOfThree]] with one site, Deep Woods, left in the
+    * Atlas. */
+  private def p1AtHintermostAtlasOfDeepWoods: ReadyGame =
     // No Table step shortens the Atlas.
-    frontier.update(_.updateCampaign(campaign => campaign.copy(atlas =
-      AtlasState(campaign.atlas.entries.take(1))))).ready
+    p1AtHintermostOfThree.update(_.updateCampaign(campaign =>
+      campaign.copy(atlas = AtlasState(campaign.atlas.entries.take(1)))))
+      .ready
 
   private def started(rules: OathRules, ready: ReadyGame): OathTransition =
     accepted(rules.startWalker(Ready(ready), ActionRef.Explore, p1))
@@ -1673,14 +1852,14 @@ class ExploreProcedureSuite extends munit.FunSuite:
 
   test("the Act menu offers Explore for 1 Supply at the Hintermost site " +
       "under Wide Horizons"):
-    val ready = frontier.ready
+    val ready = p1AtHintermostOfThree.ready
     assertEquals(ExploreProcedure.refusal(ready, p1), None)
     assertEquals(menuOption(ready),
       DecisionOption.Badged(exploreButton, "1 Supply"))
 
   test("without Wide Horizons the Act menu shows Explore unavailable " +
       "with its reason"):
-    val ready = frontier
+    val ready = p1AtHintermostOfThree
       .foundation(FoundationNumber.I, FoundationFace.Normal).ready
     assertEquals(menuOption(ready),
       unavailable("Explore needs the Wide Horizons foundation"))
@@ -1691,7 +1870,7 @@ class ExploreProcedureSuite extends munit.FunSuite:
   test("a pawn away from the Hintermost site cannot Explore, and the " +
       "player whose pawn is there can"):
     // p2 stands at Broken Peaks, p1 at Buried Giant, on p2's turn.
-    val ready = frontier.turn(p2, Phase.Act).ready
+    val ready = p1AtHintermostOfThree.turn(p2, Phase.Act).ready
     assertEquals(menuOption(ready),
       unavailable("Your pawn is not at the Hintermost site"))
     assertEquals(ExploreProcedure.refusal(ready, p1), None)
@@ -1705,12 +1884,12 @@ class ExploreProcedureSuite extends munit.FunSuite:
       unavailable("The map has no empty site slot"))
 
   test("an Atlas with no site refuses Explore"):
-    val ready = frontier.update(_.updateCampaign(_.copy(atlas =
-      AtlasState(Vector.empty)))).ready
+    val ready = p1AtHintermostOfThree.update(_.updateCampaign(
+      _.copy(atlas = AtlasState(Vector.empty)))).ready
     assertEquals(menuOption(ready), unavailable("The Atlas holds no site"))
 
   test("without Supply the Act menu says what Explore needs"):
-    assertEquals(menuOption(frontier.supply(p1, 0).ready),
+    assertEquals(menuOption(p1AtHintermostOfThree.supply(p1, 0).ready),
       unavailable("Needs 1 Supply; you have 0"))
 
   test("a refusal that carries no reason of its own reads as Explore's"):
@@ -1719,14 +1898,15 @@ class ExploreProcedureSuite extends munit.FunSuite:
 
   test("any role may Explore: a Chancellor and a Citizen at the " +
       "Hintermost site are offered it"):
-    val imperial = frontier.imperial(p1, p2).pawn(p2, BuriedGiantSite)
+    val imperial = p1AtHintermostOfThree.imperial(p1, p2)
+      .pawn(p2, BuriedGiantSite)
     assert(menuOption(imperial.ready).available)
     assert(menuOption(imperial.turn(p2, Phase.Act).ready).available)
 
   test("a roll that reaches 4 asks Recent or Forgotten, and Forgotten " +
       "places the Atlas's last site in the next slot with the explorer's " +
       "pawn on it"):
-    val ready = frontier.ready
+    val ready = p1AtHintermostOfThree.ready
     val rules = rulesRolling(scripted(fourShields))
     val rolled = started(rules, ready)
     assertEquals(parkedDecisionId(rolled), ExploreProcedure.endDecisionId)
@@ -1757,7 +1937,8 @@ class ExploreProcedureSuite extends munit.FunSuite:
   test("the site and the pawn's placement are one batch: the placement, " +
       "then the pawn's move, which is no Travel"):
     val rules = rulesRolling(scripted(fourShields))
-    val placed = resolved(rules, started(rules, frontier.ready),
+    val placed = resolved(rules,
+      started(rules, p1AtHintermostOfThree.ready),
       ExploreProcedure.endDecisionId,
       ExploreProcedure.endOption(AtlasEnd.Recent))
     val batches = placed.events.collect {
@@ -1774,7 +1955,7 @@ class ExploreProcedureSuite extends munit.FunSuite:
 
   test("with one site in the Atlas nothing is asked: the roll places it"):
     val rules = rulesRolling(scripted(fourShields))
-    val placed = started(rules, frontierWithOneAtlasSite)
+    val placed = started(rules, p1AtHintermostAtlasOfDeepWoods)
     assert(completed(placed), placed.events)
     val after = Outcomes.ready(placed.state)
     assertEquals(after.game.current.map.hintermost, Some(DeepWoodsSite.id))
@@ -1785,7 +1966,7 @@ class ExploreProcedureSuite extends munit.FunSuite:
   test("a short roll asks to roll again or stop, showing the dice and " +
       "the difficulty of 4; another Supply adds 2 dice to the same total"):
     val rules = rulesRolling(scripted(oneShield, oneShield, fourShields))
-    val short = started(rules, frontier.ready)
+    val short = started(rules, p1AtHintermostOfThree.ready)
     assertEquals(parkedDecisionId(short), ExploreProcedure.choiceDecisionId)
     assertEquals(EconomyActions.parkedDecision(short.state).query,
       DecisionQuery.ChooseOne(Vector(
@@ -1812,7 +1993,7 @@ class ExploreProcedureSuite extends munit.FunSuite:
   test("with no Supply left, rolling again is shown unavailable with " +
       "its reason, and answering it is refused"):
     val rules = rulesRolling(scripted(blanks))
-    val broke = started(rules, frontier.supply(p1, 1).ready)
+    val broke = started(rules, p1AtHintermostOfThree.supply(p1, 1).ready)
     assertEquals(Look(broke.state).supply(p1), 0)
     assertEquals(EconomyActions.parkedDecision(broke.state).query,
       DecisionQuery.ChooseOne(Vector(
@@ -1828,7 +2009,7 @@ class ExploreProcedureSuite extends munit.FunSuite:
 
   test("stopping fails the Explore: nothing is placed and the Supply " +
       "stays spent"):
-    val ready = frontier.ready
+    val ready = p1AtHintermostOfThree.ready
     val rules = rulesRolling(scripted(blanks))
     val stopped = resolved(rules, started(rules, ready),
       ExploreProcedure.choiceDecisionId, ExploreProcedure.stopOption)
@@ -1841,7 +2022,8 @@ class ExploreProcedureSuite extends munit.FunSuite:
     assertEquals(exploreLines(stopped.events), Vector("failed"))
 
   test("Jinx rerolls an Explore roll through the generic reroll choice"):
-    val jinxed = frontier.adviser(p1, JinxCard).secrets(p1, faceUp = 1).ready
+    val jinxed = p1AtHintermostOfThree.adviser(p1, JinxCard)
+      .secrets(p1, faceUp = 1).ready
     val rules = rulesRolling(scripted(blanks, fourShields))
     val rolled = started(rules, jinxed)
     val reroll = RerollChoice.decisionId(pool, 1)
@@ -1854,7 +2036,7 @@ class ExploreProcedureSuite extends munit.FunSuite:
 
   test("Silver Charm is not offered: Explore asks for no modifier and no " +
       "earlier die, though its holder pays Supply for defense dice"):
-    val charmed = frontier.relic(p1, SilverCharmCard).ready
+    val charmed = p1AtHintermostOfThree.relic(p1, SilverCharmCard).ready
     val rules = rulesRolling(scripted(blanks, blanks, fourShields))
     // No modifier decision: the start goes straight to the first roll.
     val short = started(rules, charmed)
@@ -1870,7 +2052,7 @@ class ExploreProcedureSuite extends munit.FunSuite:
   test("a question asked as the pawn is placed comes before the " +
       "Explore's line, which still names the site"):
     // Brass Army asks its holder whenever their pawn moves or is placed.
-    val armed = Table.from(frontierWithOneAtlasSite)
+    val armed = Table.from(p1AtHintermostAtlasOfDeepWoods)
       .relic(p1, BrassArmyCard).secrets(p1, faceUp = 1).ready
     val rules = rulesRolling(scripted(fourShields))
     val asked = started(rules, armed)
@@ -1884,9 +2066,38 @@ class ExploreProcedureSuite extends munit.FunSuite:
       case LogNoted(_, LogNote(_, "explored-recent", args, _), _) => args
     }, Vector(Vector[NoteArg](NoteArg.Site(DeepWoodsSite.id))))
 
+  test("after the end is chosen, a question asked as the pawn is placed " +
+      "still leaves the chosen site, its stored edifice ruined, and the " +
+      "line naming it"):
+    // Two sites in the Atlas, so the end is asked; Deep Woods stores the
+    // Stone Portal.
+    val armed = p1AtHintermostOfThree.update(_.updateCampaign(campaign =>
+        campaign.copy(atlas = AtlasState(campaign.atlas.entries.take(2)))))
+      .storedInAtlas(DeepWoodsSite, StonePortalCard)
+      .relic(p1, BrassArmyCard).secrets(p1, faceUp = 1).ready
+    val rules = rulesRolling(scripted(fourShields))
+    val rolled = started(rules, armed)
+    assertEquals(parkedDecisionId(rolled), ExploreProcedure.endDecisionId)
+    val asked = resolved(rules, rolled, ExploreProcedure.endDecisionId,
+      ExploreProcedure.endOption(AtlasEnd.Recent))
+    assertEquals(parkedDecisionId(asked), BrassArmyMoves.decisionId)
+    val placed = resolved(rules, asked, BrassArmyMoves.decisionId,
+      BrassArmyMoves.flip)
+    assert(completed(placed), placed.events)
+    val after = Outcomes.ready(placed.state)
+    assertEquals(after.game.current.map.hintermost, Some(DeepWoodsSite.id))
+    assertEquals(after.game.current.map.sites(DeepWoodsSite.id).denizens,
+      Vector[SiteDenizenState](EdificeState(StonePortalCard.id,
+        EdificeSide.Ruined, Tokens.empty)))
+    assertEquals(after.game.campaign.atlas.sites.map(_.id),
+      armed.game.campaign.atlas.sites.map(_.id).tail)
+    assertEquals(placed.events.collect {
+      case LogNoted(_, LogNote(_, "explored-recent", args, _), _) => args
+    }, Vector(Vector[NoteArg](NoteArg.Site(DeepWoodsSite.id))))
+
   test("a replayed Explore reaches the same map without rolling or " +
       "choosing again"):
-    val ready = frontier.ready
+    val ready = p1AtHintermostOfThree.ready
     val rules = rulesRolling(scripted(blanks, fourShields))
     val short = started(rules, ready)
     val placed = resolved(rules, resolved(rules, short,
@@ -1925,7 +2136,7 @@ object ExploreLogScripts:
     * Peaks and Buried Giant, where p1's pawn stands. The Atlas holds Deep
     * Woods at its Recent end, then Desolate Shore, Dunes, Fair Isle, and
     * Golden Valley at its Forgotten end. */
-  private[gamelog] def frontier: Table = Table.start
+  private[gamelog] def p1AtHintermostOfThree: Table = Table.start
     .foundation(FoundationNumber.I, FoundationFace.Altered)
     .mapCutIntoAtlas(3).pawn(p1, BuriedGiantSite)
 
@@ -1945,11 +2156,22 @@ object ExploreLogScripts:
 
   /** p1 explores the Forgotten end and finds Golden Valley. */
   def explore(using munit.Location): Script =
-    Script("explore", exploring("explore", frontier, AtlasEnd.Forgotten)._1,
-      p1)
+    Script("explore", exploring("explore", p1AtHintermostOfThree,
+      AtlasEnd.Forgotten)._1, p1)
+
+  /** p1's dice show blanks, and p1 stops after the first roll. */
+  def exploreStopped(using munit.Location): Script =
+    val (service, act) = atTable("explore-stopped",
+      p1AtHintermostOfThree.banditsRefilled, Dice.blanks)
+    act.withAnswers {
+      case park if park.decisionId == ExploreProcedure.choiceDecisionId =>
+        ChooseOneAnswer(ExploreProcedure.stopOption)
+    }.after(MenuPlay.start(p1, ActionRef.Explore))
+    Script("explore-stopped", service, p1)
 
   val named: Vector[(String, () => Script)] = Vector(
-    "explore" -> (() => explore))
+    "explore" -> (() => explore),
+    "explore-stopped" -> (() => exploreStopped))
 ```
 
 **In** `src/test/scala/distantlands/application/gamelog/GoldenScripts.scala`:
@@ -2115,6 +2337,71 @@ with
         "travel", "take-wealth", "muster", "trade", "challenge", "explore",
         "place-banner-resource", "negotiation", "campaign",
         "peek-site-relics", "reveal-owned-relic", "move-warbands",
+```
+
+**In** `src/test/scala/distantlands/application/UndoBarrierPlaySuite.scala`:
+
+Replace
+
+```scala
+package distantlands.application
+
+import distantlands.gameplay.cards.BrokenPeaksSite
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Situation, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Commands
+```
+
+with
+
+```scala
+package distantlands.application
+
+import distantlands.gameplay.actions.explore.ExploreProcedure
+import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
+import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.testkit.MenuPlay
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Dice, Situation, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Commands
+```
+
+Then replace
+
+```scala
+    nothingToUndo(service, "rest", passed.nextSequence, p1)
+    nothingToUndo(service, "rest", passed.nextSequence, p2)
+```
+
+with
+
+```scala
+    nothingToUndo(service, "rest", passed.nextSequence, p1)
+    nothingToUndo(service, "rest", passed.nextSequence, p2)
+
+  test("an Explore's placement shows the site and what it stores, so the " +
+      "end chosen before it cannot be taken back"):
+    // p1 explores under Wide Horizons from Buried Giant, the Hintermost of
+    // three sites; the dice reach 4 at once, and five sites wait in the
+    // Atlas.
+    val table = Table.start
+      .foundation(FoundationNumber.I, FoundationFace.Altered)
+      .mapCutIntoAtlas(3).pawn(p1, BuriedGiantSite).banditsRefilled
+    val (service, repository) = table.service(campaignDice = Dice.steady)
+    val act = table.situation(Situation.journaled(service, catalog,
+      repository, "explore"))
+    val asked = act.parkedAfter(MenuPlay.start(p1, ActionRef.Explore))
+    val placed = asked.after(Commands.resolveWalker(p1, TreeDecision(
+      ExploreProcedure.endDecisionId, DecisionAnswer.ChooseOneAnswer(
+        ExploreProcedure.endOption(AtlasEnd.Forgotten)))))
+    assertEquals(placed.ready.game.current.map.inPlay.size, 4)
+    nothingToUndo(service, "explore", placed.nextSequence, p1)
 ```
 
 - [ ] **Step 2: Run the tests to see them fail**
@@ -2483,13 +2770,13 @@ object ExploreProcedure:
           PositionedLocation(Location.Site(planned.site)))),
       required = true)
 
-    /** The site the Explore placed is where the explorer's pawn now
-      * stands. It is read from the live state, never from the step before:
-      * a power may ask its own question as the pawn is placed (Brass
-      * Army), and the walk then comes back to the note below in a later
-      * command. */
+    /** The site the Explore placed: the new Hintermost site, since it took
+      * the first empty slot going Hinterward. It is read from the live
+      * state, never from the step before: a power may ask its own question
+      * as the pawn is placed (Brass Army), and the walk then comes back to
+      * the note below in a later command. */
     def placedSite(ready: ReadyGame): Option[SiteId] =
-      ready.game.current.pawnSite(actor)
+      ready.game.current.map.hintermost
 
     /** "Explored Forgotten Site: Found Deep Woods". */
     val exploredNote = Note(ProcedureNotes.id(ActionRef.Explore), states =>
@@ -2537,6 +2824,28 @@ import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.actions.forge.ForgeProcedure
 import distantlands.gameplay.actions.campaign.CampaignProcedure
+```
+
+Then replace
+
+```scala
+    *
+    * It is `Option` because not every procedure has such a window:
+    * `PowerWindow` carries a `*ModifierSelection` case for each of the eight
+    * [[distantlands.model.MajorActionType]]s and Take Wealth
+    * is not one of them -- its only window is `WakeTakeWealth`, an
+    * `OtherWindow` whose `associatedMajorAction` is `None`. `None` here means
+```
+
+with
+
+```scala
+    *
+    * It is `Option` because not every procedure has such a window:
+    * `PowerWindow` carries a `*ModifierSelection` case for each
+    * [[distantlands.model.MajorActionType]] and Take Wealth
+    * is not one of them -- its only window is `WakeTakeWealth`, an
+    * `OtherWindow` whose `associatedMajorAction` is `None`. `None` here means
 ```
 
 Then replace
@@ -2843,8 +3152,10 @@ with
 
 - [ ] **Step 4: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly distantlands.gameplay.ExploreProcedureSuite distantlands.gameplay.PhaseMenuSuite distantlands.gameplay.FollowUpSupplyWaiverSuite distantlands.model.EnumWireKeySuite distantlands.model.ProcedureRefSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite"`
-Expected: PASS.
+Run: `./sbtw "testOnly distantlands.gameplay.ExploreProcedureSuite distantlands.gameplay.PhaseMenuSuite distantlands.gameplay.FollowUpSupplyWaiverSuite distantlands.model.EnumWireKeySuite distantlands.model.ProcedureRefSuite distantlands.gameplay.walker.* distantlands.application.UndoBarrierPlaySuite"`
+Expected: PASS. The undo test passes only because Task 2 made the
+placement a hidden outcome: without it, undo of the end's answer is
+accepted and the player may answer the other end having seen this one.
 
 - [ ] **Step 5: Write the note-key snapshot**
 
@@ -2869,17 +3180,20 @@ removed:
 
 Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 Expected: FAIL in "explore reads exactly as its golden log for the actor
-and another seat": `missing golden
-src/test/resources/gamelog/explore.actor.log`.
+and another seat" and in the same test of `explore-stopped`: `missing
+golden src/test/resources/gamelog/explore.actor.log`, and the same for
+`explore-stopped.actor.log`.
 
 Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 
 Run: `git status --short src/test/resources`
-Expected: exactly three lines, the modified snapshot and the two new
+Expected: exactly five lines, the modified snapshot and the four new
 goldens:
 
 ```text
  M src/test/resources/notes/declared-keys.txt
+?? src/test/resources/gamelog/explore-stopped.actor.log
+?? src/test/resources/gamelog/explore-stopped.other.log
 ?? src/test/resources/gamelog/explore.actor.log
 ?? src/test/resources/gamelog/explore.other.log
 ```
@@ -2905,6 +3219,23 @@ an Explore is hidden from the other seat. Check it:
 Run: `diff src/test/resources/gamelog/explore.actor.log src/test/resources/gamelog/explore.other.log && echo same`
 Expected: `same`.
 
+Read `explore-stopped.actor.log`; it must be exactly:
+
+```text
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+5.0 section 1 explore@4 | Explore[cost:1 Supply]
+7.0 roll 1 explore@4 | Rolled [dice:defense blank blank|blank, blank]
+11.0 action 1 explore@4 | Failed to explore
+```
+
+A blank roll, then Stop: the failed line, and nothing placed. Its other
+seat's file is the same text too:
+
+Run: `diff src/test/resources/gamelog/explore-stopped.actor.log src/test/resources/gamelog/explore-stopped.other.log && echo same`
+Expected: `same`.
+
 - [ ] **Step 7: Run the Game Log suites**
 
 Run: `./sbtw "testOnly distantlands.application.gamelog.* distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
@@ -2914,8 +3245,8 @@ an Explore, and its tag opens its band.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/main/scala/distantlands/application/gamelog/StartLines.scala src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala src/main/scala/distantlands/gameplay/actions/explore/ExploreProcedure.scala src/main/scala/distantlands/gameplay/phases/ActOffers.scala src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/model/ProcedureRef.scala src/test/resources/gamelog/explore.actor.log src/test/resources/gamelog/explore.other.log src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/application/gamelog/ExploreLogScripts.scala src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala src/test/scala/distantlands/application/gamelog/GoldenScripts.scala src/test/scala/distantlands/gameplay/ExploreProcedureSuite.scala src/test/scala/distantlands/gameplay/FollowUpSupplyWaiverSuite.scala src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala src/test/scala/distantlands/model/EnumWireKeySuite.scala src/test/scala/distantlands/model/ProcedureRefSuite.scala
-git commit -m "feat(explore): the Explore action under Wide Horizons" -m "A major action offered at the Hintermost site while Foundation I is Wide Horizons, a slot is empty and the Atlas holds a site, to any role. It rolls like a Recover against a difficulty of 4 on its own pool and windows, so no Recover power applies and the generic reroll does. On success the explorer chooses Recent or Forgotten, the site is placed with PlaceAtlasSite and their pawn on it. The Game Log tells it in its own lines." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
+git add src/main/scala/distantlands/application/gamelog/ProcedureLog.scala src/main/scala/distantlands/application/gamelog/StartLines.scala src/main/scala/distantlands/gameplay/actions/ProcedureNotes.scala src/main/scala/distantlands/gameplay/actions/explore/ExploreProcedure.scala src/main/scala/distantlands/gameplay/phases/ActOffers.scala src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala src/main/scala/distantlands/gameplay/walker/FollowUpSupplyWaiver.scala src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala src/main/scala/distantlands/model/PowerWindow.scala src/main/scala/distantlands/model/ProcedureRef.scala src/test/resources/gamelog/explore-stopped.actor.log src/test/resources/gamelog/explore-stopped.other.log src/test/resources/gamelog/explore.actor.log src/test/resources/gamelog/explore.other.log src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/application/UndoBarrierPlaySuite.scala src/test/scala/distantlands/application/gamelog/ExploreLogScripts.scala src/test/scala/distantlands/application/gamelog/GameLogPropertiesSuite.scala src/test/scala/distantlands/application/gamelog/GoldenScripts.scala src/test/scala/distantlands/gameplay/ExploreProcedureSuite.scala src/test/scala/distantlands/gameplay/FollowUpSupplyWaiverSuite.scala src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala src/test/scala/distantlands/model/EnumWireKeySuite.scala src/test/scala/distantlands/model/ProcedureRefSuite.scala
+git commit -m "feat(explore): the Explore action under Wide Horizons" -m "A major action offered at the Hintermost site while Foundation I is Wide Horizons, a slot is empty and the Atlas holds a site, to any role. It rolls like a Recover against a difficulty of 4 on its own pool and windows, so no Recover power applies and the generic reroll does. On success the explorer chooses Recent or Forgotten, the site is placed with PlaceAtlasSite and their pawn on it. The Game Log tells it in its own lines." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ---
@@ -2979,7 +3310,7 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.model.OathState.Ready
 import distantlands.testkit.{Look, Outcomes, Table}
-import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Table.p1
 import distantlands.testkit.Unwrap.accepted
 
 /** WHEN EXPLORED (rulebook, "Setup / When Explored"): the power of a card
@@ -3004,13 +3335,13 @@ class WhenExploredSuite extends munit.FunSuite:
   /** p1's Act under Wide Horizons at Buried Giant, the Hintermost of three
     * sites, each holding its bandits. The Atlas holds Deep Woods at its
     * Recent end and four more sites behind it. */
-  private def frontier: Table = Table.start
+  private def p1AtHintermostOfThree: Table = Table.start
     .foundation(FoundationNumber.I, FoundationFace.Altered)
     .mapCutIntoAtlas(3).pawn(p1, BuriedGiantSite).banditsRefilled
 
-  /** The frontier with `edifice` stored on Deep Woods. */
-  private def frontierStoring(edifice: EdificeId): Table =
-    frontier.storedInAtlas(DeepWoodsSite, edifice)
+  /** [[p1AtHintermostOfThree]] with `edifice` stored on Deep Woods. */
+  private def deepWoodsStoring(edifice: EdificeId): Table =
+    p1AtHintermostOfThree.storedInAtlas(DeepWoodsSite, edifice)
 
   /** p1's Explore of the Recent end, from its start to its end. */
   private def exploredDeepWoods(table: Table): OathTransition =
@@ -3031,7 +3362,7 @@ class WhenExploredSuite extends munit.FunSuite:
   test("Bandit Market on the explored site places 1 favor on each bandit " +
       "site, the new one too, and burns 1 favor from each bank, after the " +
       "Explore's own line"):
-    val table = frontierStoring(GreatMarketCard.id)
+    val table = deepWoodsStoring(GreatMarketCard.id)
     val banks = table.ready.banks.favor
     val explored = exploredDeepWoods(table)
     val look = Look(explored.state)
@@ -3050,7 +3381,7 @@ class WhenExploredSuite extends munit.FunSuite:
 
   test("a Bandit Market that already stands on the map stays quiet when " +
       "another site is explored"):
-    val table = frontier
+    val table = p1AtHintermostOfThree
       .edifice(GreatMarketCard, EdificeSide.Ruined, at = AncientCitySite)
     val banks = table.ready.banks.favor
     val explored = exploredDeepWoods(table)
@@ -3061,7 +3392,7 @@ class WhenExploredSuite extends munit.FunSuite:
 
   test("Broken Forge on the explored site: the explorer places their pawn " +
       "there, so every relic at a site in its region is discarded"):
-    val table = frontierStoring(GreatForgeCard.id)
+    val table = deepWoodsStoring(GreatForgeCard.id)
       .relicAt(StickyFireCard, BuriedGiantSite)
       .relicAt(DowsingSticksCard, BrokenPeaksSite)
     val explored = exploredDeepWoods(table)
@@ -3075,7 +3406,7 @@ class WhenExploredSuite extends munit.FunSuite:
 
   test("a Proving Grounds that already stands where the explorer started " +
       "gives no warbands: the pawn is placed at the explored site"):
-    val table = frontier
+    val table = p1AtHintermostOfThree
       .edifice(ProvingGroundsCard, EdificeSide.Intact, at = BuriedGiantSite)
     val before = Look(table.ready).boardWarbands(p1)
     val explored = exploredDeepWoods(table)
@@ -3083,7 +3414,7 @@ class WhenExploredSuite extends munit.FunSuite:
 
   test("Empty Grounds on the explored site discards every other denizen " +
       "in its region and stays"):
-    val table = frontierStoring(ProvingGroundsCard.id)
+    val table = deepWoodsStoring(ProvingGroundsCard.id)
       .storedInAtlas(DeepWoodsSite, WizardsConclaveCard)
       .denizen(EldersCard, at = BuriedGiantSite)
       .denizen(MessengerCard, at = AncientCitySite)
@@ -3095,27 +3426,23 @@ class WhenExploredSuite extends munit.FunSuite:
     assertEquals(look.cardsAt(AncientCitySite), Vector[CardId](MessengerCard.id))
 
   test("Hall of Mockery on the explored site places 4 favor on the " +
-      "People's Favor and burns 1 favor from each bank; the banner stays " +
-      "with its holder"):
-    val table = frontierStoring(HallOfDebateCard.id)
-      .peoplesFavor(Some(p2), favor = 1)
-    val explored = exploredDeepWoods(table)
+      "People's Favor and burns 1 favor from each bank"):
+    val explored = exploredDeepWoods(deepWoodsStoring(HallOfDebateCard.id))
     val look = Look(explored.state)
     assertEquals(look.favorOnPeoplesFavor, 1 + HallOfMockery.Favor)
-    assertEquals(look.peoplesFavorHolder, Some(p2))
     assertEquals(said(HallOfMockery.id, HallOfMockery.noteKeys,
       explored.events), Vector("Placed 4 favor on the People's Favor and " +
         "burned 6 favor from the banks."))
 
   test("Lost Guardians on the explored site places 3 secrets on the " +
       "Darkest Secret"):
-    val explored = exploredDeepWoods(frontierStoring(TomeGuardiansCard.id))
+    val explored = exploredDeepWoods(deepWoodsStoring(TomeGuardiansCard.id))
     assertEquals(Look(explored.state).secretsOnDarkestSecret,
       1 + LostGuardians.Secrets)
 
   test("Ruined School on the explored site places 1 secret on each bandit " +
       "site"):
-    val explored = exploredDeepWoods(frontierStoring(SchoolOfVinesCard.id))
+    val explored = exploredDeepWoods(deepWoodsStoring(SchoolOfVinesCard.id))
     val look = Look(explored.state)
     Vector(AncientCitySite, BrokenPeaksSite, BuriedGiantSite, DeepWoodsSite)
       .foreach(site => assertEquals(look.siteTokens(site).secrets, 1,
@@ -3125,7 +3452,7 @@ class WhenExploredSuite extends munit.FunSuite:
 
   test("Broken Horn on the explored site buries its region's discard " +
       "pile"):
-    val table = frontierStoring(ForestHornCard.id)
+    val table = deepWoodsStoring(ForestHornCard.id)
       .discarded(Region.Provinces, EldersCard, MessengerCard)
       .discarded(Region.Cradle, ScryerCard)
     val deck = table.ready.game.current.commonCards.worldDeck
@@ -3141,12 +3468,12 @@ class WhenExploredSuite extends munit.FunSuite:
 
   test("Broken Clock on the explored site advances the round marker once, " +
       "and on round 8 does nothing"):
-    val third = exploredDeepWoods(frontierStoring(GreatClockCard.id)
+    val third = exploredDeepWoods(deepWoodsStoring(GreatClockCard.id)
       .roundMarkerAt(3))
     assertEquals(Outcomes.ready(third.state).game.current.tracks.round, 4)
     assertEquals(said(BrokenClock.id, BrokenClock.noteKeys, third.events),
       Vector("Advanced the round marker to round 4."))
-    val last = exploredDeepWoods(frontierStoring(GreatClockCard.id)
+    val last = exploredDeepWoods(deepWoodsStoring(GreatClockCard.id)
       .roundMarkerAt(RoundMarker.LastRound))
     assertEquals(Outcomes.ready(last.state).game.current.tracks.round, 8)
     assertEquals(Outcomes.ready(last.state).game.current.result, None)
@@ -3155,7 +3482,7 @@ class WhenExploredSuite extends munit.FunSuite:
 
   test("Fallen Spire on the explored site swaps the denizens of its " +
       "region's discard pile with the Dispossessed"):
-    val table = frontierStoring(GreatSpireCard.id)
+    val table = deepWoodsStoring(GreatSpireCard.id)
       .discarded(Region.Provinces, EldersCard, MessengerCard)
       .dispossessed(DazzleCard, ScryerCard)
     val explored = exploredDeepWoods(table)
@@ -3169,7 +3496,7 @@ class WhenExploredSuite extends munit.FunSuite:
         "discard pile, then shuffled the pile."))
 
   test("an explored site with no edifice resolves nothing"):
-    val explored = exploredDeepWoods(frontier)
+    val explored = exploredDeepWoods(p1AtHintermostOfThree)
     assertEquals(explored.events.collect { case LogNoted(power, _, _) =>
       power.value }, Vector("procedure.explore"))
 ```
@@ -3200,26 +3527,28 @@ import distantlands.model.DecisionAnswer.ChooseOneAnswer
 Then replace
 
 ```scala
-      p1)
+    Script("explore-stopped", service, p1)
 
   val named: Vector[(String, () => Script)] = Vector(
-    "explore" -> (() => explore))
+    "explore" -> (() => explore),
+    "explore-stopped" -> (() => exploreStopped))
 ```
 
 with
 
 ```scala
-      p1)
+    Script("explore-stopped", service, p1)
 
   /** p1 explores the Recent end and finds Deep Woods, which stores the
     * Great Market: placed ruined, Bandit Market resolves WHEN EXPLORED. */
   def exploreBanditMarket(using munit.Location): Script =
     Script("explore-bandit-market", exploring("explore-bandit-market",
-      frontier.storedInAtlas(DeepWoodsSite, GreatMarketCard),
+      p1AtHintermostOfThree.storedInAtlas(DeepWoodsSite, GreatMarketCard),
       AtlasEnd.Recent)._1, p1)
 
   val named: Vector[(String, () => Script)] = Vector(
     "explore" -> (() => explore),
+    "explore-stopped" -> (() => exploreStopped),
     "explore-bandit-market" -> (() => exploreBanditMarket))
 ```
 
@@ -3289,21 +3618,21 @@ with
 Then replace
 
 ```scala
-      * stands. It is read from the live state, never from the step before:
-      * a power may ask its own question as the pawn is placed (Brass
-      * Army), and the walk then comes back to the note below in a later
-      * command. */
+      * state, never from the step before: a power may ask its own question
+      * as the pawn is placed (Brass Army), and the walk then comes back to
+      * the note below in a later command. */
     def placedSite(ready: ReadyGame): Option[SiteId] =
+      ready.game.current.map.hintermost
 ```
 
 with
 
 ```scala
-      * stands. It is read from the live state, never from the step before:
-      * a power may ask its own question as the pawn is placed (Brass
-      * Army), and the walk then comes back to the nodes below in a later
-      * command. */
+      * state, never from the step before: a power may ask its own question
+      * as the pawn is placed (Brass Army), and the walk then comes back to
+      * the nodes below in a later command. */
     def placedSite(ready: ReadyGame): Option[SiteId] =
+      ready.game.current.map.hintermost
 ```
 
 Then replace
@@ -3756,12 +4085,563 @@ Expected: PASS.
 
 ```bash
 git add src/main/scala/distantlands/gameplay/actions/explore/ExploreProcedure.scala src/main/scala/distantlands/gameplay/powers/setup/BannerSetupRules.scala src/main/scala/distantlands/gameplay/powers/setup/EdificeSetupSupport.scala src/main/scala/distantlands/gameplay/powers/setup/GreatMarketRules.scala src/main/scala/distantlands/gameplay/powers/setup/ProvingGroundsRules.scala src/main/scala/distantlands/gameplay/powers/setup/RuinedSiteSetupRules.scala src/main/scala/distantlands/model/PowerWindow.scala src/test/resources/gamelog/explore-bandit-market.actor.log src/test/resources/gamelog/explore-bandit-market.other.log src/test/scala/distantlands/application/gamelog/ExploreLogScripts.scala src/test/scala/distantlands/gameplay/powers/setup/WhenExploredSuite.scala
-git commit -m "feat(explore): resolve WHEN EXPLORED at the explored site" -m "An Explore folds the WhenExplored window on a node naming the site it placed. A setup rule with a WHEN EXPLORED half resolves there only for a face at that site, so a face already on the map stays quiet, and the explorer is the player who placed their pawn." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
+git commit -m "feat(explore): resolve WHEN EXPLORED at the explored site" -m "An Explore folds the WhenExplored window on a node naming the site it placed. A setup rule with a WHEN EXPLORED half resolves there only for a face at that site, so a face already on the map stays quiet, and the explorer is the player who placed their pawn." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ---
 
-### Task 5: Explore at the table
+### Task 5: Hall of Mockery and Lost Guardians move their banner
+
+**Files:**
+- Modify: `src/main/scala/distantlands/gameplay/operations/BoardControlOperations.scala`
+- Modify: `src/main/scala/distantlands/gameplay/powers/setup/BannerSetupRules.scala`
+- Test: `src/test/scala/distantlands/gameplay/OperationApplicationSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala`
+- Test: `src/test/scala/distantlands/gameplay/powers/setup/WhenExploredSuite.scala`
+- Written by its command: `src/test/resources/notes/declared-keys.txt`
+
+**Interfaces:**
+- Consumes: Task 4's `WhenExploredSuite` and its `exploredDeepWoods`;
+  `HallOfMockery`, `LostGuardians`, `RuinedSetupRule`; the banner moves
+  of `BoardControlOperations`; `Location.SharedBank`, which holds a banner
+  nobody holds (`OperationStateAdapter.quantity`).
+- Produces:
+  - `Move(Piece.Banner(banner), PlayArea(holder), SharedBank)`: the
+    holder's banner returns to the shared bank; refused, as
+    `missing-piece`, from a player who does not hold it.
+  - `BannerToSharedBank.move(ready, banner): Option[CoreOperation]` and
+    `BannerToSharedBank.moved(before, after, banner): Boolean`, in
+    `BannerSetupRules.scala`.
+  - Hall of Mockery and Lost Guardians move a held banner to the shared
+    bank, at Setup's end and when explored. Three new note keys:
+    `edifice.e01.ruined placed-and-moved` and `placed-moved-and-burned`,
+    and `edifice.e18.ruined placed-and-moved`.
+
+The owner decided this with the plan's review (ruling 8). It changes a
+later game's Setup for these two cards: a Chancellor who starts with the
+People's Favor (Oathkeeper goal the People) or the Darkest Secret
+(Devotion) now loses it at Setup's end when the matching ruined edifice is
+on the map, as the card says. In a first game both banners start in the
+shared bank, so nothing moves and no line changes.
+
+- [ ] **Step 1: Write the failing tests**
+
+**In** `src/test/scala/distantlands/gameplay/OperationApplicationSuite.scala`:
+
+Replace
+
+```scala
+        Location.SharedBank, 0)))
+
+  test("moving a pawn that is not at the source site is a missing-piece"):
+    // Red's pawn stands at S1, not S3.
+```
+
+with
+
+```scala
+        Location.SharedBank, 0)))
+
+  test("a held banner returns to the shared bank, and only from its " +
+      "holder"):
+    // Red holds the People's Favor.
+    def returned(from: PlayerId) = Move(Piece.Banner(Banner.PeoplesFavor),
+      PositionedLocation(Location.PlayArea(from)),
+      PositionedLocation(Location.SharedBank))
+    val after = accepted(RawOperationBatch.executeAll(ready,
+      Vector(returned(playerId))))
+    assertEquals(after.game.current.banners.peoplesFavor.holder, None)
+    assertEquals(codes(OperationApplication.validate(ready,
+      returned(blueId))), Vector("missing-piece"))
+
+  test("moving a pawn that is not at the source site is a missing-piece"):
+    // Red's pawn stands at S1, not S3.
+```
+
+**In** `src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala`:
+
+Replace
+
+```scala
+  ThreateningRoarCard}
+import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
+import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure,
+  SetupWalkDriver}
+import distantlands.gameplay.walker.{WalkerDice, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Unwrap.accepted
+
+```
+
+with
+
+```scala
+  ThreateningRoarCard}
+import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
+import distantlands.gameplay.setup.{FirstGameSetupFixture, LaterGameFixture,
+  SetupProcedure, SetupWalkDriver}
+import distantlands.gameplay.walker.{WalkerDice, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Situation, Table}
+import distantlands.testkit.Unwrap.accepted
+
+```
+
+Then replace
+
+```scala
+    assertEquals(said(HallOfMockery, walked.events), Vector.empty)
+
+  // ---- Lost Guardians ----
+
+```
+
+with
+
+```scala
+    assertEquals(said(HallOfMockery, walked.events), Vector.empty)
+
+  /** A later game's Setup, run to the first turn, from a Chronicle whose
+    * Oathkeeper goal is `goal` and whose first atlas site, placed ruined,
+    * stores `edifice`: l1, seated as p1, is the Chancellor, who starts with
+    * the goal's banner. */
+  private def laterGameSetUpWith(edifice: EdificeId,
+      goal: OathkeeperGoal): ReadyGame =
+    val record = LaterGameFixture.chronicle(LineageId("l1"),
+      LineageId("l2"))
+    val chronicle = record.copy(oathkeeperGoal = goal,
+      atlasBox = record.atlasBox.updated(0,
+        record.atlasBox(0).copy(items = Vector(edifice))))
+    Situation.wake(Situation.rules(catalog,
+        WalkerPowerCatalog.default(catalog)), chronicle,
+      LaterGameFixture.orders(chronicle, PlayerId("p1"))).ready
+
+  test("in a later game Hall of Mockery takes the People's Favor from the " +
+      "Chancellor, who started with it, back to the shared bank"):
+    val ready = laterGameSetUpWith(HallOfDebateCard.id,
+      OathkeeperGoal.ThePeople)
+    assertEquals(Look(ready).peoplesFavorHolder, None)
+    assertEquals(Look(ready).favorOnPeoplesFavor, 1 + HallOfMockery.Favor)
+
+  test("in a later game Lost Guardians takes the Darkest Secret from the " +
+      "Chancellor back to the shared bank"):
+    val ready = laterGameSetUpWith(TomeGuardiansCard.id,
+      OathkeeperGoal.Devotion)
+    assertEquals(Look(ready).darkestSecretHolder, None)
+    assertEquals(Look(ready).secretsOnDarkestSecret, 1 + LostGuardians.Secrets)
+
+  test("Hall of Mockery's line says it moved a held banner"):
+    val staged = stagedWith(HallOfDebateCard.id)
+      .peoplesFavor(Some(PlayerId("p1")), favor = 1).ready
+    val walked = finish(staged)
+    assertEquals(Look(walked.ready).peoplesFavorHolder, None)
+    assertEquals(said(HallOfMockery, walked.events), Vector(NoteText.Said(
+      "placed-moved-and-burned", "Placed 4 favor on the People's Favor, " +
+        s"moved it to the shared bank and burned ${Suit.all.size} favor " +
+        "from the banks.", covers = false)))
+    val unburned = Suit.all.foldLeft(stagedWith(HallOfDebateCard.id)
+      .peoplesFavor(Some(PlayerId("p1")), favor = 1))(
+      (table, suit) => table.bankFavor(suit, 0)).ready
+    assertEquals(said(HallOfMockery, finish(unburned).events),
+      Vector(NoteText.Said("placed-and-moved", "Placed 4 favor on the " +
+        "People's Favor and moved it to the shared bank.", covers = false)))
+
+  test("Lost Guardians' line says it moved a held banner"):
+    val staged = stagedWith(TomeGuardiansCard.id)
+      .darkestSecret(Some(PlayerId("p1")), secrets = 1).ready
+    val walked = finish(staged)
+    assertEquals(Look(walked.ready).darkestSecretHolder, None)
+    assertEquals(said(LostGuardians, walked.events), Vector(NoteText.Said(
+      "placed-and-moved", "Placed 3 secrets on the Darkest Secret and " +
+        "moved it to the shared bank.", covers = false)))
+
+  // ---- Lost Guardians ----
+
+```
+
+**In** `src/test/scala/distantlands/gameplay/powers/setup/WhenExploredSuite.scala`:
+
+Replace
+
+```scala
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
+
+```
+
+with
+
+```scala
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
+
+```
+
+Then replace
+
+```scala
+        "burned 6 favor from the banks."))
+
+  test("Lost Guardians on the explored site places 3 secrets on the " +
+      "Darkest Secret"):
+```
+
+with
+
+```scala
+        "burned 6 favor from the banks."))
+
+  test("Hall of Mockery on the explored site takes the People's Favor from " +
+      "its holder back to the shared bank"):
+    val table = deepWoodsStoring(HallOfDebateCard.id)
+      .peoplesFavor(Some(p2), favor = 1)
+    val explored = exploredDeepWoods(table)
+    assertEquals(Look(explored.state).peoplesFavorHolder, None)
+    assertEquals(said(HallOfMockery.id, HallOfMockery.noteKeys,
+      explored.events), Vector("Placed 4 favor on the People's Favor, moved " +
+        "it to the shared bank and burned 6 favor from the banks."))
+
+  test("Lost Guardians on the explored site takes the Darkest Secret from " +
+      "its holder, the explorer, back to the shared bank"):
+    val table = deepWoodsStoring(TomeGuardiansCard.id)
+      .darkestSecret(Some(p1), secrets = 1)
+    val explored = exploredDeepWoods(table)
+    assertEquals(Look(explored.state).darkestSecretHolder, None)
+    assertEquals(said(LostGuardians.id, LostGuardians.noteKeys,
+      explored.events), Vector("Placed 3 secrets on the Darkest Secret and " +
+        "moved it to the shared bank."))
+
+  test("Lost Guardians on the explored site places 3 secrets on the " +
+      "Darkest Secret"):
+```
+
+- [ ] **Step 2: Run the tests to see them fail**
+
+Run: `./sbtw "testOnly distantlands.gameplay.OperationApplicationSuite distantlands.gameplay.powers.setup.RuinedSetupRulesSuite distantlands.gameplay.powers.setup.WhenExploredSuite"`
+Expected: FAIL, seven tests of 52: the executor refuses the return as an
+incompatible location, both banners stay with their holders at Setup and
+when explored, and the new lines are not written.
+
+- [ ] **Step 3: Implement**
+
+The guard and the move accept a banner going back to the shared bank.
+
+**In** `src/main/scala/distantlands/gameplay/operations/BoardControlOperations.scala`:
+
+Replace
+
+```scala
+          else (Vector(InsufficientPieces(Piece.Banner(banner), from, 0)),
+            state)
+    case _ =>
+      (Vector(IncompatibleLocation(Piece.Banner(banner), to)), state)
+```
+
+with
+
+```scala
+          else (Vector(InsufficientPieces(Piece.Banner(banner), from, 0)),
+            state)
+    // Back to the shared bank, which holds a banner nobody holds.
+    case (Location.PlayArea(source), Location.SharedBank) =>
+      val holder = state.bannerHolders.getOrElse(banner, None)
+      if !holder.contains(source) then
+        (Vector(MissingPiece(Piece.Banner(banner), from)), state)
+      else (Vector.empty, state.copy(
+        bannerHolders = state.bannerHolders.updated(banner, None)))
+    case _ =>
+      (Vector(IncompatibleLocation(Piece.Banner(banner), to)), state)
+```
+
+Then replace
+
+```scala
+        playerState(ready, destination).map(_ =>
+          setBannerHolder(ready, banner, destination))
+      case _ => Left(IncompatibleLocation(Piece.Banner(banner), to))
+
+  private def setBannerHolder(ready: ReadyGame, banner: Banner,
+      player: PlayerId): ReadyGame =
+    val current = ready.game.current
+    val banners = banner match
+      case Banner.PeoplesFavor => current.banners.copy(
+        peoplesFavor = current.banners.peoplesFavor.copy(holder = Some(player)))
+      case Banner.DarkestSecret => current.banners.copy(
+        darkestSecret = current.banners.darkestSecret.copy(holder = Some(player)))
+    ready.copy(game = ready.game.copy(current = current.copy(banners = banners)))
+```
+
+with
+
+```scala
+        playerState(ready, destination).map(_ =>
+          setBannerHolder(ready, banner, destination))
+      case (Location.PlayArea(_), Location.SharedBank) =>
+        Right(holdBanner(ready, banner, None))
+      case _ => Left(IncompatibleLocation(Piece.Banner(banner), to))
+
+  private def setBannerHolder(ready: ReadyGame, banner: Banner,
+      player: PlayerId): ReadyGame =
+    holdBanner(ready, banner, Some(player))
+
+  /** `banner` held by `holder`, or by nobody, in the shared bank. */
+  private def holdBanner(ready: ReadyGame, banner: Banner,
+      holder: Option[PlayerId]): ReadyGame =
+    val current = ready.game.current
+    val banners = banner match
+      case Banner.PeoplesFavor => current.banners.copy(
+        peoplesFavor = current.banners.peoplesFavor.copy(holder = holder))
+      case Banner.DarkestSecret => current.banners.copy(
+        darkestSecret = current.banners.darkestSecret.copy(holder = holder))
+    ready.copy(game = ready.game.copy(current = current.copy(banners = banners)))
+```
+
+The two rules move a held banner after placing their tokens, and their
+lines say so.
+
+**In** `src/main/scala/distantlands/gameplay/powers/setup/BannerSetupRules.scala`:
+
+Replace
+
+```scala
+  * The favor comes from the shared supply, as Bandit Market's does, and each
+  * favor bank burns one with no burner, a bank already empty burning none.
+  * The banner is not moved: in the all-Exile first game both banners start
+  * in the shared bank, and "players cannot start with it" undoes a
+  * later-game setup step the engine does not have (catalog batch 9, "Catalog
+  * and roadmap corrections").
+  *
+  * Its line reads the step: "Placed 4 favor on the People's Favor and burned
+  * 6 favor from the banks.", or only the placement when no bank held favor.
+  */
+case object HallOfMockery extends RuinedSetupRule:
+```
+
+with
+
+```scala
+  * The favor comes from the shared supply, as Bandit Market's does, and each
+  * favor bank burns one with no burner, a bank already empty burning none.
+  * A held banner goes back to the shared bank: in a later game the
+  * Chancellor may start with it, and when explored anyone may hold it. A
+  * banner already in the shared bank stays there.
+  *
+  * Its line reads the step: "Placed 4 favor on the People's Favor, moved it
+  * to the shared bank and burned 6 favor from the banks.", leaving out the
+  * move when nobody held the banner and the burn when no bank held favor.
+  */
+case object HallOfMockery extends RuinedSetupRule:
+```
+
+Then replace
+
+```scala
+  val placed: NoteKey = notes.key("placed", Vector(NotePart.Text("Placed "),
+    NotePart.Arg(0), NotePart.Text(" on the People's Favor.")))
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  protected def build(ready: ReadyGame, at: SiteId): Vector[CoreOperation] =
+    Move(Piece.Favor(Favor), PositionedLocation(Location.SharedBank),
+      PositionedLocation(Location.OnBanner(Banner.PeoplesFavor))) +:
+      Suit.all.map(bank =>
+        Burn.favor(1, PositionedLocation(Location.FavorBank(bank)), None))
+```
+
+with
+
+```scala
+  val placed: NoteKey = notes.key("placed", Vector(NotePart.Text("Placed "),
+    NotePart.Arg(0), NotePart.Text(" on the People's Favor.")))
+  /** "Placed {4 favor} on the People's Favor, moved it to the shared bank
+    * and burned {6 favor} from the banks." */
+  val placedMovedAndBurned: NoteKey = notes.key("placed-moved-and-burned",
+    Vector(NotePart.Text("Placed "), NotePart.Arg(0),
+      NotePart.Text(" on the People's Favor, moved it to the shared bank " +
+        "and burned "), NotePart.Arg(1), NotePart.Text(" from the banks.")))
+  /** "Placed {4 favor} on the People's Favor and moved it to the shared
+    * bank." */
+  val placedAndMoved: NoteKey = notes.key("placed-and-moved", Vector(
+    NotePart.Text("Placed "), NotePart.Arg(0),
+    NotePart.Text(" on the People's Favor and moved it to the shared bank.")))
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  protected def build(ready: ReadyGame, at: SiteId): Vector[CoreOperation] =
+    (Move(Piece.Favor(Favor), PositionedLocation(Location.SharedBank),
+      PositionedLocation(Location.OnBanner(Banner.PeoplesFavor))) +:
+      BannerToSharedBank.move(ready, Banner.PeoplesFavor).toVector) ++
+      Suit.all.map(bank =>
+        Burn.favor(1, PositionedLocation(Location.FavorBank(bank)), None))
+```
+
+Then replace
+
+```scala
+      val burned = Suit.all.map(suit => before.banks.favor.getOrElse(suit, 0) -
+        after.banks.favor.getOrElse(suit, 0)).sum
+      val card = PowerSourceRef.Card(edifice)
+      if gained > 0 && burned > 0 then Some(placedAndBurned(card,
+        MarketRule.favor(gained), MarketRule.favor(burned)))
+      else if gained > 0 then Some(placed(card, MarketRule.favor(gained)))
+      else None
+    })
+
+/** Lost Guardians (E18, ruined): "SETUP (END): Place 3 secrets on the
+  * Darkest Secret and move it to the shared bank. Players cannot start with
+  * it."
+  *
+  * The secrets come from the shared supply. The banner is not moved, for
+  * the reason Hall of Mockery's doc gives. Its line reads the step: "Placed
+  * 3 secrets on the Darkest Secret."
+  */
+case object LostGuardians extends RuinedSetupRule:
+```
+
+with
+
+```scala
+      val burned = Suit.all.map(suit => before.banks.favor.getOrElse(suit, 0) -
+        after.banks.favor.getOrElse(suit, 0)).sum
+      val moved = BannerToSharedBank.moved(before, after, Banner.PeoplesFavor)
+      val card = PowerSourceRef.Card(edifice)
+      val (favor, bank) = (MarketRule.favor(gained), MarketRule.favor(burned))
+      if gained == 0 then None
+      else if moved && burned > 0 then
+        Some(placedMovedAndBurned(card, favor, bank))
+      else if moved then Some(placedAndMoved(card, favor))
+      else if burned > 0 then Some(placedAndBurned(card, favor, bank))
+      else Some(placed(card, favor))
+    })
+
+/** "Move it to the shared bank", as Hall of Mockery and Lost Guardians
+  * print: a held banner leaves its holder for the shared bank, which holds
+  * a banner nobody holds. One the shared bank already holds stays. */
+object BannerToSharedBank:
+  /** The move, while a player holds `banner`. */
+  def move(ready: ReadyGame, banner: Banner): Option[CoreOperation] =
+    holder(ready, banner).map(player => Move(Piece.Banner(banner),
+      PositionedLocation(Location.PlayArea(player)),
+      PositionedLocation(Location.SharedBank)))
+
+  /** Whether the step from `before` to `after` returned `banner`. */
+  def moved(before: ReadyGame, after: ReadyGame, banner: Banner): Boolean =
+    holder(before, banner).nonEmpty && holder(after, banner).isEmpty
+
+  private def holder(ready: ReadyGame, banner: Banner): Option[PlayerId] =
+    banner match
+      case Banner.PeoplesFavor => ready.game.current.banners.peoplesFavor.holder
+      case Banner.DarkestSecret =>
+        ready.game.current.banners.darkestSecret.holder
+
+/** Lost Guardians (E18, ruined): "SETUP (END): Place 3 secrets on the
+  * Darkest Secret and move it to the shared bank. Players cannot start with
+  * it."
+  *
+  * The secrets come from the shared supply, and a held banner goes back to
+  * the shared bank, as Hall of Mockery's does. Its line reads the step:
+  * "Placed 3 secrets on the Darkest Secret and moved it to the shared
+  * bank.", or only the placement when nobody held the banner.
+  */
+case object LostGuardians extends RuinedSetupRule:
+```
+
+Then replace
+
+```scala
+  val placed: NoteKey = notes.key("placed", Vector(NotePart.Text("Placed "),
+    NotePart.Arg(0), NotePart.Text(" on the Darkest Secret.")))
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  protected def build(ready: ReadyGame, at: SiteId): Vector[CoreOperation] =
+    Vector(Move(Piece.Secrets(Secrets),
+      PositionedLocation(Location.SharedBank),
+      PositionedLocation(Location.OnBanner(Banner.DarkestSecret))))
+
+  protected def note(at: SiteId): Note = Note(id, states => for
+```
+
+with
+
+```scala
+  val placed: NoteKey = notes.key("placed", Vector(NotePart.Text("Placed "),
+    NotePart.Arg(0), NotePart.Text(" on the Darkest Secret.")))
+  /** "Placed {3 secrets} on the Darkest Secret and moved it to the shared
+    * bank." */
+  val placedAndMoved: NoteKey = notes.key("placed-and-moved", Vector(
+    NotePart.Text("Placed "), NotePart.Arg(0),
+    NotePart.Text(" on the Darkest Secret and moved it to the shared bank.")))
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  protected def build(ready: ReadyGame, at: SiteId): Vector[CoreOperation] =
+    Move(Piece.Secrets(Secrets),
+      PositionedLocation(Location.SharedBank),
+      PositionedLocation(Location.OnBanner(Banner.DarkestSecret))) +:
+      BannerToSharedBank.move(ready, Banner.DarkestSecret).toVector
+
+  protected def note(at: SiteId): Note = Note(id, states => for
+```
+
+Then replace
+
+```scala
+      before.game.current.banners.darkestSecret.secrets
+    if gained > 0
+  yield placed(PowerSourceRef.Card(edifice),
+    NoteArg.Amount(gained, NoteUnit.Secret)))
+```
+
+with
+
+```scala
+      before.game.current.banners.darkestSecret.secrets
+    if gained > 0
+  yield
+    val secrets = NoteArg.Amount(gained, NoteUnit.Secret)
+    val card = PowerSourceRef.Card(edifice)
+    if BannerToSharedBank.moved(before, after, Banner.DarkestSecret) then
+      placedAndMoved(card, secrets)
+    else placed(card, secrets))
+```
+
+- [ ] **Step 4: Run the tests to see them pass**
+
+Run: `./sbtw "testOnly distantlands.gameplay.OperationApplicationSuite distantlands.gameplay.powers.setup.* distantlands.gameplay.setup.*"`
+Expected: PASS.
+
+- [ ] **Step 5: Write the note-key snapshot**
+
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
+
+Run: `git diff -- src/test/resources/notes/declared-keys.txt`
+Expected: exactly these three added lines, and nothing removed:
+
+```text
++edifice.e01.ruined placed-and-moved = Placed {0} on the People's Favor and moved it to the shared bank.
++edifice.e01.ruined placed-moved-and-burned = Placed {0} on the People's Favor, moved it to the shared bank and burned {1} from the banks.
++edifice.e18.ruined placed-and-moved = Placed {0} on the Darkest Secret and moved it to the shared bank.
+```
+
+Run: `./sbtw "testOnly distantlands.application.gamelog.* distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
+Expected: PASS, with no golden changed: no golden script holds a banner
+when one of these faces resolves.
+
+Run: `git status --short src/test/resources`
+Expected: only ` M src/test/resources/notes/declared-keys.txt`.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/main/scala/distantlands/gameplay/operations/BoardControlOperations.scala src/main/scala/distantlands/gameplay/powers/setup/BannerSetupRules.scala src/test/resources/notes/declared-keys.txt src/test/scala/distantlands/gameplay/OperationApplicationSuite.scala src/test/scala/distantlands/gameplay/powers/setup/RuinedSetupRulesSuite.scala src/test/scala/distantlands/gameplay/powers/setup/WhenExploredSuite.scala
+git commit -m "feat(setup): Hall of Mockery and Lost Guardians move their banner" -m "Both cards say to move the banner to the shared bank. A held banner now returns there, at Setup's end and when explored, and their lines say so. In a later game a Chancellor who starts with the banner loses it, as the card says." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 6: Explore at the table
 
 **Files:**
 - Modify: `frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala`
@@ -3769,7 +4649,7 @@ git commit -m "feat(explore): resolve WHEN EXPLORED at the explored site" -m "An
 - Test: `src/test/scala/distantlands/application/ExploreGameSuite.scala` (new)
 
 **Interfaces:**
-- Consumes: Tasks 1 to 4; `GameProjector.project`, `LoadedGame`,
+- Consumes: Tasks 1 to 5; `GameProjector.project`, `LoadedGame`,
   `GameApplicationService`, `Situation.journaled`, `Situation.pawnsAt`,
   `LaterGameFixture`, `Dice.ScriptedDefense`; the frontend's
   `WalkerPanelSupport.renderChooseOnePanel` and `poolLabel`.
@@ -3893,7 +4773,7 @@ Expected: PASS.
 
 - [ ] **Step 5: Pin Explore as the table sees it**
 
-This suite pins what Tasks 1 to 4 built, through the projection: the Act
+This suite pins what Tasks 1 to 5 built, through the projection: the Act
 menu's option with its cost or its reason, the roll beside the question,
 and the map after an Explore in a game started from a Chronicle and
 journaled by the service. In that game the Recent site stores an edifice,
@@ -3923,7 +4803,7 @@ class ExploreGameSuite extends munit.FunSuite:
 
   /** p1's Act menu, parked, under Wide Horizons on a map of three sites
     * with p1's pawn at Buried Giant, the Hintermost. */
-  private def frontierMenu: Table = Table.start
+  private def actMenuAtHintermostOfThree: Table = Table.start
     .foundation(FoundationNumber.I, FoundationFace.Altered)
     .mapCutIntoAtlas(3).pawn(p1, BuriedGiantSite).banditsRefilled
     .phaseMenuParked
@@ -3936,7 +4816,7 @@ class ExploreGameSuite extends munit.FunSuite:
 
   test("the projected Act menu lists Explore among the major actions with " +
       "its cost"):
-    val option = exploreOption(frontierMenu, "explore-menu")
+    val option = exploreOption(actMenuAtHintermostOfThree, "explore-menu")
     assertEquals(option.label, "Explore")
     assertEquals(option.group, Some("major"))
     assertEquals(option.badge, Some("1 Supply"))
@@ -4034,18 +4914,18 @@ Expected: PASS, four tests.
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/WalkerPanelSupport.scala frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSuite.scala src/test/scala/distantlands/application/ExploreGameSuite.scala
-git commit -m "feat(table): show Explore's dice as shields, and pin Explore at the table" -m "The panel words the Explore pool as it words Recover's. A suite plays Explore in a game started from a Chronicle and reads the Act menu's option, the roll beside the question and the map from the projection." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
+git commit -m "feat(table): show Explore's dice as shields, and pin Explore at the table" -m "The panel words the Explore pool as it words Recover's. A suite plays Explore in a game started from a Chronicle and reads the Act menu's option, the roll beside the question and the map from the projection." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ---
 
-### Task 6: The Chronicle Phase after an Explore
+### Task 7: The Chronicle Phase after an Explore
 
 **Files:**
 - Test: `src/test/scala/distantlands/gameplay/chronicle/ExploredSiteChronicleSuite.scala` (new)
 
 **Interfaces:**
-- Consumes: Tasks 1 to 4; slice 3a's Setup With No Empire;
+- Consumes: Tasks 1 to 5; slice 3a's Setup With No Empire;
   `EvolvedChronicleFixture.gameWonFrom`, `chronicleAnsweredAfter` and
   `chronicleJournaledBy`; `ChronicleExtraction.layout`;
   `ChronicleAccounting.knownAndUnique` and `conserves`.
@@ -4195,12 +5075,12 @@ defect in Task 1 or Task 2. Stop and report what it shows.
 
 ```bash
 git add src/test/scala/distantlands/gameplay/chronicle/ExploredSiteChronicleSuite.scala
-git commit -m "test(chronicle): pin the Chronicle Phase after an Explore" -m "A site explored in play is kept or archived with the map's other sites, every card is conserved, the journal replays, and the next game starts from the record." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
+git commit -m "test(chronicle): pin the Chronicle Phase after an Explore" -m "A site explored in play is kept or archived with the map's other sites, every card is conserved, the journal replays, and the next game starts from the record." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ---
 
-### Task 7: Docs and verification
+### Task 8: Docs and verification
 
 **Files:**
 - Modify: `docs/architecture/game-setup.md`
@@ -4211,7 +5091,7 @@ git commit -m "test(chronicle): pin the Chronicle Phase after an Explore" -m "A 
 - Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
 
 **Interfaces:**
-- Consumes: everything Tasks 1 to 6 built; nothing new is produced.
+- Consumes: everything Tasks 1 to 7 built; nothing new is produced.
 
 Docs are plain prose. Two of these files hold very long lines (a table row,
 a numbered item), so their blocks below are parts of a line, not whole
@@ -4330,7 +5210,7 @@ with
 
 ~~~markdown
 unaudited vocabulary rejects. Nested/action-granting boundaries remain F1. |
-| Explore (Wide Horizons) | **Tested (bounded)** | New Foundations rulebook, "Altered Foundation I: Wide Horizons" and "Setup / When Explored"; setup card `OATH-SETUP04b-NF` | `gameplay/actions/explore/ExploreProcedure.scala` offers the action while Foundation I is altered, a slot is empty, the Atlas holds a site and the actor's pawn is at the Hintermost site, to any role. It rolls 2 defense dice per 1 Supply against a difficulty of 4 through its own windows (`ExploreCost`, `ExploreRoll`), so no Recover power applies and the generic reroll choice does ([Foundations ruling 2](../superpowers/specs/2026-11-11-foundations-design.md#rulings)). On success the explorer chooses Recent or Forgotten, `PlaceAtlasSite` puts that site in the next slot as a bandit site through the builder game start shares (`SiteState.banditSite`), the pawn is placed there, and the `WhenExplored` window resolves the site's ruined edifice (`EdificeSetupSupport.resolvesAt`). `ExploreProcedureSuite`, `AtlasOperationsSuite`, `AtlasPlacementSuite`, `WhenExploredSuite`, `ExploreGameSuite`, `ExploredSiteChronicleSuite` and the `explore` goldens cover the gates, the rolls, both ends, the powers, the projection, replay and the Chronicle Phase. | The readings in the Foundations design, slice 3, "Explore". Hall of Mockery and Lost Guardians do not move their banner to the shared bank, at Setup or when explored. Lost Doors and Ruined Temple wait for Legacies. |
+| Explore (Wide Horizons) | **Tested (bounded)** | New Foundations rulebook, "Altered Foundation I: Wide Horizons" and "Setup / When Explored"; setup card `OATH-SETUP04b-NF` | `gameplay/actions/explore/ExploreProcedure.scala` offers the action while Foundation I is altered, a slot is empty, the Atlas holds a site and the actor's pawn is at the Hintermost site, to any role. It rolls 2 defense dice per 1 Supply against a difficulty of 4 through its own windows (`ExploreCost`, `ExploreRoll`), so no Recover power applies and the generic reroll choice does ([Foundations ruling 2](../superpowers/specs/2026-11-11-foundations-design.md#rulings)). On success the explorer chooses Recent or Forgotten, `PlaceAtlasSite` puts that site in the next slot as a bandit site through the builder game start shares (`SiteState.banditSite`), the pawn is placed there, and the `WhenExplored` window resolves the site's ruined edifice (`EdificeSetupSupport.resolvesAt`). The placement is a hidden outcome (`HiddenOutcomes`), so undo never takes it back. Hall of Mockery and Lost Guardians move a held banner to the shared bank, at Setup and when explored. `ExploreProcedureSuite`, `AtlasOperationsSuite`, `AtlasPlacementSuite`, `WhenExploredSuite`, `RuinedSetupRulesSuite`, `UndoBarrierPlaySuite`, `ExploreGameSuite`, `ExploredSiteChronicleSuite` and the three `explore` goldens cover the gates, the rolls, both ends, the powers, undo, the projection, replay and the Chronicle Phase. | The readings in the Foundations design, slice 3, "Explore". Lost Doors and Ruined Temple wait for Legacies. |
 | Challenge and banner resource actions |
 ~~~
 
@@ -4390,10 +5270,6 @@ with
 ~~~markdown
   add: player choices earlier in setup once foundations and legacies exist,
   such as the Chancellor choosing Recent or Forgotten sites.
-- [ ] **Hall of Mockery and Lost Guardians move their banner.** Both say
-  "move it to the shared bank". They place their tokens and leave the
-  banner with its holder, at Setup and when explored: no operation returns
-  a held banner to the shared bank.
 ~~~
 
 - [ ] **Step 2: The spec**
@@ -4477,7 +5353,9 @@ with
   site (`EdificeSetupSupport.resolvesAt`). An explored edifice is placed
   ruined, so only ruined faces resolve: Hall of Mockery, Bandit Market,
   Broken Forge, Fallen Spire, Broken Clock, Lost Guardians, Empty Grounds,
-  Ruined School and Broken Horn.
+  Ruined School and Broken Horn. The placement shows the site and what it
+  stores, so it is a hidden outcome (`HiddenOutcomes`): undo never takes it
+  back, nor the choice of end before it.
 ~~~
 
 Then replace
@@ -4511,12 +5389,15 @@ with
   pawn is placed, so "if you place your pawn here" holds for the explorer,
   and no ruler is asked to consent, as at Setup. Broken Clock advances the
   round marker at once and does nothing on round 8. An Explore, stopped or
-  not, is an action: the action boundary follows it.
-- **A gap for the owner's eye: the banner move.** Hall of Mockery and Lost
-  Guardians say "move it to the shared bank". They place their tokens and
-  leave the banner with its holder, when explored as at Setup: no
-  operation returns a held banner to the shared bank (roadmap, "Setup
-  deferred items"). Lost Doors and Ruined Temple wait for Legacies.
+  not, is an action: the action boundary follows it. Lost Doors and Ruined
+  Temple wait for Legacies.
+- **The banner move, decided with the owner.** Hall of Mockery and Lost
+  Guardians "move it to the shared bank": a held banner goes back to the
+  shared bank, when explored and at Setup alike. This changes a later
+  game's Setup: a Chancellor who starts with the People's Favor or the
+  Darkest Secret loses it at Setup's end when the matching ruined edifice
+  is on the map, as the card says. The first game, where both banners
+  start in the shared bank, does not change.
 ~~~
 
 If the owner has ruled on any reading in "Rulings needing the owner's
@@ -4529,7 +5410,7 @@ while working, add it to the "Readings taken with the plan" item.
 Run: `./sbtw clean coverage test coverageReport`
 Expected: PASS, statement coverage at or above 92% and branch coverage at
 or above 84.4%. The plan's own run of these tasks at `bbfb403a7` passed
-5805 tests at 95.30% and 89.61%.
+5816 tests at 95.31% and 89.62%.
 
 Run: `./sbtw "frontend/test"` (the frontend suites, if the full run
 skipped them)
@@ -4540,8 +5421,8 @@ Expected: `architecture check passed`; every Scala file stays under 800
 lines.
 
 Run: `git status --short src/test/resources`
-Expected: clean. The four goldens and the snapshot were committed with
-Tasks 3 and 4, and nothing else changed.
+Expected: clean. The six goldens and the snapshot were committed with
+Tasks 3, 4 and 5, and nothing else changed.
 
 Run: `git grep -n "its Explore action is not offered yet\|once an explore procedure exists\|waits for an Explore procedure" -- src docs/rules docs/architecture docs/ROADMAP.md`
 Expected: no output. Nothing still says Explore is missing.
@@ -4550,7 +5431,7 @@ Expected: no output. Nothing still says Explore is missing.
 
 ```bash
 git add docs/ROADMAP.md docs/architecture/game-setup.md docs/architecture/gameplay-modules.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11-11-foundations-design.md
-git commit -m "docs(foundations): record slice 3b, the Explore action" -m "The setup doc says how Explore fills an empty slot, the traceability table gains an Explore row and stops calling the action missing, the roadmap drops what is done and keeps the banner move it leaves, and the spec records slice 3b landed, what its plan found against the code and the readings it took." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
+git commit -m "docs(foundations): record slice 3b, the Explore action" -m "The setup doc says how Explore fills an empty slot, the traceability table gains an Explore row and stops calling the action missing, the roadmap drops what is done and keeps the banner move it leaves, and the spec records slice 3b landed, what its plan found against the code and the readings it took." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
 ---
@@ -4560,7 +5441,7 @@ git commit -m "docs(foundations): record slice 3b, the Explore action" -m "The s
 Slice 4, Imperial Maps' choice, fills the empty slots at Setup. It reuses:
 
 - `AtlasPlacement.at(catalog, ready, end)`, once per empty slot going
-  Hinterward. Each call reads the state the placement before it left, so
+  Hinterward. `PlaceAtlasSite` is an undo barrier wherever it runs. Each call reads the state the placement before it left, so
   the Forgotten end takes the Atlas's last site, then the one before it.
 - `PlaceAtlasSite`, journaled by the Setup walk, which populates the site
   as Explore does.
@@ -4590,16 +5471,17 @@ half at Setup's end, as today.
 | The `WhenExplored` window runs for that site and its cards | 4 |
 | Stop: "Failed to explore"; the Supply stays spent | 3 |
 | Log: "Explored Forgotten Site: Found Deep Woods"; the site's own power lines follow | 3 and 4 (the two goldens) |
-| Frontend: the action in the Act menu; the map shows the new site | 5 |
+| Frontend: the action in the Act menu; the map shows the new site | 6 |
 | Tests: each gate; rolls with a Jinx reroll, with Silver Charm not offered, with a stop; each end and the one-site Atlas | 3 |
 | Tests: When Explored powers firing on the new site | 4 |
 | Tests: a full map refusing Explore | 3 |
-| Tests: an Explore golden log | 3 and 4 |
-| Tests: a Chronicle round trip after an Explore | 6 |
-| Docs | 7 |
+| Tests: an Explore golden log | 3 and 4 (succeeded, stopped, and with a power line) |
+| Tests: a Chronicle round trip after an Explore | 7 |
+| Docs | 8 |
+| Review: the placement is an undo barrier | 2 (`HiddenOutcomes`) and 3 (`UndoBarrierPlaySuite`) |
+| Owner decision: Hall of Mockery and Lost Guardians move a held banner to the shared bank | 5 |
 
 **Left for later, on purpose:** Imperial Maps' choice at Setup (slice 4);
-the banner move of Hall of Mockery and Lost Guardians (roadmap, ruling 8);
 Lost Doors and Ruined Temple (Legacies); a view of the Atlas for the
 explorer; `CONTEXT.md` (slice 7).
 
@@ -4612,5 +5494,9 @@ every file written by a command shows its expected text.
 `ExploreProcedure`, its `endOption`, `continueOption`, `stopOption`,
 `choiceDecisionId`, `endDecisionId` and `refusal`, `ActionRef.Explore`
 (Task 3); `ExploredSite`, `EdificeSetupSupport.resolvesAt` (Task 4);
+`BannerToSharedBank` (Task 5);
 `Table.mapCutIntoAtlas`, `Table.storedInAtlas` (Task 1, used by every
-later suite). Each is spelled the same wherever it appears.
+later suite). The suites' table helpers name what they build:
+`p1AtHintermostOfThree`, `p1AtHintermostAtlasOfDeepWoods`,
+`deepWoodsStoring`, `actMenuAtHintermostOfThree`. Each is spelled the same
+wherever it appears.
