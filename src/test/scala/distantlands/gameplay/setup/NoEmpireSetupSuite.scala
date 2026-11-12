@@ -40,6 +40,14 @@ class NoEmpireSetupSuite extends munit.FunSuite:
       .toMap.updated(FoundationNumber.I, altered)
       .updated(FoundationNumber.III, sourced))
 
+  test("an eroded Foundation V starts the People's Favor on the Mob in the " +
+      "shared bank, whatever the Oathkeeper goal"):
+    val record = absentEmpireChronicle().copy(
+      oathkeeperGoal = OathkeeperGoal.ThePeople,
+      foundations = Map(FoundationNumber.V -> altered))
+    assertEquals(started(record).game.current.banners.peoplesFavor,
+      PeoplesFavorState(PeoplesFavorFace.Mob, None, 1))
+
   test("a Foundation I already on Wide Horizons keeps its sources"):
     val legacy = LegacyId(catalog.legacies.head.id.value)
     val sourced = FoundationState(FoundationFace.Altered, Set(legacy))

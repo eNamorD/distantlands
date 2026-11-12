@@ -3,7 +3,7 @@ package distantlands.gameplay.powers.action
 import distantlands.gameplay.actions.VisionRules
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog,
   PowerFixture, WalkerPowerCatalog}
 import distantlands.gameplay.powers.campaign.WrestlersCard
@@ -66,6 +66,21 @@ class TempleOfAncestorsSuite extends munit.FunSuite:
     assertEquals(NoteText.said(power, t.events), Vector(NoteText.Said(
       NoteKey.Used, s"${actor.value} drew ${WrestlersCard.id.value} from " +
         "the bottom of the world deck.", covers = false)))
+
+  test("a Grand Council holder's distant Imperial site is shown, refused " +
+      "with the Temple's reason as the pawn site is"):
+    val ready = Table.from(staged()).imperial(Table.p2)
+      .peoplesFavor(Some(actor), 1, PeoplesFavorFace.GrandCouncil)
+      .warbandsAt(BrokenPeaksSite, Table.p2, 1).ready
+    val t = accepted(start(ready))
+    val refused = OptionReason.Written(TempleOfAncestors.toAdvisers)
+    assertEquals(PlacementPicks.siteSlotOptions(options(t)).map {
+      case DecisionOption.Unavailable(option, reason) =>
+        option.ref -> Some(reason)
+      case option => option.ref -> None
+    }, Vector(
+      DecisionOptionRef.SiteSlot(AncientCitySite.id, 1) -> Some(refused),
+      DecisionOptionRef.SiteSlot(BrokenPeaksSite.id, 0) -> Some(refused)))
 
   test("played faceup it becomes an adviser; replay and the wire agree"):
     val ready = staged()

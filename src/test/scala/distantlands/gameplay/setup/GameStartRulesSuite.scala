@@ -122,8 +122,6 @@ class GameStartRulesSuite extends munit.FunSuite:
     def unsupported(face: String, slice: Int) =
       OathViolation.UnsupportedChronicle(
         s"$face is not supported yet: it arrives with Foundations slice $slice")
-    assertEquals(refusalFor(FoundationNumber.V),
-      unsupported("Grand Council (altered Foundation V)", 5))
     assertEquals(refusalFor(FoundationNumber.VI),
       unsupported("Festival (altered Foundation VI)", 6))
 
@@ -147,14 +145,14 @@ class GameStartRulesSuite extends munit.FunSuite:
 
   test("with several altered faces, game start names the first refused one " +
       "in foundation order"):
-    // II and III are accepted, so V is the first refused.
+    // II, III and V are accepted, so VI is the first refused.
     val several = chronicle.copy(foundations = Map(
       FoundationNumber.VI -> altered, FoundationNumber.III -> altered,
       FoundationNumber.II -> altered, FoundationNumber.V -> altered))
     assertEquals(rejected(GameStartRules.evolve(catalog, several, orders)),
-      OathViolation.UnsupportedChronicle("Grand Council (altered " +
-        "Foundation V) is not supported yet: it arrives with Foundations " +
-        "slice 5"))
+      OathViolation.UnsupportedChronicle("Festival (altered " +
+        "Foundation VI) is not supported yet: it arrives with Foundations " +
+        "slice 6"))
 
   test("a later game with a seated Chancellor starts"):
     val record = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))

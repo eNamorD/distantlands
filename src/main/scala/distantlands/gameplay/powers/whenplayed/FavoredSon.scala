@@ -2,7 +2,6 @@ package distantlands.gameplay.powers.whenplayed
 
 import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
 import distantlands.gameplay.actions.BannerRules
-import distantlands.gameplay.actions.challenge.ChallengeRibbon
 import distantlands.gameplay.powerresolver.PowerCtx
 import distantlands.model._
 
@@ -19,9 +18,10 @@ object FavoredSonCard extends Denizen(DenizenId("235"), "Favored Son", Suit.Hear
   * The user takes the banner from its holder or, unheld, from the shared
   * bank, by a `Take` that is not required, as Wizard's Conclave takes the
   * Darkest Secret. Its `leaving` is the People's Favor ribbon a Challenge
-  * walks (`ChallengeRibbon.peoplesFavorReturns`), so the favor returns to
-  * the banks only if the take happens. It is not walked under the
-  * `ChallengeRibbon` window, so Secret Testament, a Challenge modifier,
+  * walks (`BannerRules.peoplesFavorRibbon`), so the favor returns to the
+  * banks, and on the Grand Council half of it to the previous holder, only
+  * if the take happens. It is not walked under the `ChallengeRibbon`
+  * window, so Secret Testament, a Challenge modifier,
   * stays out (ruling 11). When the user already holds the banner, nothing
   * moves. When Lost Tongue refuses the take, the banner and its favor stay.
   */
@@ -59,7 +59,7 @@ case object FavoredSon extends WhenPlayedPower:
         Piece.Banner(Banner.PeoplesFavor), actor,
         holder.fold[Location](Location.SharedBank)(Location.PlayArea(_)),
         Location.PlayArea(actor),
-        leaving = ChallengeRibbon.peoplesFavorReturns(live))))),
+        leaving = BannerRules.peoplesFavorRibbon(live))))),
       Note(id, takenNote(_, actor)))
 
   /** Whether the user holds the banner now, or Lost Tongue kept it. */

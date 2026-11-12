@@ -38,7 +38,7 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
           .filterNot(edificesOn(map)), Vector.empty,
         deal.discards(plan.denizenOrder)),
       BannersState(
-        PeoplesFavorState(PeoplesFavorFace.Mob, None, 1),
+        PeoplesFavorState(peoplesFavorFace(plan), None, 1),
         DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)),
       // The first player begins round 1: in a later game, the Chancellor.
       GameTracks(1, 0, usurperLimited = true,
@@ -111,6 +111,14 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     map.sites.values.flatMap(_.denizens).collect {
       case EdificeState(id, _, _) => id
     }.toSet
+
+  /** Foundation V's face, on the People's Favor: Mob's Favor sets the
+    * Mob, and Grand Council flips it to the Grand Council. Both faces put
+    * 1 favor on it from the shared bank, and `LaterGameSetup` gives it to
+    * the Chancellor when the Oathkeeper goal is the People's Favor. */
+  private def peoplesFavorFace(plan: FirstGameSetupPlan): PeoplesFavorFace =
+    if plan.altered(FoundationNumber.V) then PeoplesFavorFace.GrandCouncil
+    else PeoplesFavorFace.Mob
 
   /** The favor on each board: 1, and under Movers and Shakers (altered
     * Foundation II) 5 more from the shared bank, which has no count. */

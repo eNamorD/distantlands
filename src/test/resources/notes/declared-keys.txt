@@ -1,5 +1,7 @@
 banner.darkest-secret.wandering-flame.move used = {0} moved to {1}.
 banner.darkest-secret.wandering-flame.place used = {0} placed a secret at {1}.
+banner.peoples-favor.grand-council bury-first = May bury a card at {0} first.
+banner.peoples-favor.grand-council discard-first = May discard a card at {0} first.
 banner.peoples-favor.mob bury-first = May bury a card at {0} first.
 banner.peoples-favor.mob discard-first = May discard a card at {0} first.
 denizen.a-round-of-ale cleanup = Triggering resource cleanup.

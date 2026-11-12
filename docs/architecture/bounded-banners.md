@@ -3,23 +3,27 @@
 Design: [challenge walker design](../superpowers/specs/2026-09/2026-09-19-challenge-walker-design.md)
 
 This slice implements Combined Rulebook pp. 26 and 32 and New Foundations
-pp. 12 and 15 for the fixed first-game banner faces: Mob and Wandering Flame.
-The face identities are typed state. The Grand Council and Festival faces have
-no implemented power: `RuleSourceIndex` lists their handler ids, and they are
+pp. 12 and 15 for the first-game banner faces, Mob and Wandering Flame, and
+for the Grand Council: an altered Foundation V starts the People's Favor on
+its Grand Council face
+([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md),
+slice 5). The face identities are typed state. The Festival face has no
+implemented power: `RuleSourceIndex` lists its handler id, and it is
 ignored and recorded like any other unimplemented power.
 
 `BannerRules` owns holder and resource lookup, the faceup-only comparison
 input (favor, or faceup secrets only), least-stocked favor banks and sites,
-and the one-at-a-time favor return. The People's Favor ribbon, Campaign Raid
-and Conspiracy share that favor return (`raidFavorReturn`), including the
-printed leftmost tied-bank rule. Only Wandering Flame site ties create a
+and the one-at-a-time favor return. The People's Favor's ribbon
+(`peoplesFavorRibbon`) reads the face, and Challenge, Favored Son, Campaign
+Raid and Conspiracy all adjust the banner through it, including the printed
+leftmost tied-bank rule. Only Wandering Flame site ties create a
 player decision. Nothing derives behaviour from component `rulesText`.
 
 ## Challenge
 
 Challenge is a normal Act major action and runs as the `ChallengeProcedure`
-walker tree. Its start gates refuse any face other than Mob and Wandering
-Flame (`UnsupportedBannerState`) and a start with no legal banner. A banner is
+walker tree. Its start gates refuse the Festival face
+(`UnsupportedBannerState`) and a start with no legal banner. A banner is
 legal when the actor does not hold it, its holder (if any) shares the actor's
 site, and the actor has strictly more relevant faceup resources than the
 banner holds.
@@ -29,7 +33,9 @@ for the banner and for a replacement amount strictly greater than the prior
 amount. Both answers come before any resource moves. The ribbon then returns
 the banner's resources (`ChallengeRibbon`):
 
-- People's Favor returns every favor to the least-favor banks, leftmost first.
+- People's Favor on the Mob returns every favor to the least-favor banks,
+  leftmost first. On the Grand Council the previous holder first takes back
+  half, rounded down; an unheld banner's favor all goes to the banks.
 - Darkest Secret first gives the previous holder the secrets beyond half
   (rounded down), or burns them when the banner was unclaimed (7.8.2 errata).
   It then places the half on the least-stocked sites one pass at a time. When
@@ -46,7 +52,9 @@ action for a banner's holder. It moves a positive amount of favor or faceup
 secrets from the holder's own board onto the banner.
 
 The Mob face is a contribution (`PeoplesFavorMob`): when its holder plays a
-card to a site, they may first discard a card there. The Wandering Flame face
+card to a site, they may first discard a card there. The Grand Council face is
+another (`PeoplesFavorGrandCouncil`): its holder may also play a card to any
+Imperial site, and may first discard a card there, but at no other site. The Wandering Flame face
 has two free, unlimited actions (`WanderingFlameMove`, `WanderingFlamePlace`):
 move the pawn to another site with a secret on it, or place a faceup secret on
 the pawn's site. `BannerFacePowers` registers them.

@@ -8,8 +8,10 @@ import distantlands.model._
   * `BuildOps` or a lazily selected `Branch`, so a resumed walk never rebuilds
   * it from a board an earlier step has changed).
   *
-  * People's Favor returns every favor to the least-favor banks, leftmost
-  * first. Wandering Flame first gives the previous holder the rest beyond
+  * People's Favor follows its face's ribbon (`BannerRules.peoplesFavorRibbon`):
+  * the Mob returns every favor to the least-favor banks, leftmost first,
+  * and the Grand Council gives half to the previous holder first. Wandering
+  * Flame first gives the previous holder the rest beyond
   * half, or burns it when the banner was unclaimed, then places the half on
   * the least-stocked sites: each pass places one secret on every tied site
   * while it can, and when fewer secrets remain than tied sites the player
@@ -24,22 +26,13 @@ private[gameplay] object ChallengeRibbon:
   private[challenge] def steps(actor: PlayerId, banner: Banner)
       : Vector[Operation] = banner match
     case Banner.PeoplesFavor =>
-      Vector(BuildOps((ready, _) => Right(peoplesFavorReturns(ready))))
+      Vector(BuildOps((ready, _) =>
+        Right(BannerRules.peoplesFavorRibbon(ready))))
     case Banner.DarkestSecret => Vector(
       BuildOps((ready, _) => Right(returnedSecrets(ready, actor))),
       Repeat((ready, _) => BannerRules.resources(ready.game.current,
         Banner.DarkestSecret) > 0,
         Branch((ready, _) => pass(ready, actor))))
-
-  /** The People's Favor's ribbon: every favor on it returns to the
-    * least-favor banks, leftmost first, one at a time. Favored Son's take
-    * carries it as its `leaving` (catalog batch 10, slice 11). */
-  def peoplesFavorReturns(ready: ReadyGame): Vector[CoreOperation] =
-    val amount = BannerRules.resources(ready.game.current, Banner.PeoplesFavor)
-    BannerRules.raidFavorReturn(ready.banks.favor, amount).map(suit =>
-      Move(Piece.Favor(1),
-        PositionedLocation(Location.OnBanner(Banner.PeoplesFavor)),
-        PositionedLocation(Location.FavorBank(suit))))
 
   /** The `P - P / 2` of the `P` secrets beyond half go to the previous
     * holder, or burn when the banner was unclaimed (rule 11.1, which the 7.8.2

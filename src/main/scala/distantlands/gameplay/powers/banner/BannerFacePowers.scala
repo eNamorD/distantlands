@@ -18,7 +18,7 @@ object BannerFacePowers:
 
   /** The banner faces' rules that change how the engine plans an action. */
   val contributions: Vector[ContributingPower] =
-    Vector[ContributingPower](PeoplesFavorMob)
+    Vector[ContributingPower](PeoplesFavorMob, PeoplesFavorGrandCouncil)
 
   private val texts: Vector[(PowerId, String, String)] = Vector(
     (WanderingFlameMove.id, "Wandering Flame: move",

@@ -1,10 +1,11 @@
 package distantlands.gameplay.actions
 
-import distantlands.gameplay.SpendableFavor
+import distantlands.gameplay.{KinshipRule, SpendableFavor}
 import distantlands.model._
 
-/** Shared printed banner invariants. Mob and Raid both use the printed
-  * deterministic leftmost policy. Wandering Flame site ties belong to the player.
+/** Shared printed banner invariants. The People's Favor's ribbons, on
+  * both faces, use the printed deterministic leftmost policy. Wandering
+  * Flame site ties belong to the player.
   */
 object BannerRules:
   def holder(current: CurrentGameState, banner: Banner): Option[PlayerId] = banner match
@@ -49,3 +50,41 @@ object BannerRules:
       val current = addFavor(banks, order)
       order :+ leastFavorBanks(current).head
     }
+
+  /** The favor the People's Favor's ribbon gives back to the banner's
+    * previous holder. The Mob's ribbons print ALL to the banks, so none.
+    * The Grand Council's print HALF to the previous holder, then REST to
+    * the banks, so half, rounded down. Each face prints the same left and
+    * right ribbon. An unheld banner has no previous holder: the returned
+    * half goes to the banks with the rest. */
+  def favorToPreviousHolder(favor: PeoplesFavorState): Int =
+    favor.active match
+      case PeoplesFavorFace.Mob => 0
+      case PeoplesFavorFace.GrandCouncil =>
+        if favor.holder.isEmpty then 0 else favor.favor / 2
+
+  /** The People's Favor's ribbon, as whoever takes the banner adjusts it:
+    * a Challenge and Favored Son by its left ribbon, a Raid and the
+    * Conspiracy by its right. The previous holder's share moves first
+    * (`favorToPreviousHolder`), then every other favor goes to the
+    * least-favor banks one at a time, leftmost first. The banks the rest
+    * reads are those after the share landed: a previous holder with Vow of
+    * Kinship faceup gets it in the Nomad bank (`KinshipRule.creditAt`). */
+  def peoplesFavorRibbon(ready: ReadyGame): Vector[CoreOperation] =
+    val favor = ready.game.current.banners.peoplesFavor
+    val kept = favorToPreviousHolder(favor)
+    val banner = PositionedLocation(Location.OnBanner(Banner.PeoplesFavor))
+    val share = favor.holder.filter(_ => kept > 0).toVector
+    val banks = share.map(holder =>
+      KinshipRule.creditAt(ready, Location.PlayArea(holder))).foldLeft(
+      ready.banks.favor) {
+        case (stocks, Location.FavorBank(suit)) =>
+          stocks.updated(suit, stocks.getOrElse(suit, 0) + kept)
+        case (stocks, _) => stocks
+      }
+    share.map(holder =>
+      Move(Piece.Favor(kept), banner,
+        PositionedLocation(Location.PlayArea(holder))): CoreOperation) ++
+      raidFavorReturn(banks, favor.favor - kept).map(suit =>
+        Move(Piece.Favor(1), banner,
+          PositionedLocation(Location.FavorBank(suit))))

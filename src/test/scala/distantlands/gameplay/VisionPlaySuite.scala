@@ -12,7 +12,8 @@ import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers, WalkerProcedureRegistry}
 import distantlands.model._
 import distantlands.model.OathState.Ready
-import distantlands.testkit.{Look, Outcomes, PlacementPicks, Table}
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, PlacementPicks,
+  Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 
@@ -117,6 +118,36 @@ class VisionPlaySuite extends munit.FunSuite:
     assertEquals(after.game.current.temporaryHands(actor), Vector.empty)
     assertEquals(MenuPlay.pendingBeyondMenu(after), None)
     assert(!accepted(CardIndex.from(after.game)).ids.contains(conspiracy))
+
+  test("a Conspiracy that takes the Grand Council gives its holder back " +
+      "half the favor, rounded down, by its right ribbon"):
+    // p2, the enemy, shares p1's site and holds the People's Favor on its
+    // Grand Council face with 3 favor. Arcane, Order and Hearth tie as the
+    // least banks, with none.
+    val enemy = p2
+    val initial = atHome.pawn(enemy, at = home)
+      .peoplesFavor(Some(enemy), favor = 3,
+        face = PeoplesFavorFace.GrandCouncil)
+      .banksHoldingOnly(Suit.Discord -> 2, Suit.Beast -> 2, Suit.Nomad -> 2)
+      .darkestSecret(None, secrets = 1).worldDeckTop(conspiracy).ready
+    val started = accepted(
+      SearchPlay.searched(rules, OathState.Ready(initial), actor))
+    val parked = accepted(
+      rules.resolveWalker(started.state, actor, placeId(conspiracy),
+        faceup(started.state)))
+    val resolved = accepted(rules.resolveWalker(parked.state, actor,
+      "cardplay.conspiracy.target", DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.Banner(Banner.PeoplesFavor))))
+    val after = Outcomes.ready(resolved.state)
+    assertEquals(after.game.current.banners.peoplesFavor,
+      PeoplesFavorState(PeoplesFavorFace.GrandCouncil, Some(actor), 0))
+    assertEquals(Look(after).favor(enemy), Look(initial).favor(enemy) + 1)
+    // The other 2 return one at a time to the leftmost least bank: Arcane,
+    // then Order.
+    assertEquals(after.banks.favor, Map(Suit.Discord -> 2, Suit.Arcane -> 1,
+      Suit.Order -> 1, Suit.Hearth -> 0, Suit.Beast -> 2, Suit.Nomad -> 2))
+    assertEquals(ActPowerHarness.replayed(rules, initial,
+      started.events ++ parked.events ++ resolved.events), after)
 
   test("Reveal is a facedown Vision played faceup: it replaces the revealed " +
       "Vision and costs no Supply"):

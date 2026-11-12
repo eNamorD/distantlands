@@ -78,9 +78,9 @@ Left behind by the
 
 - [ ] **Foundations.** Every face but Foundation III's works: the Beacon's
   Shape Foundation.
-- [ ] **The Grand Council and Festival banner faces.** Altered Foundations V
-  and VI turn the banners to these faces. Their ids are in
-  `RuleSourceIndex`, and the faces have no behaviour.
+- [ ] **The Festival banner face.** Altered Foundation VI turns the
+  Darkest Secret to it. Its id is in `RuleSourceIndex`, and the face has
+  no behaviour.
 
 ### Phase - Campaign battle summary
 
