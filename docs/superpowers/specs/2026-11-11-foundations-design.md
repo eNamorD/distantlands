@@ -2,9 +2,9 @@
 
 **Status:** designed 2026-11-11. Slices 1, 2, 3a and 3b landed.
 
-**Builds on** the [Chronicle steps design](2026-10-27-chronicle-steps-design.md),
-the [Chronicle setup design](2026-09-21-chronicle-setup-design.md) and
-[catalog batch 11](2026-11-07-catalog-batch-11-design.md), whose setup,
+**Builds on** the [Chronicle steps design](2026-10/2026-10-27-chronicle-steps-design.md),
+the [Chronicle setup design](2026-09/2026-09-21-chronicle-setup-design.md) and
+[catalog batch 11](2026-11/2026-11-07-catalog-batch-11-design.md), whose setup,
 Empire and consent rules apply unchanged.
 
 ## Goal and scope

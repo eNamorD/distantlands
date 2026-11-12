@@ -1,0 +1,627 @@
+# Power Log Lines
+
+**Status:** designed 2026-09-26; slices 1 to 5 landed by 2026-09-27. It
+started after
+[Rule gaps in implemented cards](2026-09-26-rule-gaps-in-implemented-cards-design.md)
+merged: it needed that phase's Restriction look-ahead and the Transform that
+removes Vow of Peace's sacrifice decision.
+
+**Slice 1 (2026-09-26):** the mechanism, with Vow of Peace and Gambling Hall
+as its first two powers. "Settled in slice 1" records what it decided.
+
+**Slice 2 (2026-09-26):** every phase power's own line. "Settled in slice 2"
+records what it decided.
+
+**Slice 3 (2026-09-26):** the removed and hidden options. "Settled in slice
+3" records what it decided.
+
+**Slice 4 (2026-09-26):** the added effects and altered procedures.
+"Settled in slice 4" records what it decided.
+
+**Slice 5 (2026-09-26):** setup. "Settled in slice 5" records what it
+decided.
+
+**Superseded in part (2026-10-07):** hidden options no longer write lines.
+Each hide hook's note is the hidden option's hover reason only, and the two
+notes that named the acting player dropped the name
+([travel destination design](../2026-10/2026-10-07-travel-destination-walker-design.md),
+ruling 10).
+
+**Builds on** the [Game Log design](2026-09-25-game-log-design.md). That
+design left "powers declaring their own log lines" out of scope, kept the
+generic "Used {card}" as a stand-in, and reserved the detail row
+"Trigger | {card}: {effect}" without building it. This phase builds it.
+
+## Goal
+
+Powers change what an action does without saying so in the Game Log. A phase
+power used as an action logs a generic "Used {card}". A modifier is named only
+on its action's start line. Automatic powers and Restrictions leave no line at
+all: when Vow of Peace removes the attacker's sacrifice decision, nothing
+records why.
+
+After this phase each power can declare the lines it contributes, at the
+point its effect happens, through one generic mechanism. Every implemented
+power that qualifies gets its line in this phase.
+
+## Rulings
+
+These were settled while designing and bind the rest of this document.
+
+1. **Each power decides.** No power gets a line by default. A power writes a
+   line when its effect is one the rest of the log does not show:
+   - it removes a decision or step;
+   - it hides an option at a decision the player faces;
+   - it adds an effect, such as "Book Binders: Blue gained 2 favor from the
+     Order bank.";
+   - it significantly alters the procedure, such as "Careful Plans: The
+     defender must roll first!".
+
+   A chosen modifier whose effect is only an amount or dice change stays
+   named on its action's start line with no line of its own. An automatic
+   cost change stays in the start line's cost span.
+2. **Every line starts with the source's name.** A line reads
+   "{Card}: {Sentence}". The formatter adds the name as a card or site chip.
+   The power writes only the sentence. Amended by the
+   [procedures journal their own notes design](../2026-10/2026-10-16-procedures-journal-their-notes-design.md):
+   a note's source is optional, and a note with none renders its sentence
+   alone, at `LogKind.Action`. That design also adds three argument kinds to
+   the `NoteArg` table in section 1.
+3. **Blocked actions get no line.** A Restriction that stops a whole action
+   before it starts (Vow of Peace's first sentence, the Fortress's Raid-only
+   block) leaves the log untouched. Nothing happened. Explaining a missing
+   control belongs to the control, not the log.
+4. **A hidden option gets a line only at a decision the player actually
+   faces**, and only when its power writes one.
+5. **A phase power's own line replaces "Used {card}".** The operations after
+   it still log as they do today, except any a note covers (see "Covering").
+   "Used {card}" remains as a fallback.
+6. **The journal records the fact, the power owns the wording.** The walker
+   journals a structured note when the effect happens. The formatter renders
+   the note's wording when it formats the log, so rewording a power's line
+   also rewords it in old games.
+
+## 1. Mechanism
+
+### The note
+
+`PowerNote(source: PowerSourceRef, key: String, args: Vector[NoteArg])` lives
+in the gameplay model,
+beside the operation types.
+
+- `key` tells apart the lines one power can write. The key `used` is
+  reserved for a phase power's action line (section 2).
+- `args` are typed references, never free text, so card names still pass the
+  log's knowledge rule:
+
+| `NoteArg` | Renders as |
+|---|---|
+| `Player(id)` | player chip |
+| `Card(ref)` | card chip, or the card's back to a viewer who may not identify it |
+| `Site(id)` | site chip |
+| `Amount(n, unit)` | "3 favor", "1 secret", "2 Supply", "1 warband" |
+| `Bank(suit)` | "the Order bank" |
+| `Dice(die, faces)` | die-face chips, as the log's `Dice` span |
+| `Number(n)` | a bare number, "Total: 8" |
+| `Cards(ids)` | one phrase of card chips, "Tinker, 2 Denizens and a Vision", each card by the knowledge rule |
+| `Banner(banner)` | the banner's name |
+
+### Emission path 1: the `Note` leaf
+
+`Note(power: PowerId, build: NoteStates => Option[PowerNote],
+covers: Boolean = false)` is a new leaf of the operation tree. The walker handles it the way it handles
+`Decide` and `Roll`. It is not a `CoreOperation` and changes no state.
+
+- A power puts a `Note` in any tree it builds or rewrites: a Transform's
+  output, a battle plan's subtree, a phase power's `build`, a when-played
+  tree, a setup rule's operations.
+- When the walk reaches the leaf, the walker calls `build` and appends
+  `PowerNoted(power, note, covers)` to `WalkCtx.events`, in walk order.
+- `NoteStates(now: ReadyGame, previous: Option[(ReadyGame, ReadyGame)],
+  answered: Vector[Answered])` gives `build` the live state, like
+  `BuildOps`, the states before and after the step this walk journaled
+  immediately before the note, and the action's answers so far. `previous`
+  is empty when the note is the first step of its command.
+- **Amounts are what happened, never the printed number.** Supply clamps at
+  the track's maximum, a favor gain takes at most what the bank holds, and a
+  kill does what the board allows. A note that restates a step reads its
+  amount as the difference between `previous`'s two states, so no power
+  repeats the cap logic of the operation it describes. "Magic Waterskin:
+  {Red} gained {3} Supply." reads 3 when the track had room for only 3.
+  A leaf that ran and changed nothing gives `previous` the same state
+  twice, so a note after it reads no change.
+- A `Note` inside a branch that never runs is never journaled. A line
+  therefore appears only when its effect happened.
+- A Transform that removes a decision leaves a `Note` in its place. Vow of
+  Peace swaps the sacrifice `Decide` for a note reading "Vow of Peace: The
+  attacker cannot sacrifice against Blue."
+- The note's `source` names the card the line starts with. The setup rules,
+  whose own `source` is a game rule, pass their edifice card.
+
+### Emission path 2: the hide hook
+
+`OptionRestriction`, and the `Restriction` the look-ahead probes, gain an
+optional field:
+
+```scala
+note: (PowerCtx, DecisionOptionRef) => Option[PowerNote]
+```
+
+It defaults to returning nothing.
+
+- When the walker first reaches a `Decide` and removes options from it, it
+  calls the hook of the power that removed each option.
+- Each returned note is journaled as a `PowerNoted`, in option order, before
+  the decision parks or resolves.
+- A note that names only what binds, not the option it hid, merges into one
+  line per action (see "Placement"). Narrow Pass hiding three sites as
+  targets, or the Circlet of Command hiding three relics, reads once.
+
+### Game rules
+
+The Homeland rule is not a power. `CardPlay` lets a player discard a card at
+the Homeland of the played card's suit, which is the same choice People's
+Favor's Mob face offers everywhere. It gets the same
+line.
+
+- A game rule that writes a line gets a `PowerId` of its own, such as
+  `rule.homeland-discard`, and declares its templates in `RuleNotes` (in
+  `gameplay.actions`), a small registry the formatter consults beside the
+  two power catalogs.
+- The card-play planner puts a `Note` with that id in the placement tree
+  after the discard answer. Its `source` is the Homeland site, so the line
+  starts with the site's chip.
+
+### Once per effect
+
+A resumed command walks down to the parked position again and folds the same
+windows again. A note is journaled only when the walker enters its node
+fresh, that is with no resume cursor. Re-entering on the way to a parked
+position journals nothing. Each new pass of a `Repeat` counts as fresh,
+because the effect really happens again.
+
+### Layering
+
+- `PowerNote`, `NoteArg` and the `Note` leaf sit beside the operation types.
+  Powers never import `gameplay.walker`, which `BackendArchitectureSuite`
+  forbids.
+- `PowerNoted` is a `WalkerEvent` in `gameplay/walker/WalkerEvents.scala`.
+- Emission lives in `WalkerPowerGather` or a new `WalkerNotes.scala`.
+  `ProcedureWalker.scala` is at 655 of its 800 allowed lines and does not
+  grow beyond the single dispatch case the leaf needs.
+
+## 2. Log
+
+### Rendering
+
+`GameLogFormatter.eventLines` gains a `PowerNoted` case, handled by a new
+`PowerLines.scala` in `application/gamelog`.
+
+- The line is the source's name as a chip, then ": ", then the power's
+  sentence with its arguments filled in.
+- The source is named the way `ActionLines.powerSource` names sources today,
+  and passes the same identity check as any card. A facedown source reads as
+  its back.
+- Card arguments go through `LogWords.card` with the states before and after
+  the event, so a card the viewer may not identify reads as its back ("a
+  Relic").
+- The first word of the sentence is capitalised: "Vow of Peace: The attacker
+  cannot sacrifice against Blue."
+- The kind is `Trigger`, the kind the Game Log design reserved for
+  "{card}: {effect}". The wire format and the client do not change.
+
+### Wording
+
+Each power declares a template for each key it emits, beside its own code:
+
+```scala
+def noteTemplates: Map[String, Vector[NotePart]]
+// NotePart = Text(words) | Arg(index) | Plural(index, one, many)
+```
+
+`Plural` picks a word by the `Amount` argument at `index`, so "Killed {n}
+{Blue} warband" reads "Killed 1 Blue warband" and "Killed 2 Blue warbands".
+An `Amount` rendered through `Arg` pluralises its own unit.
+
+The formatter finds the power by id through `WalkerPowerCatalog` and
+`PhasePowerCatalog`. `GameLogFormatter` already builds a lookup from the
+first.
+
+Wording rules:
+
+- Past tense for what happened: "Toll Roads: Red paid 1 favor to Blue."
+- "must", "may" or "cannot" for a rule that binds: "Narrow Pass: Red cannot
+  target other sites in the region."
+- Terse fragments are fine: "Outriders: Skulls ignored."
+- An exclamation mark is allowed where a procedure changes dramatically.
+- A pawn placed by a power "placed at" a site. It did not travel or move.
+- Every amount is an argument, including one the card prints as fixed. The
+  applied value can be smaller.
+- Players are named by chip, never "you". Every viewer reads the same line.
+
+### Placement
+
+- A power line sits at depth 1 under its action, in journal order, among the
+  action's detail lines. The walker journals each note where its effect
+  happens, so journal order is effect order.
+- A power line never precedes its action's start line. When a run's first
+  event is a `PowerNoted` (the hide hook at an action's first decision), the
+  start line posts first.
+- Setup notes post under the Setup headline, among the setup lines.
+- A power line identical to one already posted in the same action is
+  dropped. The Circlet of Command hiding three relics, or Gleaming Armor
+  taxing two plans, reads once. Only earlier lines are compared, so prefix
+  stability holds.
+
+### Phase powers
+
+Every note in this table is the power's `used` line unless marked otherwise.
+"Covers" names the generic line the note replaces. Today most of these
+effects log nothing but "Used {card}": `GainSupply`, `Kill`, pawn moves, a
+relic drawn by a power, and secrets moved between players have no generic
+line at all. Those notes cover nothing and fill the gap.
+
+A "Chose …" line from the power's own decision stays (see "Covering"),
+unless the power declares that decision narrated (see "Narrated
+decisions"). The cost payment logs nothing today and still logs nothing.
+
+| Card | Line | Covers |
+|---|---|---|
+| Elders | Elders: {Red} gained {1} secret. | the Gain line |
+| Wayside Inn | Wayside Inn: {Red} gained {n} Supply. | |
+| Magic Waterskin | Magic Waterskin: {Red} gained {n} Supply. | |
+| Alchemist | Alchemist: {Red} gained {n} favor. | nothing: each bank's Gain line stays |
+| Gambling Hall | Gambling Hall: {Red} rolled {dice}, Total: {n} | the Rolled line |
+| Gambling Hall, key `gained`, when the total is above zero | Gambling Hall: {Red} gained {n} favor from {the Order bank}. | the Gain line |
+| Bone Dice | Bone Dice: {Red} rolled {dice}, Total: {n} | the Rolled line |
+| Bone Dice, key `gained`, when the score is above zero | Bone Dice: {Red} gained {n} Supply. | |
+| Bone Dice, key `buried`, on a skull | Bone Dice: Buried after a skull. | the Buried line |
+| Murky Fountain, pawn at its site | Murky Fountain: {Red} rolled {dice}, Total: {n} | the Rolled line |
+| Murky Fountain, key `gained`, when the total is above zero | Murky Fountain: {Red} gained {n} Supply. | |
+| Murky Fountain, key `ended`, on a zero total | Murky Fountain: {Red}'s Act phase ended. | |
+| Murky Fountain, pawn elsewhere | Murky Fountain: {Red} was not at its site. | |
+| Dowsing Sticks | Dowsing Sticks: {Red} drew {relic} facedown. | |
+| Dowsing Sticks, empty deck | Dowsing Sticks: The relic deck was empty. | |
+| Fae Merchant | Fae Merchant: {Red} drew {relic} facedown. | |
+| Fae Merchant, key `returned` | Fae Merchant: {Red} put {relic} on the bottom of the relic deck. | the Buried line, and its "Chose" line |
+| Crystal Vial | Crystal Vial: {Red} buried {card}. | the Buried line |
+| Ivory Eye | Ivory Eye: {Red} peeked at {card} in {Blue}'s advisers. | the Peeked line |
+| Sleight of Hand | Sleight of Hand: {Red} took 1 secret from {Blue}. | |
+| Sleight of Hand, no target | Sleight of Hand: No player could be robbed. | |
+| Whistle | Whistle: Placed {Blue} at {site} and gave {Blue} the Whistle's secret. | |
+| Whistle, no target | Whistle: No pawn could be pulled. | |
+| Wolves | Wolves: Killed {n} {Blue} warband. | |
+| Wolves, no warband | Wolves: {Blue} had no warband to kill. | |
+| Brass Horse | Brass Horse: {Red} revealed {card}. | the Revealed line |
+| Brass Horse, key `placed` | Brass Horse: {Red} placed at {site}. | |
+| Magic Carpet | Magic Carpet: {Red} placed at {site}. | |
+| Magic Carpet, key `given` | Magic Carpet: Given to {Blue}. | |
+| Magic Carpet, key `discarded` | Magic Carpet: Discarded. | |
+| Wandering Flame (move) | Darkest Secret: {Red} placed at {site}. | |
+| Wandering Flame (place) | Darkest Secret: {Red} placed a secret at {site}. | |
+| Horned Mask | Horned Mask: {Red} took {card} as a facedown adviser. | |
+| Horned Mask, key `taken`, after a discard question | Horned Mask: {Red} took {card} as a facedown adviser. | |
+| Marble Fountains | Marble Fountains: {Red}'s Supply refreshed to {n}. | |
+| Silver Tongue (REST) | Silver Tongue: {Red} took {n} favor from {the Order bank}. | the Gain line |
+| Vow of Obedience (REST) | Vow of Obedience: {Red} took {n} favor from {the Order bank}. | the Gain line |
+
+### Removed and hidden options
+
+| Card | Path | Line |
+|---|---|---|
+| Vow of Peace, second sentence | `Note` replacing the sacrifice decision | Vow of Peace: The attacker cannot sacrifice against {Blue}. |
+| Vow of Obedience | hide hook | Vow of Obedience: {Red} cannot play a Vision faceup. |
+| Secret Police | hide hook | Secret Police: {Red} cannot play a Vision faceup. |
+| Sacred Ground | hide hook | Sacred Ground: {Red} cannot play a Vision faceup. |
+| Oaken Fortress, Rotting Fortress | hide hook, per protected target | Oaken Fortress: {Blue} cannot be targeted. |
+| Rotting Fortress, a Raid hidden from several players, key `all-shielded` | hide hook | Rotting Fortress: No player at {site} can be targeted. |
+| Circlet of Command, Raid and Challenge | hide hook | Circlet of Command: {Blue}'s banners and relics cannot be targeted. |
+| Circlet of Command, Conspiracy | `Note` from its transform | Circlet of Command: {Blue}'s banners and relics cannot be targeted. |
+| Narrow Pass, Campaign targets | hide hook | Narrow Pass: {Red} cannot target other sites in the region. |
+
+### Added effects
+
+| Card | Line | Covers |
+|---|---|---|
+| Toll Roads, key `paid` | Toll Roads: {Red} paid {1 favor} to {Blue}. | |
+| Toll Roads, key `burned`, when bandits rule | Toll Roads: {Red} burned {1 favor}. | |
+| Grasping Vines | Grasping Vines: Killed {n} {Red} warband. | |
+| Gossip | Gossip: {Blue} gained {n} favor from {the Discord bank}. | the Gain line |
+| Book Binders | Book Binders: {Blue} gained {n} favor from {the Order bank}. | the Gain line |
+| Gleaming Armor, after the taxed plan | Gleaming Armor: {Red}'s battle plans cost {1} extra secret. | |
+| Conspiracy (when played) | Conspiracy: {Red} seized {relic or banner} from {Blue}. | |
+| Dazzle | Dazzle: Discarded {cards}. | the Discard line |
+| Mercenaries | Mercenaries: Discarded after {Red} lost. | |
+| Sticky Fire, key `burned` | Sticky Fire: Killed {n} {Blue} warband, and {Blue} gained {1 favor}. | |
+| Sticky Fire, key `killed`, the winner had no favor | Sticky Fire: Killed {n} {Blue} warband. | |
+| Sticky Fire, key `gained`, no warband to kill | Sticky Fire: {Blue} gained {1 favor}. | |
+| Truthful Harp | Truthful Harp: Revealed {cards}. | the Peeked lines |
+| Forest Paths, destination with a beast card | Forest Paths: Ignoring site powers. | |
+| Dragonskin Drum | Dragonskin Drum: {Red} gained {1 warband}. | |
+| Family Heirloom, key `keep` | Family Heirloom: {Red} drew {relic} and kept it. | its "Chose" line |
+| Family Heirloom, key `bottom` | Family Heirloom: {Red} drew {relic} and put it on the bottom of the relic deck. | its "Chose" line and the Buried line |
+
+### Altered procedures
+
+| Card | Line |
+|---|---|
+| Outriders, when the attack rolled a skull | Outriders: Skulls ignored. |
+| Warning Signals, after the arrangement | Warning Signals: {Blue} redistributed their warbands. |
+| Knights Errant, after the choice to campaign | Knights Errant: {Red} campaigns for no Supply. |
+| People's Favor (Mob face), after the discard answer | People's Favor: {Red} may discard a card at their site first. |
+| Homeland rule, at the Homeland of the played card's suit, after the discard answer | {Homeland site}: {Red} may discard a card at their site first. |
+| League Treaty, after the moves | League Treaty: {Blue} sent {n favor} to {the Nomad bank}. |
+
+### Setup
+
+| Card | Line | Covers |
+|---|---|---|
+| Great Market | Great Market: Placed {3 favor} on {site}. | |
+| Bandit Market, key `placed-and-burned` | Bandit Market: Placed {1 favor} on the bandit site and burned {6 favor} from the banks. | |
+| Bandit Market, key `placed`, when no favor is left to burn | Bandit Market: Placed {1 favor} on the bandit site. | |
+| Bandit Market, key `burned`, when no site is bandit-ruled | Bandit Market: Burned {6 favor} from the banks. | |
+| Great Forge | Great Forge: {Red} drew {relic} facedown. | |
+| Broken Forge | Broken Forge: Discarded {cards}. | |
+| Proving Grounds | Proving Grounds: {Red} gained {3 warbands}. | |
+| Empty Grounds | Empty Grounds: Discarded {cards}. | the Discard line |
+
+### No line
+
+- Mountain, Island and Coast terrain: the cost span shows the cost.
+- Chosen modifiers whose effect is only an amount or dice change: the Supply
+  waivers of Forest Paths and Tents, Welcoming Party, Wild Cry, Cup of Plenty,
+  Rowdy Pub, Relic Worship, Augury, and the battle plans that only add or
+  remove dice or grant a conditional favor (Battle Honors, Brass Army,
+  Fearsome Shield, Cracked Rampart, Towering Rampart, Watchdog, Wrestlers,
+  title defense).
+- Catacombs: its Move line shows it.
+- A Small Favor, Faithful Friend, Garrison, Family Heirloom: their operations
+  and decisions already log.
+- Silver Tongue's adviser limit: the limit shows only as fewer advisers, and
+  no decision point explains it well.
+- Take Wealth's once-per-site limit: an ordinary availability rule.
+- Every whole-action block (ruling 3): Vow of Peace's first sentence, the
+  Fortress's Raid-only block, and a Travel the Narrow Pass blocks. Travel's
+  destination is part of the command, so no decision hides it.
+
+## 4. Storage
+
+- `PowerNoted(power, note, covers)` joins `WalkerEventCodec` with the type
+  `"walker.power-noted"`.
+- A note is stored as its source, its key and its arguments, the source and
+  each argument tagged with its kind, like the log's span wire format. An
+  unknown argument kind is a decode error.
+- `FormatVersion` does not change. Old journals stay valid and contain no
+  notes.
+- `WalkerReplay.applyRecordedReady` gains a no-op `PowerNoted` case ahead of
+  its catch-all, which would otherwise reject the event. Replay never reads a
+  note, as it never reads `contributions`.
+- The `Note` leaf is part of the tree, not the journal, so it needs no codec.
+
+## Tests
+
+Walker:
+
+- A `Note` leaf journals once, in walk order, with arguments read from the
+  state at that point.
+- A note after a capped step reads the applied amount from `previous`, not
+  the printed one: Magic Waterskin near the top of the Supply track.
+- A `Note` in a branch that does not run journals nothing.
+- A resumed command journals no note twice. A new `Repeat` pass journals
+  again.
+- The hide hook journals one note per hidden option, only at a decision the
+  walker reaches.
+- A whole-action Restriction journals nothing.
+- Replay ignores `PowerNoted`: a journal with and without notes replays to the
+  same state.
+
+Codec, in `GameEventWireSuite`: a round trip of every argument kind, and an
+unknown argument kind rejected.
+
+Formatter:
+
+- A note renders as chip, colon and capitalised sentence, with kind
+  `Trigger`.
+- A card argument a viewer may not identify reads as its back. A facedown
+  source reads as its back.
+- A power line never precedes its run's start line.
+- A `used` note replaces "Used {card}". A run without one still posts it.
+- A covering note drops the covered step's detail line and nothing else.
+- A power's narrated decision posts no "Chose" line; every other decision
+  still does.
+- A note with no template renders nothing.
+- A line identical to an earlier line of the same action is dropped; the same
+  line in the next action is not.
+- `Plural` and a pluralised `Amount` read correctly for 1 and for 2.
+- A card played to the Homeland of its suit reads the Homeland line after its
+  discard; a card played to a full Homeland of another suit is refused and
+  reads nothing.
+- The prefix-stability property holds over journals that contain notes.
+
+Catalog:
+
+- Every key a power can emit has a template.
+- Every phase power declares a `used` template.
+- Every id in `RuleNotes` has a template for each key it emits.
+
+Cards: each row of the audit asserts its exact line in that card's existing
+suite.
+
+## Settled in slice 1
+
+The first slice settled these:
+
+- A note carries its source: `PowerNote(source: PowerSourceRef, key, args)`.
+  `PowerSourceRef` is what the log already names sources by. It is not the
+  `RuleSourceRef` this document first named: Vow of Peace and other powers
+  have only a game-rule `RuleSourceRef`.
+- `Note(power, build, covers)` is a plain `Operation`, not a
+  `PrimitiveOperation`. `build` may return nothing, and then nothing is
+  journaled, which is how an amount of zero writes no line.
+- `NoteStates` also carries the action's answers, so a note can name what
+  the player chose.
+- `PowerNoted(power, note, covers)` carries `covers` for the formatter.
+- A template lives on its `NoteKey`. A power declares `noteKeys` and builds
+  its notes through them, so a key never lacks a template. A missing
+  template can happen only for an old journal. `ContributingPower` and
+  `PhasePower` share `noteKeys` through one parent trait, `NotingPower`, so a
+  power that is both, such as Silver Tongue, declares its keys once.
+- `NoteArg.Number` is a bare number, for "Total: 8".
+- The hide hook covers choose-one and choose-many options. A choose-amount
+  decision the look-ahead narrows writes no note.
+- Merging compares the journaled notes, never the rendered text, so every
+  viewer receives the same entries.
+- Held notes post right after the start line, at the event that posts it.
+- A template starts with an argument or a capital letter, which a catalog
+  test checks. The formatter never changes case.
+- A phase power puts its `used` note in the same command as its first
+  effect, because "Used {card}" is decided at that step and reads ahead only
+  to the end of its segment.
+- The test that every phase power declares `used` arrives with slice 2.
+
+## Settled in slice 2
+
+The second slice settled these:
+
+- A row the table marks as another outcome of a power's `used` line, such
+  as "Wolves, no warband", is a variant named `used.{variant}`: `used.none`,
+  `used.empty`, `used.away`. A variant also replaces "Used {card}" and is its
+  action's line. Every phase power declares a key named exactly `used`,
+  which a catalog test checks.
+- Brass Horse's reveal is its first effect, and its destination question can
+  park. Its `used` line is therefore the reveal, and the placement is a
+  `placed` line of its own. With an empty pile, "Used Brass Horse" stays.
+- Horned Mask's take lands after "Used Horned Mask" has posted when the
+  adviser area was full and a discard question parked. Its line then uses
+  the key `taken`, a trigger with the same sentence.
+- A note's cards, its source included, are judged at its action's start, at
+  the step it restates, and after it. A viewer who identified a card at any
+  of them reads its name. Magic Waterskin's source is buried by the time its
+  line posts, and still reads as Magic Waterskin.
+- Ivory Eye names the adviser apart from its owner, so a viewer who may not
+  identify it reads "a Denizen in Blue's advisers".
+- A banner's power names its banner, as "Used Darkest Secret" does:
+  "Darkest Secret: Red placed at {site}."
+- Magic Waterskin's Buried line posts before its own line, since the bury
+  comes first on the card.
+- The reads a note needs live in `NoteSupport`. Shared sentences live beside
+  the helpers of their family: `RollResults.rolled`, `RelicDraws.drew`,
+  `PawnMoves.placedKey`, `NoteSupport.took` and `NoteSupport.gainedKey`.
+
+## Settled in slice 3
+
+The third slice settled these:
+
+- The Narrow Pass writes no Travel line. Travel's destination is part of
+  the command, and no decision offers destinations, so a blocked Travel is a
+  whole-action block.
+- The hide hook is asked once per hidden option. A Raid hidden at the kind
+  decision names the one player it could have targeted, or, when a Rotting
+  Fortress protects several, their site: "No player at {site} can be
+  targeted." An Oaken Fortress protects only its ruler.
+- The Circlet narrows a Conspiracy's target with a transform, which puts a
+  `Note` before the decision whenever it drops an option, and in the
+  decision's place when it drops them all.
+- Vow of Obedience, Secret Police and Sacred Ground share one key,
+  `no-faceup`, declared in `VisionPlay`. Several Visions hidden in one
+  action post one line, through the merge slice 1 built.
+- A hidden option is credited to the first restriction whose violation its
+  answer adds. When two powers forbid the same option, only that one writes
+  a line.
+- `NoteText.said` reads any power's notes by id and keys, so the suites of
+  contributing powers assert their lines as the phase power suites do.
+
+## Settled in slice 4
+
+The fourth slice settled these:
+
+- A note never comes before a decision already in the tree. A game
+  parked on a decision stores its position, and a node inserted before it
+  would move it. The "may" lines of Knights Errant, the Mob and the
+  Homeland rule therefore post after the choice they explain. Warning
+  Signals and League Treaty post after it too, and say what happened:
+  "{Blue} redistributed their warbands.", "{Blue} sent {3 favor} to {the
+  Nomad bank}.".
+- A leaf that ran and changed nothing is the step a note after it reads,
+  as its unchanged state twice. Every note reads a difference, so it
+  writes nothing there, and no older step is restated by mistake.
+- `NoteArg.Cards` names several cards as one phrase, and `NoteArg.Banner`
+  names a banner. Truthful Harp and Dazzle list their cards. Conspiracy
+  names the relic or banner it seized.
+- A note that cannot read one step reads the state its transform was
+  folded with, which is the state before the step. Dazzle lists the
+  cards it would discard there that no site holds when it writes.
+- The Mob's line travels in `PlacementRules.siteDiscardNote`, so card
+  play still names no power. Without that permission card play writes
+  the Homeland rule's line. Both use `PlacementRules.discardFirst`.
+- `RuleNotes` lives in `gameplay.actions`, beside `PlacementRules`.
+- Sticky Fire writes what the burn did, in three keys, and nothing
+  against bandits. The count is what the burn killed: after a Raid's own
+  losses it names only the warbands left for the burn. Outriders writes
+  only when a skull was rolled. Forest Paths writes only when it ignores
+  site powers. Toll Roads writes `paid` or `burned`. Dragonskin Drum names
+  the player who gained.
+- Gleaming Armor's line posts after the taxed plan's own effects. Its
+  extra secret is a `Number` with a `Plural`.
+- `NoteSupport.killedKey` and `NoteSupport.gainedFromKey` are the kill and
+  the gain-from-a-bank sentences that Wolves, Gambling Hall and this
+  slice's powers share.
+
+## Settled in slice 5
+
+The fifth slice settled these:
+
+- Each setup rule's note goes last in its window's expansion, after the
+  rule's own `BuildOps`, and reads that step. A rule whose step changed
+  nothing writes nothing: an empty relic deck, an empty bank, or a region
+  with no denizens.
+- Bandit Market writes what it did, in three keys, as Sticky Fire does:
+  the favor placed on the bandit sites, the favor burned from the banks,
+  or both. One favor goes to each site, so the placed amount names the
+  number of sites.
+- Broken Forge lists the relics it discarded as cards, "Discarded {cards}",
+  and Empty Grounds shares that sentence. Facedown relics read by their
+  back.
+- Empty Grounds covers the generic Discard line, and reads the state its
+  transform was folded with, as Dazzle does.
+- Great Forge shares the relic draw sentence, and Proving Grounds the gain
+  sentence.
+- The Setup procedure has no start line, so its notes post where they
+  fall, among the setup lines.
+
+## Narrated decisions
+
+A power may declare `narratedDecisions`, the ids of its own decisions whose
+answer its notes tell. The formatter posts no "Chose …" line for them, as it
+posts none for a decision an action line names. The declaration lives beside
+`noteKeys` on `NotingPower`, and `NoteWordings` collects it from the
+catalogs. It reads no later event, so prefix stability holds.
+
+Family Heirloom is the first: its note after the settling step tells both the
+draw and the choice, and covers that step's Buried line. Fae Merchant's
+`returned` line names the relic chosen, so it opts in too. Other powers whose
+note restates their own choice may opt in the same way.
+
+## Slices
+
+1. **Mechanism.** `PowerNote`, the `Note` leaf, the hide hook, `PowerNoted`
+   and its codec, replay's no-op case, `PowerLines`, covering, the fallback,
+   and the catalog tests. Proven on Vow of Peace and Gambling Hall.
+2. **Phase powers.** The rest of the phase power table.
+3. **Removed and hidden options.** That table.
+4. **Added effects and altered procedures.** Those tables.
+5. **Setup.** The setup table.
+
+The plan may merge slices when it sizes them.
+
+## Out of scope
+
+- Explaining a missing action control (ruling 3), and explaining a hidden
+  option where it would have been offered. The roadmap's "explain restricted
+  options where they are offered" item covers both. Once it exists, most
+  hide-hook lines can move out of the log; the hide hook's note is the
+  natural source of that explanation.
+- Cards not yet implemented. Catalog batch 2 follows this pattern for each
+  card it adds.
+- WHEN EXPLORED: the setup rules share that window, but no explore procedure
+  folds it yet. Their notes will work there unchanged when one does.

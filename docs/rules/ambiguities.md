@@ -18,7 +18,7 @@ These are not claimed errors in the rulebook. They are places where an implement
 1. **Action boundary.** Several automatic checks happen "after any action" (bandit refill, Oathkeeper transfer), while powers can introduce actions and nested effects. Define a transaction boundary and when state-based checks reach a fixed point (CR pp. 15-16, 42).
 2. **Simultaneous effects.** Turn player chooses order during a turn; current Chancellor chooses during Chronicle. Define who chooses outside both contexts and whether ordering choices are logged (CR p. 42).
 3. **Consent timeout/forgetting.** "Enemies cannot" effects fail if not enforced at the moment. A digital implementation needs an explicit prompt/auto-consent policy so silence is deterministic (CR p. 43).
-   Resolved for the digital game: the engine always enforces, and a blocked player asks the ruler explicitly; a ruler may set a standing per-player answer ([consent design](../superpowers/specs/2026-10-08-consent-system-design.md), rulings 3 and 10).
+   Resolved for the digital game: the engine always enforces, and a blocked player asks the ruler explicitly; a ruler may set a standing per-player answer ([consent design](../superpowers/specs/2026-10/2026-10-08-consent-system-design.md), rulings 3 and 10).
    An official ruling on the Hall of Ministers makes enforcement all-or-nothing: once waived, it lets through every discard that happens at the same time. The engine treats one operation batch as that moment (consent design, ruling 3).
 4. **Private information.** The rules permit owners to view/share their private data. Multiplayer UI needs visibility and reveal/audit policies for facedown advisers, relics, drawn cards, and secret selections (CR p. 42).
 5. **Unlimited dice vs limited pieces.** Dice are unlimited; other components are limited and extra placement is ignored. Decide whether digital inventory should preserve physical limits exactly (CR p. 42).
@@ -41,7 +41,7 @@ These are not claimed errors in the rulebook. They are places where an implement
 
 ## Empire rulings
 
-Rulings for the Empire in play ([Empire phase design](../superpowers/specs/2026-10-29-empire-phase-design.md), "Rulings"). Slice 1a implements R1 to R3 and the Usurper ruling; slice 3a implements R4, R5 and the Usurper flip of R7.
+Rulings for the Empire in play ([Empire phase design](../superpowers/specs/2026-10/2026-10-29-empire-phase-design.md), "Rulings"). Slice 1a implements R1 to R3 and the Usurper ruling; slice 3a implements R4, R5 and the Usurper flip of R7.
 
 R1. **One ruler.** On an Imperial player's turn only that player rules Imperial sites; the Chancellor does not also rule them. A site has exactly one ruler (CR p. 15).
 
@@ -129,7 +129,7 @@ Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chron
 
 20. **A broken Empire's sites.** When an Exile wins, each site that held Imperial warbands takes one warband of the former Chancellor's colour once the Imperial warbands are removed, so the former Chancellor rules it as an Exile through the rest of the Chronicle. This deviates from CR p. 36, which leaves those sites empty and has the Throne place an Imperial warband on each site with no warbands if the former Chancellor accepts Citizenship. A former Chancellor who declines keeps the sites. Their bank holds 14 less their board warbands, which turn to their colour as they are exiled; when it runs short, the step assumes an unlimited supply and still places one warband on each of those sites, as the Throne does (ruling 22). A boxed former Chancellor places none, and those sites stay empty (Empire slice 3b).
 
-21. **Offer Citizenship.** The Throne holder offers Citizenship to any seated Exiles, none included; boxed lineages are never offered. The offered Exiles answer at once, in any order, Decline first; each answer is public and applies when it is given (user, 2026-11-02; [simultaneous decisions design](../superpowers/specs/2026-11-02-simultaneous-decisions-design.md)). An Exile who accepts becomes a Citizen, returns their board warbands, and keeps one Imperial warband at each site they rule. No other Citizenship step, and not the first-game option, applies in the Chronicle (CR p. 37; Empire slice 3b).
+21. **Offer Citizenship.** The Throne holder offers Citizenship to any seated Exiles, none included; boxed lineages are never offered. The offered Exiles answer at once, in any order, Decline first; each answer is public and applies when it is given (user, 2026-11-02; [simultaneous decisions design](../superpowers/specs/2026-11/2026-11-02-simultaneous-decisions-design.md)). An Exile who accepts becomes a Citizen, returns their board warbands, and keeps one Imperial warband at each site they rule. No other Citizenship step, and not the first-game option, applies in the Chronicle (CR p. 37; Empire slice 3b).
 
 22. **Unlimited purple at the Throne.** Offer Citizenship assumes an unlimited purple supply, since it marks sites as the Empire's; purple warbands the bank lacks are added to it (CR p. 37; Empire slice 3b).
 

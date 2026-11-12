@@ -6,9 +6,9 @@ section, modifiers chosen as for any start, and no Supply spent. Once the
 current walk ends, the walker asks the player: take the action, or Skip. Knights Errant, Hunting
 Party and Second Wind are built on it.
 
-Design: [follow-up actions design](../superpowers/specs/2026-10-08-follow-up-actions-design.md),
-amended by the [walker-driven game loop](../superpowers/specs/2026-10-09-walker-game-loop-design.md).
-Plan: [follow-up actions plan](../superpowers/plans/2026-10-08-follow-up-actions.md).
+Design: [follow-up actions design](../superpowers/specs/2026-10/2026-10-08-follow-up-actions-design.md),
+amended by the [walker-driven game loop](../superpowers/specs/2026-10/2026-10-09-walker-game-loop-design.md).
+Plan: [follow-up actions plan](../superpowers/plans/2026-10/2026-10-08-follow-up-actions.md).
 
 ## The queue and its replay
 

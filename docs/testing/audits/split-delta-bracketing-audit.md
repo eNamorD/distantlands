@@ -18,13 +18,13 @@
 > Written as a read-only audit, 2026-11-02, of the ROADMAP item "Check that a
 > split delta's steps bracket their operation" under Game Log deferred
 > items, which the
-> [log operation strictness decision](../../superpowers/specs/2026-10-19-log-operation-strictness-decision.md)
+> [log operation strictness decision](../../superpowers/specs/2026-10/2026-10-19-log-operation-strictness-decision.md)
 > raised as a separate candidate. Nothing here changes code. Line numbers
 > are those of the tree at commit `0d1ae92`.
 
 Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **note**, **note
 boundary** and **command batch**. The
-[Game Log design](../../superpowers/specs/2026-09-25-game-log-design.md),
+[Game Log design](../../superpowers/specs/2026-09/2026-09-25-game-log-design.md),
 "Input" and "Visibility", states the rule this audit checks: every line and
 every visibility judgement is made against the state immediately before and
 after the operation it describes.

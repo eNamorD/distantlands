@@ -41,7 +41,7 @@ Left behind by earlier phases:
   between them.
 
 Left behind by the
-[consent work](superpowers/specs/2026-10-08-consent-system-design.md):
+[consent work](superpowers/specs/2026-10/2026-10-08-consent-system-design.md):
 
 - [ ] **Arranged-start event for game save and load.** A journal must begin
   with `GameStarted`, and no codec exists for a full `ReadyGame`. A journaled
@@ -52,7 +52,7 @@ Left behind by the
   decision on who may start one. The test-only replay origin from the service
   and log start-state project (2026-09-28) is the seam it would grow from.
   Recorded in the
-  [service log start states design](superpowers/specs/2026-09-28-service-log-start-states-design.md).
+  [service log start states design](superpowers/specs/2026-09/2026-09-28-service-log-start-states-design.md).
   The consent play-test below needs it.
 - [ ] **Keep consent preferences across a one-turn handover.** The reset
   (consent ruling 17) clears a granter's standing preferences whenever
@@ -62,7 +62,7 @@ Left behind by the
   every Always and Never on them, and the turn player loses theirs when
   the turn ends. Comparing `ConsentDesk.stale` against the ruler outside
   any turn would keep them. Accepted for now in
-  [catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-2-card-level-ruler)
+  [catalog batch 11](superpowers/specs/2026-11/2026-11-07-catalog-batch-11-design.md#slice-2-card-level-ruler)
   and pinned by `GrandMaskConsentPreferenceSuite`; a change needs the
   owner's ruling and updates that suite.
 - [ ] **Play-test consent in a browser.** The amber destination, campaign
@@ -85,7 +85,7 @@ Left behind by the
 ### Phase - Campaign battle summary
 
 Left out of the Game Log action sections
-([spec](superpowers/specs/2026-10-05-log-action-sections-design.md)), which
+([spec](superpowers/specs/2026-10/2026-10-05-log-action-sections-design.md)), which
 answered the 2026-10-01 playtest's "make it clear what a Campaign's battle
 did":
 
@@ -108,7 +108,7 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
   command until its owner answers; a `Simultaneous` park waits on every
   player who still owes an answer. There are no timeouts, forfeits or host
   resolution. Recorded in the
-  [walker ownership and phases design](superpowers/specs/2026-09-12-walker-ownership-and-phases-design.md).
+  [walker ownership and phases design](superpowers/specs/2026-09/2026-09-12-walker-ownership-and-phases-design.md).
 - [ ] **Reconnection UX.** After a client loses its connection it should
   retry with exponential backoff and show a **Try Again** button. Recorded
   in the Phase 5 follow-ups.
@@ -157,7 +157,7 @@ Settings players can change during a game.
 
 - [ ] **Ignore Citizenship powers.** Toggle the first-game option that
   ignores "become a Citizen" powers. Game start sets it, and nothing changes
-  it during a game ([Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md),
+  it during a game ([Empire phase design](superpowers/specs/2026-10/2026-10-29-empire-phase-design.md),
   slice 3).
 - [ ] **Hover warnings.** Show warnings on hover, turn them off, or disable
   the options that carry a warning.
@@ -204,11 +204,11 @@ one.
   The Game Log posts a line only once its facts are complete, so an action
   that is still parked says nothing about its choices so far. The table's
   "Waiting on player" message is the place to show that progress. Recorded in
-  the [Game Log design](superpowers/specs/2026-09-25-game-log-design.md).
+  the [Game Log design](superpowers/specs/2026-09/2026-09-25-game-log-design.md).
 - [ ] **Game Log features the design left out.** Click-to-highlight,
   filters and search, timestamps, a server-side read marker, failed victory
   checks and negotiation proposals. Replay navigation is **L4**. Recorded in
-  the [Game Log design](superpowers/specs/2026-09-25-game-log-design.md).
+  the [Game Log design](superpowers/specs/2026-09/2026-09-25-game-log-design.md).
 - [ ] **Warn before a choice that has no effect.** The rules let a
   player pay for a power or pick an option that then does nothing: a
   modifier selected for an action it will not change (Cup of Plenty,
@@ -227,7 +227,7 @@ one.
   own notes design of 2026-10-16. False Prophet shows it most: a claimed
   Vision's owner's reveal line reads after the claimant's play and the
   kill, and a nested claim's lines read before the outer claimant's reveal
-  ([catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-8-nested-follow-ups),
+  ([catalog batch 11](superpowers/specs/2026-11/2026-11-07-catalog-batch-11-design.md#slice-8-nested-follow-ups),
   slices 7 and 8).
 - [ ] **Name whose Vision a claimant discards.** When False Prophet's
   claimant reveals the claimed Vision off turn, their own discarded Vision
@@ -244,7 +244,7 @@ one.
 - [ ] **Reasons on the remaining options.** Add hover reasons to the option
   builders that still lack them, as playtests find options people wonder
   about. Left by the
-  [board decisions design](superpowers/specs/2026-10-03-board-decisions-design.md).
+  [board decisions design](superpowers/specs/2026-10/2026-10-03-board-decisions-design.md).
 - [ ] **Mercenaries' player-chosen sign.** Mercenaries adds attack dice
   when its user attacks and removes defense dice from the attacker when it
   defends. The card lets the player choose the sign, and the plan fixes it by side.
@@ -277,7 +277,7 @@ one.
   second holder's spend in the same batch, which asks only the first. A
   draw is also not tied to its spend, so a non-required spend a
   restriction skips leaves the drawn favor on the board. Left by
-  [catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-5-favor-redirection),
+  [catalog batch 11](superpowers/specs/2026-11/2026-11-07-catalog-batch-11-design.md#slice-5-favor-redirection),
   slice 5.
 - [ ] **Show a False Prophet claim on the claimant's board.** The claimed
   Vision's owner's board shows the claimant's warband on it, but the
@@ -297,7 +297,7 @@ one.
 - [ ] **Move Campaign's pinned facts onto start facts.**
   `CampaignSetup.pinned` stores the Campaign's kind and defender as sentinel
   `ModifyDicePool` operations; start facts
-  ([travel destination design](superpowers/specs/2026-10-07-travel-destination-walker-design.md),
+  ([travel destination design](superpowers/specs/2026-10/2026-10-07-travel-destination-walker-design.md),
   ruling 6) are the durable place for them.
 - [ ] **One seam for "who may veto an operation".** `OperationPolicy`
   (an exact-shape allowlist, used by `StateBasedOperationPolicy` for
@@ -306,7 +306,7 @@ one.
   policy onto `OperationRestriction` would leave one seam, but it reorders
   precedence on the state-based path (allowlist reasons come before shape
   reasons today) and needs its own preservation argument. Recorded during the
-  [operation family consolidation](superpowers/specs/2026-09-24-operation-family-consolidation-design.md)
+  [operation family consolidation](superpowers/specs/2026-09/2026-09-24-operation-family-consolidation-design.md)
   of 2026-09-24.
 - [ ] **Key `CardKnowledge` by card id.** Knowledge is stored per
   place: `siteRelics` by viewer and site, `heldRelics` and `advisers` by
@@ -315,11 +315,11 @@ one.
   lose a card's name when it moves) by copying knowledge as cards move. A
   single map from card id to the players who know it would make "knowledge
   follows the card" structural instead of maintained per move. Recorded in
-  the [Game Log design](superpowers/specs/2026-09-25-game-log-design.md).
+  the [Game Log design](superpowers/specs/2026-09/2026-09-25-game-log-design.md).
 - [ ] **Frontend and protocol clean-up.** The projection has no protocol
   version field. (The decision ids and option ids both sides spell are
   settled by the
-  [decision-id vocabulary decision](superpowers/specs/2026-10-18-decision-id-vocabulary-decision.md)
+  [decision-id vocabulary decision](superpowers/specs/2026-10/2026-10-18-decision-id-vocabulary-decision.md)
   and are not work.) `WalkerDecisionProjectorSuite` fabricates parks instead of
   reaching them through a Situation. `OathViolation.InvalidSearchPlacement`
   also reports card-play refusals outside Search (a facedown adviser play, a
@@ -336,7 +336,7 @@ one.
   state-keyed memo in the shape of `SearchMemo`. Gather once per window, make
   the map a lazy val, and give the two memos one shape. Profile first; the
   `ActMenuBudget` benchmark is the measure. Recorded as the first follow-up of
-  the [test speed design](superpowers/specs/2026-10-07-test-speed-design.md).
+  the [test speed design](superpowers/specs/2026-10/2026-10-07-test-speed-design.md).
 - [ ] **Settle the engine's parked roll.** The parked-roll command path is
   gone, but the engine still parks on a `Roll` whose mode is `Parked`, which
   is the model default. `OathRulesWalker.rollWalkerPrepared` has test callers
@@ -345,7 +345,7 @@ one.
   default to `Automatic` and retire the engine half with the nine suites that
   build a parked roll, or keep it and make `checkAnswerable` refuse the park.
   See the
-  [parked-roll retirement decision](superpowers/specs/2026-10-23-parked-roll-retirement-decision.md).
+  [parked-roll retirement decision](superpowers/specs/2026-10/2026-10-23-parked-roll-retirement-decision.md).
 
 ### Architecture candidates
 
@@ -398,13 +398,13 @@ as current.
   renamed or computed. Deriving now needs the note's `scala.quoted`
   defaults macro plus per-field overrides, or a wire change in place.
   Decide when a wire-heavy phase begins. Design note:
-  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md),
+  [derive the wire codecs](superpowers/specs/2026-11/2026-11-02-derive-wire-codecs-design.md),
   "Probe result".
 - [ ] **One frontend client (optional).** The development shell still talks
   to `/api/dev/first-games/{gameId}?playerId=` through its own
   `HttpGameClient`; mounting the dev API at `/games/{gameId}/api` with the
   query-parameter resolution would retire the second client. Slice 5 of the
-  [one HTTP gateway](superpowers/specs/2026-11-02-one-http-gateway-design.md)
+  [one HTTP gateway](superpowers/specs/2026-11/2026-11-02-one-http-gateway-design.md)
   note, left for a frontend session. Both transports already share
   `GameApiRoutes`; what would remain is the dev-only raw-events route and
   the `development: HttpGameClient` arm of `TableSession`, and the move
@@ -439,7 +439,7 @@ as current.
     [Phase 5 follow-ups](operations/phase-5-follow-ups.md#snapshot-polling-sends-a-full-projection-on-every-tick).
 - [ ] **Table UI rework.** Rework the layout of player areas and sites, and
   port the map to haunt-roll-fail's canvas approach. Recorded in the
-  [card shape and inspection design](superpowers/specs/2026-09-22-card-shape-and-inspection-design.md).
+  [card shape and inspection design](superpowers/specs/2026-09/2026-09-22-card-shape-and-inspection-design.md).
   The playtest of 2026-10-01 asks whether the whole table, not only the map,
   should move to an HTML5 canvas.
 - [ ] **Clicking a banner shows its details.** Darkest Secret and The

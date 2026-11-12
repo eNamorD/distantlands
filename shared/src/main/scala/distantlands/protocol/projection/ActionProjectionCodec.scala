@@ -86,7 +86,7 @@ private[projection] object ActionProjectionCodec:
     * writes no table of its own -- it copies the two strings through. The seven
     * form spellings are this wire's own and are deliberately not shared with
     * `DecisionAnswerCodec`'s journal tags; see
-    * `docs/superpowers/specs/2026-09-25-decision-form-tag-separation-decision.md`.
+    * `docs/superpowers/specs/2026-09/2026-09-25-decision-form-tag-separation-decision.md`.
     */
   def encodeDecisionQuery(value: DecisionQueryProjection): ujson.Value =
     value match

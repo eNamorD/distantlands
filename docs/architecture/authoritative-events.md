@@ -63,7 +63,7 @@ Events record accepted facts needed for deterministic replay:
   the batch most recently voided while no command batch has followed; nothing
   is deleted. The application's `JournalFold` replays every event and rewinds
   or restores on a marker (undo design,
-  `docs/superpowers/specs/2026-10-06-undo-design.md`).
+  `docs/superpowers/specs/2026-10/2026-10-06-undo-design.md`).
 
 Replay never rerolls, redraws or walks a procedure tree. It applies each walker
 step's recorded operations, answers and roll faces as they are. It recomputes
