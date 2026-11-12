@@ -67,6 +67,26 @@ class FavoredSonSuite extends munit.FunSuite:
       Suit.Nomad -> 2))
     assertJournalRebuilds(ready, done.events, done.treeless)
 
+  test("takes the Grand Council with no favor on it: nothing moves but " +
+      "the banner"):
+    val ready = Table.start.adviser(p1, son).peoplesFavor(Some(p2),
+      favor = 0, face = PeoplesFavorFace.GrandCouncil).ready
+    val done = Outcomes.finished(play(ready, power, son))
+    assertEquals(Look(done.treeless).peoplesFavorHolder, Some(p1))
+    assertEquals(Look(done.treeless).favor(p2), Look(ready).favor(p2))
+    assertEquals(done.treeless.banks.favor, ready.banks.favor)
+    assertJournalRebuilds(ready, done.events, done.treeless)
+
+  test("takes the Grand Council with 1 favor on it: half of 1 is none, so " +
+      "it returns to the least bank"):
+    val ready = Table.start.adviser(p1, son).peoplesFavor(Some(p2),
+      favor = 1, face = PeoplesFavorFace.GrandCouncil).ready
+    val done = Outcomes.finished(play(ready, power, son))
+    assertEquals(Look(done.treeless).favorOnPeoplesFavor, 0)
+    assertEquals(Look(done.treeless).favor(p2), Look(ready).favor(p2))
+    assertEquals(done.treeless.banks.favor, banksAfterRibbon(ready, 1))
+    assertJournalRebuilds(ready, done.events, done.treeless)
+
   test("takes an unheld People's Favor from the shared bank"):
     val ready = Table.start.adviser(p1, son).peoplesFavor(None, favor = 2)
       .ready
