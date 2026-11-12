@@ -7,9 +7,10 @@ import distantlands.testkit.{Answers, Outcomes, Situation}
 import distantlands.testkit.Unwrap.{accepted, as, rejected}
 
 /** Game start under the altered faces that change setup: Movers and
-  * Shakers (II) and Teeming World (IV) (Foundations design, slice 2), and
-  * the face Grand Council (V) turns the People's Favor to (slice 5). Every
-  * test starts from a Chronicle: game start is the subject. */
+  * Shakers (II) and Teeming World (IV) (Foundations design, slice 2), the
+  * face Grand Council (V) turns the People's Favor to (slice 5), and the
+  * face Festival (VI) turns the Darkest Secret to (slice 6). Every test
+  * starts from a Chronicle: game start is the subject. */
 class AlteredFoundationSetupSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
   private val p1 = PlayerId("p1")
@@ -112,6 +113,40 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
       oathkeeperGoal = OathkeeperGoal.ThePeople), FoundationNumber.V))
     assertEquals(firstGame.game.current.banners.peoplesFavor,
       PeoplesFavorState(PeoplesFavorFace.GrandCouncil, None, 1))
+
+  test("Festival flips the Darkest Secret to its Festival face with 1 " +
+      "secret and its marker beside the map, and gives it to the " +
+      "Chancellor when the Oathkeeper goal is the Darkest Secret"):
+    val devotion = chronicleWithEmpire.copy(
+      oathkeeperGoal = OathkeeperGoal.Devotion)
+    val festival = started(withAlteredFoundation(devotion, FoundationNumber.VI))
+    assertEquals(festival.game.current.banners.darkestSecret,
+      DarkestSecretState(DarkestSecretFace.Festival, Some(p1), 1,
+        festival = None))
+    assertEquals(festival.game.campaign.foundations(FoundationNumber.VI),
+      FoundationState(FoundationFace.Altered, Set.empty))
+    assertEquals(started(devotion).game.current.banners.darkestSecret,
+      DarkestSecretState(DarkestSecretFace.WanderingFlame, Some(p1), 1,
+        festival = None))
+
+  test("under another Oathkeeper goal, or with no Chancellor, the Festival " +
+      "starts in the shared bank, and nothing else changes"):
+    val supremacy = chronicleWithEmpire.copy(
+      oathkeeperGoal = OathkeeperGoal.Supremacy)
+    val flame = started(supremacy)
+    val festival = started(withAlteredFoundation(supremacy,
+      FoundationNumber.VI))
+    assertEquals(festival.game.current.banners.darkestSecret,
+      DarkestSecretState(DarkestSecretFace.Festival, None, 1,
+        festival = None))
+    assertEquals(festival.game.current.copy(banners =
+      flame.game.current.banners), flame.game.current)
+    assertEquals(festival.banks, flame.banks)
+    val firstGame = started(withAlteredFoundation(firstGameChronicle.copy(
+      oathkeeperGoal = OathkeeperGoal.Devotion), FoundationNumber.VI))
+    assertEquals(firstGame.game.current.banners.darkestSecret,
+      DarkestSecretState(DarkestSecretFace.Festival, None, 1,
+        festival = None))
 
   private val (p2, p3) = (PlayerId("p2"), PlayerId("p3"))
 

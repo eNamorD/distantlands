@@ -46,7 +46,9 @@ its suit on the map; Movers and Shakers gives each board 6 favor and each
 bank only the 1 per denizen. Both altered faces are built directly, like the
 rest of game start; nothing is journaled. An altered Foundation V, Grand
 Council, starts the People's Favor on its Grand Council face, as Mob's
-Favor starts it on the Mob. The sites Imperial Maps places in
+Favor starts it on the Mob, and an altered Foundation VI, Festival, starts
+the Darkest Secret on its Festival face with its marker beside the map, as
+Wandering Flame starts it on the Wandering Flame. The sites Imperial Maps places in
 Setup's walk add their denizens' favor as they are placed
 (`AtlasPlacement.suitFavor`).
 

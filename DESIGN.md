@@ -642,6 +642,8 @@ controls are 30px.
 - **First player badge**: the target detail badge's pill (`#a98b58` border,
   Bright Brass 0.72rem 700) with no fill, inline after the role on the first
   player's identity line, with no separator dot before it.
+- **Festival marker**: the first player badge's pill, at the end of a site's
+  pawn row (Sites).
 - **Vision slot**: pill, `currentColor` border, 0.85em, no fill.
 - **Plan side**: 1em pill, `0 0.6em` padding, 0.75em; Discord fill for attack,
   Order fill for defense, a Discord-to-Order gradient for both; white text.
@@ -776,7 +778,14 @@ Bright Cream with the target halo; selected turns Selection blue on Selection
 Fill. A slot of a region that holds no site is an empty frame after the
 region's sites (`.site-slot-empty`): the site's height and radius, a 1px
 dashed Line-mid border, no fill and nothing inside. It is not an option and
-answers nothing; its label names it for a screen reader.
+answers nothing; its label names it for a screen reader. The festival
+marker, on the site whose cards it lies over, ends the pawn row as a pill
+(`.festival-marker`): the First player badge's `#a98b58` border, no fill,
+Bright Brass 0.72rem 700, reading "Festival", with the Festival's power in
+its hover note. The pawn row keeps its line, so the marker moves nothing; on
+the compact map it takes the glance size with the pawns. It is a button,
+as a player's title pill is, so a keyboard reaches it and its note shows on
+focus; pressing it opens the power in the inspector. It is no board option.
 
 ### Panes
 Four `section`s with a header strip (Pane Header fill, Line-pane bottom

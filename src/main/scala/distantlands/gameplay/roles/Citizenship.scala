@@ -1,5 +1,7 @@
 package distantlands.gameplay.roles
 
+import distantlands.gameplay.phases.rest.RestEntry
+import distantlands.gameplay.powerresolver.Deferred
 import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
 import distantlands.model._
 import distantlands.model.OathViolation.InvalidEventOrder
@@ -10,7 +12,18 @@ import distantlands.model.OathViolation.InvalidEventOrder
   *
   * The split is read from the tree's first answer to the player's own
   * `replaceDecisionId`, so a tree may make several players Imperial, each
-  * once. */
+  * once.
+  *
+  * A change on the player's own Act ends it: `RoleChanges` writes the
+  * `EnterPhase(Rest)` among the change's operations, and the tree folds the
+  * `RestStart` window after them ([[RestEntry.window]]), as every other way
+  * into Rest does. Whether it folds is decided once, in the change's own
+  * batch, from the turn before the change, and recorded there with
+  * `Defer`; the step after the change folds the window from that record
+  * (`Deferred.resolve`). The change may park on a follow-up (a False
+  * Prophet claim on a Vision it discards), and a resume selects every
+  * `Branch` again from the turn the change has already moved to Rest, so
+  * the record, not the turn, carries the answer across the park. */
 object Citizenship:
   /** The split a short purple bank asks `player`. */
   def replaceDecisionId(player: PlayerId): String =
@@ -29,14 +42,36 @@ object Citizenship:
     BuildOps((live, pending) => for
       kept <- answered(live, actor, pending)
       ops <- RoleChanges.becomeImperial(live, actor, kept)
-    yield ops, required = true)))
+    yield endingRecorded(live, actor, ops), required = true),
+    restStart(actor)))
 
   /** `actor`, a Citizen, becomes an Exile. Nothing happens while Council
     * Seat guards them (catalog batch 10, slice 1). */
-  def exile(actor: PlayerId): Operation =
+  def exile(actor: PlayerId): Operation = Sequence(Vector(
     BuildOps((live, _) =>
       if CouncilSeat.guards(live, actor) then Right(Vector.empty)
-      else RoleChanges.exile(live, actor), required = true)
+      else RoleChanges.exile(live, actor)
+        .map(endingRecorded(live, actor, _)), required = true),
+    restStart(actor)))
+
+  /** Where a change that ends `actor`'s Act records it, for the step after
+    * the change. One per actor: the step takes it at once. */
+  private def endingKey(actor: PlayerId): DeferralKey =
+    DeferralKey(s"role.ends-act.${actor.value}")
+
+  /** The change's `ops`, led by the record that it ends `actor`'s Act when
+    * it does, read from `before`, the state the change runs on. The record
+    * holds the phase change itself, which the change writes too. */
+  private def endingRecorded(before: ReadyGame, actor: PlayerId,
+      ops: Vector[CoreOperation]): Vector[CoreOperation] =
+    if RoleChanges.endsAct(before, actor) then
+      Defer(endingKey(actor), Vector(EnterPhase(Phase.Rest))) +: ops
+    else ops
+
+  /** The `RestStart` window, when the change recorded that it ended the
+    * Act; then the record is taken. */
+  private def restStart(actor: PlayerId): Operation =
+    Deferred.resolve(endingKey(actor))((_, _, _) => Vector(RestEntry.window))
 
   /** The split a short purple bank asks for: one slot per place that holds
     * the player's warbands, each opening empty, and together they take the

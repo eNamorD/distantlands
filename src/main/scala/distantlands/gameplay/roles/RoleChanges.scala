@@ -137,13 +137,19 @@ object RoleChanges:
       state.revealedVisions.map(held => Discard.Vision(held.id,
         PositionedLocation(Location.PlayArea(state.player)), region)))
 
+  /** Whether a role change of `player` now ends their Act phase: it is
+    * their turn, in the Act. `Citizenship` folds the `RestStart` window
+    * after the change exactly then. */
+  def endsAct(ready: ReadyGame, player: PlayerId): Boolean =
+    val turn = ready.game.current.turn
+    turn.activePlayer == player && turn.phase == Phase.Act
+
   /** End their Act phase if it is their turn, then refresh their Supply to
     * its leftmost space. */
   private def finish(ready: ReadyGame, state: PlayerState)
       : Vector[CoreOperation] =
-    val turn = ready.game.current.turn
-    val ending = Option.when(turn.activePlayer == state.player &&
-      turn.phase == Phase.Act)(EnterPhase(Phase.Rest))
+    val ending = Option.when(endsAct(ready, state.player))(
+      EnterPhase(Phase.Rest))
     val missing = SupplyTrack.Maximum - state.board.supply.supply
     ending.toVector ++
       Option.when(missing > 0)(GainSupply(state.player, missing)).toVector

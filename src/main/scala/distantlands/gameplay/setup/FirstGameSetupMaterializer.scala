@@ -39,7 +39,7 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
         deal.discards(plan.denizenOrder)),
       BannersState(
         PeoplesFavorState(peoplesFavorFace(plan), None, 1),
-        DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)),
+        DarkestSecretState(darkestSecretFace(plan), None, 1, festival = None)),
       // The first player begins round 1: in a later game, the Chancellor.
       GameTracks(1, 0, usurperLimited = true,
         roundStarter = plan.firstPlayer), favorBanks(plan, map),
@@ -119,6 +119,15 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
   private def peoplesFavorFace(plan: FirstGameSetupPlan): PeoplesFavorFace =
     if plan.altered(FoundationNumber.V) then PeoplesFavorFace.GrandCouncil
     else PeoplesFavorFace.Mob
+
+  /** Foundation VI's face, on the Darkest Secret: Wandering Flame sets the
+    * Wandering Flame, and Festival flips it to the Festival, its marker
+    * beside the map. Both faces put 1 secret on it from the shared bank,
+    * and `LaterGameSetup` gives it to the Chancellor when the Oathkeeper
+    * goal is the Darkest Secret. */
+  private def darkestSecretFace(plan: FirstGameSetupPlan): DarkestSecretFace =
+    if plan.altered(FoundationNumber.VI) then DarkestSecretFace.Festival
+    else DarkestSecretFace.WanderingFlame
 
   /** The favor on each board: 1, and under Movers and Shakers (altered
     * Foundation II) 5 more from the shared bank, which has no count. */

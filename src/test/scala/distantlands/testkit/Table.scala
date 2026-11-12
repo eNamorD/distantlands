@@ -264,6 +264,12 @@ final case class Table private (private val game: ReadyGame,
       c.banners.darkestSecret.copy(active = face, holder = holder,
         secrets = secrets)))))
 
+  /** The festival marker over the cards at `at`; the quiet table keeps it
+    * beside the map. */
+  def festival(at: SiteRef): Table =
+    update(_.updateCurrent(c => c.copy(banners = c.banners.copy(darkestSecret =
+      c.banners.darkestSecret.copy(festival = Some(CardRefs.siteId(at)))))))
+
   /** Foundation `number` showing `face`, with no alteration source; the
     * quiet table shows every normal face. */
   def foundation(number: FoundationNumber, face: FoundationFace): Table =

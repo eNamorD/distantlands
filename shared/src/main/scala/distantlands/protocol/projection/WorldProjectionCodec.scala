@@ -173,12 +173,13 @@ private[protocol] object WorldProjectionCodec:
       "favor" -> cost.favor, "secrets" -> cost.secrets)),
     "powers" -> encoded(value.powers)(encodePower),
     "forces" -> option(value.forces)(encodeForces),
+    "festival" -> value.festival,
     "denizens" -> encoded(value.denizens)(encodeSiteCard), "relics" -> encodeRelics(value.relics))
   private def decodeSite(raw: ujson.Value, path: String): Result[SetupSiteProjection] = for
     value <- obj(raw, path)
     _ <- exact(value, Set("siteId", "label", "looseFavor", "looseSecrets",
       "denizenCapacity", "relicCapacity", "defense", "recoverDifficulty", "forgeCost",
-      "powers", "forces", "denizens", "relics"), path)
+      "powers", "forces", "festival", "denizens", "relics"), path)
     siteId <- string(value, "siteId", path); label <- string(value, "label", path)
     favor <- int(value, "looseFavor", path); secrets <- int(value, "looseSecrets", path)
     denizenCapacity <- int(value, "denizenCapacity", path)
@@ -191,11 +192,13 @@ private[protocol] object WorldProjectionCodec:
     powerRaws <- default(value, "powers", path, Vector.empty[ujson.Value])(array)
     powers <- traverse(powerRaws, s"$path.powers")(decodePower)
     forces <- optionalAbsent(value, "forces", path)(decodeForces)
+    festival <- bool(value, "festival", path)
     denizenRaws <- array(value, "denizens", path)
     denizens <- traverse(denizenRaws, s"$path.denizens")(decodeSiteCard)
     relicRaw <- field(value, "relics", path); relics <- decodeRelics(relicRaw, s"$path.relics")
   yield SetupSiteProjection(siteId, label, favor, secrets, denizenCapacity,
-    relicCapacity, denizens, relics, defense, recover, forge, powers, forces)
+    relicCapacity, denizens, relics, defense, recover, forge, powers, forces,
+    festival)
 
   def encodeRegion(value: SetupRegionProjection): ujson.Value = ujson.Obj(
     "regionId" -> value.regionId, "discardCount" -> value.discardCount,

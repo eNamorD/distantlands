@@ -71,6 +71,17 @@ Left behind by the
   with Undo are covered by tests only. Seeding a game with a player-ruled
   Narrow Pass, Secret Police, Hall of Ministers or toll card needs the journaled
   arranged start.
+- [ ] **Let an enemy ask to Muster or Trade where every card is guarded.**
+  At a site where City Wall or the festival marker guards every card, the
+  Act menu shows only "No card to muster from" or "No card to trade with",
+  and the enemy cannot enter the walk where the source would be askable of
+  the ruler or the holder: `QueuedStart.waiting` keys a grant only on the
+  menu pick, and the refused `PayCost` comes after the source decision. A
+  fix would price a start refused with `NoPlayableOption` again with the
+  waivable restrictions lifted, as `PhaseMenu`'s `unrefused` does for
+  powers, and show the option askable. Found in the
+  [Foundations](superpowers/specs/2026-11-11-foundations-design.md) slice 6
+  review.
 
 ### Phase - Foundations
 
@@ -78,9 +89,6 @@ Left behind by the
 
 - [ ] **Foundations.** Every face but Foundation III's works: the Beacon's
   Shape Foundation.
-- [ ] **The Festival banner face.** Altered Foundation VI turns the
-  Darkest Secret to it. Its id is in `RuleSourceIndex`, and the face has
-  no behaviour.
 
 ### Phase - Campaign battle summary
 

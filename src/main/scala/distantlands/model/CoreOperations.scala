@@ -763,6 +763,17 @@ final case class TrackPawn(holder: PlayerId, target: PlayerId)
 /** Removes `holder`'s Tracker record as their Act phase begins. */
 final case class ClearTrackedPawn(holder: PlayerId) extends PrimitiveOperation
 
+/** Puts the festival marker over the cards at `site`, or takes it off the
+  * map (`None`), in `DarkestSecretState.festival` (Foundations design,
+  * slice 6). The Festival's holder places it at their Rest; a ribbon that
+  * prints the remove-festival icon takes it off. Applying it rejects a
+  * site that is not on the map, a placement while the Festival face is
+  * down, and a removal of a marker that is not on the map: each is a
+  * malformed journal, not a rule.
+  */
+final case class SetFestivalMarker(site: Option[SiteId])
+    extends PrimitiveOperation
+
 /** Opens the record of a pick a pick-and-pay menu took, in
   * `CurrentGameState.walkerPicks`: every `PayCost` and `Sacrifice` applied
   * until [[ClosePick]] adds to it, so the record holds what the pick really

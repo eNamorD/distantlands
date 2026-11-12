@@ -1,0 +1,9 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+5.0 phase 0 | Rest
+7.0 trigger 1 | Held the festival at [site:site:ancient-city|Ancient City]
+9.0 turn 0 | [player:p2|p2]'s turn
+9.1 phase 0 | Wake
+11.0 action 1 | Nothing happened in Wake
+11.1 phase 0 | Act

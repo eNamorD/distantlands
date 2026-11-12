@@ -90,7 +90,10 @@ final case class SetupSiteProjection(
     recoverDifficulty: Option[Int] = None,
     forgeCost: Option[ForgeCostProjection] = None,
     powers: Vector[SitePowerProjection] = Vector.empty,
-    forces: Option[SiteForcesProjection] = None
+    forces: Option[SiteForcesProjection] = None,
+    /** Whether the festival marker lies over this site's cards (Foundations
+      * design, slice 6). Public, as the marker is on the table. */
+    festival: Boolean = false
 )
 final case class SetupRegionProjection(
     regionId: String,

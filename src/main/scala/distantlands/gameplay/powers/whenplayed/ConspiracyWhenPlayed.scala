@@ -130,10 +130,7 @@ case object ConspiracyWhenPlayed extends ContributingPower:
           val leaving: Vector[CoreOperation] = held match
             case Banner.PeoplesFavor => BannerRules.peoplesFavorRibbon(ready)
             case Banner.DarkestSecret =>
-              val secrets = BannerRules.resources(current, held)
-              Option.when(secrets > 0)(Burn.secrets(secrets,
-                PositionedLocation(Location.OnBanner(held)), Some(actor)))
-                .toVector
+              BannerRules.darkestSecretRibbon(ready, actor)
           Vector(banner(held, owner, leaving))
         }
       case _ => Vector.empty

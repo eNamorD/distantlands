@@ -2,6 +2,7 @@ package distantlands.gameplay.powers.travel
 
 import distantlands.catalog.{Denizen, ModifierMark, PrintedPower}
 import distantlands.gameplay.operations.SupplyStrip
+import distantlands.gameplay.phases.rest.RestEntry
 import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import distantlands.gameplay.powers.SelectedModifier
 import distantlands.model._
@@ -17,10 +18,10 @@ object SpecialEnvoyCard extends Denizen(DenizenId("158"), "Special Envoy", Suit.
   * spends no Supply, and after traveling the Act Phase ends.
   *
   * It folds after every other Travel effect, above Royal Stables' priority,
-  * so it removes whatever Supply payment Royal Stables left, and its
-  * `EnterPhase(Rest)` comes after Dragonskin Drum's gain and Tyrant's kill.
-  * Its line, "The Act Phase ended.", always follows. The waiver writes no
-  * line: the start line's cost span shows it.
+  * so it removes whatever Supply payment Royal Stables left, and its way
+  * into Rest (`RestEntry`) comes after Dragonskin Drum's gain and Tyrant's
+  * kill. Its line, "The Act Phase ended.", always follows. The waiver
+  * writes no line: the start line's cost span shows it.
   *
   * Off turn (a defender's Second Wind Travel) it only waives the Supply: it
   * is not the traveller's Act Phase to end (catalog batch 8, slice 14,
@@ -45,9 +46,8 @@ case object SpecialEnvoy extends SelectedModifier:
       SupplyStrip(ctx, ctx.actor, operations) ++ (
         if ctx.actor != ctx.state.game.current.turn.activePlayer
         then Vector.empty
-        else Vector(EnterPhase(Phase.Rest),
-          Note(id, _ => Some(SpecialEnvoy.ended(
-            PowerSourceRef.Card(cardId)))))))))
+        else RestEntry.steps(Note(id, _ => Some(SpecialEnvoy.ended(
+          PowerSourceRef.Card(cardId)))))))))
 
   override def appliesAt(ctx: PowerCtx): Boolean =
     TravelRoute.pawnMove(ctx.operation).nonEmpty

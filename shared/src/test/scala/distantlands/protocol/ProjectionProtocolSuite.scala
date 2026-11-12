@@ -266,6 +266,16 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     raw("world").arr.foreach(region => region.obj.remove("emptySlots"))
     assert(GameProjectionCodec.decode(ujson.write(raw)).isLeft)
 
+  test("a site's festival marker round-trips, and a site payload without " +
+      "it is refused"):
+    val marked = projection.copy(world = projection.world.map(region =>
+      region.copy(sites = region.sites.map(_.copy(festival = true)))))
+    assertRoundTrips(marked)
+    val raw = ujson.read(GameProjectionCodec.encode(marked))
+    raw("world").arr.foreach(region =>
+      region("sites").arr.foreach(site => site.obj.remove("festival")))
+    assert(GameProjectionCodec.decode(ujson.write(raw)).isLeft)
+
   /** Task 5b: a decision's panel copy is two OPTIONAL strings, so the
     * absent case has to round-trip as faithfully as the present one. The
     * populated projection above covers the present case; this covers a

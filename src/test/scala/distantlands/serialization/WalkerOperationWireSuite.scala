@@ -572,6 +572,8 @@ class WalkerOperationWireSuite extends munit.FunSuite:
         Vector(FaeMerchantCard.id)),
       TrackPawn(PlayerId("red"), PlayerId("blue")),
       ClearTrackedPawn(PlayerId("red")),
+      SetFestivalMarker(Some(site)),
+      SetFestivalMarker(None),
       QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
           Vector.empty,
           Some(PowerSourceRef.Card(KnightsErrantCard.id)),

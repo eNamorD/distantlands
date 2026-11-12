@@ -200,11 +200,39 @@ class ChallengeProcedureSuite extends munit.FunSuite:
     assertEquals(ActPowerHarness.replayed(rules, board,
       started.events ++ chosen.events ++ done.events), after)
 
-  test("the Festival face still refuses the start"):
-    val board = challenger.peoplesFavor(None, favor = 2)
-      .darkestSecret(None, 1, face = DarkestSecretFace.Festival).ready
-    assertEquals(start(board).left.toOption, Some(
-      OathViolation.UnsupportedBannerState("unsupported active banner face")))
+  test("Festival: an enemy holder loses one secret to the fire and takes " +
+      "back the rest, nothing goes to sites, and the marker leaves the map"):
+    val board = challenger.darkestSecret(Some(p2), secrets = 4,
+        face = DarkestSecretFace.Festival).festival(BuriedGiantSite)
+      .pawn(p2, at = Table.quietPawnSite(p1)).secrets(p2, faceUp = 1).ready
+    val started = accepted(start(board))
+    val chosen = accepted(chooseBanner(started.state, darkestSecretOption))
+    val done = accepted(chooseAmount(chosen.state, 5))
+    val after = Outcomes.ready(done.state)
+    // 4 secrets: ONE burns and the REST, 3, return to the holder.
+    assertEquals(Look(after).faceUpSecrets(p2), 1 + 3)
+    assertEquals(Look(after).faceUpSecrets(p1), 6 - 5)
+    assertEquals(after.game.current.banners.darkestSecret,
+      DarkestSecretState(DarkestSecretFace.Festival, Some(p1), 5,
+        festival = None))
+    assertEquals(after.game.current.map.sites.view.mapValues(_.tokens).toMap,
+      board.game.current.map.sites.view.mapValues(_.tokens).toMap)
+    assertEquals(MenuPlay.pendingBeyondMenu(after), None)
+    assertEquals(ActPowerHarness.replayed(rules, board,
+      started.events ++ chosen.events ++ done.events), after)
+
+  test("Festival: an unclaimed banner burns every secret, and with its " +
+      "marker beside the map there is no marker to remove"):
+    val board = challenger.darkestSecret(None, secrets = 3,
+      face = DarkestSecretFace.Festival).ready
+    val done = accepted(chooseAmount(atAmount(board, darkestSecretOption), 4))
+    val after = Outcomes.ready(done.state)
+    assertEquals(after.game.current.banners.darkestSecret,
+      DarkestSecretState(DarkestSecretFace.Festival, Some(p1), 4,
+        festival = None))
+    assertEquals(Look(after).faceUpSecrets(p1), 6 - 4)
+    assertEquals(after.game.current.map.sites.view.mapValues(_.tokens).toMap,
+      board.game.current.map.sites.view.mapValues(_.tokens).toMap)
 
   test("Wandering Flame: an unclaimed banner places half on a unique least site one at a time and burns the rest"):
     val board = siteSecrets(challenger.secrets(p1, faceUp = 8, faceDown = 4)

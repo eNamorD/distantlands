@@ -239,10 +239,16 @@ final case class PeoplesFavorState(
 ):
   require(favor >= 0, "People's Favor resources must be non-negative")
 
+/** The Darkest Secret: its face, its holder, the secrets on it, and
+  * `festival`, the site the festival marker lies over while the Festival
+  * face is up (Foundations design, slice 6). The marker starts beside the
+  * map, `None`, and only the Festival face's holder places it, at their
+  * Rest. */
 final case class DarkestSecretState(
     active: DarkestSecretFace,
     holder: Option[PlayerId],
-    secrets: Int
+    secrets: Int,
+    festival: Option[SiteId]
 ):
   require(secrets >= 0, "Darkest Secret resources must be non-negative")
 

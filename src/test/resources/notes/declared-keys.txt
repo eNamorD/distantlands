@@ -1,3 +1,9 @@
+banner.darkest-secret.festival held = Held the festival at {0}
+banner.darkest-secret.festival no-placing-here = Cannot place favor or secrets on denizens at the festival.
+banner.darkest-secret.festival no-placing-here-consent = Cannot place favor or secrets on denizens at the festival without the Darkest Secret holder's consent.
+banner.darkest-secret.festival no-powers-here = Cannot use the non-persistent powers of denizens at the festival.
+banner.darkest-secret.festival no-powers-here-consent = Cannot use the non-persistent powers of denizens at the festival without the Darkest Secret holder's consent.
+banner.darkest-secret.festival stays-deactivated = {0} stays deactivated.
 banner.darkest-secret.wandering-flame.move used = {0} moved to {1}.
 banner.darkest-secret.wandering-flame.place used = {0} placed a secret at {1}.
 banner.peoples-favor.grand-council bury-first = May bury a card at {0} first.
