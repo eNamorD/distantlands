@@ -3,6 +3,7 @@ package distantlands.gameplay.powers.action
 import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
 import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.phases.rest.RestEntry
 import distantlands.model._
 
 object WizardSchoolCard extends Denizen(DenizenId("34"), "Wizard School", Suit.Arcane) with SiteOnly:
@@ -12,8 +13,8 @@ object WizardSchoolCard extends Denizen(DenizenId("34"), "Wizard School", Suit.A
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Wizard School (card 34, site-only), ACTION: place 1 favor on this card,
-  * gain 1 secret, then end the Act phase with `EnterPhase(Rest)`, as Murky
-  * Fountain ends it. The phase always ends, so its line needs no read of
+  * gain 1 secret, then end the Act phase by `RestEntry`, as Murky Fountain
+  * ends it. The phase always ends, so its line needs no read of
   * the state.
   */
 case object WizardSchool extends PaidAction(WizardSchoolCard.power):
@@ -25,10 +26,9 @@ case object WizardSchool extends PaidAction(WizardSchoolCard.power):
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
-      : Either[OathViolation, Operation] = Right(Sequence(Vector(
+      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Gain.Secrets(player, 1),
     Note(id, NoteSupport.gainNote(gained, source, player, NoteUnit.Secret,
-      NoteSupport.secrets), covers = true),
-    EnterPhase(Phase.Rest),
-    Note(id, _ => PowerSourceRef.of(source).map(ended(_,
+      NoteSupport.secrets), covers = true)) ++
+    RestEntry.steps(Note(id, _ => PowerSourceRef.of(source).map(ended(_,
       NoteArg.Player(player)))))))

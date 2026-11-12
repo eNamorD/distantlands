@@ -3,6 +3,7 @@ package distantlands.gameplay.powers.wake
 import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
 import distantlands.gameplay.NoteSupport
+import distantlands.gameplay.phases.rest.RestEntry
 import distantlands.gameplay.powerresolver.{PhasePower, QueuedStarts}
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.gameplay.powers.action.{PaidAction, PawnMoves}
@@ -23,7 +24,7 @@ object TrackerCard extends Denizen(DenizenId("221"), "Tracker", Suit.Discord) wi
   * your Act Phase." (catalog batch 10, slice 14).
   *
   * The choice is recorded with `TrackPawn`, under the user, and the Act
-  * phase ends with `EnterPhase(Rest)`, as Wizard School ends it. The record
+  * phase ends by `RestEntry`, as Wizard School ends it. The record
   * outlives the turn; the user's next End Wake clears it. An enemy is
   * another player who is not Imperial alongside the user. With no enemy
   * pawn at the site, the menu shows "No valid enemy pawn". The line is
@@ -64,8 +65,8 @@ case object TrackerAction extends PaidAction(TrackerCard.action):
         card <- PowerSourceRef.of(source)
         case DecisionOptionRef.Player(target) <-
           NoteSupport.answer(states, decisionId)
-      yield tracked(card, NoteArg.Player(target))),
-      EnterPhase(Phase.Rest))))
+      yield tracked(card, NoteArg.Player(target)))) ++
+      RestEntry.steps()))
 
 /** Tracker (card 221), WAKE: "If you chose a pawn last turn, you may place
   * your pawn at their site." (catalog batch 10, slice 14, ruling 6).

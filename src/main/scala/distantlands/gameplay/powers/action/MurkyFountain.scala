@@ -3,13 +3,14 @@ package distantlands.gameplay.powers.action
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.{NoteSupport, PowerAccess}
 import distantlands.gameplay.actions.dice.RollStep
+import distantlands.gameplay.phases.rest.RestEntry
 import distantlands.gameplay.powers.wake.MarbleFountainsCard
 import distantlands.model._
 
 /** Murky Fountain (edifice E15, ruined), ACTION: place 1 secret on this card.
   * If your pawn is at this site, roll 2 defense dice and gain Supply equal to
-  * the total. A total of zero also ends your Act phase with `EnterPhase(Rest)`,
-  * which is what Begin Rest does once its validation gate has passed. If your
+  * the total. A total of zero also ends your Act phase by `RestEntry`, which
+  * is what Begin Rest does once its validation gate has passed. If your
   * pawn is elsewhere the cost is paid and nothing else happens, and the dice
   * are never asked for.
   *
@@ -42,14 +43,13 @@ case object MurkyFountain extends PaidAction(MarbleFountainsCard.ruined.power):
         ModifyDicePool(pool, Dice),
         RollStep(pool, DiceSpec(DiceKind.Defense), Some(player)),
         Note(id, RollResults.rollNote(source, player, pool), covers = true),
-        BuildOps((state, _) => Right(outcome(state, player))),
+        Branch((state, _) => outcome(state, player, source)),
         Note(id, NoteSupport.gainNote(gained, source, player, NoteUnit.Supply,
-          NoteSupport.supply)),
-        Note(id, endNote(_, player, source)))))
+          NoteSupport.supply)))))
     case other => Left(OathViolation.InvalidEventOrder(
       s"${other.kind} is not an edifice source"))
 
-  /** The outcome step moved the turn out of the Act phase. */
+  /** The phase change just before moved the turn out of the Act phase. */
   private def endNote(states: NoteStates, player: PlayerId,
       source: DecisionOptionRef): Option[LogNote] = for
     card <- PowerSourceRef.of(source)
@@ -61,8 +61,10 @@ case object MurkyFountain extends PaidAction(MarbleFountainsCard.ruined.power):
       : Boolean = PowerAccess.siteOf(ready, player, id)
     .exists(ready.game.current.pawnSite(player).contains)
 
-  private def outcome(state: ReadyGame, player: PlayerId)
-      : Vector[CoreOperation] =
+  /** The Supply gained, or, on a zero, the way into Rest with its line. The
+    * total is the recorded roll's, so a resume selects the same branch. */
+  private def outcome(state: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef): Vector[Operation] =
     val total = RollResults.score(state, pool)
     if total > 0 then Vector(GainSupply(player, total))
-    else Vector(EnterPhase(Phase.Rest))
+    else RestEntry.steps(Note(id, endNote(_, player, source)))

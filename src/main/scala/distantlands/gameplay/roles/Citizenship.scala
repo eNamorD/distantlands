@@ -1,5 +1,6 @@
 package distantlands.gameplay.roles
 
+import distantlands.gameplay.phases.rest.RestEntry
 import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
 import distantlands.model._
 import distantlands.model.OathViolation.InvalidEventOrder
@@ -10,7 +11,16 @@ import distantlands.model.OathViolation.InvalidEventOrder
   *
   * The split is read from the tree's first answer to the player's own
   * `replaceDecisionId`, so a tree may make several players Imperial, each
-  * once. */
+  * once.
+  *
+  * A change on the player's own Act ends it: `RoleChanges` writes the
+  * `EnterPhase(Rest)` among the change's operations, and the tree folds the
+  * `RestStart` window after them ([[RestEntry.window]]), as every other way
+  * into Rest does. Whether it folds is read just before the change, from
+  * the turn alone, so the shape does not depend on what the change does.
+  * Nothing at `RestStart` asks a question, so no walk parks inside the
+  * window, where a resume would select again from the turn after the
+  * change. */
 object Citizenship:
   /** The split a short purple bank asks `player`. */
   def replaceDecisionId(player: PlayerId): String =
@@ -26,17 +36,26 @@ object Citizenship:
   def become(actor: PlayerId): Operation = Sequence(Vector(
     Branch((live, _) => query(live, actor).toVector.map(asked =>
       Decide(replaceDecisionId(actor), actor, asked))),
-    BuildOps((live, pending) => for
+    Branch((before, _) => Vector(BuildOps((live, pending) => for
       kept <- answered(live, actor, pending)
       ops <- RoleChanges.becomeImperial(live, actor, kept)
-    yield ops, required = true)))
+    yield ops, required = true)) ++ restStart(before, actor))))
 
   /** `actor`, a Citizen, becomes an Exile. Nothing happens while Council
     * Seat guards them (catalog batch 10, slice 1). */
-  def exile(actor: PlayerId): Operation =
-    BuildOps((live, _) =>
+  def exile(actor: PlayerId): Operation = Branch((before, _) =>
+    Vector(BuildOps((live, _) =>
       if CouncilSeat.guards(live, actor) then Right(Vector.empty)
-      else RoleChanges.exile(live, actor), required = true)
+      else RoleChanges.exile(live, actor), required = true)) ++
+    (if CouncilSeat.guards(before, actor) then Vector.empty
+    else restStart(before, actor)))
+
+  /** The `RestStart` window, when the change about to run ends `actor`'s
+    * Act phase. */
+  private def restStart(before: ReadyGame, actor: PlayerId)
+      : Vector[Operation] =
+    Option.when(RoleChanges.endsAct(before, actor))(RestEntry.window)
+      .toVector
 
   /** The split a short purple bank asks for: one slot per place that holds
     * the player's warbands, each opening empty, and together they take the
