@@ -1,7 +1,7 @@
 package distantlands.application
 
 import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules,
-  LaterGameFixture, SetupPawnSites, SetupProcedure}
+  ImperialMaps, LaterGameFixture, SetupPawnSites, SetupProcedure}
 import distantlands.model._
 import distantlands.model.OathState.Ready
 import distantlands.testkit.{Answers, ParkedNode, Situation}
@@ -29,6 +29,13 @@ class LaterGameSetupChoicesSuite extends munit.FunSuite:
       .parkedAfter(GameCommand.Begin(chronicle,
         LaterGameFixture.orders(chronicle, p1)))
 
+  /** `chronicle`'s Setup once Imperial Maps has filled the map from the
+    * Recent end: parked at the Chancellor's pawn question. */
+  private def filledFromRecent(chronicle: Chronicle): ReadyGame =
+    Situation.start(Situation.rules(catalog))
+      .parkedAt(SetupProcedure.pawnDecisionId(p1))(GameCommand.Begin(
+        chronicle, LaterGameFixture.orders(chronicle, p1))).ready
+
   private def parkedOn(situation: Situation): ParkedNode =
     present(accepted(ParkedNode.of(situation.state, catalog)), "a park")
 
@@ -48,20 +55,20 @@ class LaterGameSetupChoicesSuite extends munit.FunSuite:
       Orientation.FaceDown, Tokens.empty)))
     assertEquals(woken.ready.game.campaign.reliquary, Vector(other))
 
-  test("an empty Reliquary skips the pick"):
+  test("an empty Reliquary skips the pick: Imperial Maps asks first"):
     assertEquals(parkedOn(begin(record)).decisionId,
-      SetupProcedure.pawnDecisionId(p1))
+      ImperialMaps.decisionId)
 
   test("Imperial players may start only at Empire sites"):
-    val ready = started(record)
+    val ready = filledFromRecent(record)
     Vector(p1, p2).foreach(player => assertEquals(
       SetupPawnSites.legal(ready, player), record.world.map(_.site)))
 
   test("an Exile may start at the Hintermost Empire site or a site the " +
       "bandits rule, never at an empty site (R25)"):
-    // The first atlas site is emptied, as Sunken Isles' capacity 0 leaves
-    // it.
-    val ready = started(record)
+    // The first site Imperial Maps placed is emptied, as Sunken Isles'
+    // capacity 0 leaves it.
+    val ready = filledFromRecent(record)
     val emptied = ready.game.current.map.hinterward(2)
     val bare = ready.updateCurrent(current => current.copy(map =
       current.map.copy(sites = current.map.sites.updatedWith(emptied)(

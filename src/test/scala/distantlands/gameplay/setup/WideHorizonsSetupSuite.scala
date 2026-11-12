@@ -26,7 +26,7 @@ class WideHorizonsSetupSuite extends munit.FunSuite:
       LaterGameFixture.orders(chronicle, p1)))
 
   test("under Wide Horizons the Empire's sites return as under Imperial " +
-      "Maps and no slot past them is filled"):
+      "Maps, whose game start also leaves the slots past them empty"):
     val record = wideHorizonsChronicle(empireSites = 3)
     val wide = started(record).game
     val imperialMaps = started(record.copy(foundations = Map.empty)).game
@@ -38,7 +38,8 @@ class WideHorizonsSetupSuite extends munit.FunSuite:
     assertEquals(map.sites.keySet, record.world.map(_.site).toSet)
     record.world.foreach(stored => assertEquals(map.sites(stored.site),
       imperialMaps.current.map.sites(stored.site)))
-    assertEquals(imperialMaps.current.map.inPlay.size, 8)
+    // Imperial Maps fills them in Setup's walk (ImperialMapsSetupSuite).
+    assertEquals(imperialMaps.current.map, map)
     assertEquals(wide.campaign.foundations(FoundationNumber.I), wideHorizons)
 
   test("the atlas keeps every atlas site in order with its stored cards, " +

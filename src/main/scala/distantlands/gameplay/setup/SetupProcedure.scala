@@ -17,8 +17,10 @@ import distantlands.model.OathViolation._
  *     Decide(reliquary-pick, chancellor),                // Chancellor, when the
  *     BuildOps(keep the relic facedown),                 // Reliquary holds one
  *     Note(took a relic))
+ *   ImperialMaps.step(chancellor)                        // with a Chancellor and
+ *                                                        // Foundation I normal
  *   Sequence(                                            // per participant
- *     Decide(pawn-placement, participant),               // legal sites only
+ *     Branch(Decide(pawn-placement, participant)),       // legal sites only
  *     BuildOps(place the pawn)                           // window = SetupPawnPlaced
  *     Branch(                                            // only with a hand
  *       Decide(adviser-choice, participant),
@@ -63,7 +65,7 @@ object SetupProcedure:
   /** "p1 took a relic from the Reliquary" (Empire ruling R29). */
   val tookRelic: NoteKey = notes.key("took-relic", Vector(
     NotePart.Arg(0), NotePart.Text(" took a relic from the Reliquary")))
-  def noteKeys: Vector[NoteKey] = notes.declared
+  def noteKeys: Vector[NoteKey] = notes.declared ++ ImperialMaps.noteKeys
 
   val reliquaryDecisionId: String = "setup.reliquary-pick"
   def pawnDecisionId(player: PlayerId): String =
@@ -99,7 +101,10 @@ object SetupProcedure:
     val participants = turnOrder(ready)
     val steps = participants.map(playerStep(catalog, ready, _))
     val setupEnd = Sequence(Vector.empty, Some(PowerWindow.SetupEnd))
-    Sequence(Imperials.chancellor(ready).map(reliquaryPick).toVector ++
+    val chancellor = Imperials.chancellor(ready)
+    val imperialMaps = chancellor.filter(_ => ImperialMaps.applies(ready))
+      .map(ImperialMaps.step(catalog, ready, _))
+    Sequence(chancellor.map(reliquaryPick).toVector ++ imperialMaps ++
       steps :+ setupEnd :+ BeginTurn(participants.head.playerId, Phase.Wake))
 
   /** A later game's Chancellor first keeps one Reliquary relic facedown
@@ -152,13 +157,15 @@ object SetupProcedure:
       .collect { case id: DenizenId => id }
     val handOptions = hand.map(id =>
       DecisionOption.Denizen(DecisionOptionRef.Denizen(id)))
-    val siteOptions = SetupPawnSites.legal(ready, participant.playerId)
-      .map(site => DecisionOption.Site(DecisionOptionRef.Site(site)))
     Sequence(Vector(
-      Decide(pawnId, participant.playerId,
-        DecisionQuery.ChooseOne(siteOptions,
+      // The sites are read when the question is reached: Imperial Maps
+      // fills the map earlier in the same walk.
+      Branch((state, _) => Vector(Decide(pawnId, participant.playerId,
+        DecisionQuery.ChooseOne(SetupPawnSites.legal(state,
+            participant.playerId).map(site =>
+            DecisionOption.Site(DecisionOptionRef.Site(site))),
           heading = Some("Choose your starting site"),
-          confirmVerb = Some("Start at"))),
+          confirmVerb = Some("Start at"))))),
       // The window hangs on the pair, not on the placement alone: a power
       // hooked at `SetupPawnPlaced` appends its leaves to the node the
       // window names, so a note outside that node would read after them

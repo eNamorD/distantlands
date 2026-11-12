@@ -60,12 +60,11 @@ final case class FirstGameSetupPlan(
     /** The Empire a later game starts with; a first game has none, nor has
       * a game set up with no Empire. */
     empire: Option[EmpireSetup] = None,
-    /** The sites placed as bandit sites with their stored cards, their
-      * edifices ruined: the atlas sites that fill the slots the Empire
-      * leaves, Recent end first, or, with no Empire, the former Empire's
+    /** The sites game start places as bandit sites with their stored
+      * cards, their edifices ruined: with no Empire, the former Empire's
       * sites. Empty for a first game, whose sites are all in
-      * `orderedSites`, and under Wide Horizons with an Empire, which fills
-      * no slot. */
+      * `orderedSites`, and with an Empire, whose slots Imperial Maps fills
+      * in Setup's walk and Wide Horizons leaves empty. */
     atlasSites: Vector[StoredSite] = Vector.empty,
     /** Each seated player's stored starting advisers (CR p. 11). */
     startingAdvisers: Map[PlayerId, Vector[AdviserState]] = Map.empty,

@@ -22,9 +22,6 @@ class LaterGameSetupSuite extends munit.FunSuite:
     accepted(GameStartRules.evolve(catalog, chronicle,
       LaterGameFixture.orders(chronicle, p1)))
 
-  private def relicSlots(site: SiteId): Int =
-    catalog.site(site).get.relicSlots
-
   private def faceDown(relic: RelicId) =
     RelicState(relic, Orientation.FaceDown, Tokens.empty)
 
@@ -63,28 +60,6 @@ class LaterGameSetupSuite extends munit.FunSuite:
     assertEquals(ready.game.current.map.sites(record.world(1).site).relics,
       Vector.empty)
 
-  test("a remaining site keeps its stored cards, ruins its edifice and " +
-      "fills only its empty relic slots (R27)"):
-    val atlasSiteWithEdifice = record.atlasBox.find(stored =>
-      stored.items.exists(_.isInstanceOf[EdificeId])).get
-    val edifice = atlasSiteWithEdifice.items.collectFirst {
-      case id: EdificeId => id }.get
-    val denizen = record.worldDeck.head
-    val relic = record.relicDeck.head
-    val stocked = atlasSiteWithEdifice.copy(
-      items = Vector(edifice, denizen, relic))
-    val chronicle = withoutDeckCards(relic, Some(denizen)).copy(
-      atlasBox = record.atlasBox.map(stored =>
-        if stored.site == stocked.site then stocked else stored))
-    val site = started(chronicle).game.current.map.sites(stocked.site)
-    val capacity = catalog.site(stocked.site).get.capacity
-    assertEquals(site.forces, SiteForces.Occupied(ForceKind.Bandit, capacity))
-    assertEquals(site.denizens, Vector(
-      EdificeState(edifice, EdificeSide.Ruined, Tokens.empty),
-      DenizenState(denizen, Orientation.FaceUp, Tokens.empty)))
-    assertEquals(site.relics.size, math.max(1, relicSlots(stocked.site)))
-    assertEquals(site.relics.head, faceDown(relic))
-
   test("the edifice deck holds no edifice stored at any site"):
     val stored = (record.world ++ record.atlasBox).flatMap(_.items)
       .collect { case id: EdificeId => id }
@@ -92,14 +67,18 @@ class LaterGameSetupSuite extends munit.FunSuite:
     assert(!started(record).game.current.commonCards.edificeDeck
       .exists(stored.contains))
 
-  test("each favor bank adds one per denizen of its suit on the map"):
+  test("each favor bank adds one per denizen of its suit on the map, the " +
+      "Empire's at game start"):
     val ready = started(record)
     val onMap = ready.game.current.map.sites.values.flatMap(_.denizens)
       .flatMap {
         case EdificeState(id, _, _) => catalog.edifice(id).map(_.suit)
         case DenizenState(id, _, _) => catalog.denizen(id).map(_.suit)
       }.toVector
-    assert(onMap.size > 2, "the Empire's denizens are on the map")
+    // Imperial Maps fills the other slots in Setup's walk, and their
+    // denizens add their own favor (ImperialMapsSetupSuite).
+    assertEquals(ready.game.current.map.hinterward, record.world.map(_.site))
+    assert(onMap.nonEmpty, "the Empire's denizens are on the map")
     Suit.all.foreach(suit => assertEquals(ready.banks.favor(suit),
       3 + onMap.count(_ == suit)))
 
