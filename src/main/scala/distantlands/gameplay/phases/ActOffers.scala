@@ -2,6 +2,7 @@ package distantlands.gameplay.phases
 
 import distantlands.gameplay.actions.campaign.CampaignProcedure
 import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.roles.CouncilSeat
 import distantlands.model._
 
@@ -56,10 +57,15 @@ object ActOffers:
 
   /** The options `actor`'s Act menu lists. Warband Transfers is an
     * Imperial law and self-exile a Citizen's, so a menu leaves out an
-    * option its player's role can never use. */
+    * option its player's role can never use. Explore is Wide Horizons'
+    * action, and Foundation I cannot change during a game, so under
+    * Imperial Maps nobody can ever take it and the menu leaves it out too;
+    * under Wide Horizons it is listed, unavailable with its reason when a
+    * gate fails. */
   def offeredTo(ready: ReadyGame, actor: PlayerId): Vector[ActOffer] =
     all.filter(offer => offer.procedure match
       case ActionRef.TransferWarbands => Imperials.isImperial(ready, actor)
+      case ActionRef.Explore => ExploreProcedure.wideHorizons(ready)
       case ActionRef.SelfExile =>
         Imperials.role(ready, actor).contains(Role.Citizen)
       case _ => true)

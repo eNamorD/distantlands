@@ -4,7 +4,7 @@ import distantlands.gameplay.WalkerDiceFixture.scripted
 import distantlands.gameplay.actions.dice.RerollChoice
 import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.cards.{BuriedGiantSite, DeepWoodsSite,
-  GoldenValleySite}
+  DesolateShoreSite, DunesSite, FairIsleSite, GoldenValleySite}
 import distantlands.gameplay.phases.ActOffers
 import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.powers.action.StonePortalCard
@@ -93,12 +93,16 @@ class ExploreProcedureSuite extends munit.FunSuite:
     assertEquals(menuOption(ready),
       DecisionOption.Badged(exploreButton, "1 Supply"))
 
-  test("without Wide Horizons the Act menu shows Explore unavailable " +
-      "with its reason"):
+  test("under Imperial Maps the Act menu lists no Explore, and a start " +
+      "is refused with its reason"):
+    // Foundation I cannot change during a game, so no player can ever
+    // Explore in it: the menu leaves the option out.
     val ready = p1AtHintermostOfThree
       .foundation(FoundationNumber.I, FoundationFace.Normal).ready
-    assertEquals(menuOption(ready),
-      unavailable("Explore needs the Wide Horizons foundation"))
+    val listed = MenuPlay.options(Ready(Table.from(ready).phaseMenuParked
+      .ready), catalog).map(_.ref)
+    assert(!listed.contains(exploreButton.ref), listed)
+    assert(listed.contains(DecisionOptionRef.Button("recover")), listed)
     assertEquals(rejected(new OathRules(catalog).startWalker(
       Ready(MenuPlay.withoutMenu(ready)), ActionRef.Explore, p1)),
       OathViolation.StartUnavailable(ExploreProcedure.needsWideHorizons))
@@ -347,3 +351,89 @@ class ExploreProcedureSuite extends munit.FunSuite:
       Right(Ready(ready)))((state, event) =>
       state.flatMap(silent.evolve(_, event)))
     assertEquals(accepted(replayed), placed.state)
+
+  test("a second Explore in the same turn starts from a fresh score and " +
+      "spends its own Supply for each roll"):
+    val rules = rulesRolling(scripted(fourShields, oneShield, fourShields))
+    val first = resolved(rules, started(rules, p1AtHintermostOfThree.ready),
+      ExploreProcedure.endDecisionId,
+      ExploreProcedure.endOption(AtlasEnd.Recent))
+    assert(completed(first), first.events)
+    val between = MenuPlay.withoutMenu(Outcomes.ready(first.state))
+    assertEquals(Look(between).pawn(p1), DeepWoodsSite.id)
+    assertEquals(Look(between).supply(p1), 6)
+    // The pawn stands on the site just placed, the new Hintermost site.
+    val short = started(rules, between)
+    assertEquals(parkedDecisionId(short), ExploreProcedure.choiceDecisionId)
+    assertEquals(Outcomes.ready(short.state).game.current.rollOutcomes(pool)
+      .score, 1)
+    assertEquals(Look(short.state).supply(p1), 5)
+    val reached = resolved(rules, short, ExploreProcedure.choiceDecisionId,
+      ExploreProcedure.continueOption)
+    assertEquals(Look(reached.state).supply(p1), 4)
+    val second = resolved(rules, reached, ExploreProcedure.endDecisionId,
+      ExploreProcedure.endOption(AtlasEnd.Recent))
+    assert(completed(second), second.events)
+    val after = Outcomes.ready(second.state)
+    assertEquals(after.game.current.map.provinces, Vector(BuriedGiantSite.id,
+      DeepWoodsSite.id, DesolateShoreSite.id))
+    assertEquals(Look(after).pawn(p1), DesolateShoreSite.id)
+    assertEquals(exploreLines(second.events), Vector("explored-recent"))
+
+  test("with the Hintermost site's region full, the site goes to the top " +
+      "slot of the next region and the pawn follows it"):
+    // The Provinces hold Buried Giant, Deep Woods and Desolate Shore; Dunes
+    // waits at the Recent end.
+    val full = Table.start
+      .foundation(FoundationNumber.I, FoundationFace.Altered)
+      .mapCutIntoAtlas(5).pawn(p1, DesolateShoreSite).banditsRefilled.ready
+    assertEquals(full.game.current.map.nextSlot, Some(Region.Hinterland))
+    val rules = rulesRolling(scripted(fourShields))
+    val placed = resolved(rules, started(rules, full),
+      ExploreProcedure.endDecisionId,
+      ExploreProcedure.endOption(AtlasEnd.Recent))
+    assert(completed(placed), placed.events)
+    val after = Outcomes.ready(placed.state)
+    assertEquals(after.game.current.map.provinces,
+      full.game.current.map.provinces)
+    assertEquals(after.game.current.map.hinterland, Vector(DunesSite.id))
+    assertEquals(after.game.current.map.hintermost, Some(DunesSite.id))
+    assertEquals(Look(after).pawn(p1), DunesSite.id)
+    assert(placed.events.exists {
+      case WalkerStepRecorded(_, DeltaPayload(ops), _) =>
+        ops.exists {
+          case place: PlaceAtlasSite => place.region == Region.Hinterland
+          case _ => false
+        }
+      case _ => false
+    }, placed.events)
+
+  test("an Explore that fills the last slot leaves a full map and an " +
+      "empty Atlas, and the menu then says the map is full"):
+    // Only Golden Valley waits in the Atlas, for the Hinterland's last
+    // slot.
+    val last = Table.start
+      .foundation(FoundationNumber.I, FoundationFace.Altered)
+      .mapCutIntoAtlas(7).pawn(p1, FairIsleSite).banditsRefilled.ready
+    val rules = rulesRolling(scripted(fourShields))
+    val placed = started(rules, last)
+    assert(completed(placed), placed.events)
+    val after = MenuPlay.withoutMenu(Outcomes.ready(placed.state))
+    assertEquals(after.game.current.map.nextSlot, None)
+    assertEquals(after.game.current.map.hintermost, Some(GoldenValleySite.id))
+    assertEquals(after.game.campaign.atlas.sites, Vector.empty)
+    assertEquals(Look(after).pawn(p1), GoldenValleySite.id)
+    assertEquals(menuOption(after),
+      unavailable("The map has no empty site slot"))
+
+  test("an Exile explores while another player is the Chancellor"):
+    val ready = p1AtHintermostOfThree.imperial(p2).ready
+    assertEquals(Imperials.role(ready, p1), Some(Role.Exile))
+    assertEquals(Imperials.role(ready, p2), Some(Role.Chancellor))
+    val rules = rulesRolling(scripted(fourShields))
+    val placed = resolved(rules, started(rules, ready),
+      ExploreProcedure.endDecisionId,
+      ExploreProcedure.endOption(AtlasEnd.Forgotten))
+    assert(completed(placed), placed.events)
+    assertEquals(Look(placed.state).pawn(p1), GoldenValleySite.id)
+    assertEquals(exploreLines(placed.events), Vector("explored-forgotten"))

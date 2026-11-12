@@ -140,6 +140,10 @@ case object HallOfMockery extends RuinedSetupRule:
       val moved = BannerToSharedBank.moved(before, after, Banner.PeoplesFavor)
       val card = PowerSourceRef.Card(edifice)
       val (favor, bank) = (MarketRule.favor(gained), MarketRule.favor(burned))
+      // The favor comes from the shared bank, which never runs short, in
+      // the same batch as the banner's move: a step that moved the banner
+      // always placed 4 favor. No favor placed means the step did not run,
+      // so nothing moved either and no line is right.
       if gained == 0 then None
       else if moved && burned > 0 then
         Some(placedMovedAndBurned(card, favor, bank))

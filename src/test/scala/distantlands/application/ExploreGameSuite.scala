@@ -37,13 +37,13 @@ class ExploreGameSuite extends munit.FunSuite:
     assertEquals(option.badge, Some("1 Supply"))
     assertEquals(option.state, "available")
 
-  test("without Wide Horizons the projected option is unavailable and " +
-      "says why"):
-    val option = exploreOption(Table.start.phaseMenuParked, "explore-refused")
-    assertEquals(option.group, Some("major"))
-    assertEquals(option.state, "unavailable")
-    assertEquals(option.reason,
-      Some("Explore needs the Wide Horizons foundation"))
+  test("under Imperial Maps the projected Act menu lists no Explore"):
+    val projected = projector.project("explore-hidden",
+      LoadedGame(Table.start.phaseMenuParked.state, 1L), p1)
+    val ids = present(projected.walkerDecision.flatMap(_.query),
+      "the Act menu").offeredOptions.map(_.id)
+    assert(!ids.contains("explore"), ids)
+    assert(ids.contains("recover"), ids)
 
   /** A later game's Chronicle under Wide Horizons: l1 is the Chancellor of
     * an Empire of three sites, and five sites wait in the Atlas, each with

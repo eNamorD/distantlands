@@ -200,7 +200,11 @@ A new major action, `explore`.
 
 - **Offered when** Foundation I is Wide Horizons, the actor's pawn is at the
   Hintermost site, a slot is empty, and the Atlas holds a site. Any role may
-  take it. Otherwise the Act menu shows it disabled with its reason.
+  take it. Under Wide Horizons the Act menu otherwise shows it disabled
+  with its reason. Foundation I cannot change during a game, so under
+  Imperial Maps no one can ever take it and the menu leaves it out, as it
+  leaves out an option the player's role can never use (decided in the
+  slice 3b review).
 - **Tree.** It mirrors Recover's: the modifier choice any major action has
   (no Recover modifier is offered), then pool `explore` with 2 defense dice
   per 1 Supply against difficulty 4 and the continue-or-stop choice after a
