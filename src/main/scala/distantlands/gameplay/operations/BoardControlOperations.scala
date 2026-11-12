@@ -150,6 +150,24 @@ private[operations] object BoardControlOperations:
         Right(holdBanner(ready, banner, None))
       case _ => Left(IncompatibleLocation(Piece.Banner(banner), to))
 
+  /** The festival marker over `site`, or off the map. It goes only on a
+    * site on the map, only while the Festival face is up, and comes off
+    * only when it is on the map. */
+  def setFestivalMarker(ready: ReadyGame, site: Option[SiteId])
+      : Either[OperationError, ReadyGame] =
+    val secret = ready.game.current.banners.darkestSecret
+    site match
+      case Some(at) if !ready.game.current.map.inPlay.contains(at) =>
+        Left(UnknownSite(at))
+      case Some(_) if secret.active != DarkestSecretFace.Festival =>
+        Left(InvalidDescription(
+          "the festival marker is placed only on the Festival face"))
+      case None if secret.festival.isEmpty =>
+        Left(InvalidDescription("the festival marker is not on the map"))
+      case _ => Right(ready.updateCurrent(current => current.copy(
+        banners = current.banners.copy(darkestSecret =
+          secret.copy(festival = site)))))
+
   private def setBannerHolder(ready: ReadyGame, banner: Banner,
       player: PlayerId): ReadyGame =
     holdBanner(ready, banner, Some(player))

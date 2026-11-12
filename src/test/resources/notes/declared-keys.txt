@@ -1,3 +1,4 @@
+banner.darkest-secret.festival held = Held the festival at {0}
 banner.darkest-secret.wandering-flame.move used = {0} moved to {1}.
 banner.darkest-secret.wandering-flame.place used = {0} placed a secret at {1}.
 banner.peoples-favor.grand-council bury-first = May bury a card at {0} first.

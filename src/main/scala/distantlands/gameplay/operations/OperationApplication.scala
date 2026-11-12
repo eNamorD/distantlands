@@ -222,6 +222,8 @@ private[gameplay] object OperationApplication:
         result.flatMap(TurnStateOperations.trackPawn(_, holder, target))
       case (result, ClearTrackedPawn(holder)) =>
         result.flatMap(TurnStateOperations.clearTrackedPawn(_, holder))
+      case (result, SetFestivalMarker(site)) =>
+        result.flatMap(BoardControlOperations.setFestivalMarker(_, site))
       case (result, OpenPick(decisionId, option, label)) =>
         result.map(TurnStateOperations.openPick(_, decisionId, option, label))
       case (result, ClosePick()) =>
