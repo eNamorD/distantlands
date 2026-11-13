@@ -95,6 +95,17 @@ One gap: a class that extends `OperationBase` directly, outside any family,
 compiles. It is not a `CoreOperation`, so the walker would treat it as an
 unknown control node. The architecture rule below closes it.
 
+A second probe, run while planning with the build's `-Wunused` flags as
+well, matched over `CoreOperation & LeafOperation` with arms only for the
+leaves. It compiled clean, though the families held a composite final
+case class, a sealed composite trait with a private final case, and a
+sealed composite trait with a nested final case: the checker excludes
+every case that is not a `LeafOperation`. Removing a leaf's arm failed the
+build with "It would fail on pattern case: probe.GainSupply(_)". A nested
+`case p: PieceOperation => p match` inside that match needed only the
+leaf arms too, and at run time a type test against the intersection kept
+leaves and dropped composites.
+
 The repository was checked for what an alias cannot carry. Nothing defines
 or calls a `CoreOperation` companion, and no `ClassTag` or `classOf` is
 taken of an operation type (a `ClassTag` of a union erases to the common
@@ -141,11 +152,14 @@ resource group. The codec split therefore matches the model one to one.
 (`Defer`, `ActAsIf`, `TrackPawn`, `OpenPick`). They stay together while the
 file has room; a split can wait until it grows.
 
-**`PrimitiveOperation` is deleted.** It marks "Oath's sealed leaves", and
-nothing matches on it. A leaf is a family case that also extends
-`LeafOperation`, which stays as it is in `Operation.scala`.
-`Operation.flatten` reads `LeafOperation`, not `PrimitiveOperation`, so it
-does not change.
+**`PrimitiveOperation` becomes an alias.** It stays as
+`type PrimitiveOperation = CoreOperation & LeafOperation` in
+`CoreOperations.scala`: Oath's leaves, as its doc comments already say. A
+leaf is a family case that also extends `LeafOperation`, which stays as it
+is in `Operation.scala`. `Operation.flatten` reads `LeafOperation`, so it
+does not change. (Revised while planning: the second probe below showed the
+alias is what the applier should match on, so keeping the name saves the
+doc churn of deleting it.)
 
 `OperationChildren` stays `private[model]`; the families are all in
 `distantlands.model`, so every composite still reaches it.
@@ -156,10 +170,15 @@ does not change.
 move passes (counted resources, pawns and banners, cards), then every other
 leaf.
 
-`applyNonMoveLeaves` loses its wildcard. It becomes a dispatch over the six
+`applyNonMoveLeaves` hands every `PrimitiveOperation` leaf to a new
+`gameplay/operations/LeafApplication.scala`, which dispatches over the six
 families with no `case _`: `case l: ResourceOperation =>`,
-`case l: TurnOperation =>` and so on. Each family arm calls one exhaustive
-match in the gameplay object that already owns that state:
+`case l: TurnOperation =>` and so on. Each family has one exhaustive match
+over its leaves (`ResourceOperation & LeafOperation`), whose arms call the
+gameplay object that already owns that state. The only wildcard left in
+`applyNonMoveLeaves` is for a leaf that is not a `CoreOperation` at all, a
+walker control node, which never reaches the applier and which it skips
+as it does today.
 
 | Family | Applied by |
 |---|---|
@@ -170,25 +189,20 @@ match in the gameplay object that already owns that state:
 | `TurnOperation` | `TurnStateOperations`, `BoardControlOperations` (`SetFestivalMarker`) |
 | `ChronicleOperation` | `ChronicleStateOperations`, `AtlasOperations`, `TurnStateOperations` (`ChronicleUpdated`) |
 
-The cases that do nothing in this step are named in explicit arms, each
-with its reason:
+Composites (`Take`, `Give`, `Exchange`, `Kill`, `Replace`, `Sacrifice`,
+`Burn`, `PayCost`, `DrawNomadFavor`, `Gain`, `Discard`, `RemoveFromMap`,
+`Draw`, `Play`, `Reveal`, `Swap`) do not extend `LeafOperation`, so the
+intersection excludes them and no arm names them (second probe). The
+leaves that do nothing in this step are named in explicit arms, each with
+its reason:
 
-- `Move` and `Bury`: leaves the move passes already applied (`Bury` in
-  the card pass);
-- composites, which do not extend `LeafOperation` (`Take`, `Give`,
-  `Exchange`, `Kill`, `Replace`, `Sacrifice`, `Burn`, `PayCost`,
-  `DrawNomadFavor`, `Gain`, `Discard`, `RemoveFromMap`, `Draw`, `Play`,
-  `Reveal`, `Swap`): their leaves apply, and `Operation.flatten` never
-  yields them;
-- leaves with no state of their own, such as `Roll`.
+- `Move` and `Bury`: the move passes already applied them (`Bury` in the
+  card pass);
+- `Roll`, which has no state of its own: it records that a roll happens.
 
-A new operation therefore forces its author to say whether it applies here
-or does nothing here.
-
-Slice 2 first probes whether the exhaustivity checker treats
-`CoreOperation & LeafOperation` as excluding the final composite classes.
-If it does, the dispatch matches over that intersection and the composite
-arms go away; if not, they stay.
+These three are exactly the leaves today's wildcard catches. A new leaf
+therefore forces its author to say whether it applies here or does nothing
+here.
 
 **The guard keeps its wildcard.** `nonMoveViolations` also ends in
 `case _`, but most operations have no guard, and an exhaustive guard would
@@ -216,9 +230,18 @@ stays met, since no single match spans the vocabulary again.
 **The wire format does not change.** Every `kind` string and every field
 keeps its spelling, so journals and fixtures are untouched.
 
-`WalkerOperationWireSuite` splits along the same six families. One new
-check pins that the six decoders' kind sets are disjoint: two families
-claiming one `kind` would otherwise decode silently by `orElse` order.
+The two helpers both the card and the piece codecs use, `withMover` and
+`decodeMover`, and the `DecodedOperation` alias move to a small shared
+trait, `OperationWireSupport`.
+
+`WalkerOperationWireSuite` splits along the families: a suite each for
+pieces, resources, cards, the turn and the Chronicle takes that family's
+tests, and `WalkerOperationWireSuite` keeps the tests that cross families
+(locations, payloads, the step envelope, Catacombs' batch, every variant).
+Dice has no test of its own today, so it gets no suite. One new check, in
+`WalkerOperationWireSuite`, pins that the families' kind sets are
+disjoint: two families claiming one `kind` would otherwise decode silently
+by `orElse` order.
 
 Matchers that pick out a few operations with a deliberate wildcard
 (`OperationRestrictions`, `DetailLines`, `HallOfMinisters`, the powers)
@@ -240,13 +263,13 @@ Each slice preserves behavior and ends green on the full verification gate
 (ROADMAP standing rules).
 
 1. **Model split.** Create the six family files, shrink
-   `CoreOperations.scala` to the base trait and alias, delete
-   `PrimitiveOperation`, add the architecture rule. The compiler is the
-   main test; existing suites do not change.
-2. **Exhaustive applier.** Run the intersection probe, then replace the
-   wildcard with the family dispatch. If the exhaustive match turns up an
-   operation that should change state and has no apply arm, stop and
-   report it to the owner rather than fixing it inside the refactor.
+   `CoreOperations.scala` to the base trait and the two aliases, add the
+   architecture rule. The compiler is the main test; existing suites do
+   not change.
+2. **Exhaustive applier.** Replace the wildcard with `LeafApplication`'s
+   family dispatch. If the exhaustive match turns up an operation that
+   should change state and has no apply arm, stop and report it to the
+   owner rather than fixing it inside the refactor.
 3. **Codec and wire suite.** Create the six codec traits, split the wire
    suite, add the kind-disjointness check. `git diff` must show no change to
    fixtures or recorded journals, which shows the wire format did not move.
@@ -254,7 +277,8 @@ Each slice preserves behavior and ends green on the full verification gate
 ## Docs
 
 - Delete the roadmap's "`CoreOperations.scala` is at the file limit" item.
-- Repoint references to `CoreOperations.scala` and `PrimitiveOperation` in
+- Repoint references to `CoreOperations.scala` as the home of the
+  operations, and the claim that `PrimitiveOperation` is sealed, in
   `docs/architecture/follow-up-actions.md`,
   `docs/rules/implementation-traceability.md`,
   `docs/testing/audits/split-delta-bracketing-audit.md`, and the doc
