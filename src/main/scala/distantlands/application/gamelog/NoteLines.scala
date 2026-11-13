@@ -154,6 +154,8 @@ private[gamelog] final class NoteLines(words: LogWords,
       (count, site) => Vector(Text(s"$count " +
         s"${LogWords.plural(count, "warband", "warbands")} on "),
         words.site(site))))
+    case NoteArg.SuitShares(entries) => Vector(Text(entries.map(
+      (points, suit) => s"$points from $suit").mkString(", ")))
     case NoteArg.Things(items) => LogWords.join(items.map(thing(_, seen,
       viewer)))
     case NoteArg.ToNomadBank => Vector.empty

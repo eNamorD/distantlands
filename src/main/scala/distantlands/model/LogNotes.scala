@@ -57,6 +57,10 @@ object NoteArg:
   /** Warbands placed by site, "2 warbands on the Mine and 1 warband on the
     * Standing Stones". */
   final case class Placements(entries: Vector[(Int, SiteId)]) extends NoteArg
+  /** Lineage points by suit, "3 from Beast, 1 from Nomad": the winner's
+    * legacy bonus (Legacies implementation ruling R30). The entries are
+    * joined with commas, since the template continues the list. */
+  final case class SuitShares(entries: Vector[(Int, Suit)]) extends NoteArg
   /** Several references of different kinds as one joined phrase, "Broken
     * Peaks, Blue's pawn, Wine of Welcome and the People's Favor": a
     * Campaign's targets, and a won Raid's spoils. The joining is the Game

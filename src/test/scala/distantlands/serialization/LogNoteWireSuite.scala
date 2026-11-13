@@ -145,6 +145,25 @@ class LogNoteWireSuite extends munit.FunSuite:
     refused(NoteArg.Placements(Vector(2 -> SiteId("s1"))),
       arg => arg("placements")(0)("count") = -1,
       "$.payload.note.args[0].placements[0].count")
+    refused(NoteArg.SuitShares(Vector(2 -> Suit.Hearth)),
+      arg => arg("entries")(0)("points") = -1,
+      "$.payload.note.args[0].entries[0].points")
+
+  test("lineage points by suit round trip, and an unknown suit is refused"):
+    val event = noteEvent(PowerSourceRef.Site(SiteId("s1")),
+      NoteArg.SuitShares(Vector(3 -> Suit.Beast, 1 -> Suit.Nomad)))
+    val encoded = ujson.read(accepted(
+      GameEventWire.encodeEvent("notes", 0, event)))
+    assertEquals(encoded("payload")("note")("args")(0), ujson.Obj(
+      "kind" -> "suit-shares", "entries" -> ujson.Arr(
+        ujson.Obj("points" -> 3, "suit" -> "beast"),
+        ujson.Obj("points" -> 1, "suit" -> "nomad"))))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
+    encoded("payload")("note")("args")(0)("entries")(1)("suit") = "weather"
+    assert(GameEventWire.decode(encoded).left.toOption.exists {
+      case WireError.InvalidValue(path, _) =>
+        path == "$.payload.note.args[0].entries[1].suit"
+      case _ => false }, GameEventWire.decode(encoded))
 
   test("a log note's promise argument round trips its text"):
     val event = noteEvent(PowerSourceRef.Card(DenizenId("denizen")),

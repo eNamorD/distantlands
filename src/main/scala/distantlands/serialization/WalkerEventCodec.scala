@@ -154,6 +154,9 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
     case NoteArg.Placements(entries) => ujson.Obj("kind" -> "placements",
       "placements" -> ujson.Arr.from(entries.map((count, site) =>
         ujson.Obj("count" -> count, "siteId" -> site.value))))
+    case NoteArg.SuitShares(entries) => ujson.Obj("kind" -> "suit-shares",
+      "entries" -> ujson.Arr.from(entries.map((points, suit) =>
+        ujson.Obj("points" -> points, "suit" -> suit.key))))
     case NoteArg.Things(items) => ujson.Obj("kind" -> "things",
       "things" -> ujson.Arr.from(items.map(encodeNoteThing)))
     case NoteArg.ToNomadBank => ujson.Obj("kind" -> "to-nomad-bank")
@@ -250,6 +253,14 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
           decodeCount(entry("count"), s"$path.placements[$index].count")
             .map(_ -> SiteId(entry("siteId").str)) })
         .map(NoteArg.Placements.apply)
+    case "suit-shares" =>
+      traverse(value("entries").arr.zipWithIndex.toVector)({
+        case (entry, index) => for
+          points <- decodeCount(entry("points"),
+            s"$path.entries[$index].points")
+          suit <- decodeSuit(entry("suit").str, s"$path.entries[$index].suit")
+        yield points -> suit })
+        .map(NoteArg.SuitShares.apply)
     case "things" => traverse(value("things").arr.zipWithIndex.toVector)({
       case (thing, index) =>
         decodeNoteThing(thing, s"$path.things[$index]") })
