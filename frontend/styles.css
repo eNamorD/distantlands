@@ -340,7 +340,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   white-space: nowrap; color: var(--cream-bright); font-family: Georgia, serif;
   font-weight: 700; letter-spacing: 0.01em; text-transform: none;
   line-height: 1.1;
-  font-size: clamp(2.6rem, calc(14px / var(--map-scale, 1)), 4.2rem); }
+  font-size: clamp(2.6rem, calc(14px / var(--map-scale, 1)), 3.9rem); }
 
 /* A site is its card and the three slots to its right: one row, one option
    target. The row itself draws nothing but a decision's ring. */
@@ -358,17 +358,24 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .mat-board .site-name { position: absolute; bottom: 0; left: var(--face-left);
   width: var(--face-w); box-sizing: border-box; padding: 4px 8px;
   border-radius: 0 0 9px 9px; background: #1a1610d9; line-height: 1.15; }
-.mat-board .site-tokens { position: absolute; top: 8px;
+/* The lines from the top stand on rows of one height, `--row`, so a line
+   set larger on the zoomed-out map moves the lines under it with it. */
+.mat-board .site { --row: 1.3rem; --name-band: 2.5rem; }
+.mat-board .site-tokens { position: absolute; top: 6px;
   left: calc(var(--face-left) + 8px); }
-.mat-board .site-defense { position: absolute; top: 8px;
+.mat-board .site-defense { position: absolute; top: 6px;
   right: calc(100% - var(--face-left) - var(--face-w) + 8px); }
-.mat-board .site-pawns { position: absolute; top: 2.4em; margin: 0;
-  left: calc(var(--face-left) + 8px); width: calc(var(--face-w) - 16px); }
-.mat-board .site-forces { position: absolute; top: 4.4em; margin: 0;
+.mat-board .site-pawns { position: absolute; top: calc(6px + var(--row));
+  margin: 0; left: calc(var(--face-left) + 8px);
+  width: calc(var(--face-w) - 16px); }
+.mat-board .site-forces { position: absolute;
+  top: calc(6px + var(--row) * 2); margin: 0; line-height: 1.15;
   left: calc(var(--face-left) + 8px); }
-.mat-board .site-footer { position: absolute; bottom: 2.5em; margin: 0;
-  left: calc(var(--face-left) + 8px); width: calc(var(--face-w) - 16px); }
-.mat-board .site > .target-detail-badge { position: absolute; top: 2.4em;
+.mat-board .site-footer { position: absolute; bottom: var(--name-band);
+  margin: 0; left: calc(var(--face-left) + 8px);
+  width: calc(var(--face-w) - 16px); }
+.mat-board .site > .target-detail-badge { position: absolute;
+  top: calc(6px + var(--row));
   right: calc(100% - var(--face-left) - var(--face-w) + 8px); margin: 0; }
 /* A card fills the slot the mat gives it. */
 .mat-board .site-cards > .mat-slot > .card-face { width: 100%; height: 100%;
@@ -392,7 +399,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 
 /* The Cradle's foot. */
 .track-note { overflow: hidden; font-size: 1.05rem; line-height: 1.2; }
-.track-note p { display: inline; margin: 0 1.2em 0 0; }
+.track-note p { display: inline; margin: 0 1.2em 0 0; font-size: inherit; }
 .vision-cell { display: flex; align-items: flex-start;
   justify-content: center; padding-top: 3px; border: 2px solid var(--line-mid);
   border-radius: 4px; font-size: 1.1rem; font-weight: 700; }
@@ -424,18 +431,55 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .table-edge .public-legacies { margin: 0; }
 
 /* The glance layer on the mat. A site's face is a fixed box, so each line
-   it holds is set against the scale and placed in em of its own size. */
+   it holds is set against the scale, its rows grow with it, and the name
+   keeps one line, cut, its whole text being the site's name for assistive
+   technology and on a zoom. */
+.map-compact .mat-board .site { --row: calc(var(--glance-text) * 1.2);
+  --name-band: calc(var(--glance-name) * 1.05 + 10px); }
 .map-compact .mat-board .site-name { font-size: var(--glance-name);
-  line-height: 1.05; }
+  line-height: 1.05; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; }
 .map-compact .mat-board :is(.site-tokens, .site-defense, .site-pawns,
   .site-forces, .site-footer, .site > .target-detail-badge, .track-note,
   .vision-cell, .visions-drawn-label, .deck-caption, .favor-bank) {
   font-size: var(--glance-text); }
-.map-compact .mat-board .site-footer { bottom: 2.9em; }
-.map-compact .mat-board .site-powers { -webkit-line-clamp: 1; }
-/* Smaller still, the face keeps what a player scans for and gives up its
-   powers, which are read on a zoom or in the overlay. */
-.map-tiny .mat-board .site-footer { display: none; }
+/* One line of powers, cut, beside the requirement: each power's words are
+   its hover note and open in the overlay. */
+.map-compact .mat-board .site-powers { display: block; flex: 1 1 0;
+  white-space: nowrap; text-overflow: ellipsis; }
+/* The mat's label for the track, in two lines at its printed place; a
+   word a little wider than the place runs onto the bare mat beside it. */
+.map-compact .mat-board .visions-drawn-label {
+  font-size: calc(var(--glance-text) * 0.8); line-height: 1;
+  overflow: visible; }
+/* A deck's letter and count at the glance size, the count under the
+   letter. */
+.map-compact .mat-board .deck-card { font-size: calc(var(--glance-text) * 1.5);
+  line-height: 0.95; }
+.map-compact .mat-board .deck-card > .pile-count { font-size: var(--glance-text); }
+/* The wheel's numbers are drawn in its own units, large enough to read
+   while the zoomed-out map still has room for them. */
+.mat-board .round-tracker text { font-size: 22px; }
+.mat-board .round-tracker .limiter-marker { font-size: 30px; }
+/* The tracker's line repeats what the board shows: the Visions Drawn marker
+   and the First Player badge. Zoomed out, only the Usurper's lock is left
+   in words. */
+.map-compact .mat-board .track-summary { display: none; }
+/* Smaller still, a site's face keeps its name, its tokens and who stands
+   there; its defense, forces and powers, the wheel's numbers, the
+   tracker's words, the slots' names and a bank's suit name and favor glyph
+   would fall under a readable size, so they are read on a zoom or in the
+   overlay instead. Every one keeps its accessible name. */
+.map-tiny .mat-board :is(.site-footer, .site-forces, .site-defense, .track-note,
+  .deck-caption, .visions-drawn-label,
+  .round-tracker text:not(.limiter-marker),
+  .favor-bank > .printed, .favor-bank > .token-favor) { display: none; }
+/* What stays keeps one size: a deck's letter and count, and a cell's
+   number, each at the glance size, inside the place the mat gives it. */
+.map-tiny .mat-board .deck-card { font-size: var(--glance-text);
+  line-height: 1; }
+.map-tiny .mat-board .deck-card > .pile-count { font-size: 1em; }
+.map-tiny .mat-board .vision-cell { padding-top: 0; line-height: 1; }
 
 .site { position: relative; min-width: 0; color: var(--cream);
   text-align: left; }
@@ -896,6 +940,16 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    beside the dice rather than under them. */
 .card-defense { display: flex; flex: 0 0 auto; align-items: flex-start;
   gap: 0.05em; margin-left: auto; font-size: 1em; }
+/* A relic is a square a denizen's width, too short for a two-line name, the
+   dice under it and the power marks at its foot. Its dice lead the header,
+   in its upper right, so its name wraps under them instead of pushing them
+   down onto the marks. */
+.card-face-relic .card-header > .card-defense { order: -1; }
+/* With power marks at its foot as well, the name keeps one line, cut; the
+   whole name is the face's hover note and accessible name. */
+:is(.card-face-relic, .card-face-relic .card-hover-summary):has(> .card-power-marks)
+  > .card-header > .card-name { white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; }
 /* The suit glyph with the restriction banner hung under it, one column at
    the header's left, as the printed card hangs its banner under the suit. */
 .card-emblems { display: flex; flex: 0 0 auto; flex-direction: column;
@@ -1468,8 +1522,8 @@ button.festival-marker:hover,
    threshold cannot flip the class and re-fit forever. */
 /* The glance layer's two sizes, named once so the compact site below can
    size its card row from what the text leaves it. */
-.map-compact { --glance-name: clamp(1.08rem, calc(12px / var(--map-scale, 1)), 3rem);
-  --glance-text: clamp(0.86rem, calc(11.6px / var(--map-scale, 1)), 3.2rem); }
+.map-compact { --glance-name: clamp(1.08rem, calc(12px / var(--map-scale, 1)), 3.6rem);
+  --glance-text: clamp(0.86rem, calc(11.6px / var(--map-scale, 1)), 3.6rem); }
 .map-compact .site-pawns { margin: 0; justify-content: center; }
 .map-compact .site-tokens, .map-compact .site-defense, .map-compact .site-pawns,
 .map-compact .site-details { font-size: var(--glance-text); }

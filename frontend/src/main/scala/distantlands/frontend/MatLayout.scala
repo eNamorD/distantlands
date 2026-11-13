@@ -95,8 +95,11 @@ private[frontend] object MatLayout:
   def discard(column: Int): MatRect =
     MatRect(FrameLeft(column) + 932, 80, CardH, CardW)
 
+  /** The band for a region's name: from just left of its frames, where the
+    * mat's lettering starts, to short of its discard, so the longest name
+    * keeps one line at the glance size. */
   def regionName(column: Int): MatRect =
-    MatRect(FrameLeft(column), 60, 560, 240)
+    MatRect(FrameLeft(column) - 25, 60, 900, 240)
 
   val relicDeck: MatRect = MatRect(881, 1913, CardW, CardW)
   /** The world deck lies on its side, as the discards do. */
