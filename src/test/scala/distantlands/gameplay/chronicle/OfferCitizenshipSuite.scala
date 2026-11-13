@@ -1,5 +1,7 @@
 package distantlands.gameplay.chronicle
 
+import distantlands.catalog.holding.{ArbiterCard, IronHandCard, RivalCard,
+  SeerCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
@@ -176,3 +178,33 @@ class OfferCitizenshipSuite extends munit.FunSuite:
     val after = ready(done)
     assertEquals(Imperials.role(after, p3), Some(Role.Citizen))
     assertEquals(Look(after).player(p3).board.warbands, 0)
+
+  private def legaciesOf(step: OathTransition, player: PlayerId)
+      : Vector[LegacyState] =
+    val state = ready(step)
+    state.game.campaign.lineages(state.game.current.player(player).get.lineage)
+      .legacies
+
+  test("an Exile who accepts Citizenship reactivates their newly dormant " +
+      "legacies, and one who declines keeps them dormant (R20)"):
+    val table = exilesHoldSites.legacy(p2, IronHandCard, active = false)
+      .legacy(p3, SeerCard, active = false)
+    val asked = offered(throneStarted(table), p2, p3)
+    val done = replied(replied(asked, p2, OfferCitizenship.accept), p3,
+      OfferCitizenship.decline)
+    assertEquals(legaciesOf(done, p2),
+      Vector(LegacyState(IronHandCard.id, active = true)))
+    assertEquals(legaciesOf(done, p3),
+      Vector(LegacyState(SeerCard.id, active = false)))
+    assert(lines(done.events).contains(
+      s"p2 reactivated ${IronHandCard.id.value}"), lines(done.events))
+
+  test("an accepting Exile left above three active legacies discards the " +
+      "excess at once (R19)"):
+    val table = exilesHoldSites.legacy(p2, IronHandCard).legacy(p2, SeerCard)
+      .legacy(p2, RivalCard).legacy(p2, ArbiterCard, active = false)
+    val asked = replied(offered(throneStarted(table), p2), p2,
+      OfferCitizenship.accept)
+    val cap = ChronicleWalk.parked(asked.state).get
+    assertEquals((cap.decisionId, cap.owner),
+      (OfferCitizenship.capDecisionId(p2), p2))

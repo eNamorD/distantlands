@@ -54,7 +54,13 @@ object ChronicleSunProcedure:
         required = true),
       Note(noteId, states => Option.when(brokeTheEmpire(states, winner))(
         empireBroke.sourceless())),
-      Note(noteId, _ => Some(crowned.sourceless(NoteArg.Player(winner)))))),
+      Note(noteId, _ => Some(crowned.sourceless(NoteArg.Player(winner))))) ++
+      // An Exile's win: their newly dormant legacies become active (CR
+      // "If an Exile won, the Empire breaks"), then the cap if need be. An
+      // Imperial winner holds no dormant legacy after step 3 (ruling 2), so
+      // this asks nothing of them.
+      ResolveLegacies.reactivate(winner, ResolveLegacies.capDecisionId(winner),
+        noteId, ResolveLegacies.reactivated, ResolveLegacies.capped)),
     ChronicleWindows.step(PowerWindow.ChronicleAssignTasks,
       ChronicleTaskAssignment.steps(winner, tookNote)))
 

@@ -84,15 +84,49 @@ object ResolveLegacies:
         lapsed.map((player, id) =>
           line(wentDormant, NoteArg.Player(player), NoteArg.Card(id)))))
 
+  /** "p1 reactivated Iron Hand": a newly dormant legacy active again when
+    * an Exile wins (Crown Chancellor). */
+  val reactivated: NoteKey = notes.key("reactivated-legacy", Vector(
+    NotePart.Arg(0), NotePart.Text(" reactivated "), NotePart.Arg(1)))
+
   /** Sun step 4's children: `cap` for each seated player, in turn order. */
   def capAll: Vector[Operation] = Vector(Branch((state, _) =>
-    LegacyGoals.turnOrder(state).map(cap)))
+    LegacyGoals.turnOrder(state).map(player =>
+      cap(player, capDecisionId(player), noteId, capped))))
+
+  /** `player`'s newly dormant legacies turned active, each with a
+    * `reactivatedKey` line under `notesOf`, then `cap` again if that leaves
+    * more than three active (R19, R20). Every dormant legacy on a seated
+    * lineage after Sun step 3 is newly dormant (ruling 2). Crown Chancellor
+    * and Offer Citizenship both run it. The cap is a sibling of the flips,
+    * not their child: a walk resumed at its question rebuilds only the
+    * nodes on its path, and the flips' branch would read no dormant legacy
+    * by then. */
+  def reactivate(player: PlayerId, capId: String, notesOf: PowerId,
+      reactivatedKey: NoteKey, cappedKey: NoteKey): Vector[Operation] =
+    Vector(reactivation(player, notesOf, reactivatedKey),
+      cap(player, capId, notesOf, cappedKey))
+
+  /** `reactivate` without the cap, for a caller that runs the cap later:
+    * Offer Citizenship, whose answers are simultaneous and so cannot ask a
+    * second question inside one. */
+  def reactivation(player: PlayerId, notesOf: PowerId,
+      reactivatedKey: NoteKey): Operation =
+    Branch((state, _) =>
+      val dormant = legaciesOf(state, player).filterNot(_.active).map(_.id)
+      if dormant.isEmpty then Vector.empty
+      else BuildOps((live, _) => Right(dormant.map(id => Flip(id,
+          Location.Legacies(lineageOf(live, player)), Orientation.FaceUp))),
+          required = true) +:
+        dormant.map(id => Note(notesOf, _ => Some(reactivatedKey.sourceless(
+          NoteArg.Player(player), NoteArg.Card(id))))))
 
   /** A player above three active legacies discards exactly the excess, of
-    * their choice, to the deck; at three or fewer nothing is asked. Read
-    * when reached, so a reactivation can run it again (R19). */
-  def cap(player: PlayerId): Operation =
-    val decisionId = capDecisionId(player)
+    * their choice, to the deck, under decision `decisionId`, each discard a
+    * `cappedKey` line under `notesOf`; at three or fewer nothing is asked.
+    * Read when reached, so a reactivation can run it again (R19). */
+  def cap(player: PlayerId, decisionId: String, notesOf: PowerId,
+      cappedKey: NoteKey): Operation =
     Branch((state, _) =>
       val active = legaciesOf(state, player).filter(_.active).map(_.id)
       val excess = active.size - MaxActive
@@ -113,8 +147,8 @@ object ResolveLegacies:
               PositionedLocation(Location.Legacies(lineageOf(now, player))),
               PositionedLocation(Location.Deck(CardDeck.Legacy))))),
               required = true)) ++
-            chosen.map(id => line(capped, NoteArg.Player(player),
-              NoteArg.Card(id))))))
+            chosen.map(id => Note(notesOf, _ => Some(cappedKey.sourceless(
+              NoteArg.Player(player), NoteArg.Card(id))))))))
 
   private def meets(catalog: ExecutableCatalog, ready: ReadyGame,
       legacy: LegacyId, player: PlayerId): Boolean =

@@ -1,8 +1,9 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.{ArbiterCard, ChroniclerCard,
-  IronHandCard, MatchmakerCard, PeacemakerCard, RivalCard, SeerCard,
-  SteadfastCard, WealthyCard}
+import distantlands.catalog.holding.{AncestralLandsCard, ArbiterCard,
+  ChroniclerCard, GoldenKeyCard, IronHandCard, KeeperOfOrderCard,
+  MatchmakerCard, PeacemakerCard, RivalCard, SeerCard, SteadfastCard,
+  WealthyCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import distantlands.gameplay.OathRules
@@ -12,7 +13,7 @@ import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.WalkerCompleted
 import distantlands.model._
 import distantlands.testkit.{Outcomes, Table}
-import distantlands.testkit.Table.{p2, p3}
+import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 
 /** Resolve Legacies, the Sun's steps 2-4 (CR "Task 1: The Sun"; Legacies
@@ -221,3 +222,27 @@ class ResolveLegaciesSuite extends munit.FunSuite:
     assertEquals(run.asked.map(_.decisionId).filter(_.startsWith(
       "chronicle.sun.legacy-cap.")), Vector(p3, p2).map(
       ResolveLegacies.capDecisionId))
+
+  test("an Exile winner's newly dormant legacies become active at Crown " +
+      "Chancellor"):
+    // p1 rules no site, so Iron Hand goes dormant in step 3.
+    val run = sun(won.legacy(p1, IronHandCard))
+    assertEquals(legaciesOf(run.ready, p1),
+      Vector(LegacyState(IronHandCard.id, active = true)))
+    assert(lines(run).contains(s"p1 reactivated ${IronHandCard.id.value}"))
+
+  test("a Citizen winner reactivates nothing"):
+    val run = sun(won.imperial(p2, p1).legacy(p1, IronHandCard))
+    assertEquals(legaciesOf(run.ready, p1),
+      Vector(LegacyState(IronHandCard.id, active = true)))
+    assert(!lines(run).exists(_.contains(" reactivated ")))
+
+  test("a reactivation that leaves four active legacies asks for a " +
+      "discard at once (R19)"):
+    // With no Grand Scepter in play the winner meets its goal (ruling 7),
+    // so p1's three Grand Scepter legacies stay active through step 3.
+    val run = sun(holding(won, p1, KeeperOfOrderCard, AncestralLandsCard,
+      GoldenKeyCard, IronHandCard))
+    val asked = capOf(run, p1).get.query.asInstanceOf[DecisionQuery.ChooseMany]
+    assertEquals((asked.min, asked.max), (1, 1))
+    assertEquals(legaciesOf(run.ready, p1).count(_.active), 3)

@@ -353,7 +353,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         ResolveLegacies.tookPublic -> LogKind.Delta,
         ResolveLegacies.returnedPublic -> LogKind.Delta,
         ResolveLegacies.wentDormant -> LogKind.Delta,
-        ResolveLegacies.capped -> LogKind.Decision) ++
+        ResolveLegacies.capped -> LogKind.Decision,
+        ResolveLegacies.reactivated -> LogKind.Delta) ++
         ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
         ChronicleTask.all.map(task =>
           ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),
@@ -369,8 +370,11 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         SwearOath.swore -> LogKind.Decision,
         OfferCitizenship.offered -> LogKind.Decision,
         OfferCitizenship.accepted -> LogKind.Decision,
-        OfferCitizenship.declined -> LogKind.Decision)),
+        OfferCitizenship.declined -> LogKind.Decision,
+        OfferCitizenship.reactivated -> LogKind.Delta,
+        OfferCitizenship.capped -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.throne.offer",
+        "chronicle.throne.legacy-cap.",
         "chronicle.throne.citizenship.", "chronicle.shape-empire.",
         "chronicle.build-edifice.", "chronicle.stock-reliquary.",
         "chronicle.score-lineage.", "chronicle.swear-oath."),
