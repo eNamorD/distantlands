@@ -43,7 +43,7 @@ private[frontend] object ServerUiSupport:
     short.setAttribute("aria-hidden", "true")
     HoverTip.set(short, s"Defense ${presentation.defense}")
     short.appendChild(RulesTextRenderer.glyph("defense-die"))
-    short.appendChild(text("span", "site-token-count",
+    short.appendChild(text("span", "site-defense-count",
       presentation.defense.toString))
     heading.appendChild(short)
     heading
@@ -117,7 +117,7 @@ private[frontend] object ServerUiSupport:
       short.appendChild(text("span", "site-token-count", forces.count.toString))
       details.appendChild(short)
     }
-    val footer = element("div", "site-footer printed")
+    val footer = element("div", "site-footer")
     // Two lines of labels at most (`.site-powers`). Each label keeps its
     // rules text on its hover title, and opens the power in the inspector.
     // A button, so the site box it sits in leaves the click to it
@@ -125,7 +125,9 @@ private[frontend] object ServerUiSupport:
     val powers = element("p", "site-powers")
     site.powers.zipWithIndex.foreach { case (power, index) =>
       if index > 0 then powers.appendChild(dom.document.createTextNode(" · "))
-      val item = button(power.label, "site-power")
+      // The control is not printed; the label it shows is (ruling R9).
+      val item = button("", "site-power")
+      item.appendChild(text("span", "printed", power.label))
       HoverTip.set(item, power.description.fold(power.label)(
         description => s"${power.label}: $description"))
       item.onclick = (event: dom.MouseEvent) =>
@@ -145,7 +147,7 @@ private[frontend] object ServerUiSupport:
     * than a price, so it stays a number.
     */
   private def requirementCorner(value: SiteRequirement): dom.Element =
-    val node = element("span", "site-requirement")
+    val node = element("span", "site-requirement printed")
     value match
       case SiteRequirement.Forge(favor, secrets) =>
         node.appendChild(text("span", "site-requirement-label", "Forge"))
@@ -243,7 +245,7 @@ private[frontend] object ServerUiSupport:
   private def deckCard(count: Int, topCardKind: Option[String]): dom.Element =
     val card = element("span", s"deck-card ${pileCardClasses(count)}")
     val symbol = pileSymbol(count, topCardKind)
-    val letter = text("span", "deck-letter",
+    val letter = text("span", "deck-letter printed",
       if symbol.isEmpty then "\u00a0" else symbol)
     letter.setAttribute("role", "img")
     letter.setAttribute("aria-label", topCardLabel(count, topCardKind))

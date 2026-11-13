@@ -157,7 +157,7 @@ class SiteFaceSuite extends munit.FunSuite:
       "site-powers")
     assertEquals(all(footer, ".site-power").map(_.textContent), Vector("Coast"))
     assertEquals(as[dom.Element](footer.lastChild).getAttribute("class"),
-      "site-requirement")
+      "site-requirement printed")
 
   /** The box has room for one line of powers, so a second power joins the
     * first on it rather than wrapping onto a line the box then clips. Each

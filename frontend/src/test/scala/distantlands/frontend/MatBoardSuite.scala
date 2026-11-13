@@ -125,7 +125,7 @@ class MatBoardSuite extends munit.FunSuite:
     val site = one(world, """.site[aria-label="Deep Woods"]""")
     assertEquals(all(site, ".site-name.printed").size, 1)
     assertEquals(all(site, ".site-defense.printed").size, 1)
-    assertEquals(all(site, ".site-footer.printed").size, 1)
+    assertEquals(all(site, ".site-footer.printed"), Vector.empty)
     assertEquals(all(site, ".site-tokens.printed, .site-pawns.printed"),
       Vector.empty)
 
@@ -145,7 +145,8 @@ class MatBoardSuite extends munit.FunSuite:
     assert(captions.forall(_.classList.contains("printed")))
     val arcane = one(world, ".favor-bank.suit-arcane")
     assertEquals(arcane.textContent, "Arcane: 3")
-    assertEquals(all(arcane, ".printed").map(_.textContent), Vector("Arcane: "))
+    assertEquals(all(arcane, "span.printed").map(_.textContent), Vector("Arcane: "))
+    assert(one(arcane, ".token-suit-arcane").classList.contains("printed"))
     assertEquals(one(arcane, ".favor-bank-count").textContent, "3")
     assert(!one(arcane, ".favor-bank-count").classList.contains("printed"))
 

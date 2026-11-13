@@ -393,7 +393,8 @@ private[frontend] object WorldBoardRenderer:
   /** A site slot of the region `regionName` that holds no site: a frame
     * with nothing in it, and nothing to choose or inspect. */
   private def emptySlot(regionName: String): dom.Element =
-    val slot = element("div", "site-slot-empty")
+    // The mat prints the frame, so its outline is printed content.
+    val slot = element("div", "site-slot-empty printed")
     slot.setAttribute("role", "img")
     slot.setAttribute("aria-label", s"Empty site slot, $regionName")
     slot
@@ -492,7 +493,9 @@ private[frontend] object WorldBoardRenderer:
       val box = text("span", s"favor-bank suit-${bank.suit}", "")
       // The symbol first, as on a card: a player matching a bank against a
       // card's suit reads the shape, not the word.
-      box.appendChild(RulesTextRenderer.glyph(s"suit-${bank.suit}"))
+      val suit = RulesTextRenderer.glyph(s"suit-${bank.suit}")
+      suit.classList.add("printed")
+      box.appendChild(suit)
       // The suit's name is printed beside the mat's circle; the count is
       // play. Together they read as before: "Arcane: 3".
       box.appendChild(text("span", "printed", s"${bank.suit.capitalize}: "))
