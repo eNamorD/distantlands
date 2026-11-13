@@ -186,8 +186,28 @@ private[application] final class GamePresentationProjector(
           Some(card.orientation), hidden = false), ready, card.id)),
         banners(ready).filter(_.holderPlayerId.contains(player.player.value)),
         banked, printed, atSites, restBase, bands,
-        AdviserLimit.drawn(catalog, ready, player.player))
+        AdviserLimit.drawn(catalog, ready, player.player),
+        legacies(ready, viewer, player.lineage))
     }
+
+  /** `lineage`'s legacies as `viewer` may see them (Legacies design, ruling
+    * 1; implementation ruling R18): a face where `identifiesCard` names the
+    * legacy, a legacy back elsewhere. */
+  private def legacies(ready: ReadyGame, viewer: Option[PlayerId],
+      lineage: LineageId): Vector[CardDetailsProjection] =
+    ready.game.campaign.lineages.get(lineage).toVector.flatMap(_.legacies)
+      .map { legacy =>
+        val face = GamePresentationProjector.orientationOf(Some(legacy))
+        if identifiesCard(ready, viewer, legacy.id, face,
+            CardContainer.Lineage(lineage, LineageCardArea.Legacies)) then
+          cardDetails(legacy.id, face, hidden = false)
+        else hiddenCard("legacy")
+      }
+
+  /** The Public Ambitions row, faceup to every viewer. */
+  def publicLegacies(ready: ReadyGame): Vector[CardDetailsProjection] =
+    ready.game.current.commonCards.publicLegacies.map(id =>
+      cardDetails(id, Some(Orientation.FaceUp), hidden = false))
 
   /** The warbands standing on `card` (Obsidian Cage, False Prophet), one entry per
     * force: an Exile's by the colour of the player of that lineage. */

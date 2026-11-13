@@ -133,6 +133,7 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
         chronicle = Some(chronicleView(context.ready.game.campaign)),
         foundations = FoundationPresentation.ofGame(
           context.ready.game.campaign.foundations),
+        publicLegacies = presentation.publicLegacies(context.ready),
         walkerWaiting = pending.walkerWaiting,
         temporaryHandPreview = handPreview(context, pending.walkerDecision),
         supplyMaximum = SupplyTrack.Maximum,

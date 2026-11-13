@@ -36,6 +36,9 @@ final case class GameProjection(
     ,planAidPrompt: Option[PlanAidPromptProjection] = None
     /** The six foundation setup cards, I to VI; empty before a game. */
     ,foundations: Vector[FoundationProjection] = Vector.empty
+    /** The Public Ambitions row, faceup; empty unless Foundation III is
+      * altered and the Chronicle has not resolved it. */
+    ,publicLegacies: Vector[CardDetailsProjection] = Vector.empty
 )
 
 /** Every seat's view of the game's Chronicle (Chronicle browsing design,

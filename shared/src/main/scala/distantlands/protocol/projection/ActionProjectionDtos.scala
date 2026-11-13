@@ -347,7 +347,11 @@ final case class PlayerBoardProjection(
     supplyBands: Vector[SupplyBandProjection],
     /** How many advisers this player may hold: 3, or 2 under Silver Tongue
       * or Insomnia. The board draws that many adviser slots. */
-    adviserLimit: Int = 3
+    adviserLimit: Int = 3,
+    /** The player's lineage's legacies, in held order: active faceup,
+      * dormant facedown, and a legacy back where the viewer may not know
+      * one (Legacies design, ruling 1; implementation ruling R18). */
+    legacies: Vector[CardDetailsProjection] = Vector.empty
 )
 final case class NegotiationTransferProjection(authorPlayerId: String,
     recipientPlayerId: String, favor: Int, relicCount: Int,

@@ -51,3 +51,39 @@ class LegacyIdentitySuite extends munit.FunSuite:
     assertEquals(presentation.cardDetails(SeerCard.id, None, hidden = false)
       .legacyGoal, Some(distantlands.protocol.projection.LegacyGoalProjection(
         "darkest-secret", "Hold the Darkest Secret")))
+
+  private val projector = new GameProjector(catalog)
+  private def loaded(state: distantlands.model.ReadyGame): LoadedGame =
+    LoadedGame(distantlands.model.OathState.Ready(state), 1L)
+  private def legaciesOn(view: distantlands.protocol.projection.GameProjection,
+      player: distantlands.model.PlayerId)
+      : Vector[distantlands.protocol.projection.CardDetailsProjection] =
+    view.playerBoards.find(_.playerId == player.value).get.legacies
+
+  test("a board lists its lineage's legacies: the owner sees both faces, " +
+      "anyone else the active one and a legacy back"):
+    val own = legaciesOn(projector.project("g", loaded(ready), p1), p1)
+    assertEquals(own.map(card => (card.cardId, card.orientation, card.hidden)),
+      Vector((SeerCard.id.value, Some("face-up"), false),
+        (ArbiterCard.id.value, Some("face-down"), false)))
+    Vector(projector.project("g", loaded(ready), p2),
+        projector.projectPublic("g", loaded(ready))).foreach { view =>
+      val theirs = legaciesOn(view, p1)
+      assertEquals(theirs.map(card => (card.cardKind, card.hidden)),
+        Vector(("legacy", false), ("legacy", true)))
+      assert(!distantlands.protocol.projection.GameProjectionCodec
+        .encode(view).contains(s"\"${ArbiterCard.id.value}\""))
+    }
+
+  test("in the Chronicle Phase every view names a dormant legacy (R18)"):
+    val chronicle = ready.updateCurrent(current => current.copy(turn =
+      current.turn.copy(phase = Phase.Chronicle)))
+    assertEquals(legaciesOn(projector.projectPublic("g", loaded(chronicle)),
+      p1).map(_.hidden), Vector(false, false))
+
+  test("every view shows the Public Ambitions row faceup"):
+    Vector(projector.project("g", loaded(ready), p2),
+        projector.projectPublic("g", loaded(ready))).foreach(view =>
+      assertEquals(view.publicLegacies.map(card =>
+        (card.cardId, card.orientation)),
+        Vector((RivalCard.id.value, Some("face-up")))))

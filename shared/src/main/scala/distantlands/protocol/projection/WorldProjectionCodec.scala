@@ -250,13 +250,15 @@ private[protocol] object WorldProjectionCodec:
     "siteWarbands" -> value.siteWarbands,
     "restSupplyBase" -> value.restSupplyBase,
     "supplyBands" -> encoded(value.supplyBands)(encodeBand),
-    "adviserLimit" -> value.adviserLimit)
+    "adviserLimit" -> value.adviserLimit,
+    "legacies" -> encoded(value.legacies)(encodeCard))
   def decodeBoard(raw: ujson.Value, path: String): Result[PlayerBoardProjection] = for
     value <- obj(raw, path)
     _ <- exact(value, Set("playerId", "warbands", "favor", "faceUpSecrets",
       "faceDownSecrets", "committedSecrets", "totalSecrets", "supply", "pawnSiteId", "advisers", "relics",
       "revealedVisions", "banners", "bankedWarbands", "printedWarbands",
-      "siteWarbands", "restSupplyBase", "supplyBands", "adviserLimit"), path)
+      "siteWarbands", "restSupplyBase", "supplyBands", "adviserLimit",
+      "legacies"), path)
     player <- string(value, "playerId", path); warbands <- int(value, "warbands", path)
     favor <- int(value, "favor", path); up <- int(value, "faceUpSecrets", path)
     down <- int(value, "faceDownSecrets", path)
@@ -283,5 +285,8 @@ private[protocol] object WorldProjectionCodec:
     bandRaws <- array(value, "supplyBands", path)
     bands <- traverse(bandRaws, s"$path.supplyBands")(decodeBand)
     limit <- intOr(value, "adviserLimit", path, 3)
+    legacyRaws <- default(value, "legacies", path, Vector.empty[ujson.Value])(array)
+    legacies <- traverse(legacyRaws, s"$path.legacies")(decodeCard)
   yield PlayerBoardProjection(player, warbands, favor, up, down, committed, total, supply, pawn,
-    advisers, relics, visions, banners, banked, printed, atSites, restBase, bands, limit)
+    advisers, relics, visions, banners, banked, printed, atSites, restBase, bands, limit,
+    legacies)
