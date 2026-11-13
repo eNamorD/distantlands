@@ -1,5 +1,6 @@
 package distantlands.application.gamelog
 
+import distantlands.catalog.holding.{IronHandCard, SeerCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import distantlands.gameplay.chronicle.{OfferCitizenship, ShapeFoundation}
@@ -22,6 +23,18 @@ object ChronicleLogScripts:
       .turn(p3, Phase.Act).banditsRefilled)
     acting.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("chronicle-started", service, p1)
+
+  /** The same game, with legacies: p2 holds Seer dormant and misses its
+    * goal, and p3 holds Iron Hand active and rules no site, so the Sun
+    * discards Seer and turns Iron Hand dormant. */
+  def chronicleWithLegacies(using munit.Location): Script =
+    val (service, acting) = atTable("chronicle-with-legacies", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .legacy(p2, SeerCard, active = false).legacy(p3, IronHandCard)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("chronicle-with-legacies", service, p1)
 
   /** The same game, with p2 ruling Broken Peaks: at the Throne p1, the new
     * Chancellor, offers p2 Citizenship and p2 accepts (Empire slice 3b). */
