@@ -774,7 +774,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   font-size: max(0.95em, 0.7rem); overflow-wrap: anywhere; hyphens: auto; }
 /* The initials, for the zoomed-out map only; the name is the button's label. */
 .card-name-short { display: none; }
-.card-tokens { display: flex; align-items: center; gap: 0.15em;
+/* What lies on a card in play is anchored to the card's box, not to what
+   the card prints: a band across the card above its foot, the same place
+   over a drawn face and over an image. */
+.card-tokens { position: absolute; right: 0.3em; bottom: 2.1em; left: 0.3em;
+  display: flex; align-items: center; justify-content: center; gap: 0.15em;
   font-size: 1em; }
 .card-token-count { margin-right: 0.35em; font-weight: 700; }
 /* The header's right end, in the flow, so a name that wraps is laid out
@@ -1448,7 +1452,7 @@ button.festival-marker:hover,
 .map-compact .card-header { display: contents; }
 .map-compact .card-header .token-glyph { position: absolute; top: 0.2em;
   left: 0.2em; width: 1.5em; height: 1.5em; }
-.map-compact .card-tokens { justify-content: center; }
+.map-compact .card-tokens { bottom: 0.25em; justify-content: center; }
 .map-compact .card-face .card-defense, .map-compact .card-face .card-power-marks,
 .map-compact .card-face .card-unimplemented-badge { display: none; }
 /* The banner takes the corner opposite the suit glyph, in the room the

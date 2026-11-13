@@ -111,14 +111,14 @@ private[frontend] object CardFace:
     if !card.hidden then HoverTip.set(node, card.name)
 
     if card.hidden then
-      node.appendChild(text("span", "card-back-letter", backLetter(card.cardKind)))
+      node.appendChild(text("span", "card-back-letter printed", backLetter(card.cardKind)))
     else if dormantLegacy(card) then
       summary(card).foreach(node.appendChild)
       node.appendChild(text("span", "legacy-dormant", "Dormant"))
     else if faceDown(card) then
       // Knowable: the back is what shows at rest; the summary is revealed by
       // CSS on hover only, inside the same box, so nothing moves.
-      node.appendChild(text("span", "card-back-letter", backLetter(card.cardKind)))
+      node.appendChild(text("span", "card-back-letter printed", backLetter(card.cardKind)))
       val pip = element("span", "card-knowable-pip")
       pip.setAttribute("aria-hidden", "true")
       node.appendChild(pip)
@@ -149,7 +149,7 @@ private[frontend] object CardFace:
     * overlay.
     */
   private def summary(card: CardDetails): Vector[dom.Element] =
-    val header = element("span", "card-header")
+    val header = element("span", "card-header printed")
     val suit = card.suit.map(value => RulesTextRenderer.glyph(s"suit-$value"))
     // One column for the glyph and the banner, so a name that does not fit
     // beside them drops under both whole, as it drops under a glyph alone.
@@ -200,12 +200,12 @@ private[frontend] object CardFace:
         node.appendChild(RulesTextRenderer.glyph("defense-die")))
       header.appendChild(node)
     }
-    val marks = element("span", "card-power-marks")
+    val marks = element("span", "card-power-marks printed")
     card.powers.foreach(power => power.modifier.foreach(mark =>
       PowerMarks.modifier(mark, power.persistent).foreach(marks.appendChild)))
     // A legacy's goal, in words until goals have icons (R34).
     val goal = card.legacyGoal.map(goal =>
-      text("span", s"legacy-goal legacy-goal-${goal.key}", goal.text))
+      text("span", s"legacy-goal legacy-goal-${goal.key} printed", goal.text))
     Vector(Some(header), goal,
       Option.when(tokens.childNodes.length > 0)(tokens),
       Option.when(marks.childNodes.length > 0)(marks),

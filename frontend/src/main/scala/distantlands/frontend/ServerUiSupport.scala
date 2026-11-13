@@ -156,7 +156,7 @@ private[frontend] object ServerUiSupport:
     val node = element("span", s"card-face ${CardFace.boxClass(cardKind)} card-face-down")
     node.setAttribute("role", "img")
     node.setAttribute("aria-label", s"Facedown $cardKind")
-    node.appendChild(text("span", "card-back-letter", CardFace.backLetter(cardKind)))
+    node.appendChild(text("span", "card-back-letter printed", CardFace.backLetter(cardKind)))
     node
 
   private[frontend] def emptySlot(cardKind: String, label: String = "")

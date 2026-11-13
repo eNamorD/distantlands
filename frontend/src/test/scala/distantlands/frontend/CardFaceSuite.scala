@@ -45,6 +45,20 @@ class CardFaceSuite extends munit.FunSuite:
       orientation = Some("face-up")))
     assert(!denizen.classList.contains("card-face-vision"))
 
+  /** What a card prints is marked, so licensed art can replace exactly
+    * that; what lies on the card in play is not (real proportions design). */
+  test("printed parts carry the printed mark and live state does not"):
+    val card = CardDetails("c", "denizen", "Sly Fox", suit = Some("beast"),
+      orientation = Some("face-up"), favor = 2, implemented = false)
+    val node = CardFace.render(card)
+    assertEquals(all(node, ".printed").map(_.getAttribute("class")
+      .split(" ").head), Vector("card-header"))
+    assertEquals(all(node, ".card-tokens.printed, " +
+      ".card-unimplemented-badge.printed"), Vector.empty)
+    val back = CardFace.render(CardDetails("hidden", "denizen",
+      "Facedown denizen", orientation = Some("face-down"), hidden = true))
+    assertEquals(all(back, ".card-back-letter.printed").size, 1)
+
   test("a face-up card shows its summary with no field names"):
     // favor and secrets restate faceUp's values so the counts read locally.
     val node = CardFace.render(faceUp.copy(favor = 2, secrets = 1))

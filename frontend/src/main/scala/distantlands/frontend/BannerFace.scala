@@ -86,8 +86,8 @@ private[frontend] object BannerFace:
     node.setAttribute("aria-label",
       s"${title(banner)}, ${side(banner.face)}, ${holds(banner)}")
     HoverTip.set(node, title(banner))
-    node.appendChild(text("span", "banner-side", side(banner.face)))
-    val header = element("span", "card-header")
+    node.appendChild(text("span", "banner-side printed", side(banner.face)))
+    val header = element("span", "card-header printed")
     val full = element("span", "card-name")
     full.appendChild(text("span", "banner-name-prefix", "Banner of the "))
     full.appendChild(dom.document.createTextNode(name))
