@@ -4,9 +4,16 @@ import distantlands.protocol.projection.ProjectionCodecSupport._
 
 /** A lineage's era score, and its Imperial role: `"chancellor"` or
   * `"citizen"`, absent for an Exile. An entry saved before roles were kept
-  * has none. */
+  * has none. `legacies` are the lineage's legacies in held order, every face
+  * shown (the Chronicle is its owner's own record); an entry saved before
+  * they were kept has none. */
 final case class ChronicleScore(lineage: String, score: Int,
-    role: Option[String] = None)
+    role: Option[String] = None,
+    legacies: Vector[ChronicleLegacy] = Vector.empty)
+
+/** A legacy a lineage holds, by its printed name, and whether it is
+  * active. */
+final case class ChronicleLegacy(name: String, active: Boolean)
 
 object ChronicleScore:
   val roles: Set[String] = Set("chancellor", "citizen")
@@ -42,6 +49,9 @@ object ChronicleEntryCodec:
       "scores" -> encoded(entry.summary.scores) { score =>
         val row = ujson.Obj("lineage" -> score.lineage, "score" -> score.score)
         score.role.foreach(role => row("role") = role)
+        if score.legacies.nonEmpty then row("legacies") = encoded(
+          score.legacies)(legacy => ujson.Obj("name" -> legacy.name,
+            "active" -> legacy.active))
         row
       },
       "foundations" -> encoded(entry.summary.foundations)(foundation =>
@@ -74,13 +84,23 @@ object ChronicleEntryCodec:
       scores <- traverse(scoreRaws, s"$summaryPath.scores") { (raw, child) =>
         for
           row <- obj(raw, child)
-          _ <- exact(row, Set("lineage", "score", "role"), child)
+          _ <- exact(row, Set("lineage", "score", "role", "legacies"), child)
           lineage <- string(row, "lineage", child)
           score <- int(row, "score", child)
           role <- optionalAbsent(row, "role", child)((raw, at) =>
             string(raw, at).filterOrElse(ChronicleScore.roles,
               ProtocolDecodeFailure.InvalidValue(at, "unknown role")))
-        yield ChronicleScore(lineage, score, role)
+          legacyRaws <- default(row, "legacies", child,
+            Vector.empty[ujson.Value])(array)
+          legacies <- traverse(legacyRaws, s"$child.legacies") { (raw, at) =>
+            for
+              legacy <- obj(raw, at)
+              _ <- exact(legacy, Set("name", "active"), at)
+              name <- string(legacy, "name", at)
+              active <- bool(legacy, "active", at)
+            yield ChronicleLegacy(name, active)
+          }
+        yield ChronicleScore(lineage, score, role, legacies)
       }
       // An entry a browser saved before foundations were kept has none.
       foundationRaws <- default(summary, "foundations", summaryPath,

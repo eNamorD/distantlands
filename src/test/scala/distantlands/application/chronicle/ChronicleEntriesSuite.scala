@@ -3,7 +3,8 @@ package distantlands.application.chronicle
 import distantlands.gameplay.chronicle.EvolvedChronicleFixture
 import distantlands.gameplay.setup.FirstGameSetupFixture.chronicle
 import distantlands.model._
-import distantlands.protocol.ChronicleFoundation
+import distantlands.catalog.holding.{IronHandCard, SeerCard}
+import distantlands.protocol.{ChronicleFoundation, ChronicleLegacy}
 
 /** Digest and summary (Chronicle browsing design, "Digest" and "Summary"). */
 class ChronicleEntriesSuite extends munit.FunSuite:
@@ -63,3 +64,12 @@ class ChronicleEntriesSuite extends munit.FunSuite:
       ChronicleFoundation(4, "normal", "Ties of Fellowship"),
       ChronicleFoundation(5, "normal", "Mob's Favor"),
       ChronicleFoundation(6, "normal", "Wandering Flame")))
+
+  test("each lineage's row names its legacies, active or dormant, in held " +
+      "order (R39)"):
+    val held = chronicle.copy(lineages = Vector(LineageState(LineageId("l1"),
+      None, Role.Exile, Vector(LegacyState(SeerCard.id, active = true),
+        LegacyState(IronHandCard.id, active = false)), Vector.empty)))
+    assertEquals(ChronicleEntries.summary(held).scores.map(_.legacies),
+      Vector(Vector(ChronicleLegacy(SeerCard.name, active = true),
+        ChronicleLegacy(IronHandCard.name, active = false))))

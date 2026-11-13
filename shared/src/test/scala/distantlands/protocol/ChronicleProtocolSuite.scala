@@ -41,6 +41,19 @@ class ChronicleProtocolSuite extends munit.FunSuite:
     saved("summary").obj.remove("foundations")
     assertEquals(ChronicleEntryCodec.decodeValue(saved, "$"), Right(entry))
 
+  test("a summary row's legacies round trip, and a row without them has " +
+      "none"):
+    val held = entry.copy(summary = entry.summary.copy(scores = Vector(
+      ChronicleScore("red-lineage", 3, legacies = Vector(
+        ChronicleLegacy("Seer", active = true),
+        ChronicleLegacy("Iron Hand", active = false))))))
+    assertEquals(roundTripped(held), Right(held))
+    val saved = ChronicleEntryCodec.encodeValue(held)
+    saved("summary")("scores")(0).obj.remove("legacies")
+    assertEquals(ChronicleEntryCodec.decodeValue(saved, "$"), Right(entry))
+    assert(!ChronicleEntryCodec.encodeValue(entry)("summary")("scores")(0)
+      .obj.contains("legacies"))
+
   test("a summary's foundation refuses an unknown face"):
     val raw = ChronicleEntryCodec.encodeValue(entry.copy(summary =
       entry.summary.copy(foundations = Vector(

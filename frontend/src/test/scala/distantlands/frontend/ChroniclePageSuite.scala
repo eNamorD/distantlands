@@ -105,6 +105,20 @@ class ChroniclePageSuite extends munit.FunSuite:
         Vector("III"))
       assertEquals(Dom.all(loaded, "button.foundation-card").size, 0)
 
+  test("a loaded entry lists its lineages, with their legacies (R39)"):
+    TestBrowser.useSynchronously(): browser =>
+      val storage = new MemoryChronicleStorage()
+      val saved = entry("Ashen Crown")
+      accepted(new ChronicleShelf(storage, ChronicleFixtures.clock).put(
+        saved.copy(summary = saved.summary.copy(scores = Vector(
+          distantlands.protocol.ChronicleScore("red-lineage", 9,
+            legacies = Vector(distantlands.protocol.ChronicleLegacy("Seer",
+              active = false))))))))
+      renderChroniclePage(browser, storage)
+      assertEquals(Dom.all(browser.byClass("chronicle-loaded").head,
+        ".chronicle-lineages li").map(_.textContent),
+        Vector("Red 9 · Seer (dormant)"))
+
   test("an entry saved before foundations were kept shows no strip"):
     TestBrowser.useSynchronously(): browser =>
       renderChroniclePage(browser, storageHolding(Some("Ashen Crown"),
