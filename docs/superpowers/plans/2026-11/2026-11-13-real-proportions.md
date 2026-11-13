@@ -1483,6 +1483,7 @@ Confirm each of these, and where one fails, correct the value named:
 | In the inspection overlay a Vision is landscape and upright; a foundation opens with its plate | the Task 2 and Task 4 rules |
 | A board decision that picks a site rings the whole row; one that picks a card rings the card; the inspect button sits in the card's lower right | `.mat-board .site` border radius; nothing else |
 | The phone pans and zooms the board as before, and Fit shows the whole mat | nothing expected; report if not |
+| Measured, not looked at: the bounding box of each face's `.card-tokens` overlaps none of `.card-header` (as the header clips it), `.legacy-goal`, `.card-power-marks`, `.card-unimplemented-badge` or `.board-option-badge`, on a banner in the shared bank and on a player board, a relic, a legacy, a dormant legacy, a denizen with a restriction banner and a long name, an unimplemented denizen with power marks, and a Replace option card (implementation ruling R4). Cases the game does not show are built in the page from the markup `CardFace.render` and `BannerFace.render` make, inside the pane that would hold them | the R4 band rules (`--marks-bottom`, `--band-bottom`, `--band-h`) |
 
 - [ ] **Step 4: Remove the check's overlays and take screenshots**
 
