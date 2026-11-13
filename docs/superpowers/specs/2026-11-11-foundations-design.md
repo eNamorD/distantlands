@@ -508,7 +508,8 @@ always took the Recent end.
 - **Offer.** Every altered face whose `alterationSources` holds no active
   legacy. Before Legacies that is every altered face, III included. No
   altered face, no question.
-- **Log.** "Restored Foundation I to Imperial Maps".
+- **Log.** "Restored Foundation I to Imperial Maps", or "Did not flip any
+  foundations" for Keep.
 - **Tests.** Each offer; the skip; the restored face reaching
   `ChronicleUpdated`; a hand-built face with an active legacy as its source
   is not offered.
@@ -524,7 +525,9 @@ always took the Recent end.
   `ChronicleUpdated`. Each foundation has its own line, since a restore
   always reaches the one normal face, and the line names the holder, as
   every Beacon decision line does: "p3 restored Foundation I to Imperial
-  Maps". Keeping writes no line.
+  Maps". Keeping every face writes "p3 did not flip any foundations"
+  (owner, 2026-11-12); with no face altered nothing is asked and nothing is
+  written.
 - **Readings taken with the plan,** approved by the owner. An active
   legacy is one that a lineage this Chronicle records, seated or in the box,
   holds active; a source legacy that no lineage holds active does not stop

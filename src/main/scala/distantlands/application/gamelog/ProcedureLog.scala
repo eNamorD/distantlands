@@ -375,7 +375,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       lines = ActionLineSource.Notes(Map(
         IntroduceNewcomers.choseSuits -> LogKind.Decision,
         IntroduceNewcomers.returned -> LogKind.Delta,
-        WelcomeStranger.keptAdviser -> LogKind.Decision) ++
+        WelcomeStranger.keptAdviser -> LogKind.Decision,
+        ShapeFoundation.keptAll -> LogKind.Decision) ++
         ShapeFoundation.restored.values.map(_ -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.beacon."), isSection = false)
     case TriggeredProcedureRef.ChronicleStars => ProcedureLog(tag = None,
