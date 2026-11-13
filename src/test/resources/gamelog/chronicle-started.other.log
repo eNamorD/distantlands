@@ -14,7 +14,7 @@
 30.0 decision 1 | [player:p1|p1] took the Beacon task
 38.0 decision 1 | [player:p2|p2] took the World task
 43.0 delta 1 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
-50.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
+46.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
 55.0 decision 1 | The Oathkeeper goal became Protection
 64.0 decision 1 | [player:p2|p2] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
 69.0 decision 1 | [player:p2|p2] kept [card:179|Threatening Roar] as a starting adviser

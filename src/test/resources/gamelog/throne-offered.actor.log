@@ -16,7 +16,7 @@
 43.0 decision 1 | [player:p1|p1] offered Citizenship to [player:p2|p2]
 47.0 delta 1 | Moved 1 Imperial warband to [site:site:broken-peaks|Broken Peaks]
 48.0 decision 1 | [player:p2|p2] accepted Citizenship
-55.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
+51.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
 60.0 decision 1 | The Oathkeeper goal became Protection
 69.0 decision 1 | [player:p2|p2] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
 74.0 decision 1 | [player:p2|p2] kept a Denizen as a starting adviser

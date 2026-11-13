@@ -48,6 +48,13 @@ class LineageScoringSuite extends munit.FunSuite:
         DistributeAmount(DecisionOptionRef.Player(p3), toP3)))))
     OathTransition(next.state, at.events ++ next.events)
 
+  /** The lines Score Lineage Points wrote, in order. */
+  private def scoreLines(events: Vector[OathEvent]): Vector[String] =
+    val keys = LineageScoring.noteKeys
+    NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone),
+      keys, events).filter(said => keys.exists(_.name == said.key))
+      .map(_.text)
+
   private def scoreOf(ready: ReadyGame, player: PlayerId): Int =
     ready.game.campaign.era.score(
       ready.game.current.player(player).get.lineage)
@@ -72,13 +79,16 @@ class LineageScoringSuite extends munit.FunSuite:
     val after = Outcomes.ready(gifting(0, 0).state)
     assertEquals(scoreOf(after, p1) - scoreOf(before, p1), 3)
 
-  test("the lines name the points scored and given"):
-    val id = ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone)
-    assertEquals(NoteText.said(id, ChronicleThroneProcedure.noteKeys,
-      gifting(1, 0).events).map(_.text).filter(_.contains("lineage point")),
-      Vector(s"${p1.value} scored 1 lineage point",
-        s"${p2.value} scored 1 lineage point",
-        s"${p1.value} gave 1 lineage point to ${p2.value}"))
+  test("the lines name the points earned, each gift and the points kept " +
+      "(R28)"):
+    assertEquals(scoreLines(gifting(1, 0).events), Vector(
+      "p1 scored 3 lineage points",
+      "p1 gave up 2 points to give p2 1 point.",
+      "p1 keeps 1 point"))
+
+  test("the earned total is written before the gift question"):
+    assertEquals(scoreLines(atGifts.events),
+      Vector("p1 scored 3 lineage points"))
 
   /** p1, the Chancellor, with the Empire ruling Ancient City (two Beast
     * denizens and a Nomad edifice) and Broken Peaks (a ruined Beast
@@ -114,11 +124,6 @@ class LineageScoringSuite extends munit.FunSuite:
   test("a winner with no legacy has no bonus"):
     assertEquals(bonusOf(empireWithCards), Vector.empty)
 
-  /** The lines Score Lineage Points wrote, the winner's first. */
-  private def scoreLines(events: Vector[OathEvent]): Vector[String] =
-    NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone),
-      ChronicleThroneProcedure.noteKeys, events).map(_.text)
-      .filter(_.contains("lineage point"))
 
   /** p1 holding `legacies` over the Empire's cards, parked on the gifts. */
   private def holdingAtGifts(legacies: distantlands.catalog.Legacy*)(
@@ -153,21 +158,25 @@ class LineageScoringSuite extends munit.FunSuite:
     assertEquals(scoreLines(giftingOn(at, 0, 0).events), Vector(
       "p1 scored 7 lineage points (3 base, 3 from Beast, 1 from Nomad)"))
 
-  test("after gifts the line names the kept points and what was given " +
-      "(R28)"):
+  test("after a gift the lines name it and the points kept (R28)"):
     val at = holdingAtGifts(TheNeedleCard)
-    assertEquals(scoreLines(giftingOn(at, 1, 0).events).head,
-      "p1 scored 4 lineage points (3 base, 3 from Beast, less 2 given)")
+    assertEquals(scoreLines(giftingOn(at, 1, 0).events), Vector(
+      "p1 scored 6 lineage points (3 base, 3 from Beast)",
+      "p1 gave up 2 points to give p2 1 point.",
+      "p1 keeps 4 points"))
 
-  test("a winner who gives every point away records nothing, and the line " +
-      "still says so (R29)"):
+  test("a winner who gives every point away records nothing and keeps 0 " +
+      "points (R29)"):
     val at = holdingAtGifts(TheNeedleCard)
     val done = giftingOn(at, 2, 1)
     assertEquals(scoredByP1(at, done.events), Vector.empty)
     assertEquals(scoreOf(Outcomes.ready(done.state), p1),
       scoreOf(Outcomes.ready(at.state), p1))
-    assertEquals(scoreLines(done.events).head,
-      "p1 scored 0 lineage points (3 base, 3 from Beast, less 6 given)")
+    assertEquals(scoreLines(done.events), Vector(
+      "p1 scored 6 lineage points (3 base, 3 from Beast)",
+      "p1 gave up 4 points to give p2 2 points.",
+      "p1 gave up 2 points to give p3 1 point.",
+      "p1 keeps 0 points"))
 
   test("bandit sites and relics at the winner's sites add nothing"):
     val table = empireWithCards.legacy(p1, TheNeedleCard)

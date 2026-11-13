@@ -49,9 +49,13 @@ class OfferCitizenshipSuite extends munit.FunSuite:
     answer(step, by, OfferCitizenship.answerDecisionId(by),
       ChooseOneAnswer(ref))
 
+  /** Offer Citizenship's own lines: the Throne writes later steps' lines,
+    * Score Lineage Points' total among them, in the same walk. */
   private def lines(events: Vector[OathEvent]): Vector[String] =
+    val keys = OfferCitizenship.noteKeys
     NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone),
-      OfferCitizenship.noteKeys, events).map(_.text)
+      keys, events).filter(said => keys.exists(_.name == said.key))
+      .map(_.text)
 
   /** The Throne answers still open, in seat order. */
   private def openAnswers(step: OathTransition): Vector[Decide] =

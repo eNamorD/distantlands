@@ -192,14 +192,22 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       NoteArg.Number(3), shares),
       s"${rival.value} scored 7 lineage points (3 base, 3 from Beast, 1 " +
         "from Nomad)")
+    assertEquals(kindOf(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.scoredWithBonus), LogKind.Delta)
+
+  test("a gift and the points kept read in points (R28)"):
+    val blue = PlayerId("p3")
     assertEquals(said(TriggeredProcedureRef.ChronicleThrone,
-      LineageScoring.scoredWithBonusLessGifts, NoteArg.Player(rival),
-      points(3), NoteArg.Number(3), shares, NoteArg.Number(4)),
-      s"${rival.value} scored 3 lineage points (3 base, 3 from Beast, 1 " +
-        "from Nomad, less 4 given)")
-    Vector(LineageScoring.scoredWithBonus,
-      LineageScoring.scoredWithBonusLessGifts).foreach(key => assertEquals(
-        kindOf(TriggeredProcedureRef.ChronicleThrone, key), LogKind.Delta))
+      LineageScoring.gaveUp, NoteArg.Player(rival), NoteArg.Number(4),
+      NoteArg.Player(blue), NoteArg.Number(2)),
+      s"${rival.value} gave up 4 points to give ${blue.value} 2 points.")
+    assertEquals(said(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.keeps, NoteArg.Player(rival), NoteArg.Number(3)),
+      s"${rival.value} keeps 3 points")
+    assertEquals(kindOf(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.gaveUp), LogKind.Decision)
+    assertEquals(kindOf(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.keeps), LogKind.Delta)
 
   test("a Negotiation's opening lines post at Action"):
     assertEquals(kindOf(ActionRef.Negotiation,
