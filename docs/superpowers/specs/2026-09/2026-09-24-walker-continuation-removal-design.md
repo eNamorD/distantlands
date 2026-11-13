@@ -26,7 +26,7 @@
 > commits `f5c1508c..da150149` (thirteen commits; see **Delivery** for the
 > actual shape, which is not the eight this document originally estimated).
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **parked decision**,
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **parked decision**,
 **form** and **surface**.
 
 ## Purpose

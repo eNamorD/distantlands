@@ -1,6 +1,6 @@
 # Negotiation on the Procedure Walker
 
-> Status: implemented by `docs/superpowers/plans/2026-09/2026-09-19-negotiation-walker.md`. Extends the [procedure walker design](2026-09-05-procedure-walker-design.md), closes the "concurrent multi-owner decisions" open item of the [walker ownership and phases design](2026-09-12-walker-ownership-and-phases-design.md), and follows the [Challenge walker design](2026-09-19-challenge-walker-design.md), whose `ChooseMany` this slice widens. Rules content stays as in [All-Exile Negotiation](../../architecture/all-exile-negotiation.md), which this slice rewrites. This revision replaces the earlier draft that kept the deal in `PendingProcedure.Negotiation`.
+> Status: implemented by `docs/superpowers/plans/2026-09/2026-09-19-negotiation-walker.md`. Extends the [procedure walker design](2026-09-05-procedure-walker-design.md), closes the "concurrent multi-owner decisions" open item of the [walker ownership and phases design](2026-09-12-walker-ownership-and-phases-design.md), and follows the [Challenge walker design](2026-09-19-challenge-walker-design.md), whose `ChooseMany` this slice widens. Rules content stays as in [All-Exile Negotiation](../../../architecture/all-exile-negotiation.md), which this slice rewrites. This revision replaces the earlier draft that kept the deal in `PendingProcedure.Negotiation`.
 
 ## Goal and scope
 

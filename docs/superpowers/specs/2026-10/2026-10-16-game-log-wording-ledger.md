@@ -20,7 +20,7 @@ _(none)_
 
 ## Fixed
 
-Settled by the [wording audit](../../testing/audits/game-log-wording-audit.md)
+Settled by the [wording audit](../../../testing/audits/game-log-wording-audit.md)
 of 2026-11-02, with the owner's answers to its questions.
 
 - **`CampaignNotes.skipped` and `CampaignNotes.nothingToAttack`** now read

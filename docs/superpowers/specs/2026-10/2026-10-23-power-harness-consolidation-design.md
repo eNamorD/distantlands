@@ -7,7 +7,7 @@
 > records the numbers, the two shapes considered, and why the three
 > harnesses keep their names.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **table** and
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **table** and
 **situation**. The testing doctrine is the `scala-testing` skill: DAMP over
 DRY, every test earns its place, a test states every fact it relies on.
 

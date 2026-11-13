@@ -56,7 +56,7 @@ Tabletop Simulator (TTS) string.
   score is its latest entry's `totalScore`, or 0 if it has none. The Throne's
   Score Lineage Points step appends the game's `EraGame`, and `endingRole` is
   the player's role when the score is recorded, after the Sun has crowned
-  ([ruling 19](../../rules/ambiguities.md#chronicle-rulings)). The game number is
+  ([ruling 19](../../../rules/ambiguities.md#chronicle-rulings)). The game number is
   `games.size + 1`. Resetting `games` at an era's end belongs to the Eras item.
 - **Digest.** SHA-256 of the canonical JSON, hex encoded.
 

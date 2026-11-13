@@ -7,7 +7,7 @@
 > section of the [game log design](../2026-09/2026-09-25-game-log-design.md). It was
 > implemented 2026-10-15.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) and the game log design define
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) and the game log design define
 **entry**, **headline**, **line**, **span** and **viewer**.
 
 ## Purpose

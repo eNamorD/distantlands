@@ -7,7 +7,7 @@ follow-ups** item "Move Travel onto board decisions" and unblocks Way Station
 It also retires the older board targets, whose last user is Travel, and makes
 every hidden option explain itself on hover instead of in the Game Log.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **parked decision**,
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **parked decision**,
 **draft set** and **situation**. This design adds **start fact**.
 
 ## Goal

@@ -8,7 +8,7 @@
 > which settled a neighbouring question the opposite way, for reasons that do
 > not all carry over. Items 1 and 3 landed on 2026-10-18.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **phase menu**, **parked
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **phase menu**, **parked
 decision** and **answered options**.
 
 ## Decision

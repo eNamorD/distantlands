@@ -68,7 +68,7 @@ next release's notes (written when that release is cut).
 Saved data needs nothing: game events carry their own wire type tags and
 Chronicle JSON carries a numeric `"format"`, and neither holds a package
 name. A database moved by hand opens unchanged, within the alpha rule in
-[releases](../../operations/releases.md#versions-and-compatibility).
+[releases](../../../operations/releases.md#versions-and-compatibility).
 
 ### Unchanged
 
@@ -181,7 +181,7 @@ maintainer sets its visibility to public. Old images stay where they are.
 rename:
 
 - Stop the server and back up the database directory, per the
-  [data policy](../../operations/data-policy.md).
+  [data policy](../../../operations/data-policy.md).
 - Rename every `OATH_*` variable to `DLQ_*`.
 - Move the data to its new path. HSQLDB names its files after the last
   segment of the database path, so the default path's files

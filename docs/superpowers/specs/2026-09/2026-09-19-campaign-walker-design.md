@@ -1,6 +1,6 @@
 # Campaign on the Procedure Walker
 
-> Status: implemented by [the plan](../../plans/2026-09/2026-09-19-campaign-walker.md). See **Implementation notes** at the end for where the build differs from this design. Extends the [procedure walker design](2026-09-05-procedure-walker-design.md), the [declarative decisions design](2026-09-10-declarative-walker-decisions-design.md) and the [ownership design](2026-09-12-walker-ownership-and-phases-design.md), and follows the recipe of the Challenge and Negotiation ports ([Challenge](2026-09-19-challenge-walker-design.md), [Negotiation](2026-09-19-negotiation-walker-design.md)). Rules content stays as in [bounded-campaign.md](../../architecture/bounded-campaign.md) except where **Rule changes** below says otherwise.
+> Status: implemented by [the plan](../../plans/2026-09/2026-09-19-campaign-walker.md). See **Implementation notes** at the end for where the build differs from this design. Extends the [procedure walker design](2026-09-05-procedure-walker-design.md), the [declarative decisions design](2026-09-10-declarative-walker-decisions-design.md) and the [ownership design](2026-09-12-walker-ownership-and-phases-design.md), and follows the recipe of the Challenge and Negotiation ports ([Challenge](2026-09-19-challenge-walker-design.md), [Negotiation](2026-09-19-negotiation-walker-design.md)). Rules content stays as in [bounded-campaign.md](../../../architecture/bounded-campaign.md) except where **Rule changes** below says otherwise.
 
 ## Goal and scope
 

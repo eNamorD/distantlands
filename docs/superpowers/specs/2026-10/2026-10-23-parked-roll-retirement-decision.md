@@ -6,7 +6,7 @@
 > closed two leftovers that earlier records had named, and widened the
 > frontend gate the scan found narrower than its document (candidate H).
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **parked decision**,
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **parked decision**,
 **form** and **roll feedback**.
 
 ## The evidence

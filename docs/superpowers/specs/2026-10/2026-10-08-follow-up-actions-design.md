@@ -17,7 +17,7 @@ under the new names: `FollowUp` is
 `QueuedProcedure`, `followUps` is `queue`, `walkerFollowUp` is `walkerEntry`,
 `QueueFollowUp` is `QueueProcedure`, and `FollowUpStarted` is
 `ProcedureDequeued`. The
-[architecture note](../../architecture/follow-up-actions.md) holds the
+[architecture note](../../../architecture/follow-up-actions.md) holds the
 current wiring.
 
 ## Goal

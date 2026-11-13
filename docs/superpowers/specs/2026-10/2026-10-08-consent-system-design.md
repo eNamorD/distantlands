@@ -3,7 +3,7 @@
 **Status:** designed 2026-10-08. It covers the roadmap's **Phase - Consent
 system**. All four slices are implemented ([slice 1 plan](../../plans/2026-10/2026-10-09-consent-slice1.md), [slice 2 plan](../../plans/2026-10/2026-10-09-consent-slice2.md), [slice 3 plan](../../plans/2026-10/2026-10-09-consent-slice3.md), [slice 4 plan](../../plans/2026-10/2026-10-09-consent-slice4.md)), and their plans' decisions are folded in below.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **parked decision**.
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **parked decision**.
 The [undo design](2026-10-06-undo-design.md) defines **command batch**,
 **issuer**, **barrier** and **void marker**. This design adds **waivable
 power**, **granter**, **askable option**, **consent request**, **consent

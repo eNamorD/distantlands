@@ -7,7 +7,7 @@
 > settles the shape of the fix. It supersedes D's proposed direction. The migration and
 > the check landed 2026-10-15.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **parked decision**,
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **parked decision**,
 **form**, **surface** and **answered options**. The three-table form/answer tag
 separation recorded in
 [the decision form tag separation decision](../2026-09/2026-09-25-decision-form-tag-separation-decision.md)

@@ -10,7 +10,7 @@
 > changing it. Slices 1 to 4 landed by
 > 2026-10-17.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **note**, **note key**,
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **note**, **note key**,
 **wording** and **declared set**. This design widens the first three from
 "a power" to "a power, a game rule or a procedure", and adds one entry for
 the boundary ruling 2 below draws.

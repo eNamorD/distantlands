@@ -7,7 +7,7 @@
 > which types the question half of the projection wire. No implementation is
 > authorized by this document alone.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **form** and **parked
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **form** and **parked
 decision**.
 
 ## Decision

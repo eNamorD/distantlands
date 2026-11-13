@@ -4,7 +4,7 @@
 kills at their moment** under **Phase - Catalog batch 8**. It builds on
 slice 13 of [catalog batch 8](2026-10-12-catalog-batch-8-design.md) (Wild
 Allies and Captains), whose origin split question it moves, and on the
-[bounded Campaign](../../architecture/bounded-campaign.md) step order.
+[bounded Campaign](../../../architecture/bounded-campaign.md) step order.
 
 ## Goal
 
@@ -178,7 +178,7 @@ Old replays need no support.
 
 ## Docs
 
-- [Bounded Campaign](../../architecture/bounded-campaign.md): the step
+- [Bounded Campaign](../../../architecture/bounded-campaign.md): the step
   diagram gains the two windows, and "Losses and resolution" is rewritten as
   above.
 - [Catalog batch 8 rulings](2026-10-12-catalog-batch-8-rulings.md): slice
@@ -187,7 +187,7 @@ Old replays need no support.
 - [Catalog batch 4 rulings](2026-10-05-catalog-batch-4-rulings.md): "On a
   defeat today, the attacker loses skulls, sacrifice and half the
   surviving force" gains a note that each dies at its moment since 13b.
-- [Roadmap](../../ROADMAP.md): 13b links this design, its Bear Traps
+- [Roadmap](../../../ROADMAP.md): 13b links this design, its Bear Traps
   claim is corrected, and it is marked done when the plan lands.
 
 ## Departures

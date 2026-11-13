@@ -513,7 +513,7 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
   later games (R26), stored cards at the remaining sites (R27), the Empire
   always holds a site (R28), the Chancellor's Reliquary pick (R29) and a
   short purple supply at setup (R30); see
-  [ambiguities.md](../../rules/ambiguities.md#empire-rulings).
+  [ambiguities.md](../../../rules/ambiguities.md#empire-rulings).
 
 ## Testing
 

@@ -6,7 +6,7 @@ session-drafts spec's option 3 (`2026-09-25-session-drafts-design.md`,
 "Follow-up"); session identity and polling are the second move and get their
 own spec.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **draft set** and
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **draft set** and
 **modifier flow**. This spec adds one sentence to the modifier flow entry
 naming a **flow step** (a move that keeps the viewer in the flow) and a
 **flow exit** (a move that leaves it).

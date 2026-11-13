@@ -7,7 +7,7 @@
 > whether a deferred roll is hidden. The predicate's case list is untouched
 > here.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **barrier**, **command
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **barrier**, **command
 batch** and **roll feedback**.
 
 ## What the review found

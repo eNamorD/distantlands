@@ -8,7 +8,7 @@ of §4 (`subjectCards`) and §7 (generalised roll payload) in
 have merged; both edit `WalkerPanelSupport` and `ActionDecisionRenderer` in
 regions this slice moves.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **parked decision**,
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **parked decision**,
 **form** and **surface**.
 
 ## Purpose

@@ -5,7 +5,7 @@ move of the session-drafts spec's option 3 (`2026-09-25-session-drafts-design.md
 "Follow-up"; `2026-09-25-modifier-flow-module-design.md` was the first). Two
 moves are behavior-preserving; two declared fixes follow them.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **draft set** and
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **draft set** and
 **modifier flow**. This spec adds **table session** to the glossary's "Table
 session" section.
 

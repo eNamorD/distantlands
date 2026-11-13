@@ -1,6 +1,6 @@
 # Card Shape and Inspection
 
-> Status: implemented 2026-09-22. Plan: [2026-09-22-card-shape-and-inspection.md](../../plans/2026-09/2026-09-22-card-shape-and-inspection.md). Verification record: [card-shape-verification.md](../../testing/card-shape-verification.md). The deferred items at the end each still need their own design.
+> Status: implemented 2026-09-22. Plan: [2026-09-22-card-shape-and-inspection.md](../../plans/2026-09/2026-09-22-card-shape-and-inspection.md). Verification record: [card-shape-verification.md](../../../testing/card-shape-verification.md). The deferred items at the end each still need their own design.
 
 ## Goal and scope
 
@@ -15,7 +15,7 @@ In scope:
 - Rendering the catalog's `[token]` markup as inline-SVG glyphs inside that overlay, and the suit colour palette they need.
 - Removing `tabindex="0"` from `.decision-option`.
 
-Out of scope, recorded as follow-ups at the end: suit and restriction icons on the card face, restructuring player areas and sites beyond what fixed boxes force, porting the map to the `haunt-roll-fail` canvas approach, and the polling change-check (already recorded in [phase-5-follow-ups.md](../../operations/phase-5-follow-ups.md)).
+Out of scope, recorded as follow-ups at the end: suit and restriction icons on the card face, restructuring player areas and sites beyond what fixed boxes force, porting the map to the `haunt-roll-fail` canvas approach, and the polling change-check (already recorded in [phase-5-follow-ups.md](../../../operations/phase-5-follow-ups.md)).
 
 ## How the rulings were gathered
 
@@ -229,4 +229,4 @@ Browser verification follows the pattern of the existing panel UI record: an iso
 - **Suit and restriction icons on the card face.** Deferred until the boxes are settled and the face's real budget is measured.
 - **Player area and site restructuring.** This slice restructures only what fixed boxes force. A fuller rework of how player areas and sites are laid out is its own design.
 - **Map implementation.** The product owner is inclined to adopt `haunt-roll-fail`'s canvas map approach. Deferred, and unaffected by this design beyond the pinned font size.
-- **Polling change-check.** Recorded separately in [phase-5-follow-ups.md](../../operations/phase-5-follow-ups.md).
+- **Polling change-check.** Recorded separately in [phase-5-follow-ups.md](../../../operations/phase-5-follow-ups.md).

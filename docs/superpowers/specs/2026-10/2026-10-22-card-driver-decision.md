@@ -7,7 +7,7 @@
 > This records why the second half — one shared driver for "run this card's
 > power to its ruling" — is not built. No code changed.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **table**,
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **table**,
 **situation** and **first-game input**.
 
 ## What the review proposed

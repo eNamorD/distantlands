@@ -7,7 +7,7 @@
 > frontend." The tag separation it depends on is recorded in the
 > [decision form tag separation decision](2026-09-25-decision-form-tag-separation-decision.md).
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **parked decision**,
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **parked decision**,
 **form**, **surface** and **draft set**. This spec sharpens **form**.
 
 ## Purpose

@@ -5,7 +5,7 @@ exceptions (see "Behavior changes"). It is candidate D of the 2026-09-22
 architecture review, taken as option 1 of three; option 3 (decomposing
 `ServerModeUi.start`) is the recorded follow-up.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **draft set**, **modifier
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **draft set**, **modifier
 flow**, **parked decision**, **surface** and **board draft**.
 
 ## Purpose

@@ -6,9 +6,9 @@
 > by it; the [card classes design](2026-10-01-card-classes-design.md) had put
 > the retirement out of its scope.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **modifier
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **modifier
 decision**, the one reader that keeps `PowerWindow.key` alive; the
-[power resolution](../../architecture/rule-resolution.md) page describes
+[power resolution](../../../architecture/rule-resolution.md) page describes
 the walker and phase catalogs that remain.
 
 ## What was there

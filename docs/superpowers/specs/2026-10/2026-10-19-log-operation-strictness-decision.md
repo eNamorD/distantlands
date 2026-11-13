@@ -7,7 +7,7 @@
 > reach it. That posture is untouched here. The strict fold landed on
 > 2026-10-19, after the payload move it sequences first.
 
-Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **command batch**, **void
+Vocabulary: [CONTEXT.md](../../../../CONTEXT.md) defines **command batch**, **void
 marker** and **taken-back group**.
 
 ## What the review found, and what it got wrong
