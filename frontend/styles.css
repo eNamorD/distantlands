@@ -401,10 +401,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   border-radius: 4px; font-size: 1.1rem; font-weight: 700; }
 .visions-drawn-label { display: flex; align-items: center;
   color: var(--parchment-dim); font-family: Georgia, serif; line-height: 1.1; }
-.vision-marker { display: flex; align-items: flex-end;
-  justify-content: center; padding-bottom: 8%; pointer-events: none; }
-.vision-marker::after { content: ""; width: 46%; aspect-ratio: 1;
-  border-radius: 50%; background: var(--brass-bright); }
+.vision-marker { pointer-events: none; }
+/* The marker is the cell's box; its dot sits near the cell's foot, under
+   the number the cell prints. */
+.vision-marker::after { content: ""; position: absolute; bottom: 8%;
+  left: 27%; width: 46%; aspect-ratio: 1; border-radius: 50%;
+  background: var(--brass-bright); }
 
 /* A favor bank on the mat's pair of circles: the suit, the count, favor. */
 .mat-board .favor-bank { padding: 0 6px; border-radius: 999px;
@@ -897,6 +899,10 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   --band-bottom: calc(var(--marks-bottom) + 1.65em); }
 :is(.card-face-relic, .card-face-legacy):not(:has(> .card-power-marks)) {
   --band-bottom: calc(var(--marks-bottom) - 0.05em); }
+/* A knowable card's hover summary holds its own marks and tokens, so the
+   summary sets the band above its marks as the face would. */
+.card-hover-summary:has(> .card-power-marks) {
+  --band-bottom: calc(var(--marks-bottom) + 1.65em); }
 .card-face:has(> .card-unimplemented-badge) {
   --marks-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
 .card-face.board-option-replace { --marks-bottom: calc(0.35em + 1.6em); }
