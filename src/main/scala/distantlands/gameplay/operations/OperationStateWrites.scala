@@ -153,5 +153,8 @@ private[operations] object OperationStateWrites:
     case CardContainer.SuitedReserve(suit) => Location.SuitedReserve(suit)
     case CardContainer.Lineage(lineage, LineageCardArea.StartingAdvisers) =>
       Location.StartingAdvisers(lineage)
+    case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
+      Location.Legacies(lineage)
+    case CardContainer.PublicLegacies => Location.PublicLegacies
     case _: CardContainer.AtlasSite => Location.Atlas
     case _ => Location.Atlas

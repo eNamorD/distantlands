@@ -94,7 +94,9 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       Location.CardGathering,
       Location.NewlyDispossessed,
       Location.SuitedReserve(Suit.Beast),
-      Location.StartingAdvisers(LineageId("lineage")))
+      Location.StartingAdvisers(LineageId("lineage")),
+      Location.Legacies(LineageId("lineage")),
+      Location.PublicLegacies)
     // `PayCost` carries a bare `Location`, so it exercises each variant
     // without the stack-position wrapper or `Move`'s from/to constraints.
     val events = locations.map(location =>

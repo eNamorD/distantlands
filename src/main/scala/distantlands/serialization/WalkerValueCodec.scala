@@ -179,6 +179,9 @@ private[serialization] trait WalkerValueCodec extends PositionWire:
       "suit" -> suit.key)
     case Location.StartingAdvisers(lineage) => ujson.Obj(
       "kind" -> "starting-advisers", "lineage" -> lineage.value)
+    case Location.Legacies(lineage) => ujson.Obj(
+      "kind" -> "legacies", "lineage" -> lineage.value)
+    case Location.PublicLegacies => ujson.Obj("kind" -> "public-legacies")
 
   protected final def decodeLocation(value: ujson.Value,
       path: String): Either[WireError, Location] = value("kind").str match
@@ -212,6 +215,9 @@ private[serialization] trait WalkerValueCodec extends PositionWire:
       .map(Location.SuitedReserve.apply)
     case "starting-advisers" =>
       Right(Location.StartingAdvisers(LineageId(value("lineage").str)))
+    case "legacies" =>
+      Right(Location.Legacies(LineageId(value("lineage").str)))
+    case "public-legacies" => Right(Location.PublicLegacies)
     case other => Left(InvalidValue(s"$path.kind",
       s"unknown recorded walker location '$other'"))
 

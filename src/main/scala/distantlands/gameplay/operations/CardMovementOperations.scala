@@ -61,8 +61,11 @@ private[operations] object CardMovementOperations:
       "non-stack destination cannot specify top or bottom"
     ))
 
+  /** The legacy deck is derived and keeps no order (Legacies design, ruling
+    * 3), so a move into it names no top or bottom. */
   private def isStack(location: Location): Boolean = location match
-    case _: Location.Deck | _: Location.RegionalDiscard => true
+    case Location.Deck(deck) => deck != CardDeck.Legacy
+    case _: Location.RegionalDiscard => true
     case _ => false
 
   private final case class ResolvedTransfer(
@@ -150,6 +153,9 @@ private[operations] object CardMovementOperations:
         else Some(InvalidDestination(transfer.piece, destination))
       case _: Location.SuitedReserve | _: Location.StartingAdvisers =>
         if id.isInstanceOf[DenizenId] then None
+        else Some(InvalidDestination(transfer.piece, destination))
+      case _: Location.Legacies | Location.PublicLegacies =>
+        if id.isInstanceOf[LegacyId] then None
         else Some(InvalidDestination(transfer.piece, destination))
       case _: Location.Site => id match
         case _: DenizenId | _: EdificeId | _: RelicId =>
@@ -272,6 +278,13 @@ private[operations] object CardMovementOperations:
     case CardContainer.NewlyDispossessed => Right(ready.updateCurrent(current =>
       current.copy(newlyDispossessed =
         current.newlyDispossessed.filterNot(_ == located.id))))
+    case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
+      Right(ready.updateCampaign(campaign => campaign.copy(lineages =
+        campaign.lineages.updatedWith(lineage)(_.map(state => state.copy(
+          legacies = state.legacies.filterNot(_.id == located.id)))))))
+    case CardContainer.PublicLegacies => updateCommonCards(ready)(cards =>
+      cards.copy(publicLegacies =
+        cards.publicLegacies.filterNot(_ == located.id)))
     case CardContainer.SuitedReserve(suit) => Right(ready.updateCampaign(
       campaign => campaign.copy(suitedReserves = campaign.suitedReserves
         .updated(suit, campaign.suitedReserves.getOrElse(suit, Vector.empty)
@@ -364,6 +377,22 @@ private[operations] object CardMovementOperations:
                   id.asInstanceOf[DenizenId],
                   transfer.resultingOrientation.getOrElse(
                     Orientation.FaceDown), Tokens.empty)))))))
+      // A legacy keeps its face unless the move turns it; one with no face
+      // yet, from the public row, enters dormant unless turned faceup.
+      case Location.Legacies(lineage) =>
+        val legacy = original.state match
+          case Some(state: LegacyState) => transfer.resultingOrientation
+            .fold(state)(face => state.copy(active = face == Orientation.FaceUp))
+          case _ => LegacyState(id.asInstanceOf[LegacyId],
+            active = transfer.resultingOrientation.contains(Orientation.FaceUp))
+        ready.game.campaign.lineages.get(lineage).toRight(
+          InvalidDestination(transfer.piece, transfer.to.location)).map(state =>
+          ready.updateCampaign(campaign => campaign.copy(lineages =
+            campaign.lineages.updated(lineage,
+              state.copy(legacies = state.legacies :+ legacy)))))
+      case Location.PublicLegacies => Right(ready.updateCurrent(current =>
+        current.copy(commonCards = current.commonCards.copy(publicLegacies =
+          current.commonCards.publicLegacies :+ id.asInstanceOf[LegacyId]))))
       case Location.SharedBank => ensureEmptyTokens(original.state, id)
         .map(_ => ready)
       case Location.Site(site) => adjustedState.flatMap:

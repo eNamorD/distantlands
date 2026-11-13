@@ -30,6 +30,10 @@ object Location:
   final case class SuitedReserve(suit: Suit) extends Location
   /** The facedown starting advisers a lineage keeps for the next game. */
   final case class StartingAdvisers(lineage: LineageId) extends Location
+  /** A lineage's legacies, active (faceup) or dormant (facedown). */
+  final case class Legacies(lineage: LineageId) extends Location
+  /** The Public Ambitions row of faceup legacies. */
+  case object PublicLegacies extends Location
 
   private[model] def ownedBy(location: Location,
       player: PlayerId): Boolean = location match
