@@ -1,7 +1,8 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.{ArbiterCard, IronHandCard, RivalCard,
-  SeerCard}
+import distantlands.catalog.holding.{ArbiterCard, ChroniclerCard,
+  IronHandCard, PeacemakerCard, RivalCard, SeerCard, SteadfastCard,
+  TheNeedleCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
@@ -213,3 +214,26 @@ class OfferCitizenshipSuite extends munit.FunSuite:
     assertEquals(legaciesOf(capped, p2).map(_.id),
       Vector(IronHandCard.id, RivalCard.id, ArbiterCard.id))
     assert(legaciesOf(capped, p2).forall(_.active))
+
+  test("two Exiles who accept in reverse seat order are each capped, in " +
+      "seat order"):
+    val table = exilesHoldSites.legacy(p2, IronHandCard).legacy(p2, SeerCard)
+      .legacy(p2, RivalCard).legacy(p2, ArbiterCard, active = false)
+      .legacy(p3, SteadfastCard).legacy(p3, ChroniclerCard)
+      .legacy(p3, PeacemakerCard).legacy(p3, TheNeedleCard, active = false)
+    val joined = replied(replied(offered(throneStarted(table), p2, p3), p3,
+      OfferCitizenship.accept), p2, OfferCitizenship.accept)
+    val first = ChronicleWalk.parked(joined.state).get
+    assertEquals(first.decisionId, OfferCitizenship.capDecisionId(p2))
+    val capped2 = answer(joined, p2, first.decisionId, ChooseManyAnswer(
+      Vector(DecisionOptionRef.Legacy(SeerCard.id))))
+    val second = ChronicleWalk.parked(capped2.state).get
+    assertEquals(second.decisionId, OfferCitizenship.capDecisionId(p3))
+    val capped3 = answer(capped2, p3, second.decisionId, ChooseManyAnswer(
+      Vector(DecisionOptionRef.Legacy(ChroniclerCard.id))))
+    assertEquals(legaciesOf(capped3, p2).map(_.id),
+      Vector(IronHandCard.id, RivalCard.id, ArbiterCard.id))
+    assertEquals(legaciesOf(capped3, p3).map(_.id),
+      Vector(SteadfastCard.id, PeacemakerCard.id, TheNeedleCard.id))
+    assert((legaciesOf(capped3, p2) ++ legaciesOf(capped3, p3))
+      .forall(_.active))

@@ -1,7 +1,8 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.holding.{AncestralLandsCard, ArbiterCard,
-  ChroniclerCard, GoldenKeyCard, GreatArchitectCard, IronHandCard,
+  ChroniclerCard, CircleOfSwordsCard, GoldenKeyCard, GreatArchitectCard,
+  IronHandCard,
   KeeperOfOrderCard,
   MatchmakerCard, PeacemakerCard, RivalCard, SeerCard, SteadfastCard,
   WealthyCard}
@@ -276,3 +277,42 @@ class ResolveLegaciesSuite extends munit.FunSuite:
       ResolveLegacies.crownCapDecisionId(p1)))
     assertEquals(legaciesOf(run.ready, p1).count(_.active), 3)
     assertEquals(legaciesOf(run.ready, p1).size, 3)
+
+  /** p2 the Chancellor and p3 a Citizen, the Empire ruling the most sites,
+    * with `row` in the Public Ambitions row; each tie answered by
+    * `chosen`. */
+  private def tiedRow(row: Seq[distantlands.catalog.Legacy],
+      chosen: Map[LegacyId, PlayerId])(using munit.Location): Sun =
+    sun(won.imperial(p2, p3).warbandsAt(AncientCitySite, p2, 1)
+      .publicLegacies(row*), {
+      case decide if chosen.keySet.exists(id =>
+          decide.decisionId == ResolveLegacies.publicDecisionId(id)) =>
+        val id = chosen.keySet.find(id =>
+          decide.decisionId == ResolveLegacies.publicDecisionId(id)).get
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(chosen(id))) })
+
+  test("two public ties in a row are each asked and each resolved"):
+    val run = tiedRow(Vector(IronHandCard, CircleOfSwordsCard), Map(
+      IronHandCard.id -> p3, CircleOfSwordsCard.id -> p2))
+    assertEquals(legaciesOf(run.ready, p3),
+      Vector(LegacyState(IronHandCard.id, active = true)))
+    assertEquals(legaciesOf(run.ready, p2),
+      Vector(LegacyState(CircleOfSwordsCard.id, active = true)))
+
+  test("a public tie after a returned legacy is asked and resolved"):
+    // Nobody holds the People's Favor, so Matchmaker returns to the deck.
+    val run = tiedRow(Vector(MatchmakerCard, IronHandCard),
+      Map(IronHandCard.id -> p3))
+    assert(inDeck(run.ready, MatchmakerCard.id))
+    assertEquals(legaciesOf(run.ready, p3),
+      Vector(LegacyState(IronHandCard.id, active = true)))
+
+  test("a row of nothing but ties asks each in row order"):
+    val row = Vector(IronHandCard, CircleOfSwordsCard, SteadfastCard)
+    val run = tiedRow(row, row.map(_.id -> p3).toMap)
+    assertEquals(run.asked.map(_.decisionId).filter(_.startsWith(
+      "chronicle.sun.public-legacy.")),
+      row.map(card => ResolveLegacies.publicDecisionId(card.id)))
+    assertEquals(legaciesOf(run.ready, p3).map(_.id), row.map(_.id))
+    assertEquals(run.ready.game.current.commonCards.publicLegacies,
+      Vector.empty)
