@@ -42,48 +42,14 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-The plan follows the recommendation for each; a ruling that differs
-changes the named task.
-
-1. **The winner's line when they give points away** (Task 3). Today the
-   line names what the winner keeps ("p1 scored 1 lineage point", then
-   "p1 gave 1 lineage point to p2"), and the journal records the kept
-   points. With a bonus, the kept amount and the breakdown no longer sum.
-   Options: (a) the kept amount, with the breakdown ending in what was
-   given: "Blue scored 3 lineage points (3 base, 3 from Beast, 1 from
-   Nomad, less 4 given)"; (b) the earned total, "Blue scored 7 lineage
-   points (3 base, 3 from Beast, 1 from Nomad)", and the gift lines after
-   it, though the era scorepad records 3; (c) two lines, "Blue earned 7
-   lineage points (...)" and the existing kept line. Recommendation: (a),
-   whose numbers sum to what the scorepad records. With no bonus the line
-   stays as it is today, gifts or not.
-2. **A winner who gives every point away** (Task 3). With a bonus the
-   total can be even and every point given (7 is odd, but 8 gives 4 and
-   keeps 0). Today no line is written for a winner who keeps 0, and
-   `LineagePointsScored` refuses 0. Recommendation: no operation, but the
-   line is still written, "Blue scored 0 lineage points (3 base, 5 from
-   Beast, less 8 given)", so the breakdown is shown.
-3. **How the line carries the shares** (Task 2). A note's template is
-   fixed, and the number of shares is not. Options: (a) a new note
-   argument, `NoteArg.SuitShares(Vector[(Int, Suit)])`, rendered "3 from
-   Beast, 1 from Nomad" and journaled on the wire as `NoteArg.Placements`
-   is; (b) one note key per number of shares, 1 to 6, each twice (with and
-   without gifts). Recommendation: (a).
-4. **The order of the shares** (Task 1). Options: (a) suit order,
-   `Suit.all` (Discord, Arcane, Order, Hearth, Beast, Nomad); (b) the order
-   of the winner's legacies; (c) largest share first. Recommendation: (a),
-   which matches the user's example and never depends on how legacies
-   were dealt.
-5. **Ruined edifices** (Task 1). An edifice prints one suit for both sides
-   (R23). Recommendation: a ruined edifice at a site the winner rules
-   counts by its suit, as R23 counts it for the goal and Foundation II for
-   favor.
-6. **Which of the winner's legacies count** (Task 1). The design: every
-   legacy the winner holds, since none can be dormant after the Sun
-   (ruling 2, and R19-R20's reactivation). Recommendation: as the design
-   says, every held legacy, with no filter on `active`.
+The plan's open questions were ruled on 2026-11-13 as implementation
+rulings R28-R33 ([rulings](../../specs/2026-11/2026-11-13-legacies-implementation-rulings.md)),
+each as the plan recommended: the kept amount with "less N given" (R28);
+a line but no record for a winner who keeps 0 (R29); `NoteArg.SuitShares`
+(R30); shares in suit order, empty ones left out (R31); ruined edifices by
+their printed suit (R32); every legacy the winner holds (R33).
 
 ## Global Constraints
 
@@ -137,7 +103,7 @@ In `LineageScoringSuite`, on `ChronicleWalk.throneHeldByChancellorP1`
 - Advisers do not count: p1's Beast adviser adds nothing.
 - A site the Empire does not rule adds nothing, and a suit with no card
   is left out.
-- A ruined edifice counts by its suit (open question 5).
+- A ruined edifice counts by its suit (R32).
 - No legacy: `Vector.empty`.
 
 Pick denizens of the needed suits by card object, as
@@ -277,7 +243,7 @@ git log -3 --oneline
   adds 6 to p1's era score.
 - Gifts bounded by the new total: giving 3 keeps 0; p1's score is
   unchanged, p2's and p3's rise, and no `LineagePointsScored` names p1
-  (open question 2).
+  (R29).
 - The lines: with the bonus and no gift, "p1 scored 6 lineage points (3
   base, 3 from Beast)"; with one gift, "p1 scored 4 lineage points (3 base,
   3 from Beast, less 2 given)" then the gift lines; with no legacy, "p1
@@ -342,8 +308,8 @@ git log -3 --oneline
   gifts" and links to the Legacies rulings.
 - Traceability: Score Lineage Points' legacy bonus moves from the gaps to
   the evidence (`LineageScoringSuite`).
-- `ambiguities.md`: append the rulings this plan's open questions receive,
-  numbered on from 20, each with its R number.
+- `ambiguities.md`: append R28-R33 to the Legacies rulings, numbered on
+  from 21, each with its R number.
 - Design status: "Slices 1 to 4 landed (plans: ...)".
 
 - [ ] **Step 2: Run the verification gate**

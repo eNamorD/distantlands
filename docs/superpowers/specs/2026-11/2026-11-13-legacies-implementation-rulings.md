@@ -219,3 +219,37 @@ Decision: deferred to slice 5, whose plan fixes both and checks the Setup
 keep decision in the running app (hover and selection keys for
 `legacy:<id>`).
 Reason: slice 5 owns the legacy UI.
+
+## Slice 4
+
+**R28. The winner's line when they give points away.**
+Decision: the line shows the kept amount, with the breakdown ending in
+what was given: "Blue scored 3 lineage points (3 base, 3 from Beast, 1
+from Nomad, less 4 given)". With no bonus the line is unchanged.
+Reason: its numbers add up to what the era scorepad records.
+
+**R29. A winner who gives every point away.**
+Decision: a winner who keeps 0 has nothing recorded, but the line is still
+written: "Blue scored 0 lineage points (3 base, 5 from Beast, less 8
+given)".
+Reason: `LineagePointsScored` refuses 0, and the breakdown should still
+show.
+
+**R30. How the line carries the shares.**
+Decision: a new note argument, `NoteArg.SuitShares`.
+Reason: a note's template is fixed and the number of shares is not; one
+argument is simpler than a key per count.
+
+**R31. The order of the shares.**
+Decision: suit order (Discord, Arcane, Order, Hearth, Beast, Nomad); empty
+shares are left out.
+Reason: it never depends on how legacies were dealt.
+
+**R32. Ruined edifices in the bonus.**
+Decision: a ruined edifice counts by its card's printed suit.
+Reason: consistent with R23.
+
+**R33. Which of the winner's legacies count.**
+Decision: every legacy the winner holds, as the design says.
+Reason: no legacy can be dormant at that point (design ruling 2, R19,
+R20).
