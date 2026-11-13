@@ -429,6 +429,37 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .table-edge .foundation-strip {
   grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .table-edge .public-legacies { margin: 0; }
+/* The edge is on the board's zoom surface, so its words hold the glance
+   size as the board's do, and its rows wrap rather than run off the edge
+   once they are set larger. Its cards keep the box they have at rest, in
+   rem rather than in the glance size, and take the compact face: the name
+   or its initials, and the tokens. */
+.map-compact .table-edge, .map-compact .table-edge .shared-bank {
+  flex-wrap: wrap; }
+.map-compact .table-edge :is(.shared-bank > h3, .oathkeeper-status,
+  .public-legacies-label, .foundations-title) {
+  font-size: var(--glance-text); }
+/* Set larger, the foundations take a row of their own, so their names
+   keep the room to be read. */
+.map-compact .table-edge .foundations { flex: 1 1 100%; }
+.map-compact .table-edge .public-legacies-cards { --card-h: 9.1rem;
+  --card-w: calc(9.1rem * 381 / 596); font-size: var(--glance-text); }
+.map-compact .table-edge .public-legacies-cards .card-face {
+  padding: 1.7em 0.25em 0.25em; justify-content: center;
+  align-items: center; text-align: center; container-type: inline-size; }
+/* A legacy's goal in words is study, read in the overlay, as a card's power
+   marks are on the zoomed-out map. */
+.map-compact .table-edge .public-legacies-cards .legacy-goal { display: none; }
+/* Smaller still, a legacy's box holds one line at the glance size: the
+   name or its initials, without the suit in the corner. */
+.map-tiny .table-edge .public-legacies-cards .card-face { padding: 0.15em; }
+.map-tiny .table-edge .public-legacies-cards .card-header .token-glyph {
+  display: none; }
+.map-tiny .table-edge .public-legacies-cards .card-name-short {
+  font-size: 1em; }
+/* The Oath goal is a control: a hit area of 24px on screen at any zoom. */
+.table-edge .oathkeeper-status > .oathkeeper-goal { display: flex;
+  align-items: center; min-height: calc(24px / var(--map-scale, 1)); }
 
 /* The glance layer on the mat. A site's face is a fixed box, so each line
    it holds is set against the scale, its rows grow with it, and the name
