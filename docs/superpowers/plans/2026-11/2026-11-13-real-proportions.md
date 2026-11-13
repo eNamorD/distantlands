@@ -1443,8 +1443,11 @@ Wait until `curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/` print
 
 A fresh game shows no legacy in the Public Ambitions row, no Vision, and no relic or banner on a player board. They come from the Chronicle the game starts from, so build one Chronicle that sets them up and start a new game from it:
 
-1. On the root page, read the loaded Chronicle's JSON. In the script tool, parse `localStorage["distantlands.chronicles"]`, take the entry named by `localStorage["distantlands.chronicles.loaded"]`, and parse its `json` field. Check the field names below against what it holds before editing.
-2. Edit that JSON:
+No Chronicle already in the browser's storage is edited or deleted: the edited JSON is imported as a new Chronicle with a name of its own, and the others stay as they are.
+
+1. On the root page, read (only read) the loaded Chronicle's JSON. In the script tool, parse `localStorage["distantlands.chronicles"]`, take the entry named by `localStorage["distantlands.chronicles.loaded"]`, and parse its `json` field. Check the field names below against what it holds before editing.
+2. Edit a copy of that JSON:
+   - Set its `name` to one no stored Chronicle has (for example "Real proportions check"), so the import adds a Chronicle instead of replacing one.
    - In `foundations`, set number 3's `face` to `"altered"`. Its altered face is Public Ambitions, so setup deals four legacies faceup to the public row (`LegacyDeal`).
    - Give one lineage a starting relic: add a relic id that the relic deck holds (for example the first id in `relicDeck`, removed from there) to its `startingRelics`. That relic starts on its holder's board.
    - Set `oathkeeperGoal` to Devotion (`"devotion"`, in the form the JSON already uses) and give one entry of `lineages` the role `"chancellor"`. Setup gives the Darkest Secret to the Chancellor when the goal is the Darkest Secret, so the banner starts on a player board.
@@ -1506,8 +1509,9 @@ Confirm each of these, and where one fails, correct the value named:
 | The track note's words read at 11px or more on screen at Fit | `.track-note` font size, in and outside `.map-compact` |
 | A relic with a two-line name keeps its defense dice inside the box, on a player board and in a site slot | the relic face's type scale (`.card-name` or the header's line height on `.card-face-relic`); never `--card-w` (ruling R3) |
 | A relic and a banner on a player board are square, read their name and count, and their token band clears the name (ruling R4) | the R4 band rules; `.player-board .banner-face` padding |
+| On the 390×844 phone at Fit (about 0.14), nothing drawn on the board is under about 9px on screen: per `reference/adapt.md`, decide which glance text stays legible (raise a glance clamp's maximum, or drop a line under `map-tiny`), and hide at that scale what cannot reach 9px rather than show it illegible. Accessible names and hover tips are untouched | the `--glance-name` and `--glance-text` clamps and `.mat-board .region-label`'s clamp; `.map-tiny` rules |
 | At 1024×768 and on the phone, Fit shows the whole mat with the table's edge under it, and the edge's row wraps rather than overflowing | `.table-edge` and `.table-edge .shared-bank` wrapping; the banner column width |
-| Measured, not looked at: the bounding box of each face's `.card-tokens` overlaps none of `.card-header` (as the header clips it), `.legacy-goal`, `.card-power-marks`, `.card-unimplemented-badge` or `.board-option-badge`, on a banner in the shared bank and on a player board, a relic, a legacy, a dormant legacy, a denizen with a restriction banner and a long name, an unimplemented denizen with power marks, and a Replace option card (implementation ruling R4). Cases the game does not show are built in the page from the markup `CardFace.render` and `BannerFace.render` make, inside the pane that would hold them | the R4 band rules (`--marks-bottom`, `--band-bottom`, `--band-h`) |
+| Measured, not looked at: the bounding box of each face's `.card-tokens` overlaps none of `.card-header` (as the header clips it), `.legacy-goal`, `.card-power-marks`, `.card-unimplemented-badge` or `.board-option-badge`, on a banner in the shared bank and on a player board, a relic, a legacy, a dormant legacy, a denizen with a restriction banner and a long name, an unimplemented denizen with power marks, a Replace option card, and a knowable face-down relic and legacy holding tokens and a power mark with the hover summary open (`.card-hover-summary`'s band against its own marks) (implementation ruling R4). Cases the game does not show are built in the page from the markup `CardFace.render` and `BannerFace.render` make, inside the pane that would hold them | the R4 band rules (`--marks-bottom`, `--band-bottom`, `--band-h`) |
 
 - [ ] **Step 4: Remove the check's overlays and take screenshots**
 
