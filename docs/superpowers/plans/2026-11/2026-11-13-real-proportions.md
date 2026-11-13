@@ -1543,7 +1543,11 @@ Run `grep -n "1:1.4\|1 : 1.4\|1\.4 ratio\|--site-h\|shared bank\|Shared Bank\|si
 
 - [ ] **Step 3: Update the roadmap**
 
-In `docs/ROADMAP.md`, extend the L3 item with one sentence: "The layout is ready for it: every drawn asset has its real proportions and the map is laid out on the mat's coordinates ([real proportions design](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md), [asset proportions](catalog/asset-proportions.md))."
+In `docs/ROADMAP.md`, extend the L3 item with one sentence (its links are relative to `docs/`):
+
+```markdown
+The layout is ready for it: every drawn asset has its real proportions and the map is laid out on the mat's coordinates ([real proportions design](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md), [asset proportions](catalog/asset-proportions.md)).
+```
 
 - [ ] **Step 4: Check the links**
 
