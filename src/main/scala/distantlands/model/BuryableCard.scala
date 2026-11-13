@@ -1,8 +1,7 @@
 package distantlands.model
 
-/** A card [[Bury]] can send to the bottom of its deck. Split out of
-  * `CoreOperations.scala`, which holds the sealed `CoreOperation` family
-  * and is close to the project's per-file bound. */
+/** A card [[Bury]] can send to the bottom of its deck. [[Bury]] is a
+  * [[CardOperation]]. */
 sealed trait BuryableCard extends Product with Serializable:
   def id: CardId
   def deck: CardDeck

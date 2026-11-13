@@ -75,7 +75,8 @@ object ChronicleCrown:
             PositionedLocation(Location.WarbandBank(kind)), at(site))
       }
       val short = placed.size - math.max(0, bank)
-      Option.when(short > 0)(WarbandsAdded(kind, short)).toVector ++ placed
+      Option.when[CoreOperation](short > 0)(WarbandsAdded(kind, short)).toVector ++
+        placed
     }
     val board = Option.when(player.board.warbands > 0)(Move(
       Piece.Warbands(own, player.board.warbands),

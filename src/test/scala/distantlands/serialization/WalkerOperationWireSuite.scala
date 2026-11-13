@@ -443,165 +443,189 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       case Left(WireError.InvalidValue("$.payload", _)) => ()
       case other => fail(s"expected an invalid-payload WireError, got $other")
 
+  private val player = PlayerId("red")
+  private val other = PlayerId("blue")
+  private val site = SiteId("site")
+  private val denizen = DenizenId("denizen")
+  private val vision = VisionId("vision")
+  private val relic = RelicId("relic")
+  private val edifice = EdificeId("edifice")
+  private val legacy = LegacyId("legacy")
+  private val lineage = LineageId("lineage")
+  private val everyOperation: Vector[CoreOperation] = Vector(
+    GainSupply(player, 2),
+    SpendSupply(player, 1),
+    ModifyDicePool(PoolKey("recover"), 2),
+    RecordPowerUse(PowerUseRef(PowerTiming.Wake,
+      PowerSourceRef.Site(site), PowerId("site.take-wealth"))),
+    RecordPowerUse(PowerUseRef(PowerTiming.Rest,
+      PowerSourceRef.Card(denizen), PowerId("denizen.silver-tongue"))),
+    RecordPowerUse(PowerUseRef(PowerTiming.Act,
+      PowerSourceRef.Card(relic), PowerId("relic.test-power"))),
+    RecordPowerUse(PowerUseRef(PowerTiming.Act,
+      PowerSourceRef.Card(legacy), PowerId("legacy.test-power"))),
+    EnterPhase(Phase.Act),
+    BeginTurn(player, Phase.Wake),
+    BeginTurn(other, Phase.RoundEnd),
+    Move(Piece.Card(relic),
+      PositionedLocation(Location.Deck(CardDeck.Relic), StackPosition.Top),
+      PositionedLocation(Location.Site(site)), Some(Orientation.FaceDown)),
+    PayCost(player, Location.OnCard(denizen), Cost(favor = 1)),
+    Peek(player, denizen, Location.Site(site)),
+    Flip(denizen, Location.Site(site), Orientation.FaceUp),
+    FlipSecrets(player, 2, SecretSide.FaceUp, SecretSide.FaceDown),
+    Burn.favor(3, PositionedLocation(Location.PlayArea(player)), None),
+    Bury(BuryableCard.Relic(relic), PositionedLocation(Location.PlayArea(player))),
+    Discard.Denizen(denizen, PositionedLocation(Location.Site(site)),
+      Region.Cradle, Suit.Arcane, favor = 1, secrets = 1,
+      actingPlayer = player),
+    Discard.Vision(vision, PositionedLocation(Location.Hand(player)),
+      Region.Provinces),
+    Discard.Buried(BuryableCard.Denizen(denizen),
+      PositionedLocation(Location.Site(site)), Some(Suit.Arcane),
+      favor = 1, secrets = 1, actingPlayer = player),
+    Discard.Buried(BuryableCard.Vision(vision),
+      PositionedLocation(Location.Hand(player)), None, favor = 0,
+      secrets = 0, actingPlayer = player),
+    Discard.RuinedEdifice(edifice, PositionedLocation(Location.Site(site)),
+      Suit.Order, favor = 0, secrets = 0, actingPlayer = player),
+    Discard.Relic(relic, PositionedLocation(Location.PlayArea(player)),
+      secrets = 2, actingPlayer = player),
+    RemoveFromMap(denizen, PositionedLocation(Location.Site(site)),
+      PositionedLocation(Location.Dispossessed), Suit.Hearth, favor = 1,
+      secrets = 2, actingPlayer = player),
+    RemoveFromMap(edifice, PositionedLocation(Location.Site(site)),
+      PositionedLocation(Location.Deck(CardDeck.Edifice),
+        StackPosition.Bottom), Suit.Order, favor = 0, secrets = 0,
+      actingPlayer = player),
+    Draw(player, Vector(relic), Location.Deck(CardDeck.Relic),
+      Location.PlayArea(player)),
+    Draw(player, Vector(denizen), Location.RegionalDiscard(Region.Cradle),
+      Location.Hand(player), StackPosition.Bottom),
+    Exchange(
+      Give(Piece.Favor(1), player, Location.PlayArea(player),
+        Location.PlayArea(other)),
+      Give(Piece.Secrets(1), other, Location.PlayArea(other),
+        Location.PlayArea(player))),
+    Gain.Favor(player, Suit.Beast, 2),
+    Gain.Secrets(player, 3),
+    Gain.Warbands(player, ForceKind.Imperial, 4),
+    Give(Piece.Secrets(2), player, Location.PlayArea(player),
+      Location.PlayArea(other)),
+    Kill(Piece.Warbands(ForceKind.Imperial, 3),
+      PositionedLocation(Location.Site(site))),
+    Play(denizen, PositionedLocation(Location.Hand(player)),
+      Location.Site(site), Orientation.FaceUp),
+    Replace(Piece.Warbands(ForceKind.Imperial, 2),
+      Piece.Warbands(ForceKind.Exile(lineage), 2),
+      PositionedLocation(Location.Site(site))),
+    Replace(Piece.Warbands(ForceKind.Imperial, 2),
+      Piece.Warbands(ForceKind.Exile(lineage), 2),
+      PositionedLocation(Location.Site(site)), by = Some(player)),
+    Reveal(denizen, Location.Site(site)),
+    Sacrifice(player, Piece.Warbands(ForceKind.Exile(lineage), 1),
+      PositionedLocation(Location.Site(site))),
+    Swap(denizen, PositionedLocation(Location.Hand(player)),
+      vision, PositionedLocation(Location.PlayArea(player))),
+    Take(Piece.Secrets(1), player, Location.SharedBank,
+      Location.PlayArea(player)),
+    Roll(PoolKey("recover"), DiceSpec(DiceKind.Defense)),
+    ModifyRollOutcome(PoolKey("recover"), Some(1), Some(2)),
+    Reroll(PoolKey("recover"), Vector(0, 2),
+      Some(Vector(DefenseDieFace.TwoShields, DefenseDieFace.Blank))),
+    Reroll(PoolKey("campaign.attack"), Vector(1)),
+    SetDieFaces(PoolKey("campaign.defense"),
+      Vector(DefenseDieFace.TwoShields, DefenseDieFace.TwoShields)),
+    RecordCampaignResult(CampaignResult(player, CampaignKind.Conquest,
+      CampaignDefender.Bandits, Vector(site), Vector.empty, force = 2,
+      attackFaces = Vector(AttackDieFace.OneSword), attackScore = 1,
+      skullLosses = 0, sacrificed = 0,
+      defenseFaces = Vector(DefenseDieFace.Blank), defenseScore = 2,
+      attackerWins = false)),
+    Shuffle(ShufflePile.Search(SearchSource.WorldDeck),
+      Some(Vector(denizen, vision))),
+    Shuffle(ShufflePile.Search(SearchSource.RegionalDiscard(Region.Cradle)),
+      Some(Vector(vision))),
+    Shuffle(ShufflePile.Search(
+      SearchSource.RegionalDiscard(Region.Hinterland))),
+    Shuffle(ShufflePile.EdificeDeck,
+      Some(Vector(GreatMarketCard.id))),
+    Shuffle(ShufflePile.SetAsideRelics,
+      Some(Vector(RelicId("R1")))),
+    Shuffle(ShufflePile.CardGathering, Some(Vector(denizen))),
+    Shuffle(ShufflePile.Reliquary),
+    Shuffle(ShufflePile.Dispossessed, Some(Vector(denizen))),
+    Shuffle(ShufflePile.SuitedReserve(Suit.Beast),
+      Some(Vector(FaeMerchantCard.id))),
+    SetOathkeeper(Some(PlayerId("red"))),
+    SetOathkeeper(None),
+    SetOathkeeperGoal(OathkeeperGoal.ThePeople),
+    ChronicleUpdated(FirstGameSetupFixture.chronicle.copy(
+      oathkeeperGoal = OathkeeperGoal.ThePeople)),
+    RoleChanged(LineageId("lineage:red"), Role.Chancellor),
+    RoleChanged(LineageId("lineage:blue"), Role.Citizen),
+    ChronicleTaskAssigned(ChronicleTask.Beacon, PlayerId("red")),
+    GrandScepterFromBox(PlayerId("red")),
+    ImperialWarbandsTaken(8),
+    WarbandsAdded(ForceKind.Imperial, 2),
+    WarbandsAdded(ForceKind.Exile(LineageId("l1")), 3),
+    UsurperLimiterRemoved,
+    LineagePointsScored(LineageId("lineage:red"), 3),
+    EdificeBuilt(GreatMarketCard.id, site),
+    FoundationRestored(FoundationNumber.III),
+    PlaceAtlasSite(AtlasEnd.Forgotten, Region.Provinces, capacity = 2,
+      relicSlots = 1, Tokens(3, 0)),
+    SuitedReserveFromBox(Suit.Beast,
+      Vector(FaeMerchantCard.id)),
+    TrackPawn(PlayerId("red"), PlayerId("blue")),
+    ClearTrackedPawn(PlayerId("red")),
+    SetFestivalMarker(Some(site)),
+    SetFestivalMarker(None),
+    QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
+        Vector.empty,
+        Some(PowerSourceRef.Card(KnightsErrantCard.id)),
+        QueueKind.Offer)),
+    QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Trade,
+      Vector(DecisionOptionRef.Button("favor")), None, QueueKind.Run),
+      atFront = true))
+
   test("every CoreOperation variant round-trips through the walker codec"):
     // `encodeOperation`/`encodePiece` are total over the sealed hierarchy
     // (I8), exactly like `encodeLocation` above -- this list is every
     // `CoreOperation` case. The walker's tree-control nodes are not in this
     // list because they are not `CoreOperation`s: they live under the
     // unsealed `Operation` and cannot be passed to the encoder at all.
-    val player = PlayerId("red")
-    val other = PlayerId("blue")
-    val site = SiteId("site")
-    val denizen = DenizenId("denizen")
-    val vision = VisionId("vision")
-    val relic = RelicId("relic")
-    val edifice = EdificeId("edifice")
-    val legacy = LegacyId("legacy")
-    val lineage = LineageId("lineage")
-    val operations: Vector[CoreOperation] = Vector(
-      GainSupply(player, 2),
-      SpendSupply(player, 1),
-      ModifyDicePool(PoolKey("recover"), 2),
-      RecordPowerUse(PowerUseRef(PowerTiming.Wake,
-        PowerSourceRef.Site(site), PowerId("site.take-wealth"))),
-      RecordPowerUse(PowerUseRef(PowerTiming.Rest,
-        PowerSourceRef.Card(denizen), PowerId("denizen.silver-tongue"))),
-      RecordPowerUse(PowerUseRef(PowerTiming.Act,
-        PowerSourceRef.Card(relic), PowerId("relic.test-power"))),
-      RecordPowerUse(PowerUseRef(PowerTiming.Act,
-        PowerSourceRef.Card(legacy), PowerId("legacy.test-power"))),
-      EnterPhase(Phase.Act),
-      BeginTurn(player, Phase.Wake),
-      BeginTurn(other, Phase.RoundEnd),
-      Move(Piece.Card(relic),
-        PositionedLocation(Location.Deck(CardDeck.Relic), StackPosition.Top),
-        PositionedLocation(Location.Site(site)), Some(Orientation.FaceDown)),
-      PayCost(player, Location.OnCard(denizen), Cost(favor = 1)),
-      Peek(player, denizen, Location.Site(site)),
-      Flip(denizen, Location.Site(site), Orientation.FaceUp),
-      FlipSecrets(player, 2, SecretSide.FaceUp, SecretSide.FaceDown),
-      Burn.favor(3, PositionedLocation(Location.PlayArea(player)), None),
-      Bury(BuryableCard.Relic(relic), PositionedLocation(Location.PlayArea(player))),
-      Discard.Denizen(denizen, PositionedLocation(Location.Site(site)),
-        Region.Cradle, Suit.Arcane, favor = 1, secrets = 1,
-        actingPlayer = player),
-      Discard.Vision(vision, PositionedLocation(Location.Hand(player)),
-        Region.Provinces),
-      Discard.Buried(BuryableCard.Denizen(denizen),
-        PositionedLocation(Location.Site(site)), Some(Suit.Arcane),
-        favor = 1, secrets = 1, actingPlayer = player),
-      Discard.Buried(BuryableCard.Vision(vision),
-        PositionedLocation(Location.Hand(player)), None, favor = 0,
-        secrets = 0, actingPlayer = player),
-      Discard.RuinedEdifice(edifice, PositionedLocation(Location.Site(site)),
-        Suit.Order, favor = 0, secrets = 0, actingPlayer = player),
-      Discard.Relic(relic, PositionedLocation(Location.PlayArea(player)),
-        secrets = 2, actingPlayer = player),
-      RemoveFromMap(denizen, PositionedLocation(Location.Site(site)),
-        PositionedLocation(Location.Dispossessed), Suit.Hearth, favor = 1,
-        secrets = 2, actingPlayer = player),
-      RemoveFromMap(edifice, PositionedLocation(Location.Site(site)),
-        PositionedLocation(Location.Deck(CardDeck.Edifice),
-          StackPosition.Bottom), Suit.Order, favor = 0, secrets = 0,
-        actingPlayer = player),
-      Draw(player, Vector(relic), Location.Deck(CardDeck.Relic),
-        Location.PlayArea(player)),
-      Draw(player, Vector(denizen), Location.RegionalDiscard(Region.Cradle),
-        Location.Hand(player), StackPosition.Bottom),
-      Exchange(
-        Give(Piece.Favor(1), player, Location.PlayArea(player),
-          Location.PlayArea(other)),
-        Give(Piece.Secrets(1), other, Location.PlayArea(other),
-          Location.PlayArea(player))),
-      Gain.Favor(player, Suit.Beast, 2),
-      Gain.Secrets(player, 3),
-      Gain.Warbands(player, ForceKind.Imperial, 4),
-      Give(Piece.Secrets(2), player, Location.PlayArea(player),
-        Location.PlayArea(other)),
-      Kill(Piece.Warbands(ForceKind.Imperial, 3),
-        PositionedLocation(Location.Site(site))),
-      Play(denizen, PositionedLocation(Location.Hand(player)),
-        Location.Site(site), Orientation.FaceUp),
-      Replace(Piece.Warbands(ForceKind.Imperial, 2),
-        Piece.Warbands(ForceKind.Exile(lineage), 2),
-        PositionedLocation(Location.Site(site))),
-      Replace(Piece.Warbands(ForceKind.Imperial, 2),
-        Piece.Warbands(ForceKind.Exile(lineage), 2),
-        PositionedLocation(Location.Site(site)), by = Some(player)),
-      Reveal(denizen, Location.Site(site)),
-      Sacrifice(player, Piece.Warbands(ForceKind.Exile(lineage), 1),
-        PositionedLocation(Location.Site(site))),
-      Swap(denizen, PositionedLocation(Location.Hand(player)),
-        vision, PositionedLocation(Location.PlayArea(player))),
-      Take(Piece.Secrets(1), player, Location.SharedBank,
-        Location.PlayArea(player)),
-      Roll(PoolKey("recover"), DiceSpec(DiceKind.Defense)),
-      ModifyRollOutcome(PoolKey("recover"), Some(1), Some(2)),
-      Reroll(PoolKey("recover"), Vector(0, 2),
-        Some(Vector(DefenseDieFace.TwoShields, DefenseDieFace.Blank))),
-      Reroll(PoolKey("campaign.attack"), Vector(1)),
-      SetDieFaces(PoolKey("campaign.defense"),
-        Vector(DefenseDieFace.TwoShields, DefenseDieFace.TwoShields)),
-      RecordCampaignResult(CampaignResult(player, CampaignKind.Conquest,
-        CampaignDefender.Bandits, Vector(site), Vector.empty, force = 2,
-        attackFaces = Vector(AttackDieFace.OneSword), attackScore = 1,
-        skullLosses = 0, sacrificed = 0,
-        defenseFaces = Vector(DefenseDieFace.Blank), defenseScore = 2,
-        attackerWins = false)),
-      Shuffle(ShufflePile.Search(SearchSource.WorldDeck),
-        Some(Vector(denizen, vision))),
-      Shuffle(ShufflePile.Search(SearchSource.RegionalDiscard(Region.Cradle)),
-        Some(Vector(vision))),
-      Shuffle(ShufflePile.Search(
-        SearchSource.RegionalDiscard(Region.Hinterland))),
-      Shuffle(ShufflePile.EdificeDeck,
-        Some(Vector(GreatMarketCard.id))),
-      Shuffle(ShufflePile.SetAsideRelics,
-        Some(Vector(RelicId("R1")))),
-      Shuffle(ShufflePile.CardGathering, Some(Vector(denizen))),
-      Shuffle(ShufflePile.Reliquary),
-      Shuffle(ShufflePile.Dispossessed, Some(Vector(denizen))),
-      Shuffle(ShufflePile.SuitedReserve(Suit.Beast),
-        Some(Vector(FaeMerchantCard.id))),
-      SetOathkeeper(Some(PlayerId("red"))),
-      SetOathkeeper(None),
-      SetOathkeeperGoal(OathkeeperGoal.ThePeople),
-      ChronicleUpdated(FirstGameSetupFixture.chronicle.copy(
-        oathkeeperGoal = OathkeeperGoal.ThePeople)),
-      RoleChanged(LineageId("lineage:red"), Role.Chancellor),
-      RoleChanged(LineageId("lineage:blue"), Role.Citizen),
-      ChronicleTaskAssigned(ChronicleTask.Beacon, PlayerId("red")),
-      GrandScepterFromBox(PlayerId("red")),
-      ImperialWarbandsTaken(8),
-      WarbandsAdded(ForceKind.Imperial, 2),
-      WarbandsAdded(ForceKind.Exile(LineageId("l1")), 3),
-      UsurperLimiterRemoved,
-      LineagePointsScored(LineageId("lineage:red"), 3),
-      EdificeBuilt(GreatMarketCard.id, site),
-      FoundationRestored(FoundationNumber.III),
-      PlaceAtlasSite(AtlasEnd.Forgotten, Region.Provinces, capacity = 2,
-        relicSlots = 1, Tokens(3, 0)),
-      SuitedReserveFromBox(Suit.Beast,
-        Vector(FaeMerchantCard.id)),
-      TrackPawn(PlayerId("red"), PlayerId("blue")),
-      ClearTrackedPawn(PlayerId("red")),
-      SetFestivalMarker(Some(site)),
-      SetFestivalMarker(None),
-      QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
-          Vector.empty,
-          Some(PowerSourceRef.Card(KnightsErrantCard.id)),
-          QueueKind.Offer)),
-      QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Trade,
-        Vector(DecisionOptionRef.Button("favor")), None, QueueKind.Run),
-        atFront = true))
-
-    val events = operations.map(operation =>
+    val events = everyOperation.map(operation =>
       recordedOperation(operation))
 
     val encoded = encodedStreamThatRoundTrips("walker-ops", events)
     assertEquals(ujson.read(encoded).arr.map(
       _("payload")("step")("ops")(0)("kind").str).toVector.distinct.size,
-      operations.map(_.getClass.getSimpleName).distinct.size)
+      everyOperation.map(_.getClass.getSimpleName).distinct.size)
+
+  /** The family an operation belongs to. Exhaustive, so a new family fails
+    * to compile here until it is named. */
+  private def familyOf(operation: CoreOperation): String = operation match
+    case _: PieceOperation => "piece"
+    case _: ResourceOperation => "resource"
+    case _: CardOperation => "card"
+    case _: DiceOperation => "dice"
+    case _: TurnOperation => "turn"
+    case _: ChronicleOperation => "chronicle"
+
+  test("each wire kind belongs to one operation family"):
+    val kinds: Map[String, Set[String]] = everyOperation.groupMap(familyOf)(
+      operation => ujson.read(accepted(GameEventWire.encodeEvent("walker", 0,
+        recordedOperation(operation))))("payload")("step")("ops")(0)("kind")
+        .str).view.mapValues(_.toSet).toMap
+    assertEquals(kinds.keySet,
+      Set("piece", "resource", "card", "dice", "turn", "chronicle"))
+    for
+      (family, own) <- kinds
+      (other, theirs) <- kinds
+      if family < other
+    do assertEquals(own.intersect(theirs), Set.empty[String],
+      s"$family and $other share wire kinds")
 
   test("a walker roll payload round-trips attack and defense faces"):
     val events = Vector[OathEvent](

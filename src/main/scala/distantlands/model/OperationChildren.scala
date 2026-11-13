@@ -1,10 +1,11 @@
 package distantlands.model
 
-/** Builds the children of the composite operations in
-  * `CoreOperations.scala`: a world card's discard move, the favor and
-  * secrets a card returns as it leaves play, and a payment out of a
-  * player's play area. Split out of that file, which holds the sealed
-  * `CoreOperation` family and is close to the project's per-file bound
+/** Builds the children of the composite operations in the operation
+  * families (`CardOperation.scala`, `ResourceOperation.scala`): a world
+  * card's discard move, the favor and secrets a card returns as it leaves
+  * play, and a payment out of a player's play area. Split out of the
+  * single operations file that preceded the families, when it was close to
+  * the project's per-file bound
   * (catalog batch 11, slice 0).
   */
 private[model] object OperationChildren:

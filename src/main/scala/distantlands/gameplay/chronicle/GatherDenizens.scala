@@ -31,7 +31,7 @@ object GatherDenizens:
         // Returned secrets land faceup and turn facedown, as a discard's do.
         val secrets =
           if tokens.secrets == 0 then Vector.empty
-          else Vector(Move(Piece.Secrets(tokens.secrets), onCard,
+          else Vector[CoreOperation](Move(Piece.Secrets(tokens.secrets), onCard,
             PositionedLocation(Location.PlayArea(player.player))),
             FlipSecrets(player.player, tokens.secrets, SecretSide.FaceUp,
               SecretSide.FaceDown))

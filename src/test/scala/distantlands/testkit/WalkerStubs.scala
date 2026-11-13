@@ -15,8 +15,9 @@ object WalkerStubs:
     * an arbitrary children vector. `Operation` is the unsealed generic
     * layer, so a windowed node can be authored here and a suite can prove
     * the walker's generic wiring with a tree it builds itself. Oath's own
-    * operations are sealed under `CoreOperation`, which Scala pins to
-    * `CoreOperations.scala`; this node is deliberately not one of them.
+    * operations are the sealed operation families under `CoreOperation`,
+    * which Scala pins to their files; this node is deliberately not one of
+    * them.
     */
   final case class WindowedNode(hook: PowerWindow,
       override val children: Vector[Operation]) extends Operation:
