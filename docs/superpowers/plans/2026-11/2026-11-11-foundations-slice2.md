@@ -25,7 +25,7 @@ already stops at a Vision.
 **Tech Stack:** Scala 3, munit, `./sbtw` (sbt wrapper), `-Werror`. No
 frontend, protocol or journal change.
 
-**Spec:** [Foundations design](../specs/2026-11-11-foundations-design.md),
+**Spec:** [Foundations design](../../specs/2026-11/2026-11-11-foundations-design.md),
 sections "Rulings", "Approach" and "Slice 2: Movers and Shakers and Teeming
 World". Slices 3 to 7 are read only for the seams they need from this one.
 
@@ -120,7 +120,7 @@ git grep -n "StartingFoundations.refusal(StartingFoundations.of(chronicle))" -- 
 git grep -n "def dealt(drawers: Int)" -- src/main/scala/distantlands/gameplay/setup/SetupDeal.scala
 git grep -n "adviserChoices: Vector" -- src/main/scala/distantlands/gameplay/setup/FirstGameSetupMaterializer.scala
 git grep -n "with several altered faces, game start names the first in" -- src/test/scala/distantlands/gameplay/setup/GameStartRulesSuite.scala
-git grep -n "Slice 1 landed" -- docs/superpowers/specs/2026-11-11-foundations-design.md
+git grep -n "Slice 1 landed" -- docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 ```
 
 The first must print `base-ok`: `92fb2e773` is the merge that brought slice
@@ -1802,7 +1802,7 @@ five Visions. Game start no longer refuses the face." -m "Co-Authored-By: Claude
 - Modify: `docs/architecture/game-setup.md`
 - Modify: `docs/rules/implementation-traceability.md`
 - Modify: `docs/ROADMAP.md`
-- Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
+- Modify: `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`
 
 The spec leaves the batch's rulings in `docs/rules/ambiguities.md`,
 `docs/rules/chronicle.md` and `CONTEXT.md` to slice 7. This task corrects
@@ -1855,7 +1855,7 @@ Replace
 with
 
 ~~~markdown
-| Six foundation setup effects and world-deck construction | **Partial** | [CR pp. 10-12](rules-reference.md#later-games); mutable foundations [NF p. 9](new-foundations-delta.md#campaign-structure) | Game start reads the Chronicle's faces (`StartingFoundations`) and builds both faces of Foundation II and of Foundation IV directly. Movers and Shakers gives each board 6 favor and each bank 1 favor per denizen of its suit on the map (`FirstGameSetupMaterializer`). `SetupDeal` deals Ties of Fellowship's seeded discards and hands, or Teeming World's kept advisers, its discard piles dealt in turn and its Visions-only world deck (`gameplay/setup/SetupDealSuite.scala`, `AlteredFoundationSetupSuite.scala`). | Altered Foundations I, V and VI are refused at game start until their slices of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md). Imperial Maps always fills from Recent Sites ([R27](ambiguities.md#empire-rulings)). Foundation III's faces wait for Legacies. |
+| Six foundation setup effects and world-deck construction | **Partial** | [CR pp. 10-12](rules-reference.md#later-games); mutable foundations [NF p. 9](new-foundations-delta.md#campaign-structure) | Game start reads the Chronicle's faces (`StartingFoundations`) and builds both faces of Foundation II and of Foundation IV directly. Movers and Shakers gives each board 6 favor and each bank 1 favor per denizen of its suit on the map (`FirstGameSetupMaterializer`). `SetupDeal` deals Ties of Fellowship's seeded discards and hands, or Teeming World's kept advisers, its discard piles dealt in turn and its Visions-only world deck (`gameplay/setup/SetupDealSuite.scala`, `AlteredFoundationSetupSuite.scala`). | Altered Foundations I, V and VI are refused at game start until their slices of the [Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md). Imperial Maps always fills from Recent Sites ([R27](ambiguities.md#empire-rulings)). Foundation III's faces wait for Legacies. |
 ~~~
 
 Then, in the row "Starting adviser choice, pawn placement, and Reveal
@@ -1898,7 +1898,7 @@ with
 
 - [ ] **Step 4: The spec**
 
-In `docs/superpowers/specs/2026-11-11-foundations-design.md`, the status
+In `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`, the status
 line, the sentence plan-time finding 1 corrects, the readings, and a
 pointer for slice 7:
 
@@ -1987,7 +1987,7 @@ Expected: no output. Neither face is still refused.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add docs/architecture/game-setup.md docs/rules/implementation-traceability.md docs/ROADMAP.md docs/superpowers/specs/2026-11-11-foundations-design.md
+git add docs/architecture/game-setup.md docs/rules/implementation-traceability.md docs/ROADMAP.md docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git commit -m "docs(foundations): record slice 2, the setup-only faces" -m "The setup doc says how each face of Foundations II and IV deals favor and
 the starting stack, the traceability table stops calling the foundations
 blocked, the roadmap drops the finished faces, and the spec records

@@ -26,7 +26,7 @@ and the Game Log's Beacon entry maps them. `ChronicleRecord` already writes
 frontend under `frontend/`, tested with jsdom; shared protocol sources under
 `shared/`.
 
-**Spec:** [Foundations design](../specs/2026-11-11-foundations-design.md),
+**Spec:** [Foundations design](../../specs/2026-11/2026-11-11-foundations-design.md),
 sections "Rulings" (ruling 1: the Beacon may restore an altered III),
 "Slice 1: faces reach the game" ("Chronicle record"), "Slice 3: ... Setup
 With No Empire" (erosion leaves a face with no source), "Slice 7: Shape
@@ -172,7 +172,7 @@ git grep -n "LineagePointsScored | EdificeBuilt | SuitedReserveFromBox | PlaceAt
 git grep -n "WelcomeStranger.keptAdviser -> LogKind.Decision))," -- src/main/scala/distantlands/application/gamelog/ProcedureLog.scala
 git grep -n "final case class LegacyState(id: LegacyId, active: Boolean)" -- src/main/scala/distantlands/model/Cards.scala
 git grep -n "def foundation(number: FoundationNumber, face: FoundationFace): Table" -- src/test/scala/distantlands/testkit/Table.scala
-git grep -n "Slices 1, 2, 3a, 3b, 4, 5 and 6 landed" -- docs/superpowers/specs/2026-11-11-foundations-design.md
+git grep -n "Slices 1, 2, 3a, 3b, 4, 5 and 6 landed" -- docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git grep -n "Digital: an empty window until Foundations exist." -- docs/rules/chronicle.md
 git grep -n "Phase - Foundations" -- docs/ROADMAP.md
 wc -l src/main/scala/distantlands/model/CoreOperations.scala
@@ -1299,7 +1299,7 @@ git commit -m "test(chronicle): pin Shape Foundation at the table" -m "The proje
 - Modify: `docs/rules/implementation-traceability.md`
 - Modify: `docs/architecture/game-setup.md`
 - Modify: `CONTEXT.md`
-- Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
+- Modify: `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`
 
 **Interfaces:**
 - Consumes: everything Tasks 1 to 3 built; nothing new is produced.
@@ -1337,7 +1337,7 @@ Then replace
 ~~~markdown
 ### Phase - Foundations
 
-[Design](superpowers/specs/2026-11-11-foundations-design.md), seven slices.
+[Design](superpowers/specs/2026-11/2026-11-11-foundations-design.md), seven slices.
 
 - [ ] **Foundations.** Every face but Foundation III's works: the Beacon's
   Shape Foundation.
@@ -1412,7 +1412,7 @@ with
 ~~~markdown
 ## Foundations rulings
 
-Rulings and readings for the six foundation setup cards ([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md)). Items 1 to 7 were taken with the project owner on 2026-11-10 and 2026-11-11. Items 8 to 14 are the readings each slice's plan took, the most literal reading of the New Foundations text; they await the owner's confirmation, except where an item says a point was decided with the owner.
+Rulings and readings for the six foundation setup cards ([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md)). Items 1 to 7 were taken with the project owner on 2026-11-10 and 2026-11-11. Items 8 to 14 are the readings each slice's plan took, the most literal reading of the New Foundations text; they await the owner's confirmation, except where an item says a point was decided with the owner.
 
 1. **Foundation III waits for Legacies.** Both faces are accepted at game start and do nothing. The Beacon may still restore an altered III (Foundations design, ruling 1).
 2. **Explore borrows only Recover's dice.** No power that names Recover or recovering applies to Explore: Silver Charm, Relic Patrols and Drowned Library stay out, though Silver Charm's text names only spending Supply to roll defense dice. Jinx ("after you roll [attack-die] or [defense-die] for any reason") applies, through the generic reroll window (Foundations design, ruling 2).
@@ -1496,7 +1496,7 @@ Replace
 ~~~markdown
 "Setup for Later Games". It excludes Legacy selection/effects and the
 altered Foundation faces no slice of the
-[Foundations design](../superpowers/specs/2026-11-11-foundations-design.md)
+[Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md)
 has brought in yet, which game start refuses by name. Foundation III is
 accepted on either face and does nothing until Legacies.
 ~~~
@@ -1506,7 +1506,7 @@ with
 ~~~markdown
 "Setup for Later Games". It excludes Legacy selection/effects. Game start
 accepts every face of every foundation
-([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md));
+([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md));
 Foundation III is accepted on either face and does nothing until Legacies.
 ~~~
 
@@ -1573,7 +1573,7 @@ _Avoid_: discarded Reliquary, empty Reliquary
 ### Undo
 ~~~
 
-**In** `docs/superpowers/specs/2026-11-11-foundations-design.md`:
+**In** `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`:
 
 Replace
 
@@ -1728,7 +1728,7 @@ If any other line appears, a link this task wrote is broken: fix it.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/ROADMAP.md docs/rules/chronicle.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/architecture/game-setup.md CONTEXT.md docs/superpowers/specs/2026-11-11-foundations-design.md
+git add docs/ROADMAP.md docs/rules/chronicle.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/architecture/game-setup.md CONTEXT.md docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git commit -m "docs(foundations): record slice 7 and close the phase" -m "The roadmap drops Phase - Foundations, the Chronicle rules describe Shape Foundation, the ambiguities gather the batch's rulings and readings, the traceability table marks the Beacon tested and drops the Search row's Foundation caveat, the setup doc stops saying game start refuses a face, CONTEXT.md gains the batch's terms, and the spec records every slice landed with slice 7 as built and its readings." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 

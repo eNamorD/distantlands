@@ -21,7 +21,7 @@ and the frontend's `FoundationStrip` draws both.
 **Tech Stack:** Scala 3, Scala.js (frontend), munit, `./sbtw` (sbt
 wrapper), `-Werror`.
 
-**Spec:** [Foundations design](../specs/2026-11-11-foundations-design.md),
+**Spec:** [Foundations design](../../specs/2026-11/2026-11-11-foundations-design.md),
 sections "Rulings", "Approach" and "Slice 1: faces reach the game". Later
 slices are read only for the seams they need from this one.
 
@@ -3440,7 +3440,7 @@ EOF
 - Modify: `docs/architecture/game-setup.md`
 - Modify: `docs/architecture/bounded-visions-and-conspiracy.md`
 - Modify: `docs/architecture/all-exile-round-endings.md`
-- Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
+- Modify: `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`
 
 The spec leaves the batch's rules docs, roadmap and `CONTEXT.md` to slice
 7. This task corrects only what slice 1 made false.
@@ -3479,7 +3479,7 @@ clarification on p. 8. It excludes Legacy selection/effects,
 Chancellor/Citizen/Imperial setup, restoring the rest of a stored campaign
 (roles, legacies, the Empire's sites), and the altered Foundation faces no
 slice of the
-[Foundations design](../superpowers/specs/2026-11-11-foundations-design.md)
+[Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md)
 has brought in yet, which game start refuses by name. Foundation III is
 accepted on either face and does nothing until Legacies.
 
@@ -3535,7 +3535,7 @@ handlers are ignored and recorded the same way at Rest start.
 
 - [ ] **Step 2: The spec**
 
-In `docs/superpowers/specs/2026-11-11-foundations-design.md`: the status
+In `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`: the status
 line, the catalog sentence (a face's text follows its printed card, ruling
 1) and the two sentences of slice 1 the code contradicts (plan-time
 findings 1 and 5, design decision 1):
@@ -3646,7 +3646,7 @@ Expected: no output.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/architecture/game-setup.md docs/architecture/bounded-visions-and-conspiracy.md docs/architecture/all-exile-round-endings.md docs/superpowers/specs/2026-11-11-foundations-design.md
+git add docs/architecture/game-setup.md docs/architecture/bounded-visions-and-conspiracy.md docs/architecture/all-exile-round-endings.md docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git commit -m "$(cat <<'EOF'
 docs(foundations): record slice 1, faces reach the game
 

@@ -58,7 +58,8 @@ slot the atlas fills (8 in a first game; under Imperial Maps, every slot
 past the Empire's sites), enough World Deck cards to deal and, in a first
 game, enough relics for every relic slot, a deal holding exactly the
 Chronicle's decks. A first game's Homelands each store one matching edifice;
-a Chronicle that does not carries history and starts an exile-only game. The deeper suit-count and Vision-packet audit a Chronicle
+a Chronicle whose Atlas edifices differ carries history and starts an
+exile-only game. The deeper suit-count and Vision-packet audit a Chronicle
 must satisfy is the generator's own job, checked once at generation time
 (`FirstGameChronicleGenerator.validate`) rather than again at every setup.
 
@@ -80,12 +81,13 @@ starting relics, a scored era game, an Oathkeeper goal other than
 Supremacy, a stocked Reliquary, a denizen or relic stored at an Atlas
 site, or an Atlas edifice a new Chronicle would not store: one at a site
 that is no Homeland, or a Homeland storing none or another suit's; the
-check reads the catalog). With history it starts an exile-only game (`SetupMode.ExileOnly`):
-the Atlas's first eight sites are placed as bandit sites with their stored
+check reads the catalog). With history it starts an exile-only game
+(`SetupMode.ExileOnly`): the Atlas's first eight sites are placed as bandit sites with their stored
 cards and open relic slots filled, whatever Foundation I's face, the
 stored faces apply with no erosion, stored advisers are dealt, the
 Citizenship option is off and the Reliquary is set aside, as with no
-Empire. With a Chancellor seated, or a seated
+Empire. Exiles place their pawns as in a later game, and an Atlas of fewer
+than eight sites is refused. With a Chancellor seated, or a seated
 Citizen standing in for one, the Empire's sites return. Under Imperial Maps
 Setup's walk then asks the Chancellor, right after the Reliquary pick,
 whether the Recent or the Forgotten end fills the slots past them, and
@@ -112,7 +114,7 @@ play, under Wide Horizons, the Explore action fills the next empty slot:
 atlas and populates it as game start populates an atlas site
 (`SiteState.banditSite`), and the `WhenExplored` window then resolves the
 site's ruined edifice
-([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md),
+([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md),
 slice 3).
 
 The completed aggregate includes site resources and bandits, facedown site
@@ -125,7 +127,7 @@ The scope follows Combined Rulebook pp. 6-7 and the New Foundations first-game
 clarification on p. 8, and for later games the New Foundations rulebook's
 "Setup for Later Games". It excludes Legacy selection/effects. Game start
 accepts every face of every foundation
-([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md));
+([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md));
 Foundation III is accepted on either face and does nothing until Legacies.
 
 ## Application and transport

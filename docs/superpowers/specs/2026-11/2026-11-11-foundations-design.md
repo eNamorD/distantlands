@@ -4,9 +4,9 @@
 and 7. The owner reviewed the rulings and readings on 2026-11-12, and
 decided the readings marked as the owner's in a second review that day.
 
-**Builds on** the [Chronicle steps design](2026-10/2026-10-27-chronicle-steps-design.md),
-the [Chronicle setup design](2026-09/2026-09-21-chronicle-setup-design.md) and
-[catalog batch 11](2026-11/2026-11-07-catalog-batch-11-design.md), whose setup,
+**Builds on** the [Chronicle steps design](../2026-10/2026-10-27-chronicle-steps-design.md),
+the [Chronicle setup design](../2026-09/2026-09-21-chronicle-setup-design.md) and
+[catalog batch 11](../2026-11/2026-11-07-catalog-batch-11-design.md), whose setup,
 Empire and consent rules apply unchanged.
 
 ## Goal and scope
@@ -82,8 +82,11 @@ Taken with the owner on 2026-11-10 and 2026-11-11.
    Atlas's first eight sites as bandit sites with their stored cards,
    whatever Foundation I's face, the stored faces with no erosion, stored
    advisers dealt, the Citizenship option off, the Reliquary set aside, and
-   the title and banners as with no Empire. This replaces the reading that
-   a first game places its eight sites whatever Foundation I's face.
+   the title and banners as with no Empire. An Exile places their pawn as
+   in a later game, at a site the bandits hold, falling back to any site,
+   and an Atlas of fewer than eight sites is refused. This replaces the
+   reading that a first game places its eight sites whatever Foundation
+   I's face.
 
 The owner reviewed the slices' readings and undo barriers on 2026-11-12 and
 approved them, but for ruling 3 above and the Citizenship option (slice

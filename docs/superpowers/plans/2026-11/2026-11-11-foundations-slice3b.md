@@ -26,7 +26,7 @@ the map are drawn from what the engine declares.
 frontend under `frontend/`, tested with jsdom; shared protocol sources under
 `shared/`.
 
-**Spec:** [Foundations design](../specs/2026-11-11-foundations-design.md),
+**Spec:** [Foundations design](../../specs/2026-11/2026-11-11-foundations-design.md),
 sections "Rulings" (rulings 2 and 4 bind this slice), "Approach" and, in
 "Slice 3: Wide Horizons, Explore and Setup With No Empire", the "Explore"
 subsection and the Explore items of "Tests". Slice 4 is read for the
@@ -162,7 +162,7 @@ git grep -n "def foundation(number: FoundationNumber, face: FoundationFace)" -- 
 git grep -n "def chronicle(chancellor: LineageId, citizens: Vector\[LineageId\]," -- src/test/scala/distantlands/gameplay/setup/LaterGameFixture.scala
 git grep -n "def gameWonFrom(wakes: OathState): OathTransition" -- src/test/scala/distantlands/gameplay/chronicle/EvolvedChronicleFixture.scala
 git grep -n "LineagePointsScored | EdificeBuilt | SuitedReserveFromBox" -- src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
-git grep -n "Slices 1, 2 and 3a landed" -- docs/superpowers/specs/2026-11-11-foundations-design.md
+git grep -n "Slices 1, 2 and 3a landed" -- docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git grep -c "Explore" -- src/main/scala/distantlands/gameplay/phases/ActOffers.scala
 ```
 
@@ -5088,7 +5088,7 @@ git commit -m "test(chronicle): pin the Chronicle Phase after an Explore" -m "A 
 - Modify: `docs/rules/implementation-traceability.md`
 - Modify: `docs/rules/ambiguities.md`
 - Modify: `docs/ROADMAP.md`
-- Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
+- Modify: `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`
 
 **Interfaces:**
 - Consumes: everything Tasks 1 to 7 built; nothing new is produced.
@@ -5114,7 +5114,7 @@ Replace
 ~~~markdown
 each region its `emptySlots`, which the table draws as empty frames. No
 action fills an empty slot yet: Explore is slice 3b of the
-[Foundations design](../superpowers/specs/2026-11-11-foundations-design.md).
+[Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md).
 ~~~
 
 with
@@ -5126,7 +5126,7 @@ play, under Wide Horizons, the Explore action fills the next empty slot:
 atlas and populates it as game start populates an atlas site
 (`SiteState.banditSite`), and the `WhenExplored` window then resolves the
 site's ruined edifice
-([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md),
+([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md),
 slice 3).
 ~~~
 
@@ -5210,7 +5210,7 @@ with
 
 ~~~markdown
 unaudited vocabulary rejects. Nested/action-granting boundaries remain F1. |
-| Explore (Wide Horizons) | **Tested (bounded)** | New Foundations rulebook, "Altered Foundation I: Wide Horizons" and "Setup / When Explored"; setup card `OATH-SETUP04b-NF` | `gameplay/actions/explore/ExploreProcedure.scala` offers the action while Foundation I is altered, a slot is empty, the Atlas holds a site and the actor's pawn is at the Hintermost site, to any role. It rolls 2 defense dice per 1 Supply against a difficulty of 4 through its own windows (`ExploreCost`, `ExploreRoll`), so no Recover power applies and the generic reroll choice does ([Foundations ruling 2](../superpowers/specs/2026-11-11-foundations-design.md#rulings)). On success the explorer chooses Recent or Forgotten, `PlaceAtlasSite` puts that site in the next slot as a bandit site through the builder game start shares (`SiteState.banditSite`), the pawn is placed there, and the `WhenExplored` window resolves the site's ruined edifice (`EdificeSetupSupport.resolvesAt`). The placement is a hidden outcome (`HiddenOutcomes`), so undo never takes it back. Hall of Mockery and Lost Guardians move a held banner to the shared bank, at Setup and when explored. `ExploreProcedureSuite`, `AtlasOperationsSuite`, `AtlasPlacementSuite`, `WhenExploredSuite`, `RuinedSetupRulesSuite`, `UndoBarrierPlaySuite`, `ExploreGameSuite`, `ExploredSiteChronicleSuite` and the three `explore` goldens cover the gates, the rolls, both ends, the powers, undo, the projection, replay and the Chronicle Phase. | The readings in the Foundations design, slice 3, "Explore". Lost Doors and Ruined Temple wait for Legacies. |
+| Explore (Wide Horizons) | **Tested (bounded)** | New Foundations rulebook, "Altered Foundation I: Wide Horizons" and "Setup / When Explored"; setup card `OATH-SETUP04b-NF` | `gameplay/actions/explore/ExploreProcedure.scala` offers the action while Foundation I is altered, a slot is empty, the Atlas holds a site and the actor's pawn is at the Hintermost site, to any role. It rolls 2 defense dice per 1 Supply against a difficulty of 4 through its own windows (`ExploreCost`, `ExploreRoll`), so no Recover power applies and the generic reroll choice does ([Foundations ruling 2](../superpowers/specs/2026-11/2026-11-11-foundations-design.md#rulings)). On success the explorer chooses Recent or Forgotten, `PlaceAtlasSite` puts that site in the next slot as a bandit site through the builder game start shares (`SiteState.banditSite`), the pawn is placed there, and the `WhenExplored` window resolves the site's ruined edifice (`EdificeSetupSupport.resolvesAt`). The placement is a hidden outcome (`HiddenOutcomes`), so undo never takes it back. Hall of Mockery and Lost Guardians move a held banner to the shared bank, at Setup and when explored. `ExploreProcedureSuite`, `AtlasOperationsSuite`, `AtlasPlacementSuite`, `WhenExploredSuite`, `RuinedSetupRulesSuite`, `UndoBarrierPlaySuite`, `ExploreGameSuite`, `ExploredSiteChronicleSuite` and the three `explore` goldens cover the gates, the rolls, both ends, the powers, undo, the projection, replay and the Chronicle Phase. | The readings in the Foundations design, slice 3, "Explore". Lost Doors and Ruined Temple wait for Legacies. |
 | Challenge and banner resource actions |
 ~~~
 
@@ -5223,7 +5223,7 @@ Then replace
 with
 
 ~~~markdown
-| Explore places an Atlas site in the next slot (`PlaceAtlasSite`). Imperial Maps' choice, which fills the slots at Setup, waits for slice 4 of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md). |
+| Explore places an Atlas site in the next slot (`PlaceAtlasSite`). Imperial Maps' choice, which fills the slots at Setup, waits for slice 4 of the [Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md). |
 ~~~
 
 **In** `docs/rules/ambiguities.md`:
@@ -5278,7 +5278,7 @@ The status line, slice 3's opening paragraph, and the Explore subsection:
 what the plan found against the code, and the readings it took, for the
 owner to confirm.
 
-**In** `docs/superpowers/specs/2026-11-11-foundations-design.md`:
+**In** `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`:
 
 Replace
 
@@ -5430,7 +5430,7 @@ Expected: no output. Nothing still says Explore is missing.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/ROADMAP.md docs/architecture/game-setup.md docs/architecture/gameplay-modules.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11-11-foundations-design.md
+git add docs/ROADMAP.md docs/architecture/game-setup.md docs/architecture/gameplay-modules.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git commit -m "docs(foundations): record slice 3b, the Explore action" -m "The setup doc says how Explore fills an empty slot, the traceability table gains an Explore row and stops calling the action missing, the roadmap drops what is done and keeps the banner move it leaves, and the spec records slice 3b landed, what its plan found against the code and the readings it took." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 

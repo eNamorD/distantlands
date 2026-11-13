@@ -79,11 +79,11 @@ Left behind by the
   fix would price a start refused with `NoPlayableOption` again with the
   waivable restrictions lifted, as `PhaseMenu`'s `unrefused` does for
   powers, and show the option askable. Found in the
-  [Foundations](superpowers/specs/2026-11-11-foundations-design.md) slice 6
+  [Foundations](superpowers/specs/2026-11/2026-11-11-foundations-design.md) slice 6
   review.
 
 Left behind by the
-[Foundations work](superpowers/specs/2026-11-11-foundations-design.md):
+[Foundations work](superpowers/specs/2026-11/2026-11-11-foundations-design.md):
 
 - [ ] **Show the Atlas's first site.** The rulebook makes the front Recent
   site public, so players can always view it, with its edifice, its
@@ -427,6 +427,14 @@ as current.
   `GameApiRoutes`; what would remain is the dev-only raw-events route and
   the `development: HttpGameClient` arm of `TableSession`, and the move
   crosses `DevelopmentTrustBoundary`'s loopback-only rule.
+- [ ] **`CoreOperations.scala` is at the file limit.** It holds 796 of the
+  800 lines `scripts/check-architecture.py` allows, and it cannot be split
+  as it stands: `CoreOperation` and `PrimitiveOperation` are sealed, so
+  every subtype must live in the same file. Legacies will add operations,
+  so its plan needs room first: a nested sealed family per area, or an
+  exception for the sealed vocabulary. Measured at the end of the
+  [Foundations work](superpowers/specs/2026-11/2026-11-11-foundations-design.md),
+  2026-11-12.
 
 ## Later
 

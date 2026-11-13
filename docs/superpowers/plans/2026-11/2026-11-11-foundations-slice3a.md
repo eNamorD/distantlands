@@ -24,7 +24,7 @@ slice 3b and is not in this plan.
 frontend under `frontend/`, tested with jsdom; shared protocol sources under
 `shared/`.
 
-**Spec:** [Foundations design](../specs/2026-11-11-foundations-design.md),
+**Spec:** [Foundations design](../../specs/2026-11/2026-11-11-foundations-design.md),
 sections "Rulings", "Approach" and "Slice 3: Wide Horizons, Explore and
 Setup With No Empire" except its "Explore" subsection, which is slice 3b.
 Slice 4 is read for the empty slots it reuses.
@@ -140,7 +140,7 @@ git grep -n "if actual != expected then" -- src/main/scala/distantlands/model/Do
 git grep -n "if required && refs.nonEmpty && rejected.size == refs.size then" -- src/main/scala/distantlands/gameplay/walker/WalkerSearch.scala
 git grep -n "def foundation(number: FoundationNumber, face: FoundationFace)" -- src/test/scala/distantlands/testkit/Table.scala
 git grep -n "an Empire-less later game requires Wide Horizons" -- src
-git grep -n "Slices 1 and 2 landed" -- docs/superpowers/specs/2026-11-11-foundations-design.md
+git grep -n "Slices 1 and 2 landed" -- docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 ```
 
 The first must print `slice1-ok`: `92fb2e773` is the merge that brought
@@ -3564,7 +3564,7 @@ Empire's one site." -m "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>
 - Modify: `docs/rules/implementation-traceability.md`
 - Modify: `docs/rules/ambiguities.md`
 - Modify: `docs/ROADMAP.md`
-- Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
+- Modify: `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`
 
 **Interfaces:**
 - Consumes: everything Tasks 1 to 7 built; nothing new is produced.
@@ -3627,7 +3627,7 @@ slots (`MapState.inSlots`, `nextSlot`, `hintermost`). The atlas keeps
 every atlas site game start did not place, in order. The projection gives
 each region its `emptySlots`, which the table draws as empty frames. No
 action fills an empty slot yet: Explore is slice 3b of the
-[Foundations design](../superpowers/specs/2026-11-11-foundations-design.md).
+[Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md).
 
 The completed aggregate includes site resources and bandits, facedown site
 ~~~
@@ -3695,13 +3695,13 @@ with
 Then replace
 
 ~~~markdown
-| Altered Foundations I, V and VI are refused at game start until their slices of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md). Imperial Maps always fills from Recent Sites
+| Altered Foundations I, V and VI are refused at game start until their slices of the [Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md). Imperial Maps always fills from Recent Sites
 ~~~
 
 with
 
 ~~~markdown
-| Wide Horizons leaves the slots past the Empire's sites empty at game start (`WideHorizonsSetupSuite`), but its Explore action is not offered yet. Altered Foundations V and VI are refused at game start until their slices of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md). Imperial Maps always fills from Recent Sites
+| Wide Horizons leaves the slots past the Empire's sites empty at game start (`WideHorizonsSetupSuite`), but its Explore action is not offered yet. Altered Foundations V and VI are refused at game start until their slices of the [Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md). Imperial Maps always fills from Recent Sites
 ~~~
 
 Then replace
@@ -3762,7 +3762,7 @@ correct, and the readings this plan took, with ruling 7, the set-aside
 Reliquary at Crown Chancellor, set apart as the one that narrows an owner
 ruling.
 
-In `docs/superpowers/specs/2026-11-11-foundations-design.md`:
+In `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`:
 
 Replace
 
@@ -3915,7 +3915,7 @@ Expected: no output. Neither refusal is left.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add docs/architecture/game-setup.md docs/rules/implementation-traceability.md docs/rules/ambiguities.md docs/ROADMAP.md docs/superpowers/specs/2026-11-11-foundations-design.md
+git add docs/architecture/game-setup.md docs/rules/implementation-traceability.md docs/rules/ambiguities.md docs/ROADMAP.md docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git commit -m "docs(foundations): record slice 3a, empty slots and no Empire" -m "The setup doc says how a game starts with an Empire, under Wide Horizons
 and with no Empire, and how the map's slots work. The traceability table
 and the ambiguities note stop calling Wide Horizons refused, the roadmap

@@ -26,7 +26,7 @@ need no new shape.
 frontend under `frontend/`, tested with jsdom; shared protocol sources under
 `shared/`.
 
-**Spec:** [Foundations design](../specs/2026-11-11-foundations-design.md),
+**Spec:** [Foundations design](../../specs/2026-11/2026-11-11-foundations-design.md),
 sections "Rulings", "Approach", "Slice 3" (its "Empty slots", "Wide
 Horizons at game start", "Explore" and "Setup With No Empire" subsections,
 which this slice must leave unchanged) and "Slice 4: Imperial Maps'
@@ -155,7 +155,7 @@ git grep -n "private def endLabel(end: AtlasEnd): String = end match" -- src/mai
 git grep -n "atlasSites = chronicle.atlasBox.take(slots)" -- src/main/scala/distantlands/gameplay/setup/GameStartRules.scala
 git grep -n "val reliquaryDecisionId: String = \"setup.reliquary-pick\"" -- src/main/scala/distantlands/gameplay/setup/SetupProcedure.scala
 git grep -n "def mapCutIntoAtlas(kept: Int)" -- src/test/scala/distantlands/testkit/Table.scala
-git grep -n "Slices 1, 2, 3a and 3b landed" -- docs/superpowers/specs/2026-11-11-foundations-design.md
+git grep -n "Slices 1, 2, 3a and 3b landed" -- docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git grep -c "ImperialMaps" -- src/main/scala
 ```
 
@@ -1968,7 +1968,7 @@ git commit -m "test(setup): pin Imperial Maps' question, replay and undo at the 
 - Modify: `docs/rules/implementation-traceability.md`
 - Modify: `docs/architecture/game-setup.md`
 - Modify: `docs/ROADMAP.md`
-- Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
+- Modify: `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`
 
 **Interfaces:**
 - Consumes: everything Tasks 1 to 3 built; nothing new is produced.
@@ -1992,7 +1992,7 @@ are filled from the relic deck. Sites always come from the Recent end; the Chanc
 with
 
 ~~~markdown
-are filled from the relic deck. Under Imperial Maps the Chancellor chooses at Setup, right after the Reliquary pick, whether every empty slot is filled from the Recent or the Forgotten end; the sites are placed one at a time going Hinterward, each adding Foundation II's favor for its denizens (Empire slice 4; [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md), slice 4).
+are filled from the relic deck. Under Imperial Maps the Chancellor chooses at Setup, right after the Reliquary pick, whether every empty slot is filled from the Recent or the Forgotten end; the sites are placed one at a time going Hinterward, each adding Foundation II's favor for its denizens (Empire slice 4; [Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md), slice 4).
 ~~~
 
 **In** `docs/rules/implementation-traceability.md`:
@@ -2036,7 +2036,7 @@ with
 Then replace
 
 ~~~markdown
-Imperial Maps' choice, which fills the slots at Setup, waits for slice 4 of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md). |
+Imperial Maps' choice, which fills the slots at Setup, waits for slice 4 of the [Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md). |
 ~~~
 
 with
@@ -2150,7 +2150,7 @@ The status line, the Approach's materializer sentence, which named
 Foundation I's fill, and the slice 4 section: what the plan found against
 the code, and the readings it took, for the owner to confirm.
 
-**In** `docs/superpowers/specs/2026-11-11-foundations-design.md`:
+**In** `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`:
 
 Replace
 
@@ -2256,7 +2256,7 @@ Expected: no output. Nothing still says Imperial Maps' choice is missing.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/ROADMAP.md docs/architecture/game-setup.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11-11-foundations-design.md
+git add docs/ROADMAP.md docs/architecture/game-setup.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git commit -m "docs(foundations): record slice 4, Imperial Maps' choice" -m "Empire ruling R27 is closed: the Chancellor chooses the end of the Atlas that fills the map. The setup doc says where the fill now runs, the traceability table stops calling the choice missing, the roadmap drops it, and the spec records slice 4 landed, what its plan found against the code and the readings it took." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 

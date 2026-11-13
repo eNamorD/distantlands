@@ -7,7 +7,7 @@ pp. 12 and 15 for the first-game banner faces, Mob and Wandering Flame, and
 for the altered ones: an altered Foundation V starts the People's Favor on
 its Grand Council face, and an altered Foundation VI the Darkest Secret on
 its Festival face
-([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md),
+([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md),
 slices 5 and 6). The face identities are typed state, and so is the site
 the festival marker lies over (`DarkestSecretState.festival`).
 

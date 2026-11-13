@@ -29,7 +29,7 @@ in `BannerRules.darkestSecretRibbon`. The site projection gains a required
 frontend under `frontend/`, tested with jsdom; shared protocol sources under
 `shared/`.
 
-**Spec:** [Foundations design](../specs/2026-11-11-foundations-design.md),
+**Spec:** [Foundations design](../../specs/2026-11/2026-11-11-foundations-design.md),
 sections "Rulings", "Approach", "Slice 5: Grand Council" (its "As built"
 and readings, whose `BannerRules.peoplesFavorRibbon` this slice mirrors for
 the Darkest Secret), "Slice 6: Festival" and "Slice 7: Shape Foundation"
@@ -177,7 +177,7 @@ git grep -n "case object RestStart extends OtherWindow" -- src/main/scala/distan
 git grep -n "yield Sequence(Vector(EnterPhase(Phase.Rest)))" -- src/main/scala/distantlands/gameplay/phases/rest/BeginRestProcedure.scala
 git grep -n "case object CityWall extends ContributingPower with PowerUseRestriction" -- src/main/scala/distantlands/gameplay/powers/poweruse/CityWall.scala
 git grep -n "def onto(ready: ReadyGame, operation: CoreOperation)" -- src/main/scala/distantlands/gameplay/powers/poweruse/Placements.scala
-git grep -n "Slices 1, 2, 3a, 3b, 4 and 5 landed" -- docs/superpowers/specs/2026-11-11-foundations-design.md
+git grep -n "Slices 1, 2, 3a, 3b, 4 and 5 landed" -- docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git grep -c "SetFestivalMarker" -- src/main
 ```
 
@@ -2865,7 +2865,7 @@ git commit -m "feat(challenge): the Festival's ribbons burn its secrets and remo
 - Modify: `docs/architecture/game-setup.md`
 - Modify: `docs/rules/ambiguities.md`
 - Modify: `docs/rules/implementation-traceability.md`
-- Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
+- Modify: `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`
 
 **Interfaces:**
 - Consumes: everything Tasks 1 to 5 built; nothing new is produced.
@@ -2901,7 +2901,7 @@ Replace
 pp. 12 and 15 for the first-game banner faces, Mob and Wandering Flame, and
 for the Grand Council: an altered Foundation V starts the People's Favor on
 its Grand Council face
-([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md),
+([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md),
 slice 5). The face identities are typed state. The Festival face has no
 implemented power: `RuleSourceIndex` lists its handler id, and it is
 ignored and recorded like any other unimplemented power.
@@ -2914,7 +2914,7 @@ pp. 12 and 15 for the first-game banner faces, Mob and Wandering Flame, and
 for the altered ones: an altered Foundation V starts the People's Favor on
 its Grand Council face, and an altered Foundation VI the Darkest Secret on
 its Festival face
-([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md),
+([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md),
 slices 5 and 6). The face identities are typed state, and so is the site
 the festival marker lies over (`DarkestSecretState.festival`).
 ~~~
@@ -3059,13 +3059,13 @@ dependencies"):
 Replace
 
 ~~~markdown
-An altered V, Grand Council, starts the People's Favor on its Grand Council face; the altered face of VI is refused at game start until its slice of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md), and Foundation III's faces
+An altered V, Grand Council, starts the People's Favor on its Grand Council face; the altered face of VI is refused at game start until its slice of the [Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md), and Foundation III's faces
 ~~~
 
 with
 
 ~~~markdown
-An altered V, Grand Council, starts the People's Favor on its Grand Council face, and an altered VI, Festival, the Darkest Secret on its Festival face ([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md), slices 5 and 6). Foundation III's faces
+An altered V, Grand Council, starts the People's Favor on its Grand Council face, and an altered VI, Festival, the Darkest Secret on its Festival face ([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md), slices 5 and 6). Foundation III's faces
 ~~~
 
 **In** `docs/rules/implementation-traceability.md`:
@@ -3085,7 +3085,7 @@ Grand Council, altered Foundation V, starts the People's Favor on its Grand Coun
 Then replace
 
 ~~~markdown
- Altered Foundation VI is refused at game start until its slice of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md).
+ Altered Foundation VI is refused at game start until its slice of the [Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md).
 ~~~
 
 with nothing (delete exactly this text, its leading space included, and
@@ -3157,7 +3157,7 @@ Narrow Pass is waivable on Travel and on campaign targeting, Secret Police on a 
 The status line, and the slice 6 section: the ribbons as read, what was
 built, and the readings taken, for the owner to confirm.
 
-**In** `docs/superpowers/specs/2026-11-11-foundations-design.md`:
+**In** `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`:
 
 Replace
 
@@ -3278,7 +3278,7 @@ refused, and nothing names the deleted code.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/ROADMAP.md docs/architecture/bounded-banners.md docs/architecture/bounded-visions-and-conspiracy.md docs/architecture/all-exile-round-endings.md docs/architecture/game-setup.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11-11-foundations-design.md
+git add docs/ROADMAP.md docs/architecture/bounded-banners.md docs/architecture/bounded-visions-and-conspiracy.md docs/architecture/all-exile-round-endings.md docs/architecture/game-setup.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git commit -m "docs(foundations): record slice 6, the Festival" -m "The roadmap drops the Festival face, the banner, Conspiracy, Rest and setup docs describe the Festival's marker, its persistent power and its ribbons, the ambiguities and the traceability table stop calling the face refused or missing, and the spec records slice 6 landed, the ribbons as printed, what was built and the readings taken." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 

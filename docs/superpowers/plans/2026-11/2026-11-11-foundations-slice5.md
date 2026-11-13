@@ -26,7 +26,7 @@ need no change: both faces are already projected and drawn.
 frontend under `frontend/`, tested with jsdom; shared protocol sources under
 `shared/`.
 
-**Spec:** [Foundations design](../specs/2026-11-11-foundations-design.md),
+**Spec:** [Foundations design](../../specs/2026-11/2026-11-11-foundations-design.md),
 sections "Rulings", "Approach", "Slice 3" ("Setup With No Empire", whose
 erosion of Foundation V this slice must leave working), "Slice 5: Grand
 Council" and "Slice 6: Festival" (the other banner face, which stays
@@ -172,7 +172,7 @@ git grep -n "def isImperialSite(ready: ReadyGame, site: SiteId): Boolean" -- src
 git grep -n "def openSites(sites: PlaySites): CardPlayRules" -- src/main/scala/distantlands/gameplay/actions/CardPlayRules.scala
 git grep -n "def peoplesFavorReturns(ready: ReadyGame)" -- src/main/scala/distantlands/gameplay/actions/challenge/ChallengeRibbon.scala
 git grep -n "banners.peoplesFavor.active == PeoplesFavorFace.Mob &&" -- src/main/scala/distantlands/gameplay/actions/challenge/ChallengeProcedure.scala
-git grep -n "Slices 1, 2, 3a, 3b and 4 landed" -- docs/superpowers/specs/2026-11-11-foundations-design.md
+git grep -n "Slices 1, 2, 3a, 3b and 4 landed" -- docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git grep -c "PeoplesFavorGrandCouncil" -- src/main/scala
 ```
 
@@ -1540,7 +1540,7 @@ git commit -m "feat(challenge): the Grand Council's ribbons return half its favo
 - Modify: `docs/architecture/game-setup.md`
 - Modify: `docs/rules/ambiguities.md`
 - Modify: `docs/rules/implementation-traceability.md`
-- Modify: `docs/superpowers/specs/2026-11-11-foundations-design.md`
+- Modify: `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`
 
 **Interfaces:**
 - Consumes: everything Tasks 1 to 3 built; nothing new is produced.
@@ -1590,7 +1590,7 @@ with
 pp. 12 and 15 for the first-game banner faces, Mob and Wandering Flame, and
 for the Grand Council: an altered Foundation V starts the People's Favor on
 its Grand Council face
-([Foundations design](../superpowers/specs/2026-11-11-foundations-design.md),
+([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md),
 slice 5). The face identities are typed state. The Festival face has no
 implemented power: `RuleSourceIndex` lists its handler id, and it is
 ignored and recorded like any other unimplemented power.
@@ -1723,13 +1723,13 @@ dependencies"):
 Replace
 
 ~~~markdown
-The altered faces of V and VI are refused at game start until their slices of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md), and
+The altered faces of V and VI are refused at game start until their slices of the [Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md), and
 ~~~
 
 with
 
 ~~~markdown
-An altered V, Grand Council, starts the People's Favor on its Grand Council face; the altered face of VI is refused at game start until its slice of the [Foundations design](../superpowers/specs/2026-11-11-foundations-design.md), and
+An altered V, Grand Council, starts the People's Favor on its Grand Council face; the altered face of VI is refused at game start until its slice of the [Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md), and
 ~~~
 
 **In** `docs/rules/implementation-traceability.md`:
@@ -1835,7 +1835,7 @@ with
 The status line, and the slice 5 section: the ribbons as read, what was
 built, and the readings taken, for the owner to confirm.
 
-**In** `docs/superpowers/specs/2026-11-11-foundations-design.md`:
+**In** `docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md`:
 
 Replace
 
@@ -1931,7 +1931,7 @@ nothing names the deleted method.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/ROADMAP.md docs/architecture/bounded-banners.md docs/architecture/bounded-visions-and-conspiracy.md docs/architecture/all-exile-round-endings.md docs/architecture/game-setup.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11-11-foundations-design.md
+git add docs/ROADMAP.md docs/architecture/bounded-banners.md docs/architecture/bounded-visions-and-conspiracy.md docs/architecture/all-exile-round-endings.md docs/architecture/game-setup.md docs/rules/ambiguities.md docs/rules/implementation-traceability.md docs/superpowers/specs/2026-11/2026-11-11-foundations-design.md
 git commit -m "docs(foundations): record slice 5, the Grand Council" -m "The roadmap keeps only the Festival face, the banner and Conspiracy docs describe the Grand Council's power and ribbons, the setup doc says what an altered V starts, the ambiguities and the traceability table stop calling the face refused or missing, and the spec records slice 5 landed, the ribbons as printed, what was built and the readings taken." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
