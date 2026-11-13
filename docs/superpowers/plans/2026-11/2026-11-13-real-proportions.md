@@ -52,7 +52,7 @@
 **Interfaces:**
 - Produces: CSS custom properties `--ratio-denizen`, `--ratio-site`, `--ratio-relic`, `--ratio-banner`, `--ratio-legacy`, `--ratio-foundation`, `--ratio-oath-goal`, `--ratio-oathkeeper-title`; `--card-h: 18.2ex`; `--card-w` derived from it.
 
-- [ ] **Step 1: Link the tooling** (once per worktree)
+- [ ] **Step 1: Link the tooling** (once per worktree; skip a link that is already there, as both are in `.worktrees/real-proportions`)
 
 ```bash
 ln -s ../../.tooling .tooling
@@ -279,6 +279,7 @@ git add frontend/src/main/scala/distantlands/frontend/CardFace.scala frontend/sr
 **Files:**
 - Modify: `frontend/src/main/scala/distantlands/frontend/CardFace.scala` (`render`, `summary`)
 - Modify: `frontend/src/main/scala/distantlands/frontend/BannerFace.scala` (the banner's side and name elements)
+- Modify: `frontend/src/main/scala/distantlands/frontend/ServerUiSupport.scala` (`facedownCard`'s back letter)
 - Modify: `frontend/styles.css` (`.card-tokens`; `.map-compact .card-tokens`)
 - Test: `frontend/src/test/scala/distantlands/frontend/CardFaceSuite.scala`
 
@@ -312,7 +313,7 @@ Expected: FAIL, `Vector()` did not equal `Vector("card-header")`.
 
 - [ ] **Step 3: Implement**
 
-In `CardFace.summary`, change three element class strings: `"card-header"` to `"card-header printed"`, `"card-power-marks"` to `"card-power-marks printed"`, and the goal's `s"legacy-goal legacy-goal-${goal.key}"` to `s"legacy-goal legacy-goal-${goal.key} printed"`. In `render` and in `ServerUiSupport.facedownCard`, change both `"card-back-letter"` class strings to `"card-back-letter printed"`. In `BannerFace.render`, change `text("span", "banner-side", side(banner.face))` to use the class `"banner-side printed"` and `element("span", "card-header")` to use `"card-header printed"`.
+In `CardFace.summary`, change three element class strings: `"card-header"` to `"card-header printed"`, `"card-power-marks"` to `"card-power-marks printed"`, and the goal's `s"legacy-goal legacy-goal-${goal.key}"` to `s"legacy-goal legacy-goal-${goal.key} printed"`. In `render` (two places) and in `ServerUiSupport.facedownCard`, change the `"card-back-letter"` class strings to `"card-back-letter printed"`. The back letter on a legacy chip (`LegacyStrip.chip`) stays as it is: the chip is one of the stand-ins the spec leaves out of scope. In `BannerFace.render`, change `text("span", "banner-side", side(banner.face))` to use the class `"banner-side printed"` and `element("span", "card-header")` to use `"card-header printed"`.
 
 Suites that compare a whole `class` attribute for these elements now see the extra word; where one fails, change its expected string to include ` printed`.
 
@@ -350,30 +351,25 @@ git add frontend/src frontend/styles.css && git commit -m "feat(frontend): mark 
 - Modify: `frontend/src/main/scala/distantlands/frontend/CardInspection.scala` (`openText` and the request it builds)
 - Modify: `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala` (`showText`)
 - Modify: `frontend/src/main/scala/distantlands/frontend/FoundationStrip.scala:66`, `WorldBoardRenderer.scala:105` (the Oathkeeper title pill)
+- Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala:202` (the handler's `Request.Text` case)
 - Modify: `frontend/styles.css` (after the `.card-overlay-body > .card-face-vision` rule)
-- Test: `frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala`
+- Test: `frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala`, `FoundationStripSuite.scala`, `PlayerBoardSuite.scala`
+- Modify tests (a fourth `_` in each `Request.Text` pattern): `PlayerBoardSuite.scala:260`, `BannerFaceSuite.scala:30`, `FoundationStripSuite.scala:28`, `FestivalMarkerSuite.scala:26`
 
 **Interfaces:**
 - Produces: `CardInspection.openText(title: String, lines: Vector[String], origin: dom.html.Element, plate: Option[String] = None)` and `CardInspectionOverlay.showText(title, lines, origin, plate: Option[String] = None)`. `plate` is one of `"foundation"`, `"oath-goal"`, `"oathkeeper-title"`. With a plate, the overlay body's first child is `span.card-plate.card-plate-<plate>` holding the title in a `span.card-name.printed`.
 
 - [ ] **Step 1: Write the failing test**
 
-Add to `CardInspectionOverlaySuite`:
+Add to `CardInspectionOverlaySuite` (it already has `focusableOpener()` for the overlay to return focus to):
 
 ```scala
-  /** A button on `mount`'s root, for the overlay to return focus to. */
-  private def opener(mount: MountedOverlay): dom.html.Element =
-    val node = dom.document.createElement("button")
-      .asInstanceOf[dom.html.Element]
-    mount.root.appendChild(node)
-    node
-
   /** A printed card that is shown as words on the table has its box in the
     * overlay, at its real ratio, where its image will go. */
   test("a text overlay with a plate leads with the card's box"):
     val mount = mountedOverlay()
     mount.overlay.showText("The Sun", Vector("Deal the sites."),
-      opener(mount), plate = Some("foundation"))
+      focusableOpener(), plate = Some("foundation"))
     val body = Dom.one(mount.root, ".card-overlay-body")
     val plate = Dom.one(body, ".card-plate")
     assert(plate.classList.contains("card-plate-foundation"))
@@ -382,14 +378,42 @@ Add to `CardInspectionOverlaySuite`:
 
   test("a text overlay without a plate draws no box"):
     val mount = mountedOverlay()
-    mount.overlay.showText("Supply", Vector("A line."), opener(mount))
+    mount.overlay.showText("Supply", Vector("A line."), focusableOpener())
     assertEquals(Dom.all(mount.root, ".card-plate"), Vector.empty)
+```
+
+Add to `FoundationStripSuite` (its `afterEach` clears the handler):
+
+```scala
+  test("a table card opens with the foundation's plate"):
+    var plates = Vector.empty[Option[String]]
+    CardInspection.onOpen:
+      case CardInspection.Request.Text(_, _, _, plate) => plates :+= plate
+      case _ => ()
+    click(all(tableStrip, "button.foundation-card")(2))
+    assertEquals(plates, Vector(Some("foundation")))
+```
+
+Add to `PlayerBoardSuite`, after "the title pill opens the Oath text":
+
+```scala
+  test("the title pill opens with the Oathkeeper title's plate"):
+    var plates = Vector.empty[Option[String]]
+    CardInspection.onOpen:
+      case CardInspection.Request.Text(_, _, _, plate) => plates :+= plate
+      case _ => ()
+    val node = renderWith(board, Some(OathkeeperStatus("devotion",
+      Some("red"), "oathkeeper", usurperLimited = false, None)))
+    as[dom.html.Button](firstMatch(node, ".player-slots .player-title")
+      .getOrElse(fail("no title pill"))).click()
+    CardInspection.clear()
+    assertEquals(plates, Vector(Some("oathkeeper-title")))
 ```
 
 - [ ] **Step 2: Run it to see it fail**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.CardInspectionOverlaySuite"`
-Expected: compile error, `showText` has no parameter `plate`.
+Expected: compile error, `showText` has no parameter `plate` (and `Request.Text` has three fields, not four).
 
 - [ ] **Step 3: Implement**
 
