@@ -457,6 +457,10 @@ as current.
   drawn asset has its real proportions and the map is laid out on the mat's
   coordinates ([real proportions design](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md),
   [asset proportions](catalog/asset-proportions.md)).
+  Open question: whether the zoomed-out map keeps its glance layer (the
+  short forms of names, defense and forces) over the art, or lets the art
+  alone carry what is printed
+  ([implementation ruling R9](superpowers/specs/2026-11/2026-11-13-real-proportions-design-implementation-rulings.md)).
 - [ ] **L4 — Saved-game browser and replay navigation.** Saved campaigns
   are browsable; saved games and replays are not.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**
@@ -478,8 +482,9 @@ as current.
   should move to an HTML5 canvas.
 - [ ] **Clicking a banner shows its details.** Darkest Secret and The
   People's Favor are clickable like other cards, opening their details.
-- [ ] **Match the map's aspect ratio to the physical board.** The rendered
-  map's proportions differ from the actual game map's.
+- [ ] **The mat's travel-cost band.** The mat prints each region's travel
+  costs in a band under its name; the drawn mat shows the name only
+  ([real proportions design](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md)).
 - [ ] **In-game chat.**
 - [ ] **Public Chronicle pages.** The winner of a game may write their summary
   of it, and players can browse all the summaries.
