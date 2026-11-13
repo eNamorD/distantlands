@@ -919,6 +919,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .walker-amount-option[aria-selected="true"]::after { content: "✓";
   color: var(--brass); }
 .decision-cards, .board-cards { gap: var(--card-gap); }
+/* The Public Ambitions row, over the regions while it holds a legacy
+   (R38). */
+.public-legacies { display: flex; align-items: center; gap: 10px;
+  margin: 0 0 8px; }
+.public-legacies-label { margin: 0; font-size: 0.9rem; }
+.public-legacies-cards { display: flex; gap: var(--card-gap); }
 .site-cards { display: flex; flex: 0 0 auto; flex-wrap: wrap;
   align-items: flex-start; justify-content: flex-end; min-width: 0;
   gap: var(--card-gap); }
@@ -1245,6 +1251,12 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .game-table .player-board > * { grid-column: 1; }
 .game-table .player-board > .board-cards { grid-column: 2; grid-row: 1;
   margin: 0; padding-bottom: 3px; flex-wrap: nowrap; }
+/* A lineage's legacies, a row of their own under its cards in play, a
+   step smaller: they are read for their goal, not played (R37). */
+.board-legacies { display: flex; flex-wrap: nowrap; gap: var(--card-gap);
+  align-items: flex-start; font-size: 0.7em; }
+.game-table .player-board > .board-legacies { grid-column: 2; grid-row: 2;
+  margin: 2px 0 0; }
 .game-table .player-board-active { outline: 1px dashed #c8b48b; outline-offset: -2px;
   background: #29251d; }
 /* The block that stands for the player when a decision picks one. The

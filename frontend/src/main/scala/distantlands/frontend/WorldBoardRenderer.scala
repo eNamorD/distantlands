@@ -159,6 +159,7 @@ private[frontend] object WorldBoardRenderer:
         options.card(CardFace.render(card), card,
           boardCardKeys("relic-slot", player.playerId, at, card))))
       section.appendChild(cards)
+      LegacyStrip.board(board, options).foreach(section.appendChild)
       }
       panel.appendChild(section)
     }
@@ -278,6 +279,7 @@ private[frontend] object WorldBoardRenderer:
     // the map pane is wider than it is tall, so the map fits by its height.
     val layout = element("div", "world-layout")
     val main = element("div", "world-main")
+    LegacyStrip.publicRow(value, options).foreach(main.appendChild)
     main.appendChild(regions)
     main.appendChild(favorBanks(value, options))
     layout.appendChild(main)
