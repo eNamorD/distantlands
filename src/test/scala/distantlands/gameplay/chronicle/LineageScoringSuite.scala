@@ -3,17 +3,19 @@ package distantlands.gameplay.chronicle
 import distantlands.catalog.holding.{CircleOfSwordsCard, HeirloomCard,
   TheNeedleCard, WealthyCard}
 import distantlands.gameplay.SacredGroundCard
+import distantlands.gameplay.GrandMaskCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
-  BuriedGiantSite}
+  BuriedGiantSite, DesolateShoreSite}
 import distantlands.gameplay.powers.economy.{BirdsongCard, HallowedSpringCard,
   TheOldOakCard, VowOfPovertyCard}
 import distantlands.gameplay.powers.poweruse.ForestCouncilCard
+import distantlands.gameplay.powers.whenplayed.AutumnWindCard
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
-import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.{Outcomes, RecordedOps, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 
@@ -118,49 +120,77 @@ class LineageScoringSuite extends munit.FunSuite:
       ChronicleThroneProcedure.noteKeys, events).map(_.text)
       .filter(_.contains("lineage point"))
 
-  /** p1 holding The Needle over the Empire's Beast cards, parked on the
-    * gifts, and the bonus as the step reads it there. */
-  private def needleAtGifts(using munit.Location)
-      : (OathTransition, Vector[(Suit, Int)]) =
-    val at = atGiftsOn(empireWithCards.legacy(p1, TheNeedleCard))
-    (at, bonusOf(Table.from(Outcomes.ready(at.state))))
+  /** p1 holding `legacies` over the Empire's cards, parked on the gifts. */
+  private def holdingAtGifts(legacies: distantlands.catalog.Legacy*)(
+      using munit.Location): OathTransition =
+    atGiftsOn(legacies.foldLeft(empireWithCards)(_.legacy(p1, _)))
 
-  private def shares(bonus: Vector[(Suit, Int)]): String =
-    bonus.map((suit, points) => s"$points from $suit").mkString(", ")
+  /** The lineage points `events` recorded for p1's lineage. */
+  private def scoredByP1(at: OathTransition, events: Vector[OathEvent])
+      : Vector[Int] =
+    val lineage = Outcomes.ready(at.state).game.current.player(p1).get.lineage
+    RecordedOps.all(events).collect {
+      case LineagePointsScored(`lineage`, points) => points }
+
+  private def giftCap(at: OathTransition)(using munit.Location): Int =
+    ChronicleWalk.parked(at.state).get.query match
+      case spread: DecisionQuery.Distribute => spread.maxTotal
+      case other => fail(other.toString)
 
   test("the winner earns 3 plus the bonus, and may give away half of it"):
-    val (at, bonus) = needleAtGifts
-    assert(bonus.exists(_._1 == Suit.Beast), bonus)
-    val total = LineageScoring.basePoints + bonus.map(_._2).sum
-    ChronicleWalk.parked(at.state).get.query match
-      case spread: DecisionQuery.Distribute =>
-        assertEquals(spread.maxTotal, total / 2)
-      case other => fail(other.toString)
-    val after = Outcomes.ready(giftingOn(at, 0, 0).state)
-    val before = Outcomes.ready(at.state)
-    assertEquals(scoreOf(after, p1) - scoreOf(before, p1), total)
-    assertEquals(scoreLines(giftingOn(at, 0, 0).events),
-      Vector(s"p1 scored $total lineage points (3 base, ${shares(bonus)})"))
+    // The Needle over the Empire's 3 Beast cards: 3 + 3.
+    val at = holdingAtGifts(TheNeedleCard)
+    assertEquals(giftCap(at), 3)
+    val kept = giftingOn(at, 0, 0)
+    assertEquals(scoreOf(Outcomes.ready(kept.state), p1) -
+      scoreOf(Outcomes.ready(at.state), p1), 6)
+    assertEquals(scoreLines(kept.events),
+      Vector("p1 scored 6 lineage points (3 base, 3 from Beast)"))
+
+  test("two legacies of two suits score two shares, in suit order"):
+    val at = holdingAtGifts(TheNeedleCard, CircleOfSwordsCard)
+    assertEquals(giftCap(at), 3)
+    assertEquals(scoreLines(giftingOn(at, 0, 0).events), Vector(
+      "p1 scored 7 lineage points (3 base, 3 from Beast, 1 from Nomad)"))
 
   test("after gifts the line names the kept points and what was given " +
       "(R28)"):
-    val (at, bonus) = needleAtGifts
-    val total = LineageScoring.basePoints + bonus.map(_._2).sum
+    val at = holdingAtGifts(TheNeedleCard)
     assertEquals(scoreLines(giftingOn(at, 1, 0).events).head,
-      s"p1 scored ${total - 2} lineage points (3 base, ${shares(bonus)}, " +
-        "less 2 given)")
+      "p1 scored 4 lineage points (3 base, 3 from Beast, less 2 given)")
 
   test("a winner who gives every point away records nothing, and the line " +
       "still says so (R29)"):
-    // With 3 Beast cards the total is 6, which can all be given away.
-    val (at, bonus) = needleAtGifts
-    val ready = Outcomes.ready(at.state)
-    val total = LineageScoring.basePoints + bonus.map(_._2).sum
-    assertEquals(total, 6)
-    val done = giftingOn(at, total / 4, total / 2 - total / 4)
-    assertEquals(scoreOf(Outcomes.ready(done.state), p1), scoreOf(ready, p1))
-    assert(!done.events.exists(_.toString.contains(
-      s"LineagePointsScored(${ready.game.current.player(p1).get.lineage}")))
+    val at = holdingAtGifts(TheNeedleCard)
+    val done = giftingOn(at, 2, 1)
+    assertEquals(scoredByP1(at, done.events), Vector.empty)
+    assertEquals(scoreOf(Outcomes.ready(done.state), p1),
+      scoreOf(Outcomes.ready(at.state), p1))
     assertEquals(scoreLines(done.events).head,
-      s"p1 scored 0 lineage points (3 base, ${shares(bonus)}, less $total " +
-        "given)")
+      "p1 scored 0 lineage points (3 base, 3 from Beast, less 6 given)")
+
+  test("bandit sites and relics at the winner's sites add nothing"):
+    val table = empireWithCards.legacy(p1, TheNeedleCard)
+      .bandits(DesolateShoreSite, 1).denizen(AutumnWindCard, DesolateShoreSite)
+      .relicAt(GrandMaskCard, AncientCitySite)
+    assertEquals(bonusOf(table), Vector(Suit.Beast -> 3))
+
+  test("a site that turns Imperial at Offer Citizenship counts"):
+    // p2 rules Buried Giant, with a Beast denizen there, and accepts.
+    val started = accepted(rules.next(OathTransition(empireWithCards
+      .legacy(p1, TheNeedleCard).state, Vector.empty),
+      TriggeredProcedureRef.ChronicleSun))
+    def answering(step: OathTransition, by: PlayerId, decisionId: String,
+        value: DecisionAnswer): OathTransition =
+      val next = accepted(rules.resolveWalker(step.state, by, decisionId, value))
+      OathTransition(next.state, step.events ++ next.events)
+    val offered = answering(started, p1, OfferCitizenship.offerDecisionId,
+      DecisionAnswer.ChooseManyAnswer(Vector(DecisionOptionRef.Player(p2))))
+    val joined = answering(offered, p2, OfferCitizenship.answerDecisionId(p2),
+      DecisionAnswer.ChooseOneAnswer(OfferCitizenship.accept))
+    val at = ChronicleWalk.walkedTo(rules, joined,
+      LineageScoring.giftsDecisionId)
+    assertEquals(bonusOf(Table.from(Outcomes.ready(at.state))),
+      Vector(Suit.Beast -> 4))
+    assertEquals(scoreLines(giftingOn(at, 0, 0).events).head,
+      "p1 scored 7 lineage points (3 base, 4 from Beast)")
