@@ -241,6 +241,8 @@ private[gamelog] final class NoteLines(words: LogWords,
       Some(words.one(words.card(id, ready, ready, viewer)))
     case DecisionOptionRef.Edifice(id) =>
       Some(words.one(words.card(id, ready, ready, viewer)))
+    case DecisionOptionRef.Legacy(id) =>
+      Some(words.one(words.card(id, ready, ready, viewer)))
     case DecisionOptionRef.Banner(banner) => Some(Vector(words.banner(banner)))
     case _ => None
 

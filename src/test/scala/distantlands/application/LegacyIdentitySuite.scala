@@ -2,6 +2,7 @@ package distantlands.application
 
 import distantlands.catalog.holding.{ArbiterCard, RivalCard, SeerCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.{DecisionOption, DecisionOptionRef}
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2}
 
@@ -23,3 +24,17 @@ class LegacyIdentitySuite extends munit.FunSuite:
     assert(presentation.identifiesAt(ready, Some(p1), ArbiterCard.id))
     assert(!presentation.identifiesAt(ready, Some(p2), ArbiterCard.id))
     assert(!presentation.identifiesAt(ready, None, ArbiterCard.id))
+
+  private val rows = new DecisionOptionRows(catalog, presentation)
+
+  test("a dormant legacy option reads as its card to its owner only"):
+    val index = ready.game.cardIndex.toOption
+    val option = DecisionOption.Legacy(DecisionOptionRef.Legacy(ArbiterCard.id))
+    val row = rows.project(ready, Some(p1), index, option)
+    assertEquals(row.flatMap(_.card).map(card =>
+      (card.cardKind, card.name, card.suit)),
+      Some(("legacy", ArbiterCard.name, Some(ArbiterCard.suit.key))))
+    assertEquals(rows.project(ready, Some(p2), index, option), None)
+
+  test("a legacy's back is a legacy back"):
+    assertEquals(presentation.cardKind(ArbiterCard.id), "legacy")

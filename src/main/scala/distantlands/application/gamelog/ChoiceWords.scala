@@ -24,6 +24,7 @@ private[gamelog] final class ChoiceWords(words: LogWords,
     case DecisionOptionRef.Relic(id) => card(id, before, after, viewer)
     case DecisionOptionRef.Vision(id) => card(id, before, after, viewer)
     case DecisionOptionRef.Edifice(id) => card(id, before, after, viewer)
+    case DecisionOptionRef.Legacy(id) => card(id, before, after, viewer)
     case DecisionOptionRef.RelicSlot(owner, slot) =>
       Vector(words.player(owner), Text(s"'s facedown relic (slot ${slot + 1})"))
     case DecisionOptionRef.AdviserSlot(owner, slot) =>

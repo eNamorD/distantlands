@@ -396,6 +396,7 @@ private[application] final class GamePresentationProjector(
     case Orientation.FaceDown => "face-down"
   def cardKind(card: CardId): String = card match
     case _: VisionId => "vision"
+    case _: LegacyId => "legacy"
     case _ => "denizen"
 
   def cardDetails(id: CardId, orientation: Option[Orientation],
@@ -422,6 +423,16 @@ private[application] final class GamePresentationProjector(
         orientation = orientation.map(orientationName), relicValue = Some(r.value),
         defense = Some(r.defense), hidden = hidden, implemented = cardImplemented(r),
         powers = powerFaces(r))
+    }
+    // A legacy's name, seal and text (implementation ruling R11); its goal
+    // waits for the legacy strip (Legacies design, slice 5).
+    case value: LegacyId => catalog.legacy(value).fold(
+      CardDetailsProjection(value.value, "legacy", safeLabel(value.value),
+        orientation = orientation.map(orientationName), hidden = hidden)) { l =>
+      CardDetailsProjection(value.value, "legacy", l.name, Some(l.suit.key),
+        rulesText = Some(l.rulesText),
+        orientation = orientation.map(orientationName), hidden = hidden,
+        implemented = cardImplemented(l), powers = powerFaces(l))
     }
     case other => CardDetailsProjection(other.value, other.getClass.getSimpleName,
       safeLabel(other.value), orientation = orientation.map(orientationName), hidden = hidden)

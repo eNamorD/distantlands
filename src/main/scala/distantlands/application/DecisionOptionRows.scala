@@ -137,6 +137,9 @@ private[application] final class DecisionOptionRows(
       case DecisionOption.Vision(vision) =>
         card(ready, viewer, index, vision.id)
           .flatMap(details => row(details.name, Some(details)))
+      case DecisionOption.Legacy(legacy) =>
+        card(ready, viewer, index, legacy.id)
+          .flatMap(details => row(details.name, Some(details)))
       case DecisionOption.Edifice(edifice) =>
         index.flatMap(_.stateOf(edifice.id)).collect {
           case state: EdificeState => state

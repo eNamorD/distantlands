@@ -34,7 +34,7 @@ package distantlands.model
   * part of a card's identity.
   */
 sealed trait DecisionOptionRef extends Product with Serializable:
-  /** Which of the seventeen variants this is, as a stable wire string. */
+  /** Which of the eighteen variants this is, as a stable wire string. */
   def kind: String
 
   /** The variant's identity as a stable wire string, paired with [[kind]].
@@ -71,6 +71,9 @@ object DecisionOptionRef:
     def wireId: String = id.value
   final case class Edifice(id: EdificeId) extends DecisionOptionRef:
     val kind: String = "edifice"
+    def wireId: String = id.value
+  final case class Legacy(id: LegacyId) extends DecisionOptionRef:
+    val kind: String = "legacy"
     def wireId: String = id.value
   /** One relic of another player, named by its position in their relic
     * vector rather than by the card, so a facedown relic's identity is never
@@ -177,7 +180,7 @@ object DecisionOptionRef:
     * pair from untrusted input: `None` for an unknown kind or an id that
     * variant cannot carry, never a thrown `require`.
     *
-    * Total over the seventeen variants, and the exact inverse of the two
+    * Total over the eighteen variants, and the exact inverse of the two
     * accessors above — a new variant that forgets this method fails to
     * compile, because the match below is exhaustive over nothing and the
     * accessors are abstract.
@@ -192,6 +195,7 @@ object DecisionOptionRef:
       case "relic" => Some(Relic(RelicId(wireId)))
       case "vision" => Some(Vision(VisionId(wireId)))
       case "edifice" => Some(Edifice(EdificeId(wireId)))
+      case "legacy" => Some(Legacy(LegacyId(wireId)))
       case "relic-slot" => slotOf(wireId).map((owner, slot) =>
         RelicSlot(owner, slot))
       case "adviser-slot" => slotOf(wireId).map((owner, slot) =>
@@ -280,6 +284,7 @@ object DecisionOption:
   final case class Relic(ref: DecisionOptionRef.Relic) extends DecisionOption
   final case class Vision(ref: DecisionOptionRef.Vision) extends DecisionOption
   final case class Edifice(ref: DecisionOptionRef.Edifice) extends DecisionOption
+  final case class Legacy(ref: DecisionOptionRef.Legacy) extends DecisionOption
   final case class RelicSlot(ref: DecisionOptionRef.RelicSlot)
       extends DecisionOption
   final case class AdviserSlot(ref: DecisionOptionRef.AdviserSlot)
@@ -399,6 +404,7 @@ object DecisionOption:
     case value: DecisionOptionRef.Relic => Some(Relic(value))
     case value: DecisionOptionRef.Vision => Some(Vision(value))
     case value: DecisionOptionRef.Edifice => Some(Edifice(value))
+    case value: DecisionOptionRef.Legacy => Some(Legacy(value))
     case value: DecisionOptionRef.RelicSlot => Some(RelicSlot(value))
     case value: DecisionOptionRef.AdviserSlot => Some(AdviserSlot(value))
     case value: DecisionOptionRef.Banner => Some(Banner(value))
