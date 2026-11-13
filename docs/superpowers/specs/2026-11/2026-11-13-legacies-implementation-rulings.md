@@ -222,18 +222,29 @@ Reason: slice 5 owns the legacy UI.
 
 ## Slice 4
 
-**R28. The winner's line when they give points away.**
-Decision: the line shows the kept amount, with the breakdown ending in
-what was given: "Blue scored 3 lineage points (3 base, 3 from Beast, 1
-from Nomad, less 4 given)". With no bonus the line is unchanged.
-Reason: its numbers add up to what the era scorepad records.
+**R28. Score Lineage Points' lines.** (Re-ruled by the owner on
+2026-11-13; it replaces the first ruling, which named the kept amount in
+one line ending "less N given".)
+Decision: the step narrates in three parts.
+1. Before the gift question, once the winner's total is known, the earned
+   total with its breakdown: "Blue scored 7 lineage points (3 base, 3 from
+   Beast, 1 from Nomad)"; with no bonus, today's wording for the earned
+   total, "Blue scored 3 lineage points".
+2. One line per gift, as it is given: "Blue gave up 4 points to give Red 2
+   points." It replaces the old gift line.
+3. After the gifts, only when at least one gift was given: "Blue keeps 3
+   points".
+The "less N given" ending is gone. The journal and the era scorepad still
+record the kept amount at the end; the scored line is narration only.
+Reason: the owner's re-ruling: the line reads as the table plays it, the
+total first, then each gift, then what is kept.
 
 **R29. A winner who gives every point away.**
-Decision: a winner who keeps 0 has nothing recorded, but the line is still
-written: "Blue scored 0 lineage points (3 base, 5 from Beast, less 8
-given)".
-Reason: `LineagePointsScored` refuses 0, and the breakdown should still
-show.
+Decision: a winner who keeps 0 has nothing recorded, as before, and the
+last line reads "Blue keeps 0 points" (R28's third line); the earlier
+"scored 0 lineage points (..., less 8 given)" line is gone.
+Reason: `LineagePointsScored` refuses 0, and R28's sequence already shows
+the total and every gift.
 
 **R30. How the line carries the shares.**
 Decision: a new note argument, `NoteArg.SuitShares`.
