@@ -64,8 +64,11 @@ object ResolveLegacies:
   def crownCapDecisionId(player: PlayerId): String =
     s"chronicle.sun.legacy-cap.crown.${player.value}"
 
+  /** The prefix of every public tie-break's decision id. */
+  val publicDecisionPrefix: String = "chronicle.sun.public-legacy."
+
   def publicDecisionId(legacy: LegacyId): String =
-    s"chronicle.sun.public-legacy.${legacy.value}"
+    publicDecisionPrefix + legacy.value
 
   /** Sun step 2's children. */
   def flip(catalog: ExecutableCatalog): Vector[Operation] =

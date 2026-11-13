@@ -87,3 +87,11 @@ class LegacyIdentitySuite extends munit.FunSuite:
       assertEquals(view.publicLegacies.map(card =>
         (card.cardId, card.orientation)),
         Vector((RivalCard.id.value, Some("face-up")))))
+
+  test("the Chancellor's tie-break names its public legacy as its subject"):
+    val decisions = new WalkerDecisionProjector(catalog, presentation)
+    val subjects = decisions.subjectCards(ready, Some(p2),
+      distantlands.gameplay.chronicle.ResolveLegacies.publicDecisionId(
+        RivalCard.id))
+    assertEquals(subjects.map(card => (card.cardId, card.name, card.hidden)),
+      Vector((RivalCard.id.value, RivalCard.name, false)))
