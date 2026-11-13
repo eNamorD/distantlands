@@ -20,7 +20,7 @@ builds the operations of Sun steps 2-4 as `Branch`es read when each step
 is reached, with their notes and decisions; `ChronicleSunProcedure` puts
 them in the existing windows. `ChronicleCrown.empireBreaks` flips the
 winner's dormant legacies faceup. The presentation layer names every
-legacy to every viewer in the Chronicle Phase (open question 1), so the
+legacy to every viewer in the Chronicle Phase (R18), so the
 lines can name the dormant legacies the Sun reveals.
 
 **Tech Stack:** Scala 3.9.0, munit, `./sbtw` (sbt wrapper), compiler flags
@@ -47,61 +47,30 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-The plan follows the recommendation for each; a ruling that differs
-changes the named task.
+The plan's open questions were ruled on 2026-11-13 as implementation
+rulings R18-R26 ([rulings](../../specs/2026-11/2026-11-13-legacies-implementation-rulings.md)):
 
-1. **Naming the legacies the Sun reveals** (Task 2). A dormant legacy is
-   named only to its owner (ruling 1), so "Blue discarded Arbiter" would
-   read "Blue discarded a Legacy" to everyone else: the legacy leaves play
-   dormant. The CR has players reveal dormant legacies to check goals.
-   Options: (a) in the Chronicle Phase every legacy is named to every
-   viewer; (b) a `Reveal` of each dormant legacy before step 2 records
-   knowledge for every player; (c) a log-only exception. Recommendation:
-   (a). It matches the table (after step 2 the only dormant legacies are
-   newly dormant ones, which were active), and R4 already shows the
-   evolved Chronicle's legacies to everyone. (b) needs knowledge records
-   for legacies, which nothing has.
-2. **More than three active after a reactivation** (Task 6). Crown
-   Chancellor (an Exile winner) and Offer Citizenship (an accepting Exile)
-   flip newly dormant legacies active after step 4's cap, so a player can
-   end with more than three. "Legacies in Detail": "If you ever have more,
-   you must discard active legacies until you have three." Options:
-   (a) the same cap decision runs again for that player right after the
-   flip; (b) only step 4 caps. Recommendation: (a).
-3. **Offer Citizenship's reactivation** (Task 6). The design's slice 3
-   names only Crown Chancellor's; the CR has an Exile who accepts
-   Citizenship flip their newly dormant legacies too (ruling 2 names both).
-   Recommendation: slice 3 does both.
-4. **"In turn order" for the cap** (Task 5). The Chronicle has no turn.
-   Options: (a) seat order from the last round's starter
-   (`tracks.roundStarter`); (b) seat order, as Offer Citizenship's ruling
-   21; (c) seat order from the winner. Recommendation: (a), the turn order
-   the game ended in.
-5. **A Grand Scepter in play that nobody holds** (Task 1). It can lie at
-   a site. Ruling 7 covers only "no Grand Scepter in play".
-   Recommendation: nobody meets the goal; "If none, win" means none in
-   play.
-6. **What "cards of a suit" counts** (Task 1). Recommendation: denizens and
-   edifices (intact or ruined, by the edifice's printed suit) at the
-   sites the player's side rules, plus the player's own advisers of that
-   suit, faceup or facedown. Visions and relics have no suit.
-7. **Lines the design does not word** (Tasks 3-6). Recommendation:
-   a public legacy nobody takes: "Rival returned to the legacy deck"; the
-   Chancellor's tie-break: "Red took Rival" as for a sole winner, after the
-   choice; a cap discard: "Blue discarded Seer", as step 2's; a
-   reactivation: "Blue reactivated Steadfast". A foundation line is written
-   whenever `FoundationAltered` applies, including to a face already
-   altered (it records the source that now holds it altered).
-8. **Order within step 2** (Task 3). Recommendation: first every seated
-   lineage's dormant legacies, in seat order, in one batch; then the
-   public legacies in row order, each with its own question when tied;
-   then the foundation alterations, Foundation I to VI.
-9. **A tie between Imperials alone with no Chancellor seated** (Task 3).
-   Setup always seats a Chancellor when Imperials sit (a Citizen stands in,
-   R6), so this cannot happen. Recommendation: the walk refuses it with
-   `InvalidEventOrder`, as other Chronicle steps refuse missing state.
+- **R18** (Task 2): during the Chronicle Phase every legacy is shown to
+  every viewer; strictly in that phase.
+- **R19** (Task 6): after a reactivation leaves a player above three
+  active legacies, the cap's choice runs for them at once.
+- **R20** (Task 6): both Crown Chancellor's and Offer Citizenship's
+  reactivations are in this slice.
+- **R21** (Tasks 3-5): "turn order" is seat order starting from
+  `tracks.roundStarter`. Every per-player order in this slice uses it.
+- **R22** (Task 1): a Grand Scepter in play that no player holds is met by
+  nobody.
+- **R23** (Task 1): "cards of the suit" are denizens and edifices, intact
+  or ruined, at the sites the player's side rules, plus their own
+  advisers of the suit, faceup or facedown.
+- **R24** (Tasks 3-6): the lines as worded below, and a foundation line
+  for each `FoundationAltered`.
+- **R25** (Task 3): dormant legacies first, in R21's order, in one batch;
+  then the public legacies in row order; then the alterations, I to VI.
+- **R26** (Task 3): an Imperial tie with no Chancellor seated is refused
+  with `InvalidEventOrder`.
 
 ## Global Constraints
 
@@ -136,7 +105,8 @@ changes the named task.
   ExecutableCatalog, legacy: Legacy): Set[PlayerId]`, the seated players
   who meet `legacy`'s goal, read with its own suit for `MostOfSuit`; and
   `LegacyGoals.score(ready, catalog, goal, suit, player): Int` for the
-  counted goals, which the tests read.
+  counted goals, which the tests read; `LegacyGoals.turnOrder(ready):
+  Vector[PlayerId]`, seat order from `tracks.roundStarter` (R21).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -153,7 +123,7 @@ table, each asserting `meeting` for a legacy object of that goal:
   sites count for nobody.
 - `MostOfSuit` (`WealthyCard`, Hearth): the Hearth denizens at sites p2
   rules plus p2's own Hearth advisers, faceup and facedown, beat p3's; an
-  edifice of the suit at a ruled site counts (open question 6); a Vision
+  edifice of the suit at a ruled site counts (R23); a Vision
   adviser does not; Imperials share the Empire sites' cards.
 - `HighestRelic` (`OathsOfLoyaltyCard`): the player holding the relic of
   highest printed `value`, faceup or facedown, meets it; a tie between two
@@ -161,7 +131,7 @@ table, each asserting `meeting` for a legacy object of that goal:
 - `PeoplesFavor` (`MatchmakerCard`) and `DarkestSecret` (`SeerCard`): the
   banner's holder; an unheld banner, `Set()`.
 - `GrandScepter` (`KeeperOfOrderCard`): its holder; with no Grand Scepter
-  in play, the winner (ruling 7); lying at a site, nobody (open question 5).
+  in play, the winner (ruling 7); lying at a site, nobody (R22).
 - Only seated players compete: a boxed lineage's goal is never asked.
 
 - [ ] **Step 2: Run the tests to verify they fail**
@@ -225,7 +195,7 @@ object LegacyGoals:
   none.
 - `scepter`: the seated player holding `TheGrandScepterCard.id`; if no
   player holds it and no site holds it, `ChronicleTasks.winner(ready)`
-  (ruling 7); otherwise `Set.empty` (open question 5).
+  (ruling 7); otherwise `Set.empty` (R22).
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
@@ -253,7 +223,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 **Interfaces:**
 - Produces: in `Phase.Chronicle`, `identifiesCard` names a lineage's
-  legacy to every viewer, dormant or not (open question 1).
+  legacy to every viewer, dormant or not (R18).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -342,7 +312,7 @@ them. Tests:
   too (ruling 8); a face that already lists it is left alone, so a second
   Chronicle with the same legacy writes no second `FoundationAltered`.
 - A lineage in the box keeps its legacies and faces unchanged.
-- The lines, in order: activations and discards in seat order, then each
+- The lines, in order: activations and discards in turn order, then each
   public legacy's, then the foundation lines.
 
 - [ ] **Step 2: Run the tests to verify they fail**
@@ -353,9 +323,9 @@ Expected: FAIL to compile: `Not found: ResolveLegacies`.
 - [ ] **Step 3: Implement**
 
 `ResolveLegacies.flip(catalog)` returns three parts, each a `Branch` read
-when it is reached (open question 8):
+when it is reached (R25):
 
-1. **Dormant legacies.** For each seated player in seat order, each
+1. **Dormant legacies.** For each seated player in turn order (R21), each
    dormant legacy of their lineage: `Flip(id, Location.Legacies(lineage),
    FaceUp)` when `LegacyGoals.meeting` holds the player, else
    `Move(Piece.Card(id), Legacies(lineage), Deck(CardDeck.Legacy))`. One
@@ -444,7 +414,7 @@ Expected: FAIL: the Exile's legacy stays active.
 
 - [ ] **Step 3: Implement**
 
-A `Branch`: for each seated player whose role is `Exile`, in seat order,
+A `Branch`: for each seated player whose role is `Exile`, in turn order,
 each active legacy of their lineage not met by them:
 `Flip(id, Legacies(lineage), FaceDown)`, in one `BuildOps(required =
 true)`, then one `wentDormant` line each (`LogKind.Delta`).
@@ -482,8 +452,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   "legacies")`; the chosen ones move to the deck with one `capped` line
   each ("{0} discarded {1}", the same words as step 2's `discarded`, but a
   key of its own so that it posts as `LogKind.Decision`). `ResolveLegacies.capAll` runs `cap` for each
-  seated player in seat order from `tracks.roundStarter` (open question
-  4).
+  seated player in turn order (R21).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -528,7 +497,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Produces: when an Exile wins, Crown Chancellor flips every dormant
   legacy of the winner's lineage faceup (by ruling 2 they are all newly
   dormant), writes `reactivated` ("{0} reactivated {1}", one per legacy),
-  then runs `ResolveLegacies.cap(winner)` (open question 2). An Exile who
+  then runs `ResolveLegacies.cap(winner)` (R19). An Exile who
   accepts Citizenship does the same in their answer's branch (open
   question 3).
 
@@ -597,8 +566,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Traceability "Sun task" row: steps 2-5 move from the gaps to the
   evidence (`LegacyGoalsSuite`, `ResolveLegaciesSuite`); the gap keeps the
   legacy powers.
-- `ambiguities.md`: append the rulings for open questions 1-9 to the
-  Legacies rulings, numbered on from 11, each with its R number.
+- `ambiguities.md`: append R18-R26 to the Legacies rulings, numbered on
+  from 11, each with its R number.
 - Design status: "Slices 1, 2 and 3 landed (plans: ...)".
 
 - [ ] **Step 2: Run the verification gate**

@@ -267,6 +267,11 @@ Each Sun step runs in its existing window
 5. **Shuffle** (`PowerWindow.ChronicleShuffleLegacies`). The window only:
    the deck is derived (ruling 3).
 
+**Reactivation.** Newly dormant legacies become active again when an Exile
+wins (Crown Chancellor) and when an Exile accepts Citizenship (Offer
+Citizenship); a player then above three active legacies answers the cap's
+choice at once (implementation rulings R19 and R20).
+
 **Log.** Checking goals reveals the dormant faces, so the lines name cards:
 "Blue activated Seer", "Blue discarded Arbiter", "Red took Rival" (a public
 legacy), "Red's Steadfast went dormant", "Wealthy set Foundation II to

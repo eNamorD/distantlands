@@ -146,3 +146,76 @@ cards; the materializer builds neither the lineages nor the public row.
 Decision: the slice 1 follow-up (R8) adds it with design rulings 1 and 3
 and R4; slice 2 completes it with all ten design rulings.
 Reason: setup now acts on rulings 3-5.
+
+## Slice 3
+
+**R18. Naming the legacies the Sun reveals.**
+Question: a dormant legacy is named only to its owner (design ruling 1),
+so the Sun's lines could not name a dormant legacy that leaves play.
+Decision: during the Chronicle Phase every legacy is shown to every
+viewer. The scope is strictly the Chronicle Phase; the next game's dormant
+legacies are owner-only again (ruling 1).
+Reason: the game is over and goals are checked openly (the rules reveal
+held relics in the same step), and R4 already shows the faces in the
+saved Chronicle.
+
+**R19. More than three active legacies after a reactivation.**
+Decision: after any reactivation (Crown Chancellor, Offer Citizenship)
+that leaves a player above three active legacies, the same discard choice
+as Sun step 4 runs for that player at once.
+Reason: "If you ever have more, you must discard active legacies until
+you have three" ("Legacies in Detail").
+
+**R20. Offer Citizenship's reactivation.**
+Decision: both reactivations go in slice 3: an Exile winner's newly
+dormant legacies at Crown Chancellor, and an Exile's who becomes a
+Citizen at Offer Citizenship. The design's slice 3 text says so.
+Reason: the rules give both, and design ruling 2 names both.
+
+**R21. "In turn order" in the Chronicle.**
+Decision: seat order starting from the player who started the game's
+last round (`tracks.roundStarter`), the game's turn order.
+Reason: the Chronicle has no turn of its own; this is the order the game
+ended in.
+
+**R22. A Grand Scepter in play that nobody holds.**
+Decision: nobody meets the Grand Scepter goal. Design ruling 7 (the
+winner meets it) applies only when no Grand Scepter is in play.
+Reason: "If none, win" means no Grand Scepter in play.
+
+**R23. What "cards of the suit" counts.**
+Decision: denizens, edifices included (intact or ruined, by the printed
+suit of the side showing), at the sites the player's side rules (for an
+Imperial, every Imperial site), plus the player's own advisers of the
+suit, faceup or facedown. Visions, relics, banners, sites and legacies do
+not count. An edifice card in the catalog has one suit for both sides
+(`Edifice.suit`), so a ruined edifice counts by it.
+Reason: the goal prints "(even advisers)", and the rules credit every
+Imperial with the cards at Imperial sites.
+
+**R24. Lines the design does not word.**
+Decision: a public legacy nobody takes: "Rival returned to the legacy
+deck"; a tie-break: "Red took Rival"; a discard over the cap: "Blue
+discarded Seer", as the player's decision; a reactivation: "Blue
+reactivated Steadfast"; and a foundation line for each `FoundationAltered`,
+even on a face already altered, since it records a new source.
+
+**R25. Order within Sun step 2.**
+Decision: dormant legacies first, in R21's order, in one batch; then the
+public legacies in row order, each with its own tie question; then the
+foundation alterations, Foundation I to VI, for every active legacy of a
+seated or boxed lineage (design ruling 8).
+
+**R26. An Imperial tie with no Chancellor seated.**
+Decision: the walk refuses it as an invariant error, as other Chronicle
+steps refuse missing state.
+Reason: setup always seats a Chancellor when Imperials sit (a Citizen
+stands in, Empire ruling R6), so it cannot happen in play.
+
+**R27. The frontend's legacy cards.**
+Question: the frontend has no legacy handling: `BoardOptions.cardKind`
+maps `"legacy"` to `"denizen"`, and `CardFace.backLetter` gives "D".
+Decision: deferred to slice 5, whose plan fixes both and checks the Setup
+keep decision in the running app (hover and selection keys for
+`legacy:<id>`).
+Reason: slice 5 owns the legacy UI.
