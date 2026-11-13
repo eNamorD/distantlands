@@ -377,3 +377,16 @@ _Avoid_: commit point, checkpoint
 A contiguous run of Game Log entries whose events an undo voided, shown
 struck through under one header.
 _Avoid_: undone section, deleted lines
+
+### Legacies
+
+**Public legacy**:
+A legacy in the Public Ambitions row (Foundation III's altered face), held
+by nobody. Players compete for it in the Chronicle.
+_Avoid_: shared legacy, row legacy
+
+**Derived deck**:
+A pile the game works out from what nobody holds instead of storing it.
+The legacy deck is one: every legacy no lineage holds and the public row
+does not show. A legacy returned to it leaves play.
+_Avoid_: legacy box (the box and the legacy deck are the same pile here)

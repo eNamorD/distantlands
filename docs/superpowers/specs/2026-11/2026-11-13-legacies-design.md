@@ -1,7 +1,7 @@
 # Legacies
 
 **Status:** designed 2026-11-13, approved section by section by the owner.
-Nothing here is implemented.
+Slice 1 landed (plan: [Legacies slice 1](../../plans/2026-11/2026-11-13-legacies-slice1.md)).
 
 **Builds on** the [Chronicle steps design](../2026-10/2026-10-27-chronicle-steps-design.md),
 the [Foundations design](2026-11-11-foundations-design.md), whose faces and
