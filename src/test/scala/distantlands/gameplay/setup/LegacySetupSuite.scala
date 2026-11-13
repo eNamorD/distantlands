@@ -89,39 +89,42 @@ class LegacySetupSuite extends munit.FunSuite:
       woken.ready.game.campaign.lineages(seat.lineageId).legacies,
       Vector(LegacyState(drawn(seat.playerId)(1), active = false))))
 
-  test("a player whose short draw is one legacy keeps it unasked, and one " +
-      "who drew none is asked nothing (R9)"):
-    val Vector(one, none, two) = seats.map(_.lineageId)
-    val fresh = FirstGameSetupFixture.freshReady
-    val short = fresh.updateCampaign(campaign => campaign.copy(lineages =
-      campaign.lineages.updatedWith(one)(_.map(state =>
-        state.copy(legacies = state.legacies.take(1))))
-        .updatedWith(none)(_.map(_.copy(legacies = Vector.empty)))))
-    val setup = walked(short)
-    val questions = legacyQuestions(setup.asked)
-    assertEquals(questions.map(_.owner),
-      Vector(seats.find(_.lineageId == two).get.playerId))
-    assertEquals(setup.ready.game.campaign.lineages(one).legacies,
-      short.game.campaign.lineages(one).legacies)
-    assertEquals(setup.ready.game.campaign.lineages(none).legacies,
-      Vector.empty)
+  test("a short deck draws 2, 1 and 0 in seat order: the first keeper is " +
+      "asked, the second keeps theirs unasked, the third gets none (R9)"):
+    // Box lineages hold every legacy but 3, so the derived deck is short.
+    // Lineages holding legacies are history, so this starts an exile-only
+    // game; Foundation III deals the same.
+    val held = catalog.legacies.map(_.id).dropRight(3)
+    val boxed = held.grouped(12).zipWithIndex.map((ids, n) => LineageState(
+      LineageId(s"boxed-$n"), None, Role.Exile,
+      ids.map(LegacyState(_, active = true)), Vector.empty)).toVector
+    val short = chronicle.copy(lineages = boxed)
+    val shortOrders = orders.copy(legacyOrder = LegacyDeal.deck(catalog, short))
+    assertEquals(shortOrders.legacyOrder.size, 3)
+    val started = accepted(GameStartRules.evolve(catalog, short, shortOrders))
+    val Vector(two, one, none) = seats
+    val setup = walked(started)
+    assertEquals(legacyQuestions(setup.asked).map(_.owner),
+      Vector(two.playerId))
+    def holding(seat: FirstGameParticipant) =
+      setup.ready.game.campaign.lineages(seat.lineageId).legacies
+    assertEquals(holding(two).size, 1)
+    assertEquals(holding(one),
+      Vector(LegacyState(shortOrders.legacyOrder(2), active = false)))
+    assertEquals(holding(none), Vector.empty)
     val kept = notes(setup.events).filter(_.key ==
       SetupProcedure.keptLegacy.name).map(_.args)
-    assertEquals(kept.toSet, Set(one, two).map(lineage =>
-      Vector[NoteArg](NoteArg.Player(seats.find(_.lineageId == lineage)
-        .get.playerId))))
+    assertEquals(kept.toSet, Set(two, one).map(seat =>
+      Vector[NoteArg](NoteArg.Player(seat.playerId))))
 
   test("under Public Ambitions nobody is asked, and Setup first names the " +
       "row"):
-    val fresh = FirstGameSetupFixture.freshReady
+    // An altered Foundation III is history, so this starts an exile-only
+    // game.
+    val started = accepted(GameStartRules.evolve(catalog,
+      publicAmbitions(chronicle), orders))
     val row = orders.legacyOrder.take(LegacyDeal.PublicRow)
-    // The state Public Ambitions leaves at game start (tested above):
-    // nobody drew, and the row is dealt.
-    val dealt = fresh.updateCampaign(campaign => campaign.copy(lineages =
-      campaign.lineages.view.mapValues(_.copy(legacies = Vector.empty)).toMap))
-      .updateCurrent(current => current.copy(commonCards =
-        current.commonCards.copy(publicLegacies = row)))
-    val setup = walked(dealt)
+    val setup = walked(started)
     assertEquals(legacyQuestions(setup.asked), Vector.empty)
     assertEquals(setup.ready.game.current.commonCards.publicLegacies, row)
     assertEquals(notes(setup.events).headOption, Some(
