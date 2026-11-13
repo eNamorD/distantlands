@@ -126,3 +126,11 @@ class MatBoardSuite extends munit.FunSuite:
     assertEquals(all(site, ".site-footer.printed").size, 1)
     assertEquals(all(site, ".site-tokens.printed, .site-pawns.printed"),
       Vector.empty)
+
+  test("the relic deck says a relic is on top, as it shows an R"):
+    val relicDeck = all(world, ".deck-row > .deck-figure")
+      .find(deck => one(deck, ".deck-caption").textContent == "Relic deck")
+      .getOrElse(fail("no relic deck"))
+    val letter = one(relicDeck, ".deck-letter")
+    assertEquals(letter.textContent, "R")
+    assertEquals(letter.getAttribute("aria-label"), "Relic card on top")

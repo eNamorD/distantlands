@@ -237,6 +237,7 @@ private[frontend] object ServerUiSupport:
     else topCardKind match
       case Some("denizen") => "Denizen card on top"
       case Some("vision") => "Vision card on top"
+      case Some("relic") => "Relic card on top"
       case _ => "Facedown card; type hidden"
 
   /** The pile shows the same back letter a facedown card of that kind would,
