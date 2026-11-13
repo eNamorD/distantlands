@@ -168,3 +168,23 @@ one explicit discriminator/payload case in the appropriate split event codec
 (`LifecycleEventCodec`, `EndingEventCodec`, or
 another split codec). `GameEventWire` owns the single current envelope.
 Update replay and malformed-wire tests; do not serialize Scala class names.
+
+### Operation
+
+Add the case to the one operation family it belongs to
+(`model/<Family>Operation.scala`): a leaf also extends `LeafOperation`, a
+composite exposes its `children`. The compiler then names the rest: the
+encode arm in the family's codec (`serialization/<Family>OperationCodec.scala`),
+a decode arm beside it, and, for a leaf, its arm in `LeafApplication`,
+which may say the leaf changes nothing there. Pin the spelling in the
+family's wire suite and add the operation to `everyOperation` in
+`WalkerOperationWireSuite`. A new family joins the `CoreOperation` union in
+`CoreOperations.scala` and the family list in
+`scripts/check-architecture.py`.
+
+Where one expression mixes operations of two families, such as
+`Vector(Move(...), FlipSecrets(...))`, Scala infers their common base,
+`OperationBase`, which is not a `CoreOperation`: name the element type
+(`Vector[CoreOperation](...)`, `Option.when[CoreOperation](...)`). Match a
+`CoreOperation` by its families, never against a union that cuts across
+them: the exhaustivity checker can then run for many minutes.

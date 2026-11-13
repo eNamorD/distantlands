@@ -22,7 +22,7 @@ Plan: [follow-up actions plan](../superpowers/plans/2026-10/2026-10-08-follow-up
   phases. `walkerEntry` is the entry the current walk was started from. It
   is walker scratch, which `WalkerCompleted` clears.
 - A power adds an entry with the primitive op `QueueProcedure(entry,
-  atFront)` (`model/CoreOperations.scala`, applied by `TurnStateOperations`),
+  atFront)` (`model/TurnOperation.scala`, applied by `TurnStateOperations`),
   inside the origin action's tree. It appends unless `atFront` is set.
 - Two walker events touch the queue (`gameplay/walker/WalkerEvents.scala`):
   - `ProcedureDequeued` is the first event of a walk started from the queue.
