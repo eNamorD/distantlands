@@ -1,0 +1,111 @@
+package distantlands.frontend
+
+/** The mat's coordinate table (real proportions design): every slot lies
+  * where the mat prints it and has the proportions of the card it holds,
+  * so the mat image can be laid under the board without moving anything.
+  */
+class MatLayoutSuite extends munit.FunSuite:
+  import MatLayout.*
+
+  private val sites = for column <- 0 until 3; row <- 0 until Rows(column)
+    yield column -> row
+  private val slots = for (column, row) <- sites; slot <- 0 until SlotsPerSite
+    yield cardSlot(column, row, slot)
+  private val banks = FavorBankSuits.flatMap(favorBank)
+
+  /** Every rectangle the board draws, each once. */
+  private val everything: Vector[MatRect] =
+    sites.map(siteFrame).toVector ++ slots ++
+      (0 until 3).map(discard) ++ (0 until 3).map(regionName) ++
+      Vector(relicDeck, worldDeck, roundWheel, trackNote, visionsLabel) ++
+      visionCells ++ banks
+
+  private def near(actual: Double, expected: Double): Boolean =
+    math.abs(actual / expected - 1) < 0.01
+
+  test("the mat has the image's proportions"):
+    assertEquals(Width, 5787.0)
+    assertEquals(Height, 2303.0)
+
+  test("the mat prints two site rows in the Cradle and three elsewhere"):
+    assertEquals(Rows, Vector(2, 3, 3))
+    assertEquals(sites.size, 8)
+
+  test("every rectangle lies inside the mat"):
+    everything.foreach(rect => assert(rect.within(Mat), rect.toString))
+
+  test("no two rectangles overlap"):
+    for a <- everything.indices; b <- everything.indices if a < b do
+      assert(!everything(a).overlaps(everything(b)),
+        s"${everything(a)} overlaps ${everything(b)}")
+
+  test("each site has three card slots to its right, of the denizen ratio"):
+    sites.foreach { (column, row) =>
+      val frame = siteFrame(column, row)
+      val row3 = (0 until SlotsPerSite).map(cardSlot(column, row, _))
+      assertEquals(row3.size, 3)
+      row3.foreach { slot =>
+        assert(slot.x > frame.right, slot.toString)
+        assertEquals(slot.y, frame.y)
+        assert(near(slot.ratio, 381.0 / 596), slot.toString)
+      }
+    }
+
+  test("a site card has the site ratio and lies inside its frame"):
+    sites.foreach { (column, row) =>
+      val card = siteCard(column, row)
+      assert(near(card.ratio, 770.0 / 596), card.toString)
+      assert(card.within(siteFrame(column, row)), card.toString)
+    }
+
+  test("a site's row spans its frame and its three slots"):
+    sites.foreach { (column, row) =>
+      val span = siteRow(column, row)
+      assertEquals(span.x, siteFrame(column, row).x)
+      assertEquals(span.right, cardSlot(column, row, 2).right)
+    }
+
+  test("a relic slot is the square top of its card slot"):
+    val slot = cardSlot(1, 0, 2)
+    val relic = relicSlot(1, 0, 2)
+    assert(near(relic.ratio, 1.0), relic.toString)
+    assertEquals((relic.x, relic.y, relic.w), (slot.x, slot.y, slot.w))
+
+  test("a discard and the world deck are denizen cards on their side"):
+    ((0 until 3).map(discard) :+ worldDeck).foreach(rect =>
+      assert(near(rect.ratio, 596.0 / 381), rect.toString))
+
+  test("the relic deck is square and the round wheel is round"):
+    assert(near(relicDeck.ratio, 1.0))
+    assert(near(roundWheel.ratio, 1.0))
+
+  test("the Visions Drawn track has six cells, left to right"):
+    assertEquals(visionCells.size, 6)
+    assertEquals(visionCells.map(_.x), visionCells.map(_.x).sorted)
+
+  test("the favor banks stand in the mat's order"):
+    assertEquals(FavorBankSuits,
+      Vector("discord", "arcane", "order", "hearth", "beast", "nomad"))
+    assertEquals(banks.size, 6)
+    assertEquals(banks.map(_.x), banks.map(_.x).sorted)
+    assertEquals(favorBank("no-such-suit"), None)
+
+  test("a region takes its column from its id, and an unknown one from " +
+      "its place"):
+    assertEquals(column("cradle", 2), 0)
+    assertEquals(column("provinces", 0), 1)
+    assertEquals(column("hinterland", 0), 2)
+    assertEquals(column("other", 1), 1)
+    assertEquals(column("other", 7), 2)
+
+  /** Written as the CSSOM reads a percentage back, with no trailing zeros,
+    * so a placed element's inline style compares equal to its rectangle. */
+  test("a rectangle reads as percentages of its parent"):
+    assertEquals(MatRect(50, 25, 100, 50).percentOf(MatRect(0, 0, 200, 100)),
+      Vector("left" -> "25%", "top" -> "25%",
+        "width" -> "50%", "height" -> "50%"))
+    assertEquals(MatRect(1, 0, 3, 1).percentOf(MatRect(0, 0, 8, 1)),
+      Vector("left" -> "12.5%", "top" -> "0%",
+        "width" -> "37.5%", "height" -> "100%"))
+    assertEquals(MatRect(1, 0, 1, 1).percentOf(MatRect(0, 0, 3, 1)).head,
+      "left" -> "33.3333%")
