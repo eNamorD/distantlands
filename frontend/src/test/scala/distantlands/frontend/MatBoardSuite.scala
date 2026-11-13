@@ -148,3 +148,16 @@ class MatBoardSuite extends munit.FunSuite:
     assertEquals(all(arcane, ".printed").map(_.textContent), Vector("Arcane: "))
     assertEquals(one(arcane, ".favor-bank-count").textContent, "3")
     assert(!one(arcane, ".favor-bank-count").classList.contains("printed"))
+
+  /** An offered card is wrapped with its inspect button; the wrapper is what
+    * stands in the slot, and a relic inside one still takes the square top. */
+  test("an offered relic's wrapper stands in the square top of its slot"):
+    val offered = TestBoardOptions.recording(TestBoardOptions.available(
+      TestBoardOptions.option("relic", "r1"))).options
+    val site = one(WorldBoardRenderer.world(table, offered),
+      """.site[aria-label="Deep Woods"]""")
+    val wrapper = all(site, ".site-cards > *")(2)
+    assert(wrapper.classList.contains("board-option-card"),
+      wrapper.getAttribute("class"))
+    assertEquals(box(wrapper),
+      at(MatLayout.relicSlot(1, 1, 2), MatLayout.siteRow(1, 1)))
