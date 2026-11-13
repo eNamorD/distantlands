@@ -159,7 +159,7 @@ Rulings and readings for the six foundation setup cards ([Foundations design](..
 
 ## Legacies rulings
 
-Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-legacies-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacies-implementation-rulings.md)). Items 1 to 10 are the design's rulings 1 to 10, taken with the owner on 2026-11-12 and 2026-11-13; item 11 is implementation ruling R4. The implementation rulings file records the others.
+Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-legacies-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacies-implementation-rulings.md)). Items 1 to 10 are the design's rulings 1 to 10, taken with the owner on 2026-11-12 and 2026-11-13; items 11 to 20 are implementation rulings R4 and R18 to R26. The implementation rulings file records the others.
 
 1. **Only the owner sees a dormant legacy's face.** Every other viewer sees a legacy back. The projection redacts it as it redacts a facedown adviser, and nothing tracks who has seen which card (design, ruling 1).
 2. **Newly dormant is dormant.** Sun step 2 leaves no dormant legacy on a seated lineage: each becomes active or is discarded. Step 3 is the only step that makes legacies dormant, so after it every dormant legacy on a seated lineage is newly dormant. Crown Chancellor and Offer Citizenship, which flip newly dormant legacies to active, act only on seated players and only after Resolve Legacies; no flag records it (design, ruling 2).
@@ -172,6 +172,15 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 9. **Public legacies.** The player who alone meets a public legacy's goal takes it active. A tie between Imperials alone is broken by the outgoing Chancellor, who chooses one of the tied Imperials; any tie that includes an Exile is unfriendly and nobody takes it. Public legacies nobody takes return to the deck (design, ruling 9).
 10. **Scoring counts printed suits.** No power changes a card's suit during the Chronicle; the bonus counts each denizen, edifices included, by its printed suit (design, ruling 10).
 11. **The evolved Chronicle shows every legacy.** Once the Chronicle Phase journals it, the evolved Chronicle is the end-of-game save every player carries into the next game, so its lineages' dormant legacies show to every seat, as its relic deck order does. The next game's projection shows only the baseline's name and digest (implementation ruling R4).
+12. **The Chronicle shows every legacy.** During the Chronicle Phase every legacy is named to every viewer, dormant ones included: the game is over and goals are checked openly. The next game's dormant legacies are their owner's alone again (R18).
+13. **Never more than three active.** A player whom a reactivation (Crown Chancellor, Offer Citizenship) leaves above three active legacies discards the excess at once, as in Sun step 4 (R19).
+14. **Joining the Empire reactivates.** An Exile winner's newly dormant legacies become active at Crown Chancellor, and so do those of an Exile who accepts Citizenship (R20).
+15. **Turn order in the Chronicle** is seat order from the player who started the game's last round (R21).
+16. **A Grand Scepter nobody holds** but that is in play, at a site, meets nobody's goal; item 7's winner meets it only when no Grand Scepter is in play (R22).
+17. **Cards of a suit** are the denizens and edifices, intact or ruined, at the sites the player's side rules, every Imperial site for an Imperial, plus the player's own advisers of the suit, faceup or facedown. Visions, relics, banners, sites and legacies do not count. An edifice prints one suit for both sides (R23).
+18. **The lines** say "Rival returned to the legacy deck", "Red took Rival" (also after a tie-break), "Blue discarded Seer" (a choice over the cap), "Blue reactivated Steadfast", and a foundation line for every alteration, even of a face already altered, since it records a new source (R24).
+19. **Sun step 2's order:** dormant legacies first, in turn order, then the public legacies in row order, then the alterations, Foundation I to VI (R25).
+20. **An Imperial tie with no Chancellor** is refused as an invariant error; setup always seats a Chancellor when Imperials sit (R26).
 
 ## Source relationship cautions
 

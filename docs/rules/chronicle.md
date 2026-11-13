@@ -45,9 +45,13 @@ The winner makes most of this task's choices; each step names its actor.
 
 1. Reveal all facedown relics held by players. **Actor:** none: procedural.
 2. Players flip dormant legacies whose goals they meet to active, and discard dormant legacies whose goals they do not meet, returning them to the legacy deck. If active legacies alter foundations, flip those foundation setup cards to their altered sides. **Actor:** none: procedural.
+   - Digital: in the Chronicle Phase every legacy is shown to every viewer, so the lines name them. Dormant legacies resolve first, in turn order (seat order from the player who started the last round); then each public legacy in row order, to the one player who meets its goal, to the tied Imperial the outgoing Chancellor chooses, or back to the deck; then each active legacy of a seated or boxed lineage alters its foundation, I to VI, unless the face already lists it. Lines: "p2 activated Seer", "p3 discarded Iron Hand", "p3 took Matchmaker", "Iron Hand returned to the legacy deck", "Wealthy set Foundation II to Movers and Shakers" ([Legacies rulings](ambiguities.md#legacies-rulings)).
 3. Exiles (not Imperials) flip their active legacies whose goals they do not meet to dormant. These are *newly dormant* for the rest of the Chronicle. This does not flip foundations. **Actor:** none: procedural.
+   - Digital: in turn order; "p2's Iron Hand went dormant".
 4. Any player with more than three active legacies discards the excess, in turn order, returning them to the legacy deck. The cap is per player. This does not flip foundations. **Actor:** each such player, choosing which of their own legacies to discard.
+   - Digital: each player above three answers a choice of exactly the excess, in turn order; "p2 discarded Seer". The same choice runs again for a player whom a reactivation leaves above three: the winner at Crown Chancellor, a new Citizen once every Citizenship answer is in.
 5. Shuffle the legacy deck. **Actor:** none: procedural.
+   - Digital: an empty window; the legacy deck is derived and keeps no order ([Legacies rulings](ambiguities.md#legacies-rulings), item 3).
 
 Legacy goals (CR p. 36): hold the Grand Scepter (if there is none, the winner
 meets it, as in a first game); rule the most sites; hold the Darkest Secret;
@@ -62,7 +66,7 @@ meets the goal, even when tied with the Empire.
 
 6. The winner becomes Chancellor and takes the Chancellor board, the purple pieces, and the Grand Scepter. **Actor:** none: procedural.
    - Digital: when no one holds the Grand Scepter, the winner takes it from the box, faceup ([ruling 10](ambiguities.md#chronicle-rulings)).
-   - If an Exile won, the Empire breaks. The winner's newly dormant legacies become active. The former Chancellor and all Citizens, even those in the box, become Exiles. Discard all relics in the Reliquary. Remove all Imperial warbands from sites, without adding bandits. Then, on each site the winner rules, replace their warbands with one Imperial warband. The winner rules these sites for the rest of the Chronicle.
+   - If an Exile won, the Empire breaks. The winner's newly dormant legacies become active ("p1 reactivated Iron Hand"). The former Chancellor and all Citizens, even those in the box, become Exiles. Discard all relics in the Reliquary. Remove all Imperial warbands from sites, without adding bandits. Then, on each site the winner rules, replace their warbands with one Imperial warband. The winner rules these sites for the rest of the Chronicle.
    - Digital: once the Imperial warbands are removed, each site that held them takes one warband of a seated former Chancellor's colour, so the former Chancellor rules it as an Exile, their bank topped up when short; a boxed one places none ([ruling 20](ambiguities.md#chronicle-rulings), a deviation).
    - If a Citizen won, a new dynasty begins: the former Chancellor becomes a Citizen.
    - Digital: a Reliquary Setup With No Empire set aside is discarded whoever wins, as an Exile's win discards it ([Foundations ruling 3](ambiguities.md#foundations-rulings)).

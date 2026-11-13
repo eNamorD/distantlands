@@ -11,9 +11,10 @@ import distantlands.model._
   * keeps them all, which is the first option. A face whose alteration
   * sources name a legacy that a lineage of this Chronicle holds active is
   * shown unavailable, naming that legacy, even when every altered face is
-  * held and only Keep may be chosen. Before Legacies no face has such a
-  * source, so every altered face may be restored, III included
-  * (Foundations ruling 1).
+  * held and only Keep may be chosen. A face Setup With No Empire eroded,
+  * or one whose sources are no longer active, may be restored, III
+  * included (Foundations ruling 1). Sun step 2 adds the sources
+  * (`ResolveLegacies`).
   *
   * Lines, as every Beacon decision line names the holder: "p3 restored
   * Foundation I to Imperial Maps", or "p3 did not flip any foundations"
