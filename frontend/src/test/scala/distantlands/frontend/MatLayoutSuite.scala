@@ -109,3 +109,28 @@ class MatLayoutSuite extends munit.FunSuite:
         "width" -> "37.5%", "height" -> "100%"))
     assertEquals(MatRect(1, 0, 1, 1).percentOf(MatRect(0, 0, 3, 1)).head,
       "left" -> "33.3333%")
+
+  /** The survey itself, written out here rather than derived from
+    * `MatLayout`, so a number moved off the mat fails even when every
+    * invariant above still holds. A number corrected against the mat image
+    * changes here in the same commit. */
+  test("every surveyed number is where the mat prints it"):
+    assertEquals((0 until 3).map(siteFrame(_, 0).x), Vector(71.0, 1994.0, 3945.0))
+    sites.foreach((column, row) =>
+      assertEquals((siteFrame(column, row).w, siteFrame(column, row).h),
+        (669.0, 509.0)))
+    assertEquals((0 until 3).map(siteFrame(1, _).y), Vector(428.0, 962.5, 1497.0))
+    assertEquals(cardSlot(0, 0, 0).x, 788.0)
+    assertEquals((0 until 3).map(discard(_)).map(rect => (rect.x, rect.y)),
+      Vector((1003.0, 80.0), (2926.0, 80.0), (4877.0, 80.0)))
+    assertEquals((relicDeck.x, relicDeck.y), (881.0, 1913.0))
+    assertEquals((worldDeck.x, worldDeck.y), (1278.0, 1913.0))
+    assertEquals(roundWheel, MatRect(62, 1602, 642, 642))
+    assertEquals(visionCells.map(_.x),
+      Vector(805.0, 1000.0, 1120.0, 1295.0, 1415.0, 1535.0))
+    visionCells.foreach(cell =>
+      assertEquals((cell.y, cell.w, cell.h), (1690.0, 103.0, 159.0)))
+    assertEquals(FavorBankSuits,
+      Vector("discord", "arcane", "order", "hearth", "beast", "nomad"))
+    assertEquals(banks.map(bank => bank.x + 217),
+      Vector(2438.0, 2839.0, 3241.0, 3642.0, 4044.0, 4449.0))
