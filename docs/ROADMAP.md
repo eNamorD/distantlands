@@ -453,7 +453,10 @@ as current.
     final production deployment gate. The alpha phase may add a narrower safe
     invitation flow first; until then, keep development routes loopback-only.
 - [ ] **L3 — Licensed game assets with permanent visual fallbacks**, including
-  suit and restriction icons on card faces.
+  suit and restriction icons on card faces. The layout is ready for it: every
+  drawn asset has its real proportions and the map is laid out on the mat's
+  coordinates ([real proportions design](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md),
+  [asset proportions](catalog/asset-proportions.md)).
 - [ ] **L4 — Saved-game browser and replay navigation.** Saved campaigns
   are browsable; saved games and replays are not.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**
