@@ -258,9 +258,27 @@ private[frontend] object WorldBoardRenderer:
         badged(control, siteKeys, options)
         val pawns = element("div", "site-pawns")
         value.pawnLocations.filter(_.siteId == site.siteId).foreach { pawn =>
+          // Both forms are in the DOM and the map's scale picks one
+          // (ruling R6): the dot and the name at rest, the dot and the
+          // initial zoomed out, the dot alone further out. The dot and the
+          // initial are for the eye; the name stays the pawn's name.
           val marker = element("span", "pawn")
-          marker.appendChild(dom.document.createTextNode("● "))
-          marker.appendChild(playerReference(value, pawn.playerId))
+          val player = playerReference(value, pawn.playerId)
+          val colour = PlayerColorCss.of(
+            value.players.find(_.playerId == pawn.playerId).map(_.color))
+          val dot = text("span", s"pawn-dot $colour", "●")
+          dot.setAttribute("aria-hidden", "true")
+          marker.appendChild(dot)
+          // The long form: the space and the name, as the pawn reads at rest.
+          val long = element("span", "pawn-long")
+          long.appendChild(dom.document.createTextNode(" "))
+          long.appendChild(player)
+          marker.appendChild(long)
+          val initial = text("span", s"pawn-initial $colour",
+            player.textContent.take(1))
+          initial.setAttribute("aria-hidden", "true")
+          marker.appendChild(initial)
+          HoverTip.set(marker, player.textContent)
           options.decorate(marker,
             Vector(BoardOptionViews.key("player", pawn.playerId)))
           pawns.appendChild(marker)

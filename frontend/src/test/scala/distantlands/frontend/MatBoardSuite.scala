@@ -161,3 +161,22 @@ class MatBoardSuite extends munit.FunSuite:
       wrapper.getAttribute("class"))
     assertEquals(box(wrapper),
       at(MatLayout.relicSlot(1, 1, 2), MatLayout.siteRow(1, 1)))
+
+  /** A pawn carries its long and short forms together, so a zoom never
+    * re-renders (ruling R6): the dot in the player's colour, the player's
+    * name for assistive technology and at rest, and the initial the
+    * zoomed-out map shows. */
+  test("a pawn carries its dot, its player's name and the initial"):
+    val maximilian = GamePlayer("blue", "Maximilian", "Exile", PlayerColor.Blue)
+    val placed = WorldBoardRenderer.world(table.copy(
+      players = Vector(red, maximilian),
+      pawnLocations = Vector(GamePawn("blue", "woods"))), BoardOptions.none)
+    val pawn = one(placed, """.site[aria-label="Deep Woods"] .pawn""")
+    val dot = one(pawn, ".pawn-dot")
+    assertEquals(dot.getAttribute("aria-hidden"), "true")
+    assert(dot.classList.contains("player-blue"), dot.getAttribute("class"))
+    val initial = one(pawn, ".pawn-initial")
+    assertEquals(initial.getAttribute("aria-hidden"), "true")
+    assertEquals(initial.textContent, "M")
+    assertEquals(one(pawn, ".player-ref").textContent, "Maximilian")
+    assertEquals(pawn.getAttribute(HoverTip.Attribute), "Maximilian")
