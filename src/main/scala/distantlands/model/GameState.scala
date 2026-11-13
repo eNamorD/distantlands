@@ -35,7 +35,8 @@ final case class LineageState(
     legacies: Vector[LegacyState],
     startingAdvisers: Vector[AdviserState],
     /** Relics the lineage keeps between games, as the TTS player section
-      * stores them. Nothing creates them until Legacies. */
+      * stores them. Game start hands a seated lineage's to its player
+      * facedown; no rule yet creates them (Heirloom, a legacy power, will). */
     startingRelics: Vector[RelicId] = Vector.empty
 )
 

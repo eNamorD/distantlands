@@ -34,3 +34,50 @@ Decision: the legacy deck is not a stack. A move into it names no
 position, and a move that names a top or bottom is refused.
 Reason: the deck is derived and no rule reads its order (Legacies ruling
 3).
+
+## Slice 1 review
+
+**R4. The evolved Chronicle shows dormant legacies to every seat.**
+Question: `GameProjection.chronicleView` projects the evolved Chronicle,
+lineages and all, to every seat once the Chronicle Phase journals it, so
+another player's dormant legacies show there. Should it redact them?
+Decision: no. The evolved Chronicle shows every legacy to every seat.
+Reason: it is the end-of-game save every player carries into the next
+game, as the visible relic deck order already is; the next game's
+projection shows only the baseline's name and digest. Recorded in the
+`chronicleView` doc comment and in the "Legacies rulings" of
+`docs/rules/ambiguities.md`.
+
+**R5. A legacy moved between lineages with no face given.**
+Question: a legacy moved from one lineage to another with no resulting
+orientation kept its face. The design says a legacy entering a lineage
+takes the move's face, dormant when none is given.
+Decision: follow the design. A legacy entering a lineage takes the move's
+resulting orientation, dormant when none is given, whatever face it had
+(`CardMovementOperations.insertCard`).
+Reason: the design's slice 1 text; one rule for every source.
+
+**R6. A face on a move into the public row or the legacy deck.**
+Question: a move into the public row or the legacy deck could name a
+resulting orientation that neither can hold.
+Decision: such a move may name no face or faceup; facedown is refused
+with `UnsupportedOrientation`, as an edifice's face is.
+Reason: the public row is faceup, and the derived deck keeps no face.
+
+**R7. `LegacyGoal.key` and `LegacyGoal.all`, and the legacy deck's
+removal arm.**
+Question: no production code reads `LegacyGoal.key` or `LegacyGoal.all`
+yet, and `removeCard`'s `CardDeck.Legacy` arm cannot be reached.
+Decision: keep both members for slice 5, and delete them then if slice 5
+still does not use them in production. The unreachable arm stays, with a
+comment saying nothing is indexed in the derived deck.
+Reason: slice 5 draws the goal icon; the match must stay exhaustive.
+
+**R8. Slice 1 docs.**
+Question: the "Legacies rulings" section the design requires was not
+written, `docs/rules/implementation-traceability.md` still said legacies
+were excluded from game start, and the `LineageState.startingRelics` doc
+said nothing creates them until Legacies.
+Decision: add the section with design rulings 1 and 3 and R4 (slice 2
+completes it, R17), correct the traceability row and the doc comment.
+Reason: the docs must say what the code does.
