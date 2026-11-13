@@ -45,14 +45,14 @@ class DeckFigureSuite extends munit.FunSuite:
     assertEquals(all(row, ":scope > *").map(_.classList.item(0)),
       Vector("round-tracker", "visions-drawn", "deck-figure", "deck-figure"))
     assertEquals(all(row, ".deck-caption").map(_.textContent),
-      Vector("World deck", "Relic deck"))
+      Vector("Relic deck", "World deck"))
     assertEquals(all(world, ".world > .deck-figure, .world > .pile-display"),
       Vector.empty)
 
   test("the count is drawn on the card"):
     val world = WorldBoardRenderer.world(table, BoardOptions.none)
     assertEquals(all(region(world, "Cradle"), ".deck-row .deck-card .pile-count")
-      .head.textContent, "×53")
+      .last.textContent, "×53")
     assertEquals(one(region(world, "Hinterland"), ".deck-card .pile-count")
       .textContent, "×2")
 

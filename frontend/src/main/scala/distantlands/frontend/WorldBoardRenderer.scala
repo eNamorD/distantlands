@@ -316,7 +316,7 @@ private[frontend] object WorldBoardRenderer:
     }
 
   /** The Cradle's foot, as the mat prints it: the round wheel, the Visions
-    * Drawn track, the world deck and the relic deck. */
+    * Drawn track, the relic deck and the world deck. */
   private def cradleFoot(value: GameProjection, deck: dom.Element)
       : dom.Element =
     val row = element("div", "deck-row")
@@ -324,10 +324,11 @@ private[frontend] object WorldBoardRenderer:
       row.appendChild(roundTracker(value, track))
       row.appendChild(visionsDrawn(track.visionsDrawn))
     }
-    row.appendChild(place(deckFigure("World deck", deck),
-      MatLayout.worldDeck))
+    // The relic deck first, as the mat prints it left of the world deck.
     row.appendChild(place(deckFigure("Relic deck",
       deckBody(value.relicDeckCount, Some("relic"))), MatLayout.relicDeck))
+    row.appendChild(place(deckFigure("World deck", deck),
+      MatLayout.worldDeck))
     row
 
   /** The mat's six cells, each printing its number, and the marker on the

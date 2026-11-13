@@ -88,11 +88,13 @@ class MatBoardSuite extends munit.FunSuite:
       at(MatLayout.roundWheel))
     assertEquals(box(one(foot, ".track-note")), at(MatLayout.trackNote))
     val decks = all(foot, ":scope > .deck-figure")
-    assertEquals(box(decks(0)), at(MatLayout.worldDeck))
-    assertEquals(box(decks(1)), at(MatLayout.relicDeck))
+    // The relic deck comes first, as the mat prints it left of the world
+    // deck, so the reading order follows the board.
+    assertEquals(box(decks(0)), at(MatLayout.relicDeck))
+    assertEquals(box(decks(1)), at(MatLayout.worldDeck))
     assertEquals(decks.map(deck => one(deck, ".deck-caption").textContent),
-      Vector("World deck", "Relic deck"))
-    assertEquals(one(decks(1), ".pile-count").textContent, "×9")
+      Vector("Relic deck", "World deck"))
+    assertEquals(one(decks(0), ".pile-count").textContent, "×9")
 
   test("Visions Drawn is a marker on the mat's six cells"):
     val track = one(world, ".visions-drawn")
