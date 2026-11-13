@@ -287,6 +287,9 @@ private[application] final class GamePresentationProjector(
     *    so no viewer sees its pile.
     *  - A lineage's starting advisers are named only to the player seated
     *    with that lineage.
+    *  - A lineage's active legacy is named to every viewer, a dormant one
+    *    only to the player seated with that lineage; the public row to
+    *    every viewer.
     *  - The Reliquary is named only to the Chancellor, and only in Setup,
     *    where they pick one of its relics (Empire ruling R29).
     *  - Everything else -- other decks, set-aside relics, the
@@ -338,6 +341,13 @@ private[application] final class GamePresentationProjector(
       case CardContainer.Lineage(lineage, LineageCardArea.StartingAdvisers) =>
         viewer.exists(player => ready.game.current.players
           .exists(seat => seat.player == player && seat.lineage == lineage))
+      // An active legacy is faceup for all; a dormant one is facedown in its
+      // owner's play area, and only they know it (Legacies design, ruling 1).
+      case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
+        faceup || viewer.exists(player => ready.game.current.players
+          .exists(seat => seat.player == player && seat.lineage == lineage))
+      // The Public Ambitions row is faceup.
+      case CardContainer.PublicLegacies => true
       // The Chancellor chooses a Reliquary relic in Setup (CR p. 8, Empire
       // ruling R29); nobody else, and nobody later, sees the pile.
       case CardContainer.Reliquary =>
@@ -454,4 +464,6 @@ private[application] object GamePresentationProjector:
       case Some(DenizenState(_, orientation, _)) => Some(orientation)
       case Some(VisionState(_, orientation)) => Some(orientation)
       case Some(RelicState(_, orientation, _)) => Some(orientation)
+      case Some(LegacyState(_, active)) =>
+        Some(if active then Orientation.FaceUp else Orientation.FaceDown)
       case _ => None
