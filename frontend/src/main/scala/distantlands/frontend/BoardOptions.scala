@@ -173,7 +173,7 @@ private[frontend] object BoardOptions:
 
   /** A card's kind as an option names it. */
   def cardKind(card: CardDetails): String = card.cardKind match
-    case "relic" | "vision" | "edifice" => card.cardKind
+    case "relic" | "vision" | "edifice" | "legacy" => card.cardKind
     case _ => "denizen"
 
   /** A card's own option key: its kind as an option names it, and its id. */

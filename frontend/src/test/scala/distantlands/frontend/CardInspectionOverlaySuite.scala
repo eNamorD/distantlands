@@ -118,6 +118,17 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
       Some("Old Oak"))
     assert(!node.querySelector(".card-face").classList.contains("card-face-down"))
 
+  test("a legacy's inspection names its suit and its goal"):
+    val MountedOverlay(root, overlay) = mountedOverlay()
+    overlay.show(CardDetails("L22", "legacy", "Seer", suit = Some("arcane"),
+      rulesText = Some("**SETUP:** Peek."), orientation = Some("face-down"),
+      legacyGoal = Some(distantlands.protocol.projection.LegacyGoalProjection(
+        "darkest-secret", "Hold the Darkest Secret"))), focusableOpener())
+    val properties = all(root.querySelector(".card-overlay"),
+      ".card-overlay-property").map(_.textContent)
+    assert(properties.contains("Goal" + "Hold the Darkest Secret"), properties)
+    assert(properties.contains("Suit" + "arcane"), properties)
+
   test("the details lead with the card name, above the suit"):
     val MountedOverlay(root, overlay) = mountedOverlay()
     overlay.show(card, focusableOpener())

@@ -28,10 +28,18 @@ private[frontend] object CardFace:
   def backLetter(cardKind: String): String = cardKind match
     case "vision" => "V"
     case "relic" => "R"
+    case "legacy" => "L"
     case _ => "D"
 
   def faceDown(card: CardDetails): Boolean =
     card.hidden || card.orientation.contains("face-down")
+
+  /** A dormant legacy its viewer may know: drawn by its face, marked
+    * Dormant, rather than as a knowable back (Legacies implementation
+    * ruling R36). */
+  private def dormantLegacy(card: CardDetails): Boolean =
+    card.cardKind == "legacy" && !card.hidden &&
+      card.orientation.contains("face-down")
 
   /** How wide a name's longest word is, in em of the compact face's bold
     * text. The browser measures it in the body face at 700; where there is
@@ -81,8 +89,10 @@ private[frontend] object CardFace:
     val node = dom.document.createElement("button").asInstanceOf[dom.html.Button]
     node.`type` = "button"
     node.className = Vector("card-face", boxClass(card.cardKind),
-      if faceDown(card) then "card-face-down" else "",
-      if faceDown(card) && !card.hidden then "card-face-knowable" else "",
+      if faceDown(card) && !dormantLegacy(card) then "card-face-down" else "",
+      if faceDown(card) && !card.hidden && !dormantLegacy(card) then
+        "card-face-knowable" else "",
+      if dormantLegacy(card) then "card-face-dormant" else "",
       if card.implemented then "" else "card-face-unimplemented")
       .filter(_.nonEmpty).mkString(" ")
     if !card.hidden then
@@ -98,6 +108,9 @@ private[frontend] object CardFace:
 
     if card.hidden then
       node.appendChild(text("span", "card-back-letter", backLetter(card.cardKind)))
+    else if dormantLegacy(card) then
+      summary(card).foreach(node.appendChild)
+      node.appendChild(text("span", "legacy-dormant", "Dormant"))
     else if faceDown(card) then
       // Knowable: the back is what shows at rest; the summary is revealed by
       // CSS on hover only, inside the same box, so nothing moves.
@@ -186,7 +199,10 @@ private[frontend] object CardFace:
     val marks = element("span", "card-power-marks")
     card.powers.foreach(power => power.modifier.foreach(mark =>
       PowerMarks.modifier(mark, power.persistent).foreach(marks.appendChild)))
-    Vector(Some(header),
+    // A legacy's goal, in words until goals have icons (R34).
+    val goal = card.legacyGoal.map(goal =>
+      text("span", s"legacy-goal legacy-goal-${goal.key}", goal.text))
+    Vector(Some(header), goal,
       Option.when(tokens.childNodes.length > 0)(tokens),
       Option.when(marks.childNodes.length > 0)(marks),
       Option.when(!card.implemented)(

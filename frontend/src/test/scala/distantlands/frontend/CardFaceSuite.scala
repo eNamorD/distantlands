@@ -247,3 +247,32 @@ class CardFaceSuite extends munit.FunSuite:
 
   test("the card id rides the element for focus restoration"):
     assertEquals(CardFace.render(faceUp).getAttribute("data-card-id"), "d1")
+
+  private val seer = CardDetails("L22", "legacy", "Seer", suit = Some("arcane"),
+    orientation = Some("face-up"),
+    legacyGoal = Some(distantlands.protocol.projection.LegacyGoalProjection(
+      "darkest-secret", "Hold the Darkest Secret")))
+
+  test("a legacy back reads L, and its key is a legacy's (R27)"):
+    val back = CardFace.render(CardDetails("hidden", "legacy", "Legacy",
+      orientation = Some("face-down"), hidden = true))
+    assertEquals(firstMatch(back, ".card-back-letter").map(_.textContent),
+      Some("L"))
+    assertEquals(BoardOptions.cardKey(seer), "legacy:L22")
+
+  test("a legacy face shows its name and its goal in words (R34)"):
+    val node = CardFace.render(seer)
+    assertEquals(firstMatch(node, ".card-name").map(_.textContent),
+      Some("Seer"))
+    assertEquals(firstMatch(node, ".legacy-goal").map(_.textContent),
+      Some("Hold the Darkest Secret"))
+    assertEquals(firstMatch(node, ".legacy-dormant"), None)
+
+  test("a dormant legacy its viewer knows shows its face, marked Dormant " +
+      "(R36)"):
+    val node = CardFace.render(seer.copy(orientation = Some("face-down")))
+    assertEquals(firstMatch(node, ".card-back-letter"), None)
+    assertEquals(firstMatch(node, ".card-name").map(_.textContent),
+      Some("Seer"))
+    assertEquals(firstMatch(node, ".legacy-dormant").map(_.textContent),
+      Some("Dormant"))

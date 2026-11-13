@@ -785,6 +785,16 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   white-space: nowrap; }
 .card-face:has(> .card-unimplemented-badge) {
   padding-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
+/* A legacy's goal in words, under its name, until goals have icons
+   (Legacies implementation ruling R34). */
+.legacy-goal { font-size: max(0.62em, 0.7rem); line-height: 1.2;
+  color: var(--mark-modifier); }
+/* A dormant legacy its viewer knows keeps its face, with the back's colour
+   at its edge and a tag in its upper right (R36). */
+.card-face-dormant { border-color: #cbb7dd; }
+.legacy-dormant { position: absolute; top: 0.3em; right: 0.3em;
+  padding: 0 0.3em; border-radius: 0.3em; background: #2a2333;
+  color: #cbb7dd; font-size: max(0.62em, 0.7rem); line-height: 1.35; }
 .card-face-down { align-items: center; justify-content: center;
   border-style: solid; background: #2a2333; container-type: inline-size; }
 /* The letter and the pip are sized off the card as well as the type, so a

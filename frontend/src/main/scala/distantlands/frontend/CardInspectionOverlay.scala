@@ -194,6 +194,7 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     panel.appendChild(text("h3", "card-overlay-name", card.name))
     val properties = element("dl", "card-overlay-properties")
     Vector(card.suit.map("Suit" -> _),
+      card.legacyGoal.map("Goal" -> _.text),
       card.restrictions.filterNot(_ == "unrestricted").map("Restrictions" -> _),
       card.orientation.map("Orientation" -> _),
       card.side.map("Side" -> _),
