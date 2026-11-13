@@ -249,7 +249,7 @@ Licensed files live under `reference/assets/`, which `.gitignore` already
 covers through `reference/`. Nothing in the product reads them.
 
 - `reference/assets/tts/`: the mat, the attack and defense dice sheets, the
-  round die's mesh (a cube; no face texture came with it) and the owner's
+  round die's mesh and face texture, and the owner's
   screenshot of the favor and secret tokens (in place).
 - `reference/assets/cards/`: the 240 New Foundations card images and the
   symbol images, copied from the `bgs-cards` clone.
