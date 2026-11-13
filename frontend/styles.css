@@ -775,11 +775,26 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* The initials, for the zoomed-out map only; the name is the button's label. */
 .card-name-short { display: none; }
 /* What lies on a card in play is anchored to the card's box, not to what
-   the card prints: a band across the card above its foot, the same place
-   over a drawn face and over an image. */
-.card-tokens { position: absolute; right: 0.3em; bottom: 2.1em; left: 0.3em;
-  display: flex; align-items: center; justify-content: center; gap: 0.15em;
-  font-size: 1em; }
+   the card prints: a band across the card at its foot region, the same
+   place over a drawn face and over an image (implementation ruling R4).
+   Every length is set on the face, per box kind, so the band, the power
+   marks and the room the face keeps free agree. On a denizen-shaped box the
+   band stands just above the power marks' row; on a square or landscape box,
+   which has no room for both rows, it stands at the foot unless the card
+   prints power marks there. An Unimplemented band or a Replace badge lifts
+   the marks, and the band with them. */
+.card-face { --marks-bottom: 0.35em; --band-h: 1.3em;
+  --band-bottom: calc(var(--marks-bottom) + 1.65em); }
+:is(.card-face-relic, .card-face-legacy):not(:has(> .card-power-marks)) {
+  --band-bottom: calc(var(--marks-bottom) - 0.05em); }
+.card-face:has(> .card-unimplemented-badge) {
+  --marks-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
+.card-face.board-option-replace { --marks-bottom: calc(0.35em + 1.6em); }
+.card-tokens { position: absolute; right: 0.3em; bottom: var(--band-bottom);
+  left: 0.3em; display: flex; align-items: center; justify-content: center;
+  gap: 0.15em; height: var(--band-h); font-size: 1em; }
+:is(.card-face, .card-hover-summary) > :is(.card-header, .legacy-goal) {
+  flex-shrink: 1; min-height: 0; overflow: hidden; }
 .card-token-count { margin-right: 0.35em; font-weight: 700; }
 /* The header's right end, in the flow, so a name that wraps is laid out
    beside the dice rather than under them. */
@@ -793,12 +808,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* Each power's modifier tab or battle-plan crown, in the lower-left corner,
    lifted above the unimplemented band or a Replace badge when either is
    there. */
-.card-power-marks { position: absolute; left: 0.35em; bottom: 0.35em;
-  display: flex; gap: 0.15em; }
+.card-power-marks { position: absolute; left: 0.35em;
+  bottom: var(--marks-bottom); display: flex; gap: 0.15em; }
 .card-power-marks .power-mark { width: 1.5em; height: 1.5em; }
-.card-face:has(> .card-unimplemented-badge) > .card-power-marks {
-  bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
-.card-face.board-option-replace > .card-power-marks { bottom: calc(0.35em + 1.6em); }
 /* A band across the card's foot, out to the dashed border, so the word gets
    the card's whole width: at the floor's 0.7rem, mixed case, "Unimplemented"
    fits the smallest card in a pane. The card keeps the band's height free
@@ -810,6 +822,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   white-space: nowrap; }
 .card-face:has(> .card-unimplemented-badge) {
   padding-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
+/* A face holding tokens keeps the band's room free, the Unimplemented
+   band's with it: what it prints stops above the band, and a name too long
+   for what is left is cut there, its whole text being the face's hover note
+   and accessible name. */
+:is(.card-face, .card-hover-summary):has(> .card-tokens) {
+  padding-bottom: calc(var(--band-bottom) + var(--band-h) + 0.15em); }
 /* A legacy's goal in words, under its name, until goals have icons
    (Legacies implementation ruling R34). */
 .legacy-goal { font-size: max(0.62em, 0.7rem); line-height: 1.2;
