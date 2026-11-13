@@ -55,3 +55,20 @@ class LegacyMovesSuite extends munit.FunSuite:
       assert(RawOperationBatch.executeAll(ready, Vector(moved(
         AlchemistCard.id, Location.Hand(p1), to))).left.toOption
         .exists(_.isInstanceOf[OperationError.InvalidDestination]), s"$to"))
+
+  test("a dormant legacy flipped faceup becomes active, and back"):
+    val ready = Table.start.legacy(p1, SeerCard, active = false).ready
+    val lineage = lineageOf(ready, p1)
+    val active = applied(ready, Flip(SeerCard.id, Location.Legacies(lineage),
+      Orientation.FaceUp))
+    assertEquals(active.game.campaign.lineages(lineage).legacies,
+      Vector(LegacyState(SeerCard.id, active = true)))
+    val dormant = applied(active, Flip(SeerCard.id,
+      Location.Legacies(lineage), Orientation.FaceDown))
+    assertEquals(dormant.game.campaign.lineages(lineage).legacies,
+      Vector(LegacyState(SeerCard.id, active = false)))
+
+  test("a public legacy has no face to flip"):
+    val ready = Table.start.publicLegacies(RivalCard).ready
+    assert(RawOperationBatch.executeAll(ready, Vector(Flip(RivalCard.id,
+      Location.PublicLegacies, Orientation.FaceDown))).isLeft)

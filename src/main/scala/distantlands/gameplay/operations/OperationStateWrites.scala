@@ -94,6 +94,12 @@ private[operations] object OperationStateWrites:
               updateSite(ready, site)(state => state.copy(relics =
                 state.relics.map(value => if value.id == id then
                   f(value).asInstanceOf[RelicState] else value)))
+            case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
+              Right(ready.updateCampaign(campaign => campaign.copy(lineages =
+                campaign.lineages.updatedWith(lineage)(_.map(state =>
+                  state.copy(legacies = state.legacies.map(value =>
+                    if value.id == id then f(value).asInstanceOf[LegacyState]
+                    else value)))))))
             case atlas: CardContainer.AtlasSite =>
               updateAtlasCardState(ready, atlas, id, f)
             case _ => Left(IncompatibleLocation(Piece.Card(id), Location.OnCard(id)))
