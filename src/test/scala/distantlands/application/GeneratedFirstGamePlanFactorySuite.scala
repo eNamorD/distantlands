@@ -49,7 +49,7 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
 
   test("a new Chronicle carries no history and starts a first game"):
     val plan = accepted(factory.build(config, ChronicleChoice.New("Fresh")))
-    assert(!EmpireSetupRules.hasHistory(plan.chronicle))
+    assert(!EmpireSetupRules.hasHistory(catalog, plan.chronicle))
     val ready = accepted(GameStartRules.evolve(catalog, plan.chronicle,
       plan.orders))
     assert(ready.setup.ignoreCitizenshipPowers)

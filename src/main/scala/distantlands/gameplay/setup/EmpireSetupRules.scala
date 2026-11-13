@@ -1,5 +1,6 @@
 package distantlands.gameplay.setup
 
+import distantlands.catalog.ExecutableCatalog
 import distantlands.model._
 import distantlands.model.OathViolation.UnsupportedChronicle
 
@@ -33,8 +34,9 @@ object SetupMode:
 object EmpireSetupRules:
   /** Whether `chronicle` starts a first game: it lists no Chancellor and
     * no Citizen, its Empire holds no site, and it carries no history. */
-  def isFirstGame(chronicle: Chronicle): Boolean =
-    chronicle.world.isEmpty && !hasHistory(chronicle) &&
+  def isFirstGame(catalog: ExecutableCatalog, chronicle: Chronicle)
+      : Boolean =
+    chronicle.world.isEmpty && !hasHistory(catalog, chronicle) &&
       chronicle.lineages.forall(_.role == Role.Exile)
 
   /** What a brand-new Chronicle (`FirstGameChronicleGenerator`) never
@@ -42,9 +44,12 @@ object EmpireSetupRules:
     * one with alteration sources, a lineage that played before or keeps
     * starting advisers, legacies or starting relics, a scored game on the
     * era scorepad, an Oathkeeper goal other than Supremacy, a stocked
-    * Reliquary, and a denizen or relic stored at an Atlas site. A listed
-    * normal face with no source, as a TTS import writes, is no history. */
-  def hasHistory(chronicle: Chronicle): Boolean =
+    * Reliquary, a denizen or relic stored at an Atlas site, and an Atlas
+    * site whose edifice is not the one a new Chronicle stores: an edifice
+    * at a site that is no Homeland, and a Homeland storing no edifice, one
+    * of another suit, or more than one. A listed normal face with no
+    * source, as a played Chronicle may list, is no history. */
+  def hasHistory(catalog: ExecutableCatalog, chronicle: Chronicle): Boolean =
     chronicle.foundations.values.exists(state =>
       state.face == FoundationFace.Altered ||
         state.alterationSources.nonEmpty) ||
@@ -54,10 +59,19 @@ object EmpireSetupRules:
     chronicle.era.games.nonEmpty ||
     chronicle.oathkeeperGoal != OathkeeperGoal.Supremacy ||
     chronicle.reliquary.nonEmpty ||
-    chronicle.atlasBox.exists(_.items.exists {
+    chronicle.atlasBox.exists(stored => stored.items.exists {
       case _: DenizenId | _: RelicId => true
       case _ => false
-    })
+    } || !storesItsOwnEdifice(catalog, stored))
+
+  /** Whether `stored` holds the edifice a new Chronicle gives it: its
+    * Homeland suit's one edifice, or none at a site that is no Homeland. */
+  private def storesItsOwnEdifice(catalog: ExecutableCatalog,
+      stored: StoredSite): Boolean =
+    val suits = stored.items.collect { case id: EdificeId =>
+      catalog.edifice(id).map(_.suit) }
+    suits == catalog.site(stored.site).flatMap(_.homeland).toVector
+      .map(Some(_))
 
   /** The seated Chancellor leads the Empire. With none seated, because the
     * Chancellor's lineage sits out or the Chronicle lists none, a seated
@@ -66,17 +80,16 @@ object EmpireSetupRules:
     * Chancellor, no Citizen and no Empire site starts a first game, or an
     * exile-only game when it carries history. A later game's
     * Empire, kept or former, holds 1 to 8 sites (R28). */
-  def resolve(chronicle: Chronicle, orders: SetupOrders)
-      : Either[OathViolation, SetupMode] =
+  def resolve(catalog: ExecutableCatalog, chronicle: Chronicle,
+      orders: SetupOrders): Either[OathViolation, SetupMode] =
     val seated = orders.participants.map(p => p.lineageId -> p.playerId).toMap
     def lineages(role: Role) = chronicle.lineages.filter(_.role == role)
       .map(_.id)
     val chancellors = lineages(Role.Chancellor)
     val citizens = lineages(Role.Citizen)
-    if chancellors.isEmpty && citizens.isEmpty && chronicle.world.isEmpty then
-      Right(if hasHistory(chronicle) then
-        SetupMode.ExileOnly(chronicle.atlasBox.take(MapState.slots))
-      else SetupMode.FirstGame)
+    if isFirstGame(catalog, chronicle) then Right(SetupMode.FirstGame)
+    else if chancellors.isEmpty && citizens.isEmpty && chronicle.world.isEmpty
+    then Right(SetupMode.ExileOnly(chronicle.atlasBox.take(MapState.slots)))
     else
       val seatedCitizens = citizens.flatMap(seated.get)
       def empire(chancellor: PlayerId) = SetupMode.WithEmpire(EmpireSetup(

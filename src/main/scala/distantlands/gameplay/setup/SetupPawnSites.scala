@@ -1,5 +1,6 @@
 package distantlands.gameplay.setup
 
+import distantlands.catalog.ExecutableCatalog
 import distantlands.model._
 
 object SetupPawnSites:
@@ -10,7 +11,8 @@ object SetupPawnSites:
     * exile-only game is every site that holds bandits. A site with no
     * warbands is ruled by nobody. A player with no such site may place
     * anywhere, so Setup never stalls. */
-  def legal(ready: ReadyGame, player: PlayerId): Vector[SiteId] =
+  def legal(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId)
+      : Vector[SiteId] =
     val map = ready.game.current.map
     def held(kind: ForceKind)(site: SiteId) = map.sites.get(site)
       .exists(_.forces match
@@ -18,7 +20,8 @@ object SetupPawnSites:
         case _ => false)
     val empire = map.hinterward.filter(held(ForceKind.Imperial))
     // An exile-only game places its pawns as a later game's Exiles do.
-    val firstGame = EmpireSetupRules.isFirstGame(ready.game.campaign.baseline)
+    val firstGame = EmpireSetupRules.isFirstGame(catalog,
+      ready.game.campaign.baseline)
     val open =
       if firstGame then map.inPlay
       else if Imperials.isImperial(ready, player) then empire

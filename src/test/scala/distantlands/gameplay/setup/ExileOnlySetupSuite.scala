@@ -21,7 +21,7 @@ class ExileOnlySetupSuite extends munit.FunSuite:
       LaterGameFixture.orders(chronicle, p1)))
 
   private def mode(chronicle: Chronicle): SetupMode =
-    accepted(EmpireSetupRules.resolve(chronicle,
+    accepted(EmpireSetupRules.resolve(catalog, chronicle,
       LaterGameFixture.orders(chronicle, p1)))
 
   /** The Atlas's first eight sites, from the Recent end. */
@@ -34,8 +34,29 @@ class ExileOnlySetupSuite extends munit.FunSuite:
   private def exile(id: String) =
     LineageState(LineageId(id), None, Role.Exile, Vector.empty, Vector.empty)
 
+  private def homeland(stored: StoredSite): Option[Suit] =
+    catalog.site(stored.site).flatMap(_.homeland)
+
+  /** The first of the first eight sites that is, or is not, a Homeland. */
+  private def firstSite(isHomeland: Boolean): StoredSite =
+    firstEight.find(homeland(_).isDefined == isHomeland).get
+
+  /** An edifice of a suit other than `suit` that `brandNew` stores
+    * nowhere. */
+  private def unstoredEdifice(notOf: Option[Suit]): EdificeId =
+    val stored = brandNew.atlasBox.flatMap(_.items).toSet[CardId]
+    catalog.edifices.filterNot(edifice => notOf.contains(edifice.suit))
+      .map(edifice => EdificeId(edifice.id.value))
+      .find(id => !stored(id)).get
+
+  /** `brandNew` with `site`'s stored cards replaced by `items`. */
+  private def storing(site: StoredSite, items: Vector[CardId]): Chronicle =
+    brandNew.copy(atlasBox = brandNew.atlasBox.map(stored =>
+      if stored.site == site.site then stored.copy(items = items)
+      else stored))
+
   test("a brand-new Chronicle is a first game, and so is one listing six " +
-      "normal faces with no source, as a TTS import writes"):
+      "normal faces with no source, as a played Chronicle may list"):
     assertEquals(mode(brandNew), SetupMode.FirstGame)
     val normal = FoundationState(FoundationFace.Normal, Set.empty)
     assertEquals(mode(brandNew.copy(foundations =
@@ -48,8 +69,11 @@ class ExileOnlySetupSuite extends munit.FunSuite:
     val denizen = brandNew.worldDeck.last
     val adviser = DenizenState(denizen, Orientation.FaceUp, Tokens.empty)
     val legacy = LegacyId(catalog.legacies.head.id.value)
+    val homelandSite = firstSite(isHomeland = true)
     val withHistory = Vector(
       "an altered face" -> withAltered(FoundationNumber.III),
+      "a Homeland with no stored edifice" -> storing(homelandSite,
+        Vector.empty),
       "a sourced normal face" -> brandNew.copy(foundations = Map(
         FoundationNumber.III ->
           FoundationState(FoundationFace.Normal, Set(legacy)))),
@@ -73,7 +97,7 @@ class ExileOnlySetupSuite extends munit.FunSuite:
         atlasBox = brandNew.atlasBox.updated(0, brandNew.atlasBox(0).copy(
           items = brandNew.atlasBox(0).items :+ denizen))))
     withHistory.foreach { (history, chronicle) =>
-      assert(EmpireSetupRules.hasHistory(chronicle), history)
+      assert(EmpireSetupRules.hasHistory(catalog, chronicle), history)
       assertEquals(mode(chronicle),
         SetupMode.ExileOnly(chronicle.atlasBox.take(MapState.slots)),
         history)
@@ -87,7 +111,21 @@ class ExileOnlySetupSuite extends munit.FunSuite:
     assertEquals(current.map.inPlay, firstEight.map(_.site))
     assertEquals(current.map.nextSlot, None)
     assertEquals(ready.game.campaign.foundations(FoundationNumber.II), altered)
+    // No Empire existed to erode Foundation I to Wide Horizons.
+    assertEquals(ready.game.campaign.foundations(FoundationNumber.I).face,
+      FoundationFace.Normal)
     assertEquals(current.players.map(_.board.favor), Vector(6, 6, 6))
+    // A Homeland is populated as a later game's Atlas site: its stored
+    // edifice ruined, its bandits, and a relic in each slot.
+    val homelandSite = firstSite(isHomeland = true)
+    val printed = catalog.site(homelandSite.site).get
+    val placed = current.map.sites(homelandSite.site)
+    assertEquals(placed.denizens, homelandSite.items.collect {
+      case id: EdificeId => EdificeState(id, EdificeSide.Ruined, Tokens.empty)
+    })
+    assertEquals(placed.forces,
+      SiteForces.Occupied(ForceKind.Bandit, printed.capacity))
+    assertEquals(placed.relics.size, printed.relicSlots)
     assert(!ready.setup.ignoreCitizenshipPowers)
     assertEquals(Imperials.players(ready), Vector.empty)
     assert(ready.game.campaign.reliquarySetAside)
@@ -129,8 +167,30 @@ class ExileOnlySetupSuite extends munit.FunSuite:
         sites = current.map.sites.updated(site, current.map.sites(site)
           .copy(forces = SiteForces.Empty)))))
     val exileOnly = cradlemostCleared(started(withAltered(FoundationNumber.III)))
-    assertEquals(SetupPawnSites.legal(exileOnly, p1),
+    assertEquals(SetupPawnSites.legal(catalog, exileOnly, p1),
       exileOnly.game.current.map.inPlay.tail)
     val firstGame = cradlemostCleared(started(brandNew))
-    assertEquals(SetupPawnSites.legal(firstGame, p1),
+    assertEquals(SetupPawnSites.legal(catalog, firstGame, p1),
       firstGame.game.current.map.inPlay)
+
+  test("an edifice stored at a site that is no Homeland makes an " +
+      "exile-only game, which keeps it ruined at its site"):
+    val site = firstSite(isHomeland = false)
+    val edifice = unstoredEdifice(notOf = None)
+    val chronicle = storing(site, Vector(edifice))
+    assertEquals(mode(chronicle), SetupMode.ExileOnly(
+      chronicle.atlasBox.take(MapState.slots)))
+    assertEquals(started(chronicle).game.current.map.sites(site.site)
+      .denizens, Vector(EdificeState(edifice, EdificeSide.Ruined,
+        Tokens.empty)))
+
+  test("a Homeland storing an edifice of another suit makes an exile-only " +
+      "game rather than a refusal"):
+    val site = firstSite(isHomeland = true)
+    val offSuit = unstoredEdifice(notOf = homeland(site))
+    val chronicle = storing(site, Vector(offSuit))
+    assertEquals(mode(chronicle), SetupMode.ExileOnly(
+      chronicle.atlasBox.take(MapState.slots)))
+    assertEquals(started(chronicle).game.current.map.sites(site.site)
+      .denizens, Vector(EdificeState(offSuit, EdificeSide.Ruined,
+        Tokens.empty)))

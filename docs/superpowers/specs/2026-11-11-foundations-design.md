@@ -75,7 +75,9 @@ Taken with the owner on 2026-11-10 and 2026-11-11.
    (`EmpireSetupRules.hasHistory`): an altered or sourced face, a lineage
    that played before or keeps starting advisers, legacies or starting
    relics, a scored era game, an Oathkeeper goal other than Supremacy, a
-   stocked Reliquary, or a denizen or relic stored at an Atlas site. With
+   stocked Reliquary, a denizen or relic stored at an Atlas site, or an
+   edifice a new Chronicle would not store there: one at a site that is no
+   Homeland, or a Homeland storing none or another suit's. With
    history it starts an exile-only game (`SetupMode.ExileOnly`): the
    Atlas's first eight sites as bandit sites with their stored cards,
    whatever Foundation I's face, the stored faces with no erosion, stored
@@ -532,8 +534,8 @@ always took the Recent end.
 - **Offer.** Every altered face whose `alterationSources` holds no active
   legacy. Before Legacies that is every altered face, III included. No
   altered face, no question.
-- **Log.** "Restored Foundation I to Imperial Maps", or "Did not flip any
-  foundations" for Keep.
+- **Log.** "{holder} restored Foundation I to Imperial Maps", or "{holder}
+  did not flip any foundations" for Keep.
 - **Tests.** Each offer; the skip; the restored face reaching
   `ChronicleUpdated`; a hand-built face with an active legacy as its source
   is not offered.
