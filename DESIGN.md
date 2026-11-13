@@ -447,11 +447,16 @@ cannot. The two glance sizes are named once on `.map-compact`
 lines stand on rows of one height, `--row`, which grows with the glance
 size, and its name keeps one line, cut with an ellipsis. Below a scale of
 0.4 the map also carries `map-tiny`, a second step: a site face keeps its
-name, its tokens and its pawns, and its defense, forces and powers, the
-wheel's numbers, the tracker's words, the slots' names and a bank's suit
-name and favor glyph are left for a zoom, since at a tablet's or a phone's
-Fit they would fall under a readable size. Each keeps its accessible
-name.
+name, its tokens and its pawns, and its forces and defense in a short form,
+the warband in the force's colour and one defense die, each with its count
+(implementation ruling R5); on a phone defense steps out first. Its powers,
+the wheel's numbers, the tracker's words, the slots' names and a bank's
+suit name and favor glyph are left for a zoom, since at a tablet's or a
+phone's Fit they would fall under a readable size. Each keeps its
+accessible name. The table's edge is on the same zoom surface and holds
+the glance size too: its headings, the Oath goal (a link with a 24px hit
+area on screen) and its holder, and the Public Ambitions cards, which take
+the compact face.
 
 ## Layout
 
