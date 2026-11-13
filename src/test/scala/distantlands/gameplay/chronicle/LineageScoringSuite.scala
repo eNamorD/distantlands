@@ -25,14 +25,21 @@ class LineageScoringSuite extends munit.FunSuite:
     walkerDice = WalkerDiceFixture.reversingShuffle)
 
   private def atGifts(using munit.Location): OathTransition =
+    atGiftsOn(ChronicleWalk.throneHeldByChancellorP1
+      .warbandsAt(AncientCitySite, p1, 1))
+
+  /** The Throne on `table`, every step before Score Lineage Points
+    * answered plainly, parked on the gifts. */
+  private def atGiftsOn(table: Table)(using munit.Location): OathTransition =
     ChronicleWalk.walkedTo(rules, accepted(rules.next(OathTransition(
-      ChronicleWalk.throneHeldByChancellorP1.warbandsAt(AncientCitySite, p1, 1)
-        .state, Vector.empty), TriggeredProcedureRef.ChronicleSun)),
+      table.state, Vector.empty), TriggeredProcedureRef.ChronicleSun)),
       LineageScoring.giftsDecisionId)
 
   private def gifting(toP2: Int, toP3: Int)(using munit.Location)
-      : OathTransition =
-    val at = atGifts
+      : OathTransition = giftingOn(atGifts, toP2, toP3)
+
+  private def giftingOn(at: OathTransition, toP2: Int, toP3: Int)(
+      using munit.Location): OathTransition =
     val next = accepted(rules.resolveWalker(at.state, p1,
       LineageScoring.giftsDecisionId, DecisionAnswer.DistributeAnswer(Vector(
         DistributeAmount(DecisionOptionRef.Player(p2), toP2),
@@ -104,3 +111,56 @@ class LineageScoringSuite extends munit.FunSuite:
 
   test("a winner with no legacy has no bonus"):
     assertEquals(bonusOf(empireWithCards), Vector.empty)
+
+  /** The lines Score Lineage Points wrote, the winner's first. */
+  private def scoreLines(events: Vector[OathEvent]): Vector[String] =
+    NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone),
+      ChronicleThroneProcedure.noteKeys, events).map(_.text)
+      .filter(_.contains("lineage point"))
+
+  /** p1 holding The Needle over the Empire's Beast cards, parked on the
+    * gifts, and the bonus as the step reads it there. */
+  private def needleAtGifts(using munit.Location)
+      : (OathTransition, Vector[(Suit, Int)]) =
+    val at = atGiftsOn(empireWithCards.legacy(p1, TheNeedleCard))
+    (at, bonusOf(Table.from(Outcomes.ready(at.state))))
+
+  private def shares(bonus: Vector[(Suit, Int)]): String =
+    bonus.map((suit, points) => s"$points from $suit").mkString(", ")
+
+  test("the winner earns 3 plus the bonus, and may give away half of it"):
+    val (at, bonus) = needleAtGifts
+    assert(bonus.exists(_._1 == Suit.Beast), bonus)
+    val total = LineageScoring.basePoints + bonus.map(_._2).sum
+    ChronicleWalk.parked(at.state).get.query match
+      case spread: DecisionQuery.Distribute =>
+        assertEquals(spread.maxTotal, total / 2)
+      case other => fail(other.toString)
+    val after = Outcomes.ready(giftingOn(at, 0, 0).state)
+    val before = Outcomes.ready(at.state)
+    assertEquals(scoreOf(after, p1) - scoreOf(before, p1), total)
+    assertEquals(scoreLines(giftingOn(at, 0, 0).events),
+      Vector(s"p1 scored $total lineage points (3 base, ${shares(bonus)})"))
+
+  test("after gifts the line names the kept points and what was given " +
+      "(R28)"):
+    val (at, bonus) = needleAtGifts
+    val total = LineageScoring.basePoints + bonus.map(_._2).sum
+    assertEquals(scoreLines(giftingOn(at, 1, 0).events).head,
+      s"p1 scored ${total - 2} lineage points (3 base, ${shares(bonus)}, " +
+        "less 2 given)")
+
+  test("a winner who gives every point away records nothing, and the line " +
+      "still says so (R29)"):
+    // With 3 Beast cards the total is 6, which can all be given away.
+    val (at, bonus) = needleAtGifts
+    val ready = Outcomes.ready(at.state)
+    val total = LineageScoring.basePoints + bonus.map(_._2).sum
+    assertEquals(total, 6)
+    val done = giftingOn(at, total / 4, total / 2 - total / 4)
+    assertEquals(scoreOf(Outcomes.ready(done.state), p1), scoreOf(ready, p1))
+    assert(!done.events.exists(_.toString.contains(
+      s"LineagePointsScored(${ready.game.current.player(p1).get.lineage}")))
+    assertEquals(scoreLines(done.events).head,
+      s"p1 scored 0 lineage points (3 base, ${shares(bonus)}, less $total " +
+        "given)")

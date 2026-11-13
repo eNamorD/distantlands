@@ -21,7 +21,7 @@ import distantlands.gameplay.powers.search.{MushroomsCard, WineOfWelcomeCard}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.SetupProcedure
-import distantlands.gameplay.chronicle.OfferCitizenship
+import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship}
 import distantlands.model._
 import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
@@ -183,6 +183,23 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       OfferCitizenship.declined).foreach(key => assertEquals(kindOf(
         TriggeredProcedureRef.ChronicleThrone, key), LogKind.Decision,
         key.name))
+
+  test("the winner's legacy bonus reads by suit, as a Delta (R28, R30)"):
+    val shares = NoteArg.SuitShares(Vector(3 -> Suit.Beast, 1 -> Suit.Nomad))
+    def points(n: Int) = NoteArg.Amount(n, NoteUnit.LineagePoint)
+    assertEquals(said(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.scoredWithBonus, NoteArg.Player(rival), points(7),
+      NoteArg.Number(3), shares),
+      s"${rival.value} scored 7 lineage points (3 base, 3 from Beast, 1 " +
+        "from Nomad)")
+    assertEquals(said(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.scoredWithBonusLessGifts, NoteArg.Player(rival),
+      points(3), NoteArg.Number(3), shares, NoteArg.Number(4)),
+      s"${rival.value} scored 3 lineage points (3 base, 3 from Beast, 1 " +
+        "from Nomad, less 4 given)")
+    Vector(LineageScoring.scoredWithBonus,
+      LineageScoring.scoredWithBonusLessGifts).foreach(key => assertEquals(
+        kindOf(TriggeredProcedureRef.ChronicleThrone, key), LogKind.Delta))
 
   test("a Negotiation's opening lines post at Action"):
     assertEquals(kindOf(ActionRef.Negotiation,

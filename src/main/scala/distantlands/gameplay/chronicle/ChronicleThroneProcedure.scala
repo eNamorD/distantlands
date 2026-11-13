@@ -29,5 +29,5 @@ object ChronicleThroneProcedure:
     ChronicleWindows.step(PowerWindow.ChronicleScatterRelics,
       ReliquaryAndRelics.scatter(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleScoreLineage,
-      LineageScoring.steps),
+      LineageScoring.steps(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleSwearOath, SwearOath.steps))
