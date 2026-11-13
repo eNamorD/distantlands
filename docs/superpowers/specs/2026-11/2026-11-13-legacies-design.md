@@ -1,7 +1,8 @@
 # Legacies
 
 **Status:** designed 2026-11-13, approved section by section by the owner.
-Slice 1 landed (plan: [Legacies slice 1](../../plans/2026-11/2026-11-13-legacies-slice1.md)).
+Slices 1 and 2 landed (plans: [slice 1](../../plans/2026-11/2026-11-13-legacies-slice1.md),
+[slice 2](../../plans/2026-11/2026-11-13-legacies-slice2.md)).
 
 **Builds on** the [Chronicle steps design](../2026-10/2026-10-27-chronicle-steps-design.md),
 the [Foundations design](2026-11-11-foundations-design.md), whose faces and
@@ -194,10 +195,10 @@ dormant legacy redacted in another seat's snapshot.
 ## Slice 2: setup deal
 
 `LegacyDeal(face, players)` sits beside `SetupDeal` in `gameplay/setup`.
-It is the one deal arithmetic the plan factory, game start and the
-materializer share. Game start shuffles the derived deck with the setup
-seed, and `GameStarted` records the order the deal used, as it records the
-denizen order.
+It is the one deal arithmetic the plan factory and game start share; game
+start applies it (implementation ruling R16). The plan factory shuffles
+the derived deck with the setup seed, and `GameStarted` records the order
+the deal used, as it records the denizen order.
 
 - **Quiet Ambitions** (Foundation III normal, and every first game, ruling
   4). Each seated player draws 2 legacies in seat order, including players
