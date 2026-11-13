@@ -59,6 +59,11 @@ object ResolveLegacies:
   def capDecisionId(player: PlayerId): String =
     s"chronicle.sun.legacy-cap.${player.value}"
 
+  /** The cap Crown Chancellor asks again after a reactivation (R19): an id
+    * of its own, since the walk's answers still hold step 4's. */
+  def crownCapDecisionId(player: PlayerId): String =
+    s"chronicle.sun.legacy-cap.crown.${player.value}"
+
   def publicDecisionId(legacy: LegacyId): String =
     s"chronicle.sun.public-legacy.${legacy.value}"
 

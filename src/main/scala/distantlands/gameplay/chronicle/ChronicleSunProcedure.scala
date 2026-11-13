@@ -59,8 +59,9 @@ object ChronicleSunProcedure:
       // "If an Exile won, the Empire breaks"), then the cap if need be. An
       // Imperial winner holds no dormant legacy after step 3 (ruling 2), so
       // this asks nothing of them.
-      ResolveLegacies.reactivate(winner, ResolveLegacies.capDecisionId(winner),
-        noteId, ResolveLegacies.reactivated, ResolveLegacies.capped)),
+      ResolveLegacies.reactivate(winner,
+        ResolveLegacies.crownCapDecisionId(winner), noteId,
+        ResolveLegacies.reactivated, ResolveLegacies.capped)),
     ChronicleWindows.step(PowerWindow.ChronicleAssignTasks,
       ChronicleTaskAssignment.steps(winner, tookNote)))
 

@@ -1,7 +1,8 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.holding.{AncestralLandsCard, ArbiterCard,
-  ChroniclerCard, GoldenKeyCard, IronHandCard, KeeperOfOrderCard,
+  ChroniclerCard, GoldenKeyCard, GreatArchitectCard, IronHandCard,
+  KeeperOfOrderCard,
   MatchmakerCard, PeacemakerCard, RivalCard, SeerCard, SteadfastCard,
   WealthyCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
@@ -243,7 +244,9 @@ class ResolveLegaciesSuite extends munit.FunSuite:
     // so p1's three Grand Scepter legacies stay active through step 3.
     val run = sun(holding(won, p1, KeeperOfOrderCard, AncestralLandsCard,
       GoldenKeyCard, IronHandCard))
-    val asked = capOf(run, p1).get.query.asInstanceOf[DecisionQuery.ChooseMany]
+    val asked = run.asked.find(_.decisionId ==
+      ResolveLegacies.crownCapDecisionId(p1)).get.query
+      .asInstanceOf[DecisionQuery.ChooseMany]
     assertEquals((asked.min, asked.max), (1, 1))
     assertEquals(legaciesOf(run.ready, p1).count(_.active), 3)
 
@@ -260,3 +263,16 @@ class ResolveLegaciesSuite extends munit.FunSuite:
       Vector(LegacyState(SeerCard.id, active = true)))
     assertEquals(legaciesOf(run.ready, p3),
       Vector(LegacyState(IronHandCard.id, active = true)))
+
+  test("a winner capped in step 4 and again at Crown Chancellor answers " +
+      "two different questions"):
+    // Four Grand Scepter legacies stay active (ruling 7); Iron Hand goes
+    // dormant in step 3 and returns at Crown.
+    val run = sun(holding(won, p1, KeeperOfOrderCard, AncestralLandsCard,
+      GoldenKeyCard, GreatArchitectCard, IronHandCard))
+    val caps = run.asked.filter(_.owner == p1).map(_.decisionId)
+      .filter(_.startsWith("chronicle.sun.legacy-cap."))
+    assertEquals(caps, Vector(ResolveLegacies.capDecisionId(p1),
+      ResolveLegacies.crownCapDecisionId(p1)))
+    assertEquals(legaciesOf(run.ready, p1).count(_.active), 3)
+    assertEquals(legaciesOf(run.ready, p1).size, 3)
