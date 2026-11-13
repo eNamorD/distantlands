@@ -8,7 +8,8 @@ import distantlands.gameplay.SpitefulMirrorCard
 import distantlands.gameplay.powers.action.WhistleCard
 import distantlands.gameplay.powers.campaign.ScoutsCard
 import distantlands.gameplay.powers.cardplay.LostTapestryCard
-import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.gameplay.setup.{EmpireSetupRules, FirstGameSetupFixture,
+  GameStartRules, SetupMode}
 import distantlands.model._
 
 /** TTS strings to and from Chronicles (Chronicle TTS codec design). */
@@ -110,6 +111,13 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
         refusal => fail(s"game start refused: $refusal"), identity)
     assertEquals(ready.game.campaign.foundations(FoundationNumber.III),
       altered)
+
+  test("a brand-new Chronicle's TTS string, mask 0, lists no face and " +
+      "decodes to a first game"):
+    val decoded = roundTripped(chronicle)
+    assertEquals(decoded.foundations, Map.empty)
+    assertEquals(EmpireSetupRules.resolve(FirstGameSetupFixture.catalog,
+      decoded, FirstGameSetupFixture.orders), Right(SetupMode.FirstGame))
 
   test("a version 3 goal digit of 0 reads as Supremacy"):
     val unset = TtsChronicle(foundations = Some(TtsFoundations(0, Some(0))))

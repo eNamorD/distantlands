@@ -57,7 +57,8 @@ Chronicle: known and unique atlas/denizen/relic ids, an atlas site for every
 slot the atlas fills (8 in a first game; under Imperial Maps, every slot
 past the Empire's sites), enough World Deck cards to deal and, in a first
 game, enough relics for every relic slot, a deal holding exactly the
-Chronicle's decks, and, in a first game, one matching edifice per Homeland in play. The deeper suit-count and Vision-packet audit a Chronicle
+Chronicle's decks. A first game's Homelands each store one matching edifice;
+a Chronicle that does not carries history and starts an exile-only game. The deeper suit-count and Vision-packet audit a Chronicle
 must satisfy is the generator's own job, checked once at generation time
 (`FirstGameChronicleGenerator.validate`) rather than again at every setup.
 
@@ -72,7 +73,19 @@ Reliquary stay as in the baseline until the Stars task extracts them.
 
 `EmpireSetupRules.resolve` reads how the game starts, a `SetupMode`. A
 Chronicle that lists no Chancellor, no Citizen and no Empire site starts a
-first game on eight atlas sites. With a Chancellor seated, or a seated
+first game on eight atlas sites when it is brand new, carrying no history
+(`EmpireSetupRules.hasHistory`: an altered or sourced foundation face, a
+lineage that played before or keeps starting advisers, legacies or
+starting relics, a scored era game, an Oathkeeper goal other than
+Supremacy, a stocked Reliquary, a denizen or relic stored at an Atlas
+site, or an Atlas edifice a new Chronicle would not store: one at a site
+that is no Homeland, or a Homeland storing none or another suit's; the
+check reads the catalog). With history it starts an exile-only game (`SetupMode.ExileOnly`):
+the Atlas's first eight sites are placed as bandit sites with their stored
+cards and open relic slots filled, whatever Foundation I's face, the
+stored faces apply with no erosion, stored advisers are dealt, the
+Citizenship option is off and the Reliquary is set aside, as with no
+Empire. With a Chancellor seated, or a seated
 Citizen standing in for one, the Empire's sites return. Under Imperial Maps
 Setup's walk then asks the Chancellor, right after the Reliquary pick,
 whether the Recent or the Forgotten end fills the slots past them, and

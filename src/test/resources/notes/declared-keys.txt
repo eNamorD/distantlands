@@ -528,6 +528,7 @@ procedure.challenge took-from-bank-secrets = Took {0} from the bank with {1} {1?
 procedure.challenge took-from-player-favor = Took {0} from {1} with {2} favor
 procedure.challenge took-from-player-secrets = Took {0} from {1} with {2} {2?secret|secrets}
 procedure.chronicle-beacon chose-suits = {0} chose {1}, {2} and {3}
+procedure.chronicle-beacon kept-foundations = {0} did not flip any foundations
 procedure.chronicle-beacon kept-newcomer = {0} welcomed {1} as a starting adviser
 procedure.chronicle-beacon restored-foundation-i = {0} restored Foundation I to Imperial Maps
 procedure.chronicle-beacon restored-foundation-ii = {0} restored Foundation II to Powerful Tribes

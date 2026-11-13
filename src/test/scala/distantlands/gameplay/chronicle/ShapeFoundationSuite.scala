@@ -76,11 +76,12 @@ class ShapeFoundationSuite extends munit.FunSuite:
     case DecisionOption.Unavailable(inner, _) => labelOf(inner)
     case other => fail(other.toString)
 
-  /** The "restored" lines the walk journaled, as plain text. */
+  /** The Shape Foundation lines the walk journaled, as plain text. */
   private def restoredLines(transition: OathTransition): Vector[String] =
+    val keys = ShapeFoundation.noteKeys.map(_.name).toSet
     NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleBeacon),
       ChronicleBeaconProcedure.noteKeys, transition.events)
-      .filter(_.key.startsWith("restored-foundation-")).map(_.text)
+      .filter(line => keys(line.key)).map(_.text)
 
   /** The last Chronicle `transition` journaled with `ChronicleUpdated`. */
   private def recordedChronicle(transition: OathTransition): Chronicle =
@@ -88,9 +89,11 @@ class ShapeFoundationSuite extends munit.FunSuite:
       case ChronicleUpdated(chronicle) => chronicle
     }.last
 
-  test("with no foundation altered the holder is not asked"):
+  test("with no foundation altered the holder is not asked, and no line " +
+      "is written"):
     val walked = walkedToShapeFoundation(tasksAssigned)
     assertEquals(ChronicleWalk.parked(walked.state), None)
+    assertEquals(restoredLines(walked), Vector.empty)
     assert(!RecordedOps.all(walked.events)
       .exists(_.isInstanceOf[FoundationRestored]), walked.events)
 
@@ -125,12 +128,13 @@ class ShapeFoundationSuite extends munit.FunSuite:
     assertEquals(record.foundations.get(FoundationNumber.I), Some(normal))
     assertEquals(record.foundations.get(FoundationNumber.III), Some(altered))
 
-  test("keeping every foundation restores none and writes no line"):
+  test("keeping every foundation restores none and says so"):
     val done = answeredThenRecorded(wideHorizonsAndPublicAmbitions,
       ShapeFoundation.keep)
     assert(!RecordedOps.all(done.events)
       .exists(_.isInstanceOf[FoundationRestored]), done.events)
-    assertEquals(restoredLines(done), Vector.empty)
+    assertEquals(restoredLines(done),
+      Vector("p3 did not flip any foundations"))
     assertEquals(recordedChronicle(done).foundations,
       wideHorizonsAndPublicAmbitions.ready.game.campaign.foundations)
 

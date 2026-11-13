@@ -161,7 +161,7 @@ object SetupProcedure:
       // The sites are read when the question is reached: Imperial Maps
       // fills the map earlier in the same walk.
       Branch((state, _) => Vector(Decide(pawnId, participant.playerId,
-        DecisionQuery.ChooseOne(SetupPawnSites.legal(state,
+        DecisionQuery.ChooseOne(SetupPawnSites.legal(catalog, state,
             participant.playerId).map(site =>
             DecisionOption.Site(DecisionOptionRef.Site(site))),
           heading = Some("Choose your starting site"),

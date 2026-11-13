@@ -234,7 +234,7 @@ class NoEmpireSetupSuite extends munit.FunSuite:
     val ready = started(absentEmpireChronicle(empireSites = 3))
     val sites = ready.game.current.map.hinterward
     Vector(p1, p2, p3).foreach(player =>
-      assertEquals(SetupPawnSites.legal(ready, player), sites))
+      assertEquals(SetupPawnSites.legal(catalog, ready, player), sites))
     /** `ready` with `emptied` holding no warbands, as a capacity-0 site
       * holds none. */
     def withoutWarbandsAt(emptied: Set[SiteId]): ReadyGame =
@@ -242,10 +242,10 @@ class NoEmpireSetupSuite extends munit.FunSuite:
         sites = current.map.sites.map((site, state) => site ->
           (if emptied(site) then state.copy(forces = SiteForces.Empty)
           else state)))))
-    assertEquals(SetupPawnSites.legal(withoutWarbandsAt(Set(sites(1))), p1),
+    assertEquals(SetupPawnSites.legal(catalog, withoutWarbandsAt(Set(sites(1))), p1),
       Vector(sites(0), sites(2)))
     // With no bandits anywhere, any site: Setup must not stall.
-    assertEquals(SetupPawnSites.legal(withoutWarbandsAt(sites.toSet), p1),
+    assertEquals(SetupPawnSites.legal(catalog, withoutWarbandsAt(sites.toSet), p1),
       sites)
 
   test("Setup runs to the first player's turn on the former Empire's sites"):

@@ -14,9 +14,11 @@ import distantlands.model.OathViolation._
  *
  * Validation here is only what Setup itself needs: known and unique ids
  * across every Chronicle field (`ChronicleAccounting`), how a later game
- * starts, with an Empire or with none (`EmpireSetupRules`), the foundation
- * faces it starts with (`StartingFoundations`), enough cards to deal, and,
- * in a first game, one edifice per Homeland in play (Empire ruling R26).
+ * starts, with an Empire, with none or as a first or exile-only game
+ * (`EmpireSetupRules`), the foundation faces it starts with
+ * (`StartingFoundations`) and enough cards to deal. A first game's
+ * Homelands each store one edifice of their suit (Empire ruling R26), or
+ * the Chronicle carries history and starts an exile-only game.
  * The old plan's suit-count and Vision-packet audit is the generator's own
  * job now (`FirstGameChronicleGenerator.validate`), checked once at
  * generation time rather than again at every setup.
@@ -88,9 +90,10 @@ object GameStartRules:
       _ <- Either.cond(records.forall(_.legacies.isEmpty), (),
         UnsupportedChronicle("legacies require Legacies"))
       _ <- validateParticipants(orders)
-      mode <- EmpireSetupRules.resolve(chronicle, orders)
+      mode <- EmpireSetupRules.resolve(catalog, chronicle, orders)
       // Setup With No Empire erodes the faces before the foundations are
-      // resolved. Every face of every foundation starts a game.
+      // resolved; an exile-only game had no Empire to erode them. Every
+      // face of every foundation starts a game.
       faces = mode match
         case _: SetupMode.NoEmpire =>
           StartingFoundations.eroded(StartingFoundations.of(chronicle))
@@ -104,31 +107,33 @@ object GameStartRules:
       atlasSites =
         if mode == SetupMode.FirstGame then chronicle.atlasBox.take(slots)
         else Vector.empty
-      // A later game keeps every card stored at its sites (R27); a first
-      // game's sites hold only their Homeland edifices (R26).
-      _ <- Either.cond(mode != SetupMode.FirstGame ||
-        chronicle.atlasBox.forall(_.items.forall(_.isInstanceOf[EdificeId])), (),
-        UnsupportedChronicle(
-          "stored denizens or relics on an atlas site are not supported yet"))
+      // A later game keeps every card stored at its sites (R27). A first
+      // game's sites hold only their Homelands' edifices, one of each
+      // Homeland's suit (R26): a stored denizen or relic, an edifice at a
+      // site that is no Homeland, and a Homeland storing none or another
+      // suit's are history (`EmpireSetupRules.hasHistory`).
       _ <- validateIds(catalog, chronicle)
       _ <- Either.cond(
         chronicle.worldDeck.size >= deal.needed, (),
         UnsupportedChronicle("not enough world-deck cards to deal"))
-      homelands <-
+      homelands =
         if mode == SetupMode.FirstGame then homelandEdifices(catalog, atlasSites)
-        else Right(Vector.empty)
+        else Vector.empty
       _ <- Either.cond(chronicle.relicDeck.size >=
           atlasSites.map(emptyRelicSlots(catalog, _)).sum,
         (), UnsupportedChronicle("not enough relics to fill site slots"))
       _ <- validateDeal(chronicle, orders, deal)
     yield FirstGameSetupPlan(orders.participants, orders.firstPlayer,
-      (chronicle.world ++ atlasSites).map(_.site), orders.denizenOrder,
+      (chronicle.world ++ atlasSites ++ (mode match
+        case SetupMode.ExileOnly(sites) => sites
+        case _ => Vector.empty)).map(_.site), orders.denizenOrder,
       orders.worldDeckOrder, orders.relicOrder, homelands,
       chronicle.oathkeeperGoal, mode match
         case SetupMode.WithEmpire(empire) => Some(empire)
         case _ => None,
       mode match
         case SetupMode.NoEmpire(sites, _) => sites
+        case SetupMode.ExileOnly(sites) => sites
         case _ => Vector.empty,
       startingAdvisers(chronicle, orders), faces) -> mode
 
@@ -137,10 +142,11 @@ object GameStartRules:
     * the slots past the Empire's sites in Setup's walk, from the end the
     * Chancellor chooses (Foundations design, slice 4), and Wide Horizons
     * fills none. With no Empire the former Empire's sites are all that is
-    * placed. */
+    * placed. An exile-only game places eight as bandit sites at game
+    * start, whatever Foundation I's face. */
   private def atlasSlots(mode: SetupMode,
       faces: Map[FoundationNumber, FoundationState]): Int = mode match
-    case SetupMode.FirstGame => MapState.slots
+    case SetupMode.FirstGame | SetupMode.ExileOnly(_) => MapState.slots
     case SetupMode.WithEmpire(empire)
         if faces(FoundationNumber.I).face == FoundationFace.Normal =>
       MapState.slots - empire.sites.size
@@ -205,25 +211,14 @@ object GameStartRules:
       Left(UnknownFirstPlayer(orders.firstPlayer))
     else Right(())
 
+  /** Each Homeland in play with its stored edifice. A first game's
+    * Homelands each store one of their suit, or the Chronicle carries
+    * history (`EmpireSetupRules.hasHistory`). */
   private def homelandEdifices(catalog: ExecutableCatalog,
-      inPlay: Vector[StoredSite])
-      : Either[OathViolation, Vector[(SiteId, EdificeId)]] =
-    inPlay.foldLeft[Either[OathViolation, Vector[(SiteId, EdificeId)]]](
-        Right(Vector.empty)) { (acc, stored) =>
-      acc.flatMap { built =>
-        catalog.site(stored.site).get.homeland match
-          case None => Right(built)
-          case Some(suit) =>
-            stored.items.collectFirst { case id: EdificeId => id } match
-              case Some(edificeId) if catalog.edifice(edificeId).exists(_.suit == suit) =>
-                Right(built :+ (stored.site -> edificeId))
-              case Some(edificeId) => Left(UnsupportedChronicle(
-                s"edifice ${edificeId.value} at ${stored.site.value} does " +
-                  "not match its Homeland suit"))
-              case None => Left(UnsupportedChronicle(
-                s"Homeland ${stored.site.value} has no stored edifice"))
-      }
-    }
+      inPlay: Vector[StoredSite]): Vector[(SiteId, EdificeId)] =
+    inPlay.filter(stored => catalog.site(stored.site).get.homeland.nonEmpty)
+      .flatMap(stored => stored.items.collectFirst { case id: EdificeId =>
+        stored.site -> id })
 
   private def relicSlots(catalog: ExecutableCatalog, site: SiteId): Int =
     catalog.site(site).get.relicSlots

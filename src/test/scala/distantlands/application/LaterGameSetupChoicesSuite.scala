@@ -63,7 +63,7 @@ class LaterGameSetupChoicesSuite extends munit.FunSuite:
   test("Imperial players may start only at Empire sites"):
     val ready = filledFromRecent(record)
     Vector(p1, p2).foreach(player => assertEquals(
-      SetupPawnSites.legal(ready, player), record.world.map(_.site)))
+      SetupPawnSites.legal(catalog, ready, player), record.world.map(_.site)))
 
   test("an Exile may start at the Hintermost Empire site or a site the " +
       "bandits rule, never at an empty site (R25)"):
@@ -74,12 +74,12 @@ class LaterGameSetupChoicesSuite extends munit.FunSuite:
     val bare = ready.updateCurrent(current => current.copy(map =
       current.map.copy(sites = current.map.sites.updatedWith(emptied)(
         _.map(_.copy(forces = SiteForces.Empty))))))
-    assertEquals(SetupPawnSites.legal(bare, p3),
+    assertEquals(SetupPawnSites.legal(catalog, bare, p3),
       record.world.last.site +: ready.game.current.map.hinterward.drop(3))
 
   test("a first game offers every site"):
     val firstGame = FirstGameSetupFixture.freshReady
-    assertEquals(SetupPawnSites.legal(firstGame, p1),
+    assertEquals(SetupPawnSites.legal(catalog, firstGame, p1),
       firstGame.game.current.map.inPlay)
 
   test("a player with a starting adviser is not asked to choose one"):

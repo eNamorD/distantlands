@@ -26,8 +26,10 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
   private val chronicleWithEmpire =
     LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
 
-  /** The fixture's first-game Chronicle: no lineage listed and no Empire. */
-  private val firstGameChronicle = FirstGameSetupFixture.chronicle
+  /** The fixture's brand-new Chronicle: no lineage listed and no Empire.
+    * An altered face is history, so with one it starts an exile-only game
+    * (owner, 2026-11-12). */
+  private val brandNewChronicle = FirstGameSetupFixture.chronicle
 
   /** The game `chronicle` starts for `seats`, p1 first, dealt from the
     * Chronicle's decks in their own order. */
@@ -60,8 +62,8 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
   test("with five players Powerful Tribes adds 1 favor to each bank, and " +
       "Movers and Shakers adds none"):
     val fiveSeats = LaterGameFixture.seats(5)
-    val tribes = started(firstGameChronicle, fiveSeats)
-    val movers = started(withAlteredFoundation(firstGameChronicle,
+    val tribes = started(brandNewChronicle, fiveSeats)
+    val movers = started(withAlteredFoundation(brandNewChronicle,
       FoundationNumber.II), fiveSeats)
     val onMap = suitsOnMap(movers)
     assert(onMap.nonEmpty, "the Homeland edifices are on the map")
@@ -109,9 +111,9 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
     assertEquals(council.game.current.copy(banners = mob.game.current.banners),
       mob.game.current)
     assertEquals(council.banks, mob.banks)
-    val firstGame = started(withAlteredFoundation(firstGameChronicle.copy(
+    val exileOnly = started(withAlteredFoundation(brandNewChronicle.copy(
       oathkeeperGoal = OathkeeperGoal.ThePeople), FoundationNumber.V))
-    assertEquals(firstGame.game.current.banners.peoplesFavor,
+    assertEquals(exileOnly.game.current.banners.peoplesFavor,
       PeoplesFavorState(PeoplesFavorFace.GrandCouncil, None, 1))
 
   test("Festival flips the Darkest Secret to its Festival face with 1 " +
@@ -142,17 +144,18 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
     assertEquals(festival.game.current.copy(banners =
       flame.game.current.banners), flame.game.current)
     assertEquals(festival.banks, flame.banks)
-    val firstGame = started(withAlteredFoundation(firstGameChronicle.copy(
+    val exileOnly = started(withAlteredFoundation(brandNewChronicle.copy(
       oathkeeperGoal = OathkeeperGoal.Devotion), FoundationNumber.VI))
-    assertEquals(firstGame.game.current.banners.darkestSecret,
+    assertEquals(exileOnly.game.current.banners.darkestSecret,
       DarkestSecretState(DarkestSecretFace.Festival, None, 1,
         festival = None))
 
   private val (p2, p3) = (PlayerId("p2"), PlayerId("p3"))
 
-  /** The first-game Chronicle with Foundation IV on Teeming World. */
+  /** The brand-new Chronicle with Foundation IV on Teeming World: an
+    * exile-only game. */
   private val teemingWorldChronicle =
-    withAlteredFoundation(firstGameChronicle, FoundationNumber.IV)
+    withAlteredFoundation(brandNewChronicle, FoundationNumber.IV)
 
   private def faceDown(denizens: Vector[DenizenId]): Vector[AdviserState] =
     denizens.map(DenizenState(_, Orientation.FaceDown, Tokens.empty))
@@ -163,7 +166,7 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
   test("under Teeming World each player with no stored adviser starts with " +
       "three facedown advisers from the top of the stack, and no hand"):
     val ready = started(teemingWorldChronicle)
-    val stack = firstGameChronicle.worldDeck
+    val stack = brandNewChronicle.worldDeck
     assertEquals(Vector(p1, p2, p3).map(advisers(ready, _)), Vector(
       faceDown(stack.slice(0, 3)), faceDown(stack.slice(3, 6)),
       faceDown(stack.slice(6, 9))))
@@ -247,7 +250,7 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
       "Provinces and the Hinterland discard piles in turn, with no pile " +
       "seeded"):
     val ready = started(teemingWorldChronicle)
-    val rest = firstGameChronicle.worldDeck.drop(9)
+    val rest = brandNewChronicle.worldDeck.drop(9)
     /** Every third card of the rest from `from`, the first dealt last: a
       * pile is stored top last, and its first card dealt is its top. */
     def everyThird(from: Int): Vector[WorldCardId] =
@@ -291,7 +294,7 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
 
   test("Teeming World refuses a stack too short for every player's draws"):
     val short = teemingWorldChronicle.copy(
-      worldDeck = firstGameChronicle.worldDeck.take(8))
+      worldDeck = brandNewChronicle.worldDeck.take(8))
     assertEquals(rejected(GameStartRules.evolve(catalog, short,
         LaterGameFixture.orders(short, p1))),
       OathViolation.UnsupportedChronicle("not enough world-deck cards to deal"))

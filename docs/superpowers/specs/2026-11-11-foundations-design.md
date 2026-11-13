@@ -1,7 +1,8 @@
 # Foundations
 
 **Status:** designed 2026-11-11. Every slice landed: 1, 2, 3a, 3b, 4, 5, 6
-and 7. The owner reviewed the rulings and readings on 2026-11-12.
+and 7. The owner reviewed the rulings and readings on 2026-11-12, and
+decided the readings marked as the owner's in a second review that day.
 
 **Builds on** the [Chronicle steps design](2026-10/2026-10-27-chronicle-steps-design.md),
 the [Chronicle setup design](2026-09/2026-09-21-chronicle-setup-design.md) and
@@ -68,6 +69,21 @@ Taken with the owner on 2026-11-10 and 2026-11-11.
    "Recent Site").
 5. **The shared bank has no count.** Taking favor from it changes nothing
    but the taker's board.
+6. **A first game is a brand-new Chronicle** (owner, 2026-11-12). A
+   Chronicle with no Chancellor, no Citizen and no Empire site starts a
+   first game only when it carries no history
+   (`EmpireSetupRules.hasHistory`): an altered or sourced face, a lineage
+   that played before or keeps starting advisers, legacies or starting
+   relics, a scored era game, an Oathkeeper goal other than Supremacy, a
+   stocked Reliquary, a denizen or relic stored at an Atlas site, or an
+   edifice a new Chronicle would not store there: one at a site that is no
+   Homeland, or a Homeland storing none or another suit's. With
+   history it starts an exile-only game (`SetupMode.ExileOnly`): the
+   Atlas's first eight sites as bandit sites with their stored cards,
+   whatever Foundation I's face, the stored faces with no erosion, stored
+   advisers dealt, the Citizenship option off, the Reliquary set aside, and
+   the title and banners as with no Empire. This replaces the reading that
+   a first game places its eight sites whatever Foundation I's face.
 
 The owner reviewed the slices' readings and undo barriers on 2026-11-12 and
 approved them, but for ruling 3 above and the Citizenship option (slice
@@ -129,7 +145,9 @@ branches with no catalog leave the UI and the Game Log nothing to name.
 - **Projection and UI.** The game projection gains `foundations`: each
   number, its face, the face's name and its rules text. The shared bank, the
   table's game info column, shows a strip of six setup cards with the altered
-  faces marked; a click reads a face's rules. The Chronicle page lists the
+  faces marked; a click reads a face's rules. The strip stays there for
+  now; a roadmap item moves the cards to an overlay of their own, since
+  players need them rarely (owner, 2026-11-12). The Chronicle page lists the
   same six from the Chronicle's summary. Both are read-only; editing waits
   for **Edit Chronicle**.
 - **Tests.** Game start keeps stored faces and refuses the gated ones;
@@ -160,13 +178,15 @@ journaled. Each removes its refusal.
   Under Teeming World a lineage that stores three or more advisers draws
   none and keeps them all. Players draw in seat order, and a lineage's
   stored advisers come before the ones it draws. A site-only denizen drawn
-  is kept and cannot be revealed in Setup. Reveal Cards still runs. An
+  is kept facedown and cannot be revealed in Setup. Choose Adviser is
+  skipped, and Reveal Cards still runs. An
   uneven rest leaves the Cradle pile, then the Provinces pile, one card
   more, and the first card dealt to a pile is its top; later cards go
   beneath (decided in the slice's review, so that the unimplemented
   denizens the alpha shuffle puts last in the stack top no pile). A Search
   of the Visions-only deck draws one Vision and stops; once the five are
-  drawn the world deck is empty and cannot be searched.
+  drawn the world deck is empty and cannot be searched. The Teeming World
+  readings are the owner's (2026-11-12).
 - **Tests.** Bank and board totals at 3 and 5 players; Teeming World with
   and without stored advisers; the discard piles' order; a world deck of
   Visions only, and a first Search drawing a Vision; card accounting still
@@ -194,7 +214,8 @@ reader counts the sites on the map. Shattered Portal's wrap walks
 number of sites leaves the pawn where it stands. Stone Portal has no wrap:
 it offers every other site, and on a map of one site it parked the walk on
 a question with no option. The walker now refuses a required choose-one
-that declares no option, so such an action is shown unavailable.
+that declares no option, so such an action is shown unavailable. The owner
+decided Shattered Portal's wrap and the walker's refusal (2026-11-12).
 
 ### Wide Horizons at game start
 
@@ -306,8 +327,9 @@ game.
   filled Cradlemost first while the relic deck lasts, and the rest stay
   empty. If no site holds bandits, an Exile may place their pawn at any
   site. A power that takes a Reliquary relic finds a set-aside Reliquary
-  empty. A first game places its eight sites whatever Foundation I's face.
-  Powers that make a player a Citizen apply: the rulebook sets them aside
+  empty. The owner decided the refused siteless former Empire, the kept
+  sources, the Cradlemost relic fill and the any-site pawn fallback
+  (2026-11-12). Powers that make a player a Citizen apply: the rulebook sets them aside
   only in the very first game, so game start turns that option on for a
   first game alone (owner, 2026-11-12).
 - **The set-aside Reliquary at Crown Chancellor, decided with the owner.**
@@ -373,8 +395,12 @@ always took the Recent end.
   gives the same totals as counting after the fill. One answer fills every
   slot, the Forgotten end placing the Atlas's last site in the Cradlemost
   empty slot. With one site in the Atlas nothing is asked and the line says
-  Recent; an Empire of eight sites asks nothing. A placed site's SETUP half
-  resolves at Setup's end, as before.
+  Recent; an Empire of eight sites asks nothing. The owner ruled that case
+  never an issue, as the Atlas holds far more than eight sites; the code
+  keeps handling it. A placed site's SETUP half resolves at Setup's end, as
+  before. The owner decided the refused short Atlas, the open relic slots,
+  the per-denizen favor counting ruined edifices, the SETUP timing and the
+  Setup lines naming their player (2026-11-12).
 
 ## Slice 5: Grand Council
 
@@ -420,8 +446,8 @@ always took the Recent end.
   Empire's warbands hold when the play is planned; the Grand Mask changes
   who rules its cards, not the site. The holder's role does not matter.
   An unheld Grand Council has no previous holder, so all its favor goes to
-  the banks. A first game with an altered V starts the Grand Council in
-  the shared bank.
+  the banks. An exile-only game (ruling 6) with an altered V starts the
+  Grand Council in the shared bank.
 
 ## Slice 6: Festival
 
@@ -488,8 +514,8 @@ always took the Recent end.
   Mockery and Lost Guardians moving the banner to the shared bank) leaves
   the marker, which then guards for the new holder. "ONE" on an empty banner
   burns nothing. Under Secret Testament the holder takes every secret, and
-  the marker still leaves the map. A first game with an altered VI starts
-  the Festival in the shared bank. An automatic power of a guarded card is
+  the marker still leaves the map. An exile-only game (ruling 6) with an
+  altered VI starts the Festival in the shared bank. An automatic power of a guarded card is
   refused for an enemy like any other non-persistent use, even one that
   harms them: an enemy arriving at the festival waits at Boiling Lake's
   step, and the Lake stays deactivated once the holder refuses. Jinx at the
@@ -508,7 +534,8 @@ always took the Recent end.
 - **Offer.** Every altered face whose `alterationSources` holds no active
   legacy. Before Legacies that is every altered face, III included. No
   altered face, no question.
-- **Log.** "Restored Foundation I to Imperial Maps".
+- **Log.** "{holder} restored Foundation I to Imperial Maps", or "{holder}
+  did not flip any foundations" for Keep.
 - **Tests.** Each offer; the skip; the restored face reaching
   `ChronicleUpdated`; a hand-built face with an active legacy as its source
   is not offered.
@@ -524,13 +551,16 @@ always took the Recent end.
   `ChronicleUpdated`. Each foundation has its own line, since a restore
   always reaches the one normal face, and the line names the holder, as
   every Beacon decision line does: "p3 restored Foundation I to Imperial
-  Maps". Keeping writes no line.
+  Maps". Keeping every face writes "p3 did not flip any foundations"
+  (owner, 2026-11-12); with no face altered nothing is asked and nothing is
+  written.
 - **Readings taken with the plan,** approved by the owner. An active
   legacy is one that a lineage this Chronicle records, seated or in the box,
   holds active; a source legacy that no lineage holds active does not stop
   the restore. A restore clears the face's sources. A face Setup With No
   Empire eroded has no source and may be restored. The step runs after
-  Welcome a Stranger, in the printed order.
+  Welcome a Stranger, in the printed order. These readings, and Keep
+  coming first with its line, are the owner's (2026-11-12).
 
 ### Docs
 

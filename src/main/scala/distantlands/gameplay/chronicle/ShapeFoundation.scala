@@ -15,8 +15,9 @@ import distantlands.model._
   * source, so every altered face may be restored, III included
   * (Foundations ruling 1).
   *
-  * Line, as every Beacon decision line names the holder: "p3 restored
-  * Foundation I to Imperial Maps".
+  * Lines, as every Beacon decision line names the holder: "p3 restored
+  * Foundation I to Imperial Maps", or "p3 did not flip any foundations"
+  * for Keep. Nothing is written when no face is altered.
   */
 object ShapeFoundation:
   val decisionId: String = "chronicle.beacon.shape-foundation"
@@ -42,6 +43,9 @@ object ShapeFoundation:
       s"restored-foundation-${slug(number)}", Vector(NotePart.Arg(0),
         NotePart.Text(s" restored Foundation $number to " +
           normalName(number))))).toMap
+  /** "p3 did not flip any foundations": the holder kept every face. */
+  val keptAll: NoteKey = notes.key("kept-foundations", Vector(NotePart.Arg(0),
+    NotePart.Text(" did not flip any foundations")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
@@ -56,8 +60,8 @@ object ShapeFoundation:
               heading = Some(heading))),
             BuildOps((live, pending) => restoring(live, chosen(pending)),
               required = true),
-            Note(noteId, states => chosen(states.answered).map(number =>
-              restored(number).sourceless(NoteArg.Player(holder))))))))
+            Note(noteId, states => Some(chosen(states.answered)
+              .fold(keptAll)(restored).sourceless(NoteArg.Player(holder))))))))
 
   /** The altered foundations, I to VI. */
   private def altered(state: ReadyGame): Vector[FoundationNumber] =

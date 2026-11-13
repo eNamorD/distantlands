@@ -90,12 +90,13 @@ class WideHorizonsSetupSuite extends munit.FunSuite:
     assertEquals(current.turn.activePlayer, p1)
     assert(Set[Phase](Phase.Wake, Phase.Act)(current.turn.phase))
 
-  test("a first game places its eight sites whatever Foundation I's face"):
-    val firstGame = FirstGameSetupFixture.chronicle.copy(
+  test("a Chronicle with no Empire that stores Wide Horizons starts an " +
+      "exile-only game, which places eight sites and keeps the face"):
+    val exileOnly = FirstGameSetupFixture.chronicle.copy(
       foundations = Map(FoundationNumber.I -> wideHorizons))
-    val game = accepted(GameStartRules.evolve(catalog, firstGame,
+    val game = accepted(GameStartRules.evolve(catalog, exileOnly,
       FirstGameSetupFixture.orders)).game
     assertEquals(game.current.map.inPlay,
-      firstGame.atlasBox.take(8).map(_.site))
+      exileOnly.atlasBox.take(8).map(_.site))
     assertEquals(game.current.map.nextSlot, None)
     assertEquals(game.campaign.foundations(FoundationNumber.I), wideHorizons)

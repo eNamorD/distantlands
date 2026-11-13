@@ -54,7 +54,22 @@ object ChronicleLogScripts:
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("beacon-restored-foundation", service, p1)
 
+  /** The same game, where p1 keeps every foundation as it lies, and the
+    * line says so. */
+  def beaconKeptFoundations(using munit.Location): Script =
+    val (service, acting) = atTable("beacon-kept-foundations", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .foundation(FoundationNumber.I, FoundationFace.Altered)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.withAnswers {
+      case park if park.decisionId == ShapeFoundation.decisionId =>
+        ChooseOneAnswer(ShapeFoundation.keep)
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("beacon-kept-foundations", service, p1)
+
   val named: Vector[(String, () => Script)] =
     Vector("chronicle-started" -> (() => chronicleStarted),
       "throne-offered" -> (() => throneOffered),
-      "beacon-restored-foundation" -> (() => beaconRestoredFoundation))
+      "beacon-restored-foundation" -> (() => beaconRestoredFoundation),
+      "beacon-kept-foundations" -> (() => beaconKeptFoundations))
