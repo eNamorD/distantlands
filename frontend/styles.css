@@ -324,7 +324,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    it is placed from MatLayout as a percentage of the board, so the mat's
    image can lie under it without moving anything. Until then the board
    paints the mat's three lights, blended as the mat blends them. */
-.mat-board { position: relative; width: 100%; aspect-ratio: 5787 / 2303;
+.mat-board { position: relative; width: 100%; aspect-ratio: var(--ratio-mat);
   overflow: hidden; border-radius: 9px;
   background: linear-gradient(90deg, #213a24 0 27%, #1d3441 39% 61%,
     #46261a 73% 100%); }
@@ -347,8 +347,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .mat-board .site { border: 1px solid transparent; border-radius: 9px; }
 /* The site card, at the real card's proportions, in the frame the mat
    prints for it. */
-.site-face { border: 1px solid var(--line); border-radius: 9px;
-  background: var(--site); }
+.site-face { aspect-ratio: var(--ratio-site); border: 1px solid var(--line);
+  border-radius: 9px; background: var(--site); }
 /* A site's words are laid over its face. What the card prints: the name in
    a band at its foot, the powers and the requirement over the band, the
    defense in the upper right. What lies on it in play: loose tokens in the
@@ -440,7 +440,10 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .table-edge .shared-bank { display: flex; flex: 1; align-items: flex-start;
   gap: 16px; padding: 0; border: 0; }
 .table-edge .shared-bank > h3 { margin: 0; font-size: 1rem; }
-.table-edge .shared-banners { grid-template-columns: repeat(2, 8.6rem);
+/* A banner on the table's edge keeps its larger side (ruling R3, amended):
+   the real banner is three card widths across. */
+.table-edge { --banner-edge-side: 8.6rem; }
+.table-edge .shared-banners { grid-template-columns: repeat(2, var(--banner-edge-side));
   margin-top: 0; }
 .table-edge .foundations { flex: 1; margin-top: 0; }
 .table-edge .foundation-strip {
@@ -460,7 +463,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    keep the room to be read. */
 .map-compact .table-edge .foundations { flex: 1 1 100%; }
 .map-compact .table-edge .public-legacies-cards { --card-h: 9.1rem;
-  --card-w: calc(9.1rem * 381 / 596); font-size: var(--glance-text); }
+  --card-w: calc(9.1rem * var(--ratio-denizen)); font-size: var(--glance-text); }
 .map-compact .table-edge .public-legacies-cards .card-face {
   padding: 1.7em 0.25em 0.25em; justify-content: center;
   align-items: center; text-align: center; container-type: inline-size; }
@@ -986,12 +989,14 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   --ratio-foundation: 469 / 803;
   --ratio-oath-goal: 673 / 898;
   --ratio-oathkeeper-title: 1016 / 700;
+  /* The mat image, which MatLayout's numbers are measured on. */
+  --ratio-mat: 5787 / 2303;
 }
 /* One box per card type, in ex so a pane's font size scales every card in it
    together. Never overridden per pane: per-context size is font size alone.
    The height is the one a card has always had; the width follows from it,
    so a pane's height budget did not change when the ratio did. */
-:root { --card-h: 18.2ex; --card-w: calc(var(--card-h) * 381 / 596);
+:root { --card-h: 18.2ex; --card-w: calc(var(--card-h) * var(--ratio-denizen));
   --card-gap: 0.55ex; }
 .card-face { position: relative; display: flex; flex-direction: column;
   gap: 0.15em; box-sizing: border-box; width: var(--card-w);
@@ -1001,11 +1006,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   border: 1px solid transparent; border-radius: 0.35em;
   background: var(--base); color: var(--cream); font: inherit; line-height: 1.15; }
 .card-face-denizen { border-color: var(--line); }
-.card-face-relic { height: var(--card-w); border-color: #7a6a4c; }
+.card-face-relic { height: auto; aspect-ratio: var(--ratio-relic);
+  border-color: #7a6a4c; }
+.banner-face { aspect-ratio: var(--ratio-banner); }
 /* A legacy is the denizen card turned on its side: the same two lengths,
    exchanged. */
-.card-face-legacy { width: var(--card-h); height: var(--card-w);
-  border-color: var(--line); }
+.card-face-legacy { width: var(--card-h); height: auto;
+  aspect-ratio: var(--ratio-legacy); border-color: var(--line); }
 .card-face-unimplemented { border-style: dashed; border-color: var(--unimplemented); }
 /* An empty slot is a place, not a card: nothing to inspect, so no ring. */
 .card-face:not(.card-slot-empty):hover, .card-face:focus-visible {
@@ -2007,7 +2014,7 @@ button.festival-marker:hover,
 /* The overlay reads a Vision upright, in the landscape box it is printed
    in. */
 .card-overlay-body > .card-face-vision { width: var(--card-h);
-  height: var(--card-w); }
+  height: auto; aspect-ratio: var(--ratio-legacy); }
 /* A card the table shows as words has its box here, at its real ratio,
    where its image will go. */
 .card-plate { display: flex; align-items: center; justify-content: center;
