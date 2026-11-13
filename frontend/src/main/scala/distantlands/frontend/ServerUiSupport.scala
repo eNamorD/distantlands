@@ -36,6 +36,16 @@ private[frontend] object ServerUiSupport:
     else (0 until presentation.defense)
       .foreach(_ => defense.appendChild(RulesTextRenderer.glyph("defense-die")))
     heading.appendChild(defense)
+    // The form the far zoomed-out map shows in its place (implementation
+    // ruling R5): one die and the count. It is for the eye; the long form
+    // keeps the accessible name and the hover note carries it.
+    val short = element("span", "site-defense-short printed")
+    short.setAttribute("aria-hidden", "true")
+    HoverTip.set(short, s"Defense ${presentation.defense}")
+    short.appendChild(RulesTextRenderer.glyph("defense-die"))
+    short.appendChild(text("span", "site-token-count",
+      presentation.defense.toString))
+    heading.appendChild(short)
     heading
 
   private def siteToken(token: String, count: Int): Vector[dom.Element] =
@@ -98,6 +108,14 @@ private[frontend] object ServerUiSupport:
         case _: SiteForces.Bandit =>
           row.setAttribute("data-ruler-kind", "bandit")
       details.appendChild(row)
+      // The short form for the far zoomed-out map (ruling R5): the warband
+      // in the force's colour and its count, as a card shows warbands.
+      val short = element("span", s"site-forces-short ${forceCssClass(forces)}")
+      short.setAttribute("aria-hidden", "true")
+      HoverTip.set(short, forceText(forces))
+      short.appendChild(RulesTextRenderer.glyph("warband"))
+      short.appendChild(text("span", "site-token-count", forces.count.toString))
+      details.appendChild(short)
     }
     val footer = element("div", "site-footer printed")
     // Two lines of labels at most (`.site-powers`). Each label keeps its

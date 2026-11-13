@@ -194,3 +194,37 @@ class SiteFaceSuite extends munit.FunSuite:
     assertEquals(all(ServerUiSupport.siteDetails(woods.copy(
       recoverDifficulty = None, forgeCost = None)), ".site-requirement"),
       Vector.empty)
+
+  /** Zoomed far out a site keeps its defense and its forces in a short form
+    * the stylesheet swaps in, so a zoom never re-renders (ruling R5). The
+    * short forms are for the eye: assistive technology reads the long ones,
+    * and the hover note carries the long text. */
+  test("defense has a short form: one die and its count, hidden from " +
+      "assistive technology"):
+    val heading = ServerUiSupport.siteHeading(woods.copy(defense = 2))
+    val short = firstMatch(heading, ".site-defense-short")
+      .getOrElse(fail("no short defense"))
+    assertEquals(short.getAttribute("aria-hidden"), "true")
+    assertEquals(all(short, ".token-glyph").map(_.getAttribute("class")),
+      Vector("token-glyph token-defense-die"))
+    assertEquals(short.textContent, "2")
+    assertEquals(short.getAttribute(HoverTip.Attribute), "Defense 2")
+    assert(short.classList.contains("printed"))
+    assertEquals(firstMatch(heading, ".site-defense")
+      .map(_.getAttribute("aria-label")), Some("Defense 2"))
+
+  test("forces have a short form: the warband in the force's colour and " +
+      "its count"):
+    val forces = SiteForces.Bandit(3, "Bandit Warbands")
+    val details = ServerUiSupport.siteDetails(woods.copy(forces = Some(forces)))
+    val short = firstMatch(details, ".site-forces-short")
+      .getOrElse(fail("no short forces"))
+    assert(short.classList.contains("force-bandit"), short.getAttribute("class"))
+    assertEquals(short.getAttribute("aria-hidden"), "true")
+    assertEquals(all(short, ".token-glyph").map(_.getAttribute("class")),
+      Vector("token-glyph token-warband"))
+    assertEquals(short.textContent, "3")
+    assertEquals(short.getAttribute(HoverTip.Attribute), "Bandit Warbands x3")
+    assert(!short.classList.contains("printed"))
+    assertEquals(firstMatch(details, "p.site-forces").map(_.textContent),
+      Some("Bandit Warbands x3"))

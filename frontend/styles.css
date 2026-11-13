@@ -465,15 +465,46 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    and the First Player badge. Zoomed out, only the Usurper's lock is left
    in words. */
 .map-compact .mat-board .track-summary { display: none; }
-/* Smaller still, a site's face keeps its name, its tokens and who stands
-   there; its defense, forces and powers, the wheel's numbers, the
+/* Smaller still, a site's face keeps its name, its tokens, who stands
+   there, who rules it and its defense, the last two in a short form
+   (implementation ruling R5). Its powers, the wheel's numbers, the
    tracker's words, the slots' names and a bank's suit name and favor glyph
    would fall under a readable size, so they are read on a zoom or in the
    overlay instead. Every one keeps its accessible name. */
-.map-tiny .mat-board :is(.site-footer, .site-forces, .site-defense, .track-note,
+.map-tiny .mat-board :is(.site-footer, .track-note,
   .deck-caption, .visions-drawn-label,
   .round-tracker text:not(.limiter-marker),
   .favor-bank > .printed, .favor-bank > .token-favor) { display: none; }
+/* The short forms of defense and forces show only there; the long forms
+   step out of sight but stay what assistive technology reads. */
+.site-defense-short, .site-forces-short { display: none; }
+.map-tiny .mat-board :is(.site-defense, .site-forces) { width: 1px;
+  height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.map-tiny .mat-board :is(.site-defense-short, .site-forces-short) {
+  position: absolute; display: flex; align-items: center; gap: 0.1em;
+  right: calc(100% - var(--face-left) - var(--face-w) + 8px);
+  font-size: var(--glance-text); font-weight: 700; line-height: 1.15; }
+/* On the far zoomed-out face the tokens have the first row to themselves,
+   forces and defense share the second, and the pawns take the third. The
+   rows are a little tighter there, so three of them and the name fit. */
+.map-tiny .mat-board .site { --row: calc(var(--glance-text) * 1.12);
+  --name-band: calc(var(--glance-name) * 1.05 + 6px); }
+.map-tiny .mat-board :is(.site-defense-short, .site-forces-short,
+  .site-tokens) .token-glyph { width: 1.05em; height: 1.05em; }
+.map-tiny .mat-board .site-tokens { line-height: 1.1; }
+.map-tiny .mat-board .site-forces-short { top: calc(6px + var(--row));
+  right: auto; left: calc(var(--face-left) + 8px); }
+.map-tiny .mat-board .site-defense-short { top: calc(6px + var(--row)); }
+.map-tiny .mat-board .site-pawns { top: calc(6px + var(--row) * 2);
+  justify-content: flex-start; }
+/* A phone's face has room for two rows under the name: defense steps out
+   first (ruling R5), and the pawns take its place beside the forces. */
+@media (max-width: 620px) {
+  .map-tiny .mat-board .site-defense-short { display: none; }
+  .map-tiny .mat-board .site-pawns { top: calc(6px + var(--row));
+    left: calc(var(--face-left) + 2.2em);
+    width: calc(var(--face-w) - 8px - 2.2em); justify-content: flex-end; }
+}
 /* What stays keeps one size: a deck's letter and count, and a cell's
    number, each at the glance size, inside the place the mat gives it. */
 .map-tiny .mat-board .deck-card { font-size: var(--glance-text);
