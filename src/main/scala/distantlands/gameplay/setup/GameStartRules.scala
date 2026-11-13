@@ -27,6 +27,7 @@ object GameStartRules:
   def evolve(catalog: ExecutableCatalog, chronicle: Chronicle,
       orders: SetupOrders): Either[OathViolation, ReadyGame] =
     val deal = SetupDeal.of(chronicle, orders.participants)
+    val legacyDeal = LegacyDeal.of(chronicle, orders.participants)
     for
       planned <- buildPlan(catalog, chronicle, orders, deal)
       (plan, mode) = planned
@@ -38,16 +39,21 @@ object GameStartRules:
       storedEdifices = (chronicle.atlasBox ++ chronicle.world).flatMap(_.items)
         .collect { case id: EdificeId => id }.toSet
       commonCards = material.commonCards.copy(edificeDeck =
-        material.commonCards.edificeDeck.filterNot(storedEdifices))
+        material.commonCards.edificeDeck.filterNot(storedEdifices),
+        publicLegacies = legacyDeal.publicRow(orders.legacyOrder))
       // A seated lineage the Chronicle lists starts from its record, its
       // legacies with their stored faces; `LaterGameSetup` hands its
-      // starting relics to its player.
+      // starting relics to its player. Foundation III's draw joins it
+      // dormant (`LegacyDeal`); the player keeps one in Setup.
       recorded = chronicle.lineages.map(lineage => lineage.id -> lineage).toMap
-      lineages = plan.participants.map(participant =>
-        participant.lineageId -> recorded.getOrElse(participant.lineageId,
+      lineages = plan.participants.map { participant =>
+        val record = recorded.getOrElse(participant.lineageId,
           LineageState(participant.lineageId, None, Role.Exile, Vector.empty,
             Vector.empty))
-      ).toMap
+        participant.lineageId -> record.copy(legacies = record.legacies ++
+          legacyDeal.drawn(orders.legacyOrder, participant.playerId)
+            .map(LegacyState(_, active = false)))
+      }.toMap
       // The atlas sites not placed on the map stay in the atlas, in order,
       // with every stored card: the inverse of
       // `ChronicleExtraction.extract`'s `carried`.

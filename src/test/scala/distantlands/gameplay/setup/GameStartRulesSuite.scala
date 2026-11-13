@@ -93,9 +93,15 @@ class GameStartRulesSuite extends munit.FunSuite:
       Vector.empty, Vector.empty)
     val ready = accepted(GameStartRules.evolve(catalog,
       chronicle.copy(lineages = Vector(record)), orders))
-    assertEquals(ready.game.campaign.lineages(listed), record)
+    // Each also holds the legacies Quiet Ambitions drew (`LegacySetupSuite`).
+    def drawn(seat: Int): Vector[LegacyState] = LegacyDeal.of(chronicle,
+        orders.participants).drawn(orders.legacyOrder,
+        orders.participants(seat).playerId)
+      .map(LegacyState(_, active = false))
+    assertEquals(ready.game.campaign.lineages(listed),
+      record.copy(legacies = drawn(0)))
     assertEquals(ready.game.campaign.lineages(unlisted), LineageState(unlisted,
-      None, Role.Exile, Vector.empty, Vector.empty))
+      None, Role.Exile, drawn(1), Vector.empty))
 
   test("a seated lineage's legacies start with their stored faces"):
     val seated = orders.participants.head.lineageId
@@ -106,7 +112,9 @@ class GameStartRulesSuite extends munit.FunSuite:
     val ready = accepted(GameStartRules.evolve(catalog, keeping, orders.copy(
       legacyOrder = orders.legacyOrder.filterNot(
         Set(SeerCard.id, ArbiterCard.id)))))
-    assertEquals(ready.game.campaign.lineages(seated).legacies, legacies)
+    // Quiet Ambitions' draw follows them (`LegacySetupSuite`).
+    assertEquals(ready.game.campaign.lineages(seated).legacies
+      .take(legacies.size), legacies)
 
   private val altered = FoundationState(FoundationFace.Altered, Set.empty)
   private val normal = FoundationState(FoundationFace.Normal, Set.empty)

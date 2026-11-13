@@ -123,5 +123,6 @@ class ChronicleRecordSuite extends munit.FunSuite:
         Set(SeerCard.id, ArbiterCard.id)))).toOption.get
     val recorded = ChronicleRecord.campaignFields(ready).lineages
       .find(_.id == seated)
-    assertEquals(recorded.map(_.legacies), Some(legacies))
+    // Quiet Ambitions' draw follows them; Setup has not run.
+    assertEquals(recorded.map(_.legacies.take(legacies.size)), Some(legacies))
     assertEquals(recorded.map(_.startingRelics), Some(Vector.empty))

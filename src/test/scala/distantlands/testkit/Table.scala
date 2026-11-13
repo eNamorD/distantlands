@@ -614,8 +614,9 @@ object Table:
     * denizens to the bottom of the world deck, edifices to the edifice deck, relics to the bottom of the relic
     * deck. `banks.warbandSupply` is the printed inventory and the bank holds
     * whatever is not in play, so clearing a site's forces returns them to
-    * the bank with no change there. Pawns go to [[homes]], and the turn is
-    * p1's Act. */
+    * the bank with no change there. The legacies Foundation III dealt go
+    * back to the derived deck, so no lineage holds one and the public row
+    * is empty. Pawns go to [[homes]], and the turn is p1's Act. */
   private def quiet(fresh: ReadyGame): ReadyGame = fresh.updateCurrent { c =>
     val sites = c.map.inPlay.map(c.map.sites)
     val hands = c.players.flatMap(p => c.temporaryHands.getOrElse(p.player,
@@ -630,7 +631,8 @@ object Table:
         worldDeck = c.commonCards.worldDeck ++ hands ++ discards ++ denizens,
         regionalDiscards = Region.all.map(_ -> Vector.empty[WorldCardId]).toMap,
         edificeDeck = c.commonCards.edificeDeck ++ edifices,
-        relicDeck = c.commonCards.relicDeck ++ relics),
+        relicDeck = c.commonCards.relicDeck ++ relics,
+        publicLegacies = Vector.empty),
       map = c.map.copy(sites = c.map.sites.view.mapValues(_ =>
         SiteState(SiteForces.Empty, Vector.empty, Vector.empty, Tokens.empty))
         .toMap),
@@ -638,7 +640,8 @@ object Table:
         c.map.inPlay.find(_ == homes(p.player)).getOrElse(throw AssertionError(
           s"${homes(p.player).value} is not in the fixture's first game"))))),
       turn = TurnState(p1, Phase.Act, Set.empty))
-  }
+  }.updateCampaign(campaign => campaign.copy(lineages =
+    campaign.lineages.view.mapValues(_.copy(legacies = Vector.empty)).toMap))
 
   /** `ready` with `card` taken out of every zone and every viewer's memory
     * of it. */
