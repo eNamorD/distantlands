@@ -377,8 +377,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   background: transparent; }
 /* Sized from the width rather than a length of their own, so a card keeps its
    proportions as the row divides up whatever width the site has. */
-.site .card-face { height: auto; aspect-ratio: 1 / 1.4; }
-.site .card-face-relic { height: auto; aspect-ratio: 1 / 1; }
+.site .card-face { height: auto; aspect-ratio: var(--ratio-denizen); }
+.site .card-face-relic { height: auto; aspect-ratio: var(--ratio-relic); }
 /* Drawn over the site's upper right, out of the flow: the preview appears and
    disappears as actions are chosen, and nothing below it may move. */
 .site > .target-detail-badge { position: absolute; top: 8px; right: 10px;
@@ -720,9 +720,24 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   padding-bottom: 0; }
 .partition-footer .partition-confirm { display: block; width: 100%;
   margin: 0; }
+/* The real proportions of each card kind, as the pixel size of its image
+   (docs/catalog/asset-proportions.md). Every card box reads this table, so
+   a drawn card and its licensed image fill the same box. */
+:root {
+  --ratio-denizen: 381 / 596;
+  --ratio-site: 770 / 596;
+  --ratio-relic: 1 / 1;
+  --ratio-banner: 1 / 1;
+  --ratio-legacy: 596 / 381;
+  --ratio-foundation: 469 / 803;
+  --ratio-oath-goal: 673 / 898;
+  --ratio-oathkeeper-title: 1016 / 700;
+}
 /* One box per card type, in ex so a pane's font size scales every card in it
-   together. Never overridden per pane: per-context size is font size alone. */
-:root { --card-w: 13ex; --card-h: calc(var(--card-w) * 1.4);
+   together. Never overridden per pane: per-context size is font size alone.
+   The height is the one a card has always had; the width follows from it,
+   so a pane's height budget did not change when the ratio did. */
+:root { --card-h: 18.2ex; --card-w: calc(var(--card-h) * 381 / 596);
   --card-gap: 0.55ex; }
 .card-face { position: relative; display: flex; flex-direction: column;
   gap: 0.15em; box-sizing: border-box; width: var(--card-w);
@@ -1079,7 +1094,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .shared-banners { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px; margin-top: 10px; }
 .shared-banners .board-option-card { width: 100%; }
-.shared-banners .banner-face { width: 100%; height: auto; aspect-ratio: 1; }
+.shared-banners .banner-face { width: 100%; height: auto;
+  aspect-ratio: var(--ratio-banner); }
 /* The six foundation setup cards (Foundations design, slice 1), a card a
    row: its numeral, the name of the face in use in the serif that names
    things, and on an altered card the word. The word alone marks it: brass
@@ -1398,7 +1414,7 @@ button.festival-marker:hover,
    text and the footer, so neither pushes a line out of the box as the map
    shrinks: the box less its padding and grid gaps (30px), less one 1.1
    line of name, one 1.25 line of pawns and one 1.25 line of powers, is the
-   row's height, and a denizen is 1.4 of its width.
+   row's height, and a denizen's width is 381/596 of its height.
    Above a scale of about 0.35 the row's own ceiling wins and nothing
    changes. A site holding forces gives the line up first: the forces line
    (1.15 plus its 4px margin) comes off the row as well, and its ceiling is
@@ -1406,11 +1422,11 @@ button.festival-marker:hover,
 .map-compact .site { --card-w: min(8.6rem,
   calc((100% - 2 * var(--card-gap)) / 3),
   calc((var(--site-h) - 30px - var(--glance-name) * 1.1
-    - var(--glance-text) * 2.5) / 1.4)); }
+    - var(--glance-text) * 2.5) * 381 / 596)); }
 .map-compact .site:has(.site-forces) { --card-w: min(7.3rem,
   calc((100% - 2 * var(--card-gap)) / 3),
   calc((var(--site-h) - 34px - var(--glance-name) * 1.1
-    - var(--glance-text) * 3.65) / 1.4)); }
+    - var(--glance-text) * 3.65) * 381 / 596)); }
 /* The compact card face: the name in the middle, the suit in the corner.
    The card inherits the counter-scaled size from the site, so its own em
    rules hold the name at the floor without a clamp of their own. The
@@ -1853,8 +1869,8 @@ button.festival-marker:hover,
 /* The columns share the list's whole width, and each card follows its
    column's width at its ratio, as a site's card row does. */
 .card-list-item > .card-face { width: 100%; height: auto;
-  aspect-ratio: 1 / 1.4; }
-.card-list-item > .card-face-relic { aspect-ratio: 1 / 1; }
+  aspect-ratio: var(--ratio-denizen); }
+.card-list-item > .card-face-relic { aspect-ratio: var(--ratio-relic); }
 /* In the action pane, about a row and a half shows at most (a column is at
    most a third wider than a card there), so a longer pile says it scrolls
    and Done stays in reach under it. */
