@@ -71,6 +71,12 @@ final case class EdificeBuilt(edifice: EdificeId, site: SiteId)
 final case class FoundationRestored(number: FoundationNumber)
     extends ChronicleOperation, LeafOperation
 
+/** Turns Foundation `number` to its altered face, if it is not already, and
+  * adds `source`, the active legacy that sets it, to its alteration
+  * sources (Sun step 2, CR p. 36). The inverse of `FoundationRestored`. */
+final case class FoundationAltered(number: FoundationNumber,
+    source: LegacyId) extends ChronicleOperation, LeafOperation
+
 /** Takes the site at `end` of the Atlas, with the cards stored on it, and
   * places it in the next slot, which is in `region`, as a bandit site
   * (Foundation I, "populate"): its edifice ruined, its denizens faceup, its

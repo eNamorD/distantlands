@@ -33,6 +33,9 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
         "edifice" -> edifice.value, "site" -> site.value)
       case FoundationRestored(number) => ujson.Obj(
         "kind" -> "foundation-restored", "number" -> number.value)
+      case FoundationAltered(number, source) => ujson.Obj(
+        "kind" -> "foundation-altered", "number" -> number.value,
+        "source" -> source.value)
       case SuitedReserveFromBox(suit, cards) => ujson.Obj(
         "kind" -> "suited-reserve-from-box", "suit" -> suit.key,
         "cards" -> cards.map(card => ujson.Str(card.value)))
@@ -67,11 +70,10 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
     yield LineagePointsScored(LineageId(value("lineage").str), points)
     case "edifice-built" => Right(EdificeBuilt(
       EdificeId(value("edifice").str), SiteId(value("site").str)))
-    case "foundation-restored" => for
-      number <- safeIntField(value.obj, "number", path)
-      foundation <- FoundationNumber.all.find(_.value == number).toRight(
-        InvalidValue(s"$path.number", s"unknown Foundation number $number"))
-    yield FoundationRestored(foundation)
+    case "foundation-restored" =>
+      foundationNumber(value, path).map(FoundationRestored.apply)
+    case "foundation-altered" => foundationNumber(value, path)
+      .map(FoundationAltered(_, LegacyId(value("source").str)))
     case "suited-reserve-from-box" => for
       suit <- decodeSuit(value("suit").str, s"$path.suit")
       cards = value("cards").arr.toVector.map(card => DenizenId(card.str))
@@ -91,6 +93,13 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
     case "chronicle-updated" =>
       decodeChronicle(value("chronicle"), s"$path.chronicle")
         .map(ChronicleUpdated.apply)
+
+  private def foundationNumber(value: ujson.Value, path: String)
+      : Either[WireError, FoundationNumber] = for
+    number <- safeIntField(value.obj, "number", path)
+    foundation <- FoundationNumber.all.find(_.value == number).toRight(
+      InvalidValue(s"$path.number", s"unknown Foundation number $number"))
+  yield foundation
 
   private def positive(value: ujson.Value, name: String, path: String)
       : Either[WireError, Int] =

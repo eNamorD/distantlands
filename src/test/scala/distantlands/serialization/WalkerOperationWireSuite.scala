@@ -355,6 +355,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     LineagePointsScored(LineageId("lineage:red"), 3),
     EdificeBuilt(GreatMarketCard.id, site),
     FoundationRestored(FoundationNumber.III),
+    FoundationAltered(FoundationNumber.III, LegacyId("L32")),
     PlaceAtlasSite(AtlasEnd.Forgotten, Region.Provinces, capacity = 2,
       relicSlots = 1, Tokens(3, 0)),
     SuitedReserveFromBox(Suit.Beast,

@@ -1,5 +1,6 @@
 package distantlands.gameplay.operations
 
+import distantlands.catalog.holding.{PathfinderCard, WealthyCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.gameplay.setup.FirstGameSetupFixture
@@ -143,6 +144,28 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
 
   test("a foundation on its normal face cannot be restored"):
     rejected(run(Table.start.ready, FoundationRestored(FoundationNumber.II)))
+
+  test("an altering legacy turns its foundation altered and joins its " +
+      "sources"):
+    val after = accepted(run(Table.start.ready,
+      FoundationAltered(FoundationNumber.II, WealthyCard.id)))
+    assertEquals(after.game.campaign.foundations(FoundationNumber.II),
+      FoundationState(FoundationFace.Altered, Set(WealthyCard.id)))
+
+  test("a foundation already altered keeps its sources and adds the new " +
+      "one"):
+    val eroded = Table.start
+      .foundation(FoundationNumber.I, FoundationFace.Altered).ready
+    val after = accepted(run(eroded,
+      FoundationAltered(FoundationNumber.I, PathfinderCard.id)))
+    assertEquals(after.game.campaign.foundations(FoundationNumber.I),
+      FoundationState(FoundationFace.Altered, Set(PathfinderCard.id)))
+
+  test("a legacy that already alters a foundation cannot alter it again"):
+    val once = accepted(run(Table.start.ready,
+      FoundationAltered(FoundationNumber.II, WealthyCard.id)))
+    rejected(run(once, FoundationAltered(FoundationNumber.II,
+      WealthyCard.id)))
 
   /** Denizens of `suit` the quiet table does not have in play. */
   private def boxedOf(ready: ReadyGame, suit: Suit): Vector[DenizenId] =

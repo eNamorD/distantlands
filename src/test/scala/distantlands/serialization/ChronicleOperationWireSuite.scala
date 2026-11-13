@@ -35,6 +35,20 @@ class ChronicleOperationWireSuite extends munit.FunSuite:
       Left(WireError.InvalidValue("$[0].payload.step.ops[0].number",
         "unknown Foundation number 7")))
 
+  test("a foundation alteration names its number and source legacy, and " +
+      "an unknown number decodes to a typed WireError"):
+    val encoded = encodedStreamThatRoundTrips("foundation-altered",
+      Vector(recordedOperation(FoundationAltered(FoundationNumber.II,
+        LegacyId("L31")))))
+    assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
+      ujson.Obj("kind" -> "foundation-altered", "number" -> 2,
+        "source" -> "L31"))
+    val injected = ujson.read(encoded).arr
+    injected(0)("payload")("step")("ops")(0)("number") = 7
+    assertEquals(GameEventWire.decodeStream(ujson.write(injected)),
+      Left(WireError.InvalidValue("$[0].payload.step.ops[0].number",
+        "unknown Foundation number 7")))
+
   test("a site placement names its Atlas end, its region and the site's " +
       "printed facts, and an unknown end, an unknown region or a negative " +
       "capacity decodes to a typed WireError"):

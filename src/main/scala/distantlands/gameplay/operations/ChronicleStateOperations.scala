@@ -120,3 +120,16 @@ private[operations] object ChronicleStateOperations:
       ready.updateCampaign(_.copy(foundations = foundations.updated(number,
         FoundationState(FoundationFace.Normal, Set.empty)))),
       InvalidDescription(s"Foundation $number is not altered"))
+
+  /** Foundation `number` altered, with `source` among its alteration
+    * sources. A source the face already lists is a doubled operation. */
+  def foundationAltered(ready: ReadyGame, number: FoundationNumber,
+      source: LegacyId): Either[OperationError, ReadyGame] =
+    val foundations = ready.game.campaign.foundations
+    val sources = foundations.get(number).fold(Set.empty[LegacyId])(
+      _.alterationSources)
+    Either.cond(!sources(source),
+      ready.updateCampaign(_.copy(foundations = foundations.updated(number,
+        FoundationState(FoundationFace.Altered, sources + source)))),
+      InvalidDescription(
+        s"Foundation $number is already altered by ${source.value}"))
