@@ -1,8 +1,6 @@
 package distantlands.catalog
 
-import distantlands.catalog.holding.{BelovedCard, GatekeeperCard,
-  IronHandCard, PathfinderCard, ReformerCard, SeerCard, TheMouthCard,
-  WealthyCard}
+import distantlands.catalog.holding._
 import distantlands.gameplay.setup.FirstGameSetupFixture
 import distantlands.model.{FoundationNumber, Suit}
 
@@ -24,12 +22,6 @@ class LegacyCardDataSuite extends munit.FunSuite:
     assertEquals(ids, (1 to 36).map(n => f"L$n%02d").grouped(6)
       .map(_.toVector).toVector)
 
-  test("cards read from their seals"):
-    assertEquals((IronHandCard.goal, IronHandCard.suit),
-      (LegacyGoal.MostSites, Suit.Order))
-    assertEquals((SeerCard.goal, SeerCard.suit),
-      (LegacyGoal.DarkestSecret, Suit.Arcane))
-
   test("only the six suit-goal legacies alter a foundation, each a " +
       "different one"):
     val altering: Map[String, FoundationNumber] = legacies.flatMap(card =>
@@ -43,3 +35,47 @@ class LegacyCardDataSuite extends munit.FunSuite:
       PathfinderCard.id.value -> FoundationNumber.I))
     assert(legacies.filter(_.alters.nonEmpty)
       .forall(_.goal == LegacyGoal.MostOfSuit))
+
+  /** The design's "Card data" tables, card by card: printed id order, the
+    * goal of each run of six, the seal's suit and the foundation set. */
+  private val printed: Vector[(Legacy, LegacyGoal, Suit,
+      Option[FoundationNumber])] =
+    import LegacyGoal._
+    import Suit._
+    def run(goal: LegacyGoal, cards: (Legacy, Suit)*) =
+      cards.map((card, suit) => (card, goal, suit,
+        Option.empty[FoundationNumber])).toVector
+    run(MostSites, IronHandCard -> Order, ChroniclerCard -> Arcane,
+      SteadfastCard -> Discord, PeacemakerCard -> Hearth,
+      TheNeedleCard -> Beast, CircleOfSwordsCard -> Nomad) ++
+    run(GrandScepter, GreatArchitectCard -> Hearth,
+      AncestralLandsCard -> Nomad, ScepterBearerCard -> Discord,
+      RoyalLineCard -> Beast, KeeperOfOrderCard -> Order,
+      GoldenKeyCard -> Arcane) ++
+    run(PeoplesFavor, WorldCrafterCard -> Nomad, MatchmakerCard -> Hearth,
+      RevolutionaryCard -> Discord, PopulistCard -> Beast,
+      RivalCard -> Order, TheStandardBearerCard -> Arcane) ++
+    run(DarkestSecret, TheEarCard -> Hearth, HeirloomCard -> Beast,
+      HighPriestCard -> Order, SeerCard -> Arcane, ArbiterCard -> Discord,
+      TheBrightBeaconCard -> Nomad) ++
+    run(HighestRelic, OathsOfLoyaltyCard -> Hearth,
+      ConspiratorCard -> Discord, LightFingersCard -> Beast,
+      SecretSocietyCard -> Arcane, RuthlessCard -> Order,
+      QuestToDistantLandsCard -> Nomad) ++
+    Vector(
+      (WealthyCard, MostOfSuit, Hearth, Some(FoundationNumber.II)),
+      (GatekeeperCard, MostOfSuit, Discord, Some(FoundationNumber.III)),
+      (BelovedCard, MostOfSuit, Beast, Some(FoundationNumber.IV)),
+      (TheMouthCard, MostOfSuit, Arcane, Some(FoundationNumber.VI)),
+      (ReformerCard, MostOfSuit, Order, Some(FoundationNumber.V)),
+      (PathfinderCard, MostOfSuit, Nomad, Some(FoundationNumber.I)))
+
+  test("every legacy prints the goal, suit and foundation the design lists, " +
+      "in id order"):
+    assertEquals(printed.map(_._1.id.value),
+      (1 to 36).map(n => f"L$n%02d").toVector)
+    printed.foreach((card, goal, suit, alters) =>
+      assertEquals((card.goal, card.suit, card.alters), (goal, suit, alters),
+        card.name))
+    assertEquals(legacies.map(_.id).sortBy(_.value),
+      printed.map(_._1.id))
