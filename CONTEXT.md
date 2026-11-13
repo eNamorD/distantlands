@@ -327,8 +327,22 @@ at the start of each Rest; that site is the marked site. A marker beside the
 map guards nothing. Both of the Festival's ribbons remove it.
 _Avoid_: festival token, festival site
 
+**First game**:
+The game a brand-new Chronicle starts: no Chancellor, no Citizen, no Empire
+site and no history, as a New Chronicle has none. Only a first game ignores
+"become a Citizen" powers and places its Homelands' edifices by suit.
+_Avoid_: new game, fresh game
+
+**Exile-only game**:
+The game a Chronicle shaped like a first game's but carrying history starts,
+an imported one for example. The Atlas's first eight sites fill the map as
+bandit sites with their stored cards, and the stored foundations apply as
+stored, with no erosion.
+_Avoid_: imported first game
+
 **Set-aside Reliquary**:
-The Reliquary of a game Setup With No Empire started. Its relics stay in the
+The Reliquary of a game Setup With No Empire or an exile-only game
+started. Its relics stay in the
 campaign all game and no one can take one in play. Whoever wins, the Sun's
 Crown Chancellor step discards them, so Stock Reliquary never adds to them.
 _Avoid_: discarded Reliquary, empty Reliquary

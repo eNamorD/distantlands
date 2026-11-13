@@ -72,7 +72,17 @@ Reliquary stay as in the baseline until the Stars task extracts them.
 
 `EmpireSetupRules.resolve` reads how the game starts, a `SetupMode`. A
 Chronicle that lists no Chancellor, no Citizen and no Empire site starts a
-first game on eight atlas sites. With a Chancellor seated, or a seated
+first game on eight atlas sites when it is brand new, carrying no history
+(`EmpireSetupRules.hasHistory`: an altered or sourced foundation face, a
+lineage that played before or keeps starting advisers, legacies or
+starting relics, a scored era game, an Oathkeeper goal other than
+Supremacy, a stocked Reliquary, or a denizen or relic stored at an Atlas
+site). With history it starts an exile-only game (`SetupMode.ExileOnly`):
+the Atlas's first eight sites are placed as bandit sites with their stored
+cards and open relic slots filled, whatever Foundation I's face, the
+stored faces apply with no erosion, stored advisers are dealt, the
+Citizenship option is off and the Reliquary is set aside, as with no
+Empire. With a Chancellor seated, or a seated
 Citizen standing in for one, the Empire's sites return. Under Imperial Maps
 Setup's walk then asks the Chancellor, right after the Reliquary pick,
 whether the Recent or the Forgotten end fills the slots past them, and

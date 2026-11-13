@@ -1,8 +1,8 @@
 package distantlands.application
 
 import distantlands.gameplay.powers.PowerImplementationStatus
-import distantlands.gameplay.setup.{FirstGameRulesData, FirstGameSetupFixture,
-  GameStartRules, LaterGameFixture}
+import distantlands.gameplay.setup.{EmpireSetupRules, FirstGameRulesData,
+  FirstGameSetupFixture, GameStartRules, LaterGameFixture}
 import distantlands.model._
 import distantlands.testkit.ChronicleShuffles
 import distantlands.testkit.Unwrap.{accepted, present}
@@ -46,6 +46,15 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
           .forall(_ == edifice.id)
       case _ => true
     }, "a Homeland in play carries its suit's implemented edifice")
+
+  test("a new Chronicle carries no history and starts a first game"):
+    val plan = accepted(factory.build(config, ChronicleChoice.New("Fresh")))
+    assert(!EmpireSetupRules.hasHistory(plan.chronicle))
+    val ready = accepted(GameStartRules.evolve(catalog, plan.chronicle,
+      plan.orders))
+    assert(ready.setup.ignoreCitizenshipPowers)
+    assertEquals(ready.game.current.map.inPlay,
+      plan.chronicle.atlasBox.take(8).map(_.site))
 
   test("seating order and first player are shuffled, keeping every participant"):
     val plans = Vector.fill(30)(accepted(factory.build(config, ChronicleChoice.New("Test Chronicle"))).resolvedConfig)

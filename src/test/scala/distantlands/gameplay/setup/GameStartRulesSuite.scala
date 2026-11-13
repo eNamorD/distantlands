@@ -303,14 +303,18 @@ class GameStartRulesSuite extends munit.FunSuite:
       OathViolation.UnsupportedChronicle(
         s"duplicate atlas site ${stored.site.value}"))
 
-  test("a stored denizen on an atlas site is refused"):
+  test("a stored denizen on an atlas site starts an exile-only game, " +
+      "which keeps it at its site"):
     // Starts from the Chronicle itself: the start rule is the subject.
-    val denizen = chronicle.worldDeck.head
-    val polluted = chronicle.copy(atlasBox = chronicle.atlasBox.updated(
-      0, chronicle.atlasBox.head.copy(items = Vector(denizen))))
-    val result = GameStartRules.evolve(catalog, polluted, orders)
-    assertEquals(result.left.toOption, Some(OathViolation.UnsupportedChronicle(
-      "stored denizens or relics on an atlas site are not supported yet")))
+    val denizen = chronicle.worldDeck.last
+    val stored = chronicle.copy(worldDeck = chronicle.worldDeck.init,
+      atlasBox = chronicle.atlasBox.updated(0, chronicle.atlasBox.head.copy(
+        items = chronicle.atlasBox.head.items :+ denizen)))
+    val ready = accepted(GameStartRules.evolve(catalog, stored,
+      LaterGameFixture.orders(stored, orders.firstPlayer)))
+    assert(!ready.setup.ignoreCitizenshipPowers)
+    assert(ready.game.current.map.sites(stored.atlasBox.head.site).denizens
+      .exists(_.id == denizen), ready.game.current.map)
 
   test("too few atlas sites is refused"):
     // Starts from the Chronicle itself: the start rule is the subject.

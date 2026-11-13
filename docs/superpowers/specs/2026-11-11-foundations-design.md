@@ -69,6 +69,19 @@ Taken with the owner on 2026-11-10 and 2026-11-11.
    "Recent Site").
 5. **The shared bank has no count.** Taking favor from it changes nothing
    but the taker's board.
+6. **A first game is a brand-new Chronicle** (owner, 2026-11-12). A
+   Chronicle with no Chancellor, no Citizen and no Empire site starts a
+   first game only when it carries no history
+   (`EmpireSetupRules.hasHistory`): an altered or sourced face, a lineage
+   that played before or keeps starting advisers, legacies or starting
+   relics, a scored era game, an Oathkeeper goal other than Supremacy, a
+   stocked Reliquary, or a denizen or relic stored at an Atlas site. With
+   history it starts an exile-only game (`SetupMode.ExileOnly`): the
+   Atlas's first eight sites as bandit sites with their stored cards,
+   whatever Foundation I's face, the stored faces with no erosion, stored
+   advisers dealt, the Citizenship option off, the Reliquary set aside, and
+   the title and banners as with no Empire. This replaces the reading that
+   a first game places its eight sites whatever Foundation I's face.
 
 The owner reviewed the slices' readings and undo barriers on 2026-11-12 and
 approved them, but for ruling 3 above and the Citizenship option (slice
@@ -314,8 +327,7 @@ game.
   site. A power that takes a Reliquary relic finds a set-aside Reliquary
   empty. The owner decided the refused siteless former Empire, the kept
   sources, the Cradlemost relic fill and the any-site pawn fallback
-  (2026-11-12). A first game places its eight sites whatever Foundation I's face.
-  Powers that make a player a Citizen apply: the rulebook sets them aside
+  (2026-11-12). Powers that make a player a Citizen apply: the rulebook sets them aside
   only in the very first game, so game start turns that option on for a
   first game alone (owner, 2026-11-12).
 - **The set-aside Reliquary at Crown Chancellor, decided with the owner.**
@@ -432,8 +444,8 @@ always took the Recent end.
   Empire's warbands hold when the play is planned; the Grand Mask changes
   who rules its cards, not the site. The holder's role does not matter.
   An unheld Grand Council has no previous holder, so all its favor goes to
-  the banks. A first game with an altered V starts the Grand Council in
-  the shared bank.
+  the banks. An exile-only game (ruling 6) with an altered V starts the
+  Grand Council in the shared bank.
 
 ## Slice 6: Festival
 
@@ -500,8 +512,8 @@ always took the Recent end.
   Mockery and Lost Guardians moving the banner to the shared bank) leaves
   the marker, which then guards for the new holder. "ONE" on an empty banner
   burns nothing. Under Secret Testament the holder takes every secret, and
-  the marker still leaves the map. A first game with an altered VI starts
-  the Festival in the shared bank. An automatic power of a guarded card is
+  the marker still leaves the map. An exile-only game (ruling 6) with an
+  altered VI starts the Festival in the shared bank. An automatic power of a guarded card is
   refused for an enemy like any other non-persistent use, even one that
   harms them: an enemy arriving at the festival waits at Boiling Lake's
   step, and the Lake stays deactivated once the holder refuses. Jinx at the

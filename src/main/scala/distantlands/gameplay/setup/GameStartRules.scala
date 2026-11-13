@@ -90,7 +90,8 @@ object GameStartRules:
       _ <- validateParticipants(orders)
       mode <- EmpireSetupRules.resolve(chronicle, orders)
       // Setup With No Empire erodes the faces before the foundations are
-      // resolved. Every face of every foundation starts a game.
+      // resolved; an exile-only game had no Empire to erode them. Every
+      // face of every foundation starts a game.
       faces = mode match
         case _: SetupMode.NoEmpire =>
           StartingFoundations.eroded(StartingFoundations.of(chronicle))
@@ -105,11 +106,8 @@ object GameStartRules:
         if mode == SetupMode.FirstGame then chronicle.atlasBox.take(slots)
         else Vector.empty
       // A later game keeps every card stored at its sites (R27); a first
-      // game's sites hold only their Homeland edifices (R26).
-      _ <- Either.cond(mode != SetupMode.FirstGame ||
-        chronicle.atlasBox.forall(_.items.forall(_.isInstanceOf[EdificeId])), (),
-        UnsupportedChronicle(
-          "stored denizens or relics on an atlas site are not supported yet"))
+      // game's sites hold only their Homeland edifices (R26), since a
+      // stored denizen or relic is history (`EmpireSetupRules.hasHistory`).
       _ <- validateIds(catalog, chronicle)
       _ <- Either.cond(
         chronicle.worldDeck.size >= deal.needed, (),
@@ -122,13 +120,16 @@ object GameStartRules:
         (), UnsupportedChronicle("not enough relics to fill site slots"))
       _ <- validateDeal(chronicle, orders, deal)
     yield FirstGameSetupPlan(orders.participants, orders.firstPlayer,
-      (chronicle.world ++ atlasSites).map(_.site), orders.denizenOrder,
+      (chronicle.world ++ atlasSites ++ (mode match
+        case SetupMode.ExileOnly(sites) => sites
+        case _ => Vector.empty)).map(_.site), orders.denizenOrder,
       orders.worldDeckOrder, orders.relicOrder, homelands,
       chronicle.oathkeeperGoal, mode match
         case SetupMode.WithEmpire(empire) => Some(empire)
         case _ => None,
       mode match
         case SetupMode.NoEmpire(sites, _) => sites
+        case SetupMode.ExileOnly(sites) => sites
         case _ => Vector.empty,
       startingAdvisers(chronicle, orders), faces) -> mode
 
@@ -137,10 +138,11 @@ object GameStartRules:
     * the slots past the Empire's sites in Setup's walk, from the end the
     * Chancellor chooses (Foundations design, slice 4), and Wide Horizons
     * fills none. With no Empire the former Empire's sites are all that is
-    * placed. */
+    * placed. An exile-only game places eight as bandit sites at game
+    * start, whatever Foundation I's face. */
   private def atlasSlots(mode: SetupMode,
       faces: Map[FoundationNumber, FoundationState]): Int = mode match
-    case SetupMode.FirstGame => MapState.slots
+    case SetupMode.FirstGame | SetupMode.ExileOnly(_) => MapState.slots
     case SetupMode.WithEmpire(empire)
         if faces(FoundationNumber.I).face == FoundationFace.Normal =>
       MapState.slots - empire.sites.size
