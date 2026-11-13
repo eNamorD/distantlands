@@ -44,59 +44,17 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-The plan follows the recommendation for each; a ruling that differs
-changes the named task.
-
-1. **The goal's icon** (Tasks 1, 4). The design asks for a goal icon; the
-   app has no art for the six goals (`TokenSprite` holds suit, favor and
-   secret glyphs). Options: (a) six new glyphs in `TokenSprite`'s style
-   (scepter, flag for sites, Darkest Secret, People's Favor, suit, relic),
-   each labelled for screen readers, with the goal's words in the
-   inspection; (b) the goal's words only, a short tag on the small card
-   ("Most sites") and the printed goal in the inspection, with icons a
-   later ROADMAP item; (c) existing glyphs where one fits (favor for the
-   People's Favor, secret for the Darkest Secret) and words elsewhere.
-   Recommendation: (b) for this slice, so that every goal reads the same
-   way and nothing waits on drawing; the icons as a deferred item.
-2. **How the goal travels, and R7** (Task 1). Options: (a) the projection
-   carries the goal's key (`LegacyGoal.key`, a CSS and icon hook) and its
-   printed words, which `LegacyGoal` gains as `printed`; `LegacyGoal.all`
-   is deleted and its one test reads `LegacyGoal.values`; (b) the key only,
-   and the frontend words each key itself; (c) the words only, and both
-   `key` and `all` are deleted. Recommendation: (a): the wording stays in
-   the catalog beside the card data, and `key` is used in production.
-3. **A dormant legacy for its owner** (Task 4). The design says it shows
-   its face, marked "Dormant". The app's facedown advisers instead show a
-   back with the face on hover ("knowable"). Options: (a) as the design
-   says: the face, with a "Dormant" tag; (b) the knowable look advisers
-   use. Recommendation: (a). The same face and tag show to every viewer in
-   the Chronicle Phase (R18).
-4. **Where the strip goes** (Task 4). Options: (a) its own row in each
-   player area, below the cards in play, labelled "Legacies" for screen
-   readers; (b) at the end of the cards row, after the relics.
-   Recommendation: (a): legacies are not cards in play, and a lineage can
-   hold several dormant ones.
-5. **Where the public row goes** (Task 4). Options: (a) the World pane,
-   above the regions, headed "Public Ambitions", only while it holds a
-   legacy; (b) beside the foundation strip in the shared bank.
-   Recommendation: (a), "near the map" as the rule prints.
-6. **The Chronicle page's legacies** (Task 5). The page has no
-   per-lineage row today, only the summary line ("Red 9, Blue 6").
-   Options: (a) a lineage list under the summary line, one line a lineage:
-   "Red 9 · Seer, Iron Hand (dormant)"; (b) the legacies appended to the
-   summary line. Recommendation: (a). The summary carries each lineage's
-   legacies by name and face, read with the production catalog; an entry a
-   browser saved before this lists none, as with foundations.
-7. **Running the app** (Task 6). I can drive the built-in browser. The
-   project's `.claude/launch.json` (untracked, local) still names the old
-   `oathdigital.server.OathServer` and `var/oathdigital`. Options: (a)
-   update it to the README's command and path, so `preview_start` runs the
-   server; (b) leave it, and start the server from the shell in the
-   background, opening the page with the browser tools by URL.
-   Recommendation: (a), with your go-ahead, since it is a local config
-   file; (b) otherwise.
+The plan's open questions were ruled on 2026-11-13 as implementation
+rulings R34-R40 ([rulings](../../specs/2026-11/2026-11-13-legacies-implementation-rulings.md)),
+each as the plan recommended: goals in words, icons deferred (R34); the
+goal's key and printed words, `LegacyGoal.all` deleted (R35); a dormant
+legacy's face with a "Dormant" tag for its owner, and for everyone in the
+Chronicle Phase (R36); a "Legacies" row of its own (R37); the "Public
+Ambitions" row above the regions (R38); a lineage list on the Chronicle
+page (R39); the local `.claude/launch.json` corrected, not committed
+(R40).
 
 ## Global Constraints
 
@@ -244,8 +202,8 @@ and `./sbtw "frontend/test"`.
 - Produces: `BoardOptions.cardKind` keeps `"legacy"`, so a legacy card's
   key is `legacy:<id>`, the key its decision option has;
   `CardFace.backLetter("legacy")` is `"L"`; a legacy face shows its suit
-  glyph, its name and a goal tag (open question 1); a face-down, identified
-  legacy shows its face with a "Dormant" tag (open question 3), not the
+  glyph, its name and a goal tag (R34); a face-down, identified
+  legacy shows its face with a "Dormant" tag (R36), not the
   knowable back; the inspection lists "Goal" with the printed words.
 
 - [ ] **Step 1: Write the failing tests**
@@ -286,11 +244,11 @@ Run: `./sbtw "frontend/test"`.
   a world-pane suite (`git grep -ln "def world\|WorldBoardRenderer.world" -- frontend/src/test`)
 
 **Interfaces:**
-- Produces: each player area's "Legacies" row (open question 4), each card
+- Produces: each player area's "Legacies" row (R37), each card
   drawn by `CardFace.render` and keyed by `BoardOptions.cardKey` when
   identified, so a decision over a legacy highlights it on the board; the
   World pane's "Public Ambitions" row above the regions while
-  `publicLegacies` is non-empty (open question 5).
+  `publicLegacies` is non-empty (R38).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -335,7 +293,7 @@ Run: `./sbtw "frontend/test"`.
   Vector.empty`, on the wire `"legacies": [{"name": ..., "active": ...}]`,
   absent when empty; the summary reads names from
   `NewFoundations.catalog` (a legacy it does not know keeps its id); the
-  page's lineage list (open question 6), "Red 9 · Seer, Iron Hand
+  page's lineage list (R39), "Red 9 · Seer, Iron Hand
   (dormant)", every face shown (the Chronicle is the owner's own record,
   R4).
 
@@ -371,7 +329,7 @@ and fix commit before the check is repeated.
 
 - [ ] **Step 1: Start the app**
 
-`./sbtw frontend/fastLinkJS`, then the server (open question 7: through
+`./sbtw frontend/fastLinkJS`, then the server (R40: through
 `preview_start` with a corrected `.claude/launch.json`, or the README's
 command run in the background), and open
 `http://127.0.0.1:8080/?mode=server` in the built-in browser.
@@ -407,11 +365,9 @@ message of the docs task, and stop the server.
 
 - `docs/rules/implementation-traceability.md`: the legacy UI's evidence
   (the suites above and the running-app check).
-- ROADMAP: if open question 1 is ruled (b), a deferred item for the goal
-  icons; the Legacies design's slice 5 no longer pending in the in-play
+- ROADMAP: a deferred item for the goal icons (R34); the Legacies design's slice 5 no longer pending in the in-play
   batch's text.
-- `docs/rules/ambiguities.md`: the rulings this plan's open questions
-  receive, numbered on from 27.
+- `docs/rules/ambiguities.md`: R34-R39, numbered on from 27.
 - The design's status line: "Slices 1 to 5 landed".
 
 - [ ] **Step 2: Run the verification gate**

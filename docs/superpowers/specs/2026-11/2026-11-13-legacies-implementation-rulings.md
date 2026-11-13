@@ -253,3 +253,45 @@ Reason: consistent with R23.
 Decision: every legacy the winner holds, as the design says.
 Reason: no legacy can be dormant at that point (design ruling 2, R19,
 R20).
+
+## Slice 5
+
+**R34. The goal's icon.**
+Decision: goals are shown in words for now: a short tag on the small card
+and the printed goal in the inspection. Goal icons are a deferred ROADMAP
+item.
+Reason: the app has no art for the six goals; words read the same for
+every goal and wait on no drawing.
+
+**R35. How the goal travels.**
+Decision: the projection carries `LegacyGoal.key` and the goal's printed
+words; `LegacyGoal.all` is deleted. This settles R7.
+Reason: the wording stays in the catalog beside the card data, and `key`
+is used in production as a styling and icon hook.
+
+**R36. A dormant legacy for its owner.**
+Decision: its owner sees its face with a "Dormant" tag; every viewer sees
+the same during the Chronicle Phase (R18); other viewers see an "L" back
+outside that phase.
+Reason: the design's slice 5 text.
+
+**R37. Where the strip goes.**
+Decision: a "Legacies" row of its own, below the cards in play.
+Reason: legacies are not cards in play, and a lineage can hold several
+dormant ones.
+
+**R38. Where the public row goes.**
+Decision: in the World pane, above the regions, headed "Public
+Ambitions", shown only while it holds a legacy.
+Reason: "near the map", as Foundation III prints.
+
+**R39. The Chronicle page's legacies.**
+Decision: a lineage list under the Chronicle page's summary line, e.g.
+"Red 9 · Seer, Iron Hand (dormant)".
+Reason: the page has no per-lineage row to extend.
+
+**R40. Running the app.**
+Decision: the untracked local `.claude/launch.json` is updated to the
+README's current server command and data directory, changing only the
+stale names and paths; it is not committed.
+Reason: so the browser tools can start the server for the check.
