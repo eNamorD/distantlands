@@ -81,3 +81,68 @@ said nothing creates them until Legacies.
 Decision: add the section with design rulings 1 and 3 and R4 (slice 2
 completes it, R17), correct the traceability row and the doc comment.
 Reason: the docs must say what the code does.
+
+## Slice 2
+
+**R9. A short Quiet Ambitions deck leaves a player one legacy.**
+Question: under Quiet Ambitions a short deck can leave a player one
+legacy, or none.
+Decision: a player whose draw is one legacy keeps it without being asked;
+a player who drew none is asked nothing.
+Reason: design ruling 5, and a forced choice is no choice.
+
+**R10. The keep decision's options.**
+Question: how the Quiet Ambitions keep decision offers the two drawn
+legacies.
+Decision: a new decision option kind, `DecisionOptionRef.Legacy`, wire
+kind `"legacy"`, so the choose-one names the legacies as cards.
+Reason: the alternative, buttons beside subject cards, needs a new
+subject-card source and reads worse.
+
+**R11. A legacy's card details.**
+Question: the options and the Public Ambitions line need legacy names,
+and the presentation layer named a legacy by its id.
+Decision: slice 2 adds the minimal legacy card details (kind `"legacy"`,
+name, suit, rules text); slice 5 adds the goal and the UI.
+Reason: the deal's decision and log line need names now.
+
+**R12. Every game deals legacies, test games included.**
+Question: should game start refuse a legacy order that is not the
+derived deck, so every fixture must supply one?
+Decision: yes, strictly. Every fixture supplies the order, and
+`Table.start` returns the dealt legacies so the quiet table holds none.
+The affected golden logs are rewritten and reviewed; every changed golden
+line must be one the deal explains (a new keep decision, a new log line,
+a shifted event number), and nothing else may change in them.
+Reason: an empty order meaning "no deal" would let a real game start
+without legacies.
+
+**R13. Which legacies the keep decision offers.**
+Question: how Setup knows which legacies a player drew.
+Decision: derive them from state: the dormant legacies the lineage holds
+that its saved record does not. Nothing new is stored.
+Reason: the draw is already visible in state; a stored copy could drift.
+
+**R14. Where the Public Ambitions line posts.**
+Decision: first in the Setup walk, before the Reliquary pick, as a Setup
+note.
+Reason: game start deals the row before anyone acts.
+
+**R15. `legacyOrder` on the wire.**
+Decision: a required field of `SetupOrders`; a stream recorded before
+slice 2 no longer decodes.
+Reason: the ROADMAP standing rule lets event formats change in place
+before the first public release, and with R12 an empty order would fail
+at replay anyway.
+
+**R16. Where the deal is applied.**
+Decision: `GameStartRules.evolve` applies the deal; the plan factory and
+game start share the deal arithmetic (`LegacyDeal`). The design's wording,
+which named the materializer too, is updated to match.
+Reason: game start already builds the lineages and patches the common
+cards; the materializer builds neither the lineages nor the public row.
+
+**R17. The "Legacies rulings" section.**
+Decision: the slice 1 follow-up (R8) adds it with design rulings 1 and 3
+and R4; slice 2 completes it with all ten design rulings.
+Reason: setup now acts on rulings 3-5.

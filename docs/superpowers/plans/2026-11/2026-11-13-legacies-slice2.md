@@ -47,49 +47,34 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-The plan follows the recommendation for each; a ruling that differs
-changes the named task.
+The plan's open questions were ruled on 2026-11-13 as implementation
+rulings R9-R17 ([rulings](../../specs/2026-11/2026-11-13-legacies-implementation-rulings.md)):
 
-1. **A short Quiet Ambitions deck leaves a player one legacy** (Task 5).
-   Recommendation: they keep it with no question; nothing to choose. A
-   player who draws none is asked nothing.
-2. **The keep decision's options** (Task 4). Recommendation: a new
-   decision option kind, `DecisionOptionRef.Legacy` (wire kind `"legacy"`),
-   so the choose-one names the two legacies as cards. The alternative,
-   two buttons beside subject cards, needs a new subject-card source and
-   reads worse.
-3. **A legacy's card details** (Task 4). Recommendation: slice 2 adds a
-   legacy arm to `GamePresentationProjector.cardDetails` (kind `"legacy"`,
-   name, suit, rules text), because the options and the Public Ambitions
-   line need names. Slice 5 adds the goal and the UI.
-4. **Every test game deals legacies** (Tasks 2-3). Recommendation: game
-   start refuses an order that is not the derived deck, so every fixture
-   order supplies one (`LegacyDeal.deck`). `Table.start` puts the dealt
-   legacies back, so the quiet table holds none. Setup walks gain one
-   keep decision per player, which `Situation.defaultAnswer` answers, and
-   golden logs that include Setup are rewritten and reviewed (Task 5).
-   The alternative, an empty order meaning no deal, would let a real game
-   start without legacies.
-5. **Which legacies the keep decision offers** (Task 5).
-   Recommendation: the dormant legacies the lineage holds that its
-   baseline record does not, read from state when the question is
-   reached. No state records the draw.
-6. **Where the Public Ambitions line posts** (Task 5). Recommendation:
-   first in the Setup walk, before the Reliquary pick, as a Setup note.
-7. **`legacyOrder` on the wire** (Task 1). Recommendation: a required
-   field. A stream recorded before slice 2 no longer decodes, which the
-   ROADMAP standing rule allows before the first public release.
-8. **Where the deal is applied** (Task 3). Recommendation: in
-   `GameStartRules.evolve`, which already builds the lineages and patches
-   the common cards, rather than in the materializer, which builds
-   neither the lineages nor the public row. The spec's "shared by the
-   plan factory, game start and the materializer" becomes "the plan
-   factory and game start".
-9. **The "Legacies rulings" section of `docs/rules/ambiguities.md`**
-   (Task 7). Recommendation: add it in this slice with all ten design
-   rulings, since setup now acts on rulings 3-5.
+- **R9** (Task 5): a player whose short-deck draw is one legacy keeps it
+  without being asked; a player who drew none is asked nothing.
+- **R10** (Task 4): a new decision option kind, `DecisionOptionRef.Legacy`,
+  wire kind `"legacy"`.
+- **R11** (Task 4): slice 2 adds a legacy's minimal card details (kind
+  `"legacy"`, name, suit, rules text); slice 5 adds the goal and the UI.
+- **R12** (Tasks 2, 3 and 5): game start refuses a legacy order that is not
+  the derived deck, every fixture supplies one, and `Table.start` returns
+  the dealt legacies so the quiet table holds none. Affected golden logs
+  are rewritten and reviewed; every changed line must be one the deal
+  explains (a new keep decision, a new log line, a shifted event number).
+- **R13** (Task 5): the offered legacies are derived from state, the
+  dormant legacies the lineage holds that its saved record does not;
+  nothing new is stored.
+- **R14** (Task 5): the Public Ambitions line posts first in the Setup walk,
+  before the Reliquary pick, as a Setup note.
+- **R15** (Task 1): `legacyOrder` is a required wire field.
+- **R16** (Task 3): the deal is applied in `GameStartRules.evolve`; the
+  plan factory and game start share the deal arithmetic. Task 7 updates
+  the design's wording.
+- **R17** (Task 7): the "Legacies rulings" section of
+  `docs/rules/ambiguities.md`, begun in the slice 1 follow-up with design
+  rulings 1 and 3 and R4, is completed with all ten design rulings.
 
 ## Global Constraints
 
@@ -230,7 +215,7 @@ In `GameEventJsonSupport.encodeSetupOrders`, after `"relicOrder"`, add
 `"legacyOrder" -> stringArray(orders.legacyOrder.map(_.value))`. In
 `decodeSetupOrders`, pass
 `obj("legacyOrder").arr.toVector.map(v => LegacyId(v.str))` as the last
-argument. The field is required (open question 7).
+argument. The field is required (R15).
 
 - [ ] **Step 4: Add `LegacyDeal`**
 
@@ -354,9 +339,12 @@ In `GameStartRulesSuite`, add:
       orders.legacyOrder.filterNot(_ == SeerCard.id))).isRight)
 ```
 
-Update the slice 1 test "a seated lineage's legacies start with their
-stored faces" to pass `orders.copy(legacyOrder =
-orders.legacyOrder.filterNot(Set(SeerCard.id, ArbiterCard.id)))`.
+Update the slice 1 tests that start a game from a lineage holding Seer
+and Arbiter, "a seated lineage's legacies start with their stored faces"
+(`GameStartRulesSuite`) and "a game started from a lineage's legacies and
+starting relic ..." (`ChronicleRecordSuite`), to pass `orders.copy(
+legacyOrder = orders.legacyOrder.filterNot(Set(SeerCard.id,
+ArbiterCard.id)))`.
 
 In `TrustedGameProvisioningSuite`, find the test that reads the factory's
 `FirstGamePlan` orders (near line 274) and add an assertion that
@@ -735,7 +723,7 @@ legacy is the one kept.) Add four more tests in the same style:
   and the others 2 and 0 (seat order is `orders.participants`). After
   Setup the seat that drew 1 holds it dormant with no
   `legacyDecisionId` park, and the seat that drew 0 holds nothing new
-  (open question 1).
+  (R9).
 - **Public Ambitions:** a Setup walk under `publicAmbitions(chronicle)`
   parks on no `legacyDecisionId` and ends with the row unchanged.
 - **Log:** the events of `FirstGameSetupFixture.setupThroughWake()` hold,
@@ -944,9 +932,9 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
    `../superpowers/specs/2026-11/2026-11-13-legacies-design.md`.
 2. Foundations rulings item 1, "Foundation III waits for Legacies": append
    "Answered by the Legacies design, slice 2: both faces now deal."
-3. Add a "Legacies rulings" section after the Foundations rulings, in
-   that section's format, with the design's rulings 1-10, each one
-   sentence with its reason, citing the design (open question 9).
+3. Complete the "Legacies rulings" section (R17): items 1-10 become the
+   design's rulings 1-10, each a sentence or two with its reason, and
+   R4 follows as item 11. Update the section's lead to match.
 
 - [ ] **Step 2: `docs/rules/implementation-traceability.md`**
 
@@ -956,9 +944,12 @@ player, kept in Setup, or Public Ambitions' faceup row of 4
 (`gameplay/setup/LegacyDealSuite.scala`, `LegacySetupSuite.scala`)." and
 drop "Foundation III's faces wait for Legacies;" from its gaps.
 
-- [ ] **Step 3: Spec status**
+- [ ] **Step 3: The design**
 
-In the Legacies design, replace "Slice 1 landed (plan: ...)." with
+In the Legacies design, "Slice 2: setup deal", replace "It is the one deal
+arithmetic the plan factory, game start and the materializer share." with
+"It is the one deal arithmetic the plan factory and game start share;
+game start applies it (implementation ruling R16)." Then replace "Slice 1 landed (plan: ...)." with
 "Slices 1 and 2 landed (plans: [slice 1](../../plans/2026-11/2026-11-13-legacies-slice1.md),
 [slice 2](../../plans/2026-11/2026-11-13-legacies-slice2.md))."
 
