@@ -54,9 +54,10 @@ python3 scripts/check-markdown-links.py
 git diff --check
 ```
 
-Two commits rewrote the whole code base to Scala 3 indentation and control
-syntax. They are listed in `.git-blame-ignore-revs`; run this once so
-`git blame` looks through them:
+Some commits touched the whole code base mechanically: the rewrite to Scala 3
+indentation and control syntax, and the package rename to `distantlands`.
+They are listed in `.git-blame-ignore-revs`; run this once so `git blame`
+looks through them:
 
 ```sh
 git config blame.ignoreRevsFile .git-blame-ignore-revs
