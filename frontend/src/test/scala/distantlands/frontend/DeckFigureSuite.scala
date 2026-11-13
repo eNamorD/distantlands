@@ -35,23 +35,24 @@ class DeckFigureSuite extends munit.FunSuite:
   test("a region's discard sits in its header, after the region's name"):
     val header = one(region(WorldBoardRenderer.world(table, BoardOptions.none),
       "Hinterland"), ":scope > .region-header")
-    assertEquals(all(header, ":scope > *").map(_.getAttribute("class")),
+    assertEquals(all(header, ":scope > *").map(_.classList.item(0)),
       Vector("region-label", "deck-figure"))
     assertEquals(one(header, ".deck-caption").textContent, "Discard")
 
-  test("the world deck sits beside the round tracker, in the Cradle"):
+  test("the world deck and the relic deck stand in the Cradle's foot"):
     val world = WorldBoardRenderer.world(table, BoardOptions.none)
     val row = one(region(world, "Cradle"), ".deck-row")
-    assertEquals(all(row, ":scope > *").map(_.getAttribute("class")),
-      Vector("round-tracker", "deck-figure"))
-    assertEquals(one(row, ".deck-caption").textContent, "World deck")
+    assertEquals(all(row, ":scope > *").map(_.classList.item(0)),
+      Vector("round-tracker", "visions-drawn", "deck-figure", "deck-figure"))
+    assertEquals(all(row, ".deck-caption").map(_.textContent),
+      Vector("World deck", "Relic deck"))
     assertEquals(all(world, ".world > .deck-figure, .world > .pile-display"),
       Vector.empty)
 
   test("the count is drawn on the card"):
     val world = WorldBoardRenderer.world(table, BoardOptions.none)
-    assertEquals(one(region(world, "Cradle"), ".deck-row .deck-card .pile-count")
-      .textContent, "×53")
+    assertEquals(all(region(world, "Cradle"), ".deck-row .deck-card .pile-count")
+      .head.textContent, "×53")
     assertEquals(one(region(world, "Hinterland"), ".deck-card .pile-count")
       .textContent, "×2")
 

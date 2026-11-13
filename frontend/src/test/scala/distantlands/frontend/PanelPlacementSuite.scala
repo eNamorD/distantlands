@@ -93,14 +93,13 @@ class PanelPlacementSuite extends munit.FunSuite:
     * it is tall, so a column costs nothing at fit and a row below costs the
     * whole map's scale.
     */
-  test("the shared bank stands beside the regions and their favor banks"):
-    val layout = Dom.firstMatch(world(projection()), ".world-layout")
-      .getOrElse(fail("no world layout"))
-    val columns = (0 until layout.children.length).map(layout.children(_))
-    assertEquals(columns.map(_.getAttribute("class")), Vector("world-main", "shared-bank"))
-    val main = columns.head
-    assertEquals((0 until main.children.length).map(main.children(_).getAttribute("class")),
-      Vector("regions", "favor-banks"))
+  test("the shared bank stands on the table's edge, under the mat"):
+    val panel = world(projection())
+    assertEquals(Dom.all(panel, ":scope > div").map(_.getAttribute("class")),
+      Vector("mat-board", "table-edge"))
+    assertEquals(Dom.all(Dom.one(panel, ".mat-board"), ":scope > *")
+      .map(_.getAttribute("class")), Vector("regions", "favor-banks"))
+    assertEquals(Dom.all(panel, ".table-edge > .shared-bank").size, 1)
 
   test("the usurper notice sits under the round tracker, at the projected round"):
     val round4 = projection(trackState =

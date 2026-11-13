@@ -972,14 +972,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   align-items: flex-start; justify-content: flex-end; min-width: 0;
   gap: var(--card-gap); }
 
-.pile-display { display: flex; align-items: center; gap: 6px; margin: 7px 0; }
-.pile-display > .pile-card { display: inline-flex; box-sizing: border-box;
-  flex: 0 0 1.65rem; width: 1.65rem; min-width: 1.65rem; height: 2.3rem;
-  min-height: 2.3rem; align-items: center; justify-content: center;
-  border: 2px solid var(--brass); border-radius: 4px; font-weight: 700;
-  line-height: 1; vertical-align: middle; }
-.pile-display > .pile-back { background-color: var(--pile-back); color: #fff; }
-.pile-display > .pile-empty { background-color: var(--base); color: transparent; }
 /* The pile and the Supply figure as controls, with the title pill's hover.
    A button resets the text it inherits, so the colour and font are given
    back. The pile keeps the deck body's frame (below). */

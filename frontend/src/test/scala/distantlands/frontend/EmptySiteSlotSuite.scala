@@ -25,7 +25,8 @@ class EmptySiteSlotSuite extends munit.FunSuite:
       "its sites"):
     val root = world(GameRegion("provinces", Vector(woods), emptySlots = 2))
     assertEquals(slotClasses(root),
-      Vector("site site-readonly", "site-slot-empty", "site-slot-empty"))
+      Vector("site site-readonly mat-slot", "site-slot-empty mat-slot",
+        "site-slot-empty mat-slot"))
     val frames = all(root, ".site-slot-empty")
     assertEquals(frames.map(_.getAttribute("aria-label")),
       Vector.fill(2)("Empty site slot, Provinces"))
@@ -35,12 +36,12 @@ class EmptySiteSlotSuite extends munit.FunSuite:
 
   test("a region with no site draws only its frames"):
     val root = world(GameRegion("hinterland", Vector.empty, emptySlots = 3))
-    assertEquals(slotClasses(root), Vector.fill(3)("site-slot-empty"))
+    assertEquals(slotClasses(root), Vector.fill(3)("site-slot-empty mat-slot"))
     assertEquals(all(root, ".site").size, 0)
 
   test("a full region draws no frame"):
     val root = world(GameRegion("cradle", Vector(woods)))
-    assertEquals(slotClasses(root), Vector("site site-readonly"))
+    assertEquals(slotClasses(root), Vector("site site-readonly mat-slot"))
 
   test("an empty frame is no board option"):
     val root = world(GameRegion("hinterland", Vector.empty, emptySlots = 1))

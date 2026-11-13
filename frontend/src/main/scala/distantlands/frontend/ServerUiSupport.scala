@@ -25,8 +25,8 @@ private[frontend] object ServerUiSupport:
     // Always appended, empty or not: the name is the middle cell of three,
     // and a missing cell would slide it off centre.
     heading.appendChild(tokens)
-    heading.appendChild(text("span", "site-name", site.label))
-    val defense = element("span", "site-defense")
+    heading.appendChild(text("span", "site-name printed", site.label))
+    val defense = element("span", "site-defense printed")
     defense.setAttribute("aria-label", s"Defense ${presentation.defense}")
     // Drawn as dice rather than a number because defense is rolled, and no
     // site in the catalog exceeds two. An undefended site says so in words,
@@ -99,7 +99,7 @@ private[frontend] object ServerUiSupport:
           row.setAttribute("data-ruler-kind", "bandit")
       details.appendChild(row)
     }
-    val footer = element("div", "site-footer")
+    val footer = element("div", "site-footer printed")
     // Two lines of labels at most (`.site-powers`). Each label keeps its
     // rules text on its hover title, and opens the power in the inspector.
     // A button, so the site box it sits in leaves the click to it
@@ -184,22 +184,6 @@ private[frontend] object ServerUiSupport:
     node.setAttribute("data-slot-index", at.toString)
     options.decorate(node, Vector(key))
     node
-
-  /** A pile set in a line of text: its label, one back for the top card,
-    * and the count. The relic deck, which no decision offers.
-    */
-  private[frontend] def pileDisplay(label: String, count: Int,
-      topCardKind: Option[String]): dom.Element =
-    val pile = element("div", "pile-display")
-    pile.appendChild(text("span", "pile-label", s"$label:"))
-    val symbol = pileSymbol(count, topCardKind)
-    val back = text("span", pileCardClasses(count),
-      if symbol.isEmpty then "\u00a0" else symbol)
-    back.setAttribute("role", "img")
-    back.setAttribute("aria-label", topCardLabel(count, topCardKind))
-    pile.appendChild(back)
-    pile.appendChild(text("span", "pile-count", s"x$count"))
-    pile
 
   /** A deck drawn as a card, with the top card's back letter and the count
     * on its face: the part a decision rings, with its cost badge under the
