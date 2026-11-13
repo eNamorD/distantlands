@@ -344,41 +344,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         narrated = Vector(Told(ChronicleBeginProcedure.decisionId)),
         lines = ActionLineSource.Silent(
           "the Chronicle headline the phase change posts tells the answer"))
-    case TriggeredProcedureRef.ChronicleSun => ProcedureLog(tag = None,
-      lines = ActionLineSource.Notes(Map(
-        ChronicleSunProcedure.empireBroke -> LogKind.Delta,
-        ChronicleSunProcedure.crowned -> LogKind.Delta,
-        ResolveLegacies.activated -> LogKind.Delta,
-        ResolveLegacies.discarded -> LogKind.Delta,
-        ResolveLegacies.tookPublic -> LogKind.Delta,
-        ResolveLegacies.returnedPublic -> LogKind.Delta,
-        ResolveLegacies.wentDormant -> LogKind.Delta,
-        ResolveLegacies.capped -> LogKind.Decision,
-        ResolveLegacies.reactivated -> LogKind.Delta) ++
-        ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
-        ChronicleTask.all.map(task =>
-          ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),
-      narratedPrefixes = Vector("chronicle.assign.",
-        "chronicle.sun.public-legacy.", "chronicle.sun.legacy-cap."),
-      isSection = false)
-    case TriggeredProcedureRef.ChronicleThrone => ProcedureLog(tag = None,
-      lines = ActionLineSource.Notes(Map(
-        ShapeEmpire.discarded -> LogKind.Delta,
-        BuildEdifice.built -> LogKind.Decision,
-        LineageScoring.scored -> LogKind.Delta,
-        LineageScoring.gave -> LogKind.Decision,
-        SwearOath.swore -> LogKind.Decision,
-        OfferCitizenship.offered -> LogKind.Decision,
-        OfferCitizenship.accepted -> LogKind.Decision,
-        OfferCitizenship.declined -> LogKind.Decision,
-        OfferCitizenship.reactivated -> LogKind.Delta,
-        OfferCitizenship.capped -> LogKind.Decision)),
-      narratedPrefixes = Vector("chronicle.throne.offer",
-        "chronicle.throne.legacy-cap.",
-        "chronicle.throne.citizenship.", "chronicle.shape-empire.",
-        "chronicle.build-edifice.", "chronicle.stock-reliquary.",
-        "chronicle.score-lineage.", "chronicle.swear-oath."),
-      isSection = false)
+    case TriggeredProcedureRef.ChronicleSun => chronicleSun
+    case TriggeredProcedureRef.ChronicleThrone => chronicleThrone
     case TriggeredProcedureRef.ChronicleWorld => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
         ProtectAndDispossess.protectedStack -> LogKind.Decision,
@@ -407,3 +374,42 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         narrated = Vector(Told(FollowUpOffer.decisionId)),
         lines = ActionLineSource.Silent(
           "the queued action's tag, or the Skip line, tells its answer"))
+
+  // The Sun's and the Throne's entries stand apart from `rules`, whose
+  // body would otherwise outgrow coverage instrumentation.
+  private lazy val chronicleSun: ProcedureLog = ProcedureLog(tag = None,
+    lines = ActionLineSource.Notes(Map(
+      ChronicleSunProcedure.empireBroke -> LogKind.Delta,
+      ChronicleSunProcedure.crowned -> LogKind.Delta,
+      ResolveLegacies.activated -> LogKind.Delta,
+      ResolveLegacies.discarded -> LogKind.Delta,
+      ResolveLegacies.tookPublic -> LogKind.Delta,
+      ResolveLegacies.returnedPublic -> LogKind.Delta,
+      ResolveLegacies.wentDormant -> LogKind.Delta,
+      ResolveLegacies.capped -> LogKind.Decision,
+      ResolveLegacies.reactivated -> LogKind.Delta) ++
+      ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
+      ChronicleTask.all.map(task =>
+        ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),
+    narratedPrefixes = Vector("chronicle.assign.",
+      "chronicle.sun.public-legacy.", "chronicle.sun.legacy-cap."),
+    isSection = false)
+
+  private lazy val chronicleThrone: ProcedureLog = ProcedureLog(tag = None,
+    lines = ActionLineSource.Notes(Map(
+      ShapeEmpire.discarded -> LogKind.Delta,
+      BuildEdifice.built -> LogKind.Decision,
+      LineageScoring.scored -> LogKind.Delta,
+      LineageScoring.gave -> LogKind.Decision,
+      SwearOath.swore -> LogKind.Decision,
+      OfferCitizenship.offered -> LogKind.Decision,
+      OfferCitizenship.accepted -> LogKind.Decision,
+      OfferCitizenship.declined -> LogKind.Decision,
+      OfferCitizenship.reactivated -> LogKind.Delta,
+      OfferCitizenship.capped -> LogKind.Decision)),
+    narratedPrefixes = Vector("chronicle.throne.offer",
+      "chronicle.throne.legacy-cap.",
+      "chronicle.throne.citizenship.", "chronicle.shape-empire.",
+      "chronicle.build-edifice.", "chronicle.stock-reliquary.",
+      "chronicle.score-lineage.", "chronicle.swear-oath."),
+    isSection = false)
