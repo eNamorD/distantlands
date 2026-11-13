@@ -272,7 +272,7 @@ private[frontend] object ServerUiSupport:
     if count == 0 then "" else topCardKind.fold("")(CardFace.backLetter)
 
   private[frontend] def pileCardClasses(count: Int): String =
-    if count == 0 then "pile-card pile-empty" else "pile-card pile-back"
+    if count == 0 then "pile-empty" else "pile-back"
 
   private[frontend] final case class ViewerPresentation(
       showGameplayControls: Boolean,

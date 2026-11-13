@@ -1318,8 +1318,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .player-boards { margin-top: 18px; }
 .shared-bank > h3 { margin-top: 0; }
 .oathkeeper-status { margin: 0 0 6px; color: var(--brass-bright); font-weight: 700; }
-/* The oath and its holder each take a line: run together, the holder
-   wrapped mid-phrase in the bank's column. */
+/* The oath and its holder each take a line, so the holder never wraps
+   mid-phrase. */
 .oathkeeper-status > * { display: block; }
 /* The goal opens the Oath's card, a link in the line's own colour and
    weight. */
@@ -1350,8 +1350,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    the side stays on the shared bank's face and in the overlay. */
 .player-board .banner-face { padding-top: 0.4em; }
 .player-board .banner-side, .player-board .banner-name-prefix { display: none; }
-/* Two side by side across the bank's column, each a square as large as the
-   column allows: larger than a site's card, so easy to find and click. */
+/* Two side by side on the table's edge, each a square larger than a
+   site's card, so easy to find and click. */
 .shared-banners { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px; margin-top: 10px; }
 .shared-banners .board-option-card { width: 100%; }
@@ -1386,7 +1386,7 @@ button.foundation-card:hover { background: var(--pressed);
   font-size: max(0.72em, 0.7rem); font-weight: 700; letter-spacing: 0.1em;
   text-transform: uppercase; }
 /* On the zoomed-out map the cards hold the glance text size, as a site's
-   details do; a name the bank's column cannot hold is cut, never wrapped. */
+   details do; a name the row cannot hold is cut, never wrapped. */
 .map-compact .foundation-card { font-size: var(--glance-text); }
 /* On the Chronicle page the six stand three abreast. The page scrolls, so
    a name its column cannot hold wraps. */
@@ -1633,11 +1633,10 @@ button.festival-marker:hover,
    the map zooms. The site footer (powers and requirement) sits inside
    the details and so holds the glance size too, one line of it; a card's
    own study layer (defense, restriction, badge) is hidden here and read
-   on a zoom or in the overlay. Nothing here changes the size of the
-   map: the board has the mat's fixed ratio, so a Fit that lands near the
-   threshold cannot flip the class and re-fit forever. */
-/* The glance layer's two sizes, named once so the compact site below can
-   size its card row from what the text leaves it. */
+   on a zoom or in the overlay. The board has the mat's fixed ratio; the
+   table's edge under it grows as the scale falls, which only lowers Fit,
+   so a Fit that lands near a threshold settles instead of flipping. */
+/* The glance layer's two sizes, named once for the board and the edge. */
 .map-compact { --glance-name: clamp(1.08rem, calc(12px / var(--map-scale, 1)), 3.6rem);
   --glance-text: clamp(0.86rem, calc(11.6px / var(--map-scale, 1)), 3.6rem); }
 .map-compact .site-tokens, .map-compact .site-defense, .map-compact .site-pawns,

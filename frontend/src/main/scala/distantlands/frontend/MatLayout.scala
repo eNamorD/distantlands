@@ -49,8 +49,6 @@ private[frontend] object MatLayout:
   val SiteW: Double = CardH * 770 / 596
   val SlotsPerSite = 3
 
-  /** The site rows the mat prints in each column. */
-  val Rows: Vector[Int] = Vector(2, 3, 3)
 
   private val FrameW = 669.0
   private val FrameLeft = Vector(71.0, 1994.0, 3945.0)

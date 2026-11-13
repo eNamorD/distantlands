@@ -7,6 +7,9 @@ package distantlands.frontend
 class MatLayoutSuite extends munit.FunSuite:
   import MatLayout.*
 
+  /** The site rows the mat prints in each column. */
+  private val Rows = Vector(2, 3, 3)
+
   private val sites = for column <- 0 until 3; row <- 0 until Rows(column)
     yield column -> row
   private val slots = for (column, row) <- sites; slot <- 0 until SlotsPerSite
@@ -28,8 +31,8 @@ class MatLayoutSuite extends munit.FunSuite:
     assertEquals(Height, 2303.0)
 
   test("the mat prints two site rows in the Cradle and three elsewhere"):
-    assertEquals(Rows, Vector(2, 3, 3))
     assertEquals(sites.size, 8)
+    assert(siteFrame(0, 1).bottom < trackNote.y)
 
   test("every rectangle lies inside the mat"):
     everything.foreach(rect => assert(rect.within(Mat), rect.toString))
