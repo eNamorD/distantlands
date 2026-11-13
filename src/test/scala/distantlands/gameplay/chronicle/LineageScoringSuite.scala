@@ -137,6 +137,16 @@ class LineageScoringSuite extends munit.FunSuite:
     RecordedOps.all(events).collect {
       case LineagePointsScored(`lineage`, points) => points }
 
+  /** The lineage points `events` recorded, by player, in the order
+    * recorded. */
+  private def recorded(at: OathTransition, events: Vector[OathEvent])
+      : Vector[(PlayerId, Int)] =
+    val players = Outcomes.ready(at.state).game.current.players
+      .map(player => player.lineage -> player.player).toMap
+    RecordedOps.all(events).collect {
+      case LineagePointsScored(lineage, points) if players.contains(lineage) =>
+        players(lineage) -> points }
+
   private def giftCap(at: OathTransition)(using munit.Location): Int =
     ChronicleWalk.parked(at.state).get.query match
       case spread: DecisionQuery.Distribute => spread.maxTotal
@@ -203,3 +213,46 @@ class LineageScoringSuite extends munit.FunSuite:
       Vector(Suit.Beast -> 4))
     assertEquals(scoreLines(giftingOn(at, 0, 0).events).head,
       "p1 scored 7 lineage points (3 base, 4 from Beast)")
+
+  test("every point given away records each gift and nothing for p1"):
+    val at = holdingAtGifts(TheNeedleCard)
+    assertEquals(recorded(at, giftingOn(at, 2, 1).events),
+      Vector(p2 -> 2, p3 -> 1))
+
+  test("two gifts and kept points record p1's kept points first, then each " +
+      "gift"):
+    val at = holdingAtGifts(TheNeedleCard)
+    val done = giftingOn(at, 1, 1)
+    // Two gifts of 1 cost 4 of the 6 earned.
+    assertEquals(recorded(at, done.events), Vector(p1 -> 2, p2 -> 1, p3 -> 1))
+    assertEquals(scoreLines(done.events), Vector(
+      "p1 scored 6 lineage points (3 base, 3 from Beast)",
+      "p1 gave up 2 points to give p2 1 point.",
+      "p1 gave up 2 points to give p3 1 point.",
+      "p1 keeps 2 points"))
+
+  test("a winner alone at the table is asked no gift question, and the " +
+      "line names the total with no gift or keeps line"):
+    // The engine starts a one-seat game (only the start pages ask for
+    // two players): p2 and p3 are not seated.
+    val alone = ChronicleWalk.throneHeldByChancellorP1.update(state =>
+      val p1Lineage = state.game.current.player(p1).get.lineage
+      state.updateCurrent(current => current.copy(
+          players = current.players.filter(_.player == p1),
+          chronicleTasks = ChronicleTask.all.map(_ -> p1).toMap))
+        .updateCampaign(campaign => campaign.copy(lineages =
+          campaign.lineages.filter(_._1 == p1Lineage)))
+        .copy(playerColors = state.playerColors.filter(_._1 == p1)))
+    val done = distantlands.gameplay.walker.WalkerCompleted(
+      TriggeredProcedureRef.ChronicleThrone)
+    val throne = Iterator.iterate(accepted(rules.next(OathTransition(
+        alone.state, Vector.empty), TriggeredProcedureRef.ChronicleSun)))(
+      step =>
+        val decide = ChronicleWalk.parked(step.state).get
+        assertNotEquals(decide.decisionId, LineageScoring.giftsDecisionId)
+        val next = accepted(rules.resolveWalker(step.state, decide.owner,
+          decide.decisionId, ChronicleWalk.plainestAnswer(decide)))
+        OathTransition(next.state, step.events ++ next.events))
+      .find(_.events.contains(done)).get
+    assertEquals(scoreLines(throne.events),
+      Vector("p1 scored 3 lineage points"))
