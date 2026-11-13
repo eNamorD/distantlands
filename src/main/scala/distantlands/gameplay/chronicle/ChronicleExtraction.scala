@@ -81,6 +81,8 @@ object ChronicleExtraction:
           true
         case CardContainer.Player(_, PlayerCardArea.Relics) =>
           card.id == TheGrandScepterCard.id
+        // The public row is empty once the Sun has resolved legacies (slice
+        // 3); a legacy still there cannot be stored.
         case _ => false
 
   private def all[A](results: Vector[Either[OathViolation, A]])

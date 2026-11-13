@@ -71,6 +71,23 @@ final case class Table private (private val game: ReadyGame,
     moving(id).onPlayer(player)(p => p.copy(relics = p.relics :+
       RelicState(id, orientation(facedown), Tokens.empty)))
 
+  /** `card` held by `player`'s lineage, active (faceup) unless `active` is
+    * false (dormant, facedown). */
+  def legacy(player: PlayerId, card: LegacyRef, active: Boolean = true)(
+      using munit.Location): Table =
+    val id = CardRefs.legacyId(card)
+    val lineage = playerOf(player).lineage
+    moving(id).update(_.updateCampaign(campaign => campaign.copy(lineages =
+      campaign.lineages.updatedWith(lineage)(_.map(state => state.copy(
+        legacies = state.legacies :+ LegacyState(id, active)))))))
+
+  /** `cards` dealt faceup to the Public Ambitions row, in order. */
+  def publicLegacies(cards: LegacyRef*): Table =
+    val ids = cards.map(CardRefs.legacyId).toVector
+    ids.foldLeft(this)(_.moving(_)).update(_.updateCurrent(c => c.copy(
+      commonCards = c.commonCards.copy(publicLegacies =
+        c.commonCards.publicLegacies ++ ids))))
+
   def denizen(card: DenizenRef, at: SiteRef,
       facedown: Boolean = false): Table =
     val id = CardRefs.denizenId(card)
@@ -634,7 +651,7 @@ object Table:
         worldDeck = zones.worldDeck.filter(keep),
         relicDeck = zones.relicDeck.filter(keep),
         edificeDeck = zones.edificeDeck.filter(keep),
-        legacyDeck = zones.legacyDeck.filter(keep),
+        publicLegacies = zones.publicLegacies.filter(keep),
         regionalDiscards = zones.regionalDiscards.view.mapValues(
           _.filter(keep)).toMap),
       map = c.map.copy(sites = c.map.sites.view.mapValues(s => s.copy(

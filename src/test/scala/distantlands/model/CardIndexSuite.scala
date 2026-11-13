@@ -1,5 +1,8 @@
 package distantlands.model
 
+import distantlands.catalog.holding.{ArbiterCard, RivalCard, SeerCard}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 import distantlands.testkit.Unwrap.{accepted, rejected}
 
 class CardIndexSuite extends munit.FunSuite:
@@ -122,3 +125,19 @@ class CardIndexSuite extends munit.FunSuite:
       CardContainer.Player(unknown, PlayerCardArea.Hand), 0)))
     assert(DomainValidation.validate(prepared).contains(
       DomainProblem.UnknownTemporaryHandOwner(unknown)))
+
+  test("a lineage's legacies and the public row are indexed, and no " +
+      "legacy lies in the legacy deck"):
+    val ready = Table.start.legacy(p1, SeerCard)
+      .legacy(p1, ArbiterCard, active = false)
+      .publicLegacies(RivalCard).ready
+    val index = ready.game.cardIndex.toOption.get
+    val lineage = ready.game.current.player(p1).get.lineage
+    assertEquals(index.get(SeerCard.id).map(_.location.container),
+      Some(CardContainer.Lineage(lineage, LineageCardArea.Legacies)))
+    assertEquals(index.get(ArbiterCard.id).flatMap(_.state),
+      Some(LegacyState(ArbiterCard.id, active = false)))
+    assertEquals(index.get(RivalCard.id).map(_.location.container),
+      Some(CardContainer.PublicLegacies))
+    assert(index.ids.flatMap(index.get).forall(
+      _.location.container != CardContainer.Deck(CardDeck.Legacy)))

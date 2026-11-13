@@ -197,8 +197,6 @@ private[operations] object CardMovementOperations:
       Some(ready.game.current.commonCards.relicDeck)
     case CardContainer.Deck(CardDeck.Edifice) =>
       Some(ready.game.current.commonCards.edificeDeck)
-    case CardContainer.Deck(CardDeck.Legacy) =>
-      Some(ready.game.current.commonCards.legacyDeck)
     case CardContainer.RegionalDiscard(region) =>
       Some(ready.game.current.commonCards.discard(region).reverse)
     case _ => None
@@ -234,7 +232,8 @@ private[operations] object CardMovementOperations:
       case CardDeck.World => cards.copy(worldDeck = cards.worldDeck.filterNot(_ == located.id))
       case CardDeck.Relic => cards.copy(relicDeck = cards.relicDeck.filterNot(_ == located.id))
       case CardDeck.Edifice => cards.copy(edificeDeck = cards.edificeDeck.filterNot(_ == located.id))
-      case CardDeck.Legacy => cards.copy(legacyDeck = cards.legacyDeck.filterNot(_ == located.id))
+      // Nothing is indexed in the derived legacy deck, so nothing leaves it.
+      case CardDeck.Legacy => cards
     }}
     case CardContainer.RegionalDiscard(region) => updateCommonCards(ready) { cards =>
       cards.copy(regionalDiscards = cards.regionalDiscards.updated(region,
@@ -435,8 +434,8 @@ private[operations] object CardMovementOperations:
           cards.relicDeck, id.asInstanceOf[RelicId], position, topAtHead = true))
         case CardDeck.Edifice => cards.copy(edificeDeck = insertStack(
           cards.edificeDeck, id.asInstanceOf[EdificeId], position, topAtHead = true))
-        case CardDeck.Legacy => cards.copy(legacyDeck = insertStack(
-          cards.legacyDeck, id.asInstanceOf[LegacyId], position, topAtHead = true))
+        // A legacy returned to the deck leaves play: the deck is derived.
+        case CardDeck.Legacy => cards
       }
       current.copy(commonCards = updated)
     })

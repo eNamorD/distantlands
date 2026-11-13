@@ -35,7 +35,7 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     FirstGameSetupMaterial(players, map,
       CardZones(plan.worldDeckOrder, plan.relicOrder.filterNot(usedRelics),
         catalog.edifices.map(e => EdificeId(e.id.value))
-          .filterNot(edificesOn(map)), Vector.empty,
+          .filterNot(edificesOn(map)),
         deal.discards(plan.denizenOrder)),
       BannersState(
         PeoplesFavorState(peoplesFavorFace(plan), None, 1),

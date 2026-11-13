@@ -128,7 +128,6 @@ object TestGameFixtures:
       worldDeck = Vector(worldDenizen),
       relicDeck = Vector.empty,
       edificeDeck = Vector.empty,
-      legacyDeck = Vector.empty,
       regionalDiscards = Map.empty
     ),
     banners = BannersState(
