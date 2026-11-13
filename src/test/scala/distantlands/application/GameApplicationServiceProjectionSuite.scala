@@ -322,10 +322,6 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
   private val wizardsConclave = WizardsConclaveCard.id
   private val natureWorship = NatureWorshipCard.id
 
-  /** The fixture's first game begun, and the first player, p2, placed at
-    * Ancient City: p2 is now asked which adviser to keep. Replays Begin and
-    * the first placement, since the adviser choice and the hands it offers
-    * come from Setup's deal. */
   /** The legacies Quiet Ambitions drew for `player`. */
   private def drawnLegacies(player: PlayerId): Vector[LegacyId] =
     LegacyDeal.of(chronicle, orders.participants)
@@ -351,6 +347,11 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
         SetupProcedure.pawnDecisionId(firstPlayer),
         ChooseOneAnswer(DecisionOptionRef.Site(ancientCity))))))
 
+  /** The fixture's first game begun, the first player, p2, placed at
+    * Ancient City and keeping the first legacy Quiet Ambitions drew: p2 is
+    * now asked which adviser to keep. Replays Begin, the placement and the
+    * keep, since the adviser choice and the hands it offers come from
+    * Setup's deal. */
   private def askedForAdvisers(service: GameApplicationService,
       gameId: String)(using munit.Location): GameAccepted =
     keepFirstLegacy(service, gameId, askedForLegacy(service, gameId))
