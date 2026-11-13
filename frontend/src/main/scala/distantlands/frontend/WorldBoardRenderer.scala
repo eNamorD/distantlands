@@ -425,8 +425,14 @@ private[frontend] object WorldBoardRenderer:
       track: distantlands.protocol.projection.GameTracksProjection): dom.Element =
     val section = element("section", "round-tracker")
     val first = playerReference(value, track.firstPlayerId)
+    // The lock is in the tracker's name as well as in its words, which the
+    // far zoomed-out map takes out of sight.
+    val lock = Option.when(track.usurperLimited)(
+      s"Usurper locked until round ${track.limiterRound}")
     section.setAttribute("aria-label", s"Round ${track.round} of 8; " +
-      s"Visions Drawn ${track.visionsDrawn}; first player ${first.textContent}")
+      s"Visions Drawn ${track.visionsDrawn}; " +
+      lock.fold("")(words => s"$words; ") +
+      s"first player ${first.textContent}")
     val svg = dom.document.createElementNS("http://www.w3.org/2000/svg", "svg")
       .asInstanceOf[dom.svg.SVG]
     svg.setAttribute("viewBox", "0 0 200 200")
@@ -450,7 +456,9 @@ private[frontend] object WorldBoardRenderer:
         marker.setAttribute("x", segment.markerX.toString)
         marker.setAttribute("y", segment.markerY.toString)
         marker.setAttribute("text-anchor", "middle"); marker.setAttribute("class", "limiter-marker")
-        marker.textContent = "◆"; group.appendChild(marker)
+        marker.textContent = "◆"
+        lock.foreach(words => HoverTip.set(marker, words))
+        group.appendChild(marker)
       svg.appendChild(group)
     }
     section.appendChild(place(svg, MatLayout.roundWheel))
@@ -463,9 +471,7 @@ private[frontend] object WorldBoardRenderer:
     note.appendChild(summary)
     // Beside the marker the tracker already draws on that round, rather than
     // in the action panel, which is about this turn rather than the game.
-    if track.usurperLimited then
-      note.appendChild(text("p", "usurper-notice",
-        s"Usurper locked until round ${track.limiterRound}"))
+    lock.foreach(words => note.appendChild(text("p", "usurper-notice", words)))
     section.appendChild(note)
     section
 

@@ -145,3 +145,18 @@ class PanelPlacementSuite extends munit.FunSuite:
     assertEquals(Dom.all(panel, ".site-resources"), Vector.empty)
     assert(!panel.textContent.contains("loose wealth"), panel.textContent)
     assert(!panel.textContent.contains("Usurper"), panel.textContent)
+
+  /** The far zoomed-out map hides the tracker's words, so the lock is also
+    * in the tracker's name and on the limiter mark's hover note. */
+  test("the round tracker's name and the limiter mark state the lock"):
+    val tracker = Dom.one(world(projection(trackState =
+      Some(tracks.copy(usurperLimited = true, limiterRound = 4)))),
+      ".round-tracker")
+    assert(tracker.getAttribute("aria-label")
+      .contains("Usurper locked until round 4"),
+      tracker.getAttribute("aria-label"))
+    assertEquals(Dom.one(tracker, ".limiter-marker")
+      .getAttribute(HoverTip.Attribute), "Usurper locked until round 4")
+    val open = Dom.one(world(projection(trackState =
+      Some(tracks.copy(usurperLimited = false)))), ".round-tracker")
+    assert(!open.getAttribute("aria-label").contains("Usurper"))

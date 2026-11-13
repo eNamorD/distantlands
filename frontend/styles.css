@@ -516,10 +516,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .map-compact .mat-board .track-summary { display: none; }
 /* Smaller still, a site's face keeps its name, its tokens, who stands
    there, who rules it and its defense, the last two in a short form
-   (implementation ruling R5). Its powers, the wheel's numbers, the
-   tracker's words, the slots' names and a bank's suit name and favor glyph
-   would fall under a readable size, so they are read on a zoom or in the
-   overlay instead. Every one keeps its accessible name. */
+   (implementation ruling R5). Its powers, the wheel's numbers and a bank's
+   favor glyph would fall under a readable size and leave the board: the
+   powers are read and opened on a zoom or in the overlay, the wheel's
+   numbers are in the tracker's name, and the bank's count says favor in
+   its own words. */
 .map-tiny .mat-board :is(.site-footer,
   .round-tracker text:not(.limiter-marker), .favor-bank > .token-favor) {
   display: none; }
