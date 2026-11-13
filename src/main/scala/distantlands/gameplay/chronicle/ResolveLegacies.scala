@@ -182,15 +182,20 @@ object ResolveLegacies:
         resolved.map((player, id, met) => line(if met then activated
           else discarded, NoteArg.Player(player), NoteArg.Card(id))))
 
+  /** The public row, one legacy a pass, always the row's head: each pass
+    * moves its legacy out, and a walk resumed at a tie finds the tied
+    * legacy still first. A branch with one child per legacy would lose its
+    * shape as the earlier ones leave. The body reads the head as optional,
+    * since the walk may reach it with the row already empty. */
   private def publicRow(catalog: ExecutableCatalog): Operation =
-    Branch((state, _) => state.game.current.commonCards.publicLegacies
-      .map(publicLegacy(catalog, _)))
+    Repeat((state, _) => state.game.current.commonCards.publicLegacies.nonEmpty,
+      Branch((state, _) => state.game.current.commonCards.publicLegacies
+        .headOption.toVector.flatMap(publicLegacy(catalog, state, _))))
 
-  private def publicLegacy(catalog: ExecutableCatalog, legacy: LegacyId)
-      : Operation =
+  private def publicLegacy(catalog: ExecutableCatalog, state: ReadyGame,
+      legacy: LegacyId): Vector[Operation] =
     val decisionId = publicDecisionId(legacy)
-    Branch((state, _) =>
-      LegacyGoals.turnOrder(state).filter(meets(catalog, state, legacy, _))
+    LegacyGoals.turnOrder(state).filter(meets(catalog, state, legacy, _))
       match
         case Vector() => Vector(BuildOps((_, _) => Right(Vector(Move(
             Piece.Card(legacy), PositionedLocation(Location.PublicLegacies),
@@ -209,7 +214,7 @@ object ResolveLegacies:
             Branch((_, pending) =>
               ChronicleTasks.chosenPlayer(pending, decisionId).fold(
                 violation => Vector(ChronicleTasks.failing(violation)),
-                taken(legacy, _))))))
+                taken(legacy, _)))))
 
   /** `legacy` from the public row to `player`, active. */
   private def taken(legacy: LegacyId, player: PlayerId): Vector[Operation] =

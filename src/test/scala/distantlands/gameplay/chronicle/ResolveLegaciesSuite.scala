@@ -246,3 +246,17 @@ class ResolveLegaciesSuite extends munit.FunSuite:
     val asked = capOf(run, p1).get.query.asInstanceOf[DecisionQuery.ChooseMany]
     assertEquals((asked.min, asked.max), (1, 1))
     assertEquals(legaciesOf(run.ready, p1).count(_.active), 3)
+
+  test("a public tie after an earlier public legacy is taken still parks " +
+      "and resolves"):
+    // p2 alone meets Seer; Iron Hand ties the Imperials, after it.
+    val table = won.imperial(p2, p3).warbandsAt(AncientCitySite, p2, 1)
+      .darkestSecret(Some(p2), 1).publicLegacies(SeerCard, IronHandCard)
+    val decisionId = ResolveLegacies.publicDecisionId(IronHandCard.id)
+    val run = sun(table, {
+      case decide if decide.decisionId == decisionId =>
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(p3)) })
+    assertEquals(legaciesOf(run.ready, p2),
+      Vector(LegacyState(SeerCard.id, active = true)))
+    assertEquals(legaciesOf(run.ready, p3),
+      Vector(LegacyState(IronHandCard.id, active = true)))
