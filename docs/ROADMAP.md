@@ -92,6 +92,12 @@ Left behind by the
   already names that site ("Recent Sites (Buried Giant first)"); nothing
   else shows it. Asked by the owner in the review of the Foundations
   rulings, 2026-11-12.
+- [ ] **Move the foundation cards to an overlay of their own.** The six
+  foundation setup cards sit as a strip in the Shared Bank, the table's
+  game info column, for now. Players need them rarely, so they belong in
+  an overlay opened on demand, as the Chronicle page lists the same six.
+  Asked by the owner in the second review of the Foundations rulings,
+  2026-11-12.
 
 ### Phase - Campaign battle summary
 
