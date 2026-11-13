@@ -25,7 +25,7 @@ class FoundationStripSuite extends munit.FunSuite:
   override def beforeEach(context: BeforeEach): Unit =
     opened = Vector.empty
     CardInspection.onOpen:
-      case CardInspection.Request.Text(title, lines, _) =>
+      case CardInspection.Request.Text(title, lines, _, _) =>
         opened :+= title -> lines
       case _ => ()
 
@@ -88,3 +88,11 @@ class FoundationStripSuite extends munit.FunSuite:
   test("a number no card prints reads as its digits"):
     assertEquals(FoundationStrip.numeral(4), "IV")
     assertEquals(FoundationStrip.numeral(7), "7")
+
+  test("a table card opens with the foundation's plate"):
+    var plates = Vector.empty[Option[String]]
+    CardInspection.onOpen:
+      case CardInspection.Request.Text(_, _, _, plate) => plates :+= plate
+      case _ => ()
+    click(all(tableStrip, "button.foundation-card")(2))
+    assertEquals(plates, Vector(Some("foundation")))

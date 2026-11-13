@@ -55,11 +55,18 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     * card face on the table that nothing can be played from.
     */
   def showText(title: String, lines: Vector[String],
-      origin: dom.html.Element): Unit =
+      origin: dom.html.Element, plate: Option[String] = None): Unit =
     clear()
     // Named for what it shows: it is not a card, so "Card details" would
     // misname it.
     node.setAttribute("aria-label", title)
+    // The printed card behind the words, at its real ratio, where its image
+    // will go.
+    plate.foreach { kind =>
+      val box = element("span", s"card-plate card-plate-$kind")
+      box.appendChild(text("span", "card-name printed", title))
+      body.appendChild(box)
+    }
     val panel = element("div", "card-overlay-details")
     panel.appendChild(text("h3", "card-overlay-name", title))
     lines.foreach(line => RulesTextRenderer.powers(line)

@@ -1820,6 +1820,17 @@ button.festival-marker:hover,
    in. */
 .card-overlay-body > .card-face-vision { width: var(--card-h);
   height: var(--card-w); }
+/* A card the table shows as words has its box here, at its real ratio,
+   where its image will go. */
+.card-plate { display: flex; align-items: center; justify-content: center;
+  box-sizing: border-box; flex: 0 0 auto; height: calc(var(--card-h) * 1.9);
+  padding: 0.6em; border: 1px solid var(--line); border-radius: 0.35em;
+  background: var(--base); color: var(--cream); text-align: center;
+  font-family: Georgia, serif; }
+.card-plate-foundation { aspect-ratio: var(--ratio-foundation); }
+.card-plate-oath-goal { aspect-ratio: var(--ratio-oath-goal); }
+.card-plate-oathkeeper-title { aspect-ratio: var(--ratio-oathkeeper-title);
+  height: calc(var(--card-w) * 1.9); }
 .card-overlay-details { flex: 1 1 22em; min-width: 0; max-width: 34em;
   font-size: 0.82em; }
 .card-overlay-name { margin: 0 0 0.6em; font-family: Georgia, serif;

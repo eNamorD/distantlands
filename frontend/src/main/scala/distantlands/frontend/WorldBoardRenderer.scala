@@ -103,7 +103,8 @@ private[frontend] object WorldBoardRenderer:
           val title = presented.fold(oath.goal)(_.title)
           HoverTip.set(pill, title)
           pill.onclick = _ => CardInspection.openText(title,
-            presented.fold(Vector.empty[String])(_.lines), pill)
+            presented.fold(Vector.empty[String])(_.lines), pill,
+            Some("oathkeeper-title"))
           slots.appendChild(pill)
         }
       // The spot is drawn empty only while the decision lights it: the strip

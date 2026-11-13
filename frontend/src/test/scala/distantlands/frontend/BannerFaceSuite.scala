@@ -27,7 +27,7 @@ class BannerFaceSuite extends munit.FunSuite:
     opened = Vector.empty
     festivalsOpened = Vector.empty
     CardInspection.onOpen:
-      case CardInspection.Request.Text(title, lines, _) =>
+      case CardInspection.Request.Text(title, lines, _, _) =>
         opened :+= title -> lines
       case CardInspection.Request.Festival(title, lines, at, _) =>
         festivalsOpened :+= (title, lines, at)
