@@ -303,10 +303,13 @@ sites.
   none of the winner's can be dormant (ruling 2).
 - **Gifts.** `LineageScoring.winnerPoints` becomes `3 + bonus`, and the
   gift bound becomes half that total, rounded down.
-- **Log.** "Blue scored 7 lineage points (3 base, 3 from Beast, 1 from
-  Nomad)". Legacies of one suit add into one share, a suit that scores 0
-  is left out, and with no bonus the line stays "Blue scored 3 lineage
-  points".
+- **Log.** Before the gift question, the earned total: "Blue scored 7
+  lineage points (3 base, 3 from Beast, 1 from Nomad)". Legacies of one
+  suit add into one share, a suit that scores 0 is left out, and with no
+  bonus the line stays "Blue scored 3 lineage points". Then one line per
+  gift, "Blue gave up 4 points to give Red 2 points.", and after any gift
+  "Blue keeps 3 points" (implementation ruling R28, re-ruled by the
+  owner).
 
 Tests: the bonus over two legacies; two legacies of one suit in one share;
 advisers not counted; gifts bounded by the new total; the log line with and

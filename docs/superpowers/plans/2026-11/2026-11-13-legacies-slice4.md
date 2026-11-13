@@ -51,6 +51,11 @@ a line but no record for a winner who keeps 0 (R29); `NoteArg.SuitShares`
 (R30); shares in suit order, empty ones left out (R31); ruined edifices by
 their printed suit (R32); every legacy the winner holds (R33).
 
+The owner later re-ruled R28 and amended R29: the earned total before the
+gift question, one "gave up N points to give X M points." line per gift,
+and "keeps N points" after any gift, with no "less N given" ending. The
+"less N given" text below records what this plan first built.
+
 ## Global Constraints
 
 - Scala 3 with `-Werror`: no unused imports, private members or locals, no

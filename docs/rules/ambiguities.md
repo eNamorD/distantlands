@@ -181,8 +181,8 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 18. **The lines** say "Rival returned to the legacy deck", "Red took Rival" (also after a tie-break), "Blue discarded Seer" (a choice over the cap), "Blue reactivated Steadfast", and a foundation line for every alteration, even of a face already altered, since it records a new source (R24).
 19. **Sun step 2's order:** dormant legacies first, in turn order, then the public legacies in row order, then the alterations, Foundation I to VI (R25).
 20. **An Imperial tie with no Chancellor** is refused as an invariant error; setup always seats a Chancellor when Imperials sit (R26).
-21. **A winner who gives points away** gets one line naming the kept points, with the breakdown ending in what was given: "Blue scored 3 lineage points (3 base, 3 from Beast, 1 from Nomad, less 4 given)". With no bonus the line is unchanged (R28).
-22. **A winner who keeps 0** has nothing recorded, but the line is still written: "Blue scored 0 lineage points (3 base, 5 from Beast, less 8 given)" (R29).
+21. **Score Lineage Points' lines** run as the table plays it: before the gift question the earned total, "Blue scored 7 lineage points (3 base, 3 from Beast, 1 from Nomad)" ("Blue scored 3 lineage points" with no bonus); one line per gift, "Blue gave up 4 points to give Red 2 points."; and after any gift "Blue keeps 3 points". The journal and the scorepad record the kept points; the scored line is narration only (R28, re-ruled by the owner).
+22. **A winner who gives every point away** has nothing recorded and reads "Blue keeps 0 points" (R29).
 23. **The bonus's line** carries its shares in one note argument, `NoteArg.SuitShares` (R30).
 24. **Shares come in suit order**, Discord, Arcane, Order, Hearth, Beast, Nomad, and empty ones are left out (R31).
 25. **A ruined edifice** counts toward the bonus by its card's printed suit, as for the goals (R32).
