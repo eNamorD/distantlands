@@ -33,8 +33,37 @@ class PanelPlacementSuite extends munit.FunSuite:
       oath.copy(goal = "supremacy", holderPlayerId = None)))
     val status = Dom.firstMatch(world(value), ".shared-bank .oathkeeper-status")
       .getOrElse(fail("no oath line in the shared bank"))
-    assertEquals(Dom.all(status, "span").map(_.textContent),
+    assertEquals(Dom.all(status, ":scope > *").map(_.textContent),
       Vector("Oathkeeper of Supremacy", "Oathkeeper: unheld"))
+
+  /** The Oath is a printed card the table shows as words, so its goal opens
+    * the overlay at the card's real ratio (implementation ruling R2). The
+    * holder's line is state, not the card, and stays text. */
+  test("the oath's goal opens its card with the Oath goal's plate"):
+    var opened = Vector.empty[(String, Vector[String], Option[String])]
+    CardInspection.onOpen:
+      case CardInspection.Request.Text(title, lines, _, plate) =>
+        opened :+= (title, lines, plate)
+      case _ => ()
+    val status = Dom.one(world(projection()), ".shared-bank .oathkeeper-status")
+    Dom.one(status, ".oathkeeper-goal").asInstanceOf[dom.html.Button].click()
+    CardInspection.clear()
+    assertEquals(opened, Vector(("Oathkeeper of Supremacy",
+      Vector("Rules the most sites",
+        "Successor to the Chancellor: Holds more relics"),
+      Some("oath-goal"))))
+    assertEquals(Dom.one(status, ".oathkeeper-holder").tagName, "SPAN")
+
+  test("a goal the table does not know opens as its key, with no lines"):
+    var opened = Vector.empty[(String, Vector[String])]
+    CardInspection.onOpen:
+      case CardInspection.Request.Text(title, lines, _, _) =>
+        opened :+= title -> lines
+      case _ => ()
+    Dom.one(world(projection(oathkeeper = Some(oath.copy(goal = "unknown")))),
+      ".oathkeeper-goal").asInstanceOf[dom.html.Button].click()
+    CardInspection.clear()
+    assertEquals(opened, Vector("unknown" -> Vector.empty))
 
   /** The goal is projected, so the panel prints the oath actually in play
     * rather than the one the first game happens to start with.

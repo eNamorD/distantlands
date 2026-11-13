@@ -407,8 +407,17 @@ private[frontend] object WorldBoardRenderer:
     // holder wrapped mid-phrase in the bank's column.
     value.oathkeeper.foreach { oath =>
       val status = element("p", "oathkeeper-status")
-      status.appendChild(text("span", "oathkeeper-goal",
-        distantlands.protocol.projection.OathkeeperPresentation.title(oath.goal)))
+      // The Oath is a printed card: its goal opens the card's words, as the
+      // title pill on its holder's board does, so an unheld Oath can be read
+      // too (implementation ruling R2).
+      val presented = distantlands.protocol.projection
+        .OathkeeperPresentation.byGoal.get(oath.goal)
+      val title = presented.fold(oath.goal)(_.title)
+      val goal = button(title, "oathkeeper-goal card-link")
+      goal.`type` = "button"
+      goal.onclick = _ => CardInspection.openText(title,
+        presented.fold(Vector.empty[String])(_.lines), goal, Some("oath-goal"))
+      status.appendChild(goal)
       status.appendChild(text("span", "oathkeeper-holder",
         s"${oath.side.capitalize}: ${oath.holderPlayerId.getOrElse("unheld")}"))
       section.appendChild(status)
