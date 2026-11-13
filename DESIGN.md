@@ -162,7 +162,7 @@ components:
     textColor: "{colors.cream}"
     rounded: "{rounded.card}"
     padding: "0.4em"
-    width: "13ex"
+    height: "18.2ex"
   die-face:
     backgroundColor: "{colors.base}"
     textColor: "{colors.cream}"
@@ -173,8 +173,7 @@ components:
     backgroundColor: "{colors.site}"
     textColor: "{colors.cream}"
     rounded: "{rounded.md}"
-    padding: "12px"
-    height: "21.5rem"
+    padding: "8px"
   input-field:
     backgroundColor: "{colors.base}"
     textColor: "{colors.player-white}"
@@ -237,7 +236,7 @@ suit, token, die and player colors of the physical board.
 ### Primary
 - **Brass** (`brass`): the one accent. Eyebrows, `h2` section titles, the
   current round segment, board-option borders, the
-  pile card frame, and the Add Player control. Used for emphasis and
+  Add Player control. Used for emphasis and
   legality, never as a fill for large areas.
 - **Bright Brass** (`brass-bright`): brass raised for small readouts: the
   Oathkeeper status, target-detail badges, the debug label, the restart
@@ -439,21 +438,27 @@ size too, clamped to one line on the compact map; a card's own study layer
 (defense and badge) is hidden there and read on a zoom or in the overlay;
 the restriction banner stays, in the card's top-right corner, and the power
 marks are hidden. Text on the map may fall under 11px; the Eleven-Pixel Floor is
-a pane rule, and on the map nothing drawn falls under about 9px on screen.
-Nothing in the compact mode may change the map's size, because the Fit
-scale is computed from it; the board has the mat's fixed ratio, so it
-cannot. The two glance sizes are named once on `.map-compact`
+a pane rule. On the map the glance layer's text holds about 9px or more on
+screen at every supported Fit; a few small marks do not (on a phone at Fit
+the wheel's limiter mark, a card's inspect button and a selected card's
+badge are smaller). The board has the mat's fixed ratio; the table's edge
+under it grows as the scale falls, which only lowers Fit, so a Fit that
+lands near a threshold settles instead of flipping. The two glance sizes are named once on `.map-compact`
 (`--glance-name`, `--glance-text`, each capped at 3.6rem). A site face's
 lines stand on rows of one height, `--row`, which grows with the glance
 size, and its name keeps one line, cut with an ellipsis. Below a scale of
 0.4 the map also carries `map-tiny`, a second step: a site face keeps its
 name, its tokens and its pawns, and its forces and defense in a short form,
-the warband in the force's colour and one defense die, each with its count
-(implementation ruling R5); on a phone defense steps out first. Its powers,
-the wheel's numbers, the tracker's words, the slots' names and a bank's
-suit name and favor glyph are left for a zoom, since at a tablet's or a
-phone's Fit they would fall under a readable size. Each keeps its
-accessible name. The table's edge is on the same zoom surface and holds
+the warband glyph and its count in the force's colour (the Empire's glyph
+ringed, so it does not rest on colour alone) and one defense die with its
+count (implementation rulings R5 and R7). Pawns are one line that never
+wraps: the dot and the player's initial on the compact map, the dot alone
+on the tiny one, the name kept as the pawn's name and hover note (R6). Its
+powers, the wheel's numbers and a bank's favor glyph leave the board at
+that scale; the tracker's words, the slots' names and the track's label
+leave the screen but stay in the accessibility tree, and the Usurper's
+lock is also in the round tracker's name and on the limiter mark's hover
+note. The table's edge is on the same zoom surface and holds
 the glance size too: its headings, the Oath goal (a link with a 24px hit
 area on screen) and its holder, and the Public Ambitions cards, which take
 the compact face.
@@ -508,8 +513,8 @@ World pane is the exception: zero padding, a Base field, a hidden
 scrollbar, and a `.map-content` surface fixed at 2416px wide with 8px padding
 that is transform-scaled by the viewport. The map's font size is pinned to
 1rem so zoom and font scaling never compound. Fit is the default and is
-width-bound at the supported sizes (0.26 at 1024×768, 0.42 at 1440×900,
-0.16 on a 390×844 phone); below 0.72 the map goes compact and the glance
+about 0.26 at 1024×768 and 0.16 on a 390×844 phone, width-bound, and about
+0.416 at 1440×900, height-bound once the table's edge is counted; below 0.72 the map goes compact and the glance
 layer is counter-scaled, and below 0.4 it goes tiny (The Glance Layer
 Rule).
 
@@ -595,7 +600,7 @@ color swatch and the knowable pip are full circles.
 Borders are 1px solid in the Line ramp. Dashed means "not real yet": a blank
 die face, an empty card slot, the debug toolbar, the active player board's
 outline. A 2px border marks a piece that must read as an object at small
-size: the pile card, the Add Player control, the color swatch. A 3px
+size: a deck's card, the Add Player control, the color swatch. A 3px
 `currentColor` border is the victory banner, the one loud frame in the
 system.
 
@@ -715,7 +720,8 @@ controls are 30px.
 
 ### Cards
 The signature component. A card is a bordered box in Base with the physical
-ratio, sized in `ex` from `--card-w: 13ex`.
+ratio, sized in `ex` from `--card-h: 18.2ex`, its width read from the ratio
+table.
 - **Corner:** 0.35em.
 - **Border:** 1px, transparent at rest so states never reflow; Line for a
   denizen, `#7a6a4c` for a relic, dashed Unimplemented for a card the engine
@@ -743,8 +749,8 @@ ratio, sized in `ex` from `--card-w: 13ex`.
   carries its longest word's width in em of the compact text, measured in
   the body face at 700 (`--name-em`, `CardFace.nameWidthEm`; 0.6em a
   character where there is no canvas), the map carries the width its scale
-  leaves one line on the 7.3rem card of a site holding forces, the common
-  case once bandits are placed (`--box-em`, `GameTableShell.nameBoxEm`),
+  leaves one line on a card slot of the mat, 134.95px wide in the map's own
+  pixels (`--box-em`, `GameTableShell.nameBoxEm`),
   and the stylesheet folds whichever form does not apply to no height. A
   character count could not do this: in Atkinson "Summon" is 4.09em and
   "Dazzle" 3.2em at the same six letters. The compact name spans the face
@@ -794,24 +800,26 @@ hung from the line's top so the 13px line never grows; the totals follow as
 their own log lines.
 
 ### Sites
-A site is the board's unit: Site fill, Line border, 9px radius, 12px padding,
-fixed 21.5rem height, `overflow: hidden`. The heading is a three-column grid
-so the name is centered on the box regardless of token counts; tokens sit
-left, defense right. Below the compact threshold the name owns the first row
-and the two corners flank the pawns on the second (Layout). Powers are two
-clipped lines of labels with hover notes, on the board at every zoom and
-one line on the compact map. A site offered as a board option gets a brass
+A site is the board's unit: a site card of the real ratio in the frame the
+mat prints for it, with its three card slots to its right (Layout). On the
+card: Site fill, Line border, 9px radius; the name in a band at its foot,
+loose tokens in the upper left and defense in the upper right, then rows
+for the pawns and the forces, and the powers and requirement over the name
+band. The rows grow with the glance size on the zoomed-out map (The Glance
+Layer Rule). Powers are two clipped lines of labels with hover notes, one
+line on the compact map; each label is a button that opens the power. A site offered as a board option gets a brass
 border and inset ring; hover brightens the border to
 Bright Cream with the target halo; selected turns Selection blue on Selection
 Fill. A slot of a region that holds no site is an empty frame after the
-region's sites (`.site-slot-empty`): the site's height and radius, a 1px
-dashed Line-mid border, no fill and nothing inside. It is not an option and
+region's sites (`.site-slot-empty`): the frame the mat prints, a 1px dashed
+Line-mid border, no fill and nothing inside. It is not an option and
 answers nothing; its label names it for a screen reader. The festival
 marker, on the site whose cards it lies over, ends the pawn row as a pill
 (`.festival-marker`): the First player badge's `#a98b58` border, no fill,
 Bright Brass 0.72rem 700, reading "Festival", with the Festival's power in
 its hover note. The pawn row keeps its line, so the marker moves nothing; on
-the compact map it takes the glance size with the pawns. It is a button,
+the zoomed-out map it shrinks to its initial, "F", its name kept as its
+label. It is a button,
 as a player's title pill is, so a keyboard reaches it and its note shows on
 focus; pressing it opens the power in the inspector. It is no board option.
 

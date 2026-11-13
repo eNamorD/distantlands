@@ -53,8 +53,12 @@ pixels, from its upper left.
 | Relic deck | 881 | 1913 | 325.4 | 325.4 |
 | World deck (card on its side) | 1278 | 1913 | 509 | 325.4 |
 | Round wheel | 62 | 1602 | 642 | 642 |
+| Round marker (the current segment, over the wheel) | 62 | 1602 | 642 | 642 |
 | Visions Drawn cells 0 to 5 | 805, 1000, 1120, 1295, 1415, 1535 | 1690 | 103 | 159 |
 | Favor bank circle centres, Discord to Nomad | 2438, 2839, 3241, 3642, 4044, 4449 | 2155 | radius 93 | |
+| Favor bank box (suit emblem and circle) | centre − 217 | 2050 | 310 | 240 |
+| Tracker's line of text | 71 | 1500 | 1790 | 80 |
+| Visions Drawn label | 1680 | 1650 | 210 | 150 |
 
 The mat prints a frame for each site and none for its cards. A site frame
 is 669×509, a little wider than a site card of the same height (657.6), so
