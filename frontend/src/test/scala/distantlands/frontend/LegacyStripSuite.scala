@@ -30,8 +30,11 @@ class LegacyStripSuite extends munit.FunSuite:
     val node = players(seer, arbiter)
     val strip = firstMatch(node, ".board-legacies")
     assertEquals(strip.map(_.getAttribute("aria-label")), Some("Legacies"))
-    assertEquals(all(node, ".board-legacies .card-name").map(_.textContent),
-      Vector("Seer", "Arbiter"))
+    assertEquals(all(node, ".board-legacies .legacy-chip-name")
+      .map(_.textContent), Vector("Seer", "Arbiter"))
+    assertEquals(all(node, ".board-legacies .legacy-chip")
+      .map(_.getAttribute("data-tip")), Vector("Hold the Darkest Secret",
+        "Hold the Darkest Secret"))
     assertEquals(all(node, ".board-legacies .legacy-dormant")
       .map(_.textContent), Vector("Dormant"))
     assertEquals(all(node, ".board-cards .card-name").map(_.textContent)

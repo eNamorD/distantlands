@@ -206,7 +206,11 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
       card.tracking.map(tracked =>
         "Tracking" -> tracked.color.key.capitalize)).flatten.foreach:
       case (label, value) =>
-        val item = element("div", "card-overlay-property")
+        // A goal is a sentence, printed as the card prints it; the other
+        // values are single words, capitalised.
+        val item = element("div", if label == "Goal" then
+          "card-overlay-property card-overlay-sentence"
+          else "card-overlay-property")
         item.appendChild(text("dt", "", label))
         item.appendChild(text("dd", "", value))
         properties.appendChild(item)

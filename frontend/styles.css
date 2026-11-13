@@ -1251,10 +1251,21 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .game-table .player-board > * { grid-column: 1; }
 .game-table .player-board > .board-cards { grid-column: 2; grid-row: 1;
   margin: 0; padding-bottom: 3px; flex-wrap: nowrap; }
-/* A lineage's legacies, a row of their own under its cards in play, a
-   step smaller: they are read for their goal, not played (R37). */
-.board-legacies { display: flex; flex-wrap: nowrap; gap: var(--card-gap);
-  align-items: flex-start; font-size: 0.7em; }
+/* A lineage's legacies, a row of their own under its cards in play (R37):
+   chips, since the pane leaves a board one line there. */
+.board-legacies { display: flex; flex-wrap: nowrap; gap: 4px;
+  align-items: center; }
+.legacy-chip { display: inline-flex; align-items: center; gap: 0.3em;
+  min-height: 24px; margin: 0; padding: 1px 6px; border: 1px solid var(--line-mid);
+  border-radius: 5px; background: var(--raised); color: inherit;
+  font-size: 0.78rem; white-space: nowrap; cursor: pointer; }
+.legacy-chip .token-glyph { width: 1.1em; height: 1.1em; }
+.legacy-chip-dormant { border-color: #cbb7dd; }
+.legacy-chip .legacy-dormant { position: static; }
+.legacy-chip-back { background: #2a2333; }
+/* Room for the inspect button a decision hangs on an offered chip. */
+.legacy-chip.board-option { padding-right: 24px; }
+.legacy-chip-back .card-back-letter { font-size: 0.9rem; }
 .game-table .player-board > .board-legacies { grid-column: 2; grid-row: 2;
   margin: 2px 0 0; }
 .game-table .player-board-active { outline: 1px dashed #c8b48b; outline-offset: -2px;
@@ -1788,6 +1799,7 @@ button.festival-marker:hover,
 .card-overlay-property { display: contents; }
 .card-overlay-property dt { color: var(--ink-dim); }
 .card-overlay-property dd { margin: 0; text-transform: capitalize; }
+.card-overlay-sentence dd { text-transform: none; }
 /* The consent confirmation and a ruler's preferences grid (consent
    design), in the overlay's own button style. */
 .overlay-confirm { display: grid; grid-template-columns: auto auto;
