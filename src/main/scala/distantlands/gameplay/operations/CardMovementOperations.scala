@@ -131,8 +131,10 @@ private[operations] object CardMovementOperations:
     val destination = transfer.to.location
     destination match
       case Location.Deck(deck) =>
-        if cardDeck(id).contains(deck) then None
-        else Some(InvalidDestination(transfer.piece, destination))
+        if !cardDeck(id).contains(deck) then
+          Some(InvalidDestination(transfer.piece, destination))
+        else if deck == CardDeck.Legacy then facedownLegacy(id, transfer)
+        else None
       case _: Location.RegionalDiscard =>
         if id.isInstanceOf[WorldCardId] then None
         else Some(InvalidDestination(transfer.piece, destination))
@@ -154,9 +156,13 @@ private[operations] object CardMovementOperations:
       case _: Location.SuitedReserve | _: Location.StartingAdvisers =>
         if id.isInstanceOf[DenizenId] then None
         else Some(InvalidDestination(transfer.piece, destination))
-      case _: Location.Legacies | Location.PublicLegacies =>
+      case _: Location.Legacies =>
         if id.isInstanceOf[LegacyId] then None
         else Some(InvalidDestination(transfer.piece, destination))
+      case Location.PublicLegacies =>
+        if !id.isInstanceOf[LegacyId] then
+          Some(InvalidDestination(transfer.piece, destination))
+        else facedownLegacy(id, transfer)
       case _: Location.Site => id match
         case _: DenizenId | _: EdificeId | _: RelicId =>
           statefulMaterializationViolation(located, transfer)
@@ -173,6 +179,13 @@ private[operations] object CardMovementOperations:
         "Atlas destination requires a stored-site identity"
       ))
       case _ => Some(InvalidDestination(transfer.piece, destination))
+
+  /** The public row is faceup and the derived deck keeps no face, so a move
+    * there may turn a legacy faceup or name no face, never facedown (R6). */
+  private def facedownLegacy(id: CardId, transfer: CardTransfer)
+      : Option[OperationError] =
+    Option.when(transfer.resultingOrientation.contains(Orientation.FaceDown))(
+      UnsupportedOrientation(id, transfer.to.location))
 
   private def statefulMaterializationViolation(
       located: LocatedCard,
@@ -238,7 +251,8 @@ private[operations] object CardMovementOperations:
       case CardDeck.World => cards.copy(worldDeck = cards.worldDeck.filterNot(_ == located.id))
       case CardDeck.Relic => cards.copy(relicDeck = cards.relicDeck.filterNot(_ == located.id))
       case CardDeck.Edifice => cards.copy(edificeDeck = cards.edificeDeck.filterNot(_ == located.id))
-      // Nothing is indexed in the derived legacy deck, so nothing leaves it.
+      // Unreachable: nothing is indexed in the derived legacy deck, so no
+      // card is ever removed from it.
       case CardDeck.Legacy => cards
     }}
     case CardContainer.RegionalDiscard(region) => updateCommonCards(ready) { cards =>
@@ -377,14 +391,11 @@ private[operations] object CardMovementOperations:
                   id.asInstanceOf[DenizenId],
                   transfer.resultingOrientation.getOrElse(
                     Orientation.FaceDown), Tokens.empty)))))))
-      // A legacy keeps its face unless the move turns it; one with no face
-      // yet, from the public row, enters dormant unless turned faceup.
+      // A legacy entering a lineage takes the move's face, dormant when none
+      // is given, whatever face it had (Legacies design, slice 1; R5).
       case Location.Legacies(lineage) =>
-        val legacy = original.state match
-          case Some(state: LegacyState) => transfer.resultingOrientation
-            .fold(state)(face => state.copy(active = face == Orientation.FaceUp))
-          case _ => LegacyState(id.asInstanceOf[LegacyId],
-            active = transfer.resultingOrientation.contains(Orientation.FaceUp))
+        val legacy = LegacyState(id.asInstanceOf[LegacyId],
+          active = transfer.resultingOrientation.contains(Orientation.FaceUp))
         ready.game.campaign.lineages.get(lineage).toRight(
           InvalidDestination(transfer.piece, transfer.to.location)).map(state =>
           ready.updateCampaign(campaign => campaign.copy(lineages =

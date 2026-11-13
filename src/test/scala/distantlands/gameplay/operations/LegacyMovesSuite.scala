@@ -72,3 +72,52 @@ class LegacyMovesSuite extends munit.FunSuite:
     val ready = Table.start.publicLegacies(RivalCard).ready
     assert(RawOperationBatch.executeAll(ready, Vector(Flip(RivalCard.id,
       Location.PublicLegacies, Orientation.FaceDown))).isLeft)
+
+  test("a held legacy moved to the public row leaves the lineage"):
+    val ready = Table.start.legacy(p1, SeerCard).ready
+    val lineage = lineageOf(ready, p1)
+    val after = applied(ready, moved(SeerCard.id, Location.Legacies(lineage),
+      Location.PublicLegacies))
+    assertEquals(after.game.campaign.lineages(lineage).legacies, Vector.empty)
+    assertEquals(after.game.current.commonCards.publicLegacies,
+      Vector(SeerCard.id))
+
+  test("a public legacy returned to the deck leaves play"):
+    val ready = Table.start.publicLegacies(RivalCard).ready
+    val after = applied(ready, moved(RivalCard.id, Location.PublicLegacies,
+      Location.Deck(CardDeck.Legacy)))
+    assertEquals(after.game.current.commonCards.publicLegacies, Vector.empty)
+    assertEquals(after.game.cardIndex.toOption.get.get(RivalCard.id), None)
+
+  test("a legacy moved between lineages takes the move's face, dormant " +
+      "when none is given"):
+    val ready = Table.start.legacy(p1, SeerCard).ready
+    val (from, to) = (lineageOf(ready, p1), lineageOf(ready, p2))
+    val dormant = applied(ready, moved(SeerCard.id, Location.Legacies(from),
+      Location.Legacies(to)))
+    assertEquals(dormant.game.campaign.lineages(from).legacies, Vector.empty)
+    assertEquals(dormant.game.campaign.lineages(to).legacies,
+      Vector(LegacyState(SeerCard.id, active = false)))
+    val active = applied(ready, moved(SeerCard.id, Location.Legacies(from),
+      Location.Legacies(to), Some(Orientation.FaceUp)))
+    assertEquals(active.game.campaign.lineages(to).legacies,
+      Vector(LegacyState(SeerCard.id, active = true)))
+
+  test("a legacy cannot enter a lineage the campaign does not hold"):
+    val ready = Table.start.publicLegacies(RivalCard).ready
+    assert(RawOperationBatch.executeAll(ready, Vector(moved(RivalCard.id,
+      Location.PublicLegacies, Location.Legacies(LineageId("nobody")))))
+      .left.toOption.exists(_.isInstanceOf[OperationError.InvalidDestination]))
+
+  test("a legacy goes to the public row or the deck faceup or with no " +
+      "face, never facedown"):
+    val ready = Table.start.legacy(p1, SeerCard).ready
+    val from = Location.Legacies(lineageOf(ready, p1))
+    Vector(Location.PublicLegacies, Location.Deck(CardDeck.Legacy)).foreach {
+      to =>
+        assertEquals(RawOperationBatch.executeAll(ready, Vector(moved(
+          SeerCard.id, from, to, Some(Orientation.FaceDown)))),
+          Left(OperationError.UnsupportedOrientation(SeerCard.id, to)), s"$to")
+        assert(RawOperationBatch.executeAll(ready, Vector(moved(SeerCard.id,
+          from, to, Some(Orientation.FaceUp)))).isRight, s"$to")
+    }
