@@ -370,7 +370,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   width: calc(var(--face-w) - 16px); }
 .mat-board .site-forces { position: absolute;
   top: calc(6px + var(--row) * 2); margin: 0; line-height: 1.15;
-  left: calc(var(--face-left) + 8px); }
+  left: calc(var(--face-left) + 8px); display: flex;
+  max-width: calc(var(--face-w) - 16px); white-space: nowrap; }
+.mat-board .site-forces-label { min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; white-space: pre; }
+.mat-board .site-forces-count { flex: none; }
 .mat-board .site-footer { position: absolute; bottom: var(--name-band);
   margin: 0; left: calc(var(--face-left) + 8px);
   width: calc(var(--face-w) - 16px); }

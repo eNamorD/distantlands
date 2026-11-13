@@ -97,8 +97,11 @@ private[frontend] object ServerUiSupport:
       .foreach(_ => cards.appendChild(emptySlot("relic")))
     details.appendChild(cards)
     site.forces.foreach { forces =>
-      val row = text("p", s"site-forces ${forceCssClass(forces)}",
-        forceText(forces))
+      // The words cut inside the face and the count never does; together
+      // they read as forceText.
+      val row = element("p", s"site-forces ${forceCssClass(forces)}")
+      row.appendChild(text("span", "site-forces-label", s"${forces.label} "))
+      row.appendChild(text("span", "site-forces-count", s"x${forces.count}"))
       forces match
         case exile: SiteForces.Exile =>
           row.setAttribute("data-ruler-kind", "player")

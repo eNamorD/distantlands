@@ -247,3 +247,12 @@ class SiteFaceSuite extends munit.FunSuite:
         assertEquals(short.getAttribute(HoverTip.Attribute), words)
         assertEquals(short.textContent, forces.count.toString)
     }
+
+  /** A long forces line cuts its words inside the face, never its count. */
+  test("the forces line holds its words and its count apart"):
+    val row = firstMatch(ServerUiSupport.siteDetails(woods.copy(forces =
+      Some(SiteForces.Bandit(12, "Bandit Warbands")))), "p.site-forces")
+      .getOrElse(fail("no forces line"))
+    assertEquals(all(row, ":scope > span").map(_.getAttribute("class")),
+      Vector("site-forces-label", "site-forces-count"))
+    assertEquals(row.textContent, "Bandit Warbands x12")
