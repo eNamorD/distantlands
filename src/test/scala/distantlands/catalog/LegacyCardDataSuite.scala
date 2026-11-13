@@ -80,9 +80,9 @@ class LegacyCardDataSuite extends munit.FunSuite:
     assertEquals(legacies.map(_.id).sortBy(_.value),
       printed.map(_._1.id))
 
-  test("each goal prints its words (Legacies design, \"Card data\")"):
+  test("each goal prints the rules' words for it (R42)"):
     assertEquals(LegacyGoal.values.toVector.map(_.printed), Vector(
-      "Rule the most sites", "Hold the Grand Scepter. If none, win.",
-      "Hold the People's Favor", "Hold the Darkest Secret",
-      "Hold the relic of highest value",
-      "Rule the most cards of this suit (even advisers)"))
+      "Rule the most sites.", "Hold the Grand Scepter. If none, win.",
+      "Hold the People's Favor.", "Hold the Darkest Secret.",
+      "Hold the relic of the highest value (shown under name).",
+      "Rule the most cards of this suit (even advisers)."))

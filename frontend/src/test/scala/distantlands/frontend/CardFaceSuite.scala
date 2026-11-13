@@ -251,7 +251,7 @@ class CardFaceSuite extends munit.FunSuite:
   private val seer = CardDetails("L22", "legacy", "Seer", suit = Some("arcane"),
     orientation = Some("face-up"),
     legacyGoal = Some(distantlands.protocol.projection.LegacyGoalProjection(
-      "darkest-secret", "Hold the Darkest Secret")))
+      "darkest-secret", "Hold the Darkest Secret.")))
 
   test("a legacy back reads L, and its key is a legacy's (R27)"):
     val back = CardFace.render(CardDetails("hidden", "legacy", "Legacy",
@@ -265,7 +265,7 @@ class CardFaceSuite extends munit.FunSuite:
     assertEquals(firstMatch(node, ".card-name").map(_.textContent),
       Some("Seer"))
     assertEquals(firstMatch(node, ".legacy-goal").map(_.textContent),
-      Some("Hold the Darkest Secret"))
+      Some("Hold the Darkest Secret."))
     assertEquals(firstMatch(node, ".legacy-dormant"), None)
 
   test("a dormant legacy its viewer knows shows its face, marked Dormant " +

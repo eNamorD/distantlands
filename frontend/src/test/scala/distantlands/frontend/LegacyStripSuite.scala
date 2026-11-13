@@ -13,7 +13,7 @@ class LegacyStripSuite extends munit.FunSuite:
   private val seer = CardDetails("L22", "legacy", "Seer", suit = Some("arcane"),
     orientation = Some("face-up"),
     legacyGoal = Some(LegacyGoalProjection("darkest-secret",
-      "Hold the Darkest Secret")))
+      "Hold the Darkest Secret.")))
   private val arbiter = seer.copy(cardId = "L23", name = "Arbiter",
     suit = Some("discord"), orientation = Some("face-down"))
   private val back = CardDetails("hidden", "legacy", "Legacy",
@@ -33,8 +33,8 @@ class LegacyStripSuite extends munit.FunSuite:
     assertEquals(all(node, ".board-legacies .legacy-chip-name")
       .map(_.textContent), Vector("Seer", "Arbiter"))
     assertEquals(all(node, ".board-legacies .legacy-chip")
-      .map(_.getAttribute("data-tip")), Vector("Hold the Darkest Secret",
-        "Hold the Darkest Secret"))
+      .map(_.getAttribute("data-tip")), Vector("Hold the Darkest Secret.",
+        "Hold the Darkest Secret."))
     assertEquals(all(node, ".board-legacies .legacy-dormant")
       .map(_.textContent), Vector("Dormant"))
     assertEquals(all(node, ".board-cards .card-name").map(_.textContent)

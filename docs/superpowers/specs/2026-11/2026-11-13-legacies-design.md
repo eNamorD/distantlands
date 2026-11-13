@@ -109,12 +109,12 @@ cards in a run of ids, and each run holds one card of every suit.
 
 | Ids | Goal | Printed |
 |---|---|---|
-| L01-L06 | `MostSites` | Rule the most sites |
-| L07-L12 | `GrandScepter` | Hold Grand Scepter. If none, win. |
-| L13-L18 | `PeoplesFavor` | Hold People's Favor |
-| L19-L24 | `DarkestSecret` | Hold Darkest Secret |
-| L25-L30 | `HighestRelic` | Hold relic of highest value (under name) |
-| L31-L36 | `MostOfSuit` | Rule most cards of suit (even advisers) |
+| L01-L06 | `MostSites` | Rule the most sites. |
+| L07-L12 | `GrandScepter` | Hold the Grand Scepter. If none, win. |
+| L13-L18 | `PeoplesFavor` | Hold the People's Favor. |
+| L19-L24 | `DarkestSecret` | Hold the Darkest Secret. |
+| L25-L30 | `HighestRelic` | Hold the relic of the highest value (shown under name). |
+| L31-L36 | `MostOfSuit` | Rule the most cards of this suit (even advisers). |
 
 | Id | Name | Suit | | Id | Name | Suit |
 |---|---|---|---|---|---|---|

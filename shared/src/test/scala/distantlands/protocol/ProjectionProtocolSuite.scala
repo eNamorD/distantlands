@@ -189,7 +189,7 @@ class ProjectionProtocolSuite extends munit.FunSuite:
   test("a legacy's goal round-trips, and a card without one writes none"):
     val seer = known.copy(cardId = "L22", cardKind = "legacy",
       legacyGoal = Some(LegacyGoalProjection("darkest-secret",
-        "Hold the Darkest Secret")))
+        "Hold the Darkest Secret.")))
     val held = projection.copy(playerBoards = projection.playerBoards
       .map(_.copy(advisers = Vector(seer))))
     assertRoundTrips(held)

@@ -304,3 +304,14 @@ goal in the chip's hover note and the whole card in the inspection; the
 public row keeps whole cards with the goal tag. This narrows R34's goal
 tag "on the small card" to the public row.
 Reason: the strip must fit the players pane without scrolling.
+
+**R42. The goals' words.**
+Decision: each goal's words follow the rules' Sun list, every one a full
+sentence with a final period, the italics' text kept and the markup
+dropped: "Hold the Grand Scepter. If none, win.", "Rule the most sites.",
+"Hold the Darkest Secret.", "Hold the People's Favor.", "Rule the most
+cards of this suit (even advisers)." and "Hold the relic of the highest
+value (shown under name)." (`LegacyGoal.printed`, the design's Card data
+table).
+Reason: the rulebook's own wording, one source for every place a goal is
+shown.
