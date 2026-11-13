@@ -136,3 +136,15 @@ class MatBoardSuite extends munit.FunSuite:
     val letter = one(relicDeck, ".deck-letter")
     assertEquals(letter.textContent, "R")
     assertEquals(letter.getAttribute("aria-label"), "Relic card on top")
+
+  /** The mat prints each slot's name and each bank's suit; the counts are
+    * play (real proportions design). */
+  test("the mat's deck labels and bank suits are printed, the counts not"):
+    val captions = all(world, ".deck-figure > .deck-caption")
+    assertEquals(captions.size, 5)
+    assert(captions.forall(_.classList.contains("printed")))
+    val arcane = one(world, ".favor-bank.suit-arcane")
+    assertEquals(arcane.textContent, "Arcane: 3")
+    assertEquals(all(arcane, ".printed").map(_.textContent), Vector("Arcane: "))
+    assertEquals(one(arcane, ".favor-bank-count").textContent, "3")
+    assert(!one(arcane, ".favor-bank-count").classList.contains("printed"))

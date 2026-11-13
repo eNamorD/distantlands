@@ -218,7 +218,8 @@ private[frontend] object ServerUiSupport:
       body: dom.Element): dom.Element =
     val figure = element("div", "deck-figure")
     figure.appendChild(body)
-    figure.appendChild(text("span", "deck-caption", caption))
+    // The mat prints the slot's name, so the caption is printed content.
+    figure.appendChild(text("span", "deck-caption printed", caption))
     figure
 
   private def deckCard(count: Int, topCardKind: Option[String]): dom.Element =

@@ -460,8 +460,10 @@ private[frontend] object WorldBoardRenderer:
       // The symbol first, as on a card: a player matching a bank against a
       // card's suit reads the shape, not the word.
       box.appendChild(RulesTextRenderer.glyph(s"suit-${bank.suit}"))
-      box.appendChild(dom.document.createTextNode(
-        s"${bank.suit.capitalize}: ${bank.count}"))
+      // The suit's name is printed beside the mat's circle; the count is
+      // play. Together they read as before: "Arcane: 3".
+      box.appendChild(text("span", "printed", s"${bank.suit.capitalize}: "))
+      box.appendChild(text("span", "favor-bank-count", bank.count.toString))
       // The count is favor, drawn as the favor token is everywhere else.
       box.appendChild(RulesTextRenderer.glyph("favor"))
       options.decorate(box,
