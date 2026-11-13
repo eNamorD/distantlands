@@ -326,3 +326,13 @@ value (shown under name)." (`LegacyGoal.printed`, the design's Card data
 table).
 Reason: the rulebook's own wording, one source for every place a goal is
 shown.
+
+**R43. A count of 1 in the gift and keeps lines.**
+Decision: a count of 1 reads "1 point": "Blue gave up 2 points to give
+Red 1 point.", "Blue keeps 1 point".
+Reason: plain English; the lines use a plural for every other count.
+
+**R44. Gift recipients' lines.**
+Decision: a gift recipient gets no separate "scored" line, since each gift
+line says what they receive. Their points are still recorded.
+Reason: one line per gift says it once.
