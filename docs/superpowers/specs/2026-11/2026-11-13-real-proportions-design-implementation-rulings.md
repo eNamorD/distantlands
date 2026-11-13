@@ -46,3 +46,27 @@ Reason: the real relic is exactly a denizen's width (381 px), which also
 matches `MatLayout.relicSlot`, and the owner allows relative sizes to
 change as long as each asset's own ratio is right.
 Slice/files: slice 1; `frontend/styles.css`.
+
+## Slice 1 review
+
+**R4. Where the token band sits on each box kind.**
+Question: Task 3 anchored the token band a fixed 2.1em above a card's
+foot. On a box shorter than a denizen (a relic, a banner, a legacy) that
+lands mid-face over the name, the goal or the defense dice, and on a
+denizen with a long name, a restriction banner, an Unimplemented band or a
+Replace badge it runs into the header or the lifted power marks.
+Decision: the band is anchored to the box's foot region, per kind, and the
+face reserves its room so printed content never runs under it. On square
+and landscape boxes (relic, banner, legacy, dormant legacy) the band sits
+at the foot, about 0.3em up, and the face's flowing or centred content
+stops above it. On denizen-shaped boxes the band keeps its place just above
+the power marks' row; the header region ends above it, and a name too long
+for the room is clipped there rather than overlapped, since the hover tip
+and the accessible name carry the whole name. Unimplemented and Replace
+faces lift the band by the same amount they lift the power marks. The
+compact map keeps its own offset.
+Reason: the design anchors live state to the box so licensed art can
+replace the printed parts; an anchor that depends on the box's height is
+not one anchor, and state covering the name breaks the design's rule that
+the drawn name must still fit the narrower face.
+Slice/files: slice 1 review; `frontend/styles.css`.
