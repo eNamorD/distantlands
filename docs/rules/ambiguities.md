@@ -159,7 +159,7 @@ Rulings and readings for the six foundation setup cards ([Foundations design](..
 
 ## Legacies rulings
 
-Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-legacies-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacies-implementation-rulings.md)). Items 1 to 10 are the design's rulings 1 to 10, taken with the owner on 2026-11-12 and 2026-11-13; items 11 to 20 are implementation rulings R4 and R18 to R26. The implementation rulings file records the others.
+Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-legacies-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacies-implementation-rulings.md)). Items 1 to 10 are the design's rulings 1 to 10, taken with the owner on 2026-11-12 and 2026-11-13; items 11 to 26 are implementation rulings R4, R18 to R26 and R28 to R33. The implementation rulings file records the others.
 
 1. **Only the owner sees a dormant legacy's face.** Every other viewer sees a legacy back. The projection redacts it as it redacts a facedown adviser, and nothing tracks who has seen which card (design, ruling 1).
 2. **Newly dormant is dormant.** Sun step 2 leaves no dormant legacy on a seated lineage: each becomes active or is discarded. Step 3 is the only step that makes legacies dormant, so after it every dormant legacy on a seated lineage is newly dormant. Crown Chancellor and Offer Citizenship, which flip newly dormant legacies to active, act only on seated players and only after Resolve Legacies; no flag records it (design, ruling 2).
@@ -181,6 +181,12 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 18. **The lines** say "Rival returned to the legacy deck", "Red took Rival" (also after a tie-break), "Blue discarded Seer" (a choice over the cap), "Blue reactivated Steadfast", and a foundation line for every alteration, even of a face already altered, since it records a new source (R24).
 19. **Sun step 2's order:** dormant legacies first, in turn order, then the public legacies in row order, then the alterations, Foundation I to VI (R25).
 20. **An Imperial tie with no Chancellor** is refused as an invariant error; setup always seats a Chancellor when Imperials sit (R26).
+21. **A winner who gives points away** gets one line naming the kept points, with the breakdown ending in what was given: "Blue scored 3 lineage points (3 base, 3 from Beast, 1 from Nomad, less 4 given)". With no bonus the line is unchanged (R28).
+22. **A winner who keeps 0** has nothing recorded, but the line is still written: "Blue scored 0 lineage points (3 base, 5 from Beast, less 8 given)" (R29).
+23. **The bonus's line** carries its shares in one note argument, `NoteArg.SuitShares` (R30).
+24. **Shares come in suit order**, Discord, Arcane, Order, Hearth, Beast, Nomad, and empty ones are left out (R31).
+25. **A ruined edifice** counts toward the bonus by its card's printed suit, as for the goals (R32).
+26. **Every legacy the winner holds** counts toward the bonus; none can be dormant then (R33).
 
 ## Source relationship cautions
 

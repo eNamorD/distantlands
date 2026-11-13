@@ -157,14 +157,22 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
 After the all-Exile alpha, implement the Chronicle and persistent campaign:
 Legacy activation and scoring, and era scoring.
 
-- [ ] **Legacies.** Fills the Sun's empty steps 2-5 and the legacy bonus in
-  Score Lineage Points. Game start refuses a seated lineage's legacies and
-  starting relics until then. High Priest's When Negotiating power lets its
-  holder give secrets in a deal: a `DealRules` term kind, as Council Arbiter
-  opens advisers. Foundation III's two faces (Quiet Ambitions, Public
-  Ambitions) deal legacies, so game start skips them until then. A legacy
-  that alters a foundation adds itself to the face's alteration sources,
-  which the Beacon's Shape Foundation already reads.
+- [ ] **Legacy powers: setup.** The SETUP halves of the 36 legacies (Iron
+  Hand, Circle of Swords, World Crafter, Seer, Wealthy and the rest), each
+  through Setup's windows, and Matchmaker choosing the kept legacy for the
+  other players in the Setup deal ([Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md)).
+- [ ] **Legacy powers: Chronicle.** The CHRONICLE powers, through the
+  Chronicle's step windows: Iron Hand and Chronicler scoring players other
+  than the winner, Steadfast keeping legacies active, Gatekeeper taking an
+  enemy's active legacy before Resolve Legacies, Royal Line choosing the
+  Successor, Heirloom keeping a starting relic, and the others that hook a
+  task's steps.
+- [ ] **Legacy powers: in play.** The powers used during a game: actions,
+  Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
+  play among them. High Priest's When Negotiating power lets its holder
+  give secrets in a deal: a `DealRules` term kind, as Council Arbiter opens
+  advisers. The frontend's legacy strip and public row come with the
+  Legacies design's slice 5.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the

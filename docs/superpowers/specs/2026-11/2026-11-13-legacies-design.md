@@ -1,9 +1,10 @@
 # Legacies
 
 **Status:** designed 2026-11-13, approved section by section by the owner.
-Slices 1 to 3 landed (plans: [slice 1](../../plans/2026-11/2026-11-13-legacies-slice1.md),
+Slices 1 to 4 landed (plans: [slice 1](../../plans/2026-11/2026-11-13-legacies-slice1.md),
 [slice 2](../../plans/2026-11/2026-11-13-legacies-slice2.md),
-[slice 3](../../plans/2026-11/2026-11-13-legacies-slice3.md)).
+[slice 3](../../plans/2026-11/2026-11-13-legacies-slice3.md),
+[slice 4](../../plans/2026-11/2026-11-13-legacies-slice4.md)).
 
 **Builds on** the [Chronicle steps design](../2026-10/2026-10-27-chronicle-steps-design.md),
 the [Foundations design](2026-11-11-foundations-design.md), whose faces and
