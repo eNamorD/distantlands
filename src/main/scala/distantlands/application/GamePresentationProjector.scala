@@ -288,8 +288,9 @@ private[application] final class GamePresentationProjector(
     *  - A lineage's starting advisers are named only to the player seated
     *    with that lineage.
     *  - A lineage's active legacy is named to every viewer, a dormant one
-    *    only to the player seated with that lineage; the public row to
-    *    every viewer.
+    *    only to the player seated with that lineage, except in the
+    *    Chronicle Phase, where every legacy is named to everyone; the
+    *    public row to every viewer.
     *  - The Reliquary is named only to the Chancellor, and only in Setup,
     *    where they pick one of its relics (Empire ruling R29).
     *  - Everything else -- other decks, set-aside relics, the
@@ -343,9 +344,13 @@ private[application] final class GamePresentationProjector(
           .exists(seat => seat.player == player && seat.lineage == lineage))
       // An active legacy is faceup for all; a dormant one is facedown in its
       // owner's play area, and only they know it (Legacies design, ruling 1).
+      // In the Chronicle Phase the game is over and goals are checked
+      // openly, so every legacy is named to everyone (implementation ruling
+      // R18); after Resolve Legacies the only dormant ones were active.
       case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
-        faceup || viewer.exists(player => ready.game.current.players
-          .exists(seat => seat.player == player && seat.lineage == lineage))
+        faceup || ready.game.current.turn.phase == Phase.Chronicle ||
+          viewer.exists(player => ready.game.current.players
+            .exists(seat => seat.player == player && seat.lineage == lineage))
       // The Public Ambitions row is faceup.
       case CardContainer.PublicLegacies => true
       // The Chancellor chooses a Reliquary relic in Setup (CR p. 8, Empire

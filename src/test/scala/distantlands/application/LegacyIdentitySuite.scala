@@ -2,7 +2,7 @@ package distantlands.application
 
 import distantlands.catalog.holding.{ArbiterCard, RivalCard, SeerCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.model.{DecisionOption, DecisionOptionRef}
+import distantlands.model.{DecisionOption, DecisionOptionRef, Phase}
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2}
 
@@ -38,3 +38,11 @@ class LegacyIdentitySuite extends munit.FunSuite:
 
   test("a legacy's back is a legacy back"):
     assertEquals(presentation.cardKind(ArbiterCard.id), "legacy")
+
+  test("in the Chronicle Phase every viewer identifies a dormant legacy, " +
+      "and in play only its owner (R18)"):
+    val chronicle = ready.updateCurrent(current => current.copy(turn =
+      current.turn.copy(phase = Phase.Chronicle)))
+    assert(viewers.forall(presentation.identifiesAt(chronicle, _,
+      ArbiterCard.id)))
+    assert(!presentation.identifiesAt(ready, Some(p2), ArbiterCard.id))
