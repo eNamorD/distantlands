@@ -72,3 +72,30 @@ replace the printed parts; an anchor that depends on the box's height is
 not one anchor, and state covering the name breaks the design's rule that
 the drawn name must still fit the narrower face.
 Slice/files: slice 1 review; `frontend/styles.css`.
+
+## Slice 3
+
+**R5. What a site face keeps below scale 0.4.**
+Question: at a tablet's or a phone's Fit (below 0.4, `map-tiny`) the site
+face hid its defense and forces as well as its footer, so who rules a site
+and with how many warbands could not be read without zooming.
+Decision: forces and defense stay on the face at every scale, in a short
+form at the glance size; only the footer (terrain, requirement, powers) is
+left to the zoom and the overlay. As a card carries `card-name` and
+`card-name-short`, a site carries both forms in the DOM and the stylesheet
+picks one, so a zoom never re-renders. The short form of forces is the
+warband glyph in the force's colour with its count, the treatment
+`CardFace` gives warbands on a card; the short form of defense is one
+defense-die glyph with a count. The short forms are hidden from assistive
+technology and carry a hover note with the long text; the long forms keep
+the accessible text they have. Under `map-tiny` the long forms hide and the
+short forms show; above it the reverse. If the phone's face at Fit cannot
+hold everything at the glance size, defense drops first, then the name's
+tail; pawns, forces and tokens never drop.
+Reason: the design's glance layer holds names, pawns, tokens, defense and
+forces at a readable size while the board shrinks, and who rules a site is
+the state a player reads the whole map for; the earlier instruction to hide
+what cannot reach about 9px was meant for decoration and printed labels,
+not for state.
+Slice/files: slice 3; `ServerUiSupport.siteHeading`, `siteDetails`,
+`frontend/styles.css`.

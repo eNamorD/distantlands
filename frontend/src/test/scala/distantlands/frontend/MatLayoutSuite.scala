@@ -126,6 +126,9 @@ class MatLayoutSuite extends munit.FunSuite:
     assertEquals((relicDeck.x, relicDeck.y), (881.0, 1913.0))
     assertEquals((worldDeck.x, worldDeck.y), (1278.0, 1913.0))
     assertEquals(roundWheel, MatRect(62, 1602, 642, 642))
+    assertEquals((0 until 3).map(regionName),
+      Vector(MatRect(46, 60, 900, 240), MatRect(1969, 60, 900, 240),
+        MatRect(3920, 60, 900, 240)))
     assertEquals(visionCells.map(_.x),
       Vector(805.0, 1000.0, 1120.0, 1295.0, 1415.0, 1535.0))
     visionCells.foreach(cell =>
