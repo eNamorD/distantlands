@@ -81,13 +81,20 @@ class MapViewStateSuite extends FunSuite:
     assert(!GameTableShell.compactAtScale(1.0))
 
   test("the name box is the width one line of floor-sized text has on a compact card"):
-    // A card on a site holding forces is 116.8px wide in map space, so on
-    // screen it is 42px at 0.36 and 52.8px at 0.4524; less the border, that
-    // is 3.64em and 4.62em of 11px text.
-    assertEqualsDouble(GameTableShell.nameBoxEm(0.36).get, 3.64, 0.01)
-    assertEqualsDouble(GameTableShell.nameBoxEm(0.4524).get, 4.62, 0.01)
-    assertEqualsDouble(GameTableShell.nameBoxEm(0.2).get, 1.94, 0.01)
+    // A card slot on the mat is 134.95px wide in map space, so on screen it
+    // is 48.6px at 0.36 and 61.1px at 0.4524; less the border, that is
+    // 4.23em and 5.37em of 11px text.
+    assertEqualsDouble(GameTableShell.nameBoxEm(0.36).get, 4.23, 0.01)
+    assertEqualsDouble(GameTableShell.nameBoxEm(0.4524).get, 5.37, 0.01)
+    assertEqualsDouble(GameTableShell.nameBoxEm(0.2).get, 2.27, 0.01)
     assertEquals(GameTableShell.nameBoxEm(0.8), None)
+
+  test("the map is tiny below 0.4, where a site's face has no room for " +
+      "its powers"):
+    assert(GameTableShell.tinyAtScale(0.2))
+    assert(GameTableShell.tinyAtScale(0.39))
+    assert(!GameTableShell.tinyAtScale(0.4))
+    assert(!GameTableShell.tinyAtScale(0.72))
 
   test("zoom at an anchor keeps the world point under the anchor fixed"):
     val fitted = MapViewState().resize(bounds)
