@@ -8,13 +8,16 @@
 19.0 action 1 | [player:p1|p1] placed [site:site:deep-woods|Deep Woods] on the map
 21.0 action 1 | [player:p1|p1] placed [site:site:buried-giant|Buried Giant] on the map
 26.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
-31.0 decision 1 | [player:p1|p1] kept a Denizen
-39.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-44.0 decision 1 | [player:p2|p2] kept [card:175|Nature Worship]
-52.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
-57.0 decision 1 | [player:p3|p3] kept a Denizen
-58.0 round 0 | Round 1
-58.1 turn 0 | [player:p1|p1]'s turn
-58.2 phase 0 | Wake
-60.0 action 1 | Nothing happened in Wake
-60.1 phase 0 | Act
+31.0 decision 1 | [player:p1|p1] kept a legacy
+36.0 decision 1 | [player:p1|p1] kept a Denizen
+44.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+49.0 decision 1 | [player:p2|p2] kept a legacy
+54.0 decision 1 | [player:p2|p2] kept [card:175|Nature Worship]
+62.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
+67.0 decision 1 | [player:p3|p3] kept a legacy
+72.0 decision 1 | [player:p3|p3] kept a Denizen
+73.0 round 0 | Round 1
+73.1 turn 0 | [player:p1|p1]'s turn
+73.2 phase 0 | Wake
+75.0 action 1 | Nothing happened in Wake
+75.1 phase 0 | Act

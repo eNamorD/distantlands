@@ -125,9 +125,21 @@ class GameRoutesSuite extends munit.FunSuite:
         afterPlaced - 1
       )
 
+      // Quiet Ambitions asks p2 to keep one of its two drawn legacies.
+      val legacyQuery = ujson.read(placed.body())("walkerDecision")
+      assertEquals(legacyQuery("decisionId").str,
+        SetupProcedure.legacyDecisionId(p2))
+      val keptLegacy = server.post(p2Commands,
+        ActorlessCommandCodec.encode(ActorlessCommandRequest(afterPlaced,
+          GameIntent.ResolveWalker(SetupProcedure.legacyDecisionId(p2),
+            DecisionAnswerWire.ChooseOneWire("legacy",
+              legacyQuery("query")("options")(0)("id").str)))))
+      assertEquals(keptLegacy.statusCode(), 200, keptLegacy.body())
+      val afterKept = ujson.read(keptLegacy.body())("nextSequence").num.toLong
+
       val adviserDecision = SetupProcedure.adviserDecisionId(p2)
-      val handOptions = ujson.read(placed.body())("walkerDecision")("query")(
-        "options").arr.map(_("id").str).toVector
+      val handOptions = ujson.read(keptLegacy.body())("walkerDecision")(
+        "query")("options").arr.map(_("id").str).toVector
       // p2 is dealt Wizard's Conclave, Errand Boy and Nature Worship and keeps
       // Wizard's Conclave, which is not site-only, so Reveal Cards follows.
       val adviser = WizardsConclaveCard.id.value
@@ -136,7 +148,7 @@ class GameRoutesSuite extends munit.FunSuite:
       assertEquals(handOptions, adviser +: rejectedAdvisers)
       val chosen = server.post(p2Commands,
         ujson.write(ujson.Obj(
-          "expectedNextSequence" -> ujson.Num(afterPlaced.toDouble),
+          "expectedNextSequence" -> ujson.Num(afterKept.toDouble),
           "intent" -> ujson.Obj("type" -> "resolveWalker",
             "decisionId" -> adviserDecision,
             "payload" -> ujson.Obj("kind" -> "partition",

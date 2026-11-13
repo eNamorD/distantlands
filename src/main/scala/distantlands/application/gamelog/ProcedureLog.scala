@@ -324,6 +324,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     case TriggeredProcedureRef.Setup => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
         SetupProcedure.keptAdviser -> LogKind.Decision,
+        SetupProcedure.keptLegacy -> LogKind.Decision,
         SetupProcedure.revealedCard -> LogKind.Decision)),
       narratedPrefixes = Vector("setup."), isSection = false)
     // One decision id serves the Wake, Rest and Act menus, so all three

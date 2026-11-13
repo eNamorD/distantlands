@@ -77,14 +77,14 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       gateway.submit("trusted", p2Seat, placeP2Pawn(afterBegin)))
     assertEquals(placed.viewerPlayerId, Some("p2"))
     assertEquals(placed.walkerDecision.map(_.decisionId),
-      Some("setup.adviser-choice.p2"))
+      Some("setup.legacy-choice.p2"))
     assertEquals(
       present(accepted(service.load("trusted")), "the trusted game")
         .nextSequence,
       placed.nextSequence)
     // A fresh load after the answer shows p2's next decision to p2 only.
     assertEquals(accepted(gateway.load("trusted", p2Seat))
-      .walkerDecision.map(_.decisionId), Some("setup.adviser-choice.p2"))
+      .walkerDecision.map(_.decisionId), Some("setup.legacy-choice.p2"))
     assertEquals(accepted(gateway.load("trusted", p3Seat)).walkerDecision,
       None)
     assertEquals(GameHttpWire.decodeCommand("""{"expectedNextSequence":2,"intent":{"type":"resolveWalker","playerId":"p3","decisionId":"setup.pawn-placement.p3","payload":{"kind":"choose-one","optionKind":"site","optionId":"S1"}}}"""),
@@ -244,13 +244,13 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       val answered = send(server, api + "/commands", Some(command),
         Some(s"distantlands_seat=$code"))
       assertEquals(answered.statusCode(), 200, answered.body())
-      // p2 is next asked to choose among the three cards it was dealt.
-      def adviserChoice(response: JavaResponse[String]) =
+      // p2 is next asked to keep one of the two legacies it drew.
+      def legacyChoice(response: JavaResponse[String]) =
         val decision = ujson.read(response.body())("walkerDecision")
         (decision("decisionId").str, decision("query")("options").arr.size)
-      assertEquals(adviserChoice(answered), ("setup.adviser-choice.p2", 3))
+      assertEquals(legacyChoice(answered), ("setup.legacy-choice.p2", 2))
       val reloaded = send(server, api, cookie = Some(s"distantlands_seat=$code"))
-      assertEquals(adviserChoice(reloaded), ("setup.adviser-choice.p2", 3))
+      assertEquals(legacyChoice(reloaded), ("setup.legacy-choice.p2", 2))
     }
 
   test("the other seat sees no decision, and no seat response leaks the code " +

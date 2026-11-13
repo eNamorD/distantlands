@@ -13,6 +13,7 @@ import distantlands.model.OathViolation._
  *
  * {{{
  * Sequence(                                              // no window
+ *   Note(Public Ambitions dealt ...)                     // when the row holds any
  *   Branch(                                              // a later game's
  *     Decide(reliquary-pick, chancellor),                // Chancellor, when the
  *     BuildOps(keep the relic facedown),                 // Reliquary holds one
@@ -22,6 +23,10 @@ import distantlands.model.OathViolation._
  *   Sequence(                                            // per participant
  *     Branch(Decide(pawn-placement, participant)),       // legal sites only
  *     BuildOps(place the pawn)                           // window = SetupPawnPlaced
+ *     Branch(                                            // Quiet Ambitions, with
+ *       Decide(legacy-choice, participant),              // two drawn legacies
+ *       BuildOps(return the other to the deck),
+ *       Note(kept a legacy))
  *     Branch(                                            // only with a hand
  *       Decide(adviser-choice, participant),
  *       BuildOps(keep one adviser, discard the other two)),
@@ -65,6 +70,13 @@ object SetupProcedure:
   /** "p1 took a relic from the Reliquary" (Empire ruling R29). */
   val tookRelic: NoteKey = notes.key("took-relic", Vector(
     NotePart.Arg(0), NotePart.Text(" took a relic from the Reliquary")))
+  /** "p2 kept a legacy". It names no card: the kept legacy is dormant, and
+    * only its owner may know it (Legacies ruling 1). */
+  val keptLegacy: NoteKey = notes.key("kept-legacy", Vector(
+    NotePart.Arg(0), NotePart.Text(" kept a legacy")))
+  /** "Public Ambitions dealt Rival, Seer, Arbiter and Wealthy". */
+  val dealtPublicLegacies: NoteKey = notes.key("dealt-public-legacies",
+    Vector(NotePart.Text("Public Ambitions dealt "), NotePart.Arg(0)))
   def noteKeys: Vector[NoteKey] = notes.declared ++ ImperialMaps.noteKeys
 
   val reliquaryDecisionId: String = "setup.reliquary-pick"
@@ -74,6 +86,8 @@ object SetupProcedure:
     s"setup.adviser-choice.${player.value}"
   def revealDecisionId(player: PlayerId): String =
     s"setup.reveal.${player.value}"
+  def legacyDecisionId(player: PlayerId): String =
+    s"setup.legacy-choice.${player.value}"
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
@@ -104,8 +118,17 @@ object SetupProcedure:
     val chancellor = Imperials.chancellor(ready)
     val imperialMaps = chancellor.filter(_ => ImperialMaps.applies(ready))
       .map(ImperialMaps.step(catalog, ready, _))
-    Sequence(chancellor.map(reliquaryPick).toVector ++ imperialMaps ++
-      steps :+ setupEnd :+ BeginTurn(participants.head.playerId, Phase.Wake))
+    Sequence(publicRow(ready) ++ chancellor.map(reliquaryPick).toVector ++
+      imperialMaps ++ steps :+ setupEnd :+
+      BeginTurn(participants.head.playerId, Phase.Wake))
+
+  /** The Public Ambitions row game start dealt, named once and first
+    * (implementation ruling R14). Nothing when the row is empty. */
+  private def publicRow(ready: ReadyGame): Vector[Operation] =
+    val row = ready.game.current.commonCards.publicLegacies
+    Option.when(row.nonEmpty)(Note(ProcedureNotes.id(
+      TriggeredProcedureRef.Setup), _ => Some(dealtPublicLegacies.sourceless(
+        NoteArg.Cards(row))))).toVector
 
   /** A later game's Chancellor first keeps one Reliquary relic facedown
     * (CR p. 8, Empire ruling R29). An empty Reliquary asks nothing. The
@@ -179,6 +202,7 @@ object SetupProcedure:
         Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
           placedPawnNote(participant.playerId))),
         Some(PowerWindow.SetupPawnPlaced)),
+      keepLegacy(participant),
       // A player with starting advisers drew no hand (CR p. 11), and under
       // Teeming World no one did: every card drawn is already an adviser.
       Branch((_, _) =>
@@ -194,6 +218,52 @@ object SetupProcedure:
           Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
             keptAdviserNote(participant.playerId, adviserId)))),
       revealCards(catalog, participant.playerId)))
+
+  /** Quiet Ambitions: keep one of the two legacies game start drew,
+    * facedown, and return the other to the deck (CR "Set Up Players";
+    * Legacies design, slice 2). The drawn legacies are the dormant ones the
+    * lineage holds that its baseline record does not, read when the
+    * question is reached (implementation ruling R13). A short deck's single
+    * legacy is kept without a question, and a player who drew none is asked
+    * nothing (R9). */
+  private def keepLegacy(participant: FirstGameParticipant): Operation =
+    val decisionId = legacyDecisionId(participant.playerId)
+    Branch((state, _) =>
+      drawnLegacies(state, participant.lineageId) match
+        case Vector() => Vector.empty
+        case Vector(_) => Vector(keptLegacyNote(participant.playerId))
+        case drawn => Vector(
+          Decide(decisionId, participant.playerId, DecisionQuery.ChooseOne(
+            drawn.map(id =>
+              DecisionOption.Legacy(DecisionOptionRef.Legacy(id))),
+            heading = Some("Keep a legacy"), confirmVerb = Some("Keep"))),
+          BuildOps(returnLegacies(participant.lineageId, drawn, decisionId)),
+          keptLegacyNote(participant.playerId)))
+
+  private def keptLegacyNote(player: PlayerId): Operation =
+    Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
+      _ => Some(keptLegacy.sourceless(NoteArg.Player(player))))
+
+  private def drawnLegacies(ready: ReadyGame, lineage: LineageId)
+      : Vector[LegacyId] =
+    val stored = ready.game.campaign.baseline.lineages.find(_.id == lineage)
+      .toVector.flatMap(_.legacies).map(_.id).toSet
+    ready.game.campaign.lineages.get(lineage).toVector
+      .flatMap(_.legacies).collect {
+        case LegacyState(id, false) if !stored(id) => id }
+
+  private def returnLegacies(lineage: LineageId, drawn: Vector[LegacyId],
+      decisionId: String)
+      : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
+    (_, pending) =>
+      pending.answered.find(_.decisionId == decisionId).map(_.answer) match
+        case Some(DecisionAnswer.ChooseOneAnswer(
+            DecisionOptionRef.Legacy(kept))) if drawn.contains(kept) =>
+          Right(drawn.filterNot(_ == kept).map(id => Move(Piece.Card(id),
+            PositionedLocation(Location.Legacies(lineage)),
+            PositionedLocation(Location.Deck(CardDeck.Legacy)))))
+        case _ => Left(InvalidEventOrder(
+          s"no legacy answer is recorded for $decisionId"))
 
   /** Where `player`'s pawn stands once it has been placed. */
   private def placedPawnNote(player: PlayerId)(states: NoteStates)
