@@ -18,6 +18,14 @@ object LaterGameLogScripts:
   def laterGameWoken(using munit.Location): Script =
     laterGameWokenFrom("later-game-setup", identity)
 
+  /** As [[laterGameWoken]], with Foundation III on Public Ambitions: game
+    * start deals 4 legacies faceup to the public row, and nobody draws. */
+  def laterGamePublicAmbitions(using munit.Location): Script =
+    laterGameWokenFrom("later-game-public-ambitions", chronicle =>
+      chronicle.copy(foundations = chronicle.foundations.updated(
+        FoundationNumber.III,
+        FoundationState(FoundationFace.Altered, Set.empty))))
+
   /** As [[laterGameWoken]], with the Great Clock stored at the first Atlas
     * site that keeps an edifice, a site that comes into play, so its ruined face, Broken Clock,
     * advances the round marker to round 2 at Setup's end. */

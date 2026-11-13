@@ -3,8 +3,9 @@ package distantlands.application.gamelog
 import distantlands.model._
 import distantlands.protocol.projection.{LogEntry, LogSpan}
 import distantlands.testkit.Outcomes
+import distantlands.testkit.Unwrap.present
 import LogScripts._
-import LaterGameLogScripts.laterGameWoken
+import LaterGameLogScripts.{laterGamePublicAmbitions, laterGameWoken}
 
 class GameLogSetupSuite extends munit.FunSuite:
   private def setupLines(script: Script, viewer: Option[PlayerId])
@@ -56,6 +57,26 @@ class GameLogSetupSuite extends munit.FunSuite:
       assertEquals(kept.size, script.players.size, viewer)
       assert(kept.forall(!_.spans.exists(_.isInstanceOf[LogSpan.Card])),
         kept)
+    }
+
+  test("Public Ambitions names its row, card by card, to every viewer"):
+    // A later game's Setup on Public Ambitions: its row line is the subject.
+    val script = laterGamePublicAmbitions
+    val row = Outcomes.ready(script.history.steps.last.after).game.current
+      .commonCards.publicLegacies
+    assertEquals(row.size, 4)
+    val names = row.map(id => present(
+      distantlands.gameplay.setup.FirstGameSetupFixture.catalog.legacy(id),
+      id.value).name)
+    Vector(Some(script.actor), Some(script.otherSeat), None).foreach {
+      viewer =>
+        val dealt = format(script, viewer).filter(entry =>
+          text(entry).startsWith("Public Ambitions dealt "))
+        assertEquals(dealt.map(text), Vector("Public Ambitions dealt " +
+          names.init.mkString(", ") + " and " + names.last), viewer)
+        assertEquals(dealt.flatMap(_.spans).collect {
+          case LogSpan.Card(id, name) => id -> name },
+          row.map(_.value).zip(names), viewer)
     }
 
   test("a card revealed in Reveal Cards is named to every viewer"):
