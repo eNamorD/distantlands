@@ -212,11 +212,12 @@ for path in sources:
     rel = relative(path)
     if rel in OPERATION_FAMILY_FILES:
         continue
-    for line_number, line in enumerate(
-            path.read_text(encoding="utf-8").splitlines(), 1):
-        if operation_base_extension.search(line):
-            errors.append(f"{rel}:{line_number}: only an operation family "
-                          "file may extend OperationBase")
+    # The whole text, not line by line: an `extends` clause may wrap.
+    text = path.read_text(encoding="utf-8")
+    for found in operation_base_extension.finditer(text):
+        line_number = text.count("\n", 0, found.start()) + 1
+        errors.append(f"{rel}:{line_number}: only an operation family "
+                      "file may extend OperationBase")
 for family_file in sorted(OPERATION_FAMILY_FILES):
     if not (ROOT / family_file).is_file():
         errors.append(f"{family_file}: listed as an operation family file "

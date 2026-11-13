@@ -367,7 +367,16 @@ class WalkerOperationWireSuite extends munit.FunSuite:
         QueueKind.Offer)),
     QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Trade,
       Vector(DecisionOptionRef.Button("favor")), None, QueueKind.Run),
-      atFront = true))
+      atFront = true),
+    DrawNomadFavor(player, 2),
+    AdvanceVisionsDrawn,
+    AdvanceRound,
+    Defer(DeferralKey("test.held"), Vector(GainSupply(player, 1))),
+    TakeDeferred(DeferralKey("test.held")),
+    ActAsIf(site),
+    ActAsIfAdvisers(player),
+    OpenPick("test.decision", DecisionOptionRef.Button("title"), Some("label")),
+    ClosePick())
 
   test("every CoreOperation variant round-trips through the walker codec"):
     // `encodeOperation`/`encodePiece` are total over the sealed hierarchy
