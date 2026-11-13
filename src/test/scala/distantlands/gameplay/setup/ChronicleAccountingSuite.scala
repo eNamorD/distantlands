@@ -1,5 +1,6 @@
 package distantlands.gameplay.setup
 
+import distantlands.catalog.holding.SeerCard
 import distantlands.gameplay.actions.VisionRules
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.operations.TheGrandScepterCard
@@ -125,3 +126,17 @@ class ChronicleAccountingSuite extends munit.FunSuite:
       world = Vector(bare.copy(items = Vector(edifice))))
     assertEquals(ChronicleAccounting.knownAndUnique(catalog, twice),
       Left(s"edifice ${edifice.value} is stored twice"))
+
+  test("a legacy two lineages hold is refused, and so is an unknown one"):
+    def holding(legacies: Vector[LegacyId]*): Chronicle = chronicle.copy(
+      lineages = legacies.zipWithIndex.map((held, n) => LineageState(
+        LineageId(s"lineage:$n"), None, Role.Exile,
+        held.map(LegacyState(_, active = true)), Vector.empty)).toVector)
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog,
+      holding(Vector(SeerCard.id), Vector(SeerCard.id))),
+      Left(s"legacy ${SeerCard.id.value} is held twice"))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog,
+      holding(Vector(LegacyId("no-such-legacy")))),
+      Left("unknown legacy no-such-legacy"))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog,
+      holding(Vector(SeerCard.id))), Right(()))

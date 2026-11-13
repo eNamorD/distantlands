@@ -13,8 +13,9 @@ import distantlands.model._
 object ChronicleAccounting:
   /** Every id is a known card of the kind its field holds, and no card or
     * site is stored twice, across every field. A foundation's alteration
-    * sources are known legacies: game start carries them into the campaign
-    * and the Chronicle record writes them forward. */
+    * sources and the legacies a lineage holds are known legacies, and no
+    * legacy is held twice: game start carries them into the campaign and
+    * the Chronicle record writes them forward. */
   def knownAndUnique(catalog: ExecutableCatalog, chronicle: Chronicle)
       : Either[String, Unit] =
     val siteIds = catalog.sites.map(_.id).toSet
@@ -29,6 +30,7 @@ object ChronicleAccounting:
     val items = (chronicle.atlasBox ++ chronicle.world).flatMap(_.items)
     val advisers = chronicle.lineages.flatMap(_.startingAdvisers).map(_.id)
     val keptRelics = chronicle.lineages.flatMap(_.startingRelics)
+    val held = chronicle.lineages.flatMap(_.legacies).map(_.id)
     val stored = items ++ advisers ++ keptRelics
     val denizens = chronicle.worldDeck ++ chronicle.dispossessed ++
       stored.collect { case id: DenizenId => id }
@@ -55,6 +57,8 @@ object ChronicleAccounting:
       duplicate(edifices).map(id => s"edifice ${id.value} is stored twice"),
       relics.find(_ == TheGrandScepterCard.id)
         .map(_ => "the Grand Scepter is not stored"),
+      held.find(!legacyIds(_)).map(id => s"unknown legacy ${id.value}"),
+      duplicate(held).map(id => s"legacy ${id.value} is held twice"),
       sources.find(!legacyIds(_)).map(id => s"unknown legacy ${id.value}")))
 
   /** `evolved` holds exactly the sites and relics `baseline` holds. The

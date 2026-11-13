@@ -6,17 +6,17 @@ import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.model._
 
 /** What a Chronicle's lineages bring to the table `FirstGameSetupMaterializer`
-  * built (CR pp. 8-11): every seated lineage's starting advisers, and, in a
-  * later game, the Empire's roles, purple warbands, Grand Scepter, title and
-  * banners, or, with no Empire, the box's Exiles and the Reliquary set
-  * aside. The state is built directly, as game start builds the whole
-  * game; nothing here is journaled. */
+  * built (CR pp. 8-11): every seated lineage's starting advisers and
+  * starting relics, and, in a later game, the Empire's roles, purple
+  * warbands, Grand Scepter, title and banners, or, with no Empire, the box's
+  * Exiles and the Reliquary set aside. The state is built directly, as game
+  * start builds the whole game; nothing here is journaled. */
 object LaterGameSetup:
   /** Each seated lineage's starting advisers move to its player; with an
     * Empire, its table facts follow, and with none, the box's. */
   def apply(catalog: ExecutableCatalog, ready: ReadyGame,
       plan: FirstGameSetupPlan, mode: SetupMode): ReadyGame =
-    val advised = startingAdvisers(ready, plan)
+    val advised = startingRelics(startingAdvisers(ready, plan), plan)
     mode match
       case SetupMode.FirstGame => advised
       case SetupMode.WithEmpire(empire) =>
@@ -52,6 +52,23 @@ object LaterGameSetup:
         state => state.copy(advisers = plan.startingAdvisers
           .getOrElse(state.player, Vector.empty).map(faceDown) ++
           state.advisers))))
+
+  /** Each seated lineage's starting relics go facedown to its player and
+    * leave the lineage's record, as its starting advisers do (Legacies
+    * design, slice 1). Heirloom keeps one; an import may carry them. */
+  private def startingRelics(ready: ReadyGame, plan: FirstGameSetupPlan)
+      : ReadyGame =
+    val seats = plan.participants.map(p => p.lineageId -> p.playerId).toMap
+    val kept = ready.game.campaign.lineages.collect {
+      case (lineage, state) if seats.contains(lineage) =>
+        seats(lineage) -> state.startingRelics }
+    ready.updateCampaign(campaign => campaign.copy(lineages =
+      campaign.lineages.map((id, lineage) => id -> (if seats.contains(id)
+        then lineage.copy(startingRelics = Vector.empty) else lineage))))
+      .updateCurrent(current => current.copy(players = current.players.map(
+        state => state.copy(relics = state.relics ++ kept.getOrElse(
+          state.player, Vector.empty).map(
+          RelicState(_, Orientation.FaceDown, Tokens.empty))))))
 
   private def imperial(ready: ReadyGame, plan: FirstGameSetupPlan,
       empire: EmpireSetup): ReadyGame =

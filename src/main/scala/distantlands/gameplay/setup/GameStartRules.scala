@@ -39,8 +39,9 @@ object GameStartRules:
         .collect { case id: EdificeId => id }.toSet
       commonCards = material.commonCards.copy(edificeDeck =
         material.commonCards.edificeDeck.filterNot(storedEdifices))
-      // A seated lineage the Chronicle lists starts from its record;
-      // `buildPlan` refuses what that record needs Legacies for.
+      // A seated lineage the Chronicle lists starts from its record, its
+      // legacies with their stored faces; `LaterGameSetup` hands its
+      // starting relics to its player.
       recorded = chronicle.lineages.map(lineage => lineage.id -> lineage).toMap
       lineages = plan.participants.map(participant =>
         participant.lineageId -> recorded.getOrElse(participant.lineageId,
@@ -83,12 +84,6 @@ object GameStartRules:
       orders: SetupOrders, deal: SetupDeal)
       : Either[OathViolation, (FirstGameSetupPlan, SetupMode)] =
     for
-      _ <- Either.cond(chronicle.lineages.forall(_.startingRelics.isEmpty), (),
-        UnsupportedChronicle("starting relics require Legacies"))
-      seated = orders.participants.map(_.lineageId).toSet
-      records = chronicle.lineages.filter(lineage => seated(lineage.id))
-      _ <- Either.cond(records.forall(_.legacies.isEmpty), (),
-        UnsupportedChronicle("legacies require Legacies"))
       _ <- validateParticipants(orders)
       mode <- EmpireSetupRules.resolve(catalog, chronicle, orders)
       // Setup With No Empire erodes the faces before the foundations are

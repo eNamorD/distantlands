@@ -1,6 +1,7 @@
 package distantlands.gameplay.setup
 
 import distantlands.application.{ChronicleFirstGamePlan, FirstGameBootstrapConfig}
+import distantlands.catalog.holding.{ArbiterCard, SeerCard}
 import distantlands.gameplay.cards.GreatSlumSite
 import distantlands.gameplay.powers.setup.HallOfDebateCard
 import distantlands.model._
@@ -53,14 +54,20 @@ class GameStartRulesSuite extends munit.FunSuite:
     assertEquals(ready.game.campaign.baseline, withAbsentLineage)
     assertEquals(ready.game.campaign.evolved, None)
 
-  test("game start refuses a lineage's starting relics until Legacies"):
+  test("a seated lineage's starting relics go facedown to its player"):
+    val participant = orders.participants.head
     val relic = chronicle.relicDeck.head
     val keeping = chronicle.copy(relicDeck = chronicle.relicDeck.tail,
-      lineages = Vector(LineageState(LineageId("l9"), None, Role.Exile,
+      lineages = Vector(LineageState(participant.lineageId, None, Role.Exile,
         Vector.empty, Vector.empty, startingRelics = Vector(relic))))
-    assertEquals(GameStartRules.evolve(catalog, keeping, orders),
-      Left(OathViolation.UnsupportedChronicle(
-        "starting relics require Legacies")))
+    val ready = accepted(GameStartRules.evolve(catalog, keeping, orders.copy(
+      relicOrder = orders.relicOrder.filterNot(_ == relic))))
+    assertEquals(ready.game.current.player(participant.playerId).get.relics
+      .filter(_.id == relic),
+      Vector(RelicState(relic, Orientation.FaceDown, Tokens.empty)))
+    assertEquals(
+      ready.game.campaign.lineages(participant.lineageId).startingRelics,
+      Vector.empty)
 
   test("a seated lineage the Chronicle lists starts from its record, and an " +
       "unlisted one starts as a fresh Exile"):
@@ -73,14 +80,14 @@ class GameStartRulesSuite extends munit.FunSuite:
     assertEquals(ready.game.campaign.lineages(unlisted), LineageState(unlisted,
       None, Role.Exile, Vector.empty, Vector.empty))
 
-  test("game start refuses a seated lineage's legacies until Legacies"):
-    val legacy = LegacyState(LegacyId(catalog.legacies.head.id.value),
-      active = true)
-    val keeping = chronicle.copy(lineages = Vector(LineageState(
-      orders.participants.head.lineageId, None, Role.Exile, Vector(legacy),
-      Vector.empty)))
-    assertEquals(GameStartRules.evolve(catalog, keeping, orders),
-      Left(OathViolation.UnsupportedChronicle("legacies require Legacies")))
+  test("a seated lineage's legacies start with their stored faces"):
+    val seated = orders.participants.head.lineageId
+    val legacies = Vector(LegacyState(SeerCard.id, active = true),
+      LegacyState(ArbiterCard.id, active = false))
+    val keeping = chronicle.copy(lineages = Vector(LineageState(seated, None,
+      Role.Exile, legacies, Vector.empty)))
+    val ready = accepted(GameStartRules.evolve(catalog, keeping, orders))
+    assertEquals(ready.game.campaign.lineages(seated).legacies, legacies)
 
   private val altered = FoundationState(FoundationFace.Altered, Set.empty)
   private val normal = FoundationState(FoundationFace.Normal, Set.empty)
