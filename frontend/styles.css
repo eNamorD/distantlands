@@ -415,6 +415,19 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* A favor bank on the mat's pair of circles: the suit, the count, favor. */
 .mat-board .favor-bank { padding: 0 6px; border-radius: 999px;
   background: #1a1610b3; font-size: 1.05rem; line-height: 1.1; }
+/* Each part of a bank has its own place, so hiding one moves no other: the
+   suit's glyph, the count, favor. The suit's name does not fit beside them
+   in the place the mat gives a bank at any scale, so it steps out of sight
+   and stays in the bank's words ("Arcane: 3"). */
+.mat-board .favor-bank { display: grid; grid-template-columns: 1.25em auto 1.25em;
+  column-gap: 0.2em; align-items: center; justify-content: center; }
+.mat-board .favor-bank > .token-glyph { width: 1.25em; height: 1.25em; }
+.mat-board .favor-bank > .token-glyph:first-child { grid-column: 1; }
+.mat-board .favor-bank > .favor-bank-count { grid-column: 2; grid-row: 1; }
+.mat-board .favor-bank > .token-favor { grid-column: 3; grid-row: 1; }
+.mat-board .favor-bank > .printed:not(.token-glyph) { position: absolute;
+  width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+  white-space: nowrap; }
 
 /* Beside the mat, as the physical table has them: the Public Ambitions,
    then the oath, the banners and the foundations in one row. */
