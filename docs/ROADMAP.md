@@ -171,8 +171,7 @@ Legacy activation and scoring, and era scoring.
   Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
   play among them. High Priest's When Negotiating power lets its holder
   give secrets in a deal: a `DealRules` term kind, as Council Arbiter opens
-  advisers. The frontend's legacy strip and public row come with the
-  Legacies design's slice 5.
+  advisers.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
@@ -309,6 +308,12 @@ one.
   Vision's owner's board shows the claimant's warband on it, but the
   claimant's own board shows nothing, so they cannot see which Visions
   they claim. Left by catalog batch 11, slice 7.
+
+- [ ] **Legacy goal icons.** A legacy shows its goal in words, a tag on
+  its face and a sentence in its inspection and its strip chip's hover
+  note ([Legacies implementation rulings](superpowers/specs/2026-11/2026-11-13-legacies-implementation-rulings.md),
+  R34). Draw six glyphs in the token sprite's style, one per goal, keyed by
+  the goal's `key` the projection already carries.
 
 ### Engine deferred items
 

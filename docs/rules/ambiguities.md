@@ -159,7 +159,7 @@ Rulings and readings for the six foundation setup cards ([Foundations design](..
 
 ## Legacies rulings
 
-Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-legacies-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacies-implementation-rulings.md)). Items 1 to 10 are the design's rulings 1 to 10, taken with the owner on 2026-11-12 and 2026-11-13; items 11 to 26 are implementation rulings R4, R18 to R26 and R28 to R33. The implementation rulings file records the others.
+Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-legacies-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacies-implementation-rulings.md)). Items 1 to 10 are the design's rulings 1 to 10, taken with the owner on 2026-11-12 and 2026-11-13; items 11 to 32 are implementation rulings R4, R18 to R26, R28 to R33 and R34 to R39. The implementation rulings file records the others.
 
 1. **Only the owner sees a dormant legacy's face.** Every other viewer sees a legacy back. The projection redacts it as it redacts a facedown adviser, and nothing tracks who has seen which card (design, ruling 1).
 2. **Newly dormant is dormant.** Sun step 2 leaves no dormant legacy on a seated lineage: each becomes active or is discarded. Step 3 is the only step that makes legacies dormant, so after it every dormant legacy on a seated lineage is newly dormant. Crown Chancellor and Offer Citizenship, which flip newly dormant legacies to active, act only on seated players and only after Resolve Legacies; no flag records it (design, ruling 2).
@@ -187,6 +187,12 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 24. **Shares come in suit order**, Discord, Arcane, Order, Hearth, Beast, Nomad, and empty ones are left out (R31).
 25. **A ruined edifice** counts toward the bonus by its card's printed suit, as for the goals (R32).
 26. **Every legacy the winner holds** counts toward the bonus; none can be dormant then (R33).
+27. **A legacy's goal is shown in words** for now: a tag on its face, a sentence in its inspection; goal icons are a deferred item (R34).
+28. **The goal travels as its key and its printed words**, so the wording stays in the catalog (R35).
+29. **A dormant legacy shows its owner its face, marked Dormant**; every viewer sees the same in the Chronicle Phase, and anyone else an L back outside it (R36).
+30. **A player's legacies are a row of their own** below their cards in play (R37). The players pane leaves that row one line, so each legacy is a chip there, its goal in the chip's hover note and the whole card in its inspection.
+31. **The Public Ambitions row** stands in the World pane above the regions, headed "Public Ambitions", while it holds a legacy (R38).
+32. **The Chronicle page lists each lineage** under its summary line with its legacies: "Red 9 · Seer, Iron Hand (dormant)" (R39).
 
 ## Source relationship cautions
 
