@@ -633,10 +633,17 @@ class MatLayoutSuite extends munit.FunSuite:
     assertEquals(column("other", 1), 1)
     assertEquals(column("other", 7), 2)
 
+  /** Written as the CSSOM reads a percentage back, with no trailing zeros,
+    * so a placed element's inline style compares equal to its rectangle. */
   test("a rectangle reads as percentages of its parent"):
     assertEquals(MatRect(50, 25, 100, 50).percentOf(MatRect(0, 0, 200, 100)),
-      Vector("left" -> "25.0000%", "top" -> "25.0000%",
-        "width" -> "50.0000%", "height" -> "50.0000%"))
+      Vector("left" -> "25%", "top" -> "25%",
+        "width" -> "50%", "height" -> "50%"))
+    assertEquals(MatRect(1, 0, 3, 1).percentOf(MatRect(0, 0, 8, 1)),
+      Vector("left" -> "12.5%", "top" -> "0%",
+        "width" -> "37.5%", "height" -> "100%"))
+    assertEquals(MatRect(1, 0, 1, 1).percentOf(MatRect(0, 0, 3, 1)).head,
+      "left" -> "33.3333%")
 ```
 
 - [ ] **Step 2: Run it to see it fail**
@@ -664,10 +671,13 @@ private[frontend] final case class MatRect(x: Double, y: Double, w: Double,
 
   /** The CSS box of this rectangle inside `parent`, each length a
     * percentage of the parent's, so the board keeps its layout at any size.
+    * Four decimals at most and no trailing zeros, the form the CSSOM reads
+    * a percentage back in.
     */
   def percentOf(parent: MatRect): Vector[(String, String)] =
     def percent(value: Double, of: Double): String =
-      f"${value / of * 100}%.4f%%"
+      f"${value / of * 100}%.4f".reverse.dropWhile(_ == '0')
+        .dropWhile(_ == '.').reverse + "%"
     Vector("left" -> percent(x - parent.x, parent.w),
       "top" -> percent(y - parent.y, parent.h),
       "width" -> percent(w, parent.w), "height" -> percent(h, parent.h))
@@ -747,7 +757,7 @@ private[frontend] object MatLayout:
   val relicDeck: MatRect = MatRect(881, 1913, CardW, CardW)
   /** The world deck lies on its side, as the discards do. */
   val worldDeck: MatRect = MatRect(1278, 1913, CardH, CardW)
-  val roundWheel: MatRect = MatRect(62, 1634, 630, 630)
+  val roundWheel: MatRect = MatRect(62, 1602, 642, 642)
   /** The tracker's line of text, in the clear band over the Cradle's foot. */
   val trackNote: MatRect = MatRect(71, 1500, 1790, 80)
   val visionCells: Vector[MatRect] =
@@ -1088,7 +1098,7 @@ Keep the panel, heading, `deckKeys`, `deck`, `options.decorate(deck, deckKeys)` 
     panel
 ```
 
-Update `world`'s doc comment: the last sentence becomes "The map is one board with the mat's proportions; every piece is placed from `MatLayout`."
+Update `world`'s doc comment: after its sentence on `options`, add "The map is one board with the mat's proportions; every piece is placed from `MatLayout`."
 
 - [ ] **Step 6: Place the wheel, the note and the banks; drop the relic deck from the bank**
 
@@ -1130,6 +1140,8 @@ and in "the count is drawn on the card" read the world deck's count from the fir
     assertEquals(Dom.all(panel, ".table-edge > .shared-bank").size, 1)
 ```
 
+`sharedBank` itself does not change: it moves under `.table-edge` whole, with the Oath goal's button (ruling R2). The Oath goal tests in `PanelPlacementSuite` select inside `.shared-bank` and pass unchanged.
+
 - [ ] **Step 8: Run the suites**
 
 Run: `./sbtw "frontend/test"`
@@ -1154,7 +1166,7 @@ git add frontend/src && git commit -m "feat(frontend): build the map as one boar
 
 - [ ] **Step 1: Change the scale tests**
 
-In `MapViewStateSuite`, replace the three `nameBoxEm` expectations with the mat card's width (2400 × 325.386 / 5787 = 134.95px):
+In `MapViewStateSuite`, replace the three `nameBoxEm` expectations with the mat card's width (2400 × 325.386 / 5787 = 134.95px), and the comment above them with one that says so ("A card slot on the mat is 134.95px wide in map space, so on screen it is 48.6px at 0.36 and 61.1px at 0.4524; less the border, that is 4.23em and 5.37em of 11px text."):
 
 ```scala
     assertEqualsDouble(GameTableShell.nameBoxEm(0.36).get, 4.23, 0.01)
@@ -1213,11 +1225,11 @@ Expected: PASS.
 
 - [ ] **Step 5: Remove the flowing map's rules from `styles.css`**
 
-Delete these rules and the comments that belong to them: `.regions`; `.region`; `.sites` (with `--site-h`); the `.site` rule's `height`, `padding`, `overflow`, `border`, `background`, `display`, `flex-direction` and `--card-w` declarations (keep `position: relative`, `min-width: 0`, `color`, `text-align`); `.site-slot-empty`'s `height`; `.site > .target-detail-badge`; `.region-header`; `.region .region-header > .region-label`; `.region:has(> .deck-row)`; `.deck-row` and its three descendants' rules; `.world-layout`; `.shared-bank`'s border and padding; `.favor-banks`' grid; `.map-content .regions`; `.map-content .sites`; the three `.map-content .region` colour rules; `.map-compact .site` (the grid rule and both `--card-w` rules); `.map-compact .site-heading`; the `grid-row`/`grid-column` declarations of `.map-compact .site-name`, `.site-tokens`, `.site-pawns`, `.site-defense`, `.site-details`. Keep every `font-size: var(--glance-...)` declaration.
+Delete these rules and the comments that belong to them: `.regions`; `.region`; `.sites` (with `--site-h`); the `.site` rule's `height`, `padding`, `overflow`, `border`, `background`, `display`, `flex-direction` and `--card-w` declarations (keep `position: relative`, `min-width: 0`, `color`, `text-align`); `.site-slot-empty`'s `height`; `.site > .target-detail-badge`; `.region-header`; `.region .region-header > .region-label`; `.region:has(> .deck-row)`; `.deck-row` and its four descendants' rules (`> .round-tracker`, `.deck-figure`, `.deck-card`, `.deck-card > .pile-count`); `.world-layout`; `.shared-bank`'s border and padding; `.favor-banks`' grid; `.map-content .regions`; `.map-content .sites`; the three `.map-content .region` colour rules; `.map-content .region-label` (it comes later than the new `.mat-board .region-label` with the same specificity, so it would override it); `.map-compact .site` (the grid rule and both `--card-w` rules); `.map-compact .site-heading`; the `grid-row`/`grid-column` declarations of `.map-compact .site-name`, `.site-tokens`, `.site-pawns`, `.site-defense`, `.site-details`. Keep every `font-size: var(--glance-...)` declaration.
 
 - [ ] **Step 6: Add the mat board's rules**
 
-Replace the `.map-content` rule with:
+Replace the `.map-content` rule and the comment above it that explains the 1500px regions and the bank's column (keep the "Pinned, never inherited" comment) with:
 
 ```css
 /* The board is 2400px wide before the map is scaled (MatLayout
@@ -1396,8 +1408,10 @@ cp "/Users/roman/projects/distantlands/reference/2026-03-17-new-foundations-rev1
 
 - [ ] **Step 4: Confirm nothing became tracked**
 
-Run: `git -C /Users/roman/projects/distantlands status --short reference`
-Expected: no output.
+Git is not run in the main checkout. From the worktree, which tracks the same `.gitignore`:
+
+Run: `git check-ignore -v --no-index reference/assets/cards/x.png reference/assets/backs/x.pdf reference/assets/symbols/x.png`
+Expected: each path printed against the `.gitignore` rule `reference/`.
 
 ---
 
@@ -1555,7 +1569,7 @@ pixels, from its upper left.
 | Region name | column's frame | 60 | 560 | 240 |
 | Relic deck | 881 | 1913 | 325.4 | 325.4 |
 | World deck (card on its side) | 1278 | 1913 | 509 | 325.4 |
-| Round wheel | 62 | 1634 | 630 | 630 |
+| Round wheel | 62 | 1602 | 642 | 642 |
 | Visions Drawn cells 0 to 5 | 805, 1000, 1120, 1295, 1415, 1535 | 1690 | 103 | 159 |
 | Favor bank circle centres, Discord to Nomad | 2438, 2839, 3241, 3642, 4044, 4449 | 2155 | radius 93 | |
 
