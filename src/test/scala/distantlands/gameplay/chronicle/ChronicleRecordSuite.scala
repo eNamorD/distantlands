@@ -126,3 +126,9 @@ class ChronicleRecordSuite extends munit.FunSuite:
     // Quiet Ambitions' draw follows them; Setup has not run.
     assertEquals(recorded.map(_.legacies.take(legacies.size)), Some(legacies))
     assertEquals(recorded.map(_.startingRelics), Some(Vector.empty))
+
+  test("a lineage the baseline lacks is recorded with its legacies (R1)"):
+    val ready = Table.start.legacy(p1, SeerCard, active = false).ready
+    val record = ChronicleRecord.campaignFields(ready)
+    assertEquals(record.lineages.find(_.id == lineageOf(ready, p1))
+      .map(_.legacies), Some(Vector(LegacyState(SeerCard.id, active = false))))
