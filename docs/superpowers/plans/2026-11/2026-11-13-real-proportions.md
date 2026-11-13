@@ -140,6 +140,8 @@ Change the three fluid-width rules to read the table:
 .card-list-item > .card-face-relic { aspect-ratio: var(--ratio-relic); }
 ```
 
+In `.shared-banners .banner-face`, replace `aspect-ratio: 1` with `aspect-ratio: var(--ratio-banner)`.
+
 In the two `.map-compact .site` `--card-w` rules, replace the final `/ 1.4)` of each with `* 381 / 596)`, and in the comment above them replace "a denizen is 1.4 of its width" with "a denizen's width is 381/596 of its height". (Task 6 deletes both rules; until then they must stay correct.)
 
 - [ ] **Step 5: Run the test to see it pass**
@@ -425,6 +427,8 @@ In `GameTableShell`, the handler's text case becomes:
 ```
 
 Any other pattern match on `Request.Text` (`grep -rn "Request.Text(" frontend/src`) gains a fourth `_`.
+
+The Oath goal has no opener on the table today (its line in the shared bank is text), so its plate class is defined and unused until one exists; adding an opener is outside this plan.
 
 Pass plates at the two call sites: in `FoundationStrip.scala` change the call to `CardInspection.openText(title(card), Vector(rules), button, Some("foundation"))`; in `WorldBoardRenderer.playerBoards`, the title pill's call becomes `CardInspection.openText(title, presented.fold(Vector.empty[String])(_.lines), pill, Some("oathkeeper-title"))`.
 
