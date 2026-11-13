@@ -2,7 +2,7 @@ package distantlands.application
 
 import distantlands.gameplay.powers.PowerImplementationStatus
 import distantlands.gameplay.setup.{EmpireSetupRules, FirstGameRulesData,
-  FirstGameSetupFixture, GameStartRules, LaterGameFixture}
+  FirstGameSetupFixture, GameStartRules, LaterGameFixture, LegacyDeal}
 import distantlands.model._
 import distantlands.testkit.ChronicleShuffles
 import distantlands.testkit.Unwrap.{accepted, present}
@@ -90,6 +90,10 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     assertNotEquals(plan.orders.relicOrder, saved.relicDeck)
     assertEquals(plan.orders.relicOrder.sortBy(_.value),
       saved.relicDeck.sortBy(_.value))
+    val legacies = LegacyDeal.deck(catalog, saved)
+    assertNotEquals(plan.orders.legacyOrder, legacies)
+    assertEquals(plan.orders.legacyOrder.sortBy(_.value),
+      legacies.sortBy(_.value))
     assertEquals(plan.chronicle, saved)
 
   test("a Teeming World Chronicle is dealt a world deck of the five " +

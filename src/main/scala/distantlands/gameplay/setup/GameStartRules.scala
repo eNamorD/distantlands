@@ -117,7 +117,7 @@ object GameStartRules:
       _ <- Either.cond(chronicle.relicDeck.size >=
           atlasSites.map(emptyRelicSlots(catalog, _)).sum,
         (), UnsupportedChronicle("not enough relics to fill site slots"))
-      _ <- validateDeal(chronicle, orders, deal)
+      _ <- validateDeal(catalog, chronicle, orders, deal)
     yield FirstGameSetupPlan(orders.participants, orders.firstPlayer,
       (chronicle.world ++ atlasSites ++ (mode match
         case SetupMode.ExileOnly(sites) => sites
@@ -161,12 +161,12 @@ object GameStartRules:
       .filter(_ => lineage.startingAdvisers.nonEmpty)
       .map(_ -> lineage.startingAdvisers)).toMap
 
-  /** The deal holds the Chronicle's decks, each card once, in any order; the
-    * world deck holds the denizens Foundation IV leaves of `denizenOrder`,
-    * in order unless a short deck was mixed with the Visions (CR p. 12).
-    * Teeming World leaves none. */
-  private def validateDeal(chronicle: Chronicle, orders: SetupOrders,
-      deal: SetupDeal): Either[OathViolation, Unit] =
+  /** The deal holds the Chronicle's decks and the derived legacy deck, each
+    * card once, in any order; the world deck holds the denizens Foundation
+    * IV leaves of `denizenOrder`, in order unless a short deck was mixed
+    * with the Visions (CR p. 12). Teeming World leaves none. */
+  private def validateDeal(catalog: ExecutableCatalog, chronicle: Chronicle,
+      orders: SetupOrders, deal: SetupDeal): Either[OathViolation, Unit] =
     val rest = deal.deck(orders.denizenOrder)
     val deck = orders.worldDeckOrder.collect { case id: DenizenId => id }
     for
@@ -176,6 +176,9 @@ object GameStartRules:
       _ <- Either.cond(orders.relicOrder.sortBy(_.value) ==
           chronicle.relicDeck.sortBy(_.value), (),
         UnsupportedChronicle("the deal does not hold the Chronicle's relic deck"))
+      _ <- Either.cond(orders.legacyOrder.sortBy(_.value) ==
+          LegacyDeal.deck(catalog, chronicle).sortBy(_.value), (),
+        UnsupportedChronicle("the deal does not hold the legacy deck"))
       _ <- Either.cond(deck == rest || (rest.size < 25 &&
           deck.sortBy(_.value) == rest.sortBy(_.value)), (),
         UnsupportedChronicle("the world deck is not the rest of the deal"))

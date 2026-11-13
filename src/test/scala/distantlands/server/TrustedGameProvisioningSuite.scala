@@ -10,7 +10,7 @@ import distantlands.gameplay.chronicle.EvolvedChronicleFixture
 import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.{catalog, chronicle,
   orders, participants}
-import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.{LegacyDeal, SetupProcedure}
 import distantlands.gameplay.walker.ParkedDecisionAssertions
 import distantlands.persistence.HsqldbDatabaseOwner
 import distantlands.protocol._
@@ -272,7 +272,8 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
         fail("preparation must not write storage")
     val config = FirstGameBootstrapConfig(participants, orders.firstPlayer)
     val dealt = ChronicleFirstGamePlan.dealOrder(config,
-      chronicle.worldDeck, chronicle.relicDeck)
+      chronicle.worldDeck, chronicle.relicDeck,
+      LegacyDeal.deck(catalog, chronicle))
     val prepared = accepted(new GameApplicationService(catalog, untouched)
       .prepareBootstrap("prepared", chronicle, dealt))
     val journal = new InMemoryEventStreamRepository

@@ -118,7 +118,9 @@ class ChronicleRecordSuite extends munit.FunSuite:
       lineages = Vector(LineageState(seated, None, Role.Exile, legacies,
         Vector.empty, startingRelics = Vector(relic))))
     val ready = GameStartRules.evolve(catalog, keeping, orders.copy(
-      relicOrder = orders.relicOrder.filterNot(_ == relic))).toOption.get
+      relicOrder = orders.relicOrder.filterNot(_ == relic),
+      legacyOrder = orders.legacyOrder.filterNot(
+        Set(SeerCard.id, ArbiterCard.id)))).toOption.get
     val recorded = ChronicleRecord.campaignFields(ready).lineages
       .find(_.id == seated)
     assertEquals(recorded.map(_.legacies), Some(legacies))

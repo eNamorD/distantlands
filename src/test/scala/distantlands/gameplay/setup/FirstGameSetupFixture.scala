@@ -75,7 +75,8 @@ object FirstGameSetupFixture:
   val firstPlayer: PlayerId = PlayerId("p2")
 
   val orders: SetupOrders = SetupOrders(participants, firstPlayer, denizens,
-    ChronicleFixtureDealOrder.dealOrder(denizens, participants.size), relics)
+    ChronicleFixtureDealOrder.dealOrder(denizens, participants.size), relics,
+    LegacyDeal.deck(catalog, chronicle))
 
   /** A fresh `Ready` game in `Phase.Setup`: nothing placed, nothing chosen.
     * What `GameStartRulesSuite` and `SetupProcedureSuite` exercise directly.

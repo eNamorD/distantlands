@@ -101,7 +101,8 @@ class MembershipBootstrapSuite extends munit.FunSuite:
       assertEquals(begun.players.map(_.playerId), Vector("p2", "p3", "p1"))
       assertEquals(begun.viewerPlayerId, None)
       val json = GameHttpWire.encodeProjection(begun)
-      Vector("worldDeckOrder", "relicOrder", "denizenOrder", "orderedSites",
+      Vector("worldDeckOrder", "relicOrder", "denizenOrder", "legacyOrder",
+        "orderedSites",
         "userId", "actor").foreach(field => assert(!json.contains(field)))
       val replayed = present(accepted(service.load("bootstrap-game")),
         "the bootstrapped game")

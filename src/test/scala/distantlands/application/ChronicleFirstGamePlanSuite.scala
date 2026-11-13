@@ -1,7 +1,7 @@
 package distantlands.application
 
 import distantlands.gameplay.setup.{FirstGameRulesData, FirstGameSetupFixture,
-  SetupDeal}
+  LegacyDeal, SetupDeal}
 import distantlands.model._
 
 class ChronicleFirstGamePlanSuite extends munit.FunSuite:
@@ -11,13 +11,15 @@ class ChronicleFirstGamePlanSuite extends munit.FunSuite:
 
   test("dealing the fixture's equivalent Chronicle reproduces its exact deal order"):
     val orders = ChronicleFirstGamePlan.dealOrder(config,
-      chronicle.worldDeck, chronicle.relicDeck)
+      chronicle.worldDeck, chronicle.relicDeck,
+      LegacyDeal.deck(FirstGameSetupFixture.catalog, chronicle))
     assertEquals(orders, FirstGameSetupFixture.orders)
 
   test("dealOrder is total even when the Chronicle is too small for GameStartRules"):
     val short = chronicle.copy(atlasBox = chronicle.atlasBox.take(7))
     val orders = ChronicleFirstGamePlan.dealOrder(config,
-      short.worldDeck, short.relicDeck)
+      short.worldDeck, short.relicDeck,
+      LegacyDeal.deck(FirstGameSetupFixture.catalog, short))
     assertEquals(orders.participants, config.participants)
     assert(distantlands.gameplay.setup.GameStartRules
       .evolve(FirstGameSetupFixture.catalog, short, orders).isLeft)
@@ -29,7 +31,7 @@ class ChronicleFirstGamePlanSuite extends munit.FunSuite:
     val denizens = chronicle.worldDeck
     val orders = ChronicleFirstGamePlan.dealOrder(config,
       SetupDeal(FoundationFace.Normal, Vector(p1 -> 3, p2 -> 0, p3 -> 3)),
-      denizens, chronicle.relicDeck, identity)
+      denizens, chronicle.relicDeck, Vector.empty, identity)
     assertEquals(orders.worldDeckOrder.collect { case id: DenizenId => id },
       denizens.drop(6 + 2 * 3))
 
@@ -38,7 +40,7 @@ class ChronicleFirstGamePlanSuite extends munit.FunSuite:
     val short = chronicle.worldDeck.take(6 + 3 * 3 + 20)
     val orders = ChronicleFirstGamePlan.dealOrder(config,
       SetupDeal.firstGame(config.participants), short, chronicle.relicDeck,
-      _.reverse)
+      Vector.empty, _.reverse)
     val rest: Vector[WorldCardId] = short.drop(15)
     assertEquals(orders.worldDeckOrder,
       (rest ++ FirstGameRulesData.visions).reverse)
@@ -47,7 +49,7 @@ class ChronicleFirstGamePlanSuite extends munit.FunSuite:
       "mixed, and keeps the whole stack as the deal"):
     val orders = ChronicleFirstGamePlan.dealOrder(config,
       SetupDeal(FoundationFace.Altered, Vector(p1 -> 3, p2 -> 3, p3 -> 3)),
-      chronicle.worldDeck, chronicle.relicDeck, _.reverse)
+      chronicle.worldDeck, chronicle.relicDeck, Vector.empty, _.reverse)
     assertEquals(orders.worldDeckOrder,
       (FirstGameRulesData.visions: Vector[WorldCardId]).reverse)
     assertEquals(orders.denizenOrder, chronicle.worldDeck)

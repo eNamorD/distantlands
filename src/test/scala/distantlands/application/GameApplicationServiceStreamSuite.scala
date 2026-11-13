@@ -13,7 +13,7 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
 import distantlands.serialization.GameEventWire
 import distantlands.gameplay.chronicle.ChronicleBeginProcedure
-import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.{LegacyDeal, SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.testkit.{Commands, Look, Outcomes, PlacementPicks,
   RoundEndChoices, Table}
@@ -48,7 +48,8 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     val poweredWorldDeck = place(chronicle.worldDeck, p2Index, whenPlayedPower)
     val poweredChronicle = chronicle.copy(worldDeck = poweredWorldDeck)
     val poweredOrders = ChronicleFirstGamePlan.dealOrder(FirstGameBootstrapConfig(orders.participants, orders.firstPlayer),
-      poweredChronicle.worldDeck, poweredChronicle.relicDeck)
+      poweredChronicle.worldDeck, poweredChronicle.relicDeck,
+      LegacyDeal.deck(catalog, poweredChronicle))
     var service = new GameApplicationService(catalog, repository,
       roundEndRandomPort = RoundEndChoices.firstCandidate)
     var position = setupViaService(service, "powered-playability", sites,

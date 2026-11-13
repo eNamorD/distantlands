@@ -2,7 +2,7 @@ package distantlands.application
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.powers.PowerImplementationStatus
-import distantlands.gameplay.setup.SetupDeal
+import distantlands.gameplay.setup.{LegacyDeal, SetupDeal}
 import distantlands.model._
 
 /**
@@ -18,7 +18,8 @@ import distantlands.model._
  * seated (Empire ruling R6); otherwise, in a first game and in a later game
  * with no Empire, the first seat does, which the shuffle makes a random
  * player. Both decks are shuffled into the deal by
- * `policy`, since a Chronicle's own order is shown to players. The
+ * `policy`, and the derived legacy deck by `random`, since a Chronicle's
+ * own order is shown to players. The
  * shuffled orders are recorded in the plan, so replay stays RNG-free.
  */
 final class GeneratedFirstGamePlanFactory(
@@ -48,6 +49,7 @@ final class GeneratedFirstGamePlanFactory(
         policy.order(chronicle.relicDeck,
           ImplementedCardCatalog.ordinaryRelics(catalog, implemented),
           random),
+        random.shuffle(LegacyDeal.deck(catalog, chronicle)),
         random.shuffle))
     }
 

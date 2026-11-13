@@ -54,6 +54,23 @@ class GameStartRulesSuite extends munit.FunSuite:
     assertEquals(ready.game.campaign.baseline, withAbsentLineage)
     assertEquals(ready.game.campaign.evolved, None)
 
+  test("game start refuses a deal that does not hold the legacy deck"):
+    val short = orders.copy(legacyOrder = orders.legacyOrder.tail)
+    assertEquals(GameStartRules.evolve(catalog, chronicle, short),
+      Left(OathViolation.UnsupportedChronicle(
+        "the deal does not hold the legacy deck")))
+
+  test("the legacy deck a deal holds leaves out the legacies lineages hold"):
+    val seated = orders.participants.head.lineageId
+    val keeping = chronicle.copy(lineages = Vector(LineageState(seated, None,
+      Role.Exile, Vector(LegacyState(SeerCard.id, active = true)),
+      Vector.empty)))
+    assertEquals(GameStartRules.evolve(catalog, keeping, orders).left
+      .toOption, Some(OathViolation.UnsupportedChronicle(
+        "the deal does not hold the legacy deck")))
+    assert(GameStartRules.evolve(catalog, keeping, orders.copy(legacyOrder =
+      orders.legacyOrder.filterNot(_ == SeerCard.id))).isRight)
+
   test("a seated lineage's starting relics go facedown to its player"):
     val participant = orders.participants.head
     val relic = chronicle.relicDeck.head
@@ -86,7 +103,9 @@ class GameStartRulesSuite extends munit.FunSuite:
       LegacyState(ArbiterCard.id, active = false))
     val keeping = chronicle.copy(lineages = Vector(LineageState(seated, None,
       Role.Exile, legacies, Vector.empty)))
-    val ready = accepted(GameStartRules.evolve(catalog, keeping, orders))
+    val ready = accepted(GameStartRules.evolve(catalog, keeping, orders.copy(
+      legacyOrder = orders.legacyOrder.filterNot(
+        Set(SeerCard.id, ArbiterCard.id)))))
     assertEquals(ready.game.campaign.lineages(seated).legacies, legacies)
 
   private val altered = FoundationState(FoundationFace.Altered, Set.empty)
@@ -240,7 +259,7 @@ class GameStartRulesSuite extends munit.FunSuite:
     val mixed = ChronicleFirstGamePlan.dealOrder(
       FirstGameBootstrapConfig(orders.participants, PlayerId("p1")),
       SetupDeal.of(short, orders.participants), short.worldDeck,
-      short.relicDeck, _.reverse)
+      short.relicDeck, LegacyDeal.deck(catalog, short), _.reverse)
     accepted(GameStartRules.evolve(catalog, short, mixed))
     assertEquals(GameStartRules.evolve(catalog, short, mixed.copy(
         worldDeckOrder = mixed.worldDeckOrder.init)),
