@@ -306,7 +306,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 }
 
 .world { margin-top: 18px; }
-.round-tracker svg { display: block; width: min(100%, 150px); height: auto; margin: 0 auto; }
+.round-tracker svg { display: block; }
 .round-segment { fill: var(--site); stroke: var(--line-mid); stroke-width: 2; }
 .round-current { fill: var(--brass); stroke: var(--cream-bright); stroke-width: 3; }
 .round-tracker text { fill: var(--cream-bright); font-weight: 700; }
@@ -349,8 +349,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    prints for it. */
 .site-face { border: 1px solid var(--line); border-radius: 9px;
   background: var(--site); }
-.site-slot-empty { border: 1px dashed var(--line-mid); border-radius: 9px;
-  background: transparent; }
 /* A site's words are laid over its face. What the card prints: the name in
    a band at its foot, the powers and the requirement over the band, the
    defense in the upper right. What lies on it in play: loose tokens in the
@@ -393,7 +391,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   bottom: 4px; }
 
 /* The Cradle's foot. */
-.mat-board .round-tracker svg { margin: 0; }
 .track-note { overflow: hidden; font-size: 1.05rem; line-height: 1.2; }
 .track-note p { display: inline; margin: 0 1.2em 0 0; }
 .vision-cell { display: flex; align-items: flex-start;
@@ -439,13 +436,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* Smaller still, the face keeps what a player scans for and gives up its
    powers, which are read on a zoom or in the overlay. */
 .map-tiny .mat-board .site-footer { display: none; }
-.region-label {
-  margin: 0 0 8px;
-  color: var(--ink-dim);
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
 
 .site { position: relative; min-width: 0; color: var(--cream);
   text-align: left; }
@@ -453,10 +443,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    every place that is not filled yet. */
 .site-slot-empty { min-width: 0; border: 1px dashed var(--line-mid);
   border-radius: 9px; background: transparent; }
-/* Sized from the width rather than a length of their own, so a card keeps its
-   proportions as the row divides up whatever width the site has. */
-.site .card-face { height: auto; aspect-ratio: var(--ratio-denizen); }
-.site .card-face-relic { height: auto; aspect-ratio: var(--ratio-relic); }
 .site-readonly { cursor: default; }
 /* Board decisions (spec 2026-10-03): an option drawn where it lies. Nothing
    that is not an option changes, and only an unavailable option is dimmed. */
@@ -600,12 +586,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   font-weight: 700;
 }
 .site-details {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-  margin-top: 9px;
   color: var(--parchment-muted);
   font-size: 0.86rem;
   line-height: 1.45;
@@ -1084,9 +1064,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   margin: 0 0 8px; }
 .public-legacies-label { margin: 0; font-size: 0.9rem; }
 .public-legacies-cards { display: flex; gap: var(--card-gap); }
-.site-cards { display: flex; flex: 0 0 auto; flex-wrap: wrap;
-  align-items: flex-start; justify-content: flex-end; min-width: 0;
-  gap: var(--card-gap); }
 
 /* The pile and the Supply figure as controls, with the title pill's hover.
    A button resets the text it inherits, so the colour and font are given
@@ -1486,26 +1463,19 @@ button.festival-marker:hover,
    the map zooms. The site footer (powers and requirement) sits inside
    the details and so holds the glance size too, one line of it; a card's
    own study layer (defense, restriction, badge) is hidden here and read
-   on a zoom or in the overlay. Nothing here changes the height of the
-   map: the site box is fixed and
-   clips, and the region title has a fixed line, so a Fit that lands near
-   the threshold cannot flip the class and re-fit forever. */
+   on a zoom or in the overlay. Nothing here changes the size of the
+   map: the board has the mat's fixed ratio, so a Fit that lands near the
+   threshold cannot flip the class and re-fit forever. */
 /* The glance layer's two sizes, named once so the compact site below can
    size its card row from what the text leaves it. */
 .map-compact { --glance-name: clamp(1.08rem, calc(12px / var(--map-scale, 1)), 3rem);
   --glance-text: clamp(0.86rem, calc(11.6px / var(--map-scale, 1)), 3.2rem); }
-.map-compact .site-name { line-height: 1.1; font-size: var(--glance-name); }
 .map-compact .site-pawns { margin: 0; justify-content: center; }
 .map-compact .site-tokens, .map-compact .site-defense, .map-compact .site-pawns,
 .map-compact .site-details { font-size: var(--glance-text); }
 .map-compact .pawn, .map-compact .festival-marker { font-size: inherit; }
 .map-compact .site-details { margin: 0; line-height: 1.15; }
 .map-compact .site-forces { margin-top: 4px; }
-/* The footer is inside the details, so it is counter-scaled with them and
-   reads at the glance size; on the zoomed-out map it is one line (the
-   second shows from the compact threshold up, where the box has the room),
-   cut at a word with the hover title carrying the rest. */
-.map-compact .site-powers { -webkit-line-clamp: 1; }
 /* The compact card face: the name in the middle, the suit in the corner.
    The card inherits the counter-scaled size from the site, so its own em
    rules hold the name at the floor without a clamp of their own. The
