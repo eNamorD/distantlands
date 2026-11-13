@@ -11,13 +11,13 @@ class LegacyCardDataSuite extends munit.FunSuite:
 
   test("each goal is printed on six legacies, one of each suit"):
     val byGoal = legacies.groupBy(_.goal)
-    assertEquals(byGoal.keySet, LegacyGoal.all.toSet)
+    assertEquals(byGoal.keySet, LegacyGoal.values.toSet)
     byGoal.foreach((goal, cards) =>
       assertEquals(cards.map(_.suit).sortBy(_.ordinal), Suit.all.sortBy(_.ordinal),
         s"$goal"))
 
   test("each goal covers a run of six ids"):
-    val ids = LegacyGoal.all.map(goal =>
+    val ids = LegacyGoal.values.toVector.map(goal =>
       legacies.filter(_.goal == goal).map(_.id.value).sorted)
     assertEquals(ids, (1 to 36).map(n => f"L$n%02d").grouped(6)
       .map(_.toVector).toVector)
@@ -79,3 +79,10 @@ class LegacyCardDataSuite extends munit.FunSuite:
         card.name))
     assertEquals(legacies.map(_.id).sortBy(_.value),
       printed.map(_._1.id))
+
+  test("each goal prints its words (Legacies design, \"Card data\")"):
+    assertEquals(LegacyGoal.values.toVector.map(_.printed), Vector(
+      "Rule the most sites", "Hold the Grand Scepter. If none, win.",
+      "Hold the People's Favor", "Hold the Darkest Secret",
+      "Hold the relic of highest value",
+      "Rule the most cards of this suit (even advisers)"))

@@ -46,3 +46,8 @@ class LegacyIdentitySuite extends munit.FunSuite:
     assert(viewers.forall(presentation.identifiesAt(chronicle, _,
       ArbiterCard.id)))
     assert(!presentation.identifiesAt(ready, Some(p2), ArbiterCard.id))
+
+  test("a legacy's card details carry its goal's key and words (R35)"):
+    assertEquals(presentation.cardDetails(SeerCard.id, None, hidden = false)
+      .legacyGoal, Some(distantlands.protocol.projection.LegacyGoalProjection(
+        "darkest-secret", "Hold the Darkest Secret")))

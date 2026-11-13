@@ -186,6 +186,17 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     assertRoundTrips(projection.copy(playerBoards = projection.playerBoards
       .map(_.copy(advisers = Vector(tracker)))))
 
+  test("a legacy's goal round-trips, and a card without one writes none"):
+    val seer = known.copy(cardId = "L22", cardKind = "legacy",
+      legacyGoal = Some(LegacyGoalProjection("darkest-secret",
+        "Hold the Darkest Secret")))
+    val held = projection.copy(playerBoards = projection.playerBoards
+      .map(_.copy(advisers = Vector(seer))))
+    assertRoundTrips(held)
+    val raw = ujson.read(GameProjectionCodec.encode(projection))
+    assert(!raw("playerBoards")(0)("advisers").arr.exists(
+      _.obj.contains("legacyGoal")), raw)
+
   test("a board's bag figures and the Supply bands round-trip"):
     val withBag = projection.copy(
       playerBoards = projection.playerBoards.map(_.copy(bankedWarbands = 5,

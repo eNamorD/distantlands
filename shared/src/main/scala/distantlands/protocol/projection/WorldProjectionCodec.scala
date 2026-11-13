@@ -16,7 +16,13 @@ private[protocol] object WorldProjectionCodec:
     color <- playerColor(value, "colorToken", path)
   yield SetupPlayerProjection(playerId, displayName, role, color)
 
-  def encodeCard(value: CardDetailsProjection): ujson.Value = ujson.Obj(
+  def encodeCard(value: CardDetailsProjection): ujson.Value =
+    val card = encodeCardFields(value)
+    // A card with no goal writes none, so older readers see no new field.
+    value.legacyGoal.foreach(goal => card("legacyGoal") = ujson.Obj(
+      "key" -> goal.key, "text" -> goal.text))
+    card
+  private def encodeCardFields(value: CardDetailsProjection): ujson.Obj = ujson.Obj(
     "cardId" -> value.cardId, "cardKind" -> value.cardKind, "name" -> value.name,
     "suit" -> stringOption(value.suit), "restrictions" -> stringOption(value.restrictions),
     "rulesText" -> stringOption(value.rulesText), "orientation" -> stringOption(value.orientation),
@@ -30,8 +36,8 @@ private[protocol] object WorldProjectionCodec:
     value <- obj(raw, path)
     _ <- exact(value, Set("cardId", "cardKind", "name", "suit", "restrictions",
       "rulesText", "orientation", "side", "favor", "secrets", "relicValue",
-      "defense", "hidden", "implemented", "powers", "warbands", "tracking"),
-      path)
+      "defense", "hidden", "implemented", "powers", "warbands", "tracking",
+      "legacyGoal"), path)
     cardId <- string(value, "cardId", path)
     kind <- string(value, "cardKind", path)
     name <- string(value, "name", path)
@@ -52,9 +58,18 @@ private[protocol] object WorldProjectionCodec:
       Vector.empty[SiteForcesProjection])((raw, child) =>
       array(raw, child).flatMap(traverse(_, child)(decodeForces)))
     tracking <- optionalAbsent(value, "tracking", path)(decodeTracked)
+    goal <- optionalAbsent(value, "legacyGoal", path)(decodeGoal)
   yield CardDetailsProjection(cardId, kind, name, suit, restrictions, rulesText,
     orientation, side, favor, secrets, relicValue, defense, hidden, implemented,
-    powers, warbands, tracking)
+    powers, warbands, tracking, goal)
+
+  private def decodeGoal(raw: ujson.Value, path: String)
+      : Result[LegacyGoalProjection] = for
+    value <- obj(raw, path)
+    _ <- exact(value, Set("key", "text"), path)
+    key <- string(value, "key", path)
+    text <- string(value, "text", path)
+  yield LegacyGoalProjection(key, text)
 
   private def encodeTracked(value: TrackedPawnProjection): ujson.Value =
     ujson.Obj("playerId" -> value.playerId, "colorToken" -> value.color.key,

@@ -26,8 +26,12 @@ final case class CardDetailsProjection(
       * Cage). */
     warbands: Vector[SiteForcesProjection] = Vector.empty,
     /** The pawn the Tracker's holder chose last turn (Tracker). */
-    tracking: Option[TrackedPawnProjection] = None
+    tracking: Option[TrackedPawnProjection] = None,
+    /** A legacy's goal (Legacies implementation ruling R35). */
+    legacyGoal: Option[LegacyGoalProjection] = None
 )
+/** A legacy's goal: its stable key and its printed words. */
+final case class LegacyGoalProjection(key: String, text: String)
 /** A Tracker's record, as its card shows it: the player whose pawn was
   * chosen, their colour, and the card's words ("Tracking Red"). */
 final case class TrackedPawnProjection(playerId: String,

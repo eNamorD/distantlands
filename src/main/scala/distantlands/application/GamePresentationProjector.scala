@@ -437,7 +437,8 @@ private[application] final class GamePresentationProjector(
       CardDetailsProjection(value.value, "legacy", l.name, Some(l.suit.key),
         rulesText = Some(l.rulesText),
         orientation = orientation.map(orientationName), hidden = hidden,
-        implemented = cardImplemented(l), powers = powerFaces(l))
+        implemented = cardImplemented(l), powers = powerFaces(l),
+        legacyGoal = Some(LegacyGoalProjection(l.goal.key, l.goal.printed)))
     }
     case other => CardDetailsProjection(other.value, other.getClass.getSimpleName,
       safeLabel(other.value), orientation = orientation.map(orientationName), hidden = hidden)
