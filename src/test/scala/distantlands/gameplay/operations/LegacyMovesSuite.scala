@@ -121,3 +121,13 @@ class LegacyMovesSuite extends munit.FunSuite:
         assert(RawOperationBatch.executeAll(ready, Vector(moved(SeerCard.id,
           from, to, Some(Orientation.FaceUp)))).isRight, s"$to")
     }
+
+  test("the batch's card inventory check lets a legacy leave play into the " +
+      "legacy deck"):
+    val ready = Table.start.legacy(p1, SeerCard).ready
+    val from = Location.Legacies(lineageOf(ready, p1))
+    val run = OperationPipeline.run(ready, Vector(moved(SeerCard.id, from,
+      Location.Deck(CardDeck.Legacy))), OperationPolicy.Permissive,
+      Vector.empty)(Right(_))
+    assertEquals(run.map(_.state.game.cardIndex.toOption.get.get(SeerCard.id)),
+      Right(None))
