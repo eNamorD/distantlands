@@ -295,3 +295,12 @@ Decision: the untracked local `.claude/launch.json` is updated to the
 README's current server command and data directory, changing only the
 stale names and paths; it is not committed.
 Reason: so the browser tools can start the server for the check.
+
+**R41. The strip's legacies are chips.**
+Question: whole legacy cards in the player strip were cut off, since the
+players pane never scrolls and leaves a board one line under its cards.
+Decision: the player strip shows chips (suit seal, name, "Dormant"), the
+goal in the chip's hover note and the whole card in the inspection; the
+public row keeps whole cards with the goal tag. This narrows R34's goal
+tag "on the small card" to the public row.
+Reason: the strip must fit the players pane without scrolling.
