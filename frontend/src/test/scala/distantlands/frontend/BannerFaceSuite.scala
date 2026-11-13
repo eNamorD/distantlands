@@ -49,6 +49,16 @@ class BannerFaceSuite extends munit.FunSuite:
     assertEquals(face.getAttribute("aria-label"),
       "Banner of the People's Favor, Mob, 3 favor")
 
+  /** The side and the name are printed on the banner; what it holds lies
+    * on it in play (real proportions design). */
+  test("a banner's side and name are printed and what it holds is not"):
+    val face = BannerFace.render(mob, None)
+    assert(one(face, ".banner-side").classList.contains("printed"))
+    assert(one(face, ".card-header").classList.contains("printed"))
+    assertEquals(all(face, ".card-tokens.printed, .card-token-count.printed"),
+      Vector.empty)
+    assertEquals(all(face, ".card-tokens, .card-token-count").size, 2)
+
   test("the Darkest Secret holds secrets, and a two-word side is spaced"):
     val face = BannerFace.render(flame, None)
     assertEquals(one(face, ".banner-side").textContent, "Wandering Flame")

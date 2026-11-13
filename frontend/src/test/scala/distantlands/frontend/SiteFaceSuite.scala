@@ -67,6 +67,12 @@ class SiteFaceSuite extends munit.FunSuite:
   /** A slot a site owns is drawn whether or not a card sits in it, so the row
     * reads as the site's capacity rather than as its current contents.
     */
+  /** A relic's back is what the card prints on that side. */
+  test("an unknown relic's back letter is marked printed"):
+    val back = ServerUiSupport.facedownCard("relic")
+    assertEquals(all(back, ".card-back-letter").map(_.getAttribute("class")),
+      Vector("card-back-letter printed"))
+
   test("an empty relic slot is drawn like an empty denizen slot"):
     val row = firstMatch(ServerUiSupport.siteDetails(woods.copy(
       denizenCapacity = 1, relicCapacity = 2, denizens = Vector.empty,

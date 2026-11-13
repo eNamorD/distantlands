@@ -59,6 +59,37 @@ class CardFaceSuite extends munit.FunSuite:
       "Facedown denizen", orientation = Some("face-down"), hidden = true))
     assertEquals(all(back, ".card-back-letter.printed").size, 1)
 
+  /** Every part of a face, each on the side of the line it belongs to: what
+    * the card prints, which art replaces, or what lies on it in play. */
+  test("each printed part is marked and each part of play is not"):
+    import distantlands.protocol.projection.{LegacyGoalProjection,
+      ModifierMarkProjection}
+    val red = TrackedPawnProjection("red", distantlands.model.PlayerColor.Red,
+      "Tracking Red")
+    val inPlay = CardFace.render(faceUp.copy(favor = 1, secrets = 1,
+      tracking = Some(red), powers = Vector(PowerFace("Spend no Supply.",
+        modifier = Some(ModifierMarkProjection.Action(Vector("travel")))))))
+    val legacy = CardFace.render(CardDetails("l", "legacy", "Ancient Bloodline",
+      orientation = Some("face-up"),
+      legacyGoal = Some(LegacyGoalProjection("most-sites", "Rule sites."))))
+    val dormant = CardFace.render(CardDetails("l", "legacy", "Ancient Bloodline",
+      orientation = Some("face-down"),
+      legacyGoal = Some(LegacyGoalProjection("most-sites", "Rule sites."))))
+    val knowable = CardFace.render(CardDetails("r", "relic", "Crown",
+      orientation = Some("face-down")))
+    def marked(node: dom.Element, selector: String): Boolean =
+      all(node, selector).nonEmpty &&
+        all(node, selector).forall(_.classList.contains("printed"))
+    def unmarked(node: dom.Element, selector: String): Boolean =
+      all(node, selector).nonEmpty &&
+        !all(node, selector).exists(_.classList.contains("printed"))
+    assert(marked(inPlay, ".card-power-marks"))
+    assert(marked(legacy, ".legacy-goal"))
+    Vector(".card-tokens", ".card-token-count", ".card-tracking")
+      .foreach(selector => assert(unmarked(inPlay, selector), selector))
+    assert(unmarked(dormant, ".legacy-dormant"))
+    assert(unmarked(knowable, ".card-knowable-pip"))
+
   test("a face-up card shows its summary with no field names"):
     // favor and secrets restate faceUp's values so the counts read locally.
     val node = CardFace.render(faceUp.copy(favor = 2, secrets = 1))
