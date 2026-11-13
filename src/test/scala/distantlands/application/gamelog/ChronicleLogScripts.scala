@@ -3,7 +3,8 @@ package distantlands.application.gamelog
 import distantlands.catalog.holding.{IronHandCard, SeerCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import distantlands.gameplay.chronicle.{OfferCitizenship, ShapeFoundation}
+import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship,
+  ShapeFoundation}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import distantlands.testkit.{MenuPlay, Table}
@@ -52,6 +53,21 @@ object ChronicleLogScripts:
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("throne-offered", service, p1)
 
+  /** The same game as [[chronicleStarted]], where p1 gives p2 one lineage
+    * point at Score Lineage Points, for two of their three (R28). */
+  def throneGifted(using munit.Location): Script =
+    val (service, acting) = atTable("throne-gifted", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.withAnswers {
+      case park if park.decisionId == LineageScoring.giftsDecisionId =>
+        DecisionAnswer.DistributeAnswer(Vector(
+          DistributeAmount(DecisionOptionRef.Player(p2), 1),
+          DistributeAmount(DecisionOptionRef.Player(p3), 0)))
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("throne-gifted", service, p1)
+
   /** The first game, with Foundation I on Wide Horizons: at the Beacon
     * p1, who holds it, restores it to Imperial Maps (Foundations design,
     * slice 7). */
@@ -84,5 +100,6 @@ object ChronicleLogScripts:
   val named: Vector[(String, () => Script)] =
     Vector("chronicle-started" -> (() => chronicleStarted),
       "throne-offered" -> (() => throneOffered),
+      "throne-gifted" -> (() => throneGifted),
       "beacon-restored-foundation" -> (() => beaconRestoredFoundation),
       "beacon-kept-foundations" -> (() => beaconKeptFoundations))
