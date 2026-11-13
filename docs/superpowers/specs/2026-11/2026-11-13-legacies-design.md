@@ -1,7 +1,9 @@
 # Legacies
 
 **Status:** designed 2026-11-13, approved section by section by the owner.
-All five slices landed (plans: [slice 1](../../plans/2026-11/2026-11-13-legacies-slice1.md),
+All five slices landed. The questions the slices raised were settled in the
+[implementation rulings](2026-11-13-legacies-implementation-rulings.md)
+R1-R44, which the owner reviewed on 2026-11-13, re-ruling R28 (plans: [slice 1](../../plans/2026-11/2026-11-13-legacies-slice1.md),
 [slice 2](../../plans/2026-11/2026-11-13-legacies-slice2.md),
 [slice 3](../../plans/2026-11/2026-11-13-legacies-slice3.md),
 [slice 4](../../plans/2026-11/2026-11-13-legacies-slice4.md),
@@ -11,17 +13,17 @@ All five slices landed (plans: [slice 1](../../plans/2026-11/2026-11-13-legacies
 the [Foundations design](2026-11-11-foundations-design.md), whose faces and
 alteration sources this fills in, and the
 [operation families design](2026-11-12-operation-families-design.md), which
-must land first: this spec adds an operation to its `ChronicleOperation`
+landed first: this spec adds an operation to its `ChronicleOperation`
 family and legacy write paths to its card family.
 
 ## Goal and scope
 
 A legacy is a persistent lineage card with a goal, a suit and a power,
 faceup (active) or facedown (dormant) (CR section 12, pp. 33 and 36).
-Today the engine carries legacies only as Chronicle data it cannot use:
-game start refuses a seated lineage's legacies and starting relics, the
-Sun's steps 2-5 are empty windows, Score Lineage Points ignores the legacy
-bonus, and Foundation III's two faces deal nothing.
+Before this spec the engine carried legacies only as Chronicle data it
+could not use: game start refused a seated lineage's legacies and starting
+relics, the Sun's steps 2-5 were empty windows, Score Lineage Points
+ignored the legacy bonus, and Foundation III's two faces dealt nothing.
 
 This spec covers the **legacy lifecycle**: card data, dealing, Resolve
 Legacies, the scoring bonus, persistence and display. It implements no
@@ -43,8 +45,9 @@ and 4 once 1 and 2 land.
 
 ## Rulings
 
-Taken with the owner on 2026-11-12 and 2026-11-13. They go into a new
-"Legacies rulings" section of `docs/rules/ambiguities.md`.
+Taken with the owner on 2026-11-12 and 2026-11-13. They open the
+"Legacies rulings" section of `docs/rules/ambiguities.md`, which then
+carries the implementation rulings.
 
 1. **Only the owner sees a dormant legacy's face.** Every other viewer sees
    a legacy back. The projection redacts it as it redacts a facedown
@@ -156,14 +159,16 @@ altered face:
   `alters: Option[FoundationNumber]`. `LegacyGoal` is a sealed type in
   `catalog` with the six cases above; `MostOfSuit` reads the card's own
   suit. Every holding legacy object gets its values from the tables above.
-  `reference/catalog-ingestion/legacy-transcriptions.json` gains `goal` and
-  `suit`, citing the `bgs-cards` images. `CardCatalogSuite` pins the
-  shape: six cards per goal, six per suit, one per goal and suit, and
-  `alters` exactly on L31-L36.
+  `reference/catalog-ingestion/legacy-transcriptions.json` gains `goal`,
+  `suit` and `alters`, citing the `bgs-cards` images. `LegacyCardDataSuite`
+  pins the shape (six cards per goal, six per suit, one per goal and suit,
+  `alters` exactly on L31-L36) and every card's values.
 - **The deck.** `CardZones.legacyDeck` is deleted (ruling 3).
   `CardDeck.Legacy` stays as a destination: a legacy moved there leaves
   play, and `CardIndex` lists nothing in it. Card moves that read the
-  legacy deck (`CardMovementOperations`) lose those arms.
+  legacy deck (`CardMovementOperations`) lose those arms. The deck has no
+  order: a move into it names no top or bottom, and no facedown face; nor
+  may a move into the public row (R3, R6).
 - **The public row.** `CardZones.publicLegacies: Vector[LegacyId]`, with
   `CardContainer.PublicLegacies`, indexed by `CardIndex`. The Chronicle
   never stores it: after the Sun it is empty.
@@ -184,8 +189,9 @@ altered face:
   "legacies require Legacies" and "starting relics require Legacies". A
   seated lineage's legacies enter the game with their stored faces. Its
   starting relics go to its player facedown, as the Chancellor's
-  Reliquary relic does. `ChronicleAccounting` refuses a legacy that two
-  lineages hold.
+  Reliquary relic does. `ChronicleAccounting` refuses an unknown legacy
+  and one that two lineages hold. A boxed lineage's starting relics stay
+  on its record (R2).
 - **Redaction.** The projection shows an active legacy to everyone and a
   dormant legacy's face to its owner only (ruling 1); other viewers get a
   legacy back. The public row is faceup.
@@ -209,8 +215,10 @@ the deal used, as it records the denizen order.
   area, so only their owner sees them. In `SetupProcedure`, for each
   participant after pawn placement and before the adviser choice, a
   `Branch(Decide(setup.legacy-choice.<player>, participant))` asks a
-  choose-one between the two drawn legacies, both shown as subject cards.
-  `BuildOps` then moves the other to the deck. This keeps the first game's
+  choose-one between the two drawn legacies, offered as legacy options
+  (R10) and read from state rather than stored (R13). `BuildOps` then
+  moves the other to the deck. A player who drew one keeps it unasked; one
+  who drew none is asked nothing (R9). This keeps the first game's
   order on CR p. 7: place pawn, keep legacy, keep adviser.
 - **Public Ambitions** (Foundation III altered). Game start deals the
   shuffled deck's first 4 legacies faceup into `publicLegacies`. Nobody
@@ -219,7 +227,8 @@ the deal used, as it records the denizen order.
   happen in a first game.
 - **Log.** "Blue kept a legacy" names no card: a dormant face fails the
   log's knowledge rule for other viewers. "Public Ambitions dealt Rival,
-  Seer, Arbiter and Wealthy."
+  Seer, Arbiter and Wealthy." opens the Setup log, before the Reliquary pick
+  (R14).
 
 Tests: `LegacyDeal` draw order and a short deck; a Quiet Ambitions setup
 leaving each player one more dormant legacy than they started with; a
@@ -237,10 +246,10 @@ rule.
 | Goal | Score |
 |---|---|
 | `MostSites` | Sites ruled. Every Imperial is credited with each Empire site, through `SiteRule`. |
-| `MostOfSuit` | Cards of the suit at sites ruled, plus that player's own advisers. Imperials share the Empire sites' cards. |
+| `MostOfSuit` | Denizens and edifices of the suit at sites ruled, plus that player's own advisers, faceup or facedown. Imperials share the Empire sites' cards (R23). |
 | `HighestRelic` | The printed `value` of the best relic held, faceup or facedown. Sun step 1 has already revealed them. |
 | `PeoplesFavor`, `DarkestSecret` | The banner's holder meets it; an unheld banner, nobody. |
-| `GrandScepter` | Its holder meets it; with no Grand Scepter in play, the winner (ruling 7). |
+| `GrandScepter` | Its holder meets it; with no Grand Scepter in play, the winner (ruling 7); in play but held by nobody, nobody (R22). |
 
 For the counted goals only the highest positive score meets the goal
 (ruling 6). Ties between Imperials alone are friendly: every tied Imperial
@@ -253,8 +262,8 @@ Each Sun step runs in its existing window
 (`ChronicleSunProcedure`):
 
 2. **Flip legacies** (`PowerWindow.ChronicleFlipLegacies`). Each seated
-   lineage's dormant legacy is flipped active when its player meets its
-   goal, otherwise moved to the deck. Each public legacy moves active to
+   lineage's dormant legacy, in seat order, is flipped active when its
+   player meets its goal, otherwise moved to the deck (R25). Each public legacy moves active to
    the one player who meets its goal; on a tie between Imperials alone, a
    `Decide(chronicle.sun.public-legacy.<id>, chancellor)` choose-one over
    the tied players picks who. Public legacies nobody takes move to the
@@ -264,7 +273,8 @@ Each Sun step runs in its existing window
 3. **Exiles' legacies** (`PowerWindow.ChronicleExileDormancy`). Each seated Exile's active
    legacy whose goal they do not meet flips dormant. Imperials and the
    foundations are untouched.
-4. **The cap** (`PowerWindow.ChronicleLegacyCap`). In turn order, each
+4. **The cap** (`PowerWindow.ChronicleLegacyCap`). In turn order (seat
+   order from the last round's starter, R21), each
    player with `n > 3` active legacies answers a choose-many with exactly
    `n - 3` picks, and those move to the deck.
 5. **Shuffle** (`PowerWindow.ChronicleShuffleLegacies`). The window only:
@@ -275,10 +285,12 @@ wins (Crown Chancellor) and when an Exile accepts Citizenship (Offer
 Citizenship); a player then above three active legacies answers the cap's
 choice at once (implementation rulings R19 and R20).
 
-**Log.** Checking goals reveals the dormant faces, so the lines name cards:
-"Blue activated Seer", "Blue discarded Arbiter", "Red took Rival" (a public
-legacy), "Red's Steadfast went dormant", "Wealthy set Foundation II to
-Movers and Shakers".
+**Log.** Checking goals reveals the dormant faces: during the Chronicle
+Phase every legacy is named to every viewer (R18). The lines: "Blue
+activated Seer", "Blue discarded Arbiter", "Red took Rival" (a public
+legacy, also after the Chancellor's tie-break), "Rival returned to the
+legacy deck", "Red's Steadfast went dormant", "Blue reactivated
+Steadfast", "Wealthy set Foundation II to Movers and Shakers" (R24).
 
 Tests: a `LegacyGoals` table per goal, with the Empire's sites and their
 cards credited to every Imperial, a friendly tie, an unfriendly tie, a tie
@@ -301,15 +313,18 @@ sites.
   that legacy's printed suit at those sites (ruling 10). Advisers do not
   count; edifices do. Every legacy the winner holds counts: after the Sun
   none of the winner's can be dormant (ruling 2).
-- **Gifts.** `LineageScoring.winnerPoints` becomes `3 + bonus`, and the
-  gift bound becomes half that total, rounded down.
+- **Gifts.** `LineageScoring.winnerPoints` is renamed `basePoints`; the
+  winner earns `3 + bonus`, and the gift bound becomes half that total,
+  rounded down. The scorepad records what the winner keeps.
 - **Log.** Before the gift question, the earned total: "Blue scored 7
   lineage points (3 base, 3 from Beast, 1 from Nomad)". Legacies of one
   suit add into one share, a suit that scores 0 is left out, and with no
   bonus the line stays "Blue scored 3 lineage points". Then one line per
   gift, "Blue gave up 4 points to give Red 2 points.", and after any gift
   "Blue keeps 3 points" (implementation ruling R28, re-ruled by the
-  owner).
+  owner). A count of 1 reads "1 point" (R43); a winner who gives everything
+  reads "keeps 0 points" and records nothing (R29); a gift's recipient gets
+  no line of their own (R44).
 
 Tests: the bonus over two legacies; two legacies of one suit in one share;
 advisers not counted; gifts bounded by the new total; the log line with and
@@ -317,19 +332,22 @@ without a bonus.
 
 ## Slice 5: UI
 
-- **Player area.** A legacy strip shows each legacy as a small card with
-  its name, goal icon and suit seal. An active legacy is faceup. A dormant
-  legacy shows its face, marked "Dormant", to its owner and a legacy back
-  to everyone else. Clicking one opens the card inspection: rules text,
-  goal and suit.
-- **Public Ambitions row.** The public legacies, faceup near the map, while
-  the row holds any.
+- **Player area.** A "Legacies" row under each board's cards shows each
+  legacy as a chip with its suit seal and name (R37, R41). A dormant legacy
+  shows its face, marked "Dormant", to its owner and an "L" back to
+  everyone else (R36). The goal is in words, in the chip's hover note
+  (R34). Clicking a chip opens the card inspection: rules text, goal and
+  suit.
+- **Public Ambitions row.** The public legacies as whole faceup cards with
+  a goal tag, in the World pane above the regions, while the row holds any
+  (R38).
 - **Decisions** reuse existing forms: the keep choice is a choose-one with
   both legacies as subject cards; the cap is a choose-many with exact
   bounds; the Chancellor's tie-break is a choose-one over players with the
-  legacy as subject card.
-- **Chronicle page.** Each lineage's row lists its legacies by name,
-  active or dormant. A saved Chronicle is the owner's own record, so it
+  legacy as subject card. A legacy decision is answered on the strip.
+- **Chronicle page.** A lineage list under the summary line names each
+  lineage's legacies, active or dormant: "Red 9 · Seer, Iron Hand
+  (dormant)" (R39). A saved Chronicle is the owner's own record, so it
   shows every face.
 
 Tests: the strip and the public row render from a projection, the dormant
@@ -337,10 +355,12 @@ back for another seat, and the Chronicle page's legacy list.
 
 ## Docs
 
+Each landed with its slice.
+
 - **ROADMAP.** The **Legacies** item is replaced by three items for the
   setup, Chronicle and in-play power batches, which take with them High
-  Priest's `DealRules` term and the powers named below. The lifecycle
-  half is deleted when slice 4 lands.
+  Priest's `DealRules` term and the powers named below, plus goal icons
+  (R34) and the follow-ups the slices left.
 - **`docs/rules/chronicle.md`.** Sun steps 2-5 and Score Lineage Points
   marked implemented, citing this spec.
 - **`docs/rules/ambiguities.md`.** The "Legacies rulings" section above.
@@ -361,5 +381,10 @@ back for another seat, and the Chronicle page's legacy list.
   Gatekeeper taking an enemy's legacy, Royal Line choosing the Successor,
   The Mouth activating a legacy in play, and Matchmaker choosing for other
   players. Each lands with its batch, through the windows this spec keeps.
+- The other cards that act on legacies: Ancient Writ, Amber Doors and Lost
+  Doors draw legacies during a game, Ruined Temple doubles the legacy
+  points, and Stone Baths and Ruined Baths change Resolve Legacies. A draw
+  during a game needs a random draw from the derived deck, which ruling 3
+  did not foresee (the roadmap's **Cards that act on legacies**).
 - Era end and the reset of lineage points (the roadmap's **Eras** item).
 - Editing a saved Chronicle's legacies (the roadmap's **Edit Chronicle**).

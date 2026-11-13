@@ -125,10 +125,13 @@ goal, favor banks, and the Chronicle's six Foundation faces
 
 The scope follows Combined Rulebook pp. 6-7 and the New Foundations first-game
 clarification on p. 8, and for later games the New Foundations rulebook's
-"Setup for Later Games". It excludes Legacy selection/effects. Game start
+"Setup for Later Games". It deals legacies but applies no legacy power. Game start
 accepts every face of every foundation
 ([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md));
-Foundation III is accepted on either face and does nothing until Legacies.
+Foundation III deals legacies on either face: Quiet Ambitions' keep choice
+or the Public Ambitions row
+([Legacies design](../superpowers/specs/2026-11/2026-11-13-legacies-design.md),
+slice 2).
 
 ## Application and transport
 

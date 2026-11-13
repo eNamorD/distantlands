@@ -71,7 +71,8 @@ yet, and `removeCard`'s `CardDeck.Legacy` arm cannot be reached.
 Decision: keep both members for slice 5, and delete them then if slice 5
 still does not use them in production. The unreachable arm stays, with a
 comment saying nothing is indexed in the derived deck.
-Reason: slice 5 draws the goal icon; the match must stay exhaustive.
+Reason: slice 5 shows the goal; the match must stay exhaustive. R35
+settled it: `key` is used, `all` is deleted.
 
 **R8. Slice 1 docs.**
 Question: the "Legacies rulings" section the design requires was not

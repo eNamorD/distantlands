@@ -99,6 +99,17 @@ Left behind by the
   Asked by the owner in the second review of the Foundations rulings,
   2026-11-12.
 
+Left behind by the
+[Legacies work](superpowers/specs/2026-11/2026-11-13-legacies-design.md):
+
+- [ ] **Play-test Legacies' Chronicle Phase in a browser.** The running
+  app was checked only at the Setup keep decision. The Chronicle Phase
+  reveal (Legacies implementation ruling R18), a Public Ambitions row, the
+  Chancellor's tie-break with its subject card, the cap's choose-many and
+  the scoring lines are covered by tests only: no route reaches those
+  states short of playing a whole game. The journaled arranged start would
+  seed them.
+
 ### Phase - Campaign battle summary
 
 Left out of the Game Log action sections
@@ -155,7 +166,9 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
 ### Phase - Chronicle steps
 
 After the all-Exile alpha, implement the Chronicle and persistent campaign:
-Legacy activation and scoring, and era scoring.
+legacy powers and era scoring. The legacy lifecycle (dealing, Resolve
+Legacies, the scoring bonus and the display) landed with the
+[Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md).
 
 - [ ] **Legacy powers: setup.** The SETUP halves of the 36 legacies (Iron
   Hand, Circle of Swords, World Crafter, Seer, Wealthy and the rest), each
@@ -172,6 +185,13 @@ Legacy activation and scoring, and era scoring.
   play among them. High Priest's When Negotiating power lets its holder
   give secrets in a deal: a `DealRules` term kind, as Council Arbiter opens
   advisers.
+- [ ] **Cards that act on legacies.** The non-legacy cards whose powers
+  name legacies, still in holding: Ancient Writ (bury it to draw 3 and
+  keep 1), Amber Doors and Lost Doors (E05, draw legacies when explored or
+  at setup), Ruined Temple (E10, double the legacy points), and Stone Baths
+  and Ruined Baths (E04, change Resolve Legacies). A draw during a game
+  needs a random draw from the derived legacy deck, recorded as a hidden
+  outcome: Legacies ruling 3 assumed every draw happens in setup.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
@@ -207,7 +227,7 @@ one.
 
 - [ ] **Simultaneous setup effects.** The Chancellor or first player should
   resolve simultaneous setup effects; site order is used until then. Still to
-  add: player choices earlier in setup once legacies exist.
+  add: player choices earlier in setup, which the setup legacy powers bring.
 - [ ] **Keyboard focus on the Chronicle pages.** A redraw of the Chronicle
   page drops the focused control, and the table's save dialog does not trap
   focus. Do it with the next accessibility pass over the start pages.
@@ -220,6 +240,11 @@ one.
   action's own line, so the action reads as part of Rest. Hold a headline
   raised inside an action until after that action's lines. The
   `scepter-citizen` and `self-exiled` golden logs show it.
+- [ ] **Name a boxed lineage's legacy when it alters a foundation.** A
+  legacy held by a lineage in the box that alters a foundation in the Sun
+  logs as "a Legacy set Foundation II to ...": box legacies are not among
+  the cards in play, so the log cannot name them. Only an imported
+  Chronicle reaches it. Left by Legacies slice 3.
 - [ ] **First-player marker with a Chancellor.** `GameProjection` sends
   `setup.firstPlayer` as the first player, but with a Chancellor seated
   rounds start from `tracks.roundStarter`. Send the round's starter so the
@@ -317,6 +342,10 @@ one.
 
 ### Engine deferred items
 
+- [ ] **Refuse a game with fewer than two seats.** The engine and the
+  server start a one-seat game; only the start pages ask for two players.
+  Found while testing Legacies' scoring, where a lone winner is asked no
+  gift question.
 - [ ] **Campaign notes read the attack rules.** The attack line counts skull
   faces as the chosen plans score them (Lancers doubles them), so
   `CampaignNotes` imports `powers.campaign.AttackScore`, whose `changes` name
