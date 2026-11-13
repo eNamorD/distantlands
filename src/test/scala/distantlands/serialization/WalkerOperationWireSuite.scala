@@ -1,169 +1,21 @@
 package distantlands.serialization
 
-import distantlands.gameplay.actions.VisionRules
-import distantlands.gameplay.cards.DeepWoodsSite
 import distantlands.gameplay.powers.action.FaeMerchantCard
-import distantlands.gameplay.powers.campaign.WrestlersCard
 import distantlands.gameplay.powers.economy.KnightsErrantCard
 import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.model._
 import distantlands.gameplay.setup.FirstGameSetupFixture
-import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
 import distantlands.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
 import distantlands.serialization.WalkerWireEvents.{encodedStream,
   encodedStreamThatRoundTrips, recordedOperation}
-import distantlands.testkit.{RecordedOps, Table}
-import distantlands.testkit.Unwrap.{accepted, as}
+import distantlands.testkit.Unwrap.accepted
 
-/** Walker step events on the wire: the operations, locations, pieces and
-  * payloads a recorded step carries, and the typed errors for ones the codec
-  * cannot write. */
+/** Walker step events on the wire across operation families: locations,
+  * pieces, payloads, the step envelope, every variant of the vocabulary,
+  * and the wire kinds' partition into families. Each family's own
+  * spellings are pinned in its `<Family>OperationWireSuite`. */
 class WalkerOperationWireSuite extends munit.FunSuite:
-  test("recorded Visions Drawn advancement round trips without an amount " +
-      "and replays as one more Vision drawn"):
-    val event = recordedOperation(AdvanceVisionsDrawn)
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    assertEquals(ujson.read(encoded)("payload")("step")("ops")(0),
-      ujson.Obj("kind" -> "advance-visions-drawn"))
-    val decoded = as[WalkerStepRecorded](
-      accepted(GameEventWire.decode(encoded)).event)
-    val base = Table.start.ready
-    val replayed = accepted(OperationPipeline.run(base, RecordedOps.of(decoded),
-      OperationPolicy.Permissive, Vector.empty)(Right(_))).state
-    assertEquals(replayed.game.current.tracks.visionsDrawn,
-      base.game.current.tracks.visionsDrawn + 1)
-
-  test("a recorded round advance round trips and replays as one more round"):
-    val event = recordedOperation(AdvanceRound)
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    assertEquals(ujson.read(encoded)("payload")("step")("ops")(0),
-      ujson.Obj("kind" -> "advance-round"))
-    val decoded = as[WalkerStepRecorded](
-      accepted(GameEventWire.decode(encoded)).event)
-    val base = Table.start.roundMarkerAt(4).ready
-    val replayed = accepted(OperationPipeline.run(base, RecordedOps.of(decoded),
-      OperationPolicy.Permissive, Vector.empty)(Right(_))).state
-    assertEquals(replayed.game.current.tracks.round, 5)
-
-  test("reduced optional spend is canonical in memory and on the wire"):
-    val withOneSupply = Table.start.supply(Table.p1, 1).ready
-    val run = accepted(OperationPipeline.run(withOneSupply,
-      Vector(SpendSupply(Table.p1, 3, required = false)),
-      OperationPolicy.Permissive, Vector.empty)(Right(_)))
-    val event = WalkerStepRecorded("0", DeltaPayload(run.executed), Vector.empty)
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    assert(!ujson.read(encoded)("payload")("step")("ops")(0).obj.contains("required"))
-
-  test("a recorded move of a Vision to the shared bank round trips and replays"):
-    val actor = Table.p1
-    val card = VisionRules.Conspiracy
-    val prepared = Table.start.hand(actor, card).ready
-    val box = Move(Piece.Card(card), PositionedLocation(Location.Hand(actor)),
-      PositionedLocation(Location.SharedBank))
-    val event = recordedOperation(box)
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    val decoded = as[WalkerStepRecorded](
-      accepted(GameEventWire.decode(encoded)).event)
-    val replayed = accepted(OperationPipeline.run(prepared, RecordedOps.of(decoded),
-      OperationPolicy.Permissive, Vector.empty)(Right(_))).state
-    assertEquals(replayed.game.current.temporaryHands(actor), Vector.empty)
-
-  test("a move names its mover on the wire, and a site card's move " +
-      "without one decodes as moved by nobody"):
-    val move = Move(Piece.Card(RelicId("R1")),
-      PositionedLocation(Location.Site(SiteId("site"))),
-      PositionedLocation(Location.PlayArea(Table.p1)),
-      resultingOrientation = Some(Orientation.FaceDown), by = Some(Table.p1))
-    val event = recordedOperation(move)
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    val stripped = ujson.read(ujson.write(encoded))
-    stripped("payload")("step")("ops")(0).obj.remove("by")
-    assertEquals(GameEventWire.decode(stripped).map(_.event),
-      Right(recordedOperation(move.copy(by = None))))
-
-  test("an actorless discard says so on the wire"):
-    val discard = Discard.Denizen(DenizenId("D1"),
-      PositionedLocation(Location.Site(SiteId("site"))), Region.Provinces,
-      Suit.Beast, 0, 1, Table.p1, actorless = true)
-    val event = recordedOperation(discard)
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-
-  test("a discard's cause round trips, and a discard without one writes " +
-      "none"):
-    val atSite = PositionedLocation(Location.Site(SiteId("site")))
-    val cause = DiscardCause(PowerId("denizen.roving-terror"),
-      makesRoom = true)
-    val caused = Vector[CoreOperation](
-      Discard.Denizen(DenizenId("D1"), atSite, Region.Provinces, Suit.Nomad,
-        0, 1, Table.p1, cause = Some(cause)),
-      Discard.RuinedEdifice(EdificeId("E1"), atSite, Suit.Nomad, 1, 0,
-        Table.p1, cause = Some(DiscardCause(PowerId("denizen.riots")))))
-    caused.foreach { discard =>
-      val encoded = encodedStream("walker", Vector(recordedOperation(discard)))
-      assertEquals(accepted(GameEventWire.decodeStream(encoded))
-        .map(_.event), Vector(recordedOperation(discard)))
-    }
-    val plain = Discard.Denizen(DenizenId("D1"), atSite, Region.Provinces,
-      Suit.Nomad, 0, 0, Table.p1)
-    val written = ujson.read(encodedStream("walker",
-      Vector(recordedOperation(plain)))).arr
-    assert(!written(0)("payload")("step")("ops")(0).obj.contains("cause"))
-
-  test("a discard's pile position round trips, and a discard that names " +
-      "none, or names neither end, is refused"):
-    val inHand = PositionedLocation(Location.Hand(Table.p1))
-    Vector[CoreOperation](
-      Discard.Denizen(DenizenId("D1"), inHand, Region.Hinterland,
-        Suit.Beast, 0, 0, Table.p1, position = StackPosition.Bottom),
-      Discard.Vision(VisionId("vision:v1"), inHand, Region.Cradle,
-        position = StackPosition.Bottom)
-    ).foreach { discard =>
-      val encoded = encodedStream("walker", Vector(recordedOperation(discard)))
-      def withPosition(edit: ujson.Value => Unit): String =
-        val stream = ujson.read(encoded).arr
-        edit(stream(0)("payload")("step")("ops")(0))
-        ujson.write(stream)
-      assertEquals(accepted(GameEventWire.decodeStream(encoded))
-        .map(_.event), Vector(recordedOperation(discard)))
-      assertEquals(GameEventWire.decodeStream(withPosition(
-        _.obj.remove("position"))), Left(WireError.InvalidValue(
-          "$[0].payload.step.ops[0].position",
-          "a discard names the top or the bottom of its pile")))
-      assertEquals(GameEventWire.decodeStream(withPosition(
-        _("position") = "unspecified")), Left(WireError.InvalidValue(
-          "$[0].payload.step.ops[0].position",
-          "a discard goes to the top or the bottom of its pile")))
-    }
-
-  test("a replace names its performer on the wire, and one nobody " +
-      "performs writes none (R20)"):
-    val replace = Replace(Piece.Warbands(ForceKind.Bandit, 1),
-      Piece.Warbands(ForceKind.Imperial, 1),
-      PositionedLocation(Location.Site(SiteId("site"))), by = Some(Table.p1))
-    val event = recordedOperation(replace)
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    val nobody = accepted(GameEventWire.encodeEvent("walker", 0,
-      recordedOperation(replace.copy(by = None))))
-    assert(!ujson.read(ujson.write(nobody))("payload")("step")("ops")(0)
-      .obj.contains("by"))
-
-  test("a swap names its mover on the wire"):
-    val swap = Swap(DenizenId("D1"),
-      PositionedLocation(Location.Site(SiteId("here"))), DenizenId("D2"),
-      PositionedLocation(Location.Site(SiteId("there"))),
-      by = Some(Table.p1))
-    val event = recordedOperation(swap)
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-
   test("walker delta events round-trip the node path each one ran at"):
     val player = PlayerId("red")
     val pool = PoolKey("recover")
@@ -182,16 +34,6 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assertEquals(ujson.read(encoded).arr.map(
       _("payload")("nodeId").str).toVector,
       Vector("0", "1.0.1", "2.1"))
-
-  test("a journalled phase change round-trips the phase it names"):
-    // `EnterPhase` is only ever declared with `Act` today (End Wake is its
-    // one caller), so a codec that ignored the value and decoded `Act`
-    // unconditionally would pass every other test in the tree. Rest is used
-    // here for exactly that reason.
-    val event = recordedOperation(EnterPhase(Phase.Rest))
-    val encoded = accepted(GameEventWire.encodeEvent("phase", 0L, event))
-    assertEquals(encoded("payload")("step")("ops")(0)("phase").str, "rest")
-    assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
 
   test("Catacombs' recorded batch round-trips: a relic move off the top of " +
       "the relic deck and a cost placed on a card"):
@@ -306,77 +148,6 @@ class WalkerOperationWireSuite extends munit.FunSuite:
         Left(refusal), ujson.write(injected))
     }
 
-  test("an unknown Chronicle task and non-positive lineage points or Imperial " +
-      "supply decode to a typed WireError"):
-    def refusedPath(op: CoreOperation, edit: ujson.Value => Unit): String =
-      val injected = ujson.read(encodedStream("chronicle",
-        Vector(recordedOperation(op)))).arr
-      edit(injected(0)("payload")("step")("ops")(0))
-      GameEventWire.decodeStream(ujson.write(injected)) match
-        case Left(WireError.InvalidValue(path, _)) => path
-        case other => fail(other.toString)
-    assert(refusedPath(ChronicleTaskAssigned(ChronicleTask.World,
-      PlayerId("red")), _("task") = "moon").endsWith(".task"))
-    assert(refusedPath(LineagePointsScored(LineageId("lineage:red"), 2),
-      _("points") = 0).endsWith(".points"))
-    assert(refusedPath(ImperialWarbandsTaken(8), _("count") = -1)
-      .endsWith(".count"))
-
-  test("a foundation restore names its number, and an unknown number " +
-      "decodes to a typed WireError"):
-    val encoded = encodedStreamThatRoundTrips("foundation-restored",
-      Vector(recordedOperation(FoundationRestored(FoundationNumber.I))))
-    assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
-      ujson.Obj("kind" -> "foundation-restored", "number" -> 1))
-    val injected = ujson.read(encoded).arr
-    injected(0)("payload")("step")("ops")(0)("number") = 7
-    assertEquals(GameEventWire.decodeStream(ujson.write(injected)),
-      Left(WireError.InvalidValue("$[0].payload.step.ops[0].number",
-        "unknown Foundation number 7")))
-
-  test("a site placement names its Atlas end, its region and the site's " +
-      "printed facts, and an unknown end, an unknown region or a negative " +
-      "capacity decodes to a typed WireError"):
-    val placement = PlaceAtlasSite(AtlasEnd.Recent, Region.Hinterland,
-      capacity = 3, relicSlots = 2, Tokens(1, 2))
-    val encoded = encodedStreamThatRoundTrips("place-atlas-site",
-      Vector(recordedOperation(placement)))
-    assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
-      ujson.Obj("kind" -> "place-atlas-site", "end" -> "recent",
-        "region" -> "hinterland", "capacity" -> 3, "relicSlots" -> 2,
-        "resources" -> ujson.Obj("favor" -> 1, "secrets" -> 2)))
-    def refusedPath(edit: ujson.Value => Unit): String =
-      val injected = ujson.read(encoded).arr
-      edit(injected(0)("payload")("step")("ops")(0))
-      GameEventWire.decodeStream(ujson.write(injected)) match
-        case Left(WireError.InvalidValue(path, _)) => path
-        case other => fail(other.toString)
-    assert(refusedPath(_("end") = "middle").endsWith(".end"))
-    assert(refusedPath(_("region") = "sea").endsWith(".region"))
-    assert(refusedPath(_("capacity") = -1).endsWith(".capacity"))
-    assert(refusedPath(_("relicSlots") = -1).endsWith(".relicSlots"))
-
-  test("a draw written before it had a position decodes as a draw from the " +
-      "top, and a draw of no position is refused"):
-    val player = PlayerId("red")
-    val draw = Draw(player, Vector(DenizenId("denizen")),
-      Location.RegionalDiscard(Region.Cradle), Location.Hand(player))
-    val encoded = encodedStream("walker",
-      Vector(recordedOperation(draw)))
-    def withPosition(edit: ujson.Value => Unit): String =
-      val stream = ujson.read(encoded).arr
-      edit(stream(0)("payload")("step")("ops")(0))
-      ujson.write(stream)
-    assertEquals(ujson.read(encoded).arr(0)("payload")("step")("ops")(0)("position")
-      .str, "top")
-    val oldJournal = withPosition(_.obj.remove("position"))
-    assertEquals(accepted(GameEventWire.decodeStream(oldJournal))
-      .map(_.event), Vector(recordedOperation(draw)))
-    assertEquals(GameEventWire.decodeStream(withPosition(
-      _("position") = "unspecified")), Left(WireError.InvalidValue(
-        "$[0].payload.step.ops[0].position",
-        "a draw takes from the top or the bottom")))
-
   test("a WalkerStepRecorded carrying two contribution ids round-trips"):
     val pool = PoolKey("recover")
     val event: OathEvent = WalkerStepRecorded("0",
@@ -444,14 +215,23 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       case other => fail(s"expected an invalid-payload WireError, got $other")
 
   private val player = PlayerId("red")
+
   private val other = PlayerId("blue")
+
   private val site = SiteId("site")
+
   private val denizen = DenizenId("denizen")
+
   private val vision = VisionId("vision")
+
   private val relic = RelicId("relic")
+
   private val edifice = EdificeId("edifice")
+
   private val legacy = LegacyId("legacy")
+
   private val lineage = LineageId("lineage")
+
   private val everyOperation: Vector[CoreOperation] = Vector(
     GainSupply(player, 2),
     SpendSupply(player, 1),
@@ -680,104 +460,3 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assertEquals(ujson.read(encoded).arr.map(
       _("payload")("step")("ops")(0)("piece")("kind").str).toVector.distinct.size,
       pieces.map(_.getClass.getSimpleName).distinct.size)
-
-  test("a Take's leaving operations round trip, and a Take without them " +
-      "writes none"):
-    val player = PlayerId("red")
-    val holder = PlayerId("blue")
-    val leaving = Vector[CoreOperation](
-      Move(Piece.Favor(1),
-        PositionedLocation(Location.OnBanner(Banner.PeoplesFavor)),
-        PositionedLocation(Location.FavorBank(Suit.Order))),
-      Burn.secrets(2, PositionedLocation(Location.OnBanner(Banner.DarkestSecret)),
-        None))
-    val takes = Vector(
-      Take(Piece.Banner(Banner.PeoplesFavor), player, Location.PlayArea(holder),
-        Location.PlayArea(player), leaving = leaving),
-      Take(Piece.Banner(Banner.DarkestSecret), player, Location.PlayArea(holder),
-        Location.PlayArea(player)))
-    val events = takes.map(take => recordedOperation(take))
-    val encoded = encodedStreamThatRoundTrips("take-leaving", events)
-    val ops = ujson.read(encoded).arr.map(_("payload")("step")("ops")(0))
-    assertEquals(ops(0)("leaving").arr.size, 2)
-    assert(!ops(1).obj.contains("leaving"))
-
-  test("a secret move's side round trips, and a move without one writes " +
-      "none"):
-    val red = PlayerId("red")
-    val blue = PlayerId("blue")
-    val moves = Vector[CoreOperation](
-      Move(Piece.Secrets(2), PositionedLocation(Location.PlayArea(red),
-        side = Some(SecretSide.FaceDown)),
-        PositionedLocation(Location.PlayArea(blue))),
-      Take(Piece.Secrets(1), blue, Location.PlayArea(red),
-        Location.PlayArea(blue), sourceSide = Some(SecretSide.FaceUp)),
-      Move(Piece.Favor(1), PositionedLocation(Location.PlayArea(red)),
-        PositionedLocation(Location.PlayArea(blue))))
-    val events = moves.map(move => recordedOperation(move))
-    val encoded = encodedStreamThatRoundTrips("secret-side", events)
-    val ops = ujson.read(encoded).arr.map(_("payload")("step")("ops")(0))
-    assertEquals(ops(0)("from")("side").str, "face-down")
-    assertEquals(ops(1)("sourceSide").str, "face-up")
-    assert(!ops(2)("from").obj.contains("side"))
-
-  test("a burn's burner round trips, and a burn no player makes writes " +
-      "null"):
-    val red = PlayerId("red")
-    val burns = Vector[CoreOperation](
-      Burn.favor(2, PositionedLocation(Location.PlayArea(red)), Some(red)),
-      Burn.favor(1, PositionedLocation(Location.FavorBank(Suit.Order)),
-        None))
-    val events = burns.map(burn => recordedOperation(burn))
-    val encoded = encodedStreamThatRoundTrips("burn-by", events)
-    val ops = ujson.read(encoded).arr.map(_("payload")("step")("ops")(0))
-    assertEquals(ops(0)("by").str, "red")
-    assertEquals(ops(1)("by"), ujson.Null)
-
-  test("a deferral and its take round trip, with the held ops"):
-    val key = DeferralKey("test.held")
-    val held = Vector[CoreOperation](ModifyDicePool(PoolKey("test.pool"), 2),
-      Gain.Secrets(Table.p1, 1))
-    Vector[CoreOperation](Defer(key, held), TakeDeferred(key)).foreach { op =>
-      val event = recordedOperation(op)
-      val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-      assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    }
-    val deferral = accepted(GameEventWire.encodeEvent("walker", 0,
-      recordedOperation(Defer(key, held))))
-    assertEquals(ujson.read(deferral)("payload")("step")("ops")(0)("kind").str,
-      "defer")
-
-  test("a pick record's opening, with and without a label, and its closing " +
-      "round trip"):
-    Vector[CoreOperation](
-      OpenPick("campaign.defender-plan", DecisionOptionRef.Button("title"),
-        Some("Oathkeeper title: add 1 defense die")),
-      OpenPick("search.modifiers",
-        DecisionOptionRef.Denizen(WrestlersCard.id)),
-      ClosePick()).foreach { op =>
-      val event = recordedOperation(op)
-      val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-      assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    }
-
-  test("an as-if site round trips"):
-    val event = recordedOperation(ActAsIf(DeepWoodsSite.id))
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    assertEquals(ujson.read(encoded)("payload")("step")("ops")(0)("kind").str,
-      "act-as-if")
-
-  test("an as-if adviser holder round trips"):
-    val event = recordedOperation(ActAsIfAdvisers(PlayerId("p2")))
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    assertEquals(ujson.read(encoded)("payload")("step")("ops")(0)("kind").str,
-      "act-as-if-advisers")
-
-  test("a draw from the Nomad bank round trips"):
-    val event = recordedOperation(DrawNomadFavor(PlayerId("p1"), 2))
-    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
-    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
-    assertEquals(ujson.read(encoded)("payload")("step")("ops")(0)("kind").str,
-      "draw-nomad-favor")
