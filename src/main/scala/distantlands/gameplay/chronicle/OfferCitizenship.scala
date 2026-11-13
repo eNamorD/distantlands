@@ -52,9 +52,17 @@ object OfferCitizenship:
     s"chronicle.throne.legacy-cap.${player.value}"
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  val steps: Vector[Operation] = Vector(Branch((state, _) =>
+  /** The offer, read when reached. Once the offer is answered the shape
+    * holds whatever roles have changed since: the candidates are then the
+    * Exiles left and every player offered, so a walk resumed after the last
+    * Exile accepted still finds the offer it answered. */
+  val steps: Vector[Operation] = Vector(Branch((state, pending) =>
     ChronicleTasks.forHolder(state, ChronicleTask.Throne)(holder =>
-      exiles(state) match
+      val answered = pending.answered.exists(_.decisionId == offerDecisionId)
+      val offeredTo = if answered then chosen(pending) else Vector.empty
+      ChronicleTasks.seated(state).filter(player =>
+          exiles(state).contains(player) || offeredTo.contains(player))
+      match
         case Vector() => Vector.empty
         case candidates => Vector(
           Decide(offerDecisionId, holder, DecisionQuery.ChooseMany(0,

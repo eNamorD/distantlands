@@ -200,11 +200,16 @@ class OfferCitizenshipSuite extends munit.FunSuite:
       s"p2 reactivated ${IronHandCard.id.value}"), lines(done.events))
 
   test("an accepting Exile left above three active legacies discards the " +
-      "excess at once (R19)"):
+      "excess once every answer is in, even when no Exile is left (R19)"):
     val table = exilesHoldSites.legacy(p2, IronHandCard).legacy(p2, SeerCard)
       .legacy(p2, RivalCard).legacy(p2, ArbiterCard, active = false)
-    val asked = replied(offered(throneStarted(table), p2), p2,
-      OfferCitizenship.accept)
+    val asked = replied(replied(offered(throneStarted(table), p2, p3), p2,
+      OfferCitizenship.accept), p3, OfferCitizenship.accept)
     val cap = ChronicleWalk.parked(asked.state).get
     assertEquals((cap.decisionId, cap.owner),
       (OfferCitizenship.capDecisionId(p2), p2))
+    val capped = answer(asked, p2, cap.decisionId, ChooseManyAnswer(
+      Vector(DecisionOptionRef.Legacy(SeerCard.id))))
+    assertEquals(legaciesOf(capped, p2).map(_.id),
+      Vector(IronHandCard.id, RivalCard.id, ArbiterCard.id))
+    assert(legaciesOf(capped, p2).forall(_.active))
