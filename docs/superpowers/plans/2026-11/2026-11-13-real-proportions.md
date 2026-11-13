@@ -352,6 +352,8 @@ git add frontend/src frontend/styles.css && git commit -m "feat(frontend): mark 
 - Modify: `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala` (`showText`)
 - Modify: `frontend/src/main/scala/distantlands/frontend/FoundationStrip.scala:66`, `WorldBoardRenderer.scala:105` (the Oathkeeper title pill)
 - Modify: `frontend/src/main/scala/distantlands/frontend/GameTableShell.scala:202` (the handler's `Request.Text` case)
+- Modify: `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala` (`sharedBank`: the Oath goal opener, ruling R2)
+- Test: `frontend/src/test/scala/distantlands/frontend/PanelPlacementSuite.scala` (the Oath goal opener)
 - Modify: `frontend/styles.css` (after the `.card-overlay-body > .card-face-vision` rule)
 - Test: `frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala`, `FoundationStripSuite.scala`, `PlayerBoardSuite.scala`
 - Modify tests (a fourth `_` in each `Request.Text` pattern): `PlayerBoardSuite.scala:260`, `BannerFaceSuite.scala:30`, `FoundationStripSuite.scala:28`, `FestivalMarkerSuite.scala:26`
@@ -452,7 +454,38 @@ In `GameTableShell`, the handler's text case becomes:
 
 Any other pattern match on `Request.Text` (`grep -rn "Request.Text(" frontend/src`) gains a fourth `_`.
 
-The Oath goal has no opener on the table today (its line in the shared bank is text), so its plate class is defined and unused until one exists; adding an opener is outside this plan.
+The Oath goal gets an opener (implementation ruling R2). In `WorldBoardRenderer.sharedBank`, the goal's span becomes a button with the classes `oathkeeper-goal card-link` and the same visible text; it opens the title and lines the Oathkeeper title pill uses, with the plate `oath-goal`. An unknown goal falls back to its raw key and no lines, as the pill does. The holder line stays a span.
+
+```scala
+      val presented = distantlands.protocol.projection
+        .OathkeeperPresentation.byGoal.get(oath.goal)
+      val title = presented.fold(oath.goal)(_.title)
+      val goal = button(title, "oathkeeper-goal card-link")
+      goal.`type` = "button"
+      goal.onclick = _ => CardInspection.openText(title,
+        presented.fold(Vector.empty[String])(_.lines), goal, Some("oath-goal"))
+      status.appendChild(goal)
+```
+
+Its test, in `PanelPlacementSuite`, goes first and fails before the change:
+
+```scala
+  test("the oath's goal opens its card with the Oath goal's plate"):
+    var opened = Vector.empty[(String, Vector[String], Option[String])]
+    CardInspection.onOpen:
+      case CardInspection.Request.Text(title, lines, _, plate) =>
+        opened :+= (title, lines, plate)
+      case _ => ()
+    val goal = Dom.one(world(projection()), ".shared-bank .oathkeeper-goal")
+    goal.asInstanceOf[dom.html.Button].click()
+    CardInspection.clear()
+    assertEquals(opened, Vector(("Oathkeeper of Supremacy",
+      Vector("Rules the most sites",
+        "Successor to the Chancellor: Holds more relics"),
+      Some("oath-goal"))))
+```
+
+The existing test "the oath and its holder are listed in the shared bank" reads `status`'s children by `:scope > *` in place of `span`, since the goal is now a button. In `styles.css`, `.oathkeeper-status > span { display: block; }` becomes `.oathkeeper-status > * { display: block; }`; the button keeps `.card-link`'s treatment and focus ring, in the status line's colour and weight (`.oathkeeper-status > .oathkeeper-goal { color: inherit; font-weight: inherit; text-align: left; }`).
 
 Pass plates at the two call sites: in `FoundationStrip.scala` change the call to `CardInspection.openText(title(card), Vector(rules), button, Some("foundation"))`; in `WorldBoardRenderer.playerBoards`, the title pill's call becomes `CardInspection.openText(title, presented.fold(Vector.empty[String])(_.lines), pill, Some("oathkeeper-title"))`.
 
