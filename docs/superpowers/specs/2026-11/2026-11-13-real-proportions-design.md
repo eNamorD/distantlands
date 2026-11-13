@@ -86,7 +86,8 @@ The mat image is 5787×2303 px. It prints:
   unprinted and holds three cards.
 - A discard slot at each region's upper right, a denizen card on its side.
 - In the Cradle's foot: the round wheel, the Visions Drawn track with six
-  cells (0 to 5), a square relic deck slot and a portrait world deck slot.
+  cells (0 to 5), a square relic deck slot and a world deck slot. The world
+  deck slot is 494×335 px: the deck lies on its side, as the discards do.
 - Six favor bank circles in a row along the foot, under the Provinces and
   the Hinterland, in the order Discord, Arcane, Order, Hearth, Beast, Nomad.
 - Region names at each region's upper left.
@@ -151,7 +152,10 @@ A card face is a box of its kind's ratio holding two layers.
   element of the content layer, so it stands in the same place over a
   drawn face and over an image.
 
-The same split applies to the site card and the banner.
+The layers are a marking, not two wrapper elements: every element that
+redraws something printed carries the class `printed`, and nothing else
+does. L3 hides `.printed` where it shows an image. The same marking applies
+to the site card, the banner and the drawn mat.
 
 ### The mat board
 
@@ -167,7 +171,8 @@ and every slot as a rectangle in mat pixels:
 - the three discard slots, the relic deck slot, the world deck slot, the
   round wheel, the six Visions Drawn cells, the six favor banks and the
   three region name bands, each measured from the mat image by the same
-  pixel survey that gave the frames, and recorded in the plan.
+  pixel survey that gave the frames, and recorded in the plan. A discard
+  and the world deck are denizen cards on their side.
 
 `WorldBoardRenderer.world` builds one `.mat-board` element with
 `aspect-ratio: 5787 / 2303` and places each slot in it as an absolutely
@@ -195,8 +200,8 @@ What moves:
 - The round wheel and the world deck take their mat positions in the
   Cradle's foot. The wheel keeps its eight drawn segments inside the mat's
   circle.
-- Visions Drawn becomes a marker on the six-cell track, with the count kept
-  in the tracker's accessible name.
+- Visions Drawn becomes a marker on the six-cell track. The tracker's line
+  of text and its accessible name keep the count.
 - An empty site slot is the mat's frame with nothing in it.
 
 Relics at a site stay in the card slots to the right of the site, after its
@@ -217,8 +222,8 @@ A site is drawn as a card of the site ratio in its frame.
   marker; the travel cost badge a decision puts on the site.
 
 The site card and its three slots remain one option target for a board
-decision that picks a site: the ring is drawn around the site card, and
-`BoardOptions` keys do not change.
+decision that picks a site: the ring is drawn around the site and its
+slots together, as it is today, and `BoardOptions` keys do not change.
 
 ### Beside the mat
 
