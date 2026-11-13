@@ -1,9 +1,13 @@
 package distantlands.frontend
 
-import distantlands.frontend.Dom.{all, firstMatch}
+import distantlands.frontend.Dom.{all, firstMatch, one}
+import distantlands.frontend.TestBoardOptions.{available, recording}
 import distantlands.frontend.TestBoards.*
+import org.scalajs.dom
+import scala.scalajs.js
 import distantlands.model.PlayerColor
 import distantlands.protocol.projection.LegacyGoalProjection
+import distantlands.testkit.Unwrap.present
 
 /** The player areas' legacy strips and the World pane's Public Ambitions row
   * (Legacies design, slice 5; implementation rulings R36-R38), drawn from a
@@ -59,3 +63,40 @@ class LegacyStripSuite extends munit.FunSuite:
       Vector("Seer"))
     assertEquals(firstMatch(WorldBoardRenderer.world(table, BoardOptions.none),
       ".public-legacies"), None)
+
+  test("a choose-one over two legacies marks both chips, highlights the one " +
+      "hovered and picks the one clicked (R27)"):
+    val options = Vector(seer, arbiter).map(card =>
+      available(DecisionOptionState("legacy", card.cardId, card.name)))
+    val shown = recording(options*)
+    val row = present(LegacyStrip.board(quietBoard("red")
+      .copy(legacies = Vector(seer, arbiter)), shown.options), "the strip")
+    dom.document.body.appendChild(row)
+    try
+      val chips = all(row, "[data-option-ref]")
+      assertEquals(chips.map(_.getAttribute("data-option-ref")),
+        Vector("legacy:L22", "legacy:L23"))
+      chips.head.dispatchEvent(new dom.MouseEvent("mouseenter",
+        js.Dynamic.literal().asInstanceOf[dom.MouseEventInit]))
+      assertEquals(chips.map(_.classList.contains("board-option-hover")),
+        Vector(true, false))
+      chips(1).asInstanceOf[dom.html.Element].click()
+      assertEquals(shown.picks.map(_.id), Vector("L23"))
+    finally dom.document.body.removeChild(row)
+
+  test("clicking a strip chip opens the whole legacy, goal included"):
+    var opened = Option.empty[CardDetails]
+    CardInspection.onOpen:
+      case CardInspection.Request.Card(card, _) => opened = Some(card)
+      case _ => ()
+    try
+      one(players(seer), ".board-legacies .legacy-chip")
+        .asInstanceOf[dom.html.Element].click()
+      assertEquals(opened.flatMap(_.legacyGoal).map(_.text),
+        Some("Hold the Darkest Secret."))
+    finally CardInspection.clear()
+
+  test("another seat's chip carries no goal note and no card id"):
+    val chip = one(players(back), ".board-legacies .legacy-chip")
+    assertEquals(chip.getAttribute("data-tip"), null)
+    assertEquals(chip.getAttribute("data-card-id"), "hidden")

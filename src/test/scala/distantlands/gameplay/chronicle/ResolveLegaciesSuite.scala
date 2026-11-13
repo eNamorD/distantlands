@@ -292,11 +292,15 @@ class ResolveLegaciesSuite extends munit.FunSuite:
         DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(chosen(id))) })
 
   test("two public ties in a row are each asked and each resolved"):
+    // The second tie goes to p3, who is not the first option.
     val run = tiedRow(Vector(IronHandCard, CircleOfSwordsCard), Map(
-      IronHandCard.id -> p3, CircleOfSwordsCard.id -> p2))
-    assertEquals(legaciesOf(run.ready, p3),
-      Vector(LegacyState(IronHandCard.id, active = true)))
+      IronHandCard.id -> p2, CircleOfSwordsCard.id -> p3))
+    val asked = run.asked.map(_.decisionId)
+    Vector(IronHandCard, CircleOfSwordsCard).foreach(card =>
+      assert(asked.contains(ResolveLegacies.publicDecisionId(card.id)), asked))
     assertEquals(legaciesOf(run.ready, p2),
+      Vector(LegacyState(IronHandCard.id, active = true)))
+    assertEquals(legaciesOf(run.ready, p3),
       Vector(LegacyState(CircleOfSwordsCard.id, active = true)))
 
   test("a public tie after a returned legacy is asked and resolved"):

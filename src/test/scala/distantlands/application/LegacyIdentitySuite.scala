@@ -95,3 +95,19 @@ class LegacyIdentitySuite extends munit.FunSuite:
         RivalCard.id))
     assertEquals(subjects.map(card => (card.cardId, card.name, card.hidden)),
       Vector((RivalCard.id.value, RivalCard.name, false)))
+
+  test("another seat's JSON names neither a dormant legacy's name nor its " +
+      "goal"):
+    // Iron Hand's goal is the only one of its kind on this table.
+    val dormant = Table.start.legacy(p1, SeerCard)
+      .legacy(p1, distantlands.catalog.holding.IronHandCard, active = false)
+      .ready
+    Vector(projector.project("g", loaded(dormant), p2),
+        projector.projectPublic("g", loaded(dormant))).foreach { view =>
+      val json = distantlands.protocol.projection.GameProjectionCodec
+        .encode(view)
+      Vector(distantlands.catalog.holding.IronHandCard.id.value,
+        distantlands.catalog.holding.IronHandCard.name,
+        distantlands.catalog.LegacyGoal.MostSites.printed).foreach(secret =>
+        assert(!json.contains(secret), secret))
+    }
