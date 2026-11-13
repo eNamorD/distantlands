@@ -7,8 +7,8 @@ final case class FirstGameParticipant(
 )
 
 /** The concrete per-game deal derived from a Chronicle: who is seated and in
-  * what order, and the dealt orders of the two decks a Chronicle's own
-  * order is not meaningful for (2026-09-21 Chronicle design, slice 2,
+  * what order, and the dealt orders of the decks a Chronicle's own order
+  * is not meaningful for (2026-09-21 Chronicle design, slice 2,
   * "Setup from a Chronicle"). Recorded on `GameStarted` alongside the
   * Chronicle itself, so replay never re-derives either from live state.
   *
@@ -16,14 +16,17 @@ final case class FirstGameParticipant(
   * is shown to players, so its deck order must not be the deal.
   * `denizenOrder` is the world deck shuffled, which deals hands and the
   * regional discards; `worldDeckOrder` is the rest of it with the Visions
-  * spliced in; `relicOrder` is the relic deck shuffled.
+  * spliced in; `relicOrder` is the relic deck shuffled. `legacyOrder` is
+  * the derived legacy deck shuffled, which Foundation III deals
+  * (`LegacyDeal`).
   */
 final case class SetupOrders(
     participants: Vector[FirstGameParticipant],
     firstPlayer: PlayerId,
     denizenOrder: Vector[DenizenId],
     worldDeckOrder: Vector[WorldCardId],
-    relicOrder: Vector[RelicId]
+    relicOrder: Vector[RelicId],
+    legacyOrder: Vector[LegacyId] = Vector.empty
 )
 
 /** `ignoreCitizenshipPowers` is the first-game option that ignores

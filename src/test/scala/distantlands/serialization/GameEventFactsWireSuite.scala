@@ -81,6 +81,15 @@ class GameEventFactsWireSuite extends munit.FunSuite:
       chronicle.worldDeck.size)
     assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
 
+  test("GameStarted round trips the legacy order it dealt"):
+    val dealt = orders.copy(legacyOrder =
+      Vector(LegacyId("L22"), LegacyId("L17")))
+    val event = OathEvent.GameStarted(chronicle, dealt)
+    val encoded = accepted(GameEventWire.encodeEvent("goal", 0L, event))
+    assertEquals(encoded("payload")("orders")("legacyOrder"),
+      ujson.Arr("L22", "L17"))
+    assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
+
   test("GameStarted round trips a Teeming World Chronicle and its deal"):
     val teemingWorld = chronicle.copy(foundations = Map(FoundationNumber.IV ->
       FoundationState(FoundationFace.Altered, Set.empty)))
