@@ -44,7 +44,8 @@ object ChronicleSunProcedure:
     // legacy deck, which is derived and has nothing to shuffle.
     ChronicleWindows.step(PowerWindow.ChronicleFlipLegacies,
       ResolveLegacies.flip(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleExileDormancy, Vector.empty),
+    ChronicleWindows.step(PowerWindow.ChronicleExileDormancy,
+      ResolveLegacies.dormancy(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleLegacyCap, Vector.empty),
     ChronicleWindows.step(PowerWindow.ChronicleShuffleLegacies, Vector.empty),
     ChronicleWindows.step(PowerWindow.ChronicleCrown, Vector(

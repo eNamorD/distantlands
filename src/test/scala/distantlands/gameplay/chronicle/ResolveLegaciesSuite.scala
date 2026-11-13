@@ -115,13 +115,15 @@ class ResolveLegaciesSuite extends munit.FunSuite:
     val run = sun(won.legacy(p2, WealthyCard))
     assertEquals(run.ready.game.campaign.foundations(FoundationNumber.II),
       FoundationState(FoundationFace.Altered, Set(WealthyCard.id)))
-    assertEquals(lines(run), Vector(
+    def foundationLines(run: Sun) =
+      lines(run).filter(_.contains(" set Foundation "))
+    assertEquals(foundationLines(run), Vector(
       s"${WealthyCard.id.value} set Foundation II to Movers and Shakers"))
     // A second Chronicle with the face already listing it writes nothing.
     val again = sun(won.legacy(p2, WealthyCard)
       .update(_.updateCampaign(_.copy(foundations = run.ready.game.campaign
         .foundations))))
-    assertEquals(lines(again), Vector.empty)
+    assertEquals(foundationLines(again), Vector.empty)
 
   test("a boxed lineage's active legacy alters too, and the lineage is " +
       "unchanged (ruling 8)"):
@@ -143,3 +145,39 @@ class ResolveLegaciesSuite extends munit.FunSuite:
       .legacy(p3, IronHandCard, active = false))
     assertEquals(lines(run), Vector(s"p3 activated ${IronHandCard.id.value}",
       s"p2 discarded ${SeerCard.id.value}"))
+
+  test("an Exile's active legacy whose goal they miss goes dormant, one " +
+      "they meet stays active, and an Imperial's stays active"):
+    val run = sun(won.imperial(p3).darkestSecret(Some(p2), 1)
+      .legacy(p2, SeerCard).legacy(p2, IronHandCard)
+      .legacy(p3, RivalCard))
+    assertEquals(legaciesOf(run.ready, p2), Vector(
+      LegacyState(SeerCard.id, active = true),
+      LegacyState(IronHandCard.id, active = false)))
+    assertEquals(legaciesOf(run.ready, p3),
+      Vector(LegacyState(RivalCard.id, active = true)))
+    assert(lines(run).contains(s"p2's ${IronHandCard.id.value} went dormant"))
+
+  test("an altering legacy gone dormant leaves its foundation altered"):
+    val altered = FoundationState(FoundationFace.Altered, Set(WealthyCard.id))
+    val run = sun(won.legacy(p2, WealthyCard).update(_.updateCampaign(
+      campaign => campaign.copy(foundations = campaign.foundations.updated(
+        FoundationNumber.II, altered)))))
+    assertEquals(legaciesOf(run.ready, p2),
+      Vector(LegacyState(WealthyCard.id, active = false)))
+    assertEquals(run.ready.game.campaign.foundations(FoundationNumber.II),
+      altered)
+
+  test("after the Sun every dormant legacy on a seated lineage was active " +
+      "when the Chronicle began (ruling 2)"):
+    val table = won.darkestSecret(Some(p3), 1)
+      .legacy(p2, SeerCard, active = false).legacy(p2, IronHandCard)
+      .legacy(p3, RivalCard, active = false)
+      .legacy(p3, MatchmakerCard)
+    val before = table.ready.game.campaign.lineages.values
+      .flatMap(_.legacies).filter(_.active).map(_.id).toSet
+    val run = sun(table)
+    val dormant = run.ready.game.current.players.flatMap(player =>
+      legaciesOf(run.ready, player.player)).filterNot(_.active).map(_.id)
+    assert(dormant.nonEmpty)
+    assert(dormant.forall(before), dormant)

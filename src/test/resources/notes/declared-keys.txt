@@ -549,6 +549,7 @@ procedure.chronicle-sun altered-foundation-vi = {0} set Foundation VI to Festiva
 procedure.chronicle-sun crowned = {0} became Chancellor
 procedure.chronicle-sun discarded-legacy = {0} discarded {1}
 procedure.chronicle-sun empire-broke = The Empire broke
+procedure.chronicle-sun legacy-went-dormant = {0}'s {1} went dormant
 procedure.chronicle-sun returned-public-legacy = {0} returned to the legacy deck
 procedure.chronicle-sun took-beacon = {0} took the Beacon task
 procedure.chronicle-sun took-public-legacy = {0} took {1}

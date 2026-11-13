@@ -351,7 +351,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         ResolveLegacies.activated -> LogKind.Delta,
         ResolveLegacies.discarded -> LogKind.Delta,
         ResolveLegacies.tookPublic -> LogKind.Delta,
-        ResolveLegacies.returnedPublic -> LogKind.Delta) ++
+        ResolveLegacies.returnedPublic -> LogKind.Delta,
+        ResolveLegacies.wentDormant -> LogKind.Delta) ++
         ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
         ChronicleTask.all.map(task =>
           ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),

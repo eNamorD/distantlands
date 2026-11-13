@@ -17,9 +17,11 @@ import distantlands.model._
   * legacy of a seated or boxed lineage that alters a foundation whose face
   * does not yet list it (ruling 8), Foundation I to VI.
   *
+  * Step 3, Exiles' legacies: see `dormancy`.
+  *
   * Lines (R24): "p2 activated Seer", "p3 discarded Iron Hand", "p3 took
   * Matchmaker", "Iron Hand returned to the legacy deck" and "Wealthy set
-  * Foundation II to Movers and Shakers".
+  * Foundation II to Movers and Shakers", "p2's Iron Hand went dormant".
   */
 object ResolveLegacies:
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleSun)
@@ -39,6 +41,10 @@ object ResolveLegacies:
       s"altered-foundation-${number.toString.toLowerCase}", Vector(
         NotePart.Arg(0), NotePart.Text(s" set Foundation $number to " +
           FoundationCards.face(number, FoundationFace.Altered).name)))).toMap
+  /** "p2's Iron Hand went dormant". */
+  val wentDormant: NoteKey = notes.key("legacy-went-dormant", Vector(
+    NotePart.Arg(0), NotePart.Text("'s "), NotePart.Arg(1),
+    NotePart.Text(" went dormant")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   def publicDecisionId(legacy: LegacyId): String =
@@ -47,6 +53,24 @@ object ResolveLegacies:
   /** Sun step 2's children. */
   def flip(catalog: ExecutableCatalog): Vector[Operation] =
     Vector(dormant(catalog), publicRow(catalog), alterations(catalog))
+
+  /** Sun step 3's children: each seated Exile's active legacies whose goal
+    * they miss go dormant, in turn order. Imperials and the foundations
+    * are untouched. These are the newly dormant legacies (ruling 2). */
+  def dormancy(catalog: ExecutableCatalog): Vector[Operation] = Vector(
+    Branch((state, _) =>
+      val lapsed = for
+        player <- LegacyGoals.turnOrder(state)
+          if Imperials.role(state, player).contains(Role.Exile)
+        legacy <- legaciesOf(state, player)
+          if legacy.active && !meets(catalog, state, legacy.id, player)
+      yield player -> legacy.id
+      if lapsed.isEmpty then Vector.empty
+      else BuildOps((live, _) => Right(lapsed.map((player, id) =>
+          Flip(id, Location.Legacies(lineageOf(live, player)),
+            Orientation.FaceDown))), required = true) +:
+        lapsed.map((player, id) =>
+          line(wentDormant, NoteArg.Player(player), NoteArg.Card(id)))))
 
   private def meets(catalog: ExecutableCatalog, ready: ReadyGame,
       legacy: LegacyId, player: PlayerId): Boolean =
