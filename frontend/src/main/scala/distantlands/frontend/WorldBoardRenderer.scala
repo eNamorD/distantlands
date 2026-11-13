@@ -444,13 +444,22 @@ private[frontend] object WorldBoardRenderer:
       group.setAttribute("data-round", round.toString)
       val path = dom.document.createElementNS("http://www.w3.org/2000/svg", "path")
       path.setAttribute("d", segment.path)
-      path.setAttribute("class", if round == track.round then "round-current" else "round-segment")
+      // The wheel as printed, every segment in one fill (ruling R8); the
+      // current round is a wedge of its own laid over its segment.
+      path.setAttribute("class", "round-segment printed")
       val label = dom.document.createElementNS("http://www.w3.org/2000/svg", "text")
       label.setAttribute("x", segment.labelX.toString)
       label.setAttribute("y", segment.labelY.toString)
       label.setAttribute("text-anchor", "middle"); label.setAttribute("dominant-baseline", "middle")
+      label.setAttribute("class", "round-number printed")
       label.textContent = round.toString
-      group.appendChild(path); group.appendChild(label)
+      group.appendChild(path)
+      if round == track.round then
+        val current = dom.document.createElementNS("http://www.w3.org/2000/svg", "path")
+        current.setAttribute("d", segment.path)
+        current.setAttribute("class", "round-current")
+        group.appendChild(current)
+      group.appendChild(label)
       if track.usurperLimited && round == track.limiterRound then
         val marker = dom.document.createElementNS("http://www.w3.org/2000/svg", "text")
         marker.setAttribute("x", segment.markerX.toString)

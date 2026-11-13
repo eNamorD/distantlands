@@ -180,3 +180,23 @@ class MatBoardSuite extends munit.FunSuite:
     assertEquals(initial.textContent, "M")
     assertEquals(one(pawn, ".player-ref").textContent, "Maximilian")
     assertEquals(pawn.getAttribute(HoverTip.Attribute), "Maximilian")
+
+  /** The drawn wheel is printed and the round on it is play (ruling R8):
+    * eight segments and numbers in one fill, the current round a wedge of
+    * its own over its segment, and the limiter mark state. */
+  test("the wheel's segments and numbers are printed, the round and the " +
+      "limiter are not"):
+    val locked = WorldBoardRenderer.world(table.copy(tracks = Some(tracks.copy(
+      round = 3, usurperLimited = true, limiterRound = 5))), BoardOptions.none)
+    val wheel = one(locked, ".round-tracker svg")
+    val segments = all(wheel, "path.round-segment")
+    assertEquals(segments.size, 8)
+    assert(segments.forall(_.classList.contains("printed")))
+    val numbers = all(wheel, "text.round-number")
+    assertEquals(numbers.map(_.textContent), (1 to 8).map(_.toString).toVector)
+    assert(numbers.forall(_.classList.contains("printed")))
+    val current = one(wheel, ".round-current")
+    assert(!current.classList.contains("printed"))
+    assertEquals(current.parentNode.asInstanceOf[dom.Element]
+      .getAttribute("data-round"), "3")
+    assert(!one(wheel, ".limiter-marker").classList.contains("printed"))
