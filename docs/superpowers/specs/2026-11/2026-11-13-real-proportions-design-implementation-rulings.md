@@ -46,6 +46,11 @@ Reason: the real relic is exactly a denizen's width (381 px), which also
 matches `MatLayout.relicSlot`, and the owner allows relative sizes to
 change as long as each asset's own ratio is right.
 Slice/files: slice 1; `frontend/styles.css`.
+Amended after the whole-feature review: a banner is a square of
+`--ratio-banner` everywhere. On a player board its side is `--card-w`; on
+the table's edge it keeps its larger side, held in one named custom
+property. The real banner is three card widths across, and relative sizes
+are not this pass's concern.
 
 ## Slice 1 review
 
@@ -99,3 +104,71 @@ what cannot reach about 9px was meant for decoration and printed labels,
 not for state.
 Slice/files: slice 3; `ServerUiSupport.siteHeading`, `siteDetails`,
 `frontend/styles.css`.
+
+## Slice 3 review and whole-feature review
+
+**R6. How pawns are drawn on a zoomed-out site face.**
+Question: below the compact threshold the pawn row wrapped without limit,
+so one long player name or four pawns ran into the site's name or past the
+face's foot.
+Decision: below scale 0.72 the pawn row is one line that never wraps and
+never leaves the face. Each pawn carries both forms in the DOM, as names
+do: the long form (dot and player name) above the compact threshold; under
+`map-compact` the dot with the player's initial; under `map-tiny` the dot
+alone. The short forms are hidden from assistive technology; the pawn keeps
+its accessible name and gets the player's name as its hover note. Six pawns
+and a festival marker fit the phone's face at Fit, the dot sized from the
+face's width where the glance size would not fit them. Pawns keep a row of
+their own that overlaps neither tokens, forces, defense nor the name.
+Reason: ruling R5's "pawns never drop" needs a form that fits.
+Slice/files: slice 3 review; `WorldBoardRenderer.world`,
+`frontend/styles.css`.
+
+**R7. A non-colour cue for the Empire's short forces.**
+Question: with the warband glyph in the force's colour, an Imperial force
+and a purple Exile read the same.
+Decision: the Empire's short form also carries a cue that is not colour,
+drawn from what the design system already uses for the Empire, or, if
+nothing fits, an outline ring around the glyph. Bandit and player forms
+need nothing beyond colour and the hover note, as pawns do today.
+Reason: colour alone may not carry a distinction the rules depend on.
+Slice/files: slice 3 review; `frontend/styles.css`.
+
+**R8. The round wheel's printed parts.**
+Question: no part of the drawn wheel was marked printed, and the current
+round was only one segment's fill, so licensed art could neither hide the
+drawn wheel nor keep the round.
+Decision: the wheel's eight segments and their numbers are printed, drawn
+in one neutral fill; the current round is a separate unmarked element over
+its segment, a wedge in the current brass fill; the limiter mark stays
+state. The tracker's accessible label is unchanged.
+Reason: the printed marking must split what art replaces from what lies on
+it in play.
+Slice/files: slice 3 review; `WorldBoardRenderer.roundTracker`.
+
+**R9. Where the printed mark may go.**
+Question: the site-power buttons sat inside the printed footer, and they
+are the map's only opener for a site power's text and its consent grid.
+Decision: printed marks content, never a control or a box. No interactive
+element is printed or sits inside a printed element; the marking goes on
+the label inside the control, and on the terrain and requirement text. Box
+fills, borders and hit areas are not content: they stay unmarked, and L3
+decides how a box is filled. So the site-power buttons are unmarked with
+their visible label printed; a deck's back letter is printed, as a card's
+is; the bank's suit glyph is printed; an empty site frame's dashed outline
+is printed where the mat prints the frame, while empty card-slot outlines
+stay unmarked, since the mat prints none. Glance short forms that restate
+printed content stay printed; whether L3 keeps a glance layer over art is
+L3's question, recorded in the roadmap.
+Reason: hiding the printed layer must never take a control or state with
+it.
+Confidence: low on the last point only (glance short forms over art).
+Slice/files: whole-feature review; `ServerUiSupport`, `WorldBoardRenderer`,
+`docs/ROADMAP.md`.
+
+## As built
+
+The design says `--card-h` derives from `--card-w` and that Fit is near
+0.45 at 1440x900. What shipped keeps `--card-h: 18.2ex` and derives
+`--card-w` from it, the plan's choice, so no card changed height; and Fit
+there is about 0.416, height-bound once the table's edge is counted.
