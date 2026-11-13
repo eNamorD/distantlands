@@ -1,7 +1,8 @@
 package distantlands.catalog
 
 import distantlands.model.{CampaignPlanSide, Cost, DenizenId, EdificeId,
-  LegacyId, MajorActionType, PowerId, RelicId, SiteId, Suit, Tokens}
+  FoundationNumber, LegacyId, MajorActionType, PowerId, RelicId, SiteId, Suit,
+  Tokens}
 
 /** The modifier icon a power prints beside its braid, when it prints one:
   * the major actions it modifies, or, for a battle plan, the sides of a
@@ -79,7 +80,12 @@ abstract class Edifice(val id: EdificeId, val suit: Suit):
   def intact: EdificeFace
   def ruined: EdificeFace
 
-abstract class Legacy(val id: LegacyId, val name: String) extends PrintsPowers
+/** A legacy: a goal, a suit and a power (CR section 12). `alters` is the
+  * foundation it prints "Set Foundation X to ..." for; that face is always
+  * the altered one. */
+abstract class Legacy(val id: LegacyId, val name: String,
+    val goal: LegacyGoal, val suit: Suit,
+    val alters: Option[FoundationNumber] = None) extends PrintsPowers
 
 /** A site. It prints no rules text. A site object names each of its
   * power ids as a member and lists them in `handlers`. */
