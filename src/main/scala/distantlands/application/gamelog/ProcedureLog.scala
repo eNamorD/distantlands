@@ -1,7 +1,7 @@
 package distantlands.application.gamelog
 
 import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
-  ChronicleSunProcedure, BuildEdifice, IntroduceNewcomers, LineageScoring,
+  ChronicleSunProcedure, ResolveLegacies, BuildEdifice, IntroduceNewcomers, LineageScoring,
   OfferCitizenship, ProtectAndDispossess, ShapeEmpire, ShapeFoundation,
   SwearOath, WelcomeStranger,
   ChronicleStarsProcedure}
@@ -347,10 +347,16 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     case TriggeredProcedureRef.ChronicleSun => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
         ChronicleSunProcedure.empireBroke -> LogKind.Delta,
-        ChronicleSunProcedure.crowned -> LogKind.Delta) ++
+        ChronicleSunProcedure.crowned -> LogKind.Delta,
+        ResolveLegacies.activated -> LogKind.Delta,
+        ResolveLegacies.discarded -> LogKind.Delta,
+        ResolveLegacies.tookPublic -> LogKind.Delta,
+        ResolveLegacies.returnedPublic -> LogKind.Delta) ++
+        ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
         ChronicleTask.all.map(task =>
           ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),
-      narratedPrefixes = Vector("chronicle.assign."), isSection = false)
+      narratedPrefixes = Vector("chronicle.assign.",
+        "chronicle.sun.public-legacy."), isSection = false)
     case TriggeredProcedureRef.ChronicleThrone => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
         ShapeEmpire.discarded -> LogKind.Delta,
