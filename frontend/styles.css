@@ -1095,8 +1095,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .oathkeeper-status > * { display: block; }
 /* The goal opens the Oath's card, a link in the line's own colour and
    weight. */
-.oathkeeper-status > .oathkeeper-goal { color: inherit; font-weight: inherit;
-  text-align: left; }
+.oathkeeper-status > .oathkeeper-goal { font-weight: inherit; text-align: left; }
+/* At rest only, so the link's hover colour still answers the pointer. */
+.oathkeeper-status > .oathkeeper-goal:not(:hover) { color: inherit; }
 /* A banner is drawn as its component: square, its side across the top in
    the banner's own colour and its name in the middle. The People's Favor
    is amber and the Darkest Secret teal, as printed. The frame is the
