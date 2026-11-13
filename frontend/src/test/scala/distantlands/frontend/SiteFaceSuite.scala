@@ -228,3 +228,22 @@ class SiteFaceSuite extends munit.FunSuite:
     assert(!short.classList.contains("printed"))
     assertEquals(firstMatch(details, "p.site-forces").map(_.textContent),
       Some("Bandit Warbands x3"))
+
+  /** An Exile's and the Empire's short forms carry their force's colour
+    * class, which the glyph takes too, and the long text as the hover note;
+    * the Empire's carries its outline ring in the stylesheet (ruling R7). */
+  test("the short forces of an Exile and of the Empire carry their class " +
+      "and their words"):
+    Vector(
+      SiteForces.Exile(12, "purple-exile", distantlands.model.PlayerColor.Purple,
+        "Purple Warbands") -> ("force-purple", "Purple Warbands x12"),
+      SiteForces.Imperial(10, "Imperial Warbands") ->
+        ("force-empire", "Imperial Warbands x10")).foreach {
+      case (forces, (cssClass, words)) =>
+        val short = firstMatch(ServerUiSupport.siteDetails(
+          woods.copy(forces = Some(forces))), ".site-forces-short")
+          .getOrElse(fail("no short forces"))
+        assert(short.classList.contains(cssClass), short.getAttribute("class"))
+        assertEquals(short.getAttribute(HoverTip.Attribute), words)
+        assertEquals(short.textContent, forces.count.toString)
+    }

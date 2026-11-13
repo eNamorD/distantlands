@@ -752,6 +752,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .force-blue { color: var(--player-blue); }
 .force-yellow { color: var(--player-yellow); }
 .force-purple, .force-empire { color: var(--player-purple); }
+/* A force drawn as its warband glyph takes the force's colour, glyph and
+   count alike, on a site's short form and on a card. The Empire's purple is
+   a player's purple too, so its glyph also wears a ring (ruling R7). */
+:is(.site-forces-short, .card-warbands) .token-warband { color: inherit; }
+:is(.site-forces-short, .card-warbands).force-empire .token-warband {
+  border-radius: 50%; box-shadow: 0 0 0 0.09em currentColor; }
 .force-white { color: #ffffff; }
 .force-black { color: #111111; background: var(--player-black-pill); border-radius: 999px;
   padding: 0 0.4em; }
