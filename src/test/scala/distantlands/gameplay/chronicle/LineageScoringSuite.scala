@@ -1,12 +1,19 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.gameplay.cards.AncientCitySite
+import distantlands.catalog.holding.{CircleOfSwordsCard, HeirloomCard,
+  TheNeedleCard, WealthyCard}
+import distantlands.gameplay.SacredGroundCard
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
+import distantlands.gameplay.powers.economy.{BirdsongCard, HallowedSpringCard,
+  TheOldOakCard, VowOfPovertyCard}
+import distantlands.gameplay.powers.poweruse.ForestCouncilCard
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
-import distantlands.testkit.Outcomes
+import distantlands.testkit.{Outcomes, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 
@@ -63,3 +70,37 @@ class LineageScoringSuite extends munit.FunSuite:
       Vector(s"${p1.value} scored 1 lineage point",
         s"${p2.value} scored 1 lineage point",
         s"${p1.value} gave 1 lineage point to ${p2.value}"))
+
+  /** p1, the Chancellor, with the Empire ruling Ancient City (two Beast
+    * denizens and a Nomad edifice) and Broken Peaks (a ruined Beast
+    * edifice); Buried Giant, which p2 rules, holds a Beast denizen, and p1
+    * advises with another. */
+  private def empireWithCards: Table = ChronicleWalk.throneHeldByChancellorP1
+    .warbandsAt(AncientCitySite, p1, 1).warbandsAt(BrokenPeaksSite, p1, 1)
+    .warbandsAt(BuriedGiantSite, p2, 1)
+    .denizen(ForestCouncilCard, AncientCitySite)
+    .denizen(TheOldOakCard, AncientCitySite)
+    .edifice(SacredGroundCard, EdificeSide.Intact, AncientCitySite)
+    .edifice(HallowedSpringCard, EdificeSide.Ruined, BrokenPeaksSite)
+    .denizen(VowOfPovertyCard, BuriedGiantSite)
+    .adviser(p1, BirdsongCard)
+
+  private def bonusOf(table: Table)(using munit.Location)
+      : Vector[(Suit, Int)] =
+    LineageScoring.bonus(table.ready, catalog, p1)
+
+  test("each legacy scores 1 per card of its printed suit at the sites the " +
+      "winner rules, ruined edifices included, and never advisers or other " +
+      "sites (ruling 10, R32)"):
+    assertEquals(bonusOf(empireWithCards.legacy(p1, TheNeedleCard)
+      .legacy(p1, CircleOfSwordsCard)),
+      Vector(Suit.Beast -> 3, Suit.Nomad -> 1))
+
+  test("legacies of one suit add into one share, and a suit with no card is " +
+      "left out (R31)"):
+    assertEquals(bonusOf(empireWithCards.legacy(p1, TheNeedleCard)
+      .legacy(p1, HeirloomCard).legacy(p1, WealthyCard)),
+      Vector(Suit.Beast -> 6))
+
+  test("a winner with no legacy has no bonus"):
+    assertEquals(bonusOf(empireWithCards), Vector.empty)

@@ -1,17 +1,17 @@
 package distantlands.gameplay.chronicle
 
+import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
 
 /** Score Lineage Points, the Throne's sixth step (CR p. 37, Chronicle ruling
-  * 13). The winner scores 3 lineage points. Any number of times, they may
-  * spend 2 of the points they are scoring to let another seated player score
-  * 1. Legacy points (1 per matching card at sites the winner rules) arrive
-  * with the Legacies slice through this step's window. */
+  * 13). The winner scores 3 lineage points plus their legacy bonus
+  * (`bonus`). Any number of times, they may spend 2 of the points they are
+  * scoring to let another seated player score 1. */
 object LineageScoring:
   val giftsDecisionId: String = "chronicle.score-lineage.gifts"
-  val winnerPoints: Int = 3
+  val basePoints: Int = 3
 
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone)
   private val notes = NoteSet(noteId)
@@ -22,6 +22,28 @@ object LineageScoring:
     NotePart.Arg(2)))
   def noteKeys: Vector[NoteKey] = notes.declared
 
+  /** The winner's legacy bonus by suit (CR, Score Lineage Points; Legacies
+    * ruling 10): for each legacy the winner holds (R33), 1 point per card
+    * of its printed suit, denizens and edifices, intact or ruined (R32), at
+    * the sites the winner rules; advisers do not count. Legacies of one
+    * suit add into one share, a suit that scores nothing is left out, and
+    * shares come in suit order (R31). After Crown Chancellor the winner is
+    * the Chancellor, so these are the Empire's sites (Chronicle ruling
+    * 11). */
+  def bonus(ready: ReadyGame, catalog: ExecutableCatalog, winner: PlayerId)
+      : Vector[(Suit, Int)] =
+    val current = ready.game.current
+    val cards = current.map.inPlay
+      .filter(ChronicleTasks.rules(ready, winner, _))
+      .flatMap(site => current.map.sites.get(site).toVector.flatMap(_.denizens))
+      .flatMap(card => catalog.suitOf(card.id))
+    val legacies = ChronicleTasks.lineageOf(ready, winner)
+      .flatMap(ready.game.campaign.lineages.get).toVector
+      .flatMap(_.legacies).flatMap(legacy => catalog.legacy(legacy.id))
+    Suit.all.map(suit => suit ->
+      legacies.count(_.suit == suit) * cards.count(_ == suit))
+      .filter(_._2 > 0)
+
   val steps: Vector[Operation] = Vector(Branch((state, _) =>
     ChronicleTasks.winner(state).fold(violation =>
       Vector(ChronicleTasks.failing(violation)), score(state, _))))
@@ -31,7 +53,7 @@ object LineageScoring:
 
   private def score(state: ReadyGame, winner: PlayerId): Vector[Operation] =
     val others = ChronicleTasks.seated(state).filterNot(_ == winner)
-    val giftable = winnerPoints / 2
+    val giftable = basePoints / 2
     if giftable == 0 || others.isEmpty then
       Vector(award(state, winner, Vector.empty))
     else Vector(
@@ -52,7 +74,7 @@ object LineageScoring:
   /** The winner's points less 2 per gift, then each gift, and their lines. */
   private def award(state: ReadyGame, winner: PlayerId,
       gifts: Vector[(PlayerId, Int)]): Operation =
-    val kept = winnerPoints - 2 * gifts.map(_._2).sum
+    val kept = basePoints - 2 * gifts.map(_._2).sum
     val scoring = Option.when(kept > 0)(winner -> kept).toVector ++ gifts
     val ops = scoring.flatMap((player, amount) =>
       ChronicleTasks.lineageOf(state, player).map(
