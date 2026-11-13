@@ -1,7 +1,8 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.{IronHandCard, MatchmakerCard, RivalCard,
-  SeerCard, WealthyCard}
+import distantlands.catalog.holding.{ArbiterCard, ChroniclerCard,
+  IronHandCard, MatchmakerCard, PeacemakerCard, RivalCard, SeerCard,
+  SteadfastCard, WealthyCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import distantlands.gameplay.OathRules
@@ -181,3 +182,42 @@ class ResolveLegaciesSuite extends munit.FunSuite:
       legaciesOf(run.ready, player.player)).filterNot(_.active).map(_.id)
     assert(dormant.nonEmpty)
     assert(dormant.forall(before), dormant)
+
+  /** `table` with `cards` held active by `player`. */
+  private def holding(table: Table, player: PlayerId,
+      cards: distantlands.catalog.Legacy*): Table =
+    cards.foldLeft(table)(_.legacy(player, _))
+
+  private def capOf(run: Sun, player: PlayerId): Option[Decide] =
+    run.asked.find(_.decisionId == ResolveLegacies.capDecisionId(player))
+
+  test("a player with five active legacies discards exactly two of them, " +
+      "and one with three is asked nothing"):
+    // Imperials' unmet legacies stay active through step 3.
+    val table = holding(holding(won.imperial(p2, p3), p2, IronHandCard,
+      SeerCard, RivalCard, MatchmakerCard, ArbiterCard), p3, SteadfastCard,
+      ChroniclerCard, PeacemakerCard)
+    val run = sun(table, {
+      case decide if decide.decisionId ==
+          ResolveLegacies.capDecisionId(p2) =>
+        DecisionAnswer.ChooseManyAnswer(Vector(SeerCard.id, ArbiterCard.id)
+          .map(DecisionOptionRef.Legacy(_))) })
+    val asked = capOf(run, p2).get.query.asInstanceOf[DecisionQuery.ChooseMany]
+    assertEquals((asked.min, asked.max), (2, 2))
+    assertEquals(asked.options.map(_.ref), Vector(IronHandCard, SeerCard,
+      RivalCard, MatchmakerCard, ArbiterCard).map(card =>
+      DecisionOptionRef.Legacy(card.id)))
+    assertEquals(legaciesOf(run.ready, p2).map(_.id),
+      Vector(IronHandCard.id, RivalCard.id, MatchmakerCard.id))
+    assert(inDeck(run.ready, SeerCard.id) && inDeck(run.ready, ArbiterCard.id))
+    assertEquals(capOf(run, p3), None)
+    assert(lines(run).contains(s"p2 discarded ${SeerCard.id.value}"))
+
+  test("players over the cap are asked in turn order (R21)"):
+    val table = holding(holding(won.imperial(p2, p3).roundStarter(p3), p2,
+      IronHandCard, SeerCard, RivalCard, MatchmakerCard), p3, SteadfastCard,
+      ChroniclerCard, PeacemakerCard, ArbiterCard)
+    val run = sun(table)
+    assertEquals(run.asked.map(_.decisionId).filter(_.startsWith(
+      "chronicle.sun.legacy-cap.")), Vector(p3, p2).map(
+      ResolveLegacies.capDecisionId))

@@ -46,7 +46,8 @@ object ChronicleSunProcedure:
       ResolveLegacies.flip(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleExileDormancy,
       ResolveLegacies.dormancy(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleLegacyCap, Vector.empty),
+    ChronicleWindows.step(PowerWindow.ChronicleLegacyCap,
+      ResolveLegacies.capAll),
     ChronicleWindows.step(PowerWindow.ChronicleShuffleLegacies, Vector.empty),
     ChronicleWindows.step(PowerWindow.ChronicleCrown, Vector(
       BuildOps((state, _) => ChronicleCrown.operations(state, winner),

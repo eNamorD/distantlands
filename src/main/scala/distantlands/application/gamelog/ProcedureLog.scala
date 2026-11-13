@@ -352,12 +352,14 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         ResolveLegacies.discarded -> LogKind.Delta,
         ResolveLegacies.tookPublic -> LogKind.Delta,
         ResolveLegacies.returnedPublic -> LogKind.Delta,
-        ResolveLegacies.wentDormant -> LogKind.Delta) ++
+        ResolveLegacies.wentDormant -> LogKind.Delta,
+        ResolveLegacies.capped -> LogKind.Decision) ++
         ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
         ChronicleTask.all.map(task =>
           ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.assign.",
-        "chronicle.sun.public-legacy."), isSection = false)
+        "chronicle.sun.public-legacy.", "chronicle.sun.legacy-cap."),
+      isSection = false)
     case TriggeredProcedureRef.ChronicleThrone => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
         ShapeEmpire.discarded -> LogKind.Delta,

@@ -2,6 +2,7 @@ package distantlands.gameplay.chronicle
 
 import distantlands.catalog.{ExecutableCatalog, FoundationCards}
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
 
 /** Resolve Legacies, the Sun's steps 2-4 (CR "Task 1: The Sun"; Legacies
@@ -17,7 +18,7 @@ import distantlands.model._
   * legacy of a seated or boxed lineage that alters a foundation whose face
   * does not yet list it (ruling 8), Foundation I to VI.
   *
-  * Step 3, Exiles' legacies: see `dormancy`.
+  * Step 3, Exiles' legacies: see `dormancy`. Step 4, the cap: see `cap`.
   *
   * Lines (R24): "p2 activated Seer", "p3 discarded Iron Hand", "p3 took
   * Matchmaker", "Iron Hand returned to the legacy deck" and "Wealthy set
@@ -45,7 +46,18 @@ object ResolveLegacies:
   val wentDormant: NoteKey = notes.key("legacy-went-dormant", Vector(
     NotePart.Arg(0), NotePart.Text("'s "), NotePart.Arg(1),
     NotePart.Text(" went dormant")))
+  /** "p2 discarded Seer", the player's own choice over the cap: the same
+    * words as step 2's `discarded`, a key of its own to post as a
+    * decision. */
+  val capped: NoteKey = notes.key("capped-legacy", Vector(
+    NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1)))
   def noteKeys: Vector[NoteKey] = notes.declared
+
+  /** The most active legacies a player may hold ("Legacies in Detail"). */
+  val MaxActive: Int = 3
+
+  def capDecisionId(player: PlayerId): String =
+    s"chronicle.sun.legacy-cap.${player.value}"
 
   def publicDecisionId(legacy: LegacyId): String =
     s"chronicle.sun.public-legacy.${legacy.value}"
@@ -71,6 +83,38 @@ object ResolveLegacies:
             Orientation.FaceDown))), required = true) +:
         lapsed.map((player, id) =>
           line(wentDormant, NoteArg.Player(player), NoteArg.Card(id)))))
+
+  /** Sun step 4's children: `cap` for each seated player, in turn order. */
+  def capAll: Vector[Operation] = Vector(Branch((state, _) =>
+    LegacyGoals.turnOrder(state).map(cap)))
+
+  /** A player above three active legacies discards exactly the excess, of
+    * their choice, to the deck; at three or fewer nothing is asked. Read
+    * when reached, so a reactivation can run it again (R19). */
+  def cap(player: PlayerId): Operation =
+    val decisionId = capDecisionId(player)
+    Branch((state, _) =>
+      val active = legaciesOf(state, player).filter(_.active).map(_.id)
+      val excess = active.size - MaxActive
+      if excess <= 0 then Vector.empty
+      else Vector(
+        Decide(decisionId, player, DecisionQuery.ChooseMany(excess, excess,
+          active.map(id => DecisionOption.Legacy(DecisionOptionRef.Legacy(id))),
+          heading = Some(s"Discard $excess active " +
+            (if excess == 1 then "legacy" else "legacies") +
+            ": you may keep three"),
+          confirm = Some(CountedConfirm("Discard", "legacy", "legacies")))),
+        Branch((_, pending) =>
+          val chosen = PowerAnswers.many(pending, decisionId)
+            .getOrElse(Vector.empty).collect {
+              case DecisionOptionRef.Legacy(id) => id }
+          Vector(BuildOps((now, _) => Right(chosen.map(id => Move(
+              Piece.Card(id),
+              PositionedLocation(Location.Legacies(lineageOf(now, player))),
+              PositionedLocation(Location.Deck(CardDeck.Legacy))))),
+              required = true)) ++
+            chosen.map(id => line(capped, NoteArg.Player(player),
+              NoteArg.Card(id))))))
 
   private def meets(catalog: ExecutableCatalog, ready: ReadyGame,
       legacy: LegacyId, player: PlayerId): Boolean =
