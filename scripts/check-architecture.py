@@ -195,6 +195,34 @@ for path in scala_sources(ROOT / POWERS_ROOT):
         errors.append(f"{relative(path)}: listed as holding the catalog but "
                       "no longer does; drop its entry from check-architecture.py")
 
+# Oath's operation vocabulary is a union of sealed operation families
+# (docs/superpowers/specs/2026-11/2026-11-12-operation-families-design.md).
+# Only the family files extend OperationBase: a class that extends it
+# anywhere else would be neither a family case nor a CoreOperation, and the
+# walker would treat it as a control node.
+MODEL_ROOT = "src/main/scala/distantlands/model"
+OPERATION_FAMILY_FILES = {
+    f"{MODEL_ROOT}/{family}.scala" for family in (
+        "PieceOperation", "ResourceOperation", "CardOperation",
+        "DiceOperation", "TurnOperation", "ChronicleOperation")
+}
+operation_base_extension = re.compile(
+    r"\b(?:extends|with)\s+OperationBase\b|,\s*OperationBase\b")
+for path in sources:
+    rel = relative(path)
+    if rel in OPERATION_FAMILY_FILES:
+        continue
+    # The whole text, not line by line: an `extends` clause may wrap.
+    text = path.read_text(encoding="utf-8")
+    for found in operation_base_extension.finditer(text):
+        line_number = text.count("\n", 0, found.start()) + 1
+        errors.append(f"{rel}:{line_number}: only an operation family "
+                      "file may extend OperationBase")
+for family_file in sorted(OPERATION_FAMILY_FILES):
+    if not (ROOT / family_file).is_file():
+        errors.append(f"{family_file}: listed as an operation family file "
+                      "but missing; update check-architecture.py")
+
 if errors:
     print("architecture check failed:")
     for error in sorted(set(errors)):

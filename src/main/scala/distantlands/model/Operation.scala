@@ -13,9 +13,10 @@ package distantlands.model
   * subclasses to one source file, so an unsealed root is what lets generic
   * vocabulary be authored outside Oath's own family: the control operations
   * below, and a test's own windowed node (`WalkerStubs.WindowedNode`).
-  * Oath's operations live under the sealed [[CoreOperation]] in
-  * `CoreOperations.scala`, where exhaustive matching over the game's
-  * vocabulary is what the serializer and the restriction screener rely on.
+  * Oath's operations live under [[CoreOperation]], the union of the sealed
+  * operation families (`CoreOperations.scala` lists them), where exhaustive
+  * matching over the game's vocabulary is what the serializer, the applier
+  * and the restriction screener rely on.
   */
 trait Operation:
   /** Hook point for power windows; None = engine-internal. */
@@ -30,9 +31,8 @@ trait Operation:
 
 /** A leaf of the operation tree: it exposes itself as its only child, so the
   * whole tree shares one `children` accessor and [[Operation.flatten]] needs
-  * one leaf test. Unsealed, so a leaf may be authored outside
-  * `CoreOperations.scala`; [[PrimitiveOperation]] is Oath's sealed half of
-  * this.
+  * one leaf test. Unsealed, so a leaf may be authored outside Oath's
+  * operation families; [[PrimitiveOperation]] is Oath's half of this.
   */
 trait LeafOperation extends Operation:
   final val children: Vector[Operation] = Vector(this)

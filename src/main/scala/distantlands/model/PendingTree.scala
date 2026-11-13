@@ -41,7 +41,7 @@ final case class PendingTree(
   *
   * A pure model value: `CurrentGameState.rollPools` lives in model and must
   * not import gameplay, so the pool keys are declared here. The dice-pool
-  * leaves in `gameplay/operations/CoreOperations.scala` reference them through
-  * the normal model import.
+  * leaves in `model/DiceOperation.scala` reference them through the normal
+  * model import.
   */
 final case class PoolKey(value: String)

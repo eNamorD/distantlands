@@ -1,8 +1,7 @@
 package distantlands.model
 
 /** The pieces an operation moves, and where in a location it moves them
-  * from or to. Split out of `CoreOperations.scala`, which holds the sealed
-  * `CoreOperation` family and is close to the project's per-file bound. */
+  * from or to. */
 sealed trait Piece extends Product with Serializable
 object Piece:
   final case class Card(id: CardId) extends Piece

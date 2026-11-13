@@ -38,7 +38,7 @@ after the operation it describes.
   rule set.
 - The invariant is held by the coincidence of three lists that nothing
   checks against each other: the composites `DetailLines.parts` keeps whole,
-  the children each composite declares in `model/CoreOperations.scala`, and
+  the children each composite declares in its operation family (`model/*Operation.scala`), and
   the patterns `DetailLines.delta` matches. A new rule that matched a child
   of `PayCost`, `Discard.Relic`, `Take` or `Swap` and read `before`/`after`
   would read the whole step's states and nobody would be told.
@@ -98,7 +98,7 @@ leaves, reading `before.turn.phase`), `NoteLines.scala:220`
 A recorded delta is a `Vector[CoreOperation]`
 (`gameplay/walker` `DeltaPayload`), so only the sealed `CoreOperation`
 family reaches `parts`. Walker control nodes are not `CoreOperation`s and
-are never recorded. The composites, from `model/CoreOperations.scala`:
+are never recorded. The composites, from the operation families (`model/*Operation.scala`):
 
 ### Kept whole by `parts` — OK by construction
 

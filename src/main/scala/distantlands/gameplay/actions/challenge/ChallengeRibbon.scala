@@ -59,7 +59,7 @@ private[gameplay] object ChallengeRibbon:
     val current = ready.game.current
     val total = BannerRules.resources(current, Banner.DarkestSecret)
     val beyondHalf = total - total / 2
-    Option.when(beyondHalf > 0)(
+    Option.when[CoreOperation](beyondHalf > 0)(
       BannerRules.holder(current, Banner.DarkestSecret) match
         case Some(holder) => Move(Piece.Secrets(beyondHalf), secretBanner,
           PositionedLocation(Location.PlayArea(holder)))
@@ -77,7 +77,7 @@ private[gameplay] object ChallengeRibbon:
     val rest = total - burned
     Option.when(burned > 0)(Burn.secrets(burned, secretBanner,
       Some(actor)): CoreOperation).toVector ++
-      Option.when(rest > 0)(
+      Option.when[CoreOperation](rest > 0)(
         BannerRules.holder(current, Banner.DarkestSecret) match
           case Some(holder) => Move(Piece.Secrets(rest), secretBanner,
             PositionedLocation(Location.PlayArea(holder)))

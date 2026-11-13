@@ -97,7 +97,8 @@ object RoleChanges:
     // Read before the change: the board still counts as purple, so the
     // own bank's count leaves it out.
     val gained = math.min(purple, PlayerFacts.banked(ready, own))
-    Option.when(purple > 0)(Move(Piece.Warbands(ForceKind.Imperial, purple),
+    Option.when[CoreOperation](purple > 0)(Move(
+      Piece.Warbands(ForceKind.Imperial, purple),
       PositionedLocation(Location.PlayArea(player)),
       PositionedLocation(Location.WarbandBank(ForceKind.Imperial))))
       .toVector ++ Vector(RoleChanged(state.lineage, Role.Exile)) ++

@@ -89,6 +89,13 @@ holds at most one pick. A viewer has at most one draft, and only for a
 decision that asks to be confirmed.
 _Avoid_: pending selection, staged choice, highlighted site
 
+**Operation family**:
+One sealed area of Oath's operation vocabulary, in its own file in `model`:
+pieces, resources, cards, dice, the turn, or the Chronicle. `CoreOperation`
+is the union of the families, so a match over it stays exhaustive, and a
+new operation is a case of exactly one family.
+_Avoid_: operation group (the operation codec's old name for it), operation category
+
 ### Note
 
 **Note**:

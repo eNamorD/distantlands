@@ -195,7 +195,7 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
     }.collect {
       case WalkerStepRecorded(_, DeltaPayload(ops), _) => ops
     }.flatten
-    assertEquals(recorded, Vector(
+    assertEquals(recorded, Vector[CoreOperation](
       Move(Piece.Favor(1), PositionedLocation(Location.Site(home)),
         PositionedLocation(Location.PlayArea(actor)), by = Some(actor)),
       RecordPowerUse(TakeWealthLimit.useRef(home))))

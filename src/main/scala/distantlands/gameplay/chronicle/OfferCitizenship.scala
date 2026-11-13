@@ -95,7 +95,7 @@ object OfferCitizenship:
       val ruled = current.map.inPlay.flatMap(site =>
         current.map.sites.get(site).map(_.forces).collect {
           case SiteForces.Occupied(`own`, n) => site -> n })
-      val board = Option.when(state.board.warbands > 0)(Move(
+      val board = Option.when[CoreOperation](state.board.warbands > 0)(Move(
         Piece.Warbands(own, state.board.warbands),
         PositionedLocation(Location.PlayArea(exile)),
         PositionedLocation(Location.WarbandBank(own)))).toVector

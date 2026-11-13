@@ -1,8 +1,9 @@
 # Operation families
 
-**Status:** designed 2026-11-12, approved section by section by the owner.
-Nothing here is implemented. A throwaway probe (Scala 3.9.0, `-Werror`)
-confirmed the approach before the design; see "Probe result".
+**Status:** designed 2026-11-12, approved section by section by the owner,
+and built by the [operation families plan](../../plans/2026-11/2026-11-12-operation-families.md).
+Two throwaway probes (Scala 3.9.0, `-Werror`) confirmed the approach; see
+"Probe result", and "What the full build showed" for what they missed.
 
 **Answers** the roadmap's architecture candidate "`CoreOperations.scala` is
 at the file limit", measured at the end of the
@@ -105,6 +106,30 @@ build with "It would fail on pattern case: probe.GainSupply(_)". A nested
 `case p: PieceOperation => p match` inside that match needed only the
 leaf arms too, and at run time a type test against the intersection kept
 leaves and dropped composites.
+
+### What the full build showed
+
+The probes were small, and building the whole repository showed two
+behaviours they had not reached.
+
+- **A mixed-family expression infers `OperationBase`.** Where one
+  expression combines operations of two families, such as
+  `Vector(Move(...), FlipSecrets(...))`, a match whose arms return a `Move`
+  and a `Burn`, or `a ++ b` across families, Scala widens the union of
+  their types to the families' common base, `OperationBase`, which is not
+  a `CoreOperation`. Seven call sites (six in production, one in a test)
+  therefore name the element type: `Vector[CoreOperation](...)`,
+  `Option.when[CoreOperation](...)`. Marking the base traits `transparent`
+  keeps the union instead, but the type checker then ran for over half an
+  hour on the test sources, so they stay ordinary traits.
+- **A match that cuts across the families is very slow to check.** The
+  old codec matched a `CoreOperation` against its own private unions,
+  which group the cases differently from the families (`Burn` sat with the
+  pieces, the dice operations with the turn). Against the union of six
+  sealed families, that one match's reachability check ran for many
+  minutes. The family codecs match each family against its own cases, as
+  the applier does, and compile in seconds, so the codec split landed with
+  the model split rather than after it.
 
 The repository was checked for what an alias cannot carry. Nothing defines
 or calls a `CoreOperation` companion, and no `ClassTag` or `classOf` is
