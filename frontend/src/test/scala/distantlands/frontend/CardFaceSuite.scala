@@ -23,7 +23,8 @@ class CardFaceSuite extends munit.FunSuite:
 
   test("each card type gets its box, whichever way it faces"):
     Vector("denizen" -> "card-face-denizen", "vision" -> "card-face-denizen",
-      "edifice" -> "card-face-denizen", "relic" -> "card-face-relic").foreach {
+      "edifice" -> "card-face-denizen", "relic" -> "card-face-relic",
+      "legacy" -> "card-face-legacy").foreach {
       case (kind, box) =>
         val up = CardFace.render(CardDetails("c", kind, "Name",
           orientation = Some("face-up")))
@@ -32,6 +33,17 @@ class CardFaceSuite extends munit.FunSuite:
         assert(up.classList.contains(box), kind)
         assert(down.classList.contains(box), kind)
     }
+
+  /** A Vision is a denizen card on its side: it keeps the denizen box in a
+    * row, and carries a mark so the overlay can show it upright. */
+  test("a Vision keeps the denizen box and is marked as a Vision"):
+    val vision = CardFace.render(CardDetails("v", "vision", "Vision of Faith",
+      orientation = Some("face-up")))
+    assert(vision.classList.contains("card-face-vision"))
+    assert(!vision.classList.contains("card-face-legacy"))
+    val denizen = CardFace.render(CardDetails("d", "denizen", "Name",
+      orientation = Some("face-up")))
+    assert(!denizen.classList.contains("card-face-vision"))
 
   test("a face-up card shows its summary with no field names"):
     // favor and secrets restate faceUp's values so the counts read locally.

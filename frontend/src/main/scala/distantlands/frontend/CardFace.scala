@@ -6,19 +6,23 @@ import ServerUiSupport._
 
 /** The one place a projected `CardDetails` becomes DOM.
   *
-  * Every card occupies its type's box -- denizen 1:1.4, relic 1:1 -- in both
-  * states, so revealing or covering a card can never reflow the pane around
+  * Every card occupies its type's box, at the real card's ratio (the ratio
+  * table in `styles.css`), in both states, so revealing or covering a card can never reflow the pane around
   * it. Full rules live in the inspection overlay, not here: a summary fits a
   * small card and rules do not (measured p90 is 134 glyphs for a denizen).
   */
 private[frontend] object CardFace:
 
-  /** Edifices share the denizen box because they occupy denizen slots, and a
-    * differently shaped edifice would break the slot grid the moment one is
-    * built. Visions share it rather than earn a ratio used by one case.
+  /** Edifices share the denizen box because they occupy denizen slots. A
+    * legacy is a landscape card. A Vision is a denizen card on its side:
+    * in a row it keeps the denizen box, so the row stays one grid, and its
+    * mark lets the inspection overlay show it upright.
     */
-  def boxClass(cardKind: String): String =
-    if cardKind == "relic" then "card-face-relic" else "card-face-denizen"
+  def boxClass(cardKind: String): String = cardKind match
+    case "relic" => "card-face-relic"
+    case "legacy" => "card-face-legacy"
+    case "vision" => "card-face-denizen card-face-vision"
+    case _ => "card-face-denizen"
 
   /** Safe on a card the viewer cannot identify: a denizen back and a vision
     * back differ physically, so which one this is stays public even when the

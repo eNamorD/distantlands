@@ -452,6 +452,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .board-option-card { position: relative; display: inline-flex;
   flex: 0 0 auto; }
 .board-option-card:has(> .card-face) { width: var(--card-w); }
+.board-option-card:has(> .card-face-legacy) { width: var(--card-h); }
 .board-option-card > .card-face { width: 100%; }
 .board-option-inspect { position: absolute; right: 4px; bottom: 4px;
   z-index: 1; width: 22px; height: 22px; padding: 0;
@@ -691,6 +692,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
      nor asks a phone for its callout. */
   cursor: grab; user-select: none; -webkit-user-select: none;
   -webkit-touch-callout: none; }
+.partition-zone .decision-option:has(.card-face-legacy) { width: var(--card-h); }
 /* The held card stays in the row at the place a drop would put it, faded,
    so the row reads as the answer it would become. */
 .partition-zone .decision-option.dragging { opacity: 0.4; }
@@ -748,6 +750,10 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   background: var(--base); color: var(--cream); font: inherit; line-height: 1.15; }
 .card-face-denizen { border-color: var(--line); }
 .card-face-relic { height: var(--card-w); border-color: #7a6a4c; }
+/* A legacy is the denizen card turned on its side: the same two lengths,
+   exchanged. */
+.card-face-legacy { width: var(--card-h); height: var(--card-w);
+  border-color: var(--line); }
 .card-face-unimplemented { border-style: dashed; border-color: var(--unimplemented); }
 /* An empty slot is a place, not a card: nothing to inspect, so no ring. */
 .card-face:not(.card-slot-empty):hover, .card-face:focus-visible {
@@ -1806,6 +1812,10 @@ button.festival-marker:hover,
 /* The card reuses its type's ratio at overlay scale, the way haunt-roll-fail's
    courtCard is card's exact ratio at 1.34x. No third ratio. */
 .card-overlay-body > .card-face { font-size: 1.9em; }
+/* The overlay reads a Vision upright, in the landscape box it is printed
+   in. */
+.card-overlay-body > .card-face-vision { width: var(--card-h);
+  height: var(--card-w); }
 .card-overlay-details { flex: 1 1 22em; min-width: 0; max-width: 34em;
   font-size: 0.82em; }
 .card-overlay-name { margin: 0 0 0.6em; font-family: Georgia, serif;
@@ -1871,6 +1881,9 @@ button.festival-marker:hover,
 .card-list-item > .card-face { width: 100%; height: auto;
   aspect-ratio: var(--ratio-denizen); }
 .card-list-item > .card-face-relic { aspect-ratio: var(--ratio-relic); }
+/* A legacy takes two columns of the list, so it reads at a card's size. */
+.card-list-item:has(> .card-face-legacy) { grid-column: span 2; }
+.card-list-item > .card-face-legacy { aspect-ratio: var(--ratio-legacy); }
 /* In the action pane, about a row and a half shows at most (a column is at
    most a third wider than a card there), so a longer pile says it scrolls
    and Done stays in reach under it. */
