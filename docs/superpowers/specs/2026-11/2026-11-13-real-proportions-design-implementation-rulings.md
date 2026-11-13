@@ -64,7 +64,9 @@ the power marks' row; the header region ends above it, and a name too long
 for the room is clipped there rather than overlapped, since the hover tip
 and the accessible name carry the whole name. Unimplemented and Replace
 faces lift the band by the same amount they lift the power marks. The
-compact map keeps its own offset.
+compact map keeps its own offset. A square or landscape box that prints
+power marks sets the band above the marks, as a denizen does, since at the
+foot it would cover them (confirmed after slice 2).
 Reason: the design anchors live state to the box so licensed art can
 replace the printed parts; an anchor that depends on the box's height is
 not one anchor, and state covering the name breaks the design's rule that

@@ -1420,23 +1420,38 @@ Expected: each path printed against the `.gitignore` rule `reference/`.
 ### Task 9: Check and tune in the browser
 
 **Files:**
-- Modify: `frontend/styles.css` (values only, in the rules Tasks 1, 2, 3 and 7 added)
+- Modify: `frontend/styles.css` (values only, in the rules Tasks 1, 2, 3, 7 and the R4 band added)
+- Modify, only if a measured number is wrong: `frontend/src/main/scala/distantlands/frontend/MatLayout.scala` (numbers only) and the same number in Task 10's record
 
-The stylesheet values in Task 7 are computed, not yet seen. This task looks at the result at three sizes, with the real mat and real cards laid under the drawn ones, and corrects values. It changes no structure and no Scala.
+The stylesheet values in Task 7 are computed, not yet seen. This task looks at the result at three sizes, with the real mat and real cards laid under the drawn ones, and corrects values. It changes no structure; the only Scala it may touch is a measured number in `MatLayout`.
+
+It follows Impeccable's bounded verification, with `reference/adapt.md` and `reference/polish.md` read first: one batched inspection round over all three viewports (Steps 2 and 3, every row of the table), one batch of fixes, and at most one confirming round. A finding the detector hook reports is judged by line in this worktree; a `CONTEXT_STALE` finding is reported, not repaired.
+
+Before starting the server, rebuild without coverage (`./sbtw clean`): a coverage run leaves instrumented classes behind.
 
 - [ ] **Step 1: Start a scratch server**
 
-```bash
-mkdir -p "$SCRATCH/db" && cp /Users/roman/projects/distantlands/var/distantlands.script /Users/roman/projects/distantlands/var/distantlands.properties /Users/roman/projects/distantlands/var/distantlands.lobs "$SCRATCH/db/" && ls "$SCRATCH/db"
-```
-
-where `SCRATCH` is the session's scratchpad directory. Then, from the worktree, in the background:
+The scratch copy of the database made in slice 1 is in `DB=/private/tmp/claude-501/-Users-roman-projects-oathdigital/c17e13c6-2b51-40f4-a67d-0fd7cda78149/scratchpad/real-proportions-db`; it already holds a fresh two-player game, `game-yi5xmjyf3sh6`. If the folder is gone, copy `distantlands.script`, `distantlands.properties` and `distantlands.lobs` from the main checkout's `var/` into it first. Then, from the worktree, in the background:
 
 ```bash
-./sbtw frontend/fastLinkJS "runMain distantlands.server.DistantLandsServer --port 8081 --database-path $SCRATCH/db/distantlands"
+./sbtw frontend/fastLinkJS "runMain distantlands.server.DistantLandsServer --port 8081 --database-path $DB/distantlands"
 ```
 
-Wait until `curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/` prints `200`. Open `http://localhost:8081/`, create a new game from the root page (old games in a copied database may not load) and advance it until every region holds sites, at least one site holds a denizen, a relic, a pawn and warbands, and one player holds a banner.
+Wait until `curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/` prints `200`.
+
+- [ ] **Step 1b: Reach the states slices 1 and 2 could not show**
+
+A fresh game shows no legacy in the Public Ambitions row, no Vision, and no relic or banner on a player board. They come from the Chronicle the game starts from, so build one Chronicle that sets them up and start a new game from it:
+
+1. On the root page, read the loaded Chronicle's JSON. In the script tool, parse `localStorage["distantlands.chronicles"]`, take the entry named by `localStorage["distantlands.chronicles.loaded"]`, and parse its `json` field. Check the field names below against what it holds before editing.
+2. Edit that JSON:
+   - In `foundations`, set number 3's `face` to `"altered"`. Its altered face is Public Ambitions, so setup deals four legacies faceup to the public row (`LegacyDeal`).
+   - Give one lineage a starting relic: add a relic id that the relic deck holds (for example the first id in `relicDeck`, removed from there) to its `startingRelics`. That relic starts on its holder's board.
+   - Set `oathkeeperGoal` to Devotion (`"devotion"`, in the form the JSON already uses) and give one entry of `lineages` the role `"chancellor"`. Setup gives the Darkest Secret to the Chancellor when the goal is the Darkest Secret, so the banner starts on a player board.
+   - For a Vision, add one to a lineage's `startingAdvisers` as `{"kind": "vision", "id": …, "orientation": …}`, using a Vision id from `worldDeck`. If setup refuses that, use a Vision a hand or a discard list shows (switch seats from the toolbar), and failing that, build the overlay case in the page from `CardFace.render`'s markup and report that it was built.
+3. Import the edited JSON through the root page's "A Chronicle JSON file" input. In the script tool, put a `File` made from the edited text into the input through a `DataTransfer`, then dispatch `change`. Then create a game with one row per lineage.
+
+A step the server refuses is reported with its message. That case falls back to a page-built harness, as the token band check does, and the report says which cases were built.
 
 - [ ] **Step 2: Lay the real mat and real cards under the drawn ones**
 
@@ -1466,6 +1481,8 @@ This is a check, run in the page; it is not product code and nothing of it is sa
 
 - [ ] **Step 3: Inspect at 1440×900, 1024×768 and a 390×844 phone, at Fit and zoomed to 100%**
 
+This is the one batched inspection round. Every row below is checked at all three sizes before anything is changed.
+
 Confirm each of these, and where one fails, correct the value named:
 
 | Check | If it fails, change |
@@ -1483,11 +1500,18 @@ Confirm each of these, and where one fails, correct the value named:
 | In the inspection overlay a Vision is landscape and upright; a foundation opens with its plate | the Task 2 and Task 4 rules |
 | A board decision that picks a site rings the whole row; one that picks a card rings the card; the inspect button sits in the card's lower right | `.mat-board .site` border radius; nothing else |
 | The phone pans and zooms the board as before, and Fit shows the whole mat | nothing expected; report if not |
+| The round wheel's rectangle, `MatRect(62, 1602, 642, 642)`, sits on the wheel the mat image prints: its circle inside the rim, the eight drawn segments on the printed ones | `roundWheel` in `MatLayout`, and Task 10's record |
+| At Fit, a site face's lines do not run into each other: a two-line site name such as "Shrouded Woods" against the forces line above it, and the region and requirement line ("Mountain · Recover 4") against the forces line and the name band | the `top` and `bottom` em offsets of `.mat-board .site-pawns`, `.site-forces` and `.site-footer`, in and outside `.map-compact`; the name band's line height |
+| Each region name shows whole: "Hinterland" is not clipped by its box at the clamp's minimum | the `.mat-board .region-label` clamp; never the `regionName` rectangle unless it disagrees with the mat |
+| The track note's words read at 11px or more on screen at Fit | `.track-note` font size, in and outside `.map-compact` |
+| A relic with a two-line name keeps its defense dice inside the box, on a player board and in a site slot | the relic face's type scale (`.card-name` or the header's line height on `.card-face-relic`); never `--card-w` (ruling R3) |
+| A relic and a banner on a player board are square, read their name and count, and their token band clears the name (ruling R4) | the R4 band rules; `.player-board .banner-face` padding |
+| At 1024×768 and on the phone, Fit shows the whole mat with the table's edge under it, and the edge's row wraps rather than overflowing | `.table-edge` and `.table-edge .shared-bank` wrapping; the banner column width |
 | Measured, not looked at: the bounding box of each face's `.card-tokens` overlaps none of `.card-header` (as the header clips it), `.legacy-goal`, `.card-power-marks`, `.card-unimplemented-badge` or `.board-option-badge`, on a banner in the shared bank and on a player board, a relic, a legacy, a dormant legacy, a denizen with a restriction banner and a long name, an unimplemented denizen with power marks, and a Replace option card (implementation ruling R4). Cases the game does not show are built in the page from the markup `CardFace.render` and `BannerFace.render` make, inside the pane that would hold them | the R4 band rules (`--marks-bottom`, `--band-bottom`, `--band-h`) |
 
 - [ ] **Step 4: Remove the check's overlays and take screenshots**
 
-Reload the page. Save one screenshot at each of the three sizes to the scratchpad and send them to the owner.
+Reload the page. Save one screenshot at each of the three sizes to the scratchpad and give their full paths in the report. After the one batch of fixes, run at most one confirming round over the rows that failed.
 
 - [ ] **Step 5: Run every suite, stop the servers**
 
@@ -1497,6 +1521,8 @@ Expected: PASS.
 ```bash
 pkill -f "http.server 8090"; pkill -f "DistantLandsServer --port 8081"
 ```
+
+Confirm with `lsof -i :8081 -sTCP:LISTEN` and `lsof -i :8090 -sTCP:LISTEN` that nothing listens.
 
 (Exit status 144 from the second is expected.)
 
@@ -1510,7 +1536,8 @@ git add frontend/styles.css frontend/src && git commit -m "fix(frontend): tune t
 
 **Files:**
 - Create: `docs/catalog/asset-proportions.md`
-- Modify: `DESIGN.md` (the passages near lines 216, 229, 448, 503, 588, 689, 705 and 847 that state `1:1.4`, the three-region grid, the side column bank and the compact site grid)
+- Modify: `DESIGN.md` (the passages the Step 2 search finds, at HEAD near lines 229, 295, 441, 510, 512, 588 and 914, that state `1:1.4`, the three-region grid, the fixed site box, the side column bank and the compact site grid)
+- Modify: `docs/catalog/README.md` (one line pointing to the new record, so the catalog's index names it)
 - Modify: `docs/ROADMAP.md` (the L3 line)
 
 - [ ] **Step 1: Write the proportions record**
@@ -1587,7 +1614,9 @@ If Task 9 changed a number in `MatLayout`, write the changed number here.
 
 - [ ] **Step 2: Update `DESIGN.md`**
 
-Run `grep -n "1:1.4\|1 : 1.4\|1\.4 ratio\|--site-h\|shared bank\|Shared Bank\|side column\|bank's column\|three regions\|site box" DESIGN.md` and rewrite each passage it finds so that it states: cards take their ratio from the ratio table (denizen 381:596, site 770:596, relic and banner square, legacy 596:381); a card outside the mat keeps `--card-h` and derives its width; the map is one board of the mat's ratio placed from `MatLayout`; a site is a site card with three card slots to its right; decks, discards, the round wheel, the Visions Drawn track and the favor banks stand at the mat's positions; the banners, the oath and the foundations stand on the table's edge under the mat; printed content carries `printed` and live state is anchored to the box; the glance layer has a second step, `map-tiny`, below 0.4. Keep the document's own voice and structure; change statements of fact, not headings.
+Run `grep -n "1:1.4\|1 : 1.4\|1\.4 ratio\|--site-h\|shared bank\|Shared Bank\|side column\|bank's column\|three regions\|site box" DESIGN.md` and rewrite each passage it finds so that it states: cards take their ratio from the ratio table (denizen 381:596, site 770:596, relic and banner square, legacy 596:381); a card outside the mat keeps `--card-h` and derives its width; the map is one board of the mat's ratio placed from `MatLayout`; a site is a site card with three card slots to its right; decks, discards, the round wheel, the Visions Drawn track and the favor banks stand at the mat's positions; the banners, the oath and the foundations stand on the table's edge under the mat; printed content carries `printed` and live state is anchored to the box; the token band stands at a square or landscape box's foot and just above a denizen's power marks, above the marks on any box that prints them, and the face keeps its room free (ruling R4); a card the table shows as words (foundation, Oath goal, Oathkeeper title) opens with a plate at its real ratio, and the Oath goal in the shared bank is a link that opens it (ruling R2); the glance layer has a second step, `map-tiny`, below 0.4. Keep the document's own voice and structure; change statements of fact, not headings.
+
+In `docs/catalog/README.md`, add after its opening paragraph: "`asset-proportions.md` records the real size and ratio of each game asset the table draws, and where the mat prints each piece."
 
 - [ ] **Step 3: Update the roadmap**
 
@@ -1605,5 +1634,5 @@ Expected: every path printed exists relative to its file (`ls` each one).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add docs/catalog/asset-proportions.md DESIGN.md docs/ROADMAP.md && git commit -m "docs: record asset proportions and the mat layout"
+git add docs/catalog/asset-proportions.md docs/catalog/README.md DESIGN.md docs/ROADMAP.md && git commit -m "docs: record asset proportions and the mat layout"
 ```
