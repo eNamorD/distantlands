@@ -1,9 +1,9 @@
 # Alpha data, backup, restore, and upgrade policy
 
-Distant Lands uses a file-backed HSQLDB database. Treat the complete directory
-containing the configured database prefix as one unit. For example, when
-`DLQ_DATABASE_PATH=/home/alex/distantlands-data/alpha-1/database`, the data
-directory is `/home/alex/distantlands-data/alpha-1`, not one selected
+Distant Lands uses a file-backed HSQLDB database to store active games. Treat
+the complete directory containing the configured database prefix as one unit.
+For example, when `DLQ_DATABASE_PATH=/home/alex/distantlands-data/alpha-1/database`,
+the data directory is `/home/alex/distantlands-data/alpha-1`, not one selected
 `database.*` file.
 
 **Never copy, restore, or move a live HSQLDB data directory.** Stop Distant
