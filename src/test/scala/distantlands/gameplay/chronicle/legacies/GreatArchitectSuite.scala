@@ -1,15 +1,17 @@
 package distantlands.gameplay.chronicle.legacies
 
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
-import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import distantlands.gameplay.chronicle.{BuildEdifice, ChronicleWalk}
 import distantlands.gameplay.powers.{PowerImplementationStatus,
   WalkerPowerCatalog}
+import distantlands.gameplay.powers.economy.WildPasturesCard
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Great Architect (L07): "If you are an Imperial: you perform Build
   * Edifice and may build any edifice (not just a matching one)." (ruling
@@ -101,3 +103,60 @@ class GreatArchitectSuite extends munit.FunSuite:
       Suit.all.drop(1).map(BuildEdifice.decisionId))
     assert(later.forall(_.query.asInstanceOf[DecisionQuery.ChooseMany]
       .options.map(_.ref) == Vector(DecisionOptionRef.Edifice(built.head))))
+
+  /** The Empire rules Ancient City, which holds a ruined Wild Pastures, the
+    * only Nomad edifice left to build: every other stands intact at Buried
+    * Giant, which the Empire does not rule. p2 holds Great Architect. */
+  private def lonePastures: Table =
+    val base = ChronicleWalk.throneHeldByChancellorP1.imperial(p1, p2)
+      .warbandsAt(AncientCitySite, p1, 1)
+      .edifice(WildPasturesCard, EdificeSide.Ruined, at = AncientCitySite)
+      .legacy(p2, GreatArchitectCard)
+    val nomads = base.ready.game.current.commonCards.edificeDeck
+      .filter(id => catalog.edifice(id).exists(_.suit == Suit.Nomad))
+    base.update(_.updateCurrent(current => current.copy(
+      commonCards = current.commonCards.copy(edificeDeck =
+        current.commonCards.edificeDeck.filterNot(nomads.contains)),
+      map = current.map.copy(sites = current.map.sites.updatedWith(
+        BuriedGiantSite.id)(_.map(site => site.copy(denizens = site.denizens ++
+          nomads.map(EdificeState(_, EdificeSide.Intact, Tokens.empty)))))))))
+
+  private val buryPastures: PartialFunction[Decide, DecisionAnswer] =
+    case decide if decide.decisionId == BuildEdifice.decisionId(Suit.Discord) =>
+      DecisionAnswer.ChooseManyAnswer(Vector(
+        DecisionOptionRef.Edifice(WildPasturesCard.id)))
+
+  test("an edifice buried earlier in the step is not offered by a later " +
+      "suit (R45)"):
+    val run = throne(lonePastures, buryPastures)
+    assert(edificesAt(run.ready).forall(_ != WildPasturesCard.id))
+    assert(!builds(run).exists(_.decisionId ==
+      BuildEdifice.decisionId(Suit.Nomad)), builds(run).map(_.decisionId))
+
+  test("a walk resumed at a later suit's question still leaves out the " +
+      "edifice buried earlier (R45)"):
+    val table = lonePastures
+    val atDiscord = ChronicleWalk.walkedTo(rules, ChronicleWalk.started(rules,
+      table, TriggeredProcedureRef.ChronicleSun),
+      BuildEdifice.decisionId(Suit.Discord))
+    val buried = accepted(rules.resolveWalker(atDiscord.state, p2,
+      BuildEdifice.decisionId(Suit.Discord), DecisionAnswer.ChooseManyAnswer(
+        Vector(DecisionOptionRef.Edifice(WildPasturesCard.id)))))
+    val events = atDiscord.events ++ buried.events
+    val replayed = accepted(events.foldLeft[
+      Either[OathViolation, OathState]](Right(table.state))((state, event) =>
+        state.flatMap(rules.evolve(_, event))))
+    val parked = ChronicleWalk.parked(replayed)
+    assertEquals(parked, ChronicleWalk.parked(buried.state))
+    assertEquals(parked.map(_.decisionId),
+      Some(BuildEdifice.decisionId(Suit.Arcane)))
+    // Each later suit, answered plainly from the replayed walk, asks no
+    // Nomad question.
+    val asked = Iterator.iterate(Option(replayed))(_.flatMap(state =>
+      ChronicleWalk.parked(state).filter(_.decisionId.startsWith(
+        "chronicle.build-edifice.")).map(decide => accepted(
+        rules.resolveWalker(state, decide.owner, decide.decisionId,
+          ChronicleWalk.plainestAnswer(decide))).state)))
+      .takeWhile(_.nonEmpty).flatten.flatMap(ChronicleWalk.parked).toVector
+      .map(_.decisionId).filter(_.startsWith("chronicle.build-edifice."))
+    assert(!asked.contains(BuildEdifice.decisionId(Suit.Nomad)), asked)

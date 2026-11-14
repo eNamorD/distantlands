@@ -21,8 +21,8 @@ import distantlands.model._
   * holder (Legacy Chronicle powers design, rulings 10 and 19; R32). A
   * second builder is offered a suit's edifice only if the first built
   * none, read from the first's journaled answer (R43), under an id of its
-  * own. A burial returns favor to the buried card's own
-  * suit bank (R14). */
+  * own. An edifice buried this step is not offered again (R45). A burial
+  * returns favor to the buried card's own suit bank (R14). */
 object BuildEdifice:
   def decisionId(suit: Suit): String = s"chronicle.build-edifice.${suit.key}"
   /** The Iron Hand holder's question when a Great Architect builds first
@@ -36,12 +36,23 @@ object BuildEdifice:
     NotePart.Arg(2)))
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  /** The edifice each suit offers (ruling 9). */
-  def available(catalog: ExecutableCatalog, current: CurrentGameState)
-      : Vector[(Suit, EdificeId)] =
-    val pool = current.commonCards.edificeDeck ++ current.setAsideEdifices
+  /** The edifice each suit offers (ruling 9), leaving out `buried`. */
+  def available(catalog: ExecutableCatalog, current: CurrentGameState,
+      buried: Set[EdificeId] = Set.empty): Vector[(Suit, EdificeId)] =
+    val pool = (current.commonCards.edificeDeck ++ current.setAsideEdifices)
+      .filterNot(buried)
     Suit.all.flatMap(suit => pool.find(id =>
       catalog.edifice(id).exists(_.suit == suit)).map(suit -> _))
+
+  /** The edifices the build questions of the suits before `suit` buried
+    * this step, read from their journaled answers: a buried edifice goes to
+    * the deck, but was not available when the step began (CR, Build
+    * Edifice; Legacy Chronicle powers R45). */
+  private def buriedBefore(pending: PendingTree, suit: Suit): Set[EdificeId] =
+    Suit.all.takeWhile(_ != suit)
+      .flatMap(earlier => Vector(decisionId(earlier), ironHandDecisionId(earlier)))
+      .flatMap(id => PowerAnswers.many(pending, id).toVector.flatten)
+      .collect { case DecisionOptionRef.Edifice(id) => id }.toSet
 
   def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     // The shuffle draws the random edifice per suit: the deck is otherwise
@@ -52,14 +63,17 @@ object BuildEdifice:
     // change the node count the other answers are replayed against.
     // The second slot skips a suit the first built: it reads the first's
     // journaled answer, never a recomputed pool, so a resumed walk finds
-    // the same question (Legacy Chronicle powers R43).
+    // the same question (Legacy Chronicle powers R43). Each suit's pool
+    // leaves out the edifices earlier suits' answers buried, so the pool is
+    // the one the step began with (R45).
     Suit.all.flatMap(suit => Vector(0, 1).map(slot => Branch((state, pending) =>
       ChronicleLegacyRules.builders(state).fold(
         violation => Vector(ChronicleTasks.failing(violation)),
         builders => builders.lift(slot)
           .filterNot(_ => slot == 1 && builtBy(pending, decisionId(suit)))
           .toVector.flatMap(holder =>
-            available(catalog, state.game.current).find(_._1 == suit).toVector
+            available(catalog, state.game.current, buriedBefore(pending, suit))
+              .find(_._1 == suit).toVector
               .flatMap((_, edifice) => offer(catalog, state, holder, suit,
                 edifice, if slot == 0 then decisionId(suit)
                   else ironHandDecisionId(suit)))))))) :+

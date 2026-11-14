@@ -412,3 +412,16 @@ introduction says the CHRONICLE powers landed with this design.
 Reason: the convention is the file's standing rule, and R42 accepted a
 proposal that did not account for it.
 Slice/files: 5; `docs/ROADMAP.md`.
+
+**R45. An edifice buried earlier in Build Edifice.** (A slice 2 fault,
+found in the slice 5 review.)
+Question: each suit recomputed its pool from the live deck, so an edifice
+buried earlier in the same step, now at the deck's bottom, could be offered
+by a later suit and rebuilt intact.
+Decision: the available edifices are those available when the step began
+(`docs/rules/chronicle.md`, Build Edifice). A suit's pool leaves out every
+edifice that an earlier suit's answered build question (`decisionId` or
+`ironHandDecisionId`) buried, read from journaled answers only.
+Reason: it matches the rule and stays resume-safe like R43; the pool is
+not captured in an outer Branch.
+Slice/files: 2 (fixed in 5); `BuildEdifice`.
