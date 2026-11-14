@@ -8,7 +8,6 @@ import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
 import distantlands.gameplay.setup.{LaterGameFixture, SetupLegacyFixture,
   SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.gameplay.walker.WalkerParked
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.{Answers, ParkedNode, Situation}
@@ -61,12 +60,12 @@ class QuestSetupSuite extends munit.FunSuite:
       case one: DecisionQuery.ChooseOne => one.options.map(_.ref)
       case other => fail(s"expected a choose-one, got $other")
 
-  private def asked(from: Chronicle, answers: Answers): Vector[String] =
-    Situation.wake(rules.withAnswers(answers), from,
-      LaterGameFixture.orders(from, p1)).events.collect {
-      case WalkerParked(_, _, answered, _, _) =>
-        answered.map(_.decisionId)
-    }.lastOption.getOrElse(Vector.empty)
+  /** `answers`, failing the walk if any Quest question is asked. */
+  private def askingNoQuest(answers: Answers): Answers =
+    answers.orElse {
+      case park if park.decisionId.startsWith("setup.legacy.quest") =>
+        fail(s"asked ${park.decisionId}")
+    }
 
   private def lines(situation: Situation): Vector[String] =
     NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
@@ -157,12 +156,8 @@ class QuestSetupSuite extends munit.FunSuite:
       OathsOfLoyaltyCard.id -> true)
     val teeming = held.copy(foundations = held.foundations.updated(
       FoundationNumber.IV, FoundationState(FoundationFace.Altered, Set.empty)))
-    val notSwapping = stayingOff.orElse {
-      case park if park.decisionId.startsWith("setup.legacy.quest") =>
-        fail(s"asked ${park.decisionId}")
-    }
-    val ready = Situation.wake(rules.withAnswers(notSwapping), teeming,
-      LaterGameFixture.orders(teeming, p1)).ready
+    val ready = Situation.wake(rules.withAnswers(askingNoQuest(stayingOff)),
+      teeming, LaterGameFixture.orders(teeming, p1)).ready
     assertEquals(ready.game.current.pawnSite(p2), None)
     assertEquals(ready.game.current.player(p2).get.advisers, Vector.empty)
     assertEquals(ready.game.current.temporaryHands.getOrElse(p2, Vector.empty),
@@ -171,8 +166,10 @@ class QuestSetupSuite extends munit.FunSuite:
     assert(teeming.dispossessed.forall(card => !known.contains(card)), known)
 
   test("placing the pawn: no swap is offered"):
-    val walked = asked(record, PartialFunction.empty)
-    assert(!walked.exists(_.startsWith("setup.legacy.quest")), walked)
+    val ready = Situation.wake(rules.withAnswers(
+      askingNoQuest(PartialFunction.empty)), record,
+      LaterGameFixture.orders(record, p1)).ready
+    assert(ready.game.current.pawnSite(p2).nonEmpty)
 
   test("the line names no card"):
     val answers = stayingOff.orElse {
