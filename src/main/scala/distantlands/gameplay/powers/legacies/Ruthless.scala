@@ -24,8 +24,6 @@ object RuthlessCard extends Legacy(LegacyId("L29"), "Ruthless",
   * "You can bury locked cards, including edifices"). Its tokens return as
   * `Bury.standard` returns them. The question is always asked; the use is
   * refused while the site holds no such card (implementation ruling R4).
-  * The bury is required, so a card a restriction keeps (Ancient
-  * Bloodline) is not offered.
   *
   * Line: "p1 buried Herbalist with Ruthless" (ruling 13), covering the
   * generic Buried line.
