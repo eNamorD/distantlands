@@ -1,7 +1,7 @@
 package distantlands.gameplay.walker
 
-import distantlands.model.{CardId, OathViolation, ReadyGame, Shuffle,
-  ShufflePile, VisionId}
+import distantlands.model.{CardId, FoundationFace, FoundationNumber,
+  OathViolation, ReadyGame, Shuffle, ShufflePile, VisionId}
 
 /** Fills a declared `Shuffle`'s order from the walker's random source. Split
   * out of [[ProcedureWalker]], which is close to the project's per-file
@@ -14,7 +14,8 @@ private[walker] object WalkerShuffles:
       : Either[OathViolation, Shuffle] =
     val cards = ShufflePile.cards(shuffle.pile, state.game)
     if shuffle.pile == ShufflePile.VisionPackets then
-      packets(cards, dice).map(order => shuffle.copy(order = Some(order)))
+      packets(cards, dice, teeming(state))
+        .map(order => shuffle.copy(order = Some(order)))
     else if cards.size < 2 then Right(shuffle.copy(order = Some(cards)))
     else dice.shuffle(cards.size).flatMap(order => Either.cond(
       order.sorted == cards.indices.toVector,
@@ -22,13 +23,21 @@ private[walker] object WalkerShuffles:
       OathViolation.InvalidEventOrder(
         s"shuffle source gave $order for a pile of ${cards.size} cards")))
 
+  /** Whether Foundation IV shows Teeming World, whose deck holds no
+    * denizen but an Oaths of Loyalty holder's burials. */
+  private def teeming(state: ReadyGame): Boolean =
+    state.game.campaign.foundations.get(FoundationNumber.IV)
+      .exists(_.face == FoundationFace.Altered)
+
   /** The card's layout for `deck` (R19): denizens in their order, the
     * Visions assigned at random, two into the first 10 denizens' packet of
     * 12 and two into the next 15's of 17, each at a random place in its
     * packet; with fewer than 25 denizens, every Vision at a random place in
-    * the whole deck. */
-  private[walker] def packets(deck: Vector[CardId], dice: WalkerDice)
-      : Either[OathViolation, Vector[CardId]] =
+    * the whole deck. Under Teeming World the deck's denizens are an Oaths
+    * holder's burials, which stay at the bottom in their order below the
+    * shuffled Visions (R49). */
+  private[walker] def packets(deck: Vector[CardId], dice: WalkerDice,
+      teeming: Boolean = false): Either[OathViolation, Vector[CardId]] =
     val (visions, denizens) = deck.partition(_.isInstanceOf[VisionId])
     def placed(cards: Vector[CardId], among: Vector[CardId])
         : Either[OathViolation, Vector[CardId]] =
@@ -53,7 +62,8 @@ private[walker] object WalkerShuffles:
       // Secret Society leaves four Visions; any other count, which no
       // Setup builds, falls back to the whole-deck placement.
       laid <-
-        if denizens.size < 25 || mixed.size != 4 then placed(mixed, denizens)
+        if teeming then Right(mixed ++ denizens)
+        else if denizens.size < 25 || mixed.size != 4 then placed(mixed, denizens)
         else for
           first <- placed(mixed.take(2), denizens.take(10))
           second <- placed(mixed.drop(2), denizens.slice(10, 25))
