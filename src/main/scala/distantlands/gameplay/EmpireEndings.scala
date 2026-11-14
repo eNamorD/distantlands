@@ -42,12 +42,12 @@ object EmpireEndings:
     else VictoryKind.ChancellorExhaustion
 
   /** The Chancellor's win the ended game gave, before any Successor took
-    * it: the same predicate and kinds the round end used (`rollsEndDie`,
-    * `stableRegime`, `warExhaustion`), with the Successor substitution of
-    * `chancellorWins` skipped. Royal Line hands it back to the Chancellor
-    * (Legacy Chronicle powers R37). */
-  def empireWin(ready: ReadyGame): VictoryKind =
-    if rollsEndDie(ready) then endDieWin else exhaustionWin(ready)
+    * it, with the Successor substitution of `chancellorWins` skipped. Royal
+    * Line hands it back to the Chancellor (Legacy Chronicle powers R37).
+    * `exhaustionWin` alone decides it: the end die rolls only with an
+    * Imperial Oathkeeper, for whom `exhaustionWin` is `endDieWin`, Stable
+    * Regime, too. */
+  def empireWin(ready: ReadyGame): VictoryKind = exhaustionWin(ready)
 
   /** War Exhaustion with an Empire, in printed order: an Imperial
     * Oathkeeper gives the Chancellor the win; then an Exile Usurper wins;
