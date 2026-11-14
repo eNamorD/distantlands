@@ -1763,6 +1763,14 @@ button.festival-marker:hover,
 .card-warbands { display: inline-flex; align-items: center; }
 .map-compact .mat-board .site-cards .card-tokens { height: auto;
   flex-wrap: wrap-reverse; align-content: flex-start; row-gap: 0; }
+/* The face keeps the band's real height free, one line or two, and the
+   name is cut above it (ruling R4), as on a hand's or a board's card. */
+.map-compact .mat-board .site-cards .card-face:has(> .card-tokens) {
+  padding-bottom: calc(0.25em + 1.2em); }
+.map-compact .mat-board .site-cards .card-face:has(> .card-tokens > :nth-child(4)) {
+  padding-bottom: calc(0.25em + 2.4em); }
+.map-compact .mat-board .site-cards .card-face :is(.card-name, .card-name-short) {
+  flex-shrink: 1; min-height: 0; overflow: hidden; }
 .map-compact .mat-board .site-cards .card-tokens .token-glyph { width: 1em;
   height: 1em; }
 .map-compact .mat-board .site-cards .card-token-count { margin-right: 0.1em; }
