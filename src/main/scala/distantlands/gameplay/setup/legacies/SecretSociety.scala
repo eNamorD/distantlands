@@ -61,8 +61,10 @@ case object SecretSociety extends ContributingPower:
     Branch((state, _) =>
       val excess = AdviserLimit.towardLimit(state, player) -
         AdviserLimit.of(catalog, state, player)
+      // A player with no pawn discards at their first Wake (ruling 18).
       if !SetupLegacyRules.secretSociety(state).contains(player) ||
-          excess <= 0 then Vector.empty
+          excess <= 0 || state.game.current.pawnSite(player).isEmpty then
+        Vector.empty
       else
         val held = state.game.current.player(player).toVector
           .flatMap(_.advisers).map(_.id: CardId)

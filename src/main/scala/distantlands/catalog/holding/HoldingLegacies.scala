@@ -93,18 +93,6 @@ object RuthlessCard extends Legacy(LegacyId("L29"), "Ruthless",
       "denizen at your site.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object QuestToDistantLandsCard extends Legacy(LegacyId("L30"), "Quest to Distant Lands",
-    LegacyGoal.HighestRelic, Suit.Nomad):
-  val power = PrintedPower(PowerId("legacy.quest-to-distant-lands"),
-    persistent = false, cost = Cost.free,
-    text = "**SETUP:** You may choose to not place your pawn. If you " +
-      "do, you may choose one card from the Dispossessed and swap " +
-      "it with a starting adviser or card you drew in Foundation " +
-      "IV. _It is not buried by the Oaths of Loyalty legacy._ " +
-      "**WAKE:** On your first turn, you **must** place your pawn " +
-      "at any site.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object BelovedCard extends Legacy(LegacyId("L33"), "Beloved",
     LegacyGoal.MostOfSuit, Suit.Beast, Some(FoundationNumber.IV)):
   val power = PrintedPower(PowerId("legacy.beloved"),

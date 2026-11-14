@@ -47,3 +47,9 @@ object SetupLegacyRules:
   /** Who takes favor after their pawn: Wealthy's holder (ruling 17). */
   def wealthy(state: ReadyGame): Option[PlayerId] =
     ChronicleLegacyRules.holder(state, WealthyCard.id)
+
+  /** Whether `player` may stay off the map in Setup: Quest to Distant
+    * Lands' holder (ruling 18). */
+  def mayStayOff(state: ReadyGame, player: PlayerId): Boolean =
+    ChronicleLegacyRules.holder(state, QuestToDistantLandsCard.id)
+      .contains(player)

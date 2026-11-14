@@ -17,7 +17,6 @@ legacy.keeper-of-order
 legacy.light-fingers
 legacy.pathfinder
 legacy.peacemaker
-legacy.quest-to-distant-lands
 legacy.ruthless
 legacy.the-mouth
 legacy.the-needle

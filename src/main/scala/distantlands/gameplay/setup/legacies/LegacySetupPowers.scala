@@ -8,13 +8,13 @@ import distantlands.model.{NoteKey, Operation}
 object LegacySetupPowers:
   val all: Vector[ContributingPower] = Vector(CircleOfSwords, ScepterBearer,
     WorldCrafter, Populist, Matchmaker, SecretSociety, Seer,
-    TheStandardBearer, Wealthy)
+    TheStandardBearer, Wealthy, QuestToDistantLands)
   /** The lines the powers write in Setup, on Setup's note id, which
     * `SetupProcedure.noteKeys` declares. */
   def noteKeys: Vector[NoteKey] = StartLines.noteKeys ++
     WorldCrafter.setupNoteKeys ++ Populist.setupNoteKeys ++
     Matchmaker.setupNoteKeys ++ SecretSociety.setupNoteKeys ++
     Seer.setupNoteKeys ++ TheStandardBearer.setupNoteKeys ++
-    Wealthy.setupNoteKeys
+    Wealthy.setupNoteKeys ++ QuestToDistantLands.setupNoteKeys
   /** The lines that open Setup for what game start's powers did. */
   def startNotes: Vector[Operation] = StartLines.operations

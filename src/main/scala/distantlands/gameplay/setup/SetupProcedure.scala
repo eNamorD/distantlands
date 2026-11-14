@@ -4,7 +4,7 @@ import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.gameplay.setup.legacies.{LegacySetupPowers,
-  SecretSociety}
+  QuestToDistantLands, SecretSociety, SetupLegacyRules}
 import distantlands.model._
 import distantlands.model.OathViolation._
 
@@ -184,10 +184,14 @@ object SetupProcedure:
     Sequence(Vector(
       // The sites are read when the question is reached: Imperial Maps
       // fills the map earlier in the same walk.
+      // Quest to Distant Lands' holder may stay off the map (R30).
       Branch((state, _) => Vector(Decide(pawnId, participant.playerId,
         DecisionQuery.ChooseOne(SetupPawnSites.legal(catalog, state,
             participant.playerId).map(site =>
-            DecisionOption.Site(DecisionOptionRef.Site(site))),
+            DecisionOption.Site(DecisionOptionRef.Site(site))) ++
+          Option.when(SetupLegacyRules.mayStayOff(state,
+              participant.playerId))(DecisionOption.Button(
+            QuestToDistantLands.stayOff, QuestToDistantLands.stayOffLabel)),
           heading = Some("Choose your starting site"),
           confirmVerb = Some("Start at"))))),
       // The window hangs on the pair, not on the placement alone: a power
@@ -207,21 +211,38 @@ object SetupProcedure:
       // pawn (Legacy Setup powers ruling 14; R21).
       SecretSociety.excessStep(catalog, participant.playerId),
       LegacyKeep.step(participant),
-      adviserSteps.chooseAdviser(participant.playerId, adviserId, hand),
-      adviserSteps.reveal(catalog, participant.playerId,
-        revealDecisionId(participant.playerId))))
+      QuestToDistantLands.swapStep(participant.playerId),
+      // A player with no pawn chooses and reveals at their first Wake,
+      // keyed on the missing pawn (Legacy Setup powers rulings 18, 20).
+      Branch((state, _) =>
+        if state.game.current.pawnSite(participant.playerId).isEmpty then
+          Vector.empty
+        else Vector(
+          adviserSteps.chooseAdviser(participant.playerId, adviserId, hand),
+          adviserSteps.reveal(catalog, participant.playerId,
+            revealDecisionId(participant.playerId))))))
 
   /** Where `player`'s pawn stands once it has been placed. */
   private def placedPawnNote(player: PlayerId)(states: NoteStates)
       : Option[LogNote] = states.now.game.current.pawnSite(player).map(site =>
     placedPawn.sourceless(NoteArg.Player(player), NoteArg.Site(site)))
+    .orElse(Option.when(states.answered.exists(answer =>
+      answer.decisionId == pawnDecisionId(player) &&
+        answer.answer == DecisionAnswer.ChooseOneAnswer(
+          QuestToDistantLands.stayOff)))(
+      QuestToDistantLands.placedNoPawnLine(player)))
 
 
   private def placePawn(player: PlayerId, decisionId: String)
       : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
-    (_, pending) => siteAnswer(pending, decisionId).map(site => Vector(
-      Move(Piece.Pawn(player), PositionedLocation(Location.PlayArea(player)),
-        PositionedLocation(Location.Site(site)))))
+    (_, pending) =>
+      // Staying off places nothing (R30).
+      if pending.answered.exists(answer => answer.decisionId == decisionId &&
+          answer.answer == DecisionAnswer.ChooseOneAnswer(
+            QuestToDistantLands.stayOff)) then Right(Vector.empty)
+      else siteAnswer(pending, decisionId).map(site => Vector(
+        Move(Piece.Pawn(player), PositionedLocation(Location.PlayArea(player)),
+          PositionedLocation(Location.Site(site)))))
 
   private def siteAnswer(pending: PendingTree, decisionId: String)
       : Either[OathViolation, SiteId] =
