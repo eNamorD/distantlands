@@ -121,6 +121,12 @@ class LineageScoringSuite extends munit.FunSuite:
       .legacy(p1, HeirloomCard).legacy(p1, WealthyCard)),
       Vector(Suit.Beast -> 6))
 
+  test("a legacy already scored this game adds no bonus (ruling 8)"):
+    val scored = empireWithCards.legacy(p1, TheNeedleCard)
+      .legacy(p1, CircleOfSwordsCard).update(_.updateCurrent(_.copy(
+        scoredLegacies = Set(TheNeedleCard.id))))
+    assertEquals(bonusOf(scored), Vector(Suit.Nomad -> 1))
+
   test("a winner with no legacy has no bonus"):
     assertEquals(bonusOf(empireWithCards), Vector.empty)
 

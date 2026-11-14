@@ -5,7 +5,7 @@ import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   OfferCitizenship, ProtectAndDispossess, ShapeEmpire, ShapeFoundation,
   SwearOath, WelcomeStranger,
   ChronicleStarsProcedure}
-import distantlands.gameplay.chronicle.legacies.Gatekeeper
+import distantlands.gameplay.chronicle.legacies.{Chronicler, Gatekeeper}
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
@@ -389,7 +389,9 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       ResolveLegacies.wentDormant -> LogKind.Delta,
       ResolveLegacies.capped -> LogKind.Decision,
       ResolveLegacies.reactivated -> LogKind.Delta,
-      Gatekeeper.took -> LogKind.Decision) ++
+      Gatekeeper.took -> LogKind.Decision,
+      Chronicler.declared -> LogKind.Decision,
+      Chronicler.scored -> LogKind.Delta) ++
       ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
       ChronicleTask.all.map(task =>
         ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),

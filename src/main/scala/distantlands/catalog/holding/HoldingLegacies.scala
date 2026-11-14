@@ -20,15 +20,6 @@ object IronHandCard extends Legacy(LegacyId("L01"), "Iron Hand",
       "stored in place of the Empire (Stars).")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object ChroniclerCard extends Legacy(LegacyId("L02"), "Chronicler",
-    LegacyGoal.MostSites, Suit.Arcane):
-  val power = PrintedPower(PowerId("legacy.chronicler"),
-    persistent = false, cost = Cost.free,
-    text = "**CHRONICLE (SUN):** After Resolve Legacies, you may " +
-      "declare that all players score their legacies now. _Each " +
-      "legacy may only be scored once per game._")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object PeacemakerCard extends Legacy(LegacyId("L04"), "Peacemaker",
     LegacyGoal.MostSites, Suit.Hearth):
   val power = PrintedPower(PowerId("legacy.peacemaker"),

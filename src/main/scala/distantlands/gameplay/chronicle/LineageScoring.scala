@@ -35,27 +35,34 @@ object LineageScoring:
     NotePart.Arg(3), NotePart.Text(")")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  /** The winner's legacy bonus by suit (CR, Score Lineage Points; Legacies
-    * ruling 10): for each legacy the winner holds (R33), 1 point per card
+  /** `player`'s legacy bonus by suit (CR, Score Lineage Points; Legacies
+    * ruling 10): for each legacy the player holds (R33), 1 point per card
     * of its printed suit, denizens and edifices, intact or ruined (R32), at
-    * the sites the winner rules; advisers do not count. Legacies of one
+    * the sites the player rules; advisers do not count. Legacies of one
     * suit add into one share, a suit that scores nothing is left out, and
     * shares come in suit order (R31). After Crown Chancellor the winner is
     * the Chancellor, so these are the Empire's sites (Chronicle ruling
-    * 11). */
-  def bonus(ready: ReadyGame, catalog: ExecutableCatalog, winner: PlayerId)
+    * 11). A legacy already scored this game adds nothing; Chronicler reads
+    * this for every seated player, dormant legacies included (Legacy
+    * Chronicle powers design, rulings 7 and 8; R1). */
+  def bonus(ready: ReadyGame, catalog: ExecutableCatalog, player: PlayerId)
       : Vector[(Suit, Int)] =
     val current = ready.game.current
     val cards = current.map.inPlay
-      .filter(ChronicleTasks.rules(ready, winner, _))
+      .filter(ChronicleTasks.rules(ready, player, _))
       .flatMap(site => current.map.sites.get(site).toVector.flatMap(_.denizens))
       .flatMap(card => catalog.suitOf(card.id))
-    val legacies = ChronicleTasks.lineageOf(ready, winner)
-      .flatMap(ready.game.campaign.lineages.get).toVector
-      .flatMap(_.legacies).flatMap(legacy => catalog.legacy(legacy.id))
+    val legacies = unscored(ready, player).flatMap(catalog.legacy)
     Suit.all.map(suit => suit ->
       legacies.count(_.suit == suit) * cards.count(_ == suit))
       .filter(_._2 > 0)
+
+  /** `player`'s legacies that no scoring has counted yet this game (Legacy
+    * Chronicle powers design, ruling 8). */
+  def unscored(ready: ReadyGame, player: PlayerId): Vector[LegacyId] =
+    ChronicleTasks.lineageOf(ready, player)
+      .flatMap(ready.game.campaign.lineages.get).toVector.flatMap(_.legacies)
+      .map(_.id).filterNot(ready.game.current.scoredLegacies)
 
   def steps(catalog: ExecutableCatalog): Vector[Operation] =
     Vector(Branch((state, _) =>

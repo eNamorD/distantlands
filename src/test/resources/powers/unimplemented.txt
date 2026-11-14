@@ -10,7 +10,6 @@ edifice.e26.ruined
 legacy.ancestral-lands
 legacy.arbiter
 legacy.beloved
-legacy.chronicler
 legacy.circle-of-swords
 legacy.conspirator
 legacy.golden-key
