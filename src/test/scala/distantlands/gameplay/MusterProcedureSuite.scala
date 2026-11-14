@@ -148,14 +148,20 @@ class MusterProcedureSuite extends munit.FunSuite:
 
   test("resolve names why a reference is not a source"):
     // Magician's Code is in no site and no adviser of p1's: first in the
-    // deck, then another player's adviser.
+    // deck, then another player's facedown adviser. Another player's
+    // faceup adviser resolves, for Beloved, which alone offers it (Legacy
+    // in-play powers ruling 18).
     assertEquals(MusterSource.resolve(catalog, atAlchemist.ready, p1,
       DecisionOptionRef.Denizen(magiciansCode)),
       Left(EconomyCardUnavailable(ancientCity, magiciansCode)))
     assertEquals(MusterSource.resolve(catalog,
-      atAlchemist.adviser(p2, magiciansCode).ready, p1,
+      atAlchemist.adviser(p2, magiciansCode, facedown = true).ready, p1,
       DecisionOptionRef.Denizen(magiciansCode)),
       Left(EconomyCardUnavailable(ancientCity, magiciansCode)))
+    assertEquals(MusterSource.resolve(catalog,
+      atAlchemist.adviser(p2, magiciansCode).ready, p1,
+      DecisionOptionRef.Denizen(magiciansCode)), Right(MusterSource(
+        magiciansCode, Suit.Arcane, RuleSourceRef.Adviser(p2, magiciansCode))))
     assertEquals(MusterSource.resolve(catalog, atAlchemist.ready, p1,
       DecisionOptionRef.Button("site")), Left(InvalidEventOrder(
         "button/site is not a card a Muster or Trade can draw on")))

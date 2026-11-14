@@ -98,7 +98,7 @@ object WalkerPowerCatalog:
       Vector(Dazzle, GreatMarket, BanditMarket, GreatForge, BrokenForge,
         ProvingGrounds, EmptyGrounds, HallOfMockery, LostGuardians,
         RuinedSchool, BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
-        TakeWealthPawnGate, LightFingers,
+        TakeWealthPawnGate, LightFingers, Beloved,
         ConspiracyWhenPlayed) ++
       LegacyChroniclePowers.all ++
       LegacySetupPowers.all

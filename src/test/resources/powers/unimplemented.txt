@@ -8,7 +8,6 @@ edifice.e10.ruined
 edifice.e16.ruined
 edifice.e26.ruined
 legacy.arbiter
-legacy.beloved
 legacy.conspirator
 legacy.keeper-of-order
 legacy.the-mouth

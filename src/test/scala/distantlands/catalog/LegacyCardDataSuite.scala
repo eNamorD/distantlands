@@ -6,6 +6,7 @@ import distantlands.gameplay.powers.legacies._
 import distantlands.gameplay.powers.travel.{AncestralLandsCard,
   PathfinderCard}
 import distantlands.gameplay.powers.wake.LightFingersCard
+import distantlands.gameplay.powers.economy.BelovedCard
 import distantlands.gameplay.setup.FirstGameSetupFixture
 import distantlands.gameplay.setup.legacies._
 import distantlands.model.{FoundationNumber, Suit}

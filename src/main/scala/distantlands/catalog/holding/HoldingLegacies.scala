@@ -41,15 +41,6 @@ object ConspiratorCard extends Legacy(LegacyId("L26"), "Conspirator",
       "correct, you win instead. _This even beats a Successor win._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object BelovedCard extends Legacy(LegacyId("L33"), "Beloved",
-    LegacyGoal.MostOfSuit, Suit.Beast, Some(FoundationNumber.IV)):
-  val power = PrintedPower(PowerId("legacy.beloved"),
-    persistent = false, cost = Cost.free,
-    text = "Set Foundation IV to Teeming World. **WHEN TRADING:** You " +
-      "may trade with advisers held by other players whose pawns " +
-      "are at your site.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object TheMouthCard extends Legacy(LegacyId("L34"), "The Mouth",
     LegacyGoal.MostOfSuit, Suit.Arcane, Some(FoundationNumber.VI)):
   val power = PrintedPower(PowerId("legacy.the-mouth"),
