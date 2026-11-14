@@ -5,7 +5,8 @@ All four slices have landed: slice 1 (89f90563f to cc92ec496, with review
 fixes a7cd809eb to e51f8eecf), slice 2 (ad5bc9e36 to 75abb9fee, with review
 fixes 65f16009c to 1e769d8cb), slice 3 (b687cc7f0 to 6a29d3b64, with R26 in
 353b3d5cc and review fixes 15f600f1c to 64630c282) and slice 4 (7b3c6df51 to
-5196efa77, with its docs in the commit that records this status). It builds on the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
+the commit that records this status, with the R35, R37, R38, R49 and R50
+fixes and the review fixes among them). It builds on the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
 batch, which has landed: this batch reuses its holder seam, and slice 4
 changes the Setup adviser step that batch's slice 3 changes for Oaths of
 Loyalty.
@@ -122,10 +123,11 @@ batch's powers needs an order choice.
    still empty after them. The holder may place their pawn at these sites
    as well as at the sites R25 allows them.
 9. **Game start's powers are logged** by Notes at the start of Setup,
-   before the Public Ambitions line: "Circle of Swords gave p2 eight
-   warbands", "p1 started with the Grand Scepter with Scepter Bearer",
-   "Iron Hand placed p3's warbands at the Empire's sites", "Rival placed
-   p4's warbands at Deep Woods, Fallen Shrine and Wild Steppe".
+   before the Public Ambitions line. The shipped lines are implementation
+   ruling R7's, one per power and one per site: "p2 started with 8
+   warbands with Circle of Swords", "p1 started with the Grand Scepter
+   with Scepter Bearer", "p3 placed a warband at Deep Woods with Iron
+   Hand" and "p3 placed a warband at Deep Woods with Rival".
 
 ### Slice 2: foundations
 
