@@ -2,7 +2,7 @@ package distantlands.gameplay.powers.whenplayed
 
 import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import distantlands.gameplay.actions.BannerRules
-import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powerresolver.{Deferred, PowerCtx}
 import distantlands.gameplay.powers.{PowerAnswers, RuledCards}
 import distantlands.model._
 
@@ -85,20 +85,35 @@ case object WizardsConclave extends WhenPlayedPower:
       case DecisionOptionRef.Player(player) if found.contains(player) =>
         player }
 
-  /** The take and its line, or the line that the winner kept it. */
+  /** Where the take records itself for its line, per winner. */
+  private def takeKey(taker: PlayerId): DeferralKey =
+    DeferralKey(s"wizards-conclave.take.${taker.value}")
+
+  /** The take, its line and the record's clearing. The tree has one shape
+    * whoever holds the banner: the take reads the holder when it runs, takes
+    * nothing from the winner, and records itself (`Defer`) for the line, so
+    * a walk that parks after the take (The Needle) and is rebuilt on the
+    * state the take left keeps its line (Legacy in-play powers R20). */
   private def award(catalog: ExecutableCatalog,
       ready: ReadyGame, pending: PendingTree)
       : Vector[Operation] =
-    winner(catalog, ready, pending).toVector.flatMap { taker =>
-    val holder = BannerRules.holder(ready.game.current, Banner.DarkestSecret)
-    if holder.contains(taker) then Vector(Note(id, _ =>
-      Some(kept(cardSource, NoteArg.Player(taker), banner))))
-    else Vector(
-      BuildOps((_, _) => Right(Vector(Take(Piece.Banner(Banner.DarkestSecret),
-        taker, holder.fold[Location](Location.SharedBank)(Location.PlayArea(_)),
-        Location.PlayArea(taker))))),
-      Note(id, takenNote(_, taker)))
-  }
+    winner(catalog, ready, pending).toVector.flatMap { taker => Vector(
+      BuildOps((live, _) => Right(
+        BannerRules.holder(live.game.current, Banner.DarkestSecret) match
+          case Some(holder) if holder == taker => Vector.empty
+          case holder =>
+            val take = Take(Piece.Banner(Banner.DarkestSecret), taker,
+              holder.fold[Location](Location.SharedBank)(
+                Location.PlayArea(_)), Location.PlayArea(taker))
+            Vector(Defer(takeKey(taker), Vector(take)), take))),
+      Note(id, states =>
+        if Deferred.held(states.now, takeKey(taker)).isEmpty then
+          Some(kept(cardSource, NoteArg.Player(taker), banner))
+        else takenNote(states, taker)),
+      BuildOps((live, _) => Right(
+        Option.when(Deferred.held(live, takeKey(taker)).nonEmpty)(
+          TakeDeferred(takeKey(taker)): CoreOperation).toVector)))
+    }
 
   /** Whether the winner holds the banner now, or Lost Tongue kept it. */
   private def takenNote(states: NoteStates, taker: PlayerId)

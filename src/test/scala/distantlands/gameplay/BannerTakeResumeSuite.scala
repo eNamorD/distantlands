@@ -4,15 +4,17 @@ import distantlands.gameplay.BannerTakeParkFixture.{ParkAfterBannerTake,
   decisionId, resumeAnswer}
 import distantlands.gameplay.powerresolver.ContributingPower
 import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.GlamorCard
+import distantlands.gameplay.powers.search.DisciplesCard
 import distantlands.gameplay.powers.whenplayed.{FavoredSon, FavoredSonCard,
-  WhenPlayedHarness}
+  WhenPlayedHarness, WizardsConclave, WizardsConclaveCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
 import distantlands.model._
 import distantlands.model.OathState.Ready
 import distantlands.testkit.{Journal, Outcomes, Table}
-import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 
 /** Every banner taker keeps its tree's shape when a walk parks right after
@@ -77,3 +79,17 @@ class BannerTakeResumeSuite extends munit.FunSuite:
     // shape it parked in.
     assertEquals(WhenPlayedHarness.said(FavoredSon, done.events).map(_.key),
       Vector("took"))
+
+  test("Wizard's Conclave: a walk parked after the take resumes and writes " +
+      "its line"):
+    // p1 plays Wizard's Conclave; p2 rules Disciples and Glamor, the most
+    // Arcane cards, and takes the Darkest Secret, with 2 secrets, from p3.
+    val ready = Table.start.adviser(p1, WizardsConclaveCard)
+      .adviser(p2, DisciplesCard).adviser(p2, GlamorCard)
+      .darkestSecret(Some(p3), 2).ready
+    val done = whenPlayedResumed(ready, WizardsConclave,
+      WizardsConclaveCard.id, p2)
+    assertEquals(done.treeless.game.current.banners.darkestSecret.holder,
+      Some(p2))
+    assertEquals(WhenPlayedHarness.said(WizardsConclave, done.events)
+      .map(_.key), Vector("took"))
