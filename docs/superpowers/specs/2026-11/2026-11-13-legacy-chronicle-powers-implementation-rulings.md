@@ -337,6 +337,8 @@ Slice/files: 4 (changed in 5); `BuildEdifice`,
 `ChronicleLegacyRules.builder`.
 
 **R33. Iron Hand's scoring records its legacies.**
+Confirmed by the owner 2026-11-14: legacies Chronicler already scored are
+not scored again by Iron Hand.
 Decision: yes, with `LegaciesScored`.
 Reason: "scored once per game" (design ruling 8) is a fact about the
 legacy, kept whether or not a later step reads it.

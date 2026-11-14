@@ -246,7 +246,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 46. **The Crown's and Offer Citizenship's checkpoints sit between their reactivation and their cap,** so no one discards over the cap a legacy that Iron Hand's own discard would spare; the Sun's first opens Reveal Relics, and its second opens step 4, before the cap, for an Iron Hand an Imperial gained active by Flip Legacies or Gatekeeper (R30, R46).
 47. **The holder's Shape Empire discards every card at sites they do not rule,** the Empire's included, but intact edifices and Enduring sites' cards (R31).
 48. **An Imperial Great Architect performs Build Edifice instead of Iron Hand's holder,** who then does not build; one builder per suit (R32, re-ruled by the owner 2026-11-14).
-49. **Iron Hand's scoring records its legacies** as scored (R33).
+49. **Iron Hand's scoring records its legacies** as scored, and skips those Chronicler already scored (R33, confirmed by the owner 2026-11-14).
 50. **Iron Hand's lines** say "p2 discarded Iron Hand", "p3 scored 2 lineage points with Iron Hand (2 from Beast)" and "Buried Giant stays on the map with Iron Hand" (R34).
 51. **Until Iron Hand's SETUP half lands,** the next game restores the holder's stored sites as the Empire's (R35; low confidence). Its SETUP half has landed: the next game restores those sites with the holder's warbands while they hold it active as an Exile ([Legacy Setup powers rulings](#legacy-setup-powers-rulings), item 7).
 52. **Tests that used Iron Hand as a plain legacy** use one with no Chronicle half instead (R36).
