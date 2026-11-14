@@ -92,49 +92,28 @@ The Setup batch's uncommitted files on 2026-11-14
 (`GeneratedFirstGamePlanFactory`, `EmpireSetupRules`, `GameStartRules`
 and the setup test suites) are not touched by this plan.
 
-## Open questions
+## Rulings
 
-Raised for the owner's rulings before execution. Each names the plan's
-current default, which the tasks below are written to; a different ruling
-changes the tasks named.
+The plan's open questions were ruled on 2026-11-14 as implementation
+rulings R1-R5 ([rulings](../../specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)):
 
-- **Q1. Does "If you are an Imperial" cover Golden Key's ACTION?** The
-  card prints the condition before both halves: "IF YOU ARE AN IMPERIAL:
-  You may always peek at the Reliquary. ACTION: Burn ... to take a relic
-  from the Reliquary." Spec ruling 10 states the peek for "an Imperial
-  holder" and the ACTION without a role. (a) The condition covers both:
-  an Exile holder's menu leaves the ACTION out. (b) It covers the peek
-  only: an Exile holder takes a relic blind, the options shown as relic
-  backs. *Default: (a)*, since every other "IF YOU ARE" card puts the
-  condition before the whole text, and under (b) an Exile would choose
-  among cards they may not see. Tasks 5 and 6.
-- **Q2. Which relics has The Ear's holder "not identified"?** (a) Those
-  missing from their recorded knowledge (`knowledge.siteRelics`), so the
-  holder's own site counts until they peek it, as the minor peek is
-  offered there. (b) Those the projection does not name them, which also
-  excludes every relic at their pawn's site (the projector names those to
-  a player standing there). *Default: (a)*: a peek there records what the
-  holder keeps knowing after they leave, which is the point of the minor
-  peek too. Task 8.
-- **Q3. The lines ruling 13 does not give.** *Default:* "p2 moved 3
-  secrets from the Darkest Secret with High Priest" and "p2 peeked at the
-  relics at Deep Woods with The Ear". Tasks 7 and 8.
-- **Q4. "Not offered" in the menu.** *Default:* an ACTION with nothing to
-  do is shown unavailable with its reason, as every card ACTION is ("No
-  denizen at your site", "You hold no banner", "The Reliquary is empty",
-  "You do not hold the Darkest Secret", "The Darkest Secret holds no
-  secrets", "No site holds a relic you have not seen"). Only Golden Key's
-  ACTION for an Exile holder is left out, as a role that can never use a
-  power is (`PhasePower.listed`). The alternative leaves every
-  nothing-to-do ACTION out of the menu. Tasks 3, 4, 5, 7 and 8.
-- **Q5. A set-aside Reliquary.** Setup With No Empire sets the Reliquary
-  aside until the Chronicle (Foundations ruling 3); its relics stay in
-  `CampaignState.reliquary`. *Default:* the shared bank and Golden Key
-  read `reliquaryInPlay`, so a set-aside Reliquary shows nothing and
-  gives nothing, as every other taker reads it. Ruling 9's "always in
-  play" is read as "the Reliquary is not a board that comes and goes",
-  not as an override of Foundations ruling 3. With no Empire nobody is
-  Imperial, so Golden Key's holder could not use it anyway. Tasks 5 and 6.
+- **R1** (Tasks 5 and 6): "If you are an Imperial" gates both Golden
+  Key's peek and its ACTION; an Exile holder's menu leaves the ACTION out.
+- **R2** (Task 8): The Ear's "not identified" means missing from the
+  holder's recorded card knowledge (`knowledge.siteRelics`), so their own
+  pawn's site counts until they peek there.
+- **R3** (Tasks 7 and 8): the lines are "p2 moved 3 secrets from the
+  Darkest Secret with High Priest" and "p2 peeked at the relics at Deep
+  Woods with The Ear"; The Ear's never names the relics.
+- **R4** (Tasks 3, 4, 5, 7 and 8): an ACTION with nothing to do is shown
+  unavailable with its reason, as card ACTIONs are ("No denizen at your
+  site", "You hold no banner", "The Reliquary is empty", "You do not hold
+  the Darkest Secret", "The Darkest Secret holds no secrets", "No site
+  holds a relic you have not seen"). Only Golden Key for an Exile holder
+  is left out (`PhasePower.listed`), a role gate under R1.
+- **R5** (Tasks 5 and 6): the shared bank and Golden Key read
+  `reliquaryInPlay`, so a set-aside Reliquary shows nothing and gives
+  nothing; spec ruling 9 does not override Foundations ruling 3.
 
 ## Plan choices
 
@@ -308,6 +287,7 @@ git log -3
 - Create: `src/test/scala/distantlands/gameplay/powers/legacies/LegacyActionFixture.scala`
 - Test: `src/test/scala/distantlands/model/DecisionOptionRefSuite.scala`
 - Test: `src/test/scala/distantlands/gameplay/PhasePowerSuite.scala`
+- Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
 - Produces:
@@ -400,6 +380,9 @@ and `distantlands.gameplay.powers.legacies.LegacyActionFixture`, then:
       .foldLeft[Either[OathViolation, OathState]](Right(start))(
         (state, event) => state.flatMap(rules(power).evolve(_, event))),
       Right(done.state))
+    // The parked walk carries the legacy as its start selection; it
+    // survives the wire as a legacy.
+    Outcomes.assertWireRoundTrips(parked.events ++ done.events)
 
   test("Golden Key and The Mouth print their burnt costs (ruling 6)"):
     assertEquals(GoldenKeyCard.power.cost, Cost(favorBurnt = 1,
@@ -407,12 +390,41 @@ and `distantlands.gameplay.powers.legacies.LegacyActionFixture`, then:
     assertEquals(TheMouthCard.power.cost, Cost(favorBurnt = 2))
 ```
 
+In `WalkerOperationWireSuite`, after "every CoreOperation variant
+round-trips through the walker codec" (import
+`distantlands.testkit.Outcomes.assertWireRoundTrips`):
+
+```scala
+  test("a legacy's power source and a denizen's with the same id stay " +
+      "apart through the codec and replay (in-play powers ruling 6)"):
+    val id = "L29"
+    val sources = Vector[CardId](LegacyId(id), DenizenId(id))
+      .map(PowerSourceRef.Card(_))
+    assertNotEquals(sources(0), sources(1))
+    val uses = sources.map(source => recordedOperation(RecordPowerUse(
+      PowerUseRef(PowerTiming.Wake, source, PowerId("legacy.ruthless")))))
+    assertWireRoundTrips(uses)
+    val encoded = encodedStreamThatRoundTrips("legacy-source", uses)
+    assertEquals(ujson.read(encoded).arr.map(
+      _("payload")("step")("ops")(0)("cardKind").str).toVector,
+      Vector("legacy", "denizen"))
+```
+
+`assertWireRoundTrips` compares each decoded event with the original, so
+a legacy decoded as a denizen of the same id fails it: `LegacyId("L29")`
+and `DenizenId("L29")` are unequal. Phase menu starts carry the source as
+`DecisionOptionRef.Legacy`, whose wire kind is `legacy`
+(`DecisionOptionRefSuite`), and the PhasePowerSuite test above round-trips
+a parked legacy use.
+
 - [ ] **Step 2: Run them and see them fail**
 
-Run: `./sbtw "testOnly distantlands.model.DecisionOptionRefSuite distantlands.gameplay.PhasePowerSuite"`
+Run: `./sbtw "testOnly distantlands.model.DecisionOptionRefSuite distantlands.gameplay.PhasePowerSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: the `ofCard` assertion fails (`None`); the menu test fails
 (`Vector()` for the active holder); the cost test fails (favor 3, not 1);
-the printed-costs test fails (`Cost.free`).
+the printed-costs test fails (`Cost.free`). The wire test already passes
+(the codec spells a card's kind), and stays as the regression guard the
+seam relies on.
 
 - [ ] **Step 3: Implement**
 
@@ -460,7 +472,7 @@ Key's `cost = Cost(favorBurnt = 1, secretBurnt = 1)`, The Mouth's
 
 - [ ] **Step 4: Run them and see them pass**
 
-Run: `./sbtw "testOnly distantlands.model.* distantlands.gameplay.PhasePowerSuite distantlands.gameplay.PhaseMenuSuite distantlands.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.model.* distantlands.gameplay.PhasePowerSuite distantlands.gameplay.PhaseMenuSuite distantlands.gameplay.powers.* distantlands.serialization.*"`
 Expected: all pass.
 
 - [ ] **Step 5: Commit**
@@ -480,7 +492,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -- \
   src/main/scala/distantlands/catalog/holding/HoldingLegacies.scala \
   src/test/scala/distantlands/gameplay/powers/legacies/LegacyActionFixture.scala \
   src/test/scala/distantlands/model/DecisionOptionRefSuite.scala \
-  src/test/scala/distantlands/gameplay/PhasePowerSuite.scala
+  src/test/scala/distantlands/gameplay/PhasePowerSuite.scala \
+  src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala
 git log -3
 ```
 
@@ -975,7 +988,7 @@ git log -3
 
 ### Task 5: Golden Key's ACTION
 
-Written to Q1 (a) and Q5's default.
+Written to R1 and R5.
 
 **Files:**
 - Create: `src/main/scala/distantlands/gameplay/powers/legacies/GoldenKey.scala`
@@ -1059,7 +1072,7 @@ class GoldenKeySuite extends munit.FunSuite:
     assertEquals(use(empty, GoldenKey, source).left.toOption,
       Some(OathViolation.StartUnavailable("The Reliquary is empty")))
 
-  test("an Exile holder's menu leaves it out, and a use is refused (Q1)"):
+  test("an Exile holder's menu leaves it out, and a use is refused (R1)"):
     val exile = Table.start.turn(actor, Phase.Act)
       .legacy(actor, GoldenKeyCard).favor(actor, 1)
       .secrets(actor, faceUp = 1).reliquaryFromDeck(2).ready
@@ -1082,13 +1095,13 @@ Expected: compile error, `GoldenKey` is not found.
   * at the Reliquary. ACTION: Burn a secret and a favor to take a relic
   * from the Reliquary" (Legacy in-play powers design, rulings 2 and 10).
   *
-  * Both halves need its holder to be an Imperial when they are used (Q1):
+  * Both halves need its holder to be an Imperial when they are used (R1):
   * the peek is a clause of `GamePresentationProjector.identifiesCard`,
   * which reads [[peeker]], and an Exile holder's menu leaves the ACTION
   * out. The ACTION takes any relic in the Reliquary the holder chooses,
   * facedown to their play area, as the Chancellor takes one at Setup. It
   * is not a Recover. The use is refused while the Reliquary in play is
-  * empty, set aside included (Q5).
+  * empty, set aside included (R5).
   *
   * Line: "p3 took a relic from the Reliquary with Golden Key" (ruling
   * 13), which never names the relic.
@@ -1174,7 +1187,7 @@ git log -3
 
 ### Task 6: The Reliquary in the shared bank and Golden Key's peek
 
-Written to Q1 (a) and Q5's default.
+Written to R1 and R5.
 
 **Files:**
 - Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala:321-322,406-410`
@@ -1249,7 +1262,7 @@ class ReliquaryViewSuite extends munit.FunSuite:
     assertEquals(view(exiled, Some(p1)).reliquary.map(_.hidden),
       Vector(true, true))
 
-  test("an empty or set-aside Reliquary is not shown (ruling 9; Q5)"):
+  test("an empty or set-aside Reliquary is not shown (ruling 9; R5)"):
     val empty = Table.start.turn(p1, Phase.Act).ready
     assertEquals(view(empty, None).reliquary, Vector.empty)
     val setAside = Table.from(keyed).reliquarySetAside.ready
@@ -1432,7 +1445,7 @@ git log -3
 
 ### Task 7: High Priest's ACTION
 
-Written to Q3's and Q4's defaults.
+Written to R3 and R4.
 
 **Files:**
 - Create: `src/main/scala/distantlands/gameplay/powers/legacies/HighPriest.scala`
@@ -1538,7 +1551,7 @@ Expected: compile error, `HighPriest` is not found.
   * is slice 2's (ruling 19).
   *
   * Line: "p2 moved 3 secrets from the Darkest Secret with High Priest"
-  * (Q3).
+  * (R3).
   */
 case object HighPriest extends PaidAction(HighPriestCard.power):
   val decisionId: String = "power.high-priest.secrets"
@@ -1620,7 +1633,7 @@ git log -3
 
 ### Task 8: The Ear's ACTION
 
-Written to Q2 (a), Q3 and Q4's defaults.
+Written to R2, R3 and R4.
 
 **Files:**
 - Create: `src/main/scala/distantlands/gameplay/powers/legacies/TheEarAction.scala`
@@ -1673,7 +1686,7 @@ class TheEarActionSuite extends munit.FunSuite:
       .getOrElse(site, Vector.empty)
 
   test("it is free, offers every site with a relic the holder has not " +
-      "seen, and peeks at all the chosen site's relics (Q2)"):
+      "seen, and peeks at all the chosen site's relics (R2)"):
     val ready = table.ready
     assert(offered(ready))
     val started = accepted(use(ready, TheEarAction, source))
@@ -1750,12 +1763,12 @@ import distantlands.model._
   *
   * Free. The holder picks a site in play with a relic missing from their
   * recorded knowledge (`knowledge.siteRelics`), their own site included
-  * until they peek it (Q2), and peeks at all its relics. They know them
+  * until they peek it (R2), and peeks at all its relics. They know them
   * while they stay at that site, as with the minor peek; a relic that
   * moves carries its knowledge as `CardKnowledgeMoves` carries it. The
   * use is refused while no site qualifies.
   *
-  * Line: "p2 peeked at the relics at Deep Woods with The Ear" (Q3),
+  * Line: "p2 peeked at the relics at Deep Woods with The Ear" (R3),
   * public, never naming the relics, and covering the peeks' lines.
   */
 case object TheEarAction extends PaidAction(TheEarCard.power):
