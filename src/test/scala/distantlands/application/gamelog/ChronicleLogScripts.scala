@@ -7,9 +7,10 @@ import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship,
   ShapeFoundation}
 import distantlands.gameplay.GrandMaskCard
 import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
-  Gatekeeper, GatekeeperCard, Heirloom, HeirloomCard}
-import distantlands.gameplay.powers.economy.{CupOfPlentyCard, DowntroddenCard,
-  MapLibraryCard}
+  Gatekeeper, GatekeeperCard, Heirloom, HeirloomCard, OathsOfLoyalty,
+  OathsOfLoyaltyCard}
+import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
+  DowntroddenCard, GolemLegionsCard, MapLibraryCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import distantlands.testkit.{MenuPlay, Table}
@@ -113,6 +114,33 @@ object ChronicleLogScripts:
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("throne-heirloom", service, p1)
 
+  /** The game of [[chronicleStarted]] with Oaths of Loyalty and Heirloom:
+    * p2 holds the Darkest Secret, Cup of Plenty (the highest relic) and
+    * Grand Mask, two faceup advisers, Oaths of Loyalty and Heirloom. At the
+    * Throne p2 keeps Cup of Plenty with Heirloom; at the World p2 keeps both
+    * advisers with Oaths. The journaled Chronicle comes back too, for the
+    * next game's script (R27). */
+  def oathsHeirloomPlayed(using munit.Location): (Script, Chronicle) =
+    val (service, acting) = atTable("chronicle-oaths-heirloom", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .darkestSecret(Some(p2), 1).relic(p2, CupOfPlentyCard)
+      .relic(p2, GrandMaskCard).adviser(p2, BirdsongCard)
+      .adviser(p2, GolemLegionsCard).legacy(p2, OathsOfLoyaltyCard)
+      .legacy(p2, HeirloomCard).turn(p3, Phase.Act).banditsRefilled)
+    val played = acting.withAnswers {
+      case park if park.decisionId == Heirloom.decisionId(p2) =>
+        ChooseOneAnswer(DecisionOptionRef.Relic(CupOfPlentyCard.id))
+      case park if park.decisionId == OathsOfLoyalty.keepDecisionId(p2) =>
+        ChooseManyAnswer(Vector(BirdsongCard.id, GolemLegionsCard.id)
+          .map(DecisionOptionRef.Denizen(_)))
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    (Script("chronicle-oaths-heirloom", service, p1),
+      played.ready.game.campaign.evolved.get)
+
+  def chronicleOathsHeirloom(using munit.Location): Script =
+    oathsHeirloomPlayed._1
+
   /** The first game, with Foundation I on Wide Horizons: at the Beacon
     * p1, who holds it, restores it to Imperial Maps (Foundations design,
     * slice 7). */
@@ -147,5 +175,7 @@ object ChronicleLogScripts:
       "throne-offered" -> (() => throneOffered),
       "throne-gifted" -> (() => throneGifted),
       "sun-gatekeeper-chronicler" -> (() => sunGatekeeperChronicler),
+      "throne-heirloom" -> (() => throneHeirloom),
+      "chronicle-oaths-heirloom" -> (() => chronicleOathsHeirloom),
       "beacon-restored-foundation" -> (() => beaconRestoredFoundation),
       "beacon-kept-foundations" -> (() => beaconKeptFoundations))

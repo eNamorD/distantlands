@@ -3,7 +3,8 @@ package distantlands.application.gamelog
 import distantlands.catalog.holding.{IronHandCard, SeerCard}
 import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
   GatekeeperCard, HeirloomCard}
-import distantlands.gameplay.powers.economy.CupOfPlentyCard
+import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
+  GolemLegionsCard}
 import distantlands.model.PlayerId
 import distantlands.protocol.projection.LogSpan
 import distantlands.testkit.Table.{p1, p2, p3}
@@ -50,3 +51,11 @@ class ChronicleLegacyLogSuite extends munit.FunSuite:
     assertEquals(heirloomLines(Some(p2)), Vector(public, named))
     Vector(Some(p1), Some(p3), None).foreach(viewer =>
       assertEquals(heirloomLines(viewer), Vector(public), viewer))
+
+  test("the next game starts p2's lineage with what Oaths and Heirloom " +
+      "kept, facedown (R27)"):
+    val record = ChronicleLogScripts.oathsHeirloomPlayed._2
+    val lineage = record.lineages.find(_.startingRelics.nonEmpty).get
+    assertEquals(lineage.startingRelics, Vector(CupOfPlentyCard.id))
+    assertEquals(lineage.startingAdvisers.map(_.id).toSet,
+      Set[distantlands.model.CardId](BirdsongCard.id, GolemLegionsCard.id))

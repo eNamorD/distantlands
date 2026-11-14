@@ -63,6 +63,21 @@ object LaterGameLogScripts:
       LaterGameFixture.orders(chronicle, p1))
     Script(name, service, Look(situation.ready).active)
 
+  /** The next game, from the Chronicle
+    * [[ChronicleLogScripts.oathsHeirloomPlayed]] journals: p2's lineage
+    * starts with its two kept advisers and Cup of Plenty, facedown, and
+    * draws no hand (Legacy Chronicle powers, R27). */
+  def laterGameAfterOaths(using munit.Location): Script =
+    val record = ChronicleLogScripts.oathsHeirloomPlayed._2
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository,
+      campaignDicePort = Dice.steady)
+    val situation = Situation.wake(Situation.journaled(service, catalog,
+      repository, "later-game-after-oaths"), record,
+      LaterGameFixture.orders(record, p1))
+    Script("later-game-after-oaths", service, Look(situation.ready).active)
+
   val named: Vector[(String, () => Script)] = Vector(
     "later-game-setup" -> (() => laterGameWoken),
-    "later-game-forgotten-sites" -> (() => laterGameFilledFromForgotten))
+    "later-game-forgotten-sites" -> (() => laterGameFilledFromForgotten),
+    "later-game-after-oaths" -> (() => laterGameAfterOaths))
