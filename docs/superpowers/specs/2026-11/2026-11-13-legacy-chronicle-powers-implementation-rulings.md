@@ -265,8 +265,8 @@ special-case paths; the owner's ruling extends it to Teeming World's
 draws.
 Earlier decision (2026-11-13): under Teeming World an Oaths holder drew no
 starting adviser.
-Slice/files: 3 (to change); `StartingAdviserChoice`, `SetupProcedure`,
-`SetupDeal`, `FirstGameSetupMaterializer`.
+Slice/files: 3; `SetupDeal`, `FirstGameSetupMaterializer`,
+`GameStartRules`, `SetupProcedure`; R49 and R50 extend it.
 
 **R25. The Bright Beacon's choices.**
 Decision: a first choose-one, "Suited box" (first) or "The Dispossessed",
@@ -534,3 +534,30 @@ viewer touches the Chronicle page, the export codec and the next game's
 import, which is a feature of its own.
 Confidence: low; the owner may re-rule it.
 Slice/files: 5; `GameProjection`, `GameEventJsonSupport`, `docs/ROADMAP.md`.
+
+**R49. Secret Society's rebuild under Teeming World.** (A review finding
+on R24's re-ruling.)
+Question: under Teeming World the world deck holds no denizen but an Oaths
+holder's burials, so Secret Society's rebuild (Legacy Setup powers R19)
+took its fewer-than-25-denizens fallback and mixed the Visions through
+the whole deck, lifting the buried cards off the bottom.
+Decision: when Secret Society rebuilds a Teeming World deck, only the
+Visions are shuffled; the deck's denizens, the Oaths burials, stay below
+them in their order, never packed or mixed. Outside Teeming World the
+packet layout and the fallback stay as built. Seer may still place a
+Vision below a buried card: its card says "any positions".
+Reason: "bury" means the bottom of the world deck (R24), and the packet
+layout presupposes a denizen deck that Teeming World lacks.
+Slice/files: 3; `WalkerShuffles`, `OathsTeemingBurialSuite`.
+
+**R50. An Oaths holder's knowledge of their burials after a reorder.** (A
+review finding on R24's re-ruling.)
+Question: Seer's placement and Secret Society's rebuild reorder the world
+deck, and a reorder forgets every card in it, so the Oaths holder stopped
+identifying the cards they buried, although those cards had not moved.
+Decision: after either reorder the holder peeks their buried cards again,
+as Seer re-peeks its Visions (Legacy Setup powers R20).
+Reason: the holder buried those cards, and their positions did not
+change.
+Slice/files: 3; `OathsOfLoyalty.rememberBurials`, `Seer`, `SecretSociety`,
+`OathsTeemingBurialSuite`.

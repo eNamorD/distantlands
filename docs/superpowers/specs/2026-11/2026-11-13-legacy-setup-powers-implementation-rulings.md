@@ -253,3 +253,11 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   "Place your pawn at" and the site, not Setup's "Start at". *Reason:* the
   Wake is not Setup, and the question reads "Place your pawn at any site".
   *Slice/files:* slice 4; `QuestFirstWakeProcedure`.
+- **R36. The world deck's legacy powers beside Oaths' Teeming World
+  burials.** Spec ruling 14, R19 and R20 hold with two rulings of the
+  Legacy Chronicle powers batch: under Teeming World, Secret Society's
+  rebuild shuffles only the Visions and keeps the Oaths burials below them
+  in their order (its R49), and after Seer's placement or Secret Society's
+  rebuild the Oaths holder peeks their buried cards again (its R50).
+  *Reason:* those rulings. *Slice/files:* slice 3; `WalkerShuffles`,
+  `OathsOfLoyalty`, `Seer`, `SecretSociety`.

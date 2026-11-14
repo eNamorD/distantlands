@@ -203,7 +203,10 @@ deck it built.
       with `distinct` set no two equal.
     - Only the holder sees the Visions' names and the positions; the deck
       stays as hidden as before for everyone else. Under Teeming World the
-      deck holds only Visions, and the holder sets their order.
+      deck holds only Visions and any Oaths of Loyalty burials, which
+      Secret Society's rebuild keeps below the Visions (Legacy Chronicle
+      powers R49); the Seer holder sets the Visions' positions, below a
+      buried card too.
     - "p2 placed the Visions with Seer".
 
 ### Slice 4: player choices

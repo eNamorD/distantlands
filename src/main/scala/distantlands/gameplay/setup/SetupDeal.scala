@@ -19,7 +19,7 @@ import distantlands.model._
   * Loyalty, buries every card drawn (`buried`), then the whole rest of the
   * stack is dealt to the discard piles one card at a time, each card
   * beneath the ones its pile already holds, and the world deck gets no
-  * denizen.
+  * denizen but an Oaths holder's burials.
   */
 final case class SetupDeal(face: FoundationFace,
     draws: Vector[(PlayerId, Int)],
