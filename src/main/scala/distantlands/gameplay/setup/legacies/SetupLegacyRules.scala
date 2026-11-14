@@ -12,3 +12,10 @@ object SetupLegacyRules:
     * Crafter's holder (ruling 10). */
   def mapFiller(state: ReadyGame): Option[PlayerId] =
     ChronicleLegacyRules.holder(state, WorldCrafterCard.id)
+
+  /** Who chooses the end of `explorer`'s successful Explore: World
+    * Crafter's holder, who may answer on another player's turn, else the
+    * explorer (ruling 11). */
+  def exploreEndChooser(state: ReadyGame, explorer: PlayerId): PlayerId =
+    ChronicleLegacyRules.holder(state, WorldCrafterCard.id)
+      .getOrElse(explorer)

@@ -5,6 +5,8 @@ import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.actions.dice.RollStep
 import distantlands.gameplay.powerresolver.ModifierPicks
 import distantlands.gameplay.setup.AtlasPlacement
+import distantlands.gameplay.setup.legacies.{SetupLegacyRules, WorldCrafter,
+  WorldCrafterCard}
 import distantlands.gameplay.walker.{ModifierChoice, WalkerRollFeedback}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
@@ -37,7 +39,8 @@ final case class ExploredSite(site: SiteId) extends Operation:
   *                                              // then the reroll choice
   *         Branch(choice when not yet success))), // Decide("explore.choice")
   *     Branch(if success ->
-  *       Vector(Branch(Decide("explore.end")), // asked with 2 or more sites
+  *       Vector(Branch(Decide("explore.end"),  // asked with 2 or more sites,
+  *           Note(chose)),                   // of World Crafter's holder
   *         BuildOps(PlaceAtlasSite, pawn Move),
   *         Note(explored),
   *         Branch(ExploredSite(site))),        // window = WhenExplored
@@ -102,7 +105,8 @@ object ExploreProcedure:
   /** "Failed to explore": the player answered Stop. */
   val failed: NoteKey = notes.key("failed", Vector(
     NotePart.Text("Failed to explore")))
-  def noteKeys: Vector[NoteKey] = notes.declared
+  def noteKeys: Vector[NoteKey] = notes.declared ++
+    WorldCrafter.exploreNoteKeys
 
   /** The line of a successful Explore from `end`. */
   def explored(end: AtlasEnd): NoteKey = end match
@@ -193,15 +197,22 @@ object ExploreProcedure:
       Branch((ready, _) =>
         if succeeded(ready) then Vector.empty else Vector(choice(ready))))
 
-    /** Recent or Forgotten, asked while the Atlas holds two sites or more.
-      * A branch of its own: once the site is placed the Atlas is shorter,
-      * and a walk resumed past this node must still find the nodes after
-      * it where they were. */
+    /** Recent or Forgotten, asked while the Atlas holds two sites or more,
+      * of World Crafter's holder when one is seated (Legacy Setup powers
+      * ruling 11), with their line after the answer. A branch of its own:
+      * once the site is placed the Atlas is shorter, and a walk resumed
+      * past this node must still find the nodes after it where they were. */
     val endChoice = Branch((ready, _) =>
       if ready.game.campaign.atlas.sites.sizeIs < 2 then Vector.empty
-      else Vector(Decide(endDecisionId, actor, DecisionQuery.ChooseOne(
-        AtlasEnd.all.map(end => DecisionOption.Button(endOption(end),
-          AtlasPlacement.endLabel(end))), heading = Some(endHeading)))))
+      else
+        val chooser = SetupLegacyRules.exploreEndChooser(ready, actor)
+        Vector(Decide(endDecisionId, chooser, DecisionQuery.ChooseOne(
+          AtlasEnd.all.map(end => DecisionOption.Button(endOption(end),
+            AtlasPlacement.endLabel(end))), heading = Some(endHeading)))) ++
+          Option.when(chooser != actor)(Note(ProcedureNotes.id(
+            ActionRef.Explore), states => Some(WorldCrafter.chose(
+            chosenEnd(states.answered)).sourceless(NoteArg.Player(chooser),
+            NoteArg.Card(WorldCrafterCard.id))))).toVector)
 
     /** The site leaves its end of the Atlas for the next slot, and the
       * explorer's pawn is placed there. This is not a Travel. */

@@ -88,3 +88,18 @@ case object WorldCrafter extends ContributingPower:
         placed(end(states.answered)).sourceless(NoteArg.Player(holder),
           NoteArg.Site(site), NoteArg.Card(WorldCrafterCard.id))))
     Sequence(question, place, line)
+
+  private val exploreId = ProcedureNotes.id(ActionRef.Explore)
+  private val exploreNotes = NoteSet(exploreId)
+  val choseRecent: NoteKey = exploreNotes.key("world-crafter-chose-recent",
+    Vector(NotePart.Arg(0), NotePart.Text(" chose Recent Sites with "),
+      NotePart.Arg(1)))
+  val choseForgotten: NoteKey = exploreNotes.key(
+    "world-crafter-chose-forgotten", Vector(NotePart.Arg(0),
+      NotePart.Text(" chose Forgotten Sites with "), NotePart.Arg(1)))
+  /** The Explore lines this power writes, on Explore's note id. */
+  def exploreNoteKeys: Vector[NoteKey] = exploreNotes.declared
+
+  def chose(end: AtlasEnd): NoteKey = end match
+    case AtlasEnd.Recent => choseRecent
+    case AtlasEnd.Forgotten => choseForgotten
