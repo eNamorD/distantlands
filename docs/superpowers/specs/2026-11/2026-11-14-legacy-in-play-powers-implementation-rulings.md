@@ -148,3 +148,16 @@ Ruled by the owner on 2026-11-14.
   change, and the design's ruling 18 wording is corrected. *Reason:* the
   engine already follows the rulebook's clean-up; only the spec's wording
   was narrower. *Slice/files:* the design; `Beloved`'s doc.
+- **R22. In what order does the log show a flip and the taker's line?**
+  *Decision:* the flip line comes before the taker's line, as R20's timing
+  writes them: "p1 flipped the Darkest Secret with The Needle", then "p1
+  took the Darkest Secret with The Standard Bearer". *Reason:* it follows
+  R20's timing exactly, and each line says what happened; moving the park
+  point would reopen the resume problem R20 closed. *Confidence:* low;
+  readers may find "flipped" before "took" odd, and the owner may later
+  want The Needle's question to wait for the taker's line.
+  *Slice/files:* slice 3; `TheNeedle` and the banner takers.
+- **R23. Where does Iron Hand's in-game line sit?** *Decision:* as a
+  trigger line before the action's "Became a Citizen." line. *Reason:* it
+  matches how the log already shows power lines. *Slice/files:* slice 3,
+  Task 5; `Citizenship.become`.
