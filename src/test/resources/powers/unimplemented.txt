@@ -16,7 +16,6 @@ legacy.high-priest
 legacy.keeper-of-order
 legacy.light-fingers
 legacy.pathfinder
-legacy.peacemaker
 legacy.the-mouth
 legacy.the-needle
 relic.ancient-grit

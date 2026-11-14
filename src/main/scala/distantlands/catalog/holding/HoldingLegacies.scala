@@ -7,16 +7,6 @@ import distantlands.model.{Cost, FoundationNumber, LegacyId, PowerId,
 // Generated from the retired runtime JSON (card classes slice 1).
 // Hand-edited from here on; a card moves out when it is implemented.
 
-object PeacemakerCard extends Legacy(LegacyId("L04"), "Peacemaker",
-    LegacyGoal.MostSites, Suit.Hearth):
-  val power = PrintedPower(PowerId("legacy.peacemaker"),
-    persistent = false, cost = Cost.free,
-    text = "**ACTION:** Return a banner you hold to the shared bank. " +
-      "_Do not adjust its [favor] or [secret]._ If you do, remove " +
-      "all warbands except the last _(including bandits)_ from " +
-      "each site and player board, even yours.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object TheNeedleCard extends Legacy(LegacyId("L05"), "The Needle",
     LegacyGoal.MostSites, Suit.Beast):
   val power = PrintedPower(PowerId("legacy.the-needle"),

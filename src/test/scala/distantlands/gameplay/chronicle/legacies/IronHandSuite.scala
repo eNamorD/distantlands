@@ -12,7 +12,8 @@ import distantlands.gameplay.powers.action.FaeMerchantCard
 import distantlands.gameplay.powers.economy.VillageIdiotCard
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.catalog.holding.{PeacemakerCard, TheNeedleCard}
+import distantlands.catalog.holding.TheNeedleCard
+import distantlands.gameplay.powers.legacies.PeacemakerCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.setup.legacies.MatchmakerCard
 import distantlands.model._

@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle.legacies
 
-import distantlands.catalog.holding.PeacemakerCard
+import distantlands.gameplay.powers.legacies.PeacemakerCard
 import distantlands.gameplay.setup.legacies.WealthyCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.OathRules
