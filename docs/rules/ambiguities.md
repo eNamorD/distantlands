@@ -332,7 +332,7 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 
 ## Legacy in-play powers rulings
 
-Rulings for the powers legacies use during a game ([Legacy in-play powers design](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)). Items 1 to 13 are the design's rulings 1 to 13, taken with the owner on 2026-11-14; items 14 to 18 are implementation rulings R1 to R5; items 19 to 24 are the design's rulings 14 to 19; items 25 to 29 are implementation rulings R6 to R10.
+Rulings for the powers legacies use during a game ([Legacy in-play powers design](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)). Items 1 to 13 are the design's rulings 1 to 13, taken with the owner on 2026-11-14; items 14 to 18 are implementation rulings R1 to R5; items 19 to 24 are the design's rulings 14 to 19; items 25 to 29 are implementation rulings R6 to R10; items 30 to 32 are the design's rulings 20 to 22; items 33 to 40 are implementation rulings R11 to R18, and items 41 and 42 are R20 and R21 (R19 is a test's, not a rule's).
 
 1. **Only seated players' active legacies act.** Dormant legacies, a boxed lineage's legacies and the Public Ambitions row never act; The Mouth is the one way a legacy becomes active during a game (design, ruling 1).
 2. **"If you are an Imperial" is read when the power is used,** so the Crown and Citizenship change it during a game (design, ruling 2).
@@ -364,6 +364,19 @@ Rulings for the powers legacies use during a game ([Legacy in-play powers design
 27. **The passive modifiers write no lines;** Keeper of Order writes "Added 2 attack dice." or "Removed 2 attack dice.", and "Skulls ignored." when it ignores a skull; High Priest's secrets show in the deal's own lines (R8).
 28. **A Negotiation saved before High Priest's list** resumes with it empty (R9).
 29. **High Priest left the unimplemented list with its ACTION,** before its WHEN NEGOTIATING half landed (R10).
+30. **The Needle.** After a banner moves into the holder's play area by a move the walk executes (a challenge, a raid, Favored Son, Wizard's Conclave, the Conspiracy, The Standard Bearer at Setup), the holder chooses "Keep this side" or "Flip it"; a banner placed at game start is not taken. Flipping keeps the banner's tokens; flipping to the Festival places no marker, and flipping away from it removes the marker (design, ruling 20).
+31. **Arbiter.** Just before the end die is rolled for Stable Regime, at the end of rounds 5 to 7, the holder chooses Decline, −1, +1, +2 or +3, publicly. The roll's total is the face plus the modifier, read against the printed rolls as "at least": 6 or more after round 5, 5 or more after round 6, 3 or more after round 7 (design, ruling 21).
+32. **Iron Hand during a game.** When its holder becomes Imperial, by any path to Citizenship, Iron Hand goes to the legacy deck right after the role changes, as the Chronicle's discard sends it (design, ruling 22).
+33. **Arbiter's choice waits in the game state** until the roll reads and clears it; a round that ends without a roll clears it too, so no modifier reaches a later round (R11).
+34. **The slice's lines.** "p2 flipped the People's Favor with The Needle", and nothing for keeping the side; "p2 modified the end die by +2 with Arbiter", then "The end die rolled 4, modified by +2 to 6. Stable Regime needed 6.", with the old line for an unmodified roll and nothing for Decline; "p3 discarded Iron Hand on becoming a Citizen", or "… on becoming the Chancellor" in a game with no Empire (R12).
+35. **The plainest answer is asked first:** The Needle's "Keep this side", then "Flip it"; Arbiter's Decline, then −1, +1, +2, +3 (R13).
+36. **One batch handing The Needle's holder both banners asks once per banner,** the People's Favor first (R14).
+37. **Pathfinder ignores only Lost Lagoon's Island add** on arriving at its site, never its Coast power on leaving it, which narrows item 25 (R15).
+38. **Take Wealth's pawn gate may refuse after the resource check:** with an enemy pawn there and the resource missing, the refusal names the missing resource; the menu leaves the option out either way (R16).
+39. **Old Songs stacks with Beloved:** a Beloved source with exactly one secret and no favor qualifies (R17).
+40. **Imperial Infighting does not hide the enemy Imperial's lendable plans:** CR p. 35 makes the enemy a lawful lender, and the plan's own limit keeps the attacker from using it (R18).
+41. **Every banner taker keeps its question and its line** when a walk parks right after the take for The Needle's question and resumes: the question comes inside the taking walk, right after the take, as the design's ruling 20 times it (R20).
+42. **Beloved's token on another player's adviser leaves at the next Rest,** as every card's tokens do (R21).
 
 ## Source relationship cautions
 

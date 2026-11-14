@@ -18,7 +18,7 @@ Each player controls a lineage/color and one pawn. Roles are:
 - Six denizen suits exist: Discord, Arcane, Order, Hearth, Beast, and Nomad. A site may not exceed its printed denizen capacity; an adviser area normally holds at most three cards (CR p. 14).
 - A site is ruled by exactly one player or by the bandits. Any player warband there establishes rule. After any action, an empty site is immediately filled with bandit warbands equal to capacity (CR p. 15).
 - A player has access to cards at their pawn's site, sites they rule, and their play area (relics, banners, advisers, legacies). Power costs can be placed only on empty cards (CR p. 15).
-- Relics and banners have no holding limit and can be stolen. Facedown relics have no power, but still count for victory and legacy conditions (CR pp. 15, 25, 27; NF p. 14).
+- Relics and banners have no holding limit and can be stolen. Facedown relics have no power, but still count for victory and legacy conditions (CR pp. 15, 25, 27; NF p. 14). Digital: after any take of a banner into The Needle's holder's play area, the holder may flip it to its other side, keeping its tokens ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 30, 34 to 36 and 41).
 
 ## Setup
 
@@ -141,7 +141,7 @@ An Exile may reveal one true Vision. At the start of their turn they win if its 
 
 ### Empire endings
 
-At ends of rounds 5/6/7, if Chancellor or Citizen is Oathkeeper, roll the end die; Chancellor wins on 6, then 5-6, then 3-6 respectively. At round 8 resolve War Exhaustion: qualifying Imperial Oathkeeper -> Chancellor; Exile Usurper; qualifying revealed Vision (tie order Conquest, Rebellion, Sanctuary, Faith); otherwise Chancellor (CR p. 19).
+At ends of rounds 5/6/7, if Chancellor or Citizen is Oathkeeper, roll the end die; Chancellor wins on 6, then 5-6, then 3-6 respectively. At round 8 resolve War Exhaustion: qualifying Imperial Oathkeeper -> Chancellor; Exile Usurper; qualifying revealed Vision (tie order Conquest, Rebellion, Sanctuary, Faith); otherwise Chancellor (CR p. 19). Digital: just before the roll, Arbiter's holder may modify it by −1 to +3, and the total is read against the printed rolls as "at least" ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 31 and 33 to 35).
 
 If Chancellor would win, a Citizen satisfying the current Successor goal wins instead. Successor mappings are: Supremacy -> more relics than Chancellor and every other Citizen; The People -> Darkest Secret; Protection -> People's Favor; Devotion -> Grand Scepter (CR p. 19).
 
@@ -160,7 +160,7 @@ Without Empire, round 8 uses War Exhaustion while skipping Stable Regime and Cha
 
 ## Role changes
 
-- **Becoming a Citizen.** The player's board turns to its Citizen side; their warbands on the board and the map become purple, the player choosing which when the purple bank runs short; their revealed Vision is discarded; a Usurper title turns to its Oathkeeper side, and under Supremacy passes to the Chancellor; their Act phase ends if it is their turn; their Supply refreshes to 7 (CR p. 34).
+- **Becoming a Citizen.** The player's board turns to its Citizen side; their warbands on the board and the map become purple, the player choosing which when the purple bank runs short; their revealed Vision is discarded; a Usurper title turns to its Oathkeeper side, and under Supremacy passes to the Chancellor; their Act phase ends if it is their turn; their Supply refreshes to 7 (CR p. 34). Digital: a player holding Iron Hand active discards it right after the role changes, also on becoming the Chancellor ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 32 and 34).
 - **Becoming the Chancellor.** In a game with no Empire, a "become a Citizen" power makes the player the Chancellor instead: they also take the Chancellor board, the purple bank and the Grand Scepter (CR p. 34). The Usurper Limiter is removed at once (ruling R5), and the next round starts with them (ruling R4).
 - **Exile.** A Citizen's board turns to its Exile side; the purple warbands on it become warbands of their colour, the excess returning to the purple bank, while the Imperial warbands on the map stay; their Act phase ends if it is their turn; their Supply refreshes to 7 (CR p. 34).
 - **Self-exile.** As a minor action, a Citizen gives the Chancellor 1 favor per Imperial warband on their board, at least 3, and is exiled (CR p. 34).

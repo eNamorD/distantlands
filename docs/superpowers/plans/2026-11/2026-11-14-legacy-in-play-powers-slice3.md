@@ -73,6 +73,16 @@ rulings R11-R14 ([rulings](../../specs/2026-11/2026-11-14-legacy-in-play-powers-
 - **R14** (Task 2): one question per banner, People's Favor first, ids
   `power.the-needle.<banner key>`.
 
+Two more were ruled during execution:
+
+- **R20** (before Task 2): The Needle's question parks inside the taking
+  walk, right after the take, so every banner taker keeps its tree's
+  shape whoever holds the banner: each fix is its own test-first commit
+  with a resume test that parks right after the take
+  (`BannerTakeResumeSuite`), and no golden or log line changes.
+- **R21**: Beloved's token on another player's adviser leaves at the next
+  Rest; no engine change.
+
 Every table is a named fixture with concrete sites and pieces in the test
 itself.
 
@@ -97,6 +107,38 @@ itself.
   powers. Each registers a `ContributingPower` in `WalkerPowerCatalog`
   (Arbiter's hooks no window, as The Ear's Chronicle half), so the cards
   leave holding.
+
+## Deviations from the plan
+
+- R20's audit, before Task 2. Challenge's custody reads the holder when it
+  runs; Favored Son and Wizard's Conclave take inside one `BuildOps` and
+  record the take (`Defer`) for their line; the Conspiracy records its
+  take, keeps the recorded banner among the offered targets and reads its
+  line from the record; The Standard Bearer keeps the chosen banner
+  offered, read from the answer, so its journal is unchanged; the Raid's
+  spoils line reads the result's targets the attacker holds, not the step
+  before. `CampaignRaid`'s takes, `BannerToSharedBank`, `BannerSetupRules`,
+  Peacemaker and Lost Tongue needed nothing.
+- The Needle reads the batch's executed `Move`s and `Take`s of a banner,
+  not `Operation.flatten`: a composite's children are not rebuilt, since
+  building some of them anew is not safe outside their own run.
+- The modifier's sign is written "-" in the log lines and Arbiter's
+  buttons; the card's text keeps "−".
+- `ArbiterStep.due` also needs no result set. A decoded
+  `SetEndDieModifier` outside -1 to +3 is refused; `EndDieRolled`'s
+  modifier decodes as a signed integer, so `EndingEventCodec` reads
+  `WalkerValueCodec`'s decoder.
+- The `legacy-triggers` golden lands with Task 4, since
+  `GameLogPropertiesSuite` needs a script that completes
+  `round-end-arbiter`; Task 5 moves its Iron Hand line from the Sun to the
+  Grand Scepter's Action. The script's p1 also holds the People's Favor,
+  which keeps them the Oathkeeper of the People after p3's Action.
+- Iron Hand's in-game line reads a record the change keeps (`Defer`), not
+  the step before: the change may park on a follow-up before the line.
+- Arbiter's "public" is checked as the table's `walkerWaiting` naming the
+  holder. `GreatClockSuite`'s `EndDieRolled` pattern gains the new field.
+- `ambiguities.md` records R11 to R18, R20 and R21; R19 is a test's
+  ruling, not a rule's.
 
 ## Global Constraints
 
