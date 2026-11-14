@@ -23,7 +23,12 @@ object TheStandardBearerCard extends Legacy(LegacyId("L18"), "The Standard Beare
   * put two more of its own resource on it from the shared bank, which has
   * no count (R28). The banner is moved, not taken by its ribbon: it keeps
   * what it holds. Line: "p2 took the People's Favor with The Standard
-  * Bearer". */
+  * Bearer".
+  *
+  * The step keeps its shape after the move, for a walk that parks right
+  * after it (The Needle) and is rebuilt on the state the move left (Legacy
+  * in-play powers R20): the banner the holder chose stays offered though
+  * the shared bank no longer holds it. */
 case object TheStandardBearer extends ContributingPower:
   val id: PowerId = TheStandardBearerCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
@@ -52,12 +57,22 @@ case object TheStandardBearer extends ContributingPower:
       Banner.DarkestSecret -> banners.darkestSecret.holder)
       .collect { case (banner, None) => banner }
 
+  /** The banners offered: those in the shared bank and the one the holder
+    * chose, the People's Favor first. */
+  private def offered(state: ReadyGame, pending: PendingTree,
+      holder: PlayerId): Vector[Banner] =
+    val bank = inBank(state)
+    val chosen = PowerAnswers.one(pending, decisionId(holder)).collect {
+      case DecisionOptionRef.Banner(banner) => banner }
+    Vector(Banner.PeoplesFavor, Banner.DarkestSecret)
+      .filter(banner => bank.contains(banner) || chosen.contains(banner))
+
   private def resource(banner: Banner): Piece = banner match
     case Banner.PeoplesFavor => Piece.Favor(2)
     case Banner.DarkestSecret => Piece.Secrets(2)
 
-  private def step(holder: PlayerId): Operation = Branch((state, _) =>
-    inBank(state) match
+  private def step(holder: PlayerId): Operation = Branch((state, pending) =>
+    offered(state, pending, holder) match
       case Vector() => Vector.empty
       case banners => Vector(
         Decide(decisionId(holder), holder, DecisionQuery.ChooseOne(

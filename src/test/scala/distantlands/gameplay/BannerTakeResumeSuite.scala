@@ -2,22 +2,28 @@ package distantlands.gameplay
 
 import distantlands.gameplay.BannerTakeParkFixture.{ParkAfterBannerTake,
   decisionId, resumeAnswer}
-import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.{ProcedureNotes, VisionRules}
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powerresolver.ContributingPower
-import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog,
+  WalkerPowerCatalog}
 import distantlands.gameplay.powers.campaign.GlamorCard
 import distantlands.gameplay.powers.search.DisciplesCard
 import distantlands.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
   FavoredSon, FavoredSonCard, WhenPlayedHarness, WizardsConclave,
   WizardsConclaveCard}
+import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
+  SetupLegacyFixture, SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.legacies.{TheStandardBearer,
+  TheStandardBearerCard}
 import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
 import distantlands.model._
 import distantlands.model.OathState.Ready
-import distantlands.testkit.{Journal, Outcomes, PlacementPicks, Table}
+import distantlands.testkit.{Answers, Journal, Outcomes, PlacementPicks,
+  Situation, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 
@@ -129,3 +135,29 @@ class BannerTakeResumeSuite extends munit.FunSuite:
     assertEquals(NoteText.said(ConspiracyWhenPlayed.id,
       ConspiracyWhenPlayed.noteKeys, resume.events).map(_.key),
       Vector("seized"))
+
+  test("The Standard Bearer: a setup walk parked after the take resumes, " +
+      "puts two secrets on the banner and writes its line"):
+    // l2's player p2, a Citizen, holds The Standard Bearer; the People goal
+    // starts the People's Favor with the Chancellor, so only the Darkest
+    // Secret is in the shared bank, and p2 takes it after their pawn.
+    val (l1, l2) = (LineageId("l1"), LineageId("l2"))
+    val record = SetupLegacyFixture.holding(
+      LaterGameFixture.chronicle(l1, l2)
+        .copy(oathkeeperGoal = OathkeeperGoal.ThePeople),
+      l2, Role.Citizen, TheStandardBearerCard.id -> true)
+    val orders = LaterGameFixture.orders(record, p1)
+    val bank = accepted(GameStartRules.evolve(catalog, record, orders))
+      .game.current.banners.darkestSecret
+    val taking: Answers =
+      case park if park.decisionId == TheStandardBearer.decisionId(p2) =>
+        DecisionAnswer.ChooseOneAnswer(
+          DecisionOptionRef.Banner(Banner.DarkestSecret))
+    val woken = Situation.wake(Situation.rules(catalog, powers,
+      PhasePowerCatalog.default).withAnswers(taking), record, orders)
+    val held = woken.ready.game.current.banners.darkestSecret
+    assertEquals(held.holder, Some(p2))
+    assertEquals(held.secrets, bank.secrets + 2)
+    assert(NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
+      SetupProcedure.noteKeys, woken.events).map(_.text).contains(
+      s"p2 took the Darkest Secret with ${TheStandardBearerCard.id.value}"))
