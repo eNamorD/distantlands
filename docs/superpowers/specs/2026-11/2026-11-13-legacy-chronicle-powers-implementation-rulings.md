@@ -532,7 +532,8 @@ Reason: the site relics the base Scatter Relics deals facedown were
 already named this way before these powers. Redacting the record per
 viewer touches the Chronicle page, the export codec and the next game's
 import, which is a feature of its own.
-Confidence: low; the owner may re-rule it.
+Confirmed by the owner 2026-11-14 (earlier: low confidence, open to
+re-ruling).
 Slice/files: 5; `GameProjection`, `GameEventJsonSupport`, `docs/ROADMAP.md`.
 
 **R49. Secret Society's rebuild under Teeming World.** (A review finding
