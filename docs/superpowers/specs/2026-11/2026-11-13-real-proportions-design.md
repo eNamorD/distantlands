@@ -1,6 +1,12 @@
 # Real proportions for every drawn asset
 
 **Status:** designed 2026-11-13, approved section by section by the owner.
+Landed 2026-11-13 in three slices, executed from one
+[plan](../../plans/2026-11/2026-11-13-real-proportions.md). The questions the
+slices raised were settled in the
+[implementation rulings](2026-11-13-real-proportions-design-implementation-rulings.md)
+R1-R10. Two figures below are as built: `--card-h` keeps its height and
+`--card-w` derives from it, and Fit at 1440×900 is about 0.42.
 
 **Builds on** the
 [card shape and inspection design](../2026-09/2026-09-22-card-shape-and-inspection-design.md),
@@ -116,8 +122,9 @@ as a CSS ratio:
 ```
 
 Every card box takes its shape from this table through `aspect-ratio`. No
-literal `1.4` remains in `styles.css`, and `--card-h` is derived from
-`--card-w` and `--ratio-denizen`.
+literal `1.4` remains in `styles.css`. `--card-h` keeps its `18.2ex`, so
+no card changes height, and `--card-w` is derived from it and
+`--ratio-denizen`.
 
 `CardFace.boxClass` gains the kinds the table names. A legacy takes
 `card-face-legacy`, landscape, wherever it is drawn as a card: the Public
@@ -179,7 +186,8 @@ and every slot as a rectangle in mat pixels:
 positioned child whose `left`, `top`, `width` and `height` are percentages
 computed from `MatLayout`. The board's design width is 2400 px, which
 puts a card on the mat at 135 px wide, the size it has today, and leaves
-Fit near 0.45 at 1440×900. The existing zoom, pan and Fit act on the board as they act on
+Fit near 0.42 at 1440×900, where the height binds once the table's edge
+under the mat is counted. The existing zoom, pan and Fit act on the board as they act on
 `.map-content` now.
 
 The board has two layers of its own:

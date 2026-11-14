@@ -110,6 +110,24 @@ Left behind by the
   states short of playing a whole game. The journaled arranged start would
   seed them.
 
+Left behind by the
+[real proportions work](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md):
+
+- [ ] **Check the new boxes in a played game.** A Vision in the inspection
+  overlay, a banner on a player board, and a site holding five or six pawns
+  with the festival marker were checked only on copies built in the page:
+  setup refuses a Vision as a starting adviser and a Chancellor without a
+  site, and no early position gathers that many pawns. The journaled
+  arranged start would seed them.
+- [ ] **Keep the travel-cost badge off the site's name.** A selected site's
+  cost badge sits at the foot of the site face, over the end of a long name.
+- [ ] **Settle crowded pawn rows on the phone.** At the phone's Fit, three
+  or more pawns on one site shrink their dots (5.8px for three, 2.5px for
+  six with the festival marker;
+  [implementation ruling R10](superpowers/specs/2026-11/2026-11-13-real-proportions-design-implementation-rulings.md),
+  low confidence). The alternative is that the site's name gives way to the
+  pawns. Needs the owner's word.
+
 ### Phase - Campaign battle summary
 
 Left out of the Game Log action sections
@@ -492,6 +510,9 @@ as current.
   short forms of names, defense and forces) over the art, or lets the art
   alone carry what is printed
   ([implementation ruling R9](superpowers/specs/2026-11/2026-11-13-real-proportions-design-implementation-rulings.md)).
+  Three rectangles on the mat have no printed counterpart and were placed
+  by eye (the track note, the Visions label and the favor banks' boxes);
+  check that none covers printed art once the licensed mat is drawn.
 - [ ] **L4 — Saved-game browser and replay navigation.** Saved campaigns
   are browsable; saved games and replays are not.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**

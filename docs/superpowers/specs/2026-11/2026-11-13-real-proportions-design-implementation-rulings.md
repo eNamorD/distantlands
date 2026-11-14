@@ -186,10 +186,3 @@ Reason: every arrangement that keeps three or more pawns at 9px drops or
 overlaps other state at its worst case, and the case is rare.
 Confidence: low; the owner may prefer the site's name to give way instead.
 Slice/files: fix review; `frontend/styles.css`, `DESIGN.md`.
-
-## As built
-
-The design says `--card-h` derives from `--card-w` and that Fit is near
-0.45 at 1440x900. What shipped keeps `--card-h: 18.2ex` and derives
-`--card-w` from it, the plan's choice, so no card changed height; and Fit
-there is about 0.416, height-bound once the table's edge is counted.
