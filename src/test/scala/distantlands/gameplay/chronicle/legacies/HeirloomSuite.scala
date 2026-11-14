@@ -103,6 +103,14 @@ class HeirloomSuite extends munit.FunSuite:
       Either[OathViolation, OathState]](Right(table.state))((state, event) =>
         state.flatMap(rules.evolve(_, event))))
     assertEquals(ChronicleWalk.parked(replayed), Some(decide))
+    // Answered on the replayed state, the walk keeps the chosen relic.
+    val answered = accepted(rules.resolveWalker(replayed, p2,
+      Heirloom.decisionId(p2), DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.Relic(GrandMaskCard.id))))
+    val ready = ChronicleWalk.endOf(rules, replayed,
+      OathTransition(answered.state, answered.events),
+      TriggeredProcedureRef.ChronicleThrone)
+    assertEquals(lineage(ready, p2).startingRelics, Vector(GrandMaskCard.id))
 
   test("the kept relic starts the next game with its holder, facedown " +
       "(ruling 13)"):
