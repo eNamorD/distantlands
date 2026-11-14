@@ -6,6 +6,8 @@ import distantlands.gameplay.powers.campaign.{GlamorCard, PlanDriver}
 import distantlands.gameplay.powers.search.DisciplesCard
 import distantlands.gameplay.powers.whenplayed.{WhenPlayedHarness,
   WizardsConclave, WizardsConclaveCard}
+import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
+  SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.{ParkedDecisionAssertions,
   ProcedureWalker}
@@ -186,3 +188,22 @@ class TheNeedleSuite extends munit.FunSuite:
     assertEquals(done.treeless.game.current.banners.darkestSecret.active,
       DarkestSecretFace.Festival)
     assertEquals(lines(done.events).map(_.key), Vector("flipped"))
+
+  test("a banner placed at game start is not taken: Setup asks nothing"):
+    // l1, the Chancellor's lineage, holds The Needle; the People goal
+    // starts the People's Favor with the Chancellor at game start.
+    val (l1, l2) = (LineageId("l1"), LineageId("l2"))
+    val record = SetupLegacyFixture.holding(LaterGameFixture.chronicle(l1, l2)
+      .copy(oathkeeperGoal = OathkeeperGoal.ThePeople), l1, Role.Chancellor,
+      TheNeedleCard.id -> true)
+    val ready = accepted(GameStartRules.evolve(catalog, record,
+      LaterGameFixture.orders(record, p1)))
+    val holder = ready.game.current.banners.peoplesFavor.holder
+    assertEquals(holder, Some(p1))
+    val walked = SetupWalkDriver.driveWithEvents(ready, accepted(
+      SetupProcedure.build(catalog, ready, ready.game.current.turn
+        .activePlayer, Vector.empty)), TriggeredProcedureRef.Setup, powers)
+    assertEquals(walked.asked.map(_.decisionId)
+      .filter(_.startsWith("power.the-needle")), Vector.empty)
+    assertEquals(walked.ready.game.current.banners.peoplesFavor.active,
+      PeoplesFavorFace.Mob)
