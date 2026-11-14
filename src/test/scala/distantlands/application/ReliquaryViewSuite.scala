@@ -36,6 +36,15 @@ class ReliquaryViewSuite extends munit.FunSuite:
         s"$viewer sees ${id.value}"))
     }
 
+  test("a Citizen holder peeks too; the Chancellor beside them does not " +
+      "outside Setup (ruling 2)"):
+    val citizen = Table.start.imperial(p2, p1).turn(p1, Phase.Act)
+      .legacy(p1, GoldenKeyCard).reliquaryFromDeck(2).ready
+    assertEquals(view(citizen, Some(p1)).reliquary.map(_.hidden),
+      Vector(false, false))
+    assertEquals(view(citizen, Some(p2)).reliquary.map(_.hidden),
+      Vector(true, true))
+
   test("the peek is gone once its holder becomes an Exile (ruling 2)"):
     val exiled = keyed.updateCampaign(campaign => campaign.copy(lineages =
       campaign.lineages.view.mapValues(lineage => lineage.copy(

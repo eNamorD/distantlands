@@ -43,6 +43,16 @@ class GoldenKeySuite extends munit.FunSuite:
       NoteText.Said(NoteKey.Used, s"${actor.value} took a relic from the " +
         s"Reliquary with ${GoldenKeyCard.id.value}", covers = false)))
 
+  test("a Citizen holder takes a relic as the Chancellor's would (ruling 2)"):
+    val citizen = Table.start.imperial(Table.p2, actor).turn(actor, Phase.Act)
+      .legacy(actor, GoldenKeyCard).favor(actor, 1)
+      .secrets(actor, faceUp = 1).reliquaryFromDeck(2).ready
+    assert(usable(citizen))
+    val chosen = citizen.game.campaign.reliquaryInPlay.head
+    val done = useAndAnswer(citizen, GoldenKey, source, GoldenKey.decisionId,
+      DecisionOptionRef.Relic(chosen))
+    assert(Look(after(done.answered)).relics(actor).contains(chosen))
+
   test("a walk resumed at Golden Key's question takes the chosen relic"):
     val ready = table.ready
     val chosen = ready.game.campaign.reliquaryInPlay.head
