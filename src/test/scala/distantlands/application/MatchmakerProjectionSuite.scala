@@ -3,7 +3,10 @@ package distantlands.application
 import distantlands.gameplay.setup.{LaterGameFixture, LegacyDeal, LegacyKeep,
   SetupLegacyFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.gameplay.setup.legacies.MatchmakerCard
+import distantlands.application.gamelog.{GoldenLog, LaterGameLogScripts,
+  LogScripts}
+import distantlands.gameplay.setup.legacies.{MatchmakerCard, PopulistCard,
+  WorldCrafterCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.Situation
@@ -45,8 +48,9 @@ class MatchmakerProjectionSuite extends munit.FunSuite:
           s"$viewer $legacy"))
     }
     val loaded = LoadedGame(at.state, 1L)
-    assert(projector.project("match", loaded, p3).walkerDecision
-      .exists(_.query.exists(_.offeredOptions.size == 2)))
+    assertEquals(projector.project("match", loaded, p3).walkerDecision
+      .flatMap(_.query).map(_.offeredOptions.map(_.id)),
+      Some(drawn.map(_.value)))
     assert(!projector.project("match", loaded, p2).walkerDecision
       .exists(_.query.nonEmpty))
 
@@ -70,3 +74,12 @@ class MatchmakerProjectionSuite extends munit.FunSuite:
         plainOrders)).ready
     own.foreach(legacy => assert(presentation.identifiesAt(at, Some(p2),
       legacy), legacy))
+
+  test("the holder's Game Log names no legacy drawn for another player"):
+    // Only the three active legacies of the golden's Chronicle are named.
+    val script = LaterGameLogScripts.laterGameSetupFoundations
+    val log = GoldenLog.render(LogScripts.format(script, Some(p3)))
+    val named = "\\[card:(L[0-9]+)\\|".r.findAllMatchIn(log)
+      .map(_.group(1)).toSet
+    assertEquals(named, Set(WorldCrafterCard, MatchmakerCard, PopulistCard)
+      .map(_.id.value))
