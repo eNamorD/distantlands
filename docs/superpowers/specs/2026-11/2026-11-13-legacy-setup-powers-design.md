@@ -2,7 +2,9 @@
 
 **Status:** designed 2026-11-13, approved section by section by the owner.
 Slice 1 has landed (89f90563f to cc92ec496, with review fixes a7cd809eb
-to e51f8eecf) and slice 2 (ad5bc9e36 to 75abb9fee); slices 3 and 4 are not yet landed. It builds on the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
+to e51f8eecf) slice 2 (ad5bc9e36 to 75abb9fee, with review fixes 65f16009c to
+1e769d8cb) and slice 3 (b687cc7f0 to the commit that adds its golden);
+slice 4 is not yet landed. It builds on the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
 batch, which has landed: this batch reuses its holder seam, and slice 4
 changes the Setup adviser step that batch's slice 3 changes for Oaths of
 Loyalty.

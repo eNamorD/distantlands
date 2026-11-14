@@ -193,7 +193,7 @@ and the legacies' CHRONICLE powers with the
 - [ ] **Legacy powers: setup.** The SETUP halves of the legacies
   ([Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md)).
   Circle of Swords, Scepter Bearer, Iron Hand, Rival, World Crafter,
-  Populist and Matchmaker have landed; Secret Society, Seer, The Standard
+  Populist, Matchmaker, Secret Society and Seer have landed; The Standard
   Bearer, Wealthy and Quest to Distant Lands remain.
 - [ ] **Legacy powers: in play.** The powers used during a game: actions,
   Wake, Travel, battle plans and the rest, The Mouth activating a legacy in

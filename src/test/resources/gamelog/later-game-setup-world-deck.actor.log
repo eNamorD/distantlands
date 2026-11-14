@@ -1,0 +1,29 @@
+0.0 round 0 | Setup
+5.0 action 1 | [player:p1|p1] took a relic from the Reliquary
+9.0 action 1 | [player:p1|p1] filled the map from Recent Sites
+11.0 action 1 | [player:p1|p1] placed [site:site:buried-giant|Buried Giant] on the map
+13.0 action 1 | [player:p1|p1] placed [site:site:deep-woods|Deep Woods] on the map
+15.0 action 1 | [player:p1|p1] placed [site:site:desolate-shore|Desolate Shore] on the map
+17.0 action 1 | [player:p1|p1] placed [site:site:dunes|Dunes] on the map
+19.0 action 1 | [player:p1|p1] placed [site:site:fair-isle|Fair Isle] on the map
+21.0 action 1 | [player:p1|p1] placed [site:site:golden-valley|Golden Valley] on the map
+27.0 action 1 | [player:p2|p2] took a Vision as a facedown adviser with [card:L28|Secret Society]
+32.0 delta 1 | [player:p2|p2] peeked at a Vision
+33.0 delta 1 | [player:p2|p2] peeked at a Vision
+34.0 delta 1 | [player:p2|p2] peeked at a Vision
+35.0 delta 1 | [player:p2|p2] peeked at a Vision
+36.0 action 1 | [player:p2|p2] placed the Visions with [card:L22|Seer]
+41.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
+46.0 decision 1 | [player:p1|p1] kept a legacy
+51.0 decision 1 | [player:p1|p1] kept [card:207|Glamor]
+59.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+64.0 decision 1 | [player:p2|p2] kept a legacy
+69.0 decision 1 | [player:p2|p2] kept a Denizen
+77.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
+82.0 decision 1 | [player:p3|p3] kept a legacy
+87.0 decision 1 | [player:p3|p3] kept a Denizen
+88.0 round 0 | Round 1
+88.1 turn 0 | [player:p1|p1]'s turn
+88.2 phase 0 | Wake
+90.0 action 1 | Nothing happened in Wake
+90.1 phase 0 | Act

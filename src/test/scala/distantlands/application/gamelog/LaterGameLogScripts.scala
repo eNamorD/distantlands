@@ -8,8 +8,8 @@ import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.{AtlasPlacement, ImperialMaps,
   LaterGameFixture, SetupLegacyFixture}
 import distantlands.gameplay.setup.legacies.{CircleOfSwordsCard,
-  MatchmakerCard, Populist, PopulistCard, ScepterBearerCard, WorldCrafter,
-  WorldCrafterCard}
+  MatchmakerCard, Populist, PopulistCard, ScepterBearerCard, SecretSociety,
+  SecretSocietyCard, Seer, SeerCard, WorldCrafter, WorldCrafterCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.{Answers, Dice, Look, Situation}
@@ -79,6 +79,27 @@ object LaterGameLogScripts:
         ChooseOneAnswer(Populist.divide)
     })
 
+  /** As [[laterGameWoken]], with the world deck's legacy powers: l2 a
+    * Citizen holding Secret Society and Seer active (Legacy Setup powers,
+    * slice 3). Secret Society takes the first Vision it is offered; Seer
+    * puts every Vision left on top of the deck, in its order. */
+  def laterGameSetupWorldDeck(using munit.Location): Script =
+    val p2 = PlayerId("p2")
+    laterGameWokenFrom("later-game-setup-world-deck", chronicle =>
+      SetupLegacyFixture.holding(chronicle, LineageId("l2"), Role.Citizen,
+        SecretSocietyCard.id -> true, SeerCard.id -> true), {
+      case park if park.decisionId == SecretSociety.decisionId(p2) =>
+        park.decide.query match
+          case one: DecisionQuery.ChooseOne => ChooseOneAnswer(one.options(1).ref)
+          case other => throw new AssertionError(s"unexpected query $other")
+      case park if park.decisionId == Seer.decisionId(p2) =>
+        park.decide.query match
+          case amounts: DecisionQuery.ChooseAmounts =>
+            DecisionAnswer.DistributeAnswer(amounts.slots.zipWithIndex.map(
+              (slot, n) => DistributeAmount(slot.ref, n + 1)))
+          case other => throw new AssertionError(s"unexpected query $other")
+    })
+
   /** A later game's Setup on stream `name`, from the fixture's Chronicle as
     * `changed` leaves it, each park answered by `answers` where it names
     * one and as the situation does by default otherwise. */
@@ -115,5 +136,6 @@ object LaterGameLogScripts:
     "later-game-setup" -> (() => laterGameWoken),
     "later-game-setup-legacies" -> (() => laterGameSetupLegacies),
     "later-game-setup-foundations" -> (() => laterGameSetupFoundations),
+    "later-game-setup-world-deck" -> (() => laterGameSetupWorldDeck),
     "later-game-forgotten-sites" -> (() => laterGameFilledFromForgotten),
     "later-game-after-oaths" -> (() => laterGameAfterOaths))
