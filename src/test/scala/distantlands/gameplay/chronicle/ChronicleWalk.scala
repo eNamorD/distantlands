@@ -51,6 +51,34 @@ object ChronicleWalk:
       DecisionAnswer.ChooseOneAnswer(
         DecisionOptionRef.Denizen(nine(4).asInstanceOf[DenizenId])))).state
 
+  /** A Chronicle walked to the end of one procedure: the state replayed to
+    * that end, the events up to it, and every decision it parked on. */
+  final case class Run(ready: ReadyGame, events: Vector[OathEvent],
+      asked: Vector[Decide])
+
+  /** The Chronicle started on `table`, each park answered by `answers` where
+    * it names one and plainly otherwise, up to `WalkerCompleted(procedure)`.
+    * Every answer goes through `rules.resolveWalker`, which rebuilds the
+    * walk from the journaled state, so each is a resumed walk. */
+  def through(rules: OathRules, table: Table, procedure: TriggeredProcedureRef,
+      answers: PartialFunction[Decide, DecisionAnswer] = PartialFunction.empty)(
+      using munit.Location): Run =
+    val done = distantlands.gameplay.walker.WalkerCompleted(procedure)
+    var asked = Vector.empty[Decide]
+    val started = accepted(rules.next(OathTransition(table.state, Vector.empty),
+      TriggeredProcedureRef.ChronicleBegin))
+    val walked = Iterator.iterate(started)(step =>
+      val decide = parked(step.state).get
+      asked :+= decide
+      val next = accepted(rules.resolveWalker(step.state, decide.owner,
+        decide.decisionId, answers.applyOrElse(decide, plainestAnswer)))
+      OathTransition(next.state, step.events ++ next.events))
+      .find(_.events.contains(done)).get
+    val events = walked.events.take(walked.events.indexOf(done) + 1)
+    Run(distantlands.testkit.Outcomes.ready(accepted(events.foldLeft[
+      Either[OathViolation, OathState]](Right(table.state))((state, event) =>
+        state.flatMap(rules.evolve(_, event))))), events, asked)
+
   /** The decision `state` is parked on, if any. */
   def parked(state: OathState)(using munit.Location): Option[Decide] =
     ParkedNode.of(state, catalog, WalkerPowerCatalog.default(catalog)) match

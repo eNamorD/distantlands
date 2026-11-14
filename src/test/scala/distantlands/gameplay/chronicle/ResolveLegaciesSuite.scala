@@ -12,11 +12,9 @@ import distantlands.gameplay.OathRules
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.gameplay.walker.WalkerCompleted
 import distantlands.model._
-import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2, p3}
-import distantlands.testkit.Unwrap.accepted
 
 /** Resolve Legacies, the Sun's steps 2-4 (CR "Task 1: The Sun"; Legacies
   * design, slice 3). Every game here is p1's win, in the Chronicle Phase
@@ -27,31 +25,13 @@ class ResolveLegaciesSuite extends munit.FunSuite:
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleSun)
   private def won: Table = ChronicleWalk.chronicleWonByP1
 
-  /** The Sun walked to its end on `table`, each park answered by `answers`
-    * where it names one and plainly otherwise, and every decision it
-    * parked on. */
-  private final case class Sun(ready: ReadyGame, events: Vector[OathEvent],
-      asked: Vector[Decide])
-
   private def sun(table: Table,
       answers: PartialFunction[Decide, DecisionAnswer] = PartialFunction.empty)(
       using munit.Location): Sun =
-    val done = WalkerCompleted(TriggeredProcedureRef.ChronicleSun)
-    var asked = Vector.empty[Decide]
-    val started = accepted(rules.next(OathTransition(table.state, Vector.empty),
-      TriggeredProcedureRef.ChronicleBegin))
-    val walked = Iterator.iterate(started)(step =>
-      val decide = ChronicleWalk.parked(step.state).get
-      asked :+= decide
-      val next = accepted(rules.resolveWalker(step.state, decide.owner,
-        decide.decisionId, answers.applyOrElse(decide,
-          ChronicleWalk.plainestAnswer)))
-      OathTransition(next.state, step.events ++ next.events))
-      .find(_.events.contains(done)).get
-    val events = walked.events.take(walked.events.indexOf(done) + 1)
-    Sun(Outcomes.ready(accepted(events.foldLeft[
-      Either[OathViolation, OathState]](Right(table.state))((state, event) =>
-        state.flatMap(rules.evolve(_, event))))), events, asked)
+    ChronicleWalk.through(rules, table, TriggeredProcedureRef.ChronicleSun,
+      answers)
+
+  private type Sun = ChronicleWalk.Run
 
   private def legaciesOf(ready: ReadyGame, player: PlayerId)
       : Vector[LegacyState] =
