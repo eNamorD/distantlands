@@ -526,15 +526,15 @@ Reliquary, and the relics stored at sites (The Ear's placements).
 Decision: accepted for now; Legacies R4's acceptance extends to these
 fields. R28 hides relic identities while the Chronicle Phase runs; the
 stored record that ends it stays one shared record, as the TTS export and
-the Chronicle page show it. A ROADMAP item, "Redact hidden cards in a
-shown Chronicle", tracks redacting it per viewer.
+the Chronicle page show it. No per-viewer redaction is planned: the
+owner ruled it unnecessary on 2026-11-14 and removed its ROADMAP item.
 Reason: the site relics the base Scatter Relics deals facedown were
 already named this way before these powers. Redacting the record per
 viewer touches the Chronicle page, the export codec and the next game's
 import, which is a feature of its own.
 Confirmed by the owner 2026-11-14 (earlier: low confidence, open to
 re-ruling).
-Slice/files: 5; `GameProjection`, `GameEventJsonSupport`, `docs/ROADMAP.md`.
+Slice/files: 5; `GameProjection`, `GameEventJsonSupport`.
 
 **R49. Secret Society's rebuild under Teeming World.** (A review finding
 on R24's re-ruling.)
