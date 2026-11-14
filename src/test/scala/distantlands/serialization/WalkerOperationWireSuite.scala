@@ -488,6 +488,19 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assert(GameEventWire.decodeStream(encoded.replace("round-6", "round-7"))
       .isLeft)
 
+  test("an end die modifier outside -1 to +3 and an unknown banner are " +
+      "refused on decode"):
+    val encoded = encodedStreamThatRoundTrips("walker-refusals", Vector(
+      recordedOperation(SetEndDieModifier(3)),
+      recordedOperation(FlipBanner(Banner.PeoplesFavor))))
+    assert(encoded.contains("\"amount\": 3"), encoded)
+    assert(GameEventWire.decodeStream(encoded.replace("\"amount\": 3",
+      "\"amount\": 4")).isLeft)
+    assert(GameEventWire.decodeStream(encoded.replace("\"amount\": 3",
+      "\"amount\": -2")).isLeft)
+    assert(GameEventWire.decodeStream(encoded.replace("peoples-favor",
+      "imperial-banner")).isLeft)
+
   test("every Piece variant round-trips through the walker codec"):
     // `encodePiece` is fully total (I8): unlike `encodeOperation`, it has no
     // throwing arm at all, so this list is the whole of `Piece`. `Take`
