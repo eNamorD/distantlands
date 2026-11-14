@@ -3,8 +3,9 @@ package distantlands.gameplay.setup.legacies
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.legacies.{IronHandCard, RivalCard}
 import distantlands.gameplay.powers.NoteText
-import distantlands.gameplay.setup.{LaterGameFixture, SetupLegacyFixture,
-  SetupProcedure}
+import distantlands.gameplay.setup.{EmpireSetupRules, FirstGameSetupFixture,
+  GameStartRules, LaterGameFixture, SetupLegacyFixture, SetupProcedure,
+  StartingLegacies}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Situation
@@ -52,3 +53,18 @@ class StartLinesSuite extends munit.FunSuite:
   test("with no legacy acting Setup's log is unchanged"):
     val record = LaterGameFixture.chronicle(l1, l2)
     assert(!lines(record).exists(_.contains(" with L")))
+
+  test("a first game changes nothing and writes no legacy line"):
+    val chronicle = FirstGameSetupFixture.chronicle
+    val orders = FirstGameSetupFixture.orders
+    val mode = EmpireSetupRules.resolve(catalog,
+      chronicle, orders).fold(problem => fail(problem.toString), identity)
+    assertEquals(StartingLegacies.of(chronicle, orders.participants, mode),
+      StartLegacies.none)
+    val ready = GameStartRules.evolve(catalog, chronicle, orders).fold(
+      problem => fail(problem.toString), identity)
+    assert(ready.game.current.players.forall(_.board.warbands == 3))
+    val said = NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
+      SetupProcedure.noteKeys, Situation.wake(Situation.rules(catalog))
+        .events).map(_.text)
+    assert(!said.exists(_.contains(" with L")), said)

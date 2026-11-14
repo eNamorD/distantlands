@@ -53,6 +53,9 @@ class IronHandSetupSuite extends munit.FunSuite:
     val ready = started(record, PlayerId("p3"),
       LaterGameFixture.seats(4).drop(2))
     assertEquals(forces(ready, record).distinct, Vector(held))
+    Vector("p3", "p4").foreach(player => assertEquals(
+      SetupPawnSites.legal(catalog, ready, PlayerId(player)).toSet,
+      ready.game.current.map.inPlay.toSet))
 
   test("a dormant Iron Hand changes nothing (ruling 1)"):
     val record = SetupLegacyFixture.holding(
