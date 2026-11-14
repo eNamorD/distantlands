@@ -21,9 +21,9 @@ object IronHandCard extends Legacy(LegacyId("L01"), "Iron Hand",
 
 /** Iron Hand (legacy L01), its Chronicle half (Legacy Chronicle powers
   * design, rulings 18-21). An Imperial holding it active discards it at
-  * three checkpoints: the start of the Sun, after Crown Chancellor and
-  * after Offer Citizenship, each before that step's reactivation cap (R29,
-  * R30). While a seated Exile holds it active
+  * four checkpoints: the start of the Sun, before the Sun's legacy cap,
+  * after Crown Chancellor and after Offer Citizenship, each but the first
+  * before that step's cap (R29, R30, R46). While a seated Exile holds it active
   * (`ChronicleLegacyRules.ironHand`), they perform Shape Empire and Build
   * Edifice in the Empire's place, score the legacy bonus after the winner,
   * and their sites are stored in place of the Empire's. Its SETUP half and

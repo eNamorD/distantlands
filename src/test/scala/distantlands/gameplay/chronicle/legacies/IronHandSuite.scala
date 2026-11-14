@@ -12,8 +12,8 @@ import distantlands.gameplay.powers.action.FaeMerchantCard
 import distantlands.gameplay.powers.economy.VillageIdiotCard
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.catalog.holding.{MatchmakerCard, SeerCard,
-  TheNeedleCard}
+import distantlands.catalog.holding.{MatchmakerCard, PeacemakerCard,
+  SeerCard, TheNeedleCard}
 import distantlands.model._
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2, p3}
@@ -309,3 +309,42 @@ class IronHandSuite extends munit.FunSuite:
     assertEquals(run.ready.game.campaign.lineages(run.ready.game.current
       .player(p1).get.lineage).legacies.count(_.active), 3)
 
+  private def actives(ready: ReadyGame, player: PlayerId): Vector[LegacyId] =
+    ready.game.campaign.lineages(ready.game.current.player(player).get.lineage)
+      .legacies.filter(_.active).map(_.id)
+
+  private val capped = distantlands.gameplay.chronicle.ResolveLegacies
+    .capDecisionId
+
+  test("an Iron Hand Flip Legacies activates for a Citizen is discarded " +
+      "before the cap, so three other legacies ask no discard (R46)"):
+    // The Empire rules Ancient City, so the Imperials meet Iron Hand's goal.
+    val run = through(ChronicleWalk.chronicleWonByP1.imperial(p1, p3)
+      .warbandsAt(AncientCitySite, p1, 1)
+      .legacy(p3, IronHandCard, active = false).legacy(p3, PeacemakerCard)
+      .legacy(p3, TheNeedleCard).legacy(p3, SeerCard),
+      TriggeredProcedureRef.ChronicleSun)
+    assert(!run.asked.exists(_.decisionId == capped(p3)),
+      run.asked.map(_.decisionId))
+    assert(!holds(run.ready, p3))
+    assertEquals(actives(run.ready, p3).toSet,
+      Set(PeacemakerCard.id, TheNeedleCard.id, SeerCard.id))
+
+  test("an Iron Hand a Citizen takes with Gatekeeper is discarded before the " +
+      "cap, so three other legacies ask no discard (R46)"):
+    // The Empire rules Ancient City and Broken Peaks and the Exile p3 none,
+    // so p2 meets Iron Hand's goal and may take it.
+    val table = ChronicleWalk.chronicleWonByP1.imperial(p1, p2)
+      .warbandsAt(AncientCitySite, p1, 1).warbandsAt(BrokenPeaksSite, p1, 1)
+      .legacy(p2, GatekeeperCard).legacy(p2, SeerCard)
+      .legacy(p2, PeacemakerCard).legacy(p3, IronHandCard)
+    val run = through(table, TriggeredProcedureRef.ChronicleSun, {
+      case decide if decide.decisionId == Gatekeeper.decisionId(p2) =>
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Legacy(IronHandCard.id))
+    })
+    assert(run.asked.exists(_.decisionId == Gatekeeper.decisionId(p2)))
+    assert(!run.asked.exists(_.decisionId == capped(p2)),
+      run.asked.map(_.decisionId))
+    assert(!holds(run.ready, p2) && !holds(run.ready, p3))
+    assertEquals(actives(run.ready, p2).toSet,
+      Set(GatekeeperCard.id, SeerCard.id, PeacemakerCard.id))

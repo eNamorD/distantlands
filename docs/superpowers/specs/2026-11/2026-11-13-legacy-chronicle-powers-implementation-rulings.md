@@ -425,3 +425,20 @@ edifice that an earlier suit's answered build question (`decisionId` or
 Reason: it matches the rule and stays resume-safe like R43; the pool is
 not captured in an outer Branch.
 Slice/files: 2 (fixed in 5); `BuildEdifice`.
+
+**R46. An Iron Hand gained in the Sun before the cap.** (A whole-feature
+review fault; amends design ruling 18 and R30.)
+Question: an Iron Hand an Imperial gains active after the Sun's first
+checkpoint, by Flip Legacies or by Gatekeeper, counted toward step 4's cap
+and was only discarded at the Crown, so its holder discarded a legacy the
+Iron Hand's own discard would have spared.
+Decision: a fourth checkpoint, `IronHand.discard` at the start of the
+`ChronicleLegacyCap` step, before the cap; the Sun-start, Crown and Offer
+Citizenship checkpoints stay. Gatekeeper still offers Iron Hand to an
+Imperial holder, since taking it to remove it from an enemy is a legal
+play.
+Reason: it restores R30's guarantee for every path into step 4 with one
+placement.
+Slice/files: 4 (fixed in 5); `ChronicleSunProcedure`, `IronHand`; the
+design's ruling 18, `docs/rules/chronicle.md`, `docs/rules/ambiguities.md`
+items 41 and 46.

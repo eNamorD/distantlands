@@ -74,8 +74,8 @@ class ResolveLegaciesSuite extends munit.FunSuite:
       "alone, choosing among the tied players"):
     // p2 is Chancellor and p3 a Citizen; the Empire rules the most sites.
     val table = won.imperial(p2, p3).warbandsAt(AncientCitySite, p2, 1)
-      .publicLegacies(IronHandCard)
-    val decisionId = ResolveLegacies.publicDecisionId(IronHandCard.id)
+      .publicLegacies(PeacemakerCard)
+    val decisionId = ResolveLegacies.publicDecisionId(PeacemakerCard.id)
     val run = sun(table, {
       case decide if decide.decisionId == decisionId =>
         DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(p3)) })
@@ -84,7 +84,7 @@ class ResolveLegaciesSuite extends munit.FunSuite:
     assertEquals(asked.query.asInstanceOf[DecisionQuery.ChooseOne].options
       .map(_.ref), Vector(p2, p3).map(DecisionOptionRef.Player(_)))
     assertEquals(legaciesOf(run.ready, p3),
-      Vector(LegacyState(IronHandCard.id, active = true)))
+      Vector(LegacyState(PeacemakerCard.id, active = true)))
 
   test("a public legacy tied with an Exile goes to nobody"):
     val run = sun(won.warbandsAt(AncientCitySite, p2, 1)
@@ -232,17 +232,17 @@ class ResolveLegaciesSuite extends munit.FunSuite:
 
   test("a public tie after an earlier public legacy is taken still parks " +
       "and resolves"):
-    // p2 alone meets Seer; Iron Hand ties the Imperials, after it.
+    // p2 alone meets Seer; Peacemaker ties the Imperials, after it.
     val table = won.imperial(p2, p3).warbandsAt(AncientCitySite, p2, 1)
-      .darkestSecret(Some(p2), 1).publicLegacies(SeerCard, IronHandCard)
-    val decisionId = ResolveLegacies.publicDecisionId(IronHandCard.id)
+      .darkestSecret(Some(p2), 1).publicLegacies(SeerCard, PeacemakerCard)
+    val decisionId = ResolveLegacies.publicDecisionId(PeacemakerCard.id)
     val run = sun(table, {
       case decide if decide.decisionId == decisionId =>
         DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(p3)) })
     assertEquals(legaciesOf(run.ready, p2),
       Vector(LegacyState(SeerCard.id, active = true)))
     assertEquals(legaciesOf(run.ready, p3),
-      Vector(LegacyState(IronHandCard.id, active = true)))
+      Vector(LegacyState(PeacemakerCard.id, active = true)))
 
   test("a winner capped in step 4 and again at Crown Chancellor answers " +
       "two different questions"):
@@ -272,26 +272,26 @@ class ResolveLegaciesSuite extends munit.FunSuite:
 
   test("two public ties in a row are each asked and each resolved"):
     // The second tie goes to p3, who is not the first option.
-    val run = tiedRow(Vector(IronHandCard, CircleOfSwordsCard), Map(
-      IronHandCard.id -> p2, CircleOfSwordsCard.id -> p3))
+    val run = tiedRow(Vector(PeacemakerCard, CircleOfSwordsCard), Map(
+      PeacemakerCard.id -> p2, CircleOfSwordsCard.id -> p3))
     val asked = run.asked.map(_.decisionId)
-    Vector(IronHandCard, CircleOfSwordsCard).foreach(card =>
+    Vector(PeacemakerCard, CircleOfSwordsCard).foreach(card =>
       assert(asked.contains(ResolveLegacies.publicDecisionId(card.id)), asked))
     assertEquals(legaciesOf(run.ready, p2),
-      Vector(LegacyState(IronHandCard.id, active = true)))
+      Vector(LegacyState(PeacemakerCard.id, active = true)))
     assertEquals(legaciesOf(run.ready, p3),
       Vector(LegacyState(CircleOfSwordsCard.id, active = true)))
 
   test("a public tie after a returned legacy is asked and resolved"):
     // Nobody holds the People's Favor, so Matchmaker returns to the deck.
-    val run = tiedRow(Vector(MatchmakerCard, IronHandCard),
-      Map(IronHandCard.id -> p3))
+    val run = tiedRow(Vector(MatchmakerCard, PeacemakerCard),
+      Map(PeacemakerCard.id -> p3))
     assert(inDeck(run.ready, MatchmakerCard.id))
     assertEquals(legaciesOf(run.ready, p3),
-      Vector(LegacyState(IronHandCard.id, active = true)))
+      Vector(LegacyState(PeacemakerCard.id, active = true)))
 
   test("a row of nothing but ties asks each in row order"):
-    val row = Vector(IronHandCard, CircleOfSwordsCard, SteadfastCard)
+    val row = Vector(PeacemakerCard, CircleOfSwordsCard, SteadfastCard)
     val run = tiedRow(row, row.map(_.id -> p3).toMap)
     assertEquals(run.asked.map(_.decisionId).filter(_.startsWith(
       "chronicle.sun.public-legacy.")),

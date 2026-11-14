@@ -147,9 +147,11 @@ rulings then continue.
 ### Slice 4: Iron Hand
 
 18. **Iron Hand is discarded when its holder is an Imperial.** It returns
-    to the legacy deck at three Chronicle checkpoints: the start of the
-    Sun, after Crown Chancellor, and after Offer Citizenship. Discarding
-    during a game belongs to the in-play batch.
+    to the legacy deck at four Chronicle checkpoints: the start of the
+    Sun, before the Sun's legacy cap (step 4), after Crown Chancellor, and
+    after Offer Citizenship. The checkpoint before the cap was added by
+    implementation ruling R46. Discarding during a game belongs to the
+    in-play batch.
 19. **Iron Hand takes over Shape Empire and Build Edifice.** While a seated
     Exile holds it active, the Empire's Shape Empire and Build Edifice are
     skipped; the holder performs both over the sites they rule. Great

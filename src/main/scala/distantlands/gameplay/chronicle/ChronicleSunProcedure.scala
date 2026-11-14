@@ -75,8 +75,11 @@ object ChronicleSunProcedure:
       ResolveLegacies.flip(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleExileDormancy,
       ResolveLegacies.dormancy(catalog)),
+    // Iron Hand's checkpoint before the cap catches one an Imperial gained
+    // active after the Sun's first, by Flip Legacies or Gatekeeper (R46).
     ChronicleWindows.step(PowerWindow.ChronicleLegacyCap,
-      ResolveLegacies.capAll),
+      IronHand.discard(TriggeredProcedureRef.ChronicleSun) +:
+        ResolveLegacies.capAll),
     ChronicleWindows.step(PowerWindow.ChronicleShuffleLegacies, Vector.empty),
     ChronicleWindows.step(PowerWindow.ChronicleAfterResolveLegacies,
       Vector.empty),
