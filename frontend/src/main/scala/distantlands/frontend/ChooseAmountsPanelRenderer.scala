@@ -52,8 +52,8 @@ private[frontend] object ChooseAmountsPanelRenderer:
     node.appendChild(text("span", "amounts-maximum", s"of ${slot.maximum}"))
     node
 
-  /** The amount as an editable number: a typed integer is staged, clamped
-    * to the slot's bounds; other text is ignored. */
+  /** The amount as an editable number: a typed integer is clamped to the
+    * slot's bounds, written back and staged; other text is undone. */
   private def field(item: String, label: String,
       draft: WalkerChooseAmountsDraft, canControl: Boolean,
       controls: TableControls): dom.Element =
@@ -66,8 +66,15 @@ private[frontend] object ChooseAmountsPanelRenderer:
     input.setAttribute("inputmode", "numeric")
     input.setAttribute("autocomplete", "off")
     input.setAttribute("aria-label", s"Position of $label")
-    input.onchange = _ => input.value.trim.toIntOption.foreach(value =>
-      controls.stage(Draft.ChooseAmounts(draft.set(item, value))))
+    // The field always shows what Confirm sends: a typed amount is clamped
+    // and written back before it is staged, since a redraw keeps the
+    // focused field's text; text that is no number puts the amount back.
+    input.onchange = _ => input.value.trim.toIntOption match
+      case Some(value) =>
+        val next = draft.set(item, value)
+        input.value = next.state.amount(item).toString
+        controls.stage(Draft.ChooseAmounts(next))
+      case None => input.value = draft.state.amount(item).toString
     input
 
   private def stepper(label: String, name: String, className: String,

@@ -95,3 +95,36 @@ class ChooseAmountsPanelRenderSuite extends munit.FunSuite:
       .asInstanceOf[dom.html.Input].disabled)
     assert(one(panel, ".amounts-confirm").asInstanceOf[dom.html.Button]
       .disabled)
+
+  /** Types `text` into a slot's field and redraws as the table does, the
+    * field keeping focus through `PanelContent.replace`. */
+  private def typedAndRedrawn(item: String, text: String)
+      : (dom.html.Input, RecordingControls) =
+    val ui = new RecordingControls()
+    val root = dom.document.createElement("div")
+    dom.document.body.appendChild(root)
+    root.appendChild(render(ui, opened()))
+    val field = one(root, s"""[data-option-id="$item"] .amounts-field""")
+      .asInstanceOf[dom.html.Input]
+    field.focus()
+    field.value = text
+    field.dispatchEvent(new dom.Event("change"))
+    val heading = dom.document.createElement("h2").asInstanceOf[dom.html.Element]
+    PanelContent.replace(root, render(ui, ui.drafts.chooseAmounts.orElse(
+      opened())), heading)
+    val redrawn = one(root, s"""[data-option-id="$item"] .amounts-field""")
+      .asInstanceOf[dom.html.Input]
+    dom.document.body.removeChild(root)
+    redrawn -> ui
+
+  test("an out-of-range amount is clamped in the field too, so the field " +
+      "shows what Confirm sends"):
+    val (field, ui) = typedAndRedrawn("vision:vision:b", "9")
+    assertEquals(field.value, "4")
+    assertEquals(ui.drafts.chooseAmounts.map(_.state.amount(
+      "vision:vision:b")), Some(4))
+
+  test("text that is no number puts the amount back and stages nothing"):
+    val (field, ui) = typedAndRedrawn("vision:vision:b", "abc")
+    assertEquals(field.value, "3")
+    assertEquals(ui.staged, Vector.empty)
