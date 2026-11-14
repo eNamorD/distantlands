@@ -60,6 +60,8 @@ private[serialization] trait TurnOperationCodec extends CampaignResultCodec
       case SetFestivalMarker(site) => ujson.Obj(
         "kind" -> "set-festival-marker",
         "siteId" -> site.fold[ujson.Value](ujson.Null)(at => ujson.Str(at.value)))
+      case FlipBanner(banner) => ujson.Obj("kind" -> "flip-banner",
+        "bannerKey" -> banner.key)
       case OpenPick(decisionId, option, label) => ujson.Obj(
         "kind" -> "open-pick", "decisionId" -> decisionId,
         "option" -> DecisionAnswerCodec.encodeRef(option),
@@ -117,6 +119,9 @@ private[serialization] trait TurnOperationCodec extends CampaignResultCodec
       Right(ClearTrackedPawn(PlayerId(value("holder").str)))
     case "set-festival-marker" =>
       Right(SetFestivalMarker(value("siteId").strOpt.map(SiteId(_))))
+    case "flip-banner" => Banner.fromKey(value("bannerKey").str)
+      .map(FlipBanner(_))
+      .toRight(InvalidValue(s"$path.bannerKey", "unknown banner"))
     case "open-pick" => DecisionAnswerCodec.decodeRef(value("option"),
       s"$path.option").map(OpenPick(value("decisionId").str, _,
         value("label").strOpt))

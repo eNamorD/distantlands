@@ -166,6 +166,14 @@ final case class ClearTrackedPawn(holder: PlayerId) extends TurnOperation, LeafO
 final case class SetFestivalMarker(site: Option[SiteId])
     extends TurnOperation, LeafOperation
 
+/** Turns `banner` to its other face (Legacy in-play powers ruling 20):
+  * the People's Favor between the Mob and the Grand Council, the Darkest
+  * Secret between the Wandering Flame and the Festival. Its holder and
+  * tokens stay. Flipping to the Festival places no marker; flipping away
+  * from it takes the marker off. */
+final case class FlipBanner(banner: Banner) extends TurnOperation,
+    LeafOperation
+
 /** Opens the record of a pick a pick-and-pay menu took, in
   * `CurrentGameState.walkerPicks`: every `PayCost` and `Sacrifice` applied
   * until [[ClosePick]] adds to it, so the record holds what the pick really

@@ -79,6 +79,8 @@ private[operations] object LeafApplication:
       TurnStateOperations.clearTrackedPawn(ready, holder)
     case SetFestivalMarker(site) =>
       BoardControlOperations.setFestivalMarker(ready, site)
+    case FlipBanner(banner) =>
+      Right(BoardControlOperations.flipBanner(ready, banner))
     case OpenPick(decisionId, option, label) =>
       Right(TurnStateOperations.openPick(ready, decisionId, option, label))
     case ClosePick() => Right(TurnStateOperations.closePick(ready))

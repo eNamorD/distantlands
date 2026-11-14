@@ -168,6 +168,25 @@ private[operations] object BoardControlOperations:
         banners = current.banners.copy(darkestSecret =
           secret.copy(festival = site)))))
 
+  /** `banner` on its other face; the Festival marker comes off with the
+    * Festival face (Legacy in-play powers ruling 20). */
+  def flipBanner(ready: ReadyGame, banner: Banner): ReadyGame =
+    ready.updateCurrent(current => current.copy(banners = banner match
+      case Banner.PeoplesFavor =>
+        val held = current.banners.peoplesFavor
+        current.banners.copy(peoplesFavor = held.copy(active =
+          held.active match
+            case PeoplesFavorFace.Mob => PeoplesFavorFace.GrandCouncil
+            case PeoplesFavorFace.GrandCouncil => PeoplesFavorFace.Mob))
+      case Banner.DarkestSecret =>
+        val held = current.banners.darkestSecret
+        current.banners.copy(darkestSecret = held.active match
+          case DarkestSecretFace.WanderingFlame =>
+            held.copy(active = DarkestSecretFace.Festival)
+          case DarkestSecretFace.Festival =>
+            held.copy(active = DarkestSecretFace.WanderingFlame,
+              festival = None))))
+
   private def setBannerHolder(ready: ReadyGame, banner: Banner,
       player: PlayerId): ReadyGame =
     holdBanner(ready, banner, Some(player))
