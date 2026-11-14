@@ -3,12 +3,13 @@ package distantlands.gameplay
 import distantlands.gameplay.BannerTakeParkFixture.{ParkAfterBannerTake,
   decisionId, resumeAnswer}
 import distantlands.gameplay.actions.{ProcedureNotes, VisionRules}
+import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powerresolver.ContributingPower
 import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog,
   WalkerPowerCatalog}
-import distantlands.gameplay.powers.campaign.GlamorCard
+import distantlands.gameplay.powers.campaign.{GlamorCard, PlanDriver}
 import distantlands.gameplay.powers.search.DisciplesCard
 import distantlands.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
   FavoredSon, FavoredSonCard, WhenPlayedHarness, WizardsConclave,
@@ -161,3 +162,22 @@ class BannerTakeResumeSuite extends munit.FunSuite:
     assert(NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
       SetupProcedure.noteKeys, woken.events).map(_.text).contains(
       s"p2 took the Darkest Secret with ${TheStandardBearerCard.id.value}"))
+
+  test("Raid: a walk parked after the take resumes and writes the spoils " +
+      "line"):
+    // p1 raids p2 at the Campaign's origin with 4 force and wins; p2 holds
+    // the Darkest Secret with 4 secrets, the Raid's only target.
+    val base = CampaignFixture.board(warbands = 5, supply = 7)
+    val b = CampaignFixture.on(base)(_.pawn(p2, at = base.origin)
+      .boardWarbands(p2, 2).darkestSecret(Some(p2), secrets = 4))
+    val run = PlanDriver.commit(new OathRules(catalog,
+        walkerPowerCatalog = powers, walkerDice = WalkerDiceFixture.raid),
+      b, 4, targets = Vector(DecisionOptionRef.Banner(Banner.DarkestSecret)),
+      raid = true, powers = powers).finishPlanWindows
+    assert(PlanDriver.awaits(run, p1, decisionId))
+    val done = run.answer(p1, decisionId, resumeAnswer)
+    assertEquals(Outcomes.ready(done.state).game.current.banners
+      .darkestSecret.holder, Some(p1))
+    assertEquals(NoteText.said(ProcedureNotes.id(ActionRef.Campaign),
+      CampaignNotes.noteKeys, done.transition.events).map(_.key)
+      .filter(_ == "took"), Vector("took"))
