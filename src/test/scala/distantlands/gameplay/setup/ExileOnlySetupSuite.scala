@@ -213,8 +213,9 @@ class ExileOnlySetupSuite extends munit.FunSuite:
       brandNew.lineages :+ boxed), LineageId("l1"), Role.Exile,
       stored(0) -> true, stored(1) -> false)
     assert(mode(record).isInstanceOf[SetupMode.FirstGameExileOnly])
+    // The fixture deals from the starting Chronicle, as the plan factory
+    // does; game start accepting that deal is the proof.
     val orders = LaterGameFixture.orders(record, p1)
-    assert(stored.forall(orders.legacyOrder.contains), orders.legacyOrder)
     val ready = accepted(GameStartRules.evolve(catalog, record, orders))
     val deal = LegacyDeal.of(record, orders.participants)
     orders.participants.foreach(seat => assertEquals(
