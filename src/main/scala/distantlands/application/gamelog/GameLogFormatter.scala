@@ -351,4 +351,6 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
       Vector(Text(" won as the Chancellor"))
     case VictoryKind.Successor =>
       Vector(Text(" won as Successor to the Chancellor"))
+    // No event posts a Conspirator win: the reveal step writes its own
+    // victory line. The case keeps this match exhaustive (R33).
     case VictoryKind.Conspirator => Vector(Text(" won with Conspirator"))

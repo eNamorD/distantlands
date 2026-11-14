@@ -191,6 +191,15 @@ class GameLogHeadlineSuite extends munit.FunSuite:
       "The end die rolled 5, modified by -1 to 4. Stable Regime needed 5 " +
         "or more.")
 
+  test("a Conspirator win's words, which no event posts today, read " +
+      "'won with Conspirator' (R33)"):
+    val script = recordedEventsBoard
+    val winner = script.actor
+    val line = formatAppended(script, Vector(OathEvent.WarExhaustionResolved(
+      winner, VictoryKind.Conspirator, Vector.empty, Vector.empty))).last
+    assertEquals(line.kind, LogKind.Victory)
+    assertEquals(text(line), playerLabel(winner) + " won with Conspirator")
+
   test("a winning end die posts the roll, then the victory"):
     val script = recordedEventsBoard
     val winner = script.actor
