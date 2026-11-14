@@ -310,9 +310,18 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   Chronicle's deck into the `legacyOrder` the Begin command already
   journals. Starting advisers and starting relics are unchanged. No legacy
   acts in this mode. The setup mode is read from the Chronicle as saved,
-  before the wipe; the game's baseline is the wiped Chronicle. *Open:*
-  when stored legacies were a Chronicle's only history, the wiped baseline
-  carries none, so its pawns are placed as in a first game, at any site,
-  though its sites were placed exile-only. *Reason:* the owner's ruling.
+  before the wipe; the game's baseline is the wiped Chronicle, so when
+  stored legacies were a Chronicle's only history its pawns are placed as
+  in a first game (R41). *Reason:* the owner's ruling.
   *Slice/files:* re-ruling; `EmpireSetupRules.startingChronicle`,
   `GameStartRules`, `GeneratedFirstGamePlanFactory`.
+- **R41. A legacies-only history, once wiped.** When stored legacies were
+  a Chronicle's only history, the wiped baseline of its first game played
+  exile-only carries none: the game places its sites exile-only and its
+  pawns as in a first game, at any site. *Second look:* this is the one
+  place the mode and the baseline disagree. *Reason:* the owner named this
+  mode a first game, and once its legacies are wiped such a Chronicle
+  differs from a first game only in where its sites come from; making the
+  pawn rule follow the mode would add a saved field, or spread the wipe
+  across four readers, for a rare import case. *Slice/files:* re-ruling;
+  `SetupPawnSites`, `ExileOnlySetupSuite`.

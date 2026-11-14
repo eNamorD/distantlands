@@ -174,8 +174,7 @@ class ExileOnlySetupSuite extends munit.FunSuite:
       firstGame.game.current.map.inPlay)
     // When stored legacies were its only history, the wipe leaves a
     // starting Chronicle with none, so its pawns are placed as in a first
-    // game, though its sites were placed exile-only (R40; an open
-    // question to the owner).
+    // game, though its sites were placed exile-only (R41).
     val legacyOnly = cradlemostCleared(started(brandNew.copy(lineages =
       Vector(LineageState(LineageId("l1"), None, Role.Exile,
         Vector(LegacyState(catalog.legacies.head.id, active = true)),
