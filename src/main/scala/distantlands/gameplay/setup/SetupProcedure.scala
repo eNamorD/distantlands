@@ -4,7 +4,8 @@ import distantlands.catalog.{ExecutableCatalog, SiteOnly}
 import distantlands.gameplay.actions.{CardPlay, ProcedureNotes}
 import distantlands.gameplay.chronicle.ChronicleLegacyRules
 import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
-import distantlands.gameplay.setup.legacies.LegacySetupPowers
+import distantlands.gameplay.setup.legacies.{LegacySetupPowers,
+  SecretSociety}
 import distantlands.model._
 import distantlands.model.OathViolation._
 
@@ -29,6 +30,7 @@ import distantlands.model.OathViolation._
  *   Sequence(                                            // per participant
  *     Branch(Decide(pawn-placement, participant)),       // legal sites only
  *     BuildOps(place the pawn)                           // window = SetupPawnPlaced
+ *     Branch(Decide(secret-society discard, participant)) // over the limit
  *     Branch(                                            // Quiet Ambitions, with
  *       Decide(legacy-choice, participant),              // two drawn legacies
  *       BuildOps(return the other to the deck),
@@ -215,6 +217,9 @@ object SetupProcedure:
         Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
           placedPawnNote(participant.playerId))),
         Some(PowerWindow.SetupPawnPlaced)),
+      // Secret Society's holder discards excess advisers right after their
+      // pawn (Legacy Setup powers ruling 14; R21).
+      SecretSociety.excessStep(catalog, participant.playerId),
       LegacyKeep.step(participant),
       // A player with starting advisers drew no hand (CR p. 11), and under
       // Teeming World no one did: every card drawn is already an adviser.

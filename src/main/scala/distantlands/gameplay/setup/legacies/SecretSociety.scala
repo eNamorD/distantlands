@@ -1,10 +1,11 @@
 package distantlands.gameplay.setup.legacies
 
-import distantlands.catalog.{Legacy, LegacyGoal, PrintedPower}
-import distantlands.gameplay.actions.{ProcedureNotes, VisionRules}
+import distantlands.catalog.{ExecutableCatalog, Legacy, LegacyGoal,
+  PrintedPower}
+import distantlands.gameplay.actions.{CardPlay, ProcedureNotes, VisionRules}
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   Transform}
-import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.{AdviserLimit, PowerAnswers}
 import distantlands.model._
 
 object SecretSocietyCard extends Legacy(LegacyId("L28"), "Secret Society",
@@ -41,7 +42,69 @@ case object SecretSociety extends ContributingPower:
   val tookVision: NoteKey = notes.key("secret-society-took", Vector(
     NotePart.Arg(0), NotePart.Text(" took a Vision as a facedown adviser with "),
     NotePart.Arg(1)))
+  /** "p2 discarded Tinker with Secret Society": a discard is public (R21). */
+  val discarded: NoteKey = notes.key("secret-society-discarded", Vector(
+    NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1),
+    NotePart.Text(" with "), NotePart.Arg(2)))
   def setupNoteKeys: Vector[NoteKey] = notes.declared
+
+  def discardDecisionId(player: PlayerId): String =
+    s"${decisionId(player)}.discard"
+
+  /** Right after `player`'s pawn, while Secret Society's holder holds more
+    * advisers than their limit: discard the excess, one choose-many of
+    * exactly that many over their advisers by slot, each card to the top of
+    * the discard pile of the region after the pawn's, where Setup's
+    * rejected advisers go (R21). Read when reached: only this player's own
+    * steps came between the take and here. */
+  def excessStep(catalog: ExecutableCatalog, player: PlayerId): Operation =
+    Branch((state, _) =>
+      val excess = AdviserLimit.towardLimit(state, player) -
+        AdviserLimit.of(catalog, state, player)
+      if !SetupLegacyRules.secretSociety(state).contains(player) ||
+          excess <= 0 then Vector.empty
+      else
+        val held = state.game.current.player(player).toVector
+          .flatMap(_.advisers).map(_.id: CardId)
+        val id = discardDecisionId(player)
+        Vector(
+          Decide(id, player, DecisionQuery.ChooseMany(excess, excess,
+            held.indices.toVector.map(slot => DecisionOption.AdviserSlot(
+              DecisionOptionRef.AdviserSlot(player, slot))),
+            heading = Some("Secret Society: discard your excess advisers"),
+            confirm = Some(CountedConfirm("Discard", "adviser", "advisers")))),
+          BuildOps((live, pending) => discards(live, player, held,
+            chosen(pending.answered, id, held)), required = true),
+          Note(noteId, states => Option(chosen(states.answered, id, held))
+            .filter(_.nonEmpty).map(cards => discarded.sourceless(
+              NoteArg.Player(player), NoteArg.Cards(cards),
+              NoteArg.Card(SecretSocietyCard.id))))))
+
+  /** The cards the discard answer names, by slot of `held`. */
+  private def chosen(answered: Vector[Answered], id: String,
+      held: Vector[CardId]): Vector[CardId] =
+    answered.collectFirst {
+      case Answered(`id`, DecisionAnswer.ChooseManyAnswer(refs), _) => refs
+    }.toVector.flatten.collect {
+      case DecisionOptionRef.AdviserSlot(_, slot) if held.isDefinedAt(slot) =>
+        held(slot)
+    }
+
+  private def discards(ready: ReadyGame, player: PlayerId,
+      held: Vector[CardId], cards: Vector[CardId])
+      : Either[OathViolation, Vector[CoreOperation]] =
+    for
+      site <- ready.game.current.pawnSite(player)
+        .toRight(OathViolation.PawnSiteMissing(player))
+      region <- ready.game.current.map.regionOf(site).toRight(
+        OathViolation.InvalidEventOrder(s"${site.value} is not in play"))
+      _ <- Either.cond(cards.nonEmpty && cards.forall(card =>
+          held.exists(_ == card)), (), OathViolation.InvalidEventOrder(
+        "no discard answer is recorded for Secret Society"))
+    yield cards.map(card => Move(Piece.Card(card),
+      PositionedLocation(Location.PlayArea(player)),
+      PositionedLocation(Location.RegionalDiscard(CardPlay.nextRegion(region)),
+        StackPosition.Top)))
 
   /** The Visions the holder may take, in catalog order: deck order would
     * tell their places after a Decline (R22). */

@@ -4,8 +4,8 @@ import distantlands.application.GameCommand
 import distantlands.gameplay.actions.{ProcedureNotes, VisionRules}
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
-import distantlands.gameplay.setup.{LaterGameFixture, SetupLegacyFixture,
-  SetupProcedure}
+import distantlands.gameplay.setup.{LaterGameFixture, LegacyKeep,
+  SetupLegacyFixture, SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
@@ -107,6 +107,49 @@ class SecretSocietySuite extends munit.FunSuite:
       SetupProcedure.noteKeys, woken.events).map(_.text).contains(
       s"p2 took a Vision as a facedown adviser with " +
         SecretSocietyCard.id.value))
+
+  test("under Teeming World the holder discards the excess right after " +
+      "their pawn, in one choose-many (R21)"):
+    val teeming = record.copy(foundations = record.foundations.updated(
+      FoundationNumber.IV, FoundationState(FoundationFace.Altered, Set.empty)))
+    val taking: Answers =
+      case park if park.decisionId == SecretSociety.decisionId(p2) =>
+        ChooseOneAnswer(park.decide.query match
+          case one: DecisionQuery.ChooseOne => one.options(1).ref
+          case other => fail(s"expected a choose-one, got $other"))
+    val at = Situation.start(rules.withAnswers(taking))
+      .parkedAt(SecretSociety.discardDecisionId(p2))(GameCommand.Begin(
+        teeming, LaterGameFixture.orders(teeming, p1)))
+    val held = at.ready.game.current.player(p2).get
+    assert(held.pawnSite.nonEmpty)
+    decide(at).query match
+      case many: DecisionQuery.ChooseMany =>
+        val excess = held.advisers.size - 3
+        assertEquals((many.min, many.max), (excess, excess))
+      case other => fail(s"expected a choose-many, got $other")
+    val resumed = at.parkedAt(LegacyKeep.decisionId(p2))()
+    val after = resumed.ready
+    assertEquals(after.game.current.player(p2).get.advisers.size, 3)
+    // The discard is public: its line names the card (R21).
+    assert(NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
+      SetupProcedure.noteKeys, resumed.events).exists(said =>
+      said.text.startsWith("p2 discarded ") &&
+        said.text.endsWith(s"with ${SecretSocietyCard.id.value}")))
+
+  test("a holder within the limit is asked nothing"):
+    // p2 holds no starting adviser and draws a hand, so the Vision leaves
+    // them one adviser before Choose Adviser: a walk that never parks at
+    // the discard settles through Setup.
+    val taking: Answers =
+      case park if park.decisionId == SecretSociety.decisionId(p2) =>
+        ChooseOneAnswer(park.decide.query match
+          case one: DecisionQuery.ChooseOne => one.options(1).ref
+          case other => fail(s"expected a choose-one, got $other"))
+    val done = Situation.start(rules.withAnswers(taking))
+      .parkedAt(SecretSociety.discardDecisionId(p2))(GameCommand.Begin(
+        record, LaterGameFixture.orders(record, p1)))
+    assertNotEquals(done.ready.game.current.turn.phase, Phase.Setup)
+    assertEquals(done.ready.game.current.player(p2).get.advisers.size, 2)
 
   test("the card has left holding and its power is registered"):
     assert(LegacySetupPowers.all.contains(SecretSociety))
