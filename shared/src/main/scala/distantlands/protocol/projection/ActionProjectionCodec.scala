@@ -126,6 +126,13 @@ private[projection] object ActionProjectionCodec:
         "minTotal" -> minTotal, "maxTotal" -> maxTotal,
         "confirmLabel" -> confirmLabel,
         "heading" -> stringOption(heading))
+      case DecisionQueryProjection.ChooseAmounts(slots, distinct,
+          confirmLabel, heading) => ujson.Obj(
+        "form" -> "choose-amounts",
+        "slots" -> encoded(slots)(encodeSlot),
+        "distinct" -> distinct,
+        "confirmLabel" -> confirmLabel,
+        "heading" -> stringOption(heading))
       case DecisionQueryProjection.Negotiate(deal, heading) => ujson.Obj(
         "form" -> "negotiate",
         "deal" -> encodeDeal(deal),
@@ -159,6 +166,7 @@ private[projection] object ActionProjectionCodec:
       case "choose-amount" => decodeChooseAmount(value, path)
       case "partition" => decodePartition(value, path)
       case "distribute" => decodeDistribute(value, path)
+      case "choose-amounts" => decodeChooseAmounts(value, path)
       case "negotiate" => decodeNegotiate(value, path)
       case "gathering" => decodeGathering(value, path)
       case "inspect" => decodeInspect(value, path)
@@ -278,6 +286,18 @@ private[projection] object ActionProjectionCodec:
     heading <- optionalString(value, "heading", path)
   yield DecisionQueryProjection.Distribute(slots, minTotal, maxTotal,
     confirmLabel, heading)
+
+  private def decodeChooseAmounts(value: ujson.Obj, path: String)
+      : Result[DecisionQueryProjection] = for
+    _ <- exact(value, Set("form", "slots", "distinct", "confirmLabel",
+      "heading"), path)
+    slotRaws <- array(value, "slots", path)
+    slots <- traverse(slotRaws, s"$path.slots")(decodeSlot)
+    distinct <- bool(value, "distinct", path)
+    confirmLabel <- string(value, "confirmLabel", path)
+    heading <- optionalString(value, "heading", path)
+  yield DecisionQueryProjection.ChooseAmounts(slots, distinct, confirmLabel,
+    heading)
 
   private def decodeNegotiate(value: ujson.Obj, path: String)
       : Result[DecisionQueryProjection] = for

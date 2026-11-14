@@ -338,9 +338,15 @@ private[application] final class WalkerDecisionProjector(
                 DecisionSlotProjection(option, slot.minimum, slot.maximum,
                   slot.suggested) },
               minTotal, maxTotal, confirmLabel, heading))
-      // Projected with its own DTO in the next task (Legacy Setup powers
-      // slice 3, Task 2); until then no client can answer it.
-      case _: DecisionQuery.ChooseAmounts => None
+      case DecisionQuery.ChooseAmounts(slots, distinct, heading,
+          confirmLabel) =>
+        described(slots.flatMap(slot => DecisionOption.forRef(slot.ref)))
+          .filter(_.size == slots.size).map(options =>
+            DecisionQueryProjection.ChooseAmounts(
+              slots.zip(options).map { case (slot, option) =>
+                DecisionSlotProjection(option, slot.minimum, slot.maximum,
+                  slot.suggested) },
+              distinct, confirmLabel, heading))
 
   /** The cards a decision is about, read from its own id.
     *

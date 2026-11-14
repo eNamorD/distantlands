@@ -138,6 +138,25 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
       case other => fail(s"expected a distribution, got $other")
     assertEquals(query.minTotal -> query.maxTotal, 0 -> 3)
 
+  test("a parked choose-amounts projects its slots, bounds, suggestions " +
+      "and distinct flag"):
+    val context = parked(ActionRef.Recover)
+    val slots = Vector(
+      DistributeSlot(DecisionOptionRef.FavorBank(Suit.Arcane), 1, 3, Some(1)),
+      DistributeSlot(DecisionOptionRef.FavorBank(Suit.Nomad), 1, 3, Some(2)))
+    val tree = Sequence(Decide("test.amounts", p1,
+      DecisionQuery.ChooseAmounts(slots, distinct = true,
+        heading = Some("Place"), confirmLabel = "Place them")))
+    val query = projectorFor(tree).project(context).flatMap(_.query) match
+      case Some(amounts: DecisionQueryProjection.ChooseAmounts) => amounts
+      case other => fail(s"expected one amount per slot, got $other")
+    assertEquals(query.slots.map(s => (s.option.id, s.minimum, s.maximum,
+      s.suggested)), Vector(("arcane", 1, 3, Some(1)),
+      ("nomad", 1, 3, Some(2))))
+    assert(query.distinct)
+    assertEquals((query.heading, query.confirmLabel),
+      (Some("Place"), "Place them"))
+
   test("a parked choose-many projects its options and count"):
     val context = parked(ActionRef.Recover)
     val siteIds = context.ready.game.current.map.sites.keys.toVector.take(3)

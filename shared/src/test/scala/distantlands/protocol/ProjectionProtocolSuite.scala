@@ -486,6 +486,17 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       projection.walkerDecision.map(_.copy(query = Some(distribute))))
     assertRoundTrips(carrying)
 
+  test("a choose-amounts query round-trips its slots and distinct flag"):
+    def vision(id: String) = DecisionOptionProjection("vision", id, id)
+    val amounts = DecisionQueryProjection.ChooseAmounts(
+      Vector(DecisionSlotProjection(vision("vision:a"), 1, 7, Some(3)),
+        DecisionSlotProjection(vision("vision:b"), 1, 7, Some(5))),
+      distinct = true, confirmLabel = "Place the Visions",
+      heading = Some("Seer"))
+    val carrying = projection.copy(walkerDecision =
+      projection.walkerDecision.map(_.copy(query = Some(amounts))))
+    assertRoundTrips(carrying)
+
   test("a Gathering's open question round-trips who is there, who passed " +
       "and whom the viewer may name"):
     val gathering = DecisionQueryProjection.Gathering(Vector("p1", "p2", "p3"),

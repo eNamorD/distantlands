@@ -240,6 +240,8 @@ private[frontend] object ParkedDecision:
             negotiate.deal.bystanderPlayerIds.nonEmpty)(decision.decisionId)))
       case gathering: DecisionQueryState.Gathering =>
         Some(Surface.Gathering(decision, gathering))
+      // Its own panel lands with Legacy Setup powers slice 3, Task 3.
+      case _: DecisionQueryState.ChooseAmounts => None
 
   private def onTable(decision: WalkerDecisionState,
       options: Vector[DecisionOptionState], value: GameProjection): Boolean =

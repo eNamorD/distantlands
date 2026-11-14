@@ -95,6 +95,13 @@ object DecisionQueryProjection:
       heading: Option[String] = None) extends DecisionQueryProjection:
     def offeredOptions: Vector[DecisionOptionProjection] = slots.map(_.option)
 
+  /** One amount per slot, each within its bounds; with `distinct` no two
+    * equal (Seer's positions). Answered by a `DistributeWire`. */
+  final case class ChooseAmounts(slots: Vector[DecisionSlotProjection],
+      distinct: Boolean, confirmLabel: String,
+      heading: Option[String] = None) extends DecisionQueryProjection:
+    def offeredOptions: Vector[DecisionOptionProjection] = slots.map(_.option)
+
   /** A deal, as the viewer may see it. The deal is not optional here: the
     * projector always attaches one, and the old `Option` meant a negotiate
     * query with nothing to negotiate could be built.
