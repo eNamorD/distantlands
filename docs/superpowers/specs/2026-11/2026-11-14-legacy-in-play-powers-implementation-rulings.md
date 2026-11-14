@@ -208,3 +208,24 @@ open questions, ruled on 2026-11-14.
   *Reason:* R4 already reads "not offered" this way for legacy ACTIONs,
   and the design's ruling 23 reads under R4. *Slice/files:* slice 4,
   Task 1.
+
+Ruled by the owner on 2026-11-14, from the review of slice 4.
+
+- **R31. Which cards does The Mouth's goal reading count?** *Decision:*
+  during the game, only faceup advisers and faceup relics, for every
+  player, the holder included; the Chronicle's Resolve Legacies keeps its
+  scoring. Narrows the design's ruling 23 ("as Resolve Legacies reads
+  them"). *Reason:* CR p. 17 gives a facedown adviser no suit, and reading
+  hidden cards would tell the holder what they are; in the Chronicle
+  everything is revealed. *Slice/files:* slice 4 fix; `LegacyGoals`,
+  `TheMouth`.
+- **R32. How are an Imperial's Iron Hand's activation and discard lines
+  written (R25)?** *Decision:* they name Iron Hand in words. *Reason:*
+  activation reveals the legacy (design, ruling 24), but the same batch
+  discards it, so a card reference never sees it faceup; words are the
+  smallest change and match the Conspirator reveal. *Slice/files:* slice
+  4 fix; `TheMouth`, `IronHand`.
+- **R33. Does `wonBy` keep its Conspirator case?** *Decision:* yes, for
+  exhaustiveness, with a comment and a test. *Reason:* the reveal step
+  writes the victory line itself, and removing the case would make the
+  match non-exhaustive. *Slice/files:* slice 4 fix; `GameLogFormatter`.
