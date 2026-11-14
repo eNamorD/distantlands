@@ -106,6 +106,17 @@ class ReformerSuite extends munit.FunSuite:
     assertEquals(run.asked.count(_.decisionId == Reformer.pickId(p1)), 3)
     assertEquals(lines(run).size, 2)
 
+  test("a later pass picks a different card than an earlier one"):
+    // Pass 1 moves Threatening Roar to Broken Peaks; pass 2 swaps Fae
+    // Merchant, at Ancient City, with it.
+    val table = empire.denizen(FaeMerchantCard, at = AncientCitySite)
+      .legacy(p1, ReformerCard)
+    val run = reformed(table, Vector(
+      denizen(ThreateningRoarCard) -> DecisionOptionRef.Site(brokenPeaks),
+      denizen(FaeMerchantCard) -> denizen(ThreateningRoarCard)))
+    assertEquals(at(run.ready, brokenPeaks), Vector(FaeMerchantCard.id))
+    assertEquals(at(run.ready, ancientCity), Vector(ThreateningRoarCard.id))
+
   test("Done first changes nothing and writes no line"):
     val run = reformed(empire.legacy(p1, ReformerCard), Vector.empty)
     assertEquals(at(run.ready, ancientCity), Vector(ThreateningRoarCard.id))
