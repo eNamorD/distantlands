@@ -639,6 +639,7 @@ procedure.setup filled-from-forgotten = {0} filled the map from Forgotten Sites
 procedure.setup filled-from-recent = {0} filled the map from Recent Sites
 procedure.setup kept-adviser = {0} kept {1}
 procedure.setup kept-legacy = {0} kept a legacy
+procedure.setup oaths-buried = {0} buried {1} with {2}
 procedure.setup placed-pawn = {0} placed their pawn at {1}
 procedure.setup placed-site = {0} placed {1} on the map
 procedure.setup revealed-card = {0} revealed {1}

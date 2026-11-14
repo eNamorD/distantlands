@@ -2,6 +2,8 @@ package distantlands.gameplay.setup
 
 import distantlands.catalog.{ExecutableCatalog, SiteOnly}
 import distantlands.gameplay.actions.{CardPlay, ProcedureNotes}
+import distantlands.gameplay.chronicle.ChronicleLegacyRules
+import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.model._
 import distantlands.model.OathViolation._
 
@@ -77,7 +79,8 @@ object SetupProcedure:
   /** "Public Ambitions dealt Rival, Seer, Arbiter and Wealthy". */
   val dealtPublicLegacies: NoteKey = notes.key("dealt-public-legacies",
     Vector(NotePart.Text("Public Ambitions dealt "), NotePart.Arg(0)))
-  def noteKeys: Vector[NoteKey] = notes.declared ++ ImperialMaps.noteKeys
+  def noteKeys: Vector[NoteKey] = notes.declared ++ ImperialMaps.noteKeys ++
+    OathsOfLoyalty.noteKeys(TriggeredProcedureRef.Setup)
 
   val reliquaryDecisionId: String = "setup.reliquary-pick"
   def pawnDecisionId(player: PlayerId): String =
@@ -282,8 +285,12 @@ object SetupProcedure:
           case DecisionPlacement(DecisionOptionRef.Denizen(id),
               `adviserKeepKey`) => id
         }
-    }.flatMap(_.headOption).map(kept =>
-      keptAdviser.sourceless(NoteArg.Player(player), NoteArg.Card(kept)))
+    }.flatMap(_.headOption).flatMap(kept =>
+      if ChronicleLegacyRules.buriesStartingAdvisers(states.now, player) then
+        OathsOfLoyalty.buriedLine(ProcedureNotes.id(TriggeredProcedureRef.Setup),
+          player, kept)
+      else Some(keptAdviser.sourceless(NoteArg.Player(player),
+        NoteArg.Card(kept))))
 
   private def revealCards(catalog: ExecutableCatalog, player: PlayerId)
       : Operation =
@@ -357,9 +364,15 @@ object SetupProcedure:
         .toRight(PawnSiteMissing(player))
       region <- ready.game.current.map.regionOf(pawnSite)
         .toRight(InvalidEventOrder(s"${pawnSite.value} is not in play"))
-    yield Move(Piece.Card(chosen), PositionedLocation(Location.Hand(player)),
+    // An Oaths of Loyalty holder buries the adviser they would gain at the
+    // world deck bottom (Legacy Chronicle powers design, ruling 16; R24).
+    yield (if ChronicleLegacyRules.buriesStartingAdvisers(ready, player) then
+        Move(Piece.Card(chosen), PositionedLocation(Location.Hand(player)),
+          PositionedLocation(Location.Deck(CardDeck.World),
+            StackPosition.Bottom))
+      else Move(Piece.Card(chosen), PositionedLocation(Location.Hand(player)),
         PositionedLocation(Location.PlayArea(player)),
-        resultingOrientation = Some(Orientation.FaceDown)) +:
+        resultingOrientation = Some(Orientation.FaceDown))) +:
       rejected.map(id => Move(Piece.Card(id),
         PositionedLocation(Location.Hand(player)),
         PositionedLocation(Location.RegionalDiscard(CardPlay.nextRegion(region)),

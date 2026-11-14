@@ -1,5 +1,6 @@
 package distantlands.gameplay.setup
 
+import distantlands.gameplay.chronicle.ChronicleLegacyRules
 import distantlands.model._
 
 /** Foundation IV's deal of the starting denizen stack: the one arithmetic
@@ -78,12 +79,19 @@ object SetupDeal:
       : SetupDeal =
     val stored = chronicle.lineages.map(lineage =>
       lineage.id -> lineage.startingAdvisers.size).toMap
+    // Under Teeming World an Oaths of Loyalty holder draws no starting
+    // adviser beyond the ones it kept (Legacy Chronicle powers design,
+    // ruling 16; R24). Under Ties of Fellowship they draw a hand as usual,
+    // and Setup buries the one they pick.
+    val oaths = chronicle.lineages.filter(ChronicleLegacyRules.oathsHolds)
+      .map(_.id).toSet
     val face = StartingFoundations.of(chronicle)(FoundationNumber.IV).face
     SetupDeal(face, participants.map { participant =>
       val held = stored.getOrElse(participant.lineageId, 0)
       participant.playerId -> (face match
         case FoundationFace.Normal => if held == 0 then 3 else 0
-        case FoundationFace.Altered => math.max(0, 3 - held))
+        case FoundationFace.Altered =>
+          if oaths(participant.lineageId) then 0 else math.max(0, 3 - held))
     })
 
   /** A first game's deal: Ties of Fellowship, and every player draws. */
