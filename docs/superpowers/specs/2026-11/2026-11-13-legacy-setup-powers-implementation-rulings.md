@@ -51,3 +51,17 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   the map are built by `FirstGameSetupMaterializer`; the spec's
   "`LaterGameSetup` gains a legacy pass" names the wrong place for three
   of the four.
+- **R9. Iron Hand places no warbands in an exile-only game.** In
+  `SetupMode.ExileOnly` the holder's warbands go to no site, and every
+  player may still place their pawn at any site. *Reason:* spec ruling 7
+  places the holder's warbands only on sites restored up to the Empire
+  divider, and an exile-only Chronicle stores no Empire site, so there are
+  none. *Slice/files:* slice 1; `StartingLegacies.of`,
+  `IronHandSetupSuite`.
+- **R10. Setup's new steps may shift a walk saved mid-Setup.** The Notes
+  that open Setup shift its node paths, so a game saved mid-Setup by an
+  earlier build may not resume correctly; this applies to every step
+  slices 2 to 4 insert into Setup too. *Reason:* the project makes no
+  mid-phase save compatibility promise across builds (Legacy Chronicle
+  powers R15). *Slice/files:* slice 1; `SetupProcedure.tree`,
+  `StartLines`.

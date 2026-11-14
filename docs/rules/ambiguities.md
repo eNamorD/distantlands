@@ -263,7 +263,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 
 ## Legacy Setup powers rulings
 
-Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 17 are implementation rulings R1 to R8.
+Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 19 are implementation rulings R1 to R10.
 
 1. **Only seated players' active legacies act.** A legacy's SETUP power applies when a seated player holds it active at the moment its step is reached. A boxed lineage's legacies never act, and neither does the Public Ambitions row, which nobody holds (design, ruling 1).
 2. **"If you are an Imperial" or "an Exile" is read at the same moment.** Game start's Empire setup has already chosen the Chancellor, so every role is settled (design, ruling 2).
@@ -282,6 +282,8 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 15. **Imperial Maps counts from what game start fixed:** its empty slots are the map's slots less the Empire's stored sites less the sites Rival places, worked out again from the Chronicle and the seats (R6).
 16. **One line per power, first in Setup:** "p2 started with 8 warbands with Circle of Swords", "p1 started with the Grand Scepter with Scepter Bearer", and one line per site, "p3 placed a warband at Deep Woods with Iron Hand" and "p3 placed a warband at Deep Woods with Rival" (R7).
 17. **The game-start pass lives in the setup plan and the materializer;** only Scepter Bearer is applied in `LaterGameSetup` (R8).
+18. **Iron Hand places no warbands in an exile-only game,** which stores no Empire site up to the divider; every player may still place their pawn at any site (R9).
+19. **Setup's new steps may shift a walk saved mid-Setup** by an earlier build; there is no mid-phase save compatibility promise across builds (R10; [Legacy Chronicle powers rulings](#legacy-chronicle-powers-rulings), item 28).
 
 ## Source relationship cautions
 

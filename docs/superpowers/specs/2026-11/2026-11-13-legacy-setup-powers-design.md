@@ -1,9 +1,11 @@
 # Legacy Setup powers
 
 **Status:** designed 2026-11-13, approved section by section by the owner.
-Not yet planned. Plan it once the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
-batch has landed: this batch reuses its holder seam, and slice 4 changes
-the Setup adviser step that batch's slice 3 changes for Oaths of Loyalty.
+Slice 1 has landed (89f90563f to cc92ec496); slices 2 to 4 are not yet
+landed. It builds on the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
+batch, which has landed: this batch reuses its holder seam, and slice 4
+changes the Setup adviser step that batch's slice 3 changes for Oaths of
+Loyalty.
 
 **Builds on** the [Legacies design](2026-11-13-legacies-design.md), which
 landed the legacy lifecycle and left every power in holding, and the
