@@ -1,5 +1,6 @@
 package distantlands.gameplay.setup
 
+import distantlands.gameplay.chronicle.ChronicleLegacyRules
 import distantlands.gameplay.chronicle.legacies.{IronHandCard, RivalCard}
 import distantlands.gameplay.setup.legacies.{CircleOfSwords,
   CircleOfSwordsCard, ScepterBearerCard}
@@ -11,7 +12,6 @@ import distantlands.model._
   * later walker step that needs the same answer asks again from the
   * Chronicle, which keeps its shape fixed on resume. */
 object StartingLegacies:
-  val imperialRoles: Set[Role] = Role.values.filter(_.isImperial).toSet
   val exileRoles: Set[Role] = Set(Role.Exile)
 
   /** The seated lineage whose stored record holds `legacy` active, if its
@@ -47,7 +47,7 @@ object StartingLegacies:
     // A seated Chancellor or Citizen always sets up an Empire, so an
     // Imperial holder is one of its players.
     val bearer = holder(chronicle, seated, ScepterBearerCard.id,
-      imperialRoles).map(playerOf)
+      ChronicleLegacyRules.imperialRoles).map(playerOf)
     // Only an Exile's Iron Hand acts: an Imperial discarded it (R4). An
     // exile-only game restored no Empire, so it has no site up to the
     // Empire divider for the holder's warbands.

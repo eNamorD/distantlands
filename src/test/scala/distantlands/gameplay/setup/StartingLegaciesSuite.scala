@@ -1,5 +1,6 @@
 package distantlands.gameplay.setup
 
+import distantlands.gameplay.chronicle.ChronicleLegacyRules
 import distantlands.gameplay.setup.legacies.CircleOfSwordsCard
 import distantlands.model._
 
@@ -30,6 +31,6 @@ class StartingLegaciesSuite extends munit.FunSuite:
     val citizen = SetupLegacyFixture.holding(base, l2, Role.Citizen,
       CircleOfSwordsCard.id -> true)
     assertEquals(StartingLegacies.holder(citizen, seated,
-      CircleOfSwordsCard.id, StartingLegacies.imperialRoles), Some(l2))
+      CircleOfSwordsCard.id, ChronicleLegacyRules.imperialRoles), Some(l2))
     assertEquals(StartingLegacies.holder(citizen, seated,
       CircleOfSwordsCard.id, StartingLegacies.exileRoles), None)
