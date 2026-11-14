@@ -192,7 +192,7 @@ the legacies' CHRONICLE powers with the
 and their SETUP powers with the
 [Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md).
 
-- [ ] **Legacy powers: in play.** The powers used during a game: actions,
+- [x] **Legacy powers: in play.** The powers used during a game: actions,
   Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
   play and The Ear's ACTION half, peeking at a site's relics, among them
   (The Ear's card counts as implemented for its Chronicle half), and Iron
@@ -201,7 +201,10 @@ and their SETUP powers with the
   Doors, Lost Doors, Ancient Writ). High
   Priest's When Negotiating power lets its holder
   give secrets in a deal: a `DealRules` term kind, as Council Arbiter opens
-  advisers.
+  advisers. Landed with the
+  [Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md);
+  Matchmaker on draws during a game waits with the cards that act on
+  legacies.
 - [ ] **Cards that act on legacies.** The non-legacy cards whose powers
   name legacies, still in holding: Ancient Writ (bury it to draw 3 and
   keep 1), Amber Doors and Lost Doors (E05, draw legacies when explored or
