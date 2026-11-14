@@ -49,3 +49,26 @@ case object TakeWealthLimit extends ContributingPower:
     ctx.state.game.current.pawnSite(ctx.actor).map(useRef)
       .filter(ctx.state.game.current.turn.usedPowers.contains)
       .map(OathViolation.PowerAlreadyUsed.apply)
+
+/** Take Wealth's "no enemy pawns at your site" (Legacy in-play powers
+  * ruling 17), a `Restriction` at the action's window as the once-per-site
+  * limit is, so a power may ignore it: Light Fingers' holder does. It
+  * refuses with the reason the action's build gave, so the Wake menu's
+  * words are unchanged. A game rule, not a printed power. */
+case object TakeWealthPawnGate extends ContributingPower:
+  val id: PowerId = PowerId("rule.take-wealth.enemy-pawns")
+  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+
+  def contributions: Map[PowerWindow, Vector[Contribution]] =
+    Map(PowerWindow.WakeTakeWealth -> Vector(
+      Restriction((ctx, _) => blocked(ctx))))
+
+  private def blocked(ctx: PowerCtx): Option[OathViolation] =
+    val current = ctx.state.game.current
+    current.pawnSite(ctx.actor).flatMap { site =>
+      val enemies = current.players.collect {
+        case other if other.player != ctx.actor &&
+            other.pawnSite.contains(site) => other.player }
+      Option.when(enemies.nonEmpty)(
+        OathViolation.EnemyPawnBlocksTakeWealth(site, enemies))
+    }

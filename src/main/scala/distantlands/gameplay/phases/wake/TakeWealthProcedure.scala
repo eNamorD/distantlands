@@ -23,8 +23,10 @@ import distantlands.model._
   * `Restriction` declared by [[distantlands.gameplay.powers.wake.TakeWealthLimit]] at this tree's own window, so
   * it is gathered and run at command entry like any other power's cannot-rule.
   * `build` therefore gates on what the printed action requires and nothing
-  * else: the phase, the actor's pawn site, no enemy pawn on it, and the
-  * requested resource present there.
+  * else: the phase, the actor's pawn site and the requested resource
+  * present there. "No enemy pawns at your site" is a `Restriction` too,
+  * [[distantlands.gameplay.powers.wake.TakeWealthPawnGate]], so Light
+  * Fingers' holder may ignore it (Legacy in-play powers ruling 17).
   *
   * **Both leaves are plain operations.** Neither needs deferring to walk
   * time: the site is the actor's pawn site and the resource is the start
@@ -54,7 +56,6 @@ object TakeWealthProcedure:
       .toRight(OathViolation.PawnSiteMissing(actor))
     tokens <- state.game.current.map.sites.get(site).map(_.tokens)
       .toRight(OathViolation.SiteNotInPlay(site))
-    _ <- noEnemyPawn(state, actor, site)
     _ <- Either.cond(available(tokens, resource), (),
       OathViolation.ResourceUnavailable(site, resource))
   yield tree(actor, site, resource)
@@ -86,14 +87,6 @@ object TakeWealthProcedure:
     case other => Left(OathViolation.InvalidEventOrder(
       "take wealth takes exactly one resource as its start selection, got " +
         other.map(ref => s"${ref.kind}/${ref.wireId}").mkString(", ")))
-
-  private def noEnemyPawn(ready: ReadyGame, actor: PlayerId, site: SiteId)
-      : Either[OathViolation, Unit] =
-    val enemies = ready.game.current.players.collect:
-      case other if other.player != actor && other.pawnSite.contains(site) =>
-        other.player
-    Either.cond(enemies.isEmpty, (),
-      OathViolation.EnemyPawnBlocksTakeWealth(site, enemies))
 
   private def available(tokens: Tokens, resource: WakeResource): Boolean =
     resource match

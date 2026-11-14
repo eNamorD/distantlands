@@ -125,6 +125,12 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
     assertEquals(take(wake(favor = 1, secrets = 1, sharedEnemy = true))
       .left.toOption, Some(EnemyPawnBlocksTakeWealth(home, Vector(p2, p3))))
 
+  test("the enemy pawn gate is a walker restriction, not the build's " +
+      "(Legacy in-play powers ruling 17)"):
+    val bare = new OathRules(catalog, walkerPowerCatalog = WalkerPowers.empty)
+    assert(TakeWealthFixture.take(bare,
+      wake(favor = 1, secrets = 1, sharedEnemy = true)).isRight)
+
   test("the requested resource must be present at the site"):
     val ready = wake(favor = 0, secrets = 1)
     assertEquals(rejected(take(ready)),

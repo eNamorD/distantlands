@@ -41,14 +41,6 @@ object ConspiratorCard extends Legacy(LegacyId("L26"), "Conspirator",
       "correct, you win instead. _This even beats a Successor win._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object LightFingersCard extends Legacy(LegacyId("L27"), "Light Fingers",
-    LegacyGoal.HighestRelic, Suit.Beast):
-  val power = PrintedPower(PowerId("legacy.light-fingers"),
-    persistent = false, cost = Cost.free,
-    text = "**WAKE:** When you Take Wealth, you may take [favor] or " +
-      "[secret] from your site even if enemy pawns are there.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object BelovedCard extends Legacy(LegacyId("L33"), "Beloved",
     LegacyGoal.MostOfSuit, Suit.Beast, Some(FoundationNumber.IV)):
   val power = PrintedPower(PowerId("legacy.beloved"),
