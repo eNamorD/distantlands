@@ -98,6 +98,10 @@ class IronHandSuite extends munit.FunSuite:
     assert(!holds(run.ready, p3))
     assert(lines(run, TriggeredProcedureRef.ChronicleThrone)
       .contains(discardLine))
+    // p3's warband at Buried Giant turned Imperial: the Empire now holds two
+    // warbands, and p1, the Throne holder, shapes it.
+    assertEquals(run.asked.filter(_.decisionId ==
+      ShapeEmpire.removeDecisionId).map(_.owner), Vector(p1))
 
   test("a boxed lineage's Iron Hand does nothing (ruling 1)"):
     val boxed = LineageState(LineageId("lineage:boxed"), None, Role.Citizen,
