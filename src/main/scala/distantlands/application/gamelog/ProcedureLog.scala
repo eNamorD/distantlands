@@ -6,7 +6,8 @@ import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   SwearOath, WelcomeStranger,
   ChronicleStarsProcedure}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, Gatekeeper,
-  Heirloom, OathsOfLoyalty, Reformer, Revolutionary, Rival, TheEar}
+  Heirloom, OathsOfLoyalty, Reformer, Revolutionary, Rival,
+  TheBrightBeacon, TheEar}
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
@@ -366,7 +367,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         ShapeFoundation.keptAll -> LogKind.Decision) ++
         ShapeFoundation.restored.values.map(_ -> LogKind.Decision) ++
         OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleBeacon)
-          .map(_ -> LogKind.Decision)),
+          .map(_ -> LogKind.Decision) ++
+        Vector(TheBrightBeacon.took -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.beacon."), isSection = false)
     case TriggeredProcedureRef.ChronicleStars => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(

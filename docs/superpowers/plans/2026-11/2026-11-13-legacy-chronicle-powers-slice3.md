@@ -1269,6 +1269,11 @@ class TheBrightBeaconSuite extends munit.FunSuite:
     assertEquals(ChronicleWalk.parked(replayed), Some(decide))
 ```
 
+As written, the suite's visibility test ("the Dispossessed are named to
+the holder only after choosing them...") moves to
+`HiddenChronicleCardsSuite` with a copy of `beaconTable(5, 3)`, for the
+reason Task 2 gives.
+
 - [ ] **Step 2: Run the tests to verify they fail**
 
 Expected: FAIL to compile: `Not found: TheBrightBeaconCard` in the new

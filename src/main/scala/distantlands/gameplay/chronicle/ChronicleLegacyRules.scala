@@ -1,7 +1,8 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.gameplay.chronicle.legacies.{GreatArchitectCard,
-  OathsOfLoyaltyCard, RivalCard, SteadfastCard, TheEarCard}
+  OathsOfLoyaltyCard, RivalCard, SteadfastCard, TheBrightBeaconCard,
+  TheEarCard}
 import distantlands.model._
 
 /** The seam the legacies' Chronicle powers share (Legacy Chronicle powers
@@ -64,3 +65,9 @@ object ChronicleLegacyRules:
     * read from the Chronicle before a game starts (ruling 16). */
   def oathsHolds(lineage: LineageState): Boolean =
     lineage.legacies.contains(LegacyState(OathsOfLoyaltyCard.id, active = true))
+
+  /** The Beacon task holder when they hold The Bright Beacon in effect, so
+    * may take newcomers from the Dispossessed (ruling 17). */
+  def beaconFromDispossessed(state: ReadyGame): Option[PlayerId] =
+    ChronicleTasks.holder(state, ChronicleTask.Beacon).toOption
+      .filter(holder(state, TheBrightBeaconCard.id).contains)

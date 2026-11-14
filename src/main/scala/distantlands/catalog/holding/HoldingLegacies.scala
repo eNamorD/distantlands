@@ -154,15 +154,6 @@ object ArbiterCard extends Legacy(LegacyId("L23"), "Arbiter",
       "choose to modify the roll by −1 to +3.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object TheBrightBeaconCard extends Legacy(LegacyId("L24"), "The Bright Beacon",
-    LegacyGoal.DarkestSecret, Suit.Nomad):
-  val power = PrintedPower(PowerId("legacy.the-bright-beacon"),
-    persistent = false, cost = Cost.free,
-    text = "**CHRONICLE (BEACON):** If you're resolving the Beacon, you " +
-      "may take any six cards from the Dispossessed _(instead of " +
-      "choosing suits and taking from their matching dividers)_.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object ConspiratorCard extends Legacy(LegacyId("L26"), "Conspirator",
     LegacyGoal.HighestRelic, Suit.Discord):
   val power = PrintedPower(PowerId("legacy.conspirator"),
