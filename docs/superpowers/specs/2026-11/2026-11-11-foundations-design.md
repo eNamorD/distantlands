@@ -78,7 +78,8 @@ Taken with the owner on 2026-11-10 and 2026-11-11.
    stocked Reliquary, a denizen or relic stored at an Atlas site, or an
    edifice a new Chronicle would not store there: one at a site that is no
    Homeland, or a Homeland storing none or another suit's. With
-   history it starts an exile-only game (`SetupMode.ExileOnly`): the
+   history it starts an exile-only game (`SetupMode.ExileOnly`, since
+   renamed `FirstGameExileOnly`, Legacy Setup powers R40): the
    Atlas's first eight sites as bandit sites with their stored cards,
    whatever Foundation I's face, the stored faces with no erosion, stored
    advisers dealt, the Citizenship option off, the Reliquary set aside, and
