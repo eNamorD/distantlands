@@ -36,6 +36,15 @@ class LegacyIdentitySuite extends munit.FunSuite:
       Some(("legacy", ArbiterCard.name, Some(ArbiterCard.suit.key))))
     assertEquals(rows.project(ready, Some(p2), index, option), None)
 
+  test("a legacy option held by another seated player names its holder, " +
+      "and its own holder reads no such line (R6)"):
+    val index = ready.game.cardIndex.toOption
+    val option = DecisionOption.Legacy(DecisionOptionRef.Legacy(SeerCard.id))
+    assertEquals(rows.project(ready, Some(p2), index, option)
+      .map(_.details), Some(Vector("Held by p1")))
+    assertEquals(rows.project(ready, Some(p1), index, option)
+      .map(_.details), Some(Vector.empty))
+
   test("a legacy's back is a legacy back"):
     assertEquals(presentation.cardKind(ArbiterCard.id), "legacy")
 

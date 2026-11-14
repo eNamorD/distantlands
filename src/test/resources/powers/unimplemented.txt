@@ -13,7 +13,6 @@ legacy.beloved
 legacy.chronicler
 legacy.circle-of-swords
 legacy.conspirator
-legacy.gatekeeper
 legacy.golden-key
 legacy.great-architect
 legacy.heirloom

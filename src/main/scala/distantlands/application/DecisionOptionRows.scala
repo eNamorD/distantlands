@@ -137,9 +137,12 @@ private[application] final class DecisionOptionRows(
       case DecisionOption.Vision(vision) =>
         card(ready, viewer, index, vision.id)
           .flatMap(details => row(details.name, Some(details)))
+      // Another seated player's legacy names its holder, as Gatekeeper's
+      // options do (Legacy Chronicle powers implementation ruling R6).
       case DecisionOption.Legacy(legacy) =>
-        card(ready, viewer, index, legacy.id)
-          .flatMap(details => row(details.name, Some(details)))
+        card(ready, viewer, index, legacy.id).flatMap(details =>
+          row(details.name, Some(details), extra = heldBy(ready, viewer,
+            legacy.id).toVector))
       case DecisionOption.Edifice(edifice) =>
         index.flatMap(_.stateOf(edifice.id)).collect {
           case state: EdificeState => state
@@ -285,6 +288,14 @@ private[application] final class DecisionOptionRows(
     * `viewer` is the decision's own owner -- `project` has already gated on
     * that -- which is why a permissive answer here is still owner-private.
     */
+  /** "Held by p3" for a legacy a seated player other than `viewer` holds. */
+  private def heldBy(ready: ReadyGame, viewer: Option[PlayerId],
+      legacy: LegacyId): Option[String] =
+    ready.game.current.players.find(player => !viewer.contains(player.player) &&
+      ready.game.campaign.lineages.get(player.lineage)
+        .exists(_.legacies.exists(_.id == legacy)))
+      .map(holder => s"Held by ${presentation.playerLabel(holder.player)}")
+
   private def card(ready: ReadyGame, viewer: Option[PlayerId],
       index: Option[CardIndex], id: CardId): Option[CardDetailsProjection] =
     index.flatMap(_.get(id)).filter(located => presentation.identifiesCard(

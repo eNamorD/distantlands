@@ -201,6 +201,10 @@ object PowerWindow:
   // step's actor, add to it or skip it.
   case object ChronicleRevealRelics extends OtherWindow:
     val key = "chronicle.sun.reveal-relics"
+  /** Before players resolve legacies, after Reveal Relics: Gatekeeper's
+    * step (Legacy Chronicle powers design, ruling 6). Empty with no power. */
+  case object ChronicleBeforeResolveLegacies extends OtherWindow:
+    val key = "chronicle.sun.before-resolve-legacies"
   case object ChronicleFlipLegacies extends OtherWindow:
     val key = "chronicle.sun.flip-legacies"
   case object ChronicleExileDormancy extends OtherWindow:
@@ -209,6 +213,10 @@ object PowerWindow:
     val key = "chronicle.sun.legacy-cap"
   case object ChronicleShuffleLegacies extends OtherWindow:
     val key = "chronicle.sun.shuffle-legacies"
+  /** After Resolve Legacies, before Crown Chancellor: Chronicler's step
+    * (ruling 7). Empty with no power. */
+  case object ChronicleAfterResolveLegacies extends OtherWindow:
+    val key = "chronicle.sun.after-resolve-legacies"
   case object ChronicleCrown extends OtherWindow { val key = "chronicle.sun.crown" }
   case object ChronicleAssignTasks extends OtherWindow:
     val key = "chronicle.sun.assign-tasks"

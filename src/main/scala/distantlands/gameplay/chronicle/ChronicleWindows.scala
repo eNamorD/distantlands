@@ -9,8 +9,9 @@ import distantlands.model._
 object ChronicleWindows:
   import PowerWindow._
   val sun: Vector[PowerWindow] = Vector(ChronicleRevealRelics,
-    ChronicleFlipLegacies, ChronicleExileDormancy, ChronicleLegacyCap,
-    ChronicleShuffleLegacies, ChronicleCrown, ChronicleAssignTasks)
+    ChronicleBeforeResolveLegacies, ChronicleFlipLegacies,
+    ChronicleExileDormancy, ChronicleLegacyCap, ChronicleShuffleLegacies,
+    ChronicleAfterResolveLegacies, ChronicleCrown, ChronicleAssignTasks)
   val throne: Vector[PowerWindow] = Vector(ChronicleOfferCitizenship,
     ChronicleShapeEmpire, ChronicleBuildEdifice, ChronicleStockReliquary,
     ChronicleScatterRelics, ChronicleScoreLineage, ChronicleSwearOath)

@@ -286,15 +286,6 @@ object WealthyCard extends Legacy(LegacyId("L31"), "Wealthy",
       "[favor] [favor] [favor] from the shared bank.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object GatekeeperCard extends Legacy(LegacyId("L32"), "Gatekeeper",
-    LegacyGoal.MostOfSuit, Suit.Discord, Some(FoundationNumber.III)):
-  val power = PrintedPower(PowerId("legacy.gatekeeper"),
-    persistent = false, cost = Cost.free,
-    text = "Set Foundation III to Public Ambitions. **CHRONICLE " +
-      "(SUN):** Before players resolve legacies, you may take one " +
-      "active legacy from an enemy if you meet its goal.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object BelovedCard extends Legacy(LegacyId("L33"), "Beloved",
     LegacyGoal.MostOfSuit, Suit.Beast, Some(FoundationNumber.IV)):
   val power = PrintedPower(PowerId("legacy.beloved"),

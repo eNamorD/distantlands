@@ -2,13 +2,17 @@ package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.legacies.LegacyChroniclePowers
 import distantlands.gameplay.walker.ProcedureStart
 import distantlands.model._
 
 /** The Sun task (CR p. 36, `docs/rules/chronicle.md` task 1). Each step is
   * its own power window. Steps 2-4 resolve legacies (`ResolveLegacies`);
   * step 5, Shuffle, is an empty window, since the legacy deck is derived
-  * (Legacies design, ruling 3). */
+  * (Legacies design, ruling 3). Two empty windows hold the legacies' added
+  * steps: one before step 2, where Gatekeeper acts, and one after step 5,
+  * where Chronicler does (Legacy Chronicle powers design, rulings 6 and
+  * 7). */
 object ChronicleSunProcedure:
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleSun)
   private val notes = NoteSet(noteId)
@@ -21,7 +25,8 @@ object ChronicleSunProcedure:
       Vector(NotePart.Arg(0), NotePart.Text(s" took the ${name(task)} task"))))
       .toMap
   def tookTask(task: ChronicleTask): NoteKey = tookKeys(task)
-  def noteKeys: Vector[NoteKey] = notes.declared ++ ResolveLegacies.noteKeys
+  def noteKeys: Vector[NoteKey] = notes.declared ++ ResolveLegacies.noteKeys ++
+    LegacyChroniclePowers.sunNoteKeys
 
   private def name(task: ChronicleTask): String = task match
     case ChronicleTask.Throne => "Throne"
@@ -39,6 +44,8 @@ object ChronicleSunProcedure:
       : Vector[Operation] = Vector(
     ChronicleWindows.step(PowerWindow.ChronicleRevealRelics, Vector(
       BuildOps((state, _) => Right(revealHeldRelics(state)), required = true))),
+    ChronicleWindows.step(PowerWindow.ChronicleBeforeResolveLegacies,
+      Vector.empty),
     // Sun steps 2-5 (CR p. 36): flip or discard dormant legacies, Exiles'
     // unmet legacies go dormant, discard legacies over three, shuffle the
     // legacy deck, which is derived and has nothing to shuffle.
@@ -49,6 +56,8 @@ object ChronicleSunProcedure:
     ChronicleWindows.step(PowerWindow.ChronicleLegacyCap,
       ResolveLegacies.capAll),
     ChronicleWindows.step(PowerWindow.ChronicleShuffleLegacies, Vector.empty),
+    ChronicleWindows.step(PowerWindow.ChronicleAfterResolveLegacies,
+      Vector.empty),
     ChronicleWindows.step(PowerWindow.ChronicleCrown, Vector(
       BuildOps((state, _) => ChronicleCrown.operations(state, winner),
         required = true),

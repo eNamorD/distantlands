@@ -5,6 +5,7 @@ import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   OfferCitizenship, ProtectAndDispossess, ShapeEmpire, ShapeFoundation,
   SwearOath, WelcomeStranger,
   ChronicleStarsProcedure}
+import distantlands.gameplay.chronicle.legacies.Gatekeeper
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
@@ -387,12 +388,14 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       ResolveLegacies.returnedPublic -> LogKind.Delta,
       ResolveLegacies.wentDormant -> LogKind.Delta,
       ResolveLegacies.capped -> LogKind.Decision,
-      ResolveLegacies.reactivated -> LogKind.Delta) ++
+      ResolveLegacies.reactivated -> LogKind.Delta,
+      Gatekeeper.took -> LogKind.Decision) ++
       ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
       ChronicleTask.all.map(task =>
         ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),
     narratedPrefixes = Vector("chronicle.assign.",
-      "chronicle.sun.public-legacy.", "chronicle.sun.legacy-cap."),
+      "chronicle.sun.public-legacy.", "chronicle.sun.legacy-cap.",
+      "chronicle.sun.legacy."),
     isSection = false)
 
   private lazy val chronicleThrone: ProcedureLog = ProcedureLog(tag = None,

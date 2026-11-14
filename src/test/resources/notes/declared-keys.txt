@@ -550,6 +550,7 @@ procedure.chronicle-sun capped-legacy = {0} discarded {1}
 procedure.chronicle-sun crowned = {0} became Chancellor
 procedure.chronicle-sun discarded-legacy = {0} discarded {1}
 procedure.chronicle-sun empire-broke = The Empire broke
+procedure.chronicle-sun gatekeeper-took = {0} took {1} from {2} with {3}
 procedure.chronicle-sun legacy-went-dormant = {0}'s {1} went dormant
 procedure.chronicle-sun reactivated-legacy = {0} reactivated {1}
 procedure.chronicle-sun returned-public-legacy = {0} returned to the legacy deck
