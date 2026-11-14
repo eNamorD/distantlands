@@ -81,8 +81,16 @@ final case class CampaignState(
     // Phase: its relics stay in `reliquary`, no one can take one in play,
     // and Crown Chancellor discards them whoever wins (Foundations ruling
     // 3).
-    reliquarySetAside: Boolean = false
+    reliquarySetAside: Boolean = false,
+    // The Chronicle as `GameStarted` carried it, when game start changed it
+    // into `baseline`: a first game played exile-only wipes its stored
+    // legacies (Legacy Setup powers R40). The projection's starting digest
+    // is this one's, so a browser still matches its saved entry.
+    saved: Option[Chronicle] = None
 ):
+  /** The Chronicle the game was started from, as saved. */
+  def savedChronicle: Chronicle = saved.getOrElse(baseline)
+
   /** The Reliquary's relics a player may take in play: none while the
     * Reliquary is set aside. Every taker reads this, never `reliquary`,
     * which the card index and the Chronicle Phase read whole. */

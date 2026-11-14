@@ -150,7 +150,7 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
     * (Legacies implementation ruling R4). */
   private def chronicleView(campaign: CampaignState): ChronicleProjection =
     ChronicleProjection(campaign.baseline.name,
-      entries.entry(campaign.baseline).digest,
+      entries.entry(campaign.savedChronicle).digest,
       campaign.evolved.map(entries.entry))
 
   /** The cards the viewer is handling and nothing else on the panel draws:
