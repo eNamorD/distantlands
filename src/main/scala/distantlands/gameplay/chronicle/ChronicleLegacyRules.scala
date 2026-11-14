@@ -1,5 +1,6 @@
 package distantlands.gameplay.chronicle
 
+import distantlands.gameplay.chronicle.legacies.SteadfastCard
 import distantlands.model._
 
 /** The seam the legacies' Chronicle powers share (Legacy Chronicle powers
@@ -20,3 +21,8 @@ object ChronicleLegacyRules:
         roles(lineage.role) &&
           lineage.legacies.contains(LegacyState(legacy, active = true))))
       .map(_.player)
+
+  /** Whether `player` holds Steadfast in effect, so none of their other
+    * legacies go dormant (ruling 5). */
+  def keepsOthersActive(state: ReadyGame, player: PlayerId): Boolean =
+    holder(state, SteadfastCard.id).contains(player)

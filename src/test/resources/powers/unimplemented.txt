@@ -35,7 +35,6 @@ legacy.ruthless
 legacy.scepter-bearer
 legacy.secret-society
 legacy.seer
-legacy.steadfast
 legacy.the-bright-beacon
 legacy.the-ear
 legacy.the-mouth

@@ -1,6 +1,7 @@
 package distantlands.catalog
 
 import distantlands.catalog.holding._
+import distantlands.gameplay.chronicle.legacies._
 import distantlands.gameplay.setup.FirstGameSetupFixture
 import distantlands.model.{FoundationNumber, Suit}
 

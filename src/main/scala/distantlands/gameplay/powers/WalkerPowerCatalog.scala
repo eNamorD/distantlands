@@ -1,6 +1,7 @@
 package distantlands.gameplay.powers
 
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.legacies.LegacyChroniclePowers
 import distantlands.gameplay.operations.OperationRestrictions
 import distantlands.gameplay.powerresolver.{ContributingPower,
   IgnoresOwnLock, PowerUseRestriction}
@@ -54,6 +55,9 @@ import distantlands.model.{CardId, PowerId}
   * Secret Testament is inert until a Challenge walks `ChallengeRibbon`.
   * Yew Staff hooks no window: card powers read it through CardPowerBanners.
   * Jinx is inert until a roll step asks for rerolls.
+  * The legacies' Chronicle powers (`LegacyChroniclePowers`) are inert until
+  * a Chronicle walks their windows; Steadfast hooks none, as Sun step 3
+  * reads it.
   * `restrictionSet` gives every walker step the catalog's global operation
   * restrictions.
   */
@@ -92,7 +96,8 @@ object WalkerPowerCatalog:
       Vector(Dazzle, GreatMarket, BanditMarket, GreatForge, BrokenForge,
         ProvingGrounds, EmptyGrounds, HallOfMockery, LostGuardians,
         RuinedSchool, BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
-        ConspiracyWhenPlayed)
+        ConspiracyWhenPlayed) ++
+      LegacyChroniclePowers.all
 
   /** The power-use restrictions the walker powers declare, for the phase
     * powers (catalog batch 8, slice 10). */

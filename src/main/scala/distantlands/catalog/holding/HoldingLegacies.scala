@@ -29,14 +29,6 @@ object ChroniclerCard extends Legacy(LegacyId("L02"), "Chronicler",
       "legacy may only be scored once per game._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object SteadfastCard extends Legacy(LegacyId("L03"), "Steadfast",
-    LegacyGoal.MostSites, Suit.Discord):
-  val power = PrintedPower(PowerId("legacy.steadfast"),
-    persistent = false, cost = Cost.free,
-    text = "**CHRONICLE:** Your other legacies **cannot** become " +
-      "dormant—they always stay active.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object PeacemakerCard extends Legacy(LegacyId("L04"), "Peacemaker",
     LegacyGoal.MostSites, Suit.Hearth):
   val power = PrintedPower(PowerId("legacy.peacemaker"),

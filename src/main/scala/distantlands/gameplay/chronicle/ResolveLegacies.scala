@@ -2,6 +2,7 @@ package distantlands.gameplay.chronicle
 
 import distantlands.catalog.{ExecutableCatalog, FoundationCards}
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.legacies.SteadfastCard
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
 
@@ -76,14 +77,18 @@ object ResolveLegacies:
 
   /** Sun step 3's children: each seated Exile's active legacies whose goal
     * they miss go dormant, in turn order. Imperials and the foundations
-    * are untouched. These are the newly dormant legacies (ruling 2). */
+    * are untouched. These are the newly dormant legacies (ruling 2). A
+    * Steadfast holder's other legacies stay active, read at the step's start
+    * (Legacy Chronicle powers design, ruling 5). */
   def dormancy(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     Branch((state, _) =>
       val lapsed = for
         player <- LegacyGoals.turnOrder(state)
           if Imperials.role(state, player).contains(Role.Exile)
+        steadfast = ChronicleLegacyRules.keepsOthersActive(state, player)
         legacy <- legaciesOf(state, player)
-          if legacy.active && !meets(catalog, state, legacy.id, player)
+          if legacy.active && !meets(catalog, state, legacy.id, player) &&
+            !(steadfast && legacy.id != SteadfastCard.id)
       yield player -> legacy.id
       if lapsed.isEmpty then Vector.empty
       else BuildOps((live, _) => Right(lapsed.map((player, id) =>
