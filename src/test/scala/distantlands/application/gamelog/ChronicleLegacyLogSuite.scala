@@ -2,7 +2,9 @@ package distantlands.application.gamelog
 
 import distantlands.catalog.holding.{IronHandCard, SeerCard}
 import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
-  GatekeeperCard}
+  GatekeeperCard, HeirloomCard}
+import distantlands.gameplay.powers.economy.CupOfPlentyCard
+import distantlands.model.PlayerId
 import distantlands.protocol.projection.LogSpan
 import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{format, text}
@@ -36,3 +38,15 @@ class ChronicleLegacyLogSuite extends munit.FunSuite:
         viewer)
       assert(said.exists(_.startsWith(s"${p2.value} scored ")), viewer)
     }
+
+  test("Heirloom's relic is named to its holder alone (ruling 13; R19)"):
+    val script = ChronicleLogScripts.throneHeirloom
+    val public = s"${p2.value} kept a relic with ${HeirloomCard.name}"
+    val named = s"${p2.value} kept ${CupOfPlentyCard.name} with " +
+      HeirloomCard.name
+    def heirloomLines(viewer: Option[PlayerId]) =
+      format(script, viewer).map(text).filter(line =>
+        line == public || line == named)
+    assertEquals(heirloomLines(Some(p2)), Vector(public, named))
+    Vector(Some(p1), Some(p3), None).foreach(viewer =>
+      assertEquals(heirloomLines(viewer), Vector(public), viewer))

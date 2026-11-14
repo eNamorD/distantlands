@@ -163,3 +163,27 @@ private[operations] object ChronicleStateOperations:
         Left(InvalidDescription("a scoring names each legacy once"))
       case None => Right(ready.updateCurrent(current => current.copy(
         scoredLegacies = current.scoredLegacies ++ legacies)))
+
+  /** `relic` from `player`'s relics to their lineage's starting relics
+    * (Heirloom; R20). The Grand Scepter, a relic the player does not hold
+    * and a relic with tokens are refused. */
+  def startingRelicKept(ready: ReadyGame, player: PlayerId, relic: RelicId)
+      : Either[OperationError, ReadyGame] =
+    val held = ready.game.current.player(player)
+      .flatMap(_.relics.find(_.id == relic))
+    val lineage = ready.game.current.player(player).map(_.lineage)
+      .filter(ready.game.campaign.lineages.contains)
+    (held, lineage) match
+      case _ if relic == TheGrandScepterCard.id => Left(InvalidDescription(
+        "the Grand Scepter is never kept as a starting relic"))
+      case (None, _) | (_, None) => Left(InvalidDescription(
+        s"${player.value} holds no ${relic.value} to keep"))
+      case (Some(state), _) if !state.tokens.isEmpty => Left(
+        InvalidDescription(s"${relic.value} still holds tokens"))
+      case (Some(_), Some(id)) => Right(ready.updateCurrent(current =>
+        current.copy(players = current.players.map(state =>
+          if state.player == player then
+            state.copy(relics = state.relics.filterNot(_.id == relic))
+          else state))).updateCampaign(campaign => campaign.copy(lineages =
+        campaign.lineages.updatedWith(id)(_.map(state => state.copy(
+          startingRelics = state.startingRelics :+ relic))))))

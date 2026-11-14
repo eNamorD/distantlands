@@ -138,15 +138,6 @@ object TheEarCard extends Legacy(LegacyId("L19"), "The Ear",
       "relics and choose which sites they go to.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object HeirloomCard extends Legacy(LegacyId("L20"), "Heirloom",
-    LegacyGoal.DarkestSecret, Suit.Beast):
-  val power = PrintedPower(PowerId("legacy.heirloom"),
-    persistent = false, cost = Cost.free,
-    text = "**CHRONICLE (THRONE):** Before Scatter Relics, secretly " +
-      "choose one of your relics to keep facedown. You will start " +
-      "the next game with it.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object HighPriestCard extends Legacy(LegacyId("L21"), "High Priest",
     LegacyGoal.DarkestSecret, Suit.Order):
   val power = PrintedPower(PowerId("legacy.high-priest"),

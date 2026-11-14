@@ -1,7 +1,8 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.{CircleOfSwordsCard, HeirloomCard,
-  TheNeedleCard, WealthyCard}
+import distantlands.catalog.holding.{CircleOfSwordsCard, TheNeedleCard,
+  WealthyCard}
+import distantlands.gameplay.chronicle.legacies.HeirloomCard
 import distantlands.gameplay.SacredGroundCard
 import distantlands.gameplay.GrandMaskCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,

@@ -57,7 +57,9 @@ class ChronicleWindowsSuite extends munit.FunSuite:
         "chronicle.throne.offer-citizenship",
         "chronicle.throne.shape-empire", "chronicle.throne.build-edifice",
         "chronicle.throne.after-build-edifice",
-        "chronicle.throne.stock-reliquary", "chronicle.throne.scatter-relics",
+        "chronicle.throne.stock-reliquary",
+        "chronicle.throne.before-scatter-relics",
+        "chronicle.throne.scatter-relics",
         "chronicle.throne.score-lineage", "chronicle.throne.swear-oath")))
 
   test("World and Beacon window keys stay as power data spells them"):

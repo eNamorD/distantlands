@@ -7,7 +7,8 @@ import distantlands.model.NoteKey
   * powers design), registered on the walker by `WalkerPowerCatalog`. */
 object LegacyChroniclePowers:
   val all: Vector[ContributingPower] = Vector(Steadfast, Gatekeeper,
-    Chronicler, Rival, GreatArchitect, Revolutionary, Reformer)
+    Chronicler, Rival, GreatArchitect, Revolutionary, Reformer,
+    Heirloom)
   /** The lines the powers write in the Sun, on the Sun's note id, which
     * `ChronicleSunProcedure.noteKeys` declares. */
   def sunNoteKeys: Vector[NoteKey] =
@@ -16,4 +17,4 @@ object LegacyChroniclePowers:
     * which `ChronicleThroneProcedure.noteKeys` declares. */
   def throneNoteKeys: Vector[NoteKey] =
     Rival.throneNoteKeys ++ Revolutionary.throneNoteKeys ++
-      Reformer.throneNoteKeys
+      Reformer.throneNoteKeys ++ Heirloom.throneNoteKeys

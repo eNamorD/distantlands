@@ -15,7 +15,7 @@ object ChronicleWindows:
   val throne: Vector[PowerWindow] = Vector(ChronicleStartOfThrone,
     ChronicleOfferCitizenship,
     ChronicleShapeEmpire, ChronicleBuildEdifice, ChronicleAfterBuildEdifice,
-    ChronicleStockReliquary,
+    ChronicleStockReliquary, ChronicleBeforeScatterRelics,
     ChronicleScatterRelics, ChronicleScoreLineage, ChronicleSwearOath)
   val world: Vector[PowerWindow] = Vector(ChronicleSeparateVisions,
     ChronicleGatherDenizens, ChronicleProtectAndDispossess)

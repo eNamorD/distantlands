@@ -84,3 +84,11 @@ class ChronicleOperationWireSuite extends munit.FunSuite:
     assertEquals(GameEventWire.decodeStream(ujson.write(injected)),
       Left(WireError.InvalidValue("$[0].payload.step.ops[0].legacies",
         "scores at least one legacy")))
+
+  test("a kept starting relic names its player and its relic"):
+    val encoded = encodedStreamThatRoundTrips("starting-relic-kept",
+      Vector(recordedOperation(StartingRelicKept(PlayerId("red"),
+        RelicId("R1")))))
+    assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
+      ujson.Obj("kind" -> "starting-relic-kept", "player" -> "red",
+        "relic" -> "R1"))

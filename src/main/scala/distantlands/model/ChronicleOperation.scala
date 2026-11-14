@@ -77,6 +77,14 @@ final case class FoundationRestored(number: FoundationNumber)
 final case class FoundationAltered(number: FoundationNumber,
     source: LegacyId) extends ChronicleOperation, LeafOperation
 
+/** Keeps a held relic for the next game (Heirloom; Legacy Chronicle powers
+  * design, ruling 13; R20): it leaves the player's relics for their
+  * lineage's `startingRelics`, outside play and the card index (Legacies
+  * R2), and game start hands it back facedown. The Grand Scepter, a relic
+  * the player does not hold and a relic with tokens are refused. */
+final case class StartingRelicKept(player: PlayerId, relic: RelicId)
+    extends ChronicleOperation, LeafOperation
+
 /** Records the legacies scored this game (Chronicler, "Each legacy may only
   * be scored once per game"; Legacy Chronicle powers design, ruling 8). By
   * legacy, not by player: Score Lineage Points and Iron Hand's scoring skip

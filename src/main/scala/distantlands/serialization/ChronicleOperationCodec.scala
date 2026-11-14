@@ -36,6 +36,9 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
       case FoundationAltered(number, source) => ujson.Obj(
         "kind" -> "foundation-altered", "number" -> number.value,
         "source" -> source.value)
+      case StartingRelicKept(player, relic) => ujson.Obj(
+        "kind" -> "starting-relic-kept", "player" -> player.value,
+        "relic" -> relic.value)
       case LegaciesScored(legacies) => ujson.Obj("kind" -> "legacies-scored",
         "legacies" -> legacies.map(legacy => ujson.Str(legacy.value)))
       case SuitedReserveFromBox(suit, cards) => ujson.Obj(
@@ -76,6 +79,8 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
       foundationNumber(value, path).map(FoundationRestored.apply)
     case "foundation-altered" => foundationNumber(value, path)
       .map(FoundationAltered(_, LegacyId(value("source").str)))
+    case "starting-relic-kept" => Right(StartingRelicKept(
+      PlayerId(value("player").str), RelicId(value("relic").str)))
     case "legacies-scored" =>
       val legacies = value("legacies").arr.toVector.map(id => LegacyId(id.str))
       Either.cond(legacies.nonEmpty, LegaciesScored(legacies),

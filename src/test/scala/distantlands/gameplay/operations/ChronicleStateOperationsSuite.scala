@@ -2,6 +2,7 @@ package distantlands.gameplay.operations
 
 import distantlands.catalog.holding.{PathfinderCard, SeerCard, WealthyCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.economy.CupOfPlentyCard
 import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.gameplay.setup.FirstGameSetupFixture
 import distantlands.model._
@@ -231,3 +232,22 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     val after = accepted(run(ready,
       RoleChanged(lineageOf(ready, p1), Role.Chancellor)))
     assertEquals(after.game.campaign.era, ready.game.campaign.era)
+
+  test("a kept relic leaves its holder for the lineage's starting relics"):
+    val ready = Table.start.relic(p1, CupOfPlentyCard).ready
+    val after = accepted(run(ready, StartingRelicKept(p1, CupOfPlentyCard.id)))
+    assert(!after.game.current.player(p1).get.relics
+      .exists(_.id == CupOfPlentyCard.id))
+    assertEquals(after.game.campaign.lineages(lineageOf(ready, p1))
+      .startingRelics, Vector(CupOfPlentyCard.id))
+    assert(after.game.cardIndex.toOption.get.get(CupOfPlentyCard.id).isEmpty)
+
+  test("the Grand Scepter, a relic not held and a relic with tokens are " +
+      "not kept"):
+    val ready = Table.start.relic(p1, CupOfPlentyCard).ready
+    rejected(run(ready, StartingRelicKept(p2, CupOfPlentyCard.id)))
+    rejected(run(Table.start.relic(p1, TheGrandScepterCard).ready,
+      StartingRelicKept(p1, TheGrandScepterCard.id)))
+    rejected(run(Table.start.relic(p1, CupOfPlentyCard)
+      .tokens(CupOfPlentyCard, secrets = 1).ready,
+      StartingRelicKept(p1, CupOfPlentyCard.id)))

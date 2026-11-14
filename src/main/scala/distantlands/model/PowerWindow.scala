@@ -236,6 +236,10 @@ object PowerWindow:
     val key = "chronicle.throne.after-build-edifice"
   case object ChronicleStockReliquary extends OtherWindow:
     val key = "chronicle.throne.stock-reliquary"
+  /** Before Scatter Relics, after Stock Reliquary: Heirloom's step (Legacy
+    * Chronicle powers design, ruling 13; R17, R26). Empty with no power. */
+  case object ChronicleBeforeScatterRelics extends OtherWindow:
+    val key = "chronicle.throne.before-scatter-relics"
   case object ChronicleScatterRelics extends OtherWindow:
     val key = "chronicle.throne.scatter-relics"
   case object ChronicleScoreLineage extends OtherWindow:

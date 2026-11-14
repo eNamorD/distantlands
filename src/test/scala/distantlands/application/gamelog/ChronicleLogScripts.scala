@@ -5,9 +5,11 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship,
   ShapeFoundation}
+import distantlands.gameplay.GrandMaskCard
 import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
-  Gatekeeper, GatekeeperCard}
-import distantlands.gameplay.powers.economy.{DowntroddenCard, MapLibraryCard}
+  Gatekeeper, GatekeeperCard, Heirloom, HeirloomCard}
+import distantlands.gameplay.powers.economy.{CupOfPlentyCard, DowntroddenCard,
+  MapLibraryCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import distantlands.testkit.{MenuPlay, Table}
@@ -94,6 +96,22 @@ object ChronicleLogScripts:
         ChooseOneAnswer(Chronicler.declare)
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("sun-gatekeeper-chronicler", service, p1)
+
+  /** The game of [[chronicleStarted]] with Heirloom: p2, holding the
+    * Darkest Secret, holds Heirloom, Cup of Plenty and Grand Mask, and at
+    * the Throne keeps Cup of Plenty (Legacy Chronicle powers, slice 3). */
+  def throneHeirloom(using munit.Location): Script =
+    val (service, acting) = atTable("throne-heirloom", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .darkestSecret(Some(p2), 1).relic(p2, CupOfPlentyCard)
+      .relic(p2, GrandMaskCard).legacy(p2, HeirloomCard)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.withAnswers {
+      case park if park.decisionId == Heirloom.decisionId(p2) =>
+        ChooseOneAnswer(DecisionOptionRef.Relic(CupOfPlentyCard.id))
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("throne-heirloom", service, p1)
 
   /** The first game, with Foundation I on Wide Horizons: at the Beacon
     * p1, who holds it, restores it to Imperial Maps (Foundations design,

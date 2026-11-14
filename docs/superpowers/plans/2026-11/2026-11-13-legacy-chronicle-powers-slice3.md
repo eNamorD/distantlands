@@ -175,9 +175,11 @@ each as the plan recommended:
 `update` on the player's `relics`.)
 
 `ChronicleOperationWireSuite`: `StartingRelicKept(PlayerId("red"),
-RelicId("R07"))` round-trips as `{"kind": "starting-relic-kept",
-"player": "red", "relic": "R07"}`. `WalkerOperationWireSuite.everyOperation`
-gains `StartingRelicKept(PlayerId("red"), RelicId("R07"))`.
+RelicId("R1"))` round-trips as `{"kind": "starting-relic-kept",
+"player": "red", "relic": "R1"}`. `WalkerOperationWireSuite.everyOperation`
+gains `StartingRelicKept(PlayerId("red"), RelicId("R1"))`. (A catalog id
+such as `R07` in a test trips `BackendArchitectureSuite`'s card-object
+rule.)
 `ChronicleWindowsSuite`: the Throne's keys gain
 `"chronicle.throne.before-scatter-relics"` after
 `"chronicle.throne.stock-reliquary"`.
@@ -370,6 +372,10 @@ were in slice 1:
 final case class StartingRelicKept(player: PlayerId, relic: RelicId)
     extends ChronicleOperation, LeafOperation
 ```
+
+`OperationPipeline.boxed` counts the relic a `StartingRelicKept` removes,
+as it counts a card moved to the shared bank: the card-inventory check
+otherwise refuses a card that leaves the index.
 
 `ChronicleStateOperations.startingRelicKept(ready, player, relic)` checks
 the three refusals (`TheGrandScepterCard.id`, the player's `relics`, an
