@@ -1,21 +1,12 @@
 package distantlands.gameplay.powers.legacies
 
-import distantlands.catalog.{ExecutableCatalog, Legacy, LegacyGoal,
-  PrintedPower}
+import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.negotiation.HighPriestCard
 import distantlands.gameplay.powerresolver.QueuedStarts
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.gameplay.powers.action.PaidAction
 import distantlands.model._
-
-object HighPriestCard extends Legacy(LegacyId("L21"), "High Priest",
-    LegacyGoal.DarkestSecret, Suit.Order):
-  val power = PrintedPower(PowerId("legacy.high-priest"),
-    persistent = false, cost = Cost.free,
-    text = "**ACTION:** If you have the Darkest Secret, you may move " +
-      "any number of [secret] from the Darkest Secret to your " +
-      "player board. **WHEN NEGOTIATING:** You may give [secret].")
-  val powers: Vector[PrintedPower] = Vector(power)
 
 /** High Priest (legacy L21), its ACTION: "If you have the Darkest Secret,
   * you may move any number of secrets from the Darkest Secret to your
@@ -25,7 +16,9 @@ object HighPriestCard extends Legacy(LegacyId("L21"), "High Priest",
   * secret on it (implementation ruling R4). The holder chooses an amount
   * from 1 to the secrets on it, always asked, and that many move to their
   * board faceup with a `Take`, so a restriction on taking applies. Its
-  * WHEN NEGOTIATING half is slice 2's (ruling 19).
+  * card, and its WHEN NEGOTIATING half, are the Negotiation's
+  * (`NegotiationLegacyCards`, `NegotiationAdvisers.highPriestUsers`;
+  * ruling 19).
   *
   * Line: "p2 moved 3 secrets from the Darkest Secret with High Priest"
   * (R3).

@@ -1,7 +1,7 @@
 package distantlands.gameplay
 
 import distantlands.gameplay.actions.negotiation.{DealRules, DealState,
-  NegotiationDeal}
+  HighPriestCard, NegotiationDeal}
 import distantlands.gameplay.cards.BrokenPeaksSite
 import distantlands.gameplay.operations.OperationExecutor
 import distantlands.gameplay.powers.AdviserLimit
@@ -11,7 +11,7 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.ProposeTerms
 import distantlands.model.OathState.Ready
 import distantlands.model.OathViolation.InsufficientSecrets
-import distantlands.testkit.{ParkedNode, Table}
+import distantlands.testkit.{Journal, ParkedNode, Table}
 import distantlands.testkit.Table.{p1, p2}
 
 /** Secret terms (catalog batch 12, rulings 6 and 31): closed in the
@@ -68,6 +68,35 @@ class NegotiationSecretTermsSuite extends munit.FunSuite:
     assert(offered(open, 2).isRight)
     assert(offered(open, 3).isLeft)
     assert(offered(query(withSecrets(), open = false), 1).isLeft)
+
+  test("High Priest's holder may give secrets; the other side may not " +
+      "(Legacy in-play powers ruling 19)"):
+    val oneWay = NegotiationDeal.snapshot(catalog, withSecrets().ready,
+      dealOf(), DealRules(secretGivers = Vector(p1)), AdviserLimit)
+    assertEquals(oneWay.bounds(p1).secretRecipients, Vector(p2))
+    assertEquals(oneWay.bounds(p2).secretRecipients, Vector.empty[PlayerId])
+    assert(offered(oneWay, 2).isRight)
+
+  /** The deal a walk at `state` is parked on. */
+  private def parkedDeal(state: OathState): DecisionQuery.Negotiate =
+    ParkedNode.of(state, catalog) match
+      case Right(Some(ParkedNode.Decision(_, decide, _))) =>
+        decide.query match
+          case negotiate: DecisionQuery.Negotiate => negotiate
+          case other => fail(s"not a deal: $other")
+      case other => fail(s"not parked on a decision: $other")
+
+  test("a Negotiation started by High Priest's holder opens their secrets, " +
+      "and a resumed deal keeps them"):
+    val ready = withSecrets().legacy(p1, HighPriestCard).ready
+    val started = rules.startWalker(Ready(ready), ActionRef.Negotiation, p1)
+      .getOrElse(fail("Negotiation must start"))
+    def opened(deal: DecisionQuery.Negotiate) =
+      (deal.bounds(p1).secretRecipients, deal.bounds(p2).secretRecipients)
+    assertEquals(opened(parkedDeal(started.state)), (Vector(p2), Vector.empty))
+    val resumed = Journal.evolved(rules, ready, started.events)
+      .getOrElse(fail("the start must replay"))
+    assertEquals(opened(parkedDeal(resumed)), (Vector(p2), Vector.empty))
 
   test("settling moves faceup secrets, faceup, and leaves the facedown " +
       "one"):

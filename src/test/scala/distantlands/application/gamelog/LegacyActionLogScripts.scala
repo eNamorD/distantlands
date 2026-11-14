@@ -4,9 +4,10 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.legacies.TheEarCard
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.gameplay.powers.economy.DefameCard
+import distantlands.gameplay.actions.negotiation.HighPriestCard
 import distantlands.gameplay.powers.legacies.{GoldenKey, GoldenKeyCard,
-  HighPriest, HighPriestCard, Peacemaker, PeacemakerCard, Ruthless,
-  RuthlessCard, TheEarAction}
+  HighPriest, Peacemaker, PeacemakerCard, Ruthless, RuthlessCard,
+  TheEarAction}
 import distantlands.model._
 import distantlands.testkit.MenuPlay
 import distantlands.testkit.Table.p1

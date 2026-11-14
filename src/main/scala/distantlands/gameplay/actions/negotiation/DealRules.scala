@@ -18,16 +18,19 @@ enum TermKind:
   * give and receive sites with anyone (Deed Writer, ruling 18).
   * `privateDeal` keeps the terms from players outside the deal (Whispering
   * Stone, ruling 23). `secretsOpen` lets every pair trade secrets (The
-  * Gathering, ruling 5).
+  * Gathering, ruling 5). `secretGivers` may give secrets to anyone, one
+  * way (High Priest, Legacy in-play powers ruling 19).
   */
 final case class DealRules(adviserTraders: Vector[PlayerId] = Vector.empty,
     advisersOpen: Boolean = false, bindingPromises: Boolean = false,
     siteTraders: Vector[PlayerId] = Vector.empty,
-    privateDeal: Boolean = false, secretsOpen: Boolean = false):
+    privateDeal: Boolean = false, secretsOpen: Boolean = false,
+    secretGivers: Vector[PlayerId] = Vector.empty):
   def kinds(author: PlayerId, recipient: PlayerId): Set[TermKind] =
     val pair = Set(author, recipient)
     Set[TermKind](TermKind.Favor, TermKind.Relic) ++
-      Option.when(secretsOpen)(TermKind.Secret) ++
+      Option.when(secretsOpen || secretGivers.contains(author))(
+        TermKind.Secret) ++
       Option.when(advisersOpen || adviserTraders.exists(pair))(
         TermKind.Adviser) ++
       Option.when(siteTraders.exists(pair))(TermKind.Site)

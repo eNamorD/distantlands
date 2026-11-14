@@ -1,6 +1,7 @@
 package distantlands.gameplay
 
-import distantlands.gameplay.actions.negotiation.NegotiationStartFacts
+import distantlands.gameplay.actions.negotiation.{HighPriestCard,
+  NegotiationAdvisers, NegotiationStartFacts}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -51,6 +52,35 @@ class NegotiationStartFactsSuite extends munit.FunSuite:
       Vector(p1, p3)), Vector(p3))
     assertEquals(facts.rules(Vector(p1, p2)).siteTraders,
       Vector.empty[PlayerId])
+
+  test("High Priest's users round trip, and open one-way secret terms " +
+      "(Legacy in-play powers ruling 19)"):
+    val facts = NegotiationStartFacts(Vector(p2), Vector.empty,
+      highPriestUsers = Vector(p1))
+    assertEquals(NegotiationStartFacts.read(facts.refs), Right(facts))
+    assertEquals(facts.rules(Vector(p1, p2)).secretGivers, Vector(p1))
+    assertEquals(facts.rules(Vector(p2, p3)).secretGivers,
+      Vector.empty[PlayerId])
+
+  test("facts saved before High Priest's list decode with it empty (R9)"):
+    val saved = Vector[DecisionOptionRef](DecisionOptionRef.Player(p2),
+      DecisionOptionRef.Button(NegotiationStartFacts.Marker),
+      DecisionOptionRef.Button(NegotiationStartFacts.ArbiterMarker),
+      DecisionOptionRef.Button(NegotiationStartFacts.FestivalMarker),
+      DecisionOptionRef.Button(NegotiationStartFacts.DeedWriterMarker))
+    assertEquals(NegotiationStartFacts.read(saved),
+      Right(NegotiationStartFacts(Vector(p2), Vector.empty)))
+
+  test("only a seated holder of an active High Priest among the players " +
+      "is a user"):
+    def users(table: Table, among: Vector[PlayerId] = Vector(p1, p2, p3)) =
+      NegotiationAdvisers.highPriestUsers(catalog, table.ready, among,
+        Vector.empty)
+    assertEquals(users(Table.start.legacy(p1, HighPriestCard)), Vector(p1))
+    assertEquals(users(Table.start.legacy(p1, HighPriestCard,
+      active = false)), Vector.empty[PlayerId])
+    assertEquals(users(Table.start.legacy(p1, HighPriestCard),
+      among = Vector(p2, p3)), Vector.empty[PlayerId])
 
   test("a private start's candidates are every other player, wherever " +
       "their pawns stand"):

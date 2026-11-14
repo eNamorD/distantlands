@@ -8,6 +8,7 @@ import distantlands.gameplay.powers.travel.{AncestralLandsCard,
 import distantlands.gameplay.powers.wake.LightFingersCard
 import distantlands.gameplay.powers.economy.BelovedCard
 import distantlands.gameplay.powers.campaign.KeeperOfOrderCard
+import distantlands.gameplay.actions.negotiation.HighPriestCard
 import distantlands.gameplay.setup.FirstGameSetupFixture
 import distantlands.gameplay.setup.legacies._
 import distantlands.model.{FoundationNumber, Suit}

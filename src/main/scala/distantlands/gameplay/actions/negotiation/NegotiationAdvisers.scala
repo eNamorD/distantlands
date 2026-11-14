@@ -2,6 +2,7 @@ package distantlands.gameplay.actions.negotiation
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.{PowerAccess, RuleSourceFace}
+import distantlands.gameplay.chronicle.ChronicleLegacyRules
 import distantlands.gameplay.powerresolver.{PowerUse, PowerUseRestriction}
 import distantlands.model._
 
@@ -46,3 +47,13 @@ object NegotiationAdvisers:
           NegotiationReach.usable(catalog, ready, PowerUse.of(player,
             FestivalDistrictCard.intact.power, FestivalDistrictCard.id),
             restrictions)))
+
+  /** The players among `players` holding High Priest active, who may give
+    * secrets in a deal (Legacy in-play powers ruling 19): at most one. */
+  def highPriestUsers(catalog: ExecutableCatalog, ready: ReadyGame,
+      players: Vector[PlayerId],
+      restrictions: Vector[PowerUseRestriction]): Vector[PlayerId] =
+    ChronicleLegacyRules.holder(ready, HighPriestCard.id).toVector
+      .filter(holder => players.contains(holder) &&
+        NegotiationReach.usable(catalog, ready, PowerUse.of(holder,
+          HighPriestCard.power, HighPriestCard.id), restrictions))

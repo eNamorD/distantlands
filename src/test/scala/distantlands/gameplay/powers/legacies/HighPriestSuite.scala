@@ -1,5 +1,6 @@
 package distantlands.gameplay.powers.legacies
 
+import distantlands.gameplay.actions.negotiation.HighPriestCard
 import distantlands.gameplay.powers.NoteText
 import distantlands.model._
 import distantlands.testkit.{Look, PhasePowerHarness, Table}
