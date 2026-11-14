@@ -7,9 +7,9 @@ import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.ParkedDecisionAssertions
 import distantlands.model._
 import distantlands.model.OathState.Ready
-import distantlands.testkit.{Journal, Outcomes, Table}
+import distantlands.testkit.{Journal, Outcomes, ParkedNode, Table}
 import distantlands.testkit.Table.{p1, p2}
-import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** The Needle (L05): after its holder takes a banner, they may flip it
   * (Legacy in-play powers ruling 20; implementation rulings R12-R14). */
@@ -52,6 +52,19 @@ class TheNeedleSuite extends munit.FunSuite:
       "keep first, and flipping turns it to the Grand Council (R13)"):
     val taken = challenged(challenger(), Banner.PeoplesFavor)
     assert(asked(taken.state, Banner.PeoplesFavor))
+    present(accepted(ParkedNode.of(taken.state, catalog, powers)),
+      "a park") match
+      case ParkedNode.Decision(_, decide, awaiting) =>
+        assertEquals((decide.decisionId, awaiting),
+          ("power.the-needle.peoples-favor", p1))
+        decide.query match
+          case one: DecisionQuery.ChooseOne =>
+            assertEquals(one.options.collect {
+              case DecisionOption.Button(ref, label) => (ref, label) },
+              Vector(TheNeedle.keep -> "Keep this side",
+                TheNeedle.flip -> "Flip it"))
+          case other => fail(s"expected a choose-one, got $other")
+      case other => fail(s"expected a decision, parked on $other")
     val done = answer(taken.state, p1,
       TheNeedle.decisionId(Banner.PeoplesFavor), TheNeedle.flip)
     val banner = Outcomes.ready(done.state).game.current.banners.peoplesFavor
