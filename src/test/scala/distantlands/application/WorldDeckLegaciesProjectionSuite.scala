@@ -93,6 +93,12 @@ class WorldDeckLegaciesProjectionSuite extends munit.FunSuite:
     assert(!projector.project("deck", loaded, p1).walkerDecision
       .exists(_.query.nonEmpty))
 
+  test("after a Decline the holder does not identify the deck's Visions " +
+      "(R20)"):
+    val at = parkedAt(SetupProcedure.pawnDecisionId(p1),
+      chronicle = societyOnly).ready
+    assertEquals(seenBy(at, Some(p2)), Vector.empty)
+
   test("after Seer's answer the holder keeps knowing the deck's Visions, " +
       "and nobody else does (R20)"):
     val at = parkedAt(SetupProcedure.pawnDecisionId(p1), taking).ready
