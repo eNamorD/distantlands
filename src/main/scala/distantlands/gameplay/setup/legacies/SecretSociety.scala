@@ -43,7 +43,9 @@ case object SecretSociety extends ContributingPower:
   val tookVision: NoteKey = notes.key("secret-society-took", Vector(
     NotePart.Arg(0), NotePart.Text(" took a Vision as a facedown adviser with "),
     NotePart.Arg(1)))
-  /** "p2 discarded Tinker with Secret Society": a discard is public (R21). */
+  /** "p2 discarded Tinker with Secret Society": the line names each card by
+    * the knowledge rule, so a viewer who does not know it reads "a Denizen"
+    * (R21). */
   val discarded: NoteKey = notes.key("secret-society-discarded", Vector(
     NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1),
     NotePart.Text(" with "), NotePart.Arg(2)))

@@ -29,19 +29,24 @@ import distantlands.model.OathViolation._
  *   Sequence(Vector.empty)                               // window = SetupBanks
  *   Sequence(Vector.empty)                               // window = SetupWorldDeck
  *   Sequence(                                            // per participant
- *     Branch(Decide(pawn-placement, participant)),       // legal sites only
+ *     Branch(Decide(pawn-placement, participant)),       // legal sites, and
+ *                                                        // Quest's stay-off
  *     BuildOps(place the pawn)                           // window = SetupPawnPlaced
- *     Branch(Decide(secret-society discard, participant)) // over the limit
+ *     Branch(Decide(secret-society discard, participant)) // over the limit,
+ *                                                        // with a pawn
  *     Branch(                                            // Quiet Ambitions, with
  *       Decide(legacy-choice, participant),              // two drawn legacies
  *       BuildOps(return the other to the deck),
  *       Note(kept a legacy))
- *     Branch(                                            // only with a hand
- *       Decide(adviser-choice, participant),
- *       BuildOps(keep one adviser, discard the other two)),
- *     Branch(                                            // CR p. 13, Reveal Cards
- *       Decide(reveal, participant),                     // only when one can be
- *       BuildOps(reveal the chosen cards)))
+ *     QuestToDistantLands.swapStep(participant)          // no pawn, a card to
+ *                                                        // give (R31, R37)
+ *     Branch(                                            // with a pawn; a player
+ *       Branch(                                          // with none chooses and
+ *         Decide(adviser-choice, participant),           // reveals at their
+ *         BuildOps(keep one adviser, discard the rest)), // first Wake
+ *       Branch(                                          // CR p. 13, Reveal Cards
+ *         Decide(reveal, participant),                   // only when one can be
+ *         BuildOps(reveal the chosen cards))))
  *   ...
  *   Sequence(Vector.empty)                                // window = SetupEnd
  *   BeginTurn(firstPlayer, Wake))
@@ -60,8 +65,9 @@ import distantlands.model.OathViolation._
  * runs there yet.
  *
  * Reveal Cards lets a player turn any of their facedown advisers and relics
- * faceup, except site-only advisers. A `Reveal` does not trigger When Played
- * powers. The step asks nothing when the player has nothing to reveal.
+ * faceup, except site-only advisers; an Exile's facedown Vision goes to
+ * their Vision space (R38). It triggers no When Played power. The step asks
+ * nothing when the player has nothing to reveal.
  */
 object SetupProcedure:
   /** Choose Adviser and Reveal Cards, with Setup's lines. */

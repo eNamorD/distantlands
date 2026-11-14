@@ -204,7 +204,9 @@ private[gamelog] final class DetailLines(words: LogWords,
 private[gamelog] object DetailLines:
   /** The procedures whose peeks write no line: in the Chronicle only The
     * Ear (Throne) and The Bright Beacon (Beacon) peek (Legacy Chronicle
-    * powers R47), and in Setup only Seer (Legacy Setup powers R26). */
+    * powers R47); in Setup Seer's placement, Quest to Distant Lands' swap
+    * and an Oaths holder's re-peek of their Teeming World burials do
+    * (`OathsOfLoyalty.rememberBurials`; Legacy Setup powers R26). */
   val knowledgeOnlyPeeks: Set[ProcedureRef] = Set(
     TriggeredProcedureRef.ChronicleThrone, TriggeredProcedureRef.ChronicleBeacon,
     TriggeredProcedureRef.Setup)

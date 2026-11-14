@@ -130,7 +130,8 @@ class SecretSocietySuite extends munit.FunSuite:
     val resumed = at.parkedAt(LegacyKeep.decisionId(p2))()
     val after = resumed.ready
     assertEquals(after.game.current.player(p2).get.advisers.size, 3)
-    // The discard is public: its line names the card (R21).
+    // The line names the card by the knowledge rule; the holder knows it
+    // (R21).
     assert(NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
       SetupProcedure.noteKeys, resumed.events).exists(said =>
       said.text.startsWith("p2 discarded ") &&
