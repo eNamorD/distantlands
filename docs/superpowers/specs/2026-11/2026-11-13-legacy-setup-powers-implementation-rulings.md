@@ -306,22 +306,38 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   lineages' stored legacies at game start, because a first game has none:
   they return to the derived legacy deck before the legacy deal, so they
   can be drawn, and the deal's card accounting stays exact. The wipe needs
-  no new random outcome: the plan factory shuffles the starting
-  Chronicle's deck into the `legacyOrder` the Begin command already
-  journals. Starting advisers and starting relics are unchanged. No legacy
+  no new random outcome and no new journaled field: the plan factory
+  shuffles the starting Chronicle's deck into the `legacyOrder` the Begin
+  command already journals. What a `legacyOrder` must hold has changed,
+  though, so a `GameStarted` journaled by an earlier build may not replay
+  (R42). Starting advisers and starting relics are unchanged. No legacy
   acts in this mode. The setup mode is read from the Chronicle as saved,
   before the wipe; the game's baseline is the wiped Chronicle, so when
   stored legacies were a Chronicle's only history its pawns are placed as
-  in a first game (R41). *Reason:* the owner's ruling.
-  *Slice/files:* re-ruling; `EmpireSetupRules.startingChronicle`,
-  `GameStartRules`, `GeneratedFirstGamePlanFactory`.
+  in a first game (R41). The projection's starting digest is the saved
+  Chronicle's (`CampaignState.saved`), so a browser's saved entry still
+  matches it. *Reason:* the owner's ruling. *Slice/files:* re-ruling;
+  `EmpireSetupRules.startingChronicle`, `GameStartRules`,
+  `GeneratedFirstGamePlanFactory`, `GameProjection`.
 - **R41. A legacies-only history, once wiped.** When stored legacies were
   a Chronicle's only history, the wiped baseline of its first game played
   exile-only carries none: the game places its sites exile-only and its
   pawns as in a first game, at any site. *Second look:* this is the one
   place the mode and the baseline disagree. *Reason:* the owner named this
   mode a first game, and once its legacies are wiped such a Chronicle
-  differs from a first game only in where its sites come from; making the
-  pawn rule follow the mode would add a saved field, or spread the wipe
-  across four readers, for a rare import case. *Slice/files:* re-ruling;
-  `SetupPawnSites`, `ExileOnlySetupSuite`.
+  differs from a first game in its site placement and a few table facts:
+  the Citizenship powers stay on (only a first game ignores them), the
+  Reliquary is set aside, and the first player and Usurper Limiter start
+  as in Setup With No Empire. Making the pawn rule follow the mode would
+  add a saved field, or spread the wipe across four readers, for a rare
+  import case. *Slice/files:* re-ruling; `SetupPawnSites`,
+  `ExileOnlySetupSuite`.
+- **R42. Games journaled before R39 and R40 may not replay.** A
+  `GameStarted` journaled by an earlier build no longer replays in two
+  cases: an exile-only Chronicle with stored legacies, whose journaled
+  `legacyOrder` game start now refuses ("the deal does not hold the legacy
+  deck"); and a Chronicle whose Iron Hand holder's `previousPlayer` reads
+  differently under R39. No release note or doc claims compatibility for
+  such games. *Reason:* the alpha data policy treats releases as
+  incompatible by default, the same trade-off as R10. *Slice/files:*
+  re-ruling; `GameStartRules`, `ChronicleRecord`.
