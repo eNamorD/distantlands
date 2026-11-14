@@ -114,7 +114,8 @@ object Situation:
     * demands one, every other option in another section -- the "keep one,
     * discard the rest" shape of Setup's adviser choice. `ChooseMany`: the
     * first `min` available options. `ChooseAmount`: `min`. `Distribute`:
-    * each slot its minimum, when those sum within the bounds. Anything else
+    * each slot its minimum, when those sum within the bounds.
+    * `ChooseAmounts`: the suggested amounts. Anything else
     * is not answered by default and fails the walk naming the decision.
     */
   val defaultAnswer: Answers =
@@ -137,6 +138,10 @@ object Situation:
     case Park(Decide(_, _, amount: DecisionQuery.ChooseAmount, _, _, _, _),
         _, _, _) =>
       DecisionAnswer.ChooseAmountAnswer(amount.min)
+    case Park(Decide(_, _, amounts: DecisionQuery.ChooseAmounts, _, _, _, _),
+        _, _, _) if amounts.slots.forall(_.suggested.nonEmpty) =>
+      DecisionAnswer.DistributeAnswer(amounts.slots.map(slot =>
+        DistributeAmount(slot.ref, slot.suggested.get)))
     case Park(Decide(_, _, spread: DecisionQuery.Distribute, _, _, _, _),
         _, _, _) if spread.slots.map(_.minimum).sum >= spread.minTotal &&
           spread.slots.map(_.minimum).sum <= spread.maxTotal =>

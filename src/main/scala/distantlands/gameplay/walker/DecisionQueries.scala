@@ -254,6 +254,41 @@ object DecisionQueries:
               "suggests a distribution it would not accept"), Right(_))
       yield ()
 
+    case DecisionQuery.ChooseAmounts(slots, distinct, heading,
+        confirmLabel) =>
+      val refs = slots.map(_.ref)
+      val suggested = slots.flatMap(_.suggested)
+      val lowest = slots.map(_.minimum).minOption.getOrElse(0).toLong
+      val highest = slots.map(_.maximum).maxOption.getOrElse(0).toLong
+      for
+        _ <- require(heading.exists(_.trim.nonEmpty), decisionId,
+          "declares no heading")
+        _ <- require(confirmLabel.trim.nonEmpty, decisionId,
+          "declares a blank confirm label")
+        _ <- require(slots.nonEmpty, decisionId, "declares no slot")
+        _ <- require(refs.distinct.size == refs.size, decisionId,
+          "declares duplicate options")
+        _ <- refs.find(DecisionOption.forRef(_).isEmpty) match
+          case Some(ref) => reject(decisionId,
+            s"declares slot ${label(ref)}, which has no presentable option")
+          case None => Right(())
+        _ <- slots.find(s => s.minimum < 0 || s.minimum > s.maximum) match
+          case Some(s) => reject(decisionId, s"declares slot ${label(s.ref)} " +
+            s"with bounds ${s.minimum}..${s.maximum}")
+          case None => Right(())
+        _ <- require(!distinct || slots.size.toLong <= highest - lowest + 1,
+          decisionId, "declares more distinct slots than its bounds hold")
+        _ <- require(slots.exists(s => s.minimum < s.maximum), decisionId,
+          "declares no variable slot, leaving nothing to decide")
+        _ <- require(suggested.isEmpty || suggested.size == slots.size,
+          decisionId, "suggests amounts for some slots but not all")
+        _ <- if suggested.isEmpty then Right(())
+          else acceptsAmounts(decisionId, slots, distinct,
+              slots.zip(suggested).map((s, n) => DistributeAmount(s.ref, n)))
+            .fold(_ => reject(decisionId,
+              "suggests amounts it would not accept"), Right(_))
+      yield ()
+
   /** Check on a submitted answer: the failure here is a bad or stale
     * submission, not a bug in the tree.
     *
@@ -319,6 +354,12 @@ object DecisionQueries:
           distribute.minTotal, distribute.maxTotal, amounts)
       case _ =>
         reject(decisionId, "expects a distribution answer")
+
+    case amounts: DecisionQuery.ChooseAmounts => answer match
+      case DecisionAnswer.DistributeAnswer(placed) =>
+        acceptsAmounts(decisionId, amounts.slots, amounts.distinct, placed)
+      case _ =>
+        reject(decisionId, "expects one amount per slot")
 
     case negotiate: DecisionQuery.Negotiate =>
       val (participants, bounds, acceptors) =
@@ -388,6 +429,30 @@ object DecisionQueries:
         if minTotal == maxTotal then
           s"distributes an amount other than its total of $maxTotal"
         else s"distributes an amount outside $minTotal..$maxTotal")
+    yield ()
+
+  /** One amount per declared slot, each within its bounds, and with
+    * `distinct` no two equal. */
+  private def acceptsAmounts(decisionId: String,
+      slots: Vector[DistributeSlot], distinct: Boolean,
+      amounts: Vector[DistributeAmount]): Either[OathViolation, Unit] =
+    val declared = slots.map(_.ref)
+    val named = amounts.map(_.ref)
+    for
+      _ <- require(named.forall(declared.contains), decisionId,
+        "names an option it does not offer")
+      _ <- require(named.distinct.size == named.size, decisionId,
+        "names an option more than once")
+      _ <- require(declared.forall(named.contains), decisionId,
+        "leaves an option without an amount")
+      _ <- slots.find(s => amounts.find(_.ref == s.ref)
+          .exists(a => a.amount < s.minimum || a.amount > s.maximum)) match
+        case Some(s) => reject(decisionId, s"gives ${label(s.ref)} an amount " +
+          s"outside ${s.minimum}..${s.maximum}")
+        case None => Right(())
+      _ <- require(!distinct ||
+          amounts.map(_.amount).distinct.size == amounts.size, decisionId,
+        "gives two options the same amount")
     yield ()
 
   private def acceptsTerms(decisionId: String, participants: Vector[PlayerId],

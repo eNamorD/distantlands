@@ -613,6 +613,17 @@ object DecisionQuery:
         heading: Option[String], confirmLabel: String): Distribute =
       Distribute(slots, total, total, heading, confirmLabel)
 
+  /** One amount per slot, each within its own bounds, and with `distinct`
+    * no two equal (Legacy Setup powers design, ruling 15): Seer places each
+    * Vision at a position of the world deck. Answered by a
+    * [[DecisionAnswer.DistributeAnswer]], one amount per slot (R18). Both
+    * labels are required. Either every slot suggests an amount or none
+    * does, and the suggestions must be an accepted answer.
+    */
+  final case class ChooseAmounts(slots: Vector[DistributeSlot],
+      distinct: Boolean, heading: Option[String], confirmLabel: String)
+      extends DecisionQuery
+
   /** A negotiation deal, as a snapshot the action rebuilds from live state and
     * the recorded answers on every command: who is in it, everyone's current
     * terms, who has accepted, what each author may still offer, and who may
