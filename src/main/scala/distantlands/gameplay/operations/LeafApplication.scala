@@ -118,4 +118,6 @@ private[operations] object LeafApplication:
       ChronicleStateOperations.foundationRestored(ready, number)
     case FoundationAltered(number, source) =>
       ChronicleStateOperations.foundationAltered(ready, number, source)
+    case LegaciesScored(legacies) =>
+      ChronicleStateOperations.legaciesScored(ready, legacies)
     case placement: PlaceAtlasSite => AtlasOperations.placeSite(ready, placement)

@@ -230,6 +230,9 @@ final case class CurrentGameState(
     setAsideEdifices: Vector[EdificeId] = Vector.empty,
     // Who holds each Chronicle task card (Assign Tasks, CR p. 36).
     chronicleTasks: Map[ChronicleTask, PlayerId] = Map.empty,
+    // The legacies scored this game, which no later scoring counts again
+    // (Legacy Chronicle powers design, ruling 8).
+    scoredLegacies: Set[LegacyId] = Set.empty,
     // Cards gathered for a shuffle: the World task's dealt denizens (CR p.
     // 38), stack by stack, the facedown stack last when the protected stack
     // leaves; or the discard piles Autumn Wind deals out again.

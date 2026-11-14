@@ -133,3 +133,16 @@ private[operations] object ChronicleStateOperations:
         FoundationState(FoundationFace.Altered, sources + source)))),
       InvalidDescription(
         s"Foundation $number is already altered by ${source.value}"))
+
+  /** `legacies` join the scored set; one already in it, or named twice, is
+    * a doubled scoring. */
+  def legaciesScored(ready: ReadyGame, legacies: Vector[LegacyId])
+      : Either[OperationError, ReadyGame] =
+    val scored = ready.game.current.scoredLegacies
+    legacies.find(scored) match
+      case Some(legacy) => Left(InvalidDescription(
+        s"${legacy.value} has already scored this game"))
+      case None if legacies.distinct.size != legacies.size =>
+        Left(InvalidDescription("a scoring names each legacy once"))
+      case None => Right(ready.updateCurrent(current => current.copy(
+        scoredLegacies = current.scoredLegacies ++ legacies)))

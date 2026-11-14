@@ -77,6 +77,14 @@ final case class FoundationRestored(number: FoundationNumber)
 final case class FoundationAltered(number: FoundationNumber,
     source: LegacyId) extends ChronicleOperation, LeafOperation
 
+/** Records the legacies scored this game (Chronicler, "Each legacy may only
+  * be scored once per game"; Legacy Chronicle powers design, ruling 8). By
+  * legacy, not by player: Score Lineage Points and Iron Hand's scoring skip
+  * them. A legacy already recorded is a doubled operation. */
+final case class LegaciesScored(legacies: Vector[LegacyId])
+    extends ChronicleOperation, LeafOperation:
+  require(legacies.nonEmpty, "a scoring records at least one legacy")
+
 /** Takes the site at `end` of the Atlas, with the cards stored on it, and
   * places it in the next slot, which is in `region`, as a bandit site
   * (Foundation I, "populate"): its edifice ruined, its denizens faceup, its

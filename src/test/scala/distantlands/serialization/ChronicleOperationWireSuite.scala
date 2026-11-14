@@ -70,3 +70,17 @@ class ChronicleOperationWireSuite extends munit.FunSuite:
     assert(refusedPath(_("region") = "sea").endsWith(".region"))
     assert(refusedPath(_("capacity") = -1).endsWith(".capacity"))
     assert(refusedPath(_("relicSlots") = -1).endsWith(".relicSlots"))
+
+  test("scored legacies name each legacy, and an empty list decodes to a " +
+      "typed WireError"):
+    val encoded = encodedStreamThatRoundTrips("legacies-scored",
+      Vector(recordedOperation(LegaciesScored(Vector(LegacyId("L02"),
+        LegacyId("L22"))))))
+    assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
+      ujson.Obj("kind" -> "legacies-scored",
+        "legacies" -> ujson.Arr("L02", "L22")))
+    val injected = ujson.read(encoded).arr
+    injected(0)("payload")("step")("ops")(0)("legacies") = ujson.Arr()
+    assertEquals(GameEventWire.decodeStream(ujson.write(injected)),
+      Left(WireError.InvalidValue("$[0].payload.step.ops[0].legacies",
+        "scores at least one legacy")))

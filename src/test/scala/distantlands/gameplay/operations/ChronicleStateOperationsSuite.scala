@@ -1,6 +1,6 @@
 package distantlands.gameplay.operations
 
-import distantlands.catalog.holding.{PathfinderCard, WealthyCard}
+import distantlands.catalog.holding.{PathfinderCard, SeerCard, WealthyCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.gameplay.setup.FirstGameSetupFixture
@@ -203,3 +203,16 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     val ready = Table.start.ready
     val card = boxedOf(ready, Suit.Beast).head
     rejected(run(ready, SuitedReserveFromBox(Suit.Beast, Vector(card, card))))
+
+  test("scored legacies are recorded for the rest of the game (ruling 8)"):
+    val after = accepted(run(Table.start.ready,
+      LegaciesScored(Vector(WealthyCard.id, SeerCard.id))))
+    assertEquals(after.game.current.scoredLegacies,
+      Set(WealthyCard.id, SeerCard.id))
+
+  test("a legacy scores once per game"):
+    val once = accepted(run(Table.start.ready,
+      LegaciesScored(Vector(WealthyCard.id))))
+    rejected(run(once, LegaciesScored(Vector(SeerCard.id, WealthyCard.id))))
+    rejected(run(Table.start.ready,
+      LegaciesScored(Vector(SeerCard.id, SeerCard.id))))
