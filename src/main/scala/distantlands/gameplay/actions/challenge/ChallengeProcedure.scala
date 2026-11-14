@@ -182,7 +182,7 @@ object ChallengeProcedure:
           // or the note must read the state as Travel's does.
           Note(ProcedureNotes.id(ActionRef.Challenge), tookNote(actor,
             banner, BannerRules.holder(ready.game.current, banner))),
-          custody(ready, actor, banner)),
+          custody(actor, banner)),
           Some(PowerWindow.ChallengePlacement))))
       .getOrElse(Vector[Operation](BuildOps((_, _) => Left(
         OathViolation.InvalidEventOrder(
@@ -227,14 +227,16 @@ object ChallengeProcedure:
   /** The banner moves to the challenger by a required `Take`: the payment
     * buys it, so a refused custody fails the path and the search hides that
     * banner. The walker checks the `Take` whole and records its `Move`, which
-    * the Game Log reads.
+    * the Game Log reads. The holder is read when the take runs, never when
+    * the tree is built: a walk that parks after the take (The Needle) is
+    * rebuilt on the state the take left, where the challenger already holds
+    * it (Legacy in-play powers R20).
     */
-  private def custody(ready: ReadyGame, actor: PlayerId,
-      banner: Banner): Operation =
-    Take(Piece.Banner(banner), actor,
-      BannerRules.holder(ready.game.current, banner)
+  private def custody(actor: PlayerId, banner: Banner): Operation =
+    BuildOps((live, _) => Right(Vector(Take(Piece.Banner(banner), actor,
+      BannerRules.holder(live.game.current, banner)
         .fold[Location](Location.SharedBank)(Location.PlayArea(_)),
-      Location.PlayArea(actor), required = true)
+      Location.PlayArea(actor), required = true))), required = true)
 
   private def bannerOf(pending: PendingTree): Option[Banner] =
     pending.answered.collectFirst:
