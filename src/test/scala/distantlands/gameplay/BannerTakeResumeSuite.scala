@@ -4,6 +4,7 @@ import distantlands.gameplay.BannerTakeParkFixture.{ParkAfterBannerTake,
   decisionId, resumeAnswer}
 import distantlands.gameplay.actions.{ProcedureNotes, VisionRules}
 import distantlands.gameplay.actions.campaign.CampaignNotes
+import distantlands.gameplay.actions.challenge.ChallengeProcedure
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powerresolver.ContributingPower
@@ -19,8 +20,8 @@ import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.legacies.{TheStandardBearer,
   TheStandardBearerCard}
-import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
-  WalkerPowers}
+import distantlands.gameplay.walker.{LogNoted, ProcedureWalker,
+  WalkerOutcome, WalkerPowers}
 import distantlands.model._
 import distantlands.model.OathState.Ready
 import distantlands.testkit.{Answers, Journal, Outcomes, PlacementPicks,
@@ -181,3 +182,28 @@ class BannerTakeResumeSuite extends munit.FunSuite:
     assertEquals(NoteText.said(ProcedureNotes.id(ActionRef.Campaign),
       CampaignNotes.noteKeys, done.transition.events).map(_.key)
       .filter(_ == "took"), Vector("took"))
+
+  test("Challenge from a rival: the line names the holder before the take, " +
+      "once, and the resumed walk keeps the banner with the challenger"):
+    // p1 and p2 stand at Ancient City; p2 holds the People's Favor with 2
+    // favor, and p1, with 6 favor, challenges for it, bidding 3.
+    val board = Table.start.pawn(p1, at = AncientCitySite)
+      .pawn(p2, at = AncientCitySite).favor(p1, 6)
+      .secrets(p1, faceUp = 6, faceDown = 4)
+      .peoplesFavor(Some(p2), favor = 2).ready
+    val started = accepted(rules.startWalker(Ready(board), ActionRef.Challenge,
+      p1))
+    val chosen = answer(started.state, p1, "challenge.banner",
+      DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.Banner(Banner.PeoplesFavor)))
+    val bid = answer(chosen.state, p1, "challenge.amount",
+      DecisionAnswer.ChooseAmountAnswer(3))
+    val resume = resumedWith(board,
+      started.events ++ chosen.events ++ bid.events, p1)
+    val keys = ChallengeProcedure.noteKeys
+    val lines = (bid.events ++ resume.events).collect {
+      case LogNoted(_, note, _) if keys.exists(_.name == note.key) =>
+        NoteText.sentence(keys, note) }
+    assertEquals(lines, Vector("Took People's Favor from p2 with 3 favor"))
+    assertEquals(Outcomes.ready(resume.state).game.current.banners
+      .peoplesFavor.holder, Some(p1))

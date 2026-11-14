@@ -174,14 +174,15 @@ object ChallengeProcedure:
           payment(actor, banner, amount + bonus),
           // Directly after the payment, so `previous` is the payment and the
           // note reads what actually left the play area rather than the
-          // amount answered. The holder is read here, before the take moves
-          // the banner, which is the holder the deleted rule read off the
-          // recorded `Take`. No power contributes at `ChallengePlacement`; a
-          // first one that inserted a leaf between the payment and the note
-          // would leave the note reading its step instead, so it must append
-          // or the note must read the state as Travel's does.
+          // amount answered, and the holder from the state the payment ran
+          // on, before the take moves the banner: read at walk time, as the
+          // custody reads it (Legacy in-play powers R20). No power
+          // contributes at `ChallengePlacement`; a first one that inserted a
+          // leaf between the payment and the note would leave the note
+          // reading its step instead, so it must append or the note must
+          // read the state as Travel's does.
           Note(ProcedureNotes.id(ActionRef.Challenge), tookNote(actor,
-            banner, BannerRules.holder(ready.game.current, banner))),
+            banner)),
           custody(actor, banner)),
           Some(PowerWindow.ChallengePlacement))))
       .getOrElse(Vector[Operation](BuildOps((_, _) => Left(
@@ -190,16 +191,18 @@ object ChallengeProcedure:
 
   /** What the challenger put on the banner, in the step before the note,
     * and who held it. Nothing paid writes nothing. */
-  private def tookNote(actor: PlayerId, banner: Banner,
-      holder: Option[PlayerId])(states: NoteStates): Option[LogNote] =
-    states.previous.map(step => banner match
+  private def tookNote(actor: PlayerId, banner: Banner)(states: NoteStates)
+      : Option[LogNote] = states.previous.flatMap { step =>
+    val paid = banner match
       case Banner.PeoplesFavor => -NoteSupport.favor(step, actor)
-      case Banner.DarkestSecret => -NoteSupport.secrets(step, actor))
-      .filter(_ > 0).map(paid => holder match
+      case Banner.DarkestSecret => -NoteSupport.secrets(step, actor)
+    val holder = BannerRules.holder(step._1.game.current, banner)
+    Option.when(paid > 0)(holder match
         case Some(rival) => fromPlayer(banner).sourceless(
           NoteArg.Banner(banner), NoteArg.Player(rival), NoteArg.Number(paid))
         case None => fromBank(banner).sourceless(
           NoteArg.Banner(banner), NoteArg.Number(paid)))
+  }
 
   private def fromPlayer(banner: Banner): NoteKey = banner match
     case Banner.PeoplesFavor => tookFromPlayerWithFavor
