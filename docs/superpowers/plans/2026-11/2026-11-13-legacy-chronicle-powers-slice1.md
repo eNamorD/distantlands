@@ -51,67 +51,37 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-These change behaviour, data or the public shape of the code, and wait for
-the orchestrator's rulings. The tasks below are written to each
-recommendation; a different ruling is folded in before execution.
+The plan's open questions were ruled on 2026-11-13 as implementation
+rulings R1-R6 ([rulings](../../specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)):
 
-1. **Do dormant legacies score under Chronicler?** At Chronicler's step,
-   after Sun step 3, Exiles may hold newly dormant legacies (an Exile
-   winner's come back only at Crown Chancellor, after Chronicler).
-   Options: (a) every legacy held, dormant included, as ruling 7's "each
-   legacy held" reads and as `LineageScoring.bonus` counts today;
-   (b) only active legacies. Recommendation: (a). A dormant legacy has no
-   power (ruling 1), but scoring is not its power; it is the Chronicler
-   holder's.
-2. **Which legacies `LegaciesScored` records.** Options: (a) every legacy
-   each seated player holds when Chronicler resolves, including those whose
-   share is 0; (b) only legacies that earned a point. Recommendation: (a):
-   the card says all players "score their legacies", and a legacy that
-   scores 0 has still been scored. A consequence: declaring early (before
-   Shape Empire and Build Edifice) can deny the winner's bonus. Only
-   Chronicler records in this slice; Score Lineage Points only skips
-   (ruling 8 says it skips them), and slice 4 decides whether Iron Hand's
-   scoring records.
-3. **The scorepad's roles when Chronicler scores first.** Points recorded
-   by Chronicler open the game's era row in the Sun, before Crown
-   Chancellor, so `lineagePointsScored` writes each entry's `endingRole`
-   from the roles before the Crown and Offer Citizenship. A winning Exile
-   would be recorded as an Exile, against Chronicle ruling 19 ("circle the
-   Chancellor's score"). Options: (a) `RoleChanged` also updates the open
-   row's entry for that lineage, so `endingRole` follows the lineage's role
-   until the Chronicle ends (today the row opens at Throne step 6, after
-   every role change, so nothing else moves); (b) Chronicler holds its
-   points aside and records them at Score Lineage Points; (c) accept the
-   pre-Crown roles. Recommendation: (a), Task 5.
-4. **Chronicler's lines.** Spec: "p2 declared Chronicler", then one line in
-   the bonus format per player who scores. Proposed: "p2 scored 3 lineage
-   points (1 from Discord, 2 from Arcane)", the bonus format without the
-   base (`LineageScoring.scoredWithBonus` minus "N base"), posted as
-   `Delta`. The declaration and Gatekeeper's "p2 took Seer from p3 with
-   Gatekeeper" post as `Decision`. Each legacy named in a line is a card
-   span. Recommendation: as proposed.
-5. **The two new windows' names and keys.**
-   `PowerWindow.ChronicleBeforeResolveLegacies`
-   (`chronicle.sun.before-resolve-legacies`), between Reveal Relics and
-   Flip Legacies, and `PowerWindow.ChronicleAfterResolveLegacies`
-   (`chronicle.sun.after-resolve-legacies`), between Shuffle and Crown, after
-   the cards' printed timings ("Before players resolve legacies", "After
-   Resolve Legacies"). Window keys are not serialized. Recommendation: as
-   proposed.
-6. **The decisions' shapes.** Gatekeeper: `ChooseMany(0, 1)` over the
-   takeable legacies as `DecisionOptionRef.Legacy` options, confirm
-   "Take", asked only when at least one legacy is takeable (as Offer
-   Citizenship's optional choose-many). Chronicler: `ChooseOne` of two
-   buttons, Decline first then Declare (as Offer Citizenship's answer),
-   asked whenever its holder holds it active. Decision ids
-   `chronicle.sun.legacy.gatekeeper.<player>` and
-   `chronicle.sun.legacy.chronicler.<player>` (ruling 3), narrated by the
-   prefix `chronicle.sun.legacy.`, so a decline writes no line (as an empty
-   Citizenship offer writes none). The plainest answer is a decline, so
-   existing tests that hold these cards are unchanged. Recommendation: as
-   proposed.
+- **R1** (Task 6): every legacy a seated player holds scores under
+  Chronicler, dormant ones included, the set Score Lineage Points would
+  score.
+- **R2** (Task 6): `LegaciesScored` records every legacy each seated
+  player holds when Chronicler resolves, those scoring 0 included. Only
+  Chronicler records in this slice; Score Lineage Points only skips
+  (design ruling 8), and slice 4 decides for Iron Hand.
+- **R3** (Task 5): `RoleChanged` updates the lineage's entry in this
+  game's open era row, so a row Chronicler opens in the Sun still records
+  the roles after the Crown (Chronicle ruling 19).
+- **R4** (Tasks 4 and 6): "p2 declared Chronicler" (decision) and "p1
+  scored 2 lineage points (2 from Beast)" (delta) for each player who
+  scores; "p2 took Seer from p3 with Gatekeeper" (decision). Legacies in a
+  line are card spans.
+- **R5** (Task 4): `PowerWindow.ChronicleBeforeResolveLegacies`
+  (`chronicle.sun.before-resolve-legacies`), between Reveal Relics and
+  Flip Legacies, and `PowerWindow.ChronicleAfterResolveLegacies`
+  (`chronicle.sun.after-resolve-legacies`), between Shuffle and Crown.
+- **R6** (Tasks 4 and 6): Chronicler is a choose-one of two buttons,
+  Decline first, then Declare, asked whenever its holder holds it active.
+  Gatekeeper is a choose-one, Decline first, then one legacy option per
+  takeable legacy with its owner named, asked only when one is takeable.
+  Ids `chronicle.sun.legacy.<power>.<player>`, narrated by the prefix
+  `chronicle.sun.legacy.`, so a decline writes no line. The plainest
+  answer is a decline, so existing tests that hold these cards are
+  unchanged.
 
 ## Deviations from the spec
 
@@ -127,6 +97,10 @@ recommendation; a different ruling is folded in before execution.
 - `ResolveLegaciesSuite`'s private Sun walk moves to `ChronicleWalk` as
   `ChronicleWalk.through`, so the new suites share it (the slice 3 plan's
   own advice).
+- R6's "its owner named" is a detail line on the legacy option's row,
+  "Held by p3", which `DecisionOptionRows` adds to any legacy option held
+  by a seated player other than the viewer, rather than a new option
+  wrapper in `model`.
 
 ## Global Constraints
 
@@ -654,8 +628,11 @@ git log -3
   (import)
 - Modify: `src/main/scala/distantlands/application/gamelog/ProcedureLog.scala`
   (`chronicleSun`)
+- Modify: `src/main/scala/distantlands/application/DecisionOptionRows.scala`
+  (a legacy option names its holder)
 - Modify: `src/test/scala/distantlands/gameplay/chronicle/ChronicleWindowsSuite.scala`
 - Create: `src/test/scala/distantlands/gameplay/chronicle/legacies/GatekeeperSuite.scala`
+- Modify: `src/test/scala/distantlands/application/LegacyIdentitySuite.scala`
 - Modify (imports): `src/test/scala/distantlands/catalog/LegacyCardDataSuite.scala`
 - Modify: `src/test/resources/powers/unimplemented.txt`,
   `src/test/resources/notes/declared-keys.txt` (rewritten)
@@ -669,7 +646,10 @@ git log -3
   ChronicleExileDormancy, ChronicleLegacyCap, ChronicleShuffleLegacies,
   ChronicleAfterResolveLegacies, ChronicleCrown, ChronicleAssignTasks`;
   `GatekeeperCard`; `Gatekeeper` (power); `Gatekeeper.decisionId(player)`
-  = `s"chronicle.sun.legacy.gatekeeper.${player.value}"`;
+  = `s"chronicle.sun.legacy.gatekeeper.${player.value}"`, a choose-one of
+  `Gatekeeper.decline` (`DecisionOptionRef.Button("decline")`) then the
+  takeable legacies (R6); a legacy option held by another seated player
+  names its holder in its row ("Held by p3");
   `Gatekeeper.took: NoteKey` ("{0} took {1} from {2} with {3}");
   `LegacyChroniclePowers.sunNoteKeys: Vector[NoteKey]`, the powers' Sun
   lines, which `ChronicleSunProcedure.noteKeys` adds.
@@ -725,13 +705,13 @@ class GatekeeperSuite extends munit.FunSuite:
 
   private def taking(legacy: LegacyId): PartialFunction[Decide, DecisionAnswer] =
     case decide if decide.decisionId == Gatekeeper.decisionId(p2) =>
-      DecisionAnswer.ChooseManyAnswer(Vector(DecisionOptionRef.Legacy(legacy)))
+      DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Legacy(legacy))
 
   private def asked(run: ChronicleWalk.Run): Option[Decide] =
     run.asked.find(_.decisionId == Gatekeeper.decisionId(p2))
 
   private def offered(run: ChronicleWalk.Run): Vector[DecisionOptionRef] =
-    asked(run).get.query.asInstanceOf[DecisionQuery.ChooseMany]
+    asked(run).get.query.asInstanceOf[DecisionQuery.ChooseOne]
       .options.map(_.ref)
 
   private def legaciesOf(ready: ReadyGame, player: PlayerId): Vector[LegacyId] =
@@ -750,13 +730,12 @@ class GatekeeperSuite extends munit.FunSuite:
   test("Gatekeeper is implemented"):
     assert(PowerImplementationStatus.implemented(GatekeeperCard.power.id))
 
-  test("the holder is offered exactly the enemies' active legacies whose " +
-      "goal they meet, at most one, or none"):
+  test("the holder is offered Decline, then exactly the enemies' active " +
+      "legacies whose goal they meet (R6)"):
     val run = sun(secretKeeper.legacy(p3, SeerCard)
       .legacy(p3, IronHandCard).legacy(p1, RivalCard, active = false))
-    val query = asked(run).get.query.asInstanceOf[DecisionQuery.ChooseMany]
-    assertEquals((query.min, query.max), (0, 1))
-    assertEquals(offered(run), Vector(DecisionOptionRef.Legacy(SeerCard.id)))
+    assertEquals(offered(run), Vector(Gatekeeper.decline,
+      DecisionOptionRef.Legacy(SeerCard.id)))
     assertEquals(asked(run).get.owner, p2)
 
   test("the taken legacy joins the holder active, with a line"):
@@ -811,7 +790,8 @@ class GatekeeperSuite extends munit.FunSuite:
     val run = sun(table, taking(WealthyCard.id).orElse {
       case decide if decide.decisionId == ResolveLegacies.capDecisionId(p2) =>
         DecisionAnswer.ChooseManyAnswer(Vector(
-          DecisionOptionRef.Legacy(IronHandCard.id))) })
+          DecisionOptionRef.Legacy(IronHandCard.id)))
+    })
     assertEquals(legaciesOf(run.ready, p2).toSet,
       Set(GatekeeperCard.id, SeerCard.id, WealthyCard.id))
     assertEquals(run.asked.map(_.decisionId).filter(_.startsWith(
@@ -823,9 +803,22 @@ class GatekeeperSuite extends munit.FunSuite:
 which rebuilds the walk from the journaled state: every answer here is a
 resumed walk.)
 
+In `LegacyIdentitySuite`, the owner named (R6):
+
+```scala
+  test("a legacy option held by another seated player names its holder, " +
+      "and its own holder reads no such line (R6)"):
+    val index = ready.game.cardIndex.toOption
+    val option = DecisionOption.Legacy(DecisionOptionRef.Legacy(SeerCard.id))
+    assertEquals(rows.project(ready, Some(p2), index, option)
+      .map(_.details), Some(Vector("Held by p1")))
+    assertEquals(rows.project(ready, Some(p1), index, option)
+      .map(_.details), Some(Vector.empty))
+```
+
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly distantlands.gameplay.chronicle.legacies.GatekeeperSuite distantlands.gameplay.chronicle.ChronicleWindowsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.legacies.GatekeeperSuite distantlands.gameplay.chronicle.ChronicleWindowsSuite distantlands.application.LegacyIdentitySuite"`
 Expected: FAIL to compile: `Not found: GatekeeperCard` in the new package.
 
 - [ ] **Step 3: Implement**
@@ -872,6 +865,7 @@ case object Gatekeeper extends ContributingPower:
 
   def decisionId(player: PlayerId): String =
     s"chronicle.sun.legacy.gatekeeper.${player.value}"
+  val decline: DecisionOptionRef.Button = DecisionOptionRef.Button("decline")
 
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleSun)
   private val notes = NoteSet(noteId)
@@ -886,12 +880,13 @@ case object Gatekeeper extends ContributingPower:
       holder => takeable(catalog, state, holder) match
         case Vector() => Vector.empty
         case options => Vector(
-          Decide(decisionId(holder), holder, DecisionQuery.ChooseMany(0, 1,
-            options.map((_, legacy) =>
-              DecisionOption.Legacy(DecisionOptionRef.Legacy(legacy))),
+          Decide(decisionId(holder), holder, DecisionQuery.ChooseOne(
+            DecisionOption.Button(decline, "Decline") +:
+              options.map((_, legacy) =>
+                DecisionOption.Legacy(DecisionOptionRef.Legacy(legacy))),
             heading = Some("Gatekeeper: you may take an active legacy " +
               "from an enemy whose goal you meet"),
-            confirm = Some(CountedConfirm("Take", "legacy", "legacies")))),
+            confirmVerb = Some("Take"))),
           Branch((_, pending) => taken(holder, options, pending)))))
 
   /** Each seated enemy's active legacies whose goal `holder` meets, with
@@ -909,8 +904,8 @@ case object Gatekeeper extends ContributingPower:
 
   private def taken(holder: PlayerId, options: Vector[(PlayerId, LegacyId)],
       pending: PendingTree): Vector[Operation] =
-    val chosen = PowerAnswers.many(pending, decisionId(holder))
-      .getOrElse(Vector.empty).collect { case DecisionOptionRef.Legacy(id) => id }
+    val chosen = PowerAnswers.one(pending, decisionId(holder)).toVector
+      .collect { case DecisionOptionRef.Legacy(id) => id }
     options.filter((_, legacy) => chosen.contains(legacy)).flatMap(
       (enemy, legacy) => Vector(
         BuildOps((live, _) => Right(Vector(Move(Piece.Card(legacy),
@@ -931,6 +926,11 @@ case object Gatekeeper extends ContributingPower:
 `ProcedureLog.chronicleSun`: add `Gatekeeper.took -> LogKind.Decision`
 and the prefix `"chronicle.sun.legacy."` to `narratedPrefixes`.
 
+`DecisionOptionRows.project`, the `Legacy` case: when the legacy lies in a
+seated player's lineage and that player is not the viewer, add the detail
+`s"Held by ${presentation.playerLabel(holder)}"`, so Gatekeeper's options
+name their owners without a new option kind.
+
 - [ ] **Step 4: Run the tests to verify they pass, and rewrite the snapshots**
 
 Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.gameplay.cards.CardCatalogSuite distantlands.catalog.* distantlands.application.gamelog.*"`
@@ -950,7 +950,9 @@ git add src/main/scala/distantlands/model/PowerWindow.scala \
   src/main/scala/distantlands/catalog/holding/HoldingLegacies.scala \
   src/main/scala/distantlands/gameplay/cards/NewFoundations.scala \
   src/main/scala/distantlands/application/gamelog/ProcedureLog.scala \
+  src/main/scala/distantlands/application/DecisionOptionRows.scala \
   src/test/scala/distantlands/gameplay/chronicle \
+  src/test/scala/distantlands/application/LegacyIdentitySuite.scala \
   src/test/scala/distantlands/catalog/LegacyCardDataSuite.scala \
   src/test/resources/powers/unimplemented.txt \
   src/test/resources/notes/declared-keys.txt
@@ -962,9 +964,7 @@ git log -3
 
 ---
 
-### Task 5: The open scorepad row follows role changes (open question 3)
-
-Written to recommendation (a); dropped or rewritten if the ruling differs.
+### Task 5: The open scorepad row follows role changes (R3)
 
 **Files:**
 - Modify: `src/main/scala/distantlands/gameplay/operations/ChronicleStateOperations.scala`
@@ -1007,7 +1007,7 @@ campaign.baseline.era.games.size`, replace the last game's entry for
 `lineage` with `entry.copy(endingRole = role)`. Say in both doc comments
 that an entry's `endingRole` follows its lineage's role until the
 Chronicle ends, since Chronicler can open the row in the Sun (Legacy
-Chronicle powers implementation ruling, open question 3).
+Chronicle powers implementation ruling R3).
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
@@ -1172,7 +1172,7 @@ class ChroniclerSuite extends munit.FunSuite:
       Vector(Set(TheNeedleCard.id, ChroniclerCard.id, SeerCard.id)))
 ```
 
-If open question 3 is ruled (a), add:
+And (R3):
 
 ```scala
   test("an Exile winner's scorepad entry is the Chancellor's though " +
@@ -1284,11 +1284,6 @@ case object Chronicler extends ContributingPower:
 `ProcedureLog.chronicleSun`: `Chronicler.declared -> LogKind.Decision`,
 `Chronicler.scored -> LogKind.Delta`.
 
-If open question 1 is ruled (b), `unscored` keeps only active legacies for
-Chronicler's reading; if open question 2 is ruled (b), `LegaciesScored`
-lists only the legacies whose suit share is positive. Both change only
-`scoring`.
-
 - [ ] **Step 4: Run the tests to verify they pass, and rewrite the snapshots**
 
 Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.gameplay.cards.CardCatalogSuite distantlands.catalog.* distantlands.application.gamelog.*"`
@@ -1352,7 +1347,7 @@ In `ChronicleLogScripts`:
       .turn(p3, Phase.Act).banditsRefilled)
     acting.withAnswers {
       case park if park.decisionId == Gatekeeper.decisionId(p2) =>
-        ChooseManyAnswer(Vector(DecisionOptionRef.Legacy(SeerCard.id)))
+        ChooseOneAnswer(DecisionOptionRef.Legacy(SeerCard.id))
       case park if park.decisionId == Chronicler.decisionId(p2) =>
         ChooseOneAnswer(Chronicler.declare)
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
@@ -1387,7 +1382,7 @@ Read both new files line by line. Expected in the Sun, in this order:
 "p2 took Seer from p3 with Gatekeeper" (decision);
 "Gatekeeper set Foundation III to Public Ambitions" (delta); "p2 declared
 Chronicler" (decision); "p2 scored 3 lineage points (1 from Discord, 2
-from Arcane)" (delta, by open question 1's recommendation: Gatekeeper,
+from Arcane)" (delta: Gatekeeper,
 Chronicler and Seer, all active); then the Crown and the tasks as in
 `throne-offered`, and at the Throne "p1 scored 3 lineage points". No
 existing golden file may change (`git status --short src/test/resources`
@@ -1433,7 +1428,7 @@ git log -3
   after step 5 for Chronicler (the declaration, the bonus with no base,
   the lines, rulings 7 and 8); on the Throne's step 6, that legacies
   already scored this game add nothing (ruling 8), and the scorepad's
-  roles (open question 3's ruling). Each links the new rulings section.
+  roles (R3). Each links the new rulings section.
 - `ambiguities.md`: after "Legacies rulings", a "Legacy Chronicle powers
   rulings" section introduced as the Legacies section is (the design and
   its implementation rulings), with the design's rulings 1-8 as items 1-8
@@ -1502,9 +1497,7 @@ git log -3
 - Docs: Task 8 (chronicle.md, ambiguities.md, traceability; the ROADMAP
   item is ticked only after slice 5).
 
-**Placeholder scan:** the one conditional, Task 5 and the Chronicler
-scorepad test, depends on open question 3 and says what changes if the
-ruling differs. No other step defers its content.
+**Placeholder scan:** no step defers its content.
 
 **Type consistency:** `ChronicleLegacyRules.holder(ReadyGame, LegacyId,
 Set[Role]): Option[PlayerId]` in Tasks 2-6; `LegaciesScored(Vector[LegacyId])`
