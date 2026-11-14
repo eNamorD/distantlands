@@ -22,10 +22,10 @@ class WorldCrafterExploreSuite extends munit.FunSuite:
   import DefenseDieFace.TwoShields
   private val fourShields: Vector[DieFace] = Vector(TwoShields, TwoShields)
 
-  private def table(holder: PlayerId): ReadyGame = Table.start
-    .foundation(FoundationNumber.I, FoundationFace.Altered)
-    .mapCutIntoAtlas(3).pawn(p1, BuriedGiantSite).banditsRefilled
-    .legacy(holder, WorldCrafterCard).ready
+  private def table(holder: PlayerId, active: Boolean = true): ReadyGame =
+    Table.start.foundation(FoundationNumber.I, FoundationFace.Altered)
+      .mapCutIntoAtlas(3).pawn(p1, BuriedGiantSite).banditsRefilled
+      .legacy(holder, WorldCrafterCard, active).ready
 
   private def rules(dice: WalkerDice): OathRules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
@@ -68,3 +68,12 @@ class WorldCrafterExploreSuite extends munit.FunSuite:
       case LogNoted(_, note, _) => note.key.startsWith("world-crafter")
       case _ => false
     })
+
+  test("a dormant World Crafter leaves the end to the explorer (ruling 1)"):
+    val (explore, at) = rolled(table(p2, active = false))
+    assertEquals(EconomyActions.parkedDecision(at.state).owner, p1)
+    val placed = accepted(explore.resolveWalker(at.state, p1,
+      ExploreProcedure.endDecisionId,
+      ChooseOneAnswer(ExploreProcedure.endOption(AtlasEnd.Recent))))
+    assert(!lines(at.events ++ placed.events).exists(
+      _.startsWith("world-crafter")))
