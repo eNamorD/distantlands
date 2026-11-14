@@ -2,13 +2,17 @@ package distantlands.gameplay
 
 import distantlands.gameplay.BannerTakeParkFixture.{ParkAfterBannerTake,
   decisionId, resumeAnswer}
+import distantlands.gameplay.powerresolver.ContributingPower
 import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.whenplayed.{FavoredSon, FavoredSonCard,
+  WhenPlayedHarness}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.gameplay.walker.WalkerPowers
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+  WalkerPowers}
 import distantlands.model._
 import distantlands.model.OathState.Ready
 import distantlands.testkit.{Journal, Outcomes, Table}
-import distantlands.testkit.Table.p1
+import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Unwrap.accepted
 
 /** Every banner taker keeps its tree's shape when a walk parks right after
@@ -47,3 +51,29 @@ class BannerTakeResumeSuite extends munit.FunSuite:
       p1)
     assertEquals(end.game.current.banners.peoplesFavor.holder, Some(p1))
     assertEquals(end.game.current.banners.peoplesFavor.favor, 3)
+
+  /** `power` played from `ready` beside the park trigger, parked after its
+    * take, then resumed from the replayed state with the park answered by
+    * `taker`: the state the walk ends in. */
+  private def whenPlayedResumed(ready: ReadyGame, power: ContributingPower,
+      card: DenizenId, taker: PlayerId): WalkerOutcome.Finished =
+    val beside = WhenPlayedHarness.powersBeside(power, ParkAfterBannerTake)
+    val hook = WhenPlayedHarness.hook(card)
+    val parked = Outcomes.parked(ProcedureWalker.advance(ready, hook, None,
+      beside))
+    val at = WhenPlayedHarness.replayed(ready, parked.events)
+    Outcomes.finished(ProcedureWalker.resolve(at, hook, parked.tree,
+      Answered(decisionId, resumeAnswer, taker), beside))
+
+  test("Favored Son: a walk parked after the take resumes and keeps the " +
+      "People's Favor with the player"):
+    // p1 plays Favored Son while p2 holds the People's Favor with 3 favor.
+    val ready = Table.start.adviser(p1, FavoredSonCard)
+      .peoplesFavor(Some(p2), favor = 3).ready
+    val done = whenPlayedResumed(ready, FavoredSon, FavoredSonCard.id, p1)
+    assertEquals(done.treeless.game.current.banners.peoplesFavor.holder,
+      Some(p1))
+    // The take's line, after the park, is still written: the tree kept the
+    // shape it parked in.
+    assertEquals(WhenPlayedHarness.said(FavoredSon, done.events).map(_.key),
+      Vector("took"))
