@@ -60,8 +60,9 @@ class GreatArchitectSuite extends munit.FunSuite:
 
   test("every available edifice is offered the denizen, whatever its suit"):
     val run = throne(empire.legacy(p2, GreatArchitectCard))
-    assertEquals(builds(run).size,
-      BuildEdifice.available(catalog, empire.ready.game.current).size)
+    // The fixture's edifice deck holds every suit, so each suit offers one.
+    assertEquals(builds(run).map(_.decisionId),
+      Suit.all.map(BuildEdifice.decisionId))
     assert(builds(run).forall(_.query.asInstanceOf[DecisionQuery.ChooseMany]
       .options.map(_.ref) == Vector(DecisionOptionRef.Denizen(roar))))
 
@@ -91,12 +92,12 @@ class GreatArchitectSuite extends munit.FunSuite:
     // The first suit's build buries the only denizen; each later suit,
     // asked of a walk rebuilt from the journal, offers the edifice just
     // built in its place, as an edifice may be buried.
-    val first = BuildEdifice.available(catalog, empire.ready.game.current)
-      .head._1
+    val first = Suit.all.head
     val run = throne(empire.legacy(p2, GreatArchitectCard), building(first))
     val built = edificesAt(run.ready)
     assertEquals(built.size, 1)
     val later = builds(run).drop(1)
-    assert(later.nonEmpty)
+    assertEquals(later.map(_.decisionId),
+      Suit.all.drop(1).map(BuildEdifice.decisionId))
     assert(later.forall(_.query.asInstanceOf[DecisionQuery.ChooseMany]
       .options.map(_.ref) == Vector(DecisionOptionRef.Edifice(built.head))))
