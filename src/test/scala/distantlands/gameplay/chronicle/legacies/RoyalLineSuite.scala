@@ -62,6 +62,16 @@ class RoyalLineSuite extends munit.FunSuite:
     assertEquals(decide.query.asInstanceOf[DecisionQuery.ChooseOne].options
       .map(_.ref), Vector(p1, p2, p3).map(DecisionOptionRef.Player(_)))
 
+  test("the Chancellor is the first option when seated after a Citizen " +
+      "(R38)"):
+    val table = ChronicleWalk.chronicleWonByP1.imperial(p2, p1, p3)
+      .update(_.updateCurrent(_.copy(result =
+        Some(GameResult(p2, VictoryKind.StableRegime)))))
+      .legacy(p3, RoyalLineCard)
+    val decide = asked(through(table, TriggeredProcedureRef.ChronicleSun)).get
+    assertEquals(decide.query.asInstanceOf[DecisionQuery.ChooseOne].options
+      .map(_.ref), Vector(p2, p1, p3).map(DecisionOptionRef.Player(_)))
+
   test("naming a Citizen makes them the Successor, whom the Crown and the " +
       "tasks follow (ruling 23)"):
     val run = through(ended(stable), TriggeredProcedureRef.ChronicleSun,
