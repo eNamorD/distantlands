@@ -119,7 +119,7 @@ Choose a banner not held by the actor. If enemy-held, pawns must share a site. C
 Default cost is 0 Supply. Core minor actions include:
 
 - play/discard a facedown adviser as if just searched;
-- use an Action power; Digital: a seated player's active legacy is a source of its ACTION, named in the Act menu, its burnt cost paid as a card's ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 1 to 6); The Mouth activates a dormant or Public Ambitions legacy whose goal its holder meets (items 43, 44, 51 and 56);
+- use an Action power; Digital: a seated player's active legacy is a source of its ACTION, named in the Act menu, its burnt cost paid as a card's ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 1 to 6); The Mouth activates a dormant or Public Ambitions legacy whose goal its holder meets, counting only faceup cards (items 43, 44, 51, 56 and 57);
 - reveal/peek at relics held by the player;
 - move warbands between board and a ruled site at the pawn;
 - negotiate with a co-located player, exchanging favor and relics (not secrets/banners), with mutual consent; Digital: High Priest's holder may give secrets, one way ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 24 and 28);

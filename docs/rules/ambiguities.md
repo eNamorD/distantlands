@@ -332,7 +332,7 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 
 ## Legacy in-play powers rulings
 
-Rulings for the powers legacies use during a game ([Legacy in-play powers design](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)). Items 1 to 13 are the design's rulings 1 to 13, taken with the owner on 2026-11-14; items 14 to 18 are implementation rulings R1 to R5; items 19 to 24 are the design's rulings 14 to 19; items 25 to 29 are implementation rulings R6 to R10; items 30 to 32 are the design's rulings 20 to 22; items 33 to 40 are implementation rulings R11 to R18, items 41 and 42 are R20 and R21 (R19 is a test's, not a rule's); items 43 to 47 are the design's rulings 23 to 27; items 48 to 56 are implementation rulings R22 to R30.
+Rulings for the powers legacies use during a game ([Legacy in-play powers design](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)). Items 1 to 13 are the design's rulings 1 to 13, taken with the owner on 2026-11-14; items 14 to 18 are implementation rulings R1 to R5; items 19 to 24 are the design's rulings 14 to 19; items 25 to 29 are implementation rulings R6 to R10; items 30 to 32 are the design's rulings 20 to 22; items 33 to 40 are implementation rulings R11 to R18, items 41 and 42 are R20 and R21 (R19 is a test's, not a rule's); items 43 to 47 are the design's rulings 23 to 27; items 48 to 59 are implementation rulings R22 to R33.
 
 1. **Only seated players' active legacies act.** Dormant legacies, a boxed lineage's legacies and the Public Ambitions row never act; The Mouth is the one way a legacy becomes active during a game (design, ruling 1).
 2. **"If you are an Imperial" is read when the power is used,** so the Crown and Citizenship change it during a game (design, ruling 2).
@@ -391,6 +391,9 @@ Rulings for the powers legacies use during a game ([Legacy in-play powers design
 54. **The round is an amount** no log line names, and no "chose" line names the winner (R28).
 55. **A void prediction** is revealed with the same line (R29).
 56. **The Mouth with nothing to activate** is shown unavailable with "No legacy whose goal you meet" (R30).
+57. **The Mouth reads goals from faceup cards only:** during the game, a legacy's goal counts only faceup advisers and faceup relics, for every player; the Chronicle's Resolve Legacies keeps its scoring. This narrows item 43 (R31).
+58. **An Imperial's Iron Hand, activated and discarded at once, is named in words** in both lines (R32).
+59. **A Conspirator win's log words** are kept for completeness; the game-end step writes the victory line itself (R33).
 
 ## Source relationship cautions
 
