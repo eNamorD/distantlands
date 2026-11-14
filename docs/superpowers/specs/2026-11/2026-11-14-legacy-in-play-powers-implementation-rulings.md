@@ -161,3 +161,50 @@ Ruled by the owner on 2026-11-14.
   trigger line before the action's "Became a Citizen." line. *Reason:* it
   matches how the log already shows power lines. *Slice/files:* slice 3,
   Task 5; `Citizenship.become`.
+
+## Slice 4
+
+The [slice 4 plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice4.md)'s
+open questions, ruled on 2026-11-14.
+
+- **R24. Is Conspirator's prediction compared before or after Royal
+  Line?** *Decision:* at the game's end, before the Chronicle opens, with
+  the result after any Successor substitution. *Reason:* Royal Line
+  chooses who meets the Successor goal for the Chronicle, not who won this
+  game; the card's prediction "even beats a Successor win", so it is
+  compared with this game's final winner. *Slice/files:* slice 4, Task 4;
+  `ConspiratorReveal`.
+- **R25. May The Mouth activate Iron Hand for an Imperial holder?**
+  *Decision:* yes; the same batch then discards it, with Iron Hand's
+  discard line. *Reason:* "If you are Imperial, discard Iron Hand" is a
+  standing condition, not a restriction on activation; leaving Iron Hand
+  out of the targets invents a rule, and leaving it active breaks the
+  card. *Confidence:* low; leaving it out of the targets gives the same
+  board for less cost, and the owner may prefer that. *Slice/files:*
+  slice 4, Task 1; `TheMouth`, `IronHand`.
+- **R26. How does Conspirator's holder see their prediction?**
+  *Decision:* through the holder-only log line alone. *Reason:* no
+  frontend change is needed; the log already carries holder-only lines
+  (Heirloom). *Slice/files:* slice 4, Task 3.
+- **R27. How are the slice's lines worded?** *Decision:* "p2 wrote down a
+  prediction with Conspirator"; "p2 predicted p3 wins in round 6", read by
+  the holder only; "p2 had written down p3 to win in round 6 with
+  Conspirator" at the reveal; "p2 won with Conspirator"; the winner banner
+  "Conspirator's prediction". The Mouth: "p1 activated Arbiter with The
+  Mouth", "p1 took Golden Key from the Public Ambitions with The Mouth",
+  "Arbiter set Foundation VI to Festival", "p1 discarded Seer with The
+  Mouth". *Reason:* it matches the batch's "<player> <verb> … with
+  <legacy>" pattern, and the public line names nothing. *Slice/files:*
+  slice 4, Tasks 1-4.
+- **R28. How is the round written?** *Decision:* as an amount from 1 to
+  8, which no log line names; a test shows that neither `DetailLines` nor
+  any other viewer's projection or log exposes the amount or the winner
+  before the game ends. *Slice/files:* slice 4, Task 3.
+- **R29. How is a void prediction revealed?** *Decision:* with the same
+  line, and no extra word. *Reason:* the game-end state shows Conspirator
+  is gone, and one line shape is simpler. *Slice/files:* slice 4, Task 4.
+- **R30. What does The Mouth show with nothing to activate?**
+  *Decision:* unavailable, with "No legacy whose goal you meet".
+  *Reason:* R4 already reads "not offered" this way for legacy ACTIONs,
+  and the design's ruling 23 reads under R4. *Slice/files:* slice 4,
+  Task 1.

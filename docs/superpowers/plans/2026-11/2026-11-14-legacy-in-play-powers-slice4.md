@@ -56,9 +56,28 @@ Expected: `ready`.
 
 ## Rulings
 
-Rulings R22 and R23 (slice 3's log order) are recorded. This plan's open
-questions are listed at its end; the tasks follow the recommended option
-for each until it is ruled.
+This plan's open questions were ruled on 2026-11-14 as implementation
+rulings R24-R30 ([rulings](../../specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)).
+Each took the recommended option but R25:
+
+- **R24** (Task 4): the prediction is compared at the game's end, before
+  the Chronicle, with the result after any Successor.
+- **R25** (Task 1): The Mouth may activate Iron Hand for an Imperial
+  holder; the same batch then discards it, with Iron Hand's discard line.
+- **R26** (Task 3): the holder sees the prediction through the holder-only
+  line alone.
+- **R27** (Tasks 1-4): the lines as worded in the open questions below.
+- **R28** (Task 3): the round is an amount; a test shows that neither
+  `DetailLines` nor any other viewer's projection or log exposes the
+  amount or the winner before the game ends.
+- **R29** (Task 4): a void prediction reveals with the same line.
+- **R30** (Task 1): with nothing to activate, The Mouth shows unavailable
+  with "No legacy whose goal you meet".
+
+For the weak spots: if no arrangement reaches round 5 cleanly, the
+golden's table starts at a later round with a prediction stored by the
+operation (a deviation); The Mouth's alteration test may use Arbiter,
+which names Foundation VI.
 
 Every table is a named fixture with concrete sites and pieces in the test
 itself.
@@ -85,6 +104,10 @@ itself.
   `ResolveLegacies.alterations` uses, and `foundationAltered` refuses a
   repeated source. It changes `campaign.foundations` only: the banners
   keep their faces, as in the Sun.
+- **Iron Hand** (R25): when the activated legacy is Iron Hand and the
+  holder is Imperial, the activation batch ends with
+  `IronHand.inGameDiscard`, and Iron Hand's line ("p1 discarded Iron Hand")
+  follows; it then counts for no cap.
 - **The cap** reuses `ResolveLegacies.cap(holder, TheMouth.capDecisionId(holder),
   TheMouth.id, TheMouth.capped)` with The Mouth's own decision id and
   line, as `OfferCitizenship` does. It flips no foundation back
@@ -259,6 +282,9 @@ The tests:
       "its reason (R4)")
 
   test("a dormant Mouth offers nothing (ruling 1)")
+
+  test("an Imperial holder may activate Iron Hand, which the same batch " +
+      "discards, with Iron Hand's line (R25)")
 
   test("a walk resumed at the cap keeps the chosen legacy offered and the " +
       "activation's line, and the journal replays")
