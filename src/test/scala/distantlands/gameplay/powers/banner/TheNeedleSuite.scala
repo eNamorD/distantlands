@@ -128,3 +128,34 @@ class TheNeedleSuite extends munit.FunSuite:
       TheNeedle.decisionId(Banner.PeoplesFavor), TheNeedle.flip)
     assertEquals(Outcomes.ready(done.state).game.current.banners.peoplesFavor
       .active, PeoplesFavorFace.GrandCouncil)
+
+  test("one raid hands over both banners: two questions, the People's " +
+      "Favor first, resuming between them (R14)"):
+    // p1 raids p2 at the Campaign's origin; p2 holds the People's Favor
+    // with 2 favor and the Darkest Secret with 2 secrets, both targets.
+    import CampaignFixture.on
+    val base = CampaignFixture.board(warbands = 5, supply = 7)
+    val b = on(base)(_.pawn(p2, at = base.origin).boardWarbands(p2, 2)
+      .legacy(p1, TheNeedleCard).peoplesFavor(Some(p2), favor = 2)
+      .darkestSecret(Some(p2), secrets = 2))
+    val run = PlanDriver.commit(CampaignFixture.rules(WalkerDiceFixture.raid),
+      b, 4, targets = Vector(DecisionOptionRef.Banner(Banner.PeoplesFavor),
+        DecisionOptionRef.Banner(Banner.DarkestSecret)),
+      raid = true).finishPlanWindows
+    assert(PlanDriver.awaits(run, p1, TheNeedle.decisionId(
+      Banner.PeoplesFavor)))
+    val first = run.pick(p1, TheNeedle.decisionId(Banner.PeoplesFavor),
+      TheNeedle.flip)
+    assert(PlanDriver.awaits(first, p1, TheNeedle.decisionId(
+      Banner.DarkestSecret)))
+    // The second question survives a reload: the journal replays to it.
+    val reloaded = accepted(Journal.evolved(run.game, b.ready, first.events))
+    assertEquals(reloaded, first.state)
+    val done = first.pick(p1, TheNeedle.decisionId(Banner.DarkestSecret),
+      TheNeedle.keep)
+    val banners = Outcomes.ready(done.state).game.current.banners
+    assertEquals((banners.peoplesFavor.holder, banners.peoplesFavor.active,
+      banners.darkestSecret.holder, banners.darkestSecret.active),
+      (Some(p1), PeoplesFavorFace.GrandCouncil, Some(p1),
+        DarkestSecretFace.WanderingFlame))
+    assertEquals(lines(done.events).map(_.key), Vector("flipped"))
