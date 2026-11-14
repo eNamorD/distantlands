@@ -168,7 +168,9 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
 After the all-Exile alpha, implement the Chronicle and persistent campaign:
 legacy powers and era scoring. The legacy lifecycle (dealing, Resolve
 Legacies, the scoring bonus and the display) landed with the
-[Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md).
+[Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md),
+and the legacies' CHRONICLE powers with the
+[Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md).
 
 - [ ] **Legacy powers: setup.** The SETUP halves of the 36 legacies (Iron
   Hand, whose card counts as implemented for its Chronicle half, and whose
@@ -177,13 +179,6 @@ Legacies, the scoring bonus and the display) landed with the
   counts as implemented for its Throne half, and the rest), each
   through Setup's windows, and Matchmaker choosing the kept legacy for the
   other players in the Setup deal ([Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md)).
-- [x] **Legacy powers: Chronicle.** The CHRONICLE powers, through the
-  Chronicle's step windows
-  ([Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md)),
-  landed in five slices: Steadfast, Gatekeeper, Chronicler, Rival's Throne
-  half, Great Architect, Revolutionary, Reformer, Heirloom, The Ear's
-  Chronicle half, Oaths of Loyalty, The Bright Beacon, Iron Hand's
-  Chronicle half and Royal Line.
 - [ ] **Legacy powers: in play.** The powers used during a game: actions,
   Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
   play and The Ear's ACTION half, peeking at a site's relics, among them

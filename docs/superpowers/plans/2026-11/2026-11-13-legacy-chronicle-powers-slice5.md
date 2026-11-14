@@ -66,7 +66,8 @@ rulings R37-R42 ([rulings](../../specs/2026-11/2026-11-13-legacy-chronicle-power
 - **R40** (Task 2): `ChronicleStartOfSun` (`chronicle.sun.start-of-sun`).
 - **R41** (Tasks 3 and 4): "p3 named p2 the winner with Royal Line", only
   when the winner changes.
-- **R42** (Task 5): tick "Legacy powers: Chronicle".
+- **R42** (Task 5): tick "Legacy powers: Chronicle"; narrowed by **R44**:
+  drop the landed item instead, following the ROADMAP's convention.
 
 The Sun reading the winner live is accepted, with an audit: every
 Chronicle step and power that reads the winner reads it from the result
@@ -85,8 +86,9 @@ reaches the Crown, Reformer and Score Lineage Points (Task 3).
   Imperial Oathkeeper, which gives exhaustion. The test now checks both
   cases: no Oathkeeper gives Chancellor Exhaustion, an Imperial
   Oathkeeper Stable Regime.
-- The ROADMAP's convention drops landed items; R42 says tick, so the
-  item is ticked and reworded as landed.
+- The ROADMAP's convention drops landed items, so R44 narrows R42: the
+  item is dropped, and the phase's introduction says the CHRONICLE powers
+  landed.
 
 ## Global Constraints
 

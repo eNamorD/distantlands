@@ -405,3 +405,10 @@ the edifice in an outer Branch before the first slot would reintroduce the
 bug class of a Branch recomputed on resume.
 Slice/files: 4 (fixed in 5); `BuildEdifice`.
 
+**R44. The landed ROADMAP item.** (Narrows R42.)
+Decision: drop the landed "Legacy powers: Chronicle" item from the ROADMAP
+instead of ticking it, following the file's convention; the phase's
+introduction says the CHRONICLE powers landed with this design.
+Reason: the convention is the file's standing rule, and R42 accepted a
+proposal that did not account for it.
+Slice/files: 5; `docs/ROADMAP.md`.
