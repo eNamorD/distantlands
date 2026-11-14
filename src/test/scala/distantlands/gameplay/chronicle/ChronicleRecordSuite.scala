@@ -4,7 +4,8 @@ import distantlands.catalog.holding.ArbiterCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.action.{BrassHorseCard, FaeMerchantCard}
-import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture}
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules,
+  LaterGameFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
@@ -137,6 +138,16 @@ class ChronicleRecordSuite extends munit.FunSuite:
     // Quiet Ambitions' draw follows them; Setup has not run.
     assertEquals(recorded.map(_.legacies.take(legacies.size)), Some(legacies))
     assertEquals(recorded.map(_.startingRelics), Some(Vector.empty))
+
+  test("after a first game played exile-only, a boxed lineage's wiped " +
+      "legacies stay empty in the record (R40)"):
+    val saved = FirstGameSetupFixture.chronicle.copy(lineages = Vector(
+      LineageState(boxed, None, Role.Exile, Vector(legacy.copy(
+        id = SeerCard.id)), Vector.empty)))
+    val ready = GameStartRules.evolve(catalog, saved,
+      LaterGameFixture.orders(saved, p1)).toOption.get
+    assertEquals(ChronicleRecord.campaignFields(ready).lineages
+      .find(_.id == boxed).map(_.legacies), Some(Vector.empty))
 
   test("a lineage the baseline lacks is recorded with its legacies (R1)"):
     val ready = Table.start.legacy(p1, SeerCard, active = false).ready
