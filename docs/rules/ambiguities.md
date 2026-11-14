@@ -186,7 +186,7 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 23. **The bonus's line** carries its shares in one note argument, `NoteArg.SuitShares` (R30).
 24. **Shares come in suit order**, Discord, Arcane, Order, Hearth, Beast, Nomad, and empty ones are left out (R31).
 25. **A ruined edifice** counts toward the bonus by its card's printed suit, as for the goals (R32).
-26. **Every legacy the winner holds** counts toward the bonus; none can be dormant then (R33).
+26. **Every legacy the winner holds** counts toward the bonus; none can be dormant then (R33). Narrowed by the Legacy Chronicle powers rulings, item 9: only active legacies score.
 27. **A legacy's goal is shown in words** for now: a tag on its face, a sentence in its inspection; goal icons are a deferred item (R34).
 28. **The goal travels as its key and its printed words**, so the wording stays in the catalog (R35).
 29. **A dormant legacy shows its owner its face, marked Dormant**; every viewer sees the same in the Chronicle Phase, and anyone else an L back outside it (R36).
@@ -206,8 +206,8 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 6. **Gatekeeper is a step between Sun steps 1 and 2,** after the relics are revealed. Its holder may take one active legacy from an enemy whose goal they meet, as counted then, or decline. The legacy joins them active; step 2 alters its foundation and step 4 applies the cap (design, ruling 6).
 7. **Chronicler is a step after Sun step 5.** If its holder declares, every seated player scores the Score Lineage Points bonus now, with no base points and no gifts; each player who scores a point gets one line (design, ruling 7).
 8. **A legacy scores once per game.** The journal records the legacies scored this Chronicle, by legacy; Score Lineage Points skips them (design, ruling 8).
-9. **Dormant legacies score under Chronicler,** as every legacy held does, the set Score Lineage Points would score (R1).
-10. **Every legacy held is recorded as scored** when Chronicler resolves, even one that scores 0: a legacy scored for 0 has still been scored, and denying the winner's later bonus is the card's point (R2).
+9. **Dormant legacies do not score,** under Chronicler, Score Lineage Points or Iron Hand's scoring; each scores a player's active legacies (R1, re-ruled by the owner 2026-11-14).
+10. **Every active legacy held is recorded as scored** when Chronicler resolves, even one that scores 0: a legacy scored for 0 has still been scored, and denying the winner's later bonus is the card's point. A dormant legacy is not recorded and may score later (R2, re-ruled by the owner 2026-11-14).
 11. **The scorepad records each lineage's role at the Chronicle's end.** A role change after this game's row opens updates the lineage's entry, so a row Chronicler opens in the Sun still records the roles after the Crown (R3; [Chronicle rulings](#chronicle-rulings), item 19).
 12. **The lines** say "p2 took Seer from p3 with Gatekeeper", "p2 declared Chronicler" and "p1 scored 2 lineage points (2 from Beast)" (R4).
 13. **Two Sun windows hold the added steps:** one before Flip Legacies, for Gatekeeper, and one after Shuffle, for Chronicler (R5).

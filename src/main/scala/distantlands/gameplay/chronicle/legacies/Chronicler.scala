@@ -26,8 +26,9 @@ object ChroniclerCard extends Legacy(LegacyId("L02"), "Chronicler",
   * reached, declares or declines (ruling 3; R6). On a declaration every
   * seated player, in turn order (Legacies R21), scores
   * `LineageScoring.bonus`, with no base and no gifts, and one
-  * `LegaciesScored` records every unscored legacy they hold, dormant ones
-  * and those scoring 0 included (ruling 8; R1, R2). Lines (R4): "p2
+  * `LegaciesScored` records every unscored active legacy they hold, those
+  * scoring 0 included; a dormant legacy neither scores nor is recorded
+  * (ruling 8; R1, R2, re-ruled by the owner 2026-11-14). Lines (R4): "p2
   * declared Chronicler", then "p1 scored 2 lineage points (2 from Beast)"
   * for each player who scores a point. */
 case object Chronicler extends ContributingPower:

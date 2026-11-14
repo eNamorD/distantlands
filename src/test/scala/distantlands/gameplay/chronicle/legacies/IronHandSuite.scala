@@ -203,6 +203,14 @@ class IronHandSuite extends munit.FunSuite:
       s"p3 scored 1 lineage point with ${IronHandCard.id.value} " +
         "(1 from Beast)"))
 
+  test("the holder's dormant legacy neither scores nor is recorded (R1)"):
+    val run = through(ironThrone.legacy(p3, TheNeedleCard, active = false),
+      TriggeredProcedureRef.ChronicleThrone,
+      after = TriggeredProcedureRef.ChronicleSun)
+    val lineage = run.ready.game.current.player(p3).get.lineage
+    assertEquals(run.ready.game.campaign.era.score(lineage), 0)
+    assert(!run.ready.game.current.scoredLegacies.contains(TheNeedleCard.id))
+
   test("the holder's scoring skips legacies Chronicler scored (ruling 8)"):
     val table = ironThrone.legacy(p3, TheNeedleCard).update(
       _.updateCurrent(_.copy(scoredLegacies = Set(TheNeedleCard.id))))

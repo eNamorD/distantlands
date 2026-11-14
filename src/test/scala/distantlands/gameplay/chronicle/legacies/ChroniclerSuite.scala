@@ -4,7 +4,8 @@ import distantlands.catalog.holding.TheNeedleCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
 import distantlands.gameplay.chronicle.{ChronicleWalk, LineageScoring}
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
@@ -89,7 +90,7 @@ class ChroniclerSuite extends munit.FunSuite:
     assert(!run.asked.exists(_.decisionId.startsWith(
       "chronicle.sun.legacy.chronicler.")))
 
-  test("a dormant legacy is scored and recorded too (R1)"):
+  test("a dormant legacy is neither scored nor recorded (R1, R2)"):
     // p3, an Exile, misses Seer's goal, as nobody holds the Darkest Secret,
     // so Seer goes dormant in step 3, before Chronicler.
     val run = through(chronicled.legacy(p3, SeerCard),
@@ -97,7 +98,25 @@ class ChroniclerSuite extends munit.FunSuite:
     val lineage = run.ready.game.current.player(p3).get.lineage
     assertEquals(run.ready.game.campaign.lineages(lineage).legacies,
       Vector(LegacyState(SeerCard.id, active = false)))
-    assert(run.ready.game.current.scoredLegacies.contains(SeerCard.id))
+    assert(!run.ready.game.current.scoredLegacies.contains(SeerCard.id))
+
+  test("an Exile winner's legacy dormant when Chronicler resolves scores " +
+      "later, reactivated at the Crown (R1, R2)"):
+    // p1, the Exile winner, rules Ancient City and its two Beast denizens;
+    // p2 rules two sites, so holds Chronicler active and p1 misses The
+    // Needle's goal: it goes dormant in step 3 and returns at the Crown.
+    val table = ChronicleWalk.chronicleWonByP1
+      .warbandsAt(AncientCitySite, p1, 1)
+      .warbandsAt(BrokenPeaksSite, p2, 1).warbandsAt(DeepWoodsSite, p2, 1)
+      .denizen(ForestCouncilCard, AncientCitySite)
+      .denizen(TheOldOakCard, AncientCitySite)
+      .legacy(p2, ChroniclerCard).legacy(p1, TheNeedleCard)
+    val sun = through(table, TriggeredProcedureRef.ChronicleSun)
+    assert(sun.asked.exists(_.decisionId == Chronicler.decisionId(p2)))
+    assert(!sun.ready.game.current.scoredLegacies.contains(TheNeedleCard.id))
+    assertEquals(scoreOf(sun.ready, p1), 0)
+    val throne = through(table, TriggeredProcedureRef.ChronicleThrone)
+    assertEquals(scoreOf(throne.ready, p1), LineageScoring.basePoints + 2)
 
   test("a walk resumed at Chronicler's question applies the answer once"):
     // The declaration journals one LegaciesScored, replayed into `ready`.

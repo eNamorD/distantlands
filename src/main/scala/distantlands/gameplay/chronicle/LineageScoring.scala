@@ -37,14 +37,15 @@ object LineageScoring:
   def noteKeys: Vector[NoteKey] = notes.declared
 
   /** `player`'s legacy bonus by suit (CR, Score Lineage Points; Legacies
-    * ruling 10): for each legacy the player holds (R33), 1 point per card
+    * ruling 10): for each active legacy the player holds (R33, narrowed by
+    * Legacy Chronicle powers R1), 1 point per card
     * of its printed suit, denizens and edifices, intact or ruined (R32), at
     * the sites the player rules; advisers do not count. Legacies of one
     * suit add into one share, a suit that scores nothing is left out, and
     * shares come in suit order (R31). After Crown Chancellor the winner is
     * the Chancellor, so these are the Empire's sites (Chronicle ruling
-    * 11). A legacy already scored this game adds nothing; Chronicler reads
-    * this for every seated player, dormant legacies included (Legacy
+    * 11). A legacy already scored this game adds nothing, nor does a
+    * dormant one; Chronicler reads this for every seated player (Legacy
     * Chronicle powers design, rulings 7 and 8; R1). */
   def bonus(ready: ReadyGame, catalog: ExecutableCatalog, player: PlayerId)
       : Vector[(Suit, Int)] =
@@ -58,12 +59,15 @@ object LineageScoring:
       legacies.count(_.suit == suit) * cards.count(_ == suit))
       .filter(_._2 > 0)
 
-  /** `player`'s legacies that no scoring has counted yet this game (Legacy
-    * Chronicle powers design, ruling 8). */
+  /** `player`'s active legacies that no scoring has counted yet this game
+    * (Legacy Chronicle powers design, ruling 8). A dormant legacy does not
+    * score, and is not recorded, so it may score later this game (R1, R2,
+    * re-ruled by the owner 2026-11-14). Chronicler, Score Lineage Points
+    * and Iron Hand's scoring all read this set. */
   def unscored(ready: ReadyGame, player: PlayerId): Vector[LegacyId] =
     ChronicleTasks.lineageOf(ready, player)
       .flatMap(ready.game.campaign.lineages.get).toVector.flatMap(_.legacies)
-      .map(_.id).filterNot(ready.game.current.scoredLegacies)
+      .filter(_.active).map(_.id).filterNot(ready.game.current.scoredLegacies)
 
   def steps(catalog: ExecutableCatalog): Vector[Operation] =
     Vector(Branch((state, _) =>

@@ -265,6 +265,9 @@ Reason: consistent with R23.
 Decision: every legacy the winner holds, as the design says.
 Reason: no legacy can be dormant at that point (design ruling 2, R19,
 R20).
+Narrowed by the owner 2026-11-14: only active legacies score, under any
+scorer ([Legacy Chronicle powers R1](2026-11-13-legacy-chronicle-powers-implementation-rulings.md)).
+The winner holds none dormant here, so nothing changes for them.
 
 ## Slice 5
 

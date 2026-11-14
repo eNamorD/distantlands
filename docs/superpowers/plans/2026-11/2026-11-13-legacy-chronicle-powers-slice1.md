@@ -58,9 +58,12 @@ rulings R1-R6 ([rulings](../../specs/2026-11/2026-11-13-legacy-chronicle-powers-
 
 - **R1** (Task 6): every legacy a seated player holds scores under
   Chronicler, dormant ones included, the set Score Lineage Points would
-  score.
+  score. Re-ruled by the owner 2026-11-14: dormant legacies do not score
+  under any scorer; changed in slice 5.
 - **R2** (Task 6): `LegaciesScored` records every legacy each seated
-  player holds when Chronicler resolves, those scoring 0 included. Only
+  player holds when Chronicler resolves, those scoring 0 included.
+  Re-ruled by the owner 2026-11-14: only the active legacies that scored
+  are recorded; changed in slice 5. Only
   Chronicler records in this slice; Score Lineage Points only skips
   (design ruling 8), and slice 4 decides for Iron Hand.
 - **R3** (Task 5): `RoleChanged` updates the lineage's entry in this

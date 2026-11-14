@@ -10,18 +10,33 @@ touches. The design's own rulings 1-23 are not repeated here.
 ## Slice 1
 
 **R1. Do dormant legacies score under Chronicler?**
-Decision: yes. Every legacy a seated player holds scores under Chronicler,
+Re-ruled by the owner 2026-11-14.
+Decision: no. Dormant legacies do not score under Chronicler, Score
+Lineage Points or Iron Hand's scoring. `LineageScoring.unscored` reads a
+player's active, unscored legacies, and `LineageScoring.bonus` counts
+those; all three scorers reuse them. The winner never holds a dormant
+legacy at Score Lineage Points (an Exile winner's newly dormant ones
+reactivate at the Crown), so the winner's score is unchanged, as the
+golden logs show.
+Reason: the owner's ruling: a dormant legacy has no effect, scoring
+included. This narrows Legacies R33 ("every legacy the winner holds").
+Earlier decision (2026-11-13): every legacy held scored under Chronicler,
 dormant ones included.
-Reason: design ruling 7 and Legacies R33 count each legacy held; Chronicler
-must score the same set Score Lineage Points would.
-Slice/files: 1; `LineageScoring.unscored`, `Chronicler`.
+Slice/files: 1 (changed in 5); `LineageScoring.unscored`, `Chronicler`,
+`IronHand.scoring`.
 
 **R2. Which legacies `LegaciesScored` records.**
-Decision: every legacy each seated player holds when Chronicler resolves,
-those that score 0 points included.
-Reason: a legacy scored for 0 has still been scored; denying the winner's
-later bonus is the card's point.
-Slice/files: 1; `Chronicler`, `LegaciesScored`.
+Re-ruled by the owner 2026-11-14, following R1.
+Decision: only the legacies that actually scored: each seated player's
+active, unscored legacies when Chronicler resolves, those that score 0
+points included. A legacy dormant when Chronicler resolves is not
+recorded and may score later, such as an Exile winner's, reactivated at
+the Crown.
+Reason: a legacy scored for 0 has still been scored, and denying the
+winner's later bonus is the card's point; a dormant one has not scored.
+Earlier decision (2026-11-13): every legacy held was recorded, dormant
+ones included.
+Slice/files: 1 (changed in 5); `Chronicler`, `LegaciesScored`.
 
 **R3. The scorepad's roles when Chronicler scores before the Crown.**
 Decision: `RoleChanged` updates that lineage's entry in this game's open

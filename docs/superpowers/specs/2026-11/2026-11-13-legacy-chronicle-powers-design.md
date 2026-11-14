@@ -78,9 +78,10 @@ rulings then continue.
    alters one, and step 4 applies the cap.
 7. **Chronicler is a new step after Sun step 5.** If the holder declares,
    every seated player scores their legacies now: the bonus Score Lineage
-   Points computes (each legacy held, 1 point per card of its suit at the
-   sites the player rules; Legacies R31-R33), with no 3 base points and no
-   gifts. Each player who scores at least one point logs one line in the
+   Points computes (each active legacy held, 1 point per card of its suit
+   at the sites the player rules; Legacies R31-R33; dormant legacies do not
+   score, implementation ruling R1, re-ruled by the owner 2026-11-14), with
+   no 3 base points and no gifts. Each player who scores at least one point logs one line in the
    bonus format.
 8. **A legacy scores once per game.** A new `ChronicleOperation` records
    the legacies scored so far this Chronicle, by legacy, not by player.
