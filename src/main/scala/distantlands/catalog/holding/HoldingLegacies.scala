@@ -51,15 +51,6 @@ object GoldenKeyCard extends Legacy(LegacyId("L12"), "Golden Key",
       "take a relic from the Reliquary.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object MatchmakerCard extends Legacy(LegacyId("L14"), "Matchmaker",
-    LegacyGoal.PeoplesFavor, Suit.Hearth):
-  val power = PrintedPower(PowerId("legacy.matchmaker"),
-    persistent = false, cost = Cost.free,
-    text = "Whenever players draw legacies from the deck and choose one " +
-      "to keep, you draw and choose for them instead. _The Amber " +
-      "Doors edifice does not trigger this._")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object TheStandardBearerCard extends Legacy(LegacyId("L18"), "The Standard Bearer",
     LegacyGoal.PeoplesFavor, Suit.Arcane):
   val power = PrintedPower(PowerId("legacy.the-standard-bearer"),

@@ -15,7 +15,6 @@ legacy.golden-key
 legacy.high-priest
 legacy.keeper-of-order
 legacy.light-fingers
-legacy.matchmaker
 legacy.pathfinder
 legacy.peacemaker
 legacy.quest-to-distant-lands

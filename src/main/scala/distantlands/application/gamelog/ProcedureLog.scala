@@ -24,6 +24,7 @@ import distantlands.gameplay.oathkeeper.OathkeeperProcedure
 import distantlands.gameplay.phases.rest.FinishRestProcedure
 import distantlands.gameplay.phases.PhaseMenu
 import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.legacies.Matchmaker
 import distantlands.gameplay.walker.FollowUpOffer
 import distantlands.model._
 import distantlands.protocol.projection.{LogKind, LogSpan}
@@ -328,6 +329,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       lines = ActionLineSource.Notes(Map(
         SetupProcedure.keptAdviser -> LogKind.Decision,
         SetupProcedure.keptLegacy -> LogKind.Decision,
+        Matchmaker.keptFor -> LogKind.Decision,
         SetupProcedure.revealedCard -> LogKind.Decision) ++
         OathsOfLoyalty.noteKeys(TriggeredProcedureRef.Setup)
           .map(_ -> LogKind.Decision)),

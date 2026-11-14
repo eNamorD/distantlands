@@ -1,13 +1,16 @@
 package distantlands.gameplay.setup
 
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.setup.legacies.{Matchmaker, MatchmakerCard,
+  SetupLegacyRules}
 import distantlands.model._
 import distantlands.model.OathViolation.InvalidEventOrder
 
 /** Foundation III's Quiet Ambitions keep in Setup's walk: each player who
   * drew two legacies keeps one facedown and returns the other (Legacies
   * design, slice 2). Split from `SetupProcedure`, which calls `step` in
-  * each player's turn. */
+  * each player's turn. Matchmaker's holder answers every other player's
+  * keep (Legacy Setup powers ruling 13; R16). */
 object LegacyKeep:
   def decisionId(player: PlayerId): String =
     s"setup.legacy-choice.${player.value}"
@@ -32,18 +35,46 @@ object LegacyKeep:
     Branch((state, _) =>
       drawn(state, participant.lineageId) match
         case Vector() => Vector.empty
-        case Vector(_) => Vector(keptLegacyNote(participant.playerId))
-        case drawn => Vector(
-          Decide(decisionId, participant.playerId, DecisionQuery.ChooseOne(
-            drawn.map(id =>
-              DecisionOption.Legacy(DecisionOptionRef.Legacy(id))),
-            heading = Some("Keep a legacy"), confirmVerb = Some("Keep"))),
-          BuildOps(returnLegacies(participant.lineageId, drawn, decisionId)),
-          keptLegacyNote(participant.playerId)))
+        case Vector(_) => Vector(keptNote(participant.playerId,
+          participant.playerId))
+        // Matchmaker: its holder answers every other player's keep
+        // (Legacy Setup powers ruling 13).
+        case drawn =>
+          val keeper = SetupLegacyRules.keeper(state, participant.playerId)
+          Vector(
+            Decide(decisionId, keeper, DecisionQuery.ChooseOne(
+              drawn.map(id =>
+                DecisionOption.Legacy(DecisionOptionRef.Legacy(id))),
+              heading = Some(
+                if keeper == participant.playerId then "Keep a legacy"
+                else "Matchmaker: keep a legacy for another player"),
+              confirmVerb = Some("Keep"))),
+            BuildOps(returnLegacies(participant.lineageId, drawn, decisionId)),
+            keptNote(keeper, participant.playerId)))
 
-  private def keptLegacyNote(player: PlayerId): Operation =
-    Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
-      _ => Some(keptLegacy.sourceless(NoteArg.Player(player))))
+  private def keptNote(keeper: PlayerId, owner: PlayerId): Operation =
+    Note(ProcedureNotes.id(TriggeredProcedureRef.Setup), _ => Some(
+      if keeper == owner then keptLegacy.sourceless(NoteArg.Player(owner))
+      else Matchmaker.keptFor.sourceless(NoteArg.Player(keeper),
+        NoteArg.Player(owner), NoteArg.Card(MatchmakerCard.id))))
+
+  /** The owner and Matchmaker's holder when `legacy` is in a two-legacy
+    * draw, during Setup, that the holder keeps for that owner (R16). The
+    * owner never identifies such a card; the holder does only while the
+    * owner's keep is the parked decision, which the projection checks. None
+    * when the owner keeps for themselves, once one is kept, and outside
+    * Setup. */
+  def matchmade(ready: ReadyGame, lineage: LineageId, legacy: LegacyId)
+      : Option[(PlayerId, PlayerId)] =
+    val waiting = drawn(ready, lineage)
+    for
+      owner <- ready.game.current.players.find(_.lineage == lineage)
+        .map(_.player)
+      if ready.game.current.turn.phase == Phase.Setup &&
+        waiting.sizeIs >= 2 && waiting.contains(legacy)
+      keeper = SetupLegacyRules.keeper(ready, owner)
+      if keeper != owner
+    yield owner -> keeper
 
   /** The legacies game start drew for `lineage` that are still on it:
     * the dormant ones its baseline record does not hold. */

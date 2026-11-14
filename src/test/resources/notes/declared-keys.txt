@@ -650,6 +650,7 @@ procedure.setup kept-legacy = {0} kept a legacy
 procedure.setup legacy-placed-warband = {0} placed a warband at {1} with {2}
 procedure.setup legacy-started-scepter = {0} started with the Grand Scepter with {1}
 procedure.setup legacy-started-warbands = {0} started with {1} {1?warband|warbands} with {2}
+procedure.setup matchmaker-kept-for = {0} kept a legacy for {1} with {2}
 procedure.setup oaths-buried = {0} buried {1} with {2}
 procedure.setup placed-pawn = {0} placed their pawn at {1}
 procedure.setup placed-site = {0} placed {1} on the map

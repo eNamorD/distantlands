@@ -24,3 +24,8 @@ object SetupLegacyRules:
     * 12). */
   def populist(state: ReadyGame): Option[PlayerId] =
     ChronicleLegacyRules.holder(state, PopulistCard.id)
+
+  /** Who answers `owner`'s Quiet Ambitions keep: Matchmaker's holder, for
+    * every player but themselves, else the owner (ruling 13). */
+  def keeper(state: ReadyGame, owner: PlayerId): PlayerId =
+    ChronicleLegacyRules.holder(state, MatchmakerCard.id).getOrElse(owner)
