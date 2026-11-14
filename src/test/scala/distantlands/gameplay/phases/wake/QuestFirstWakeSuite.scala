@@ -108,7 +108,15 @@ class QuestFirstWakeSuite extends munit.FunSuite:
     val at = parkedAt(QuestFirstWakeProcedure.discardDecisionId(p2), teeming,
       taking)
     assertEquals(decide(at).owner, p2)
-    assert(at.ready.game.current.pawnSite(p2).nonEmpty)
+    val site = at.ready.game.current.pawnSite(p2).get
+    val next = CardPlay.nextRegion(at.ready.game.current.map.regionOf(site).get)
+    val held = at.ready.game.current.player(p2).get.advisers.map(_.id: CardId)
+    val after = at.after().ready.game.current
+    val discarded = held.diff(after.player(p2).get.advisers.map(_.id: CardId))
+    assert(discarded.nonEmpty, held)
+    // A regional discard pile keeps its top card last.
+    val pile = after.commonCards.discard(next)
+    assertEquals(pile.takeRight(discarded.size).toSet, discarded.toSet)
 
   test("a Ties hand card swapped in is buried at the Wake's Choose Adviser " +
       "under Oaths of Loyalty"):
