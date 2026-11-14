@@ -1,6 +1,7 @@
 package distantlands.application
 
-import distantlands.catalog.holding.{ArbiterCard, RivalCard, SeerCard}
+import distantlands.catalog.holding.{ArbiterCard, SeerCard}
+import distantlands.gameplay.chronicle.legacies.RivalCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model.{DecisionOption, DecisionOptionRef, Phase}
 import distantlands.testkit.Table

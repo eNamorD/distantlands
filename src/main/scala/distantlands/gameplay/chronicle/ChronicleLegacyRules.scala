@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.gameplay.chronicle.legacies.SteadfastCard
+import distantlands.gameplay.chronicle.legacies.{RivalCard, SteadfastCard}
 import distantlands.model._
 
 /** The seam the legacies' Chronicle powers share (Legacy Chronicle powers
@@ -26,3 +26,7 @@ object ChronicleLegacyRules:
     * legacies go dormant (ruling 5). */
   def keepsOthersActive(state: ReadyGame, player: PlayerId): Boolean =
     holder(state, SteadfastCard.id).contains(player)
+
+  /** Who keeps cards from Shape Empire's discard: Rival's holder (ruling 9). */
+  def protector(state: ReadyGame): Option[PlayerId] =
+    holder(state, RivalCard.id)

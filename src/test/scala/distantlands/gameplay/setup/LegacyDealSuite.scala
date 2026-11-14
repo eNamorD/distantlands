@@ -1,6 +1,7 @@
 package distantlands.gameplay.setup
 
-import distantlands.catalog.holding.{ArbiterCard, RivalCard, SeerCard}
+import distantlands.catalog.holding.{ArbiterCard, SeerCard}
+import distantlands.gameplay.chronicle.legacies.RivalCard
 import distantlands.model._
 
 /** Foundation III's deal of the derived legacy deck, on both faces

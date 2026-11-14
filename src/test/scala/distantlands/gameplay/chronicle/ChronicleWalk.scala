@@ -56,17 +56,20 @@ object ChronicleWalk:
   final case class Run(ready: ReadyGame, events: Vector[OathEvent],
       asked: Vector[Decide])
 
-  /** The Chronicle started on `table`, each park answered by `answers` where
-    * it names one and plainly otherwise, up to `WalkerCompleted(procedure)`.
+  /** The Chronicle started on `table` from the end of `after` (the driver's
+    * next procedure: Begin starts the Sun, the Sun starts the Throne), each
+    * park answered by `answers` where it names one and plainly otherwise,
+    * up to `WalkerCompleted(procedure)`.
     * Every answer goes through `rules.resolveWalker`, which rebuilds the
     * walk from the journaled state, so each is a resumed walk. */
   def through(rules: OathRules, table: Table, procedure: TriggeredProcedureRef,
-      answers: PartialFunction[Decide, DecisionAnswer] = PartialFunction.empty)(
+      answers: PartialFunction[Decide, DecisionAnswer] = PartialFunction.empty,
+      after: TriggeredProcedureRef = TriggeredProcedureRef.ChronicleBegin)(
       using munit.Location): Run =
     val done = distantlands.gameplay.walker.WalkerCompleted(procedure)
     var asked = Vector.empty[Decide]
     val started = accepted(rules.next(OathTransition(table.state, Vector.empty),
-      TriggeredProcedureRef.ChronicleBegin))
+      after))
     val walked = Iterator.iterate(started)(step =>
       val decide = parked(step.state).get
       asked :+= decide

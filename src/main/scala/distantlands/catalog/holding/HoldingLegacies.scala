@@ -137,19 +137,6 @@ object PopulistCard extends Legacy(LegacyId("L16"), "Populist",
       "banks leaves you one favor._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object RivalCard extends Legacy(LegacyId("L17"), "Rival",
-    LegacyGoal.PeoplesFavor, Suit.Order):
-  val power = PrintedPower(PowerId("legacy.rival"),
-    persistent = false, cost = Cost.free,
-    text = "**CHRONICLE (THRONE):** In Shape Empire, you may prevent " +
-      "any number of denizens from being discarded.\n\n**IF YOU ARE " +
-      "AN EXILE:** **SETUP:** Before resolving foundations, fill " +
-      "the three Cradlemost empty site slots using the Empire " +
-      "setup rules, but place one warband of yours on each _(not " +
-      "an Imperial warband)_. You may place your pawn on these " +
-      "sites.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object TheStandardBearerCard extends Legacy(LegacyId("L18"), "The Standard Bearer",
     LegacyGoal.PeoplesFavor, Suit.Arcane):
   val power = PrintedPower(PowerId("legacy.the-standard-bearer"),

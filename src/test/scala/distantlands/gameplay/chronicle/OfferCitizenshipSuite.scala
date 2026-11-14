@@ -1,8 +1,8 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.holding.{ArbiterCard, IronHandCard,
-  PeacemakerCard, RivalCard, SeerCard, TheNeedleCard}
-import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
+  PeacemakerCard, SeerCard, TheNeedleCard}
+import distantlands.gameplay.chronicle.legacies.{ChroniclerCard, RivalCard,
   SteadfastCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}

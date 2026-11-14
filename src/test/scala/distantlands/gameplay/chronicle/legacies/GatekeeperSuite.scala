@@ -1,7 +1,6 @@
 package distantlands.gameplay.chronicle.legacies
 
-import distantlands.catalog.holding.{IronHandCard, RivalCard, SeerCard,
-  WealthyCard}
+import distantlands.catalog.holding.{IronHandCard, SeerCard, WealthyCard}
 import distantlands.gameplay.OathRules
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.cards.AncientCitySite

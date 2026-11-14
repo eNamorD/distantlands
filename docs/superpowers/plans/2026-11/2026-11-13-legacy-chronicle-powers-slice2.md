@@ -268,13 +268,14 @@ class RivalSuite extends munit.FunSuite:
     // Two Imperial warbands: Shape Empire first asks p1 to remove some.
     val table = outside.warbandsAt(BrokenPeaksSite, p1, 1)
       .legacy(p2, RivalCard)
-    val run = throne(table, {
+    val removing: PartialFunction[Decide, DecisionAnswer] =
       case decide if decide.decisionId ==
           distantlands.gameplay.chronicle.ShapeEmpire.removeDecisionId =>
         DecisionAnswer.DistributeAnswer(Vector(
           DistributeAmount(DecisionOptionRef.Site(BrokenPeaksSite.id), 1),
           DistributeAmount(DecisionOptionRef.Site(AncientCitySite.id), 0)))
-    }.orElse(keeping(DecisionOptionRef.Denizen(ThreateningRoarCard.id))))
+    val run = throne(table, removing.orElse(
+      keeping(DecisionOptionRef.Denizen(ThreateningRoarCard.id))))
     assert(onMap(run.ready, ThreateningRoarCard.id))
     assert(!onMap(run.ready, FaeMerchantCard.id))
 ```
@@ -720,12 +721,13 @@ class RevolutionarySuite extends munit.FunSuite:
       "the answer"):
     // Build Edifice first buries Threatening Roar for its suit's edifice.
     val suit = catalog.denizen(ThreateningRoarCard.id).get.suit
-    val run = throne(empire, {
+    val building: PartialFunction[Decide, DecisionAnswer] =
       case decide if decide.decisionId ==
           distantlands.gameplay.chronicle.BuildEdifice.decisionId(suit) =>
         DecisionAnswer.ChooseManyAnswer(Vector(
           DecisionOptionRef.Denizen(ThreateningRoarCard.id)))
-    }.orElse(discarding(DecisionOptionRef.Denizen(FaeMerchantCard.id))))
+    val run = throne(empire, building.orElse(
+      discarding(DecisionOptionRef.Denizen(FaeMerchantCard.id))))
     assert(!onMap(run.ready, FaeMerchantCard.id))
     val asked = run.asked.find(_.decisionId == Revolutionary.decisionId(p3)).get
     assert(!asked.query.asInstanceOf[DecisionQuery.ChooseMany].options

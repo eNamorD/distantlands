@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.legacies.LegacyChroniclePowers
 import distantlands.gameplay.walker.ProcedureStart
 import distantlands.model._
 
@@ -15,7 +16,8 @@ object ChronicleThroneProcedure:
   /** The notes the Throne's steps write. */
   def noteKeys: Vector[NoteKey] = OfferCitizenship.noteKeys ++
     ShapeEmpire.noteKeys ++
-    BuildEdifice.noteKeys ++ LineageScoring.noteKeys ++ SwearOath.noteKeys
+    BuildEdifice.noteKeys ++ LineageScoring.noteKeys ++ SwearOath.noteKeys ++
+    LegacyChroniclePowers.throneNoteKeys
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     ChronicleWindows.step(PowerWindow.ChronicleOfferCitizenship,

@@ -2,6 +2,7 @@ package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.{CardPlay, ProcedureNotes}
+import distantlands.gameplay.chronicle.legacies.{Rival, RivalCard}
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
 
@@ -79,8 +80,11 @@ object ShapeEmpire:
   private def enduring(catalog: ExecutableCatalog, site: SiteId): Boolean =
     catalog.site(site).exists(_.handlers.exists(_.value.endsWith(".enduring")))
 
-  /** Some legacies also protect denizens (ruling 6); they arrive with legacy
-    * powers through this step's window. */
+  /** The cards at sites the holder does not rule, but Enduring ones, are
+    * discarded. Rival's holder, read when the discard is reached, first keeps
+    * any of them, ruined edifices included (Legacy Chronicle powers design,
+    * ruling 9; R8): the question's options are the cards this Branch read,
+    * so a walk resumed there finds the same ones. */
   private def discards(catalog: ExecutableCatalog, state: ReadyGame,
       holder: PlayerId): Vector[Operation] =
     val current = state.game.current
@@ -88,14 +92,47 @@ object ShapeEmpire:
       ChronicleTasks.rules(state, holder, site) || enduring(catalog, site))
       .flatMap(site => current.map.regionOf(site).toVector.flatMap(region =>
         current.map.sites(site).denizens.flatMap(card =>
-          discard(catalog, site, region, card, holder)
-            .map(op => (site, card.id, op)))))
+          discardOf(catalog, site, region, card, holder)
+            .map(op => (site, card, op)))))
+    if cards.isEmpty then Vector.empty
+    else ChronicleLegacyRules.protector(state) match
+      case None => discarding(cards)
+      case Some(rival) => Vector(
+        Decide(Rival.decisionId(rival), rival, DecisionQuery.ChooseMany(0,
+          cards.size, cards.map((_, card, _) => option(card)),
+          heading = Some("Rival: you may keep any of these cards from " +
+            "being discarded"),
+          confirm = Some(CountedConfirm("Keep", "card", "cards",
+            Some("Keep none"))))),
+        Branch((_, pending) =>
+          val kept = PowerAnswers.many(pending, Rival.decisionId(rival))
+            .getOrElse(Vector.empty).toSet
+          val (keeping, lost) = cards.partition((_, card, _) =>
+            kept(option(card).ref))
+          discarding(lost) ++ Option.when(keeping.nonEmpty)(Note(noteId, _ =>
+            Some(Rival.protectedWith.sourceless(NoteArg.Player(rival),
+              NoteArg.Number(keeping.size), NoteArg.Card(RivalCard.id)))))
+            .toVector))
+
+  /** One batch discarding `cards`, then each card's line. */
+  private def discarding(cards: Vector[(SiteId, SiteDenizenState,
+      CoreOperation)]): Vector[Operation] =
     if cards.isEmpty then Vector.empty
     else BuildOps((_, _) => Right(cards.map(_._3)), required = true) +:
       cards.map((site, card, _) => Note(noteId, _ => Some(
-        discarded.sourceless(NoteArg.Card(card), NoteArg.Site(site)))))
+        discarded.sourceless(NoteArg.Card(card.id), NoteArg.Site(site)))))
 
-  private def discard(catalog: ExecutableCatalog, site: SiteId,
+  /** A site card as a decision option. */
+  def option(card: SiteDenizenState): DecisionOption = card match
+    case DenizenState(id, _, _) =>
+      DecisionOption.Denizen(DecisionOptionRef.Denizen(id))
+    case EdificeState(id, _, _) =>
+      DecisionOption.Edifice(DecisionOptionRef.Edifice(id))
+
+  /** Where Shape Empire sends `card`, discarded from `site` in `region` by
+    * `actor`: a denizen to the next region's discard, a ruined edifice to
+    * the set-aside list; an intact edifice is never discarded. */
+  def discardOf(catalog: ExecutableCatalog, site: SiteId,
       region: Region, card: SiteDenizenState, holder: PlayerId)
       : Option[Discard.Denizen | Discard.RuinedEdifice] =
     val at = PositionedLocation(Location.Site(site))

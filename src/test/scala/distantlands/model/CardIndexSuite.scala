@@ -1,6 +1,7 @@
 package distantlands.model
 
-import distantlands.catalog.holding.{ArbiterCard, RivalCard, SeerCard}
+import distantlands.catalog.holding.{ArbiterCard, SeerCard}
+import distantlands.gameplay.chronicle.legacies.RivalCard
 import distantlands.testkit.Table
 import distantlands.testkit.Table.p1
 import distantlands.testkit.Unwrap.{accepted, rejected}

@@ -1,6 +1,7 @@
 package distantlands.gameplay.operations
 
-import distantlands.catalog.holding.{RivalCard, SeerCard}
+import distantlands.catalog.holding.SeerCard
+import distantlands.gameplay.chronicle.legacies.RivalCard
 import distantlands.gameplay.powers.action.AlchemistCard
 import distantlands.model._
 import distantlands.testkit.Table
