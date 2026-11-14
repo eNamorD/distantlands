@@ -93,7 +93,9 @@ final case class EmpireSetup(chancellor: PlayerId,
 /** What the legacies' SETUP powers change at game start (Legacy Setup
   * powers design, slice 1), worked out from the Chronicle and the seats by
   * `StartingLegacies`. `boardWarbands` holds only the boards that start
-  * with other than 3; `ironHand` and `rival` are the holders' lineages;
+  * with other than 3; `ironHand` and `rival` are the holders' lineages
+  * whose warbands game start places at sites (`ironHand` is none in an
+  * exile-only game, which restored no Empire);
   * `rivalSites` are the Atlas sites Rival places, Cradlemost first. */
 final case class StartLegacies(
     boardWarbands: Map[PlayerId, Int],

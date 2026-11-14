@@ -1,5 +1,6 @@
 package distantlands.gameplay.setup
 
+import distantlands.gameplay.chronicle.legacies.IronHandCard
 import distantlands.gameplay.setup.legacies.{CircleOfSwords,
   CircleOfSwordsCard, ScepterBearerCard}
 import distantlands.model._
@@ -47,5 +48,11 @@ object StartingLegacies:
     // Imperial holder is one of its players.
     val bearer = holder(chronicle, seated, ScepterBearerCard.id,
       imperialRoles).map(playerOf)
+    // Only an Exile's Iron Hand acts: an Imperial discarded it (R4). An
+    // exile-only game restored no Empire, so it has no site up to the
+    // Empire divider for the holder's warbands.
+    val ironHand = mode match
+      case SetupMode.ExileOnly(_) => None
+      case _ => holder(chronicle, seated, IronHandCard.id, exileRoles)
     StartLegacies.none.copy(boardWarbands = circle.toMap,
-      scepterBearer = bearer)
+      ironHand = ironHand, scepterBearer = bearer)

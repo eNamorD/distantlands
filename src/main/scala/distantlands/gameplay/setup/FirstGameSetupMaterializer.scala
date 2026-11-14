@@ -19,17 +19,22 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       plan.legacies.boardWarbands.getOrElse(p.playerId, 3)).toMap
     val purpleBoards = plan.empire.fold(0)(_.imperial.toVector
       .map(boards).sum)
-    val purple = plan.empire.fold(Set.empty[SiteId])(empire =>
-      empire.sites.take(math.max(0,
-        MaterialBankState.ImperialWarbands - purpleBoards))
-        .map(_.site).toSet)
+    // Under Iron Hand the Empire's sites take its holder's warbands.
+    val purple = plan.empire.filter(_ => plan.legacies.ironHand.isEmpty)
+      .fold(Set.empty[SiteId])(empire =>
+        empire.sites.take(math.max(0,
+          MaterialBankState.ImperialWarbands - purpleBoards))
+          .map(_.site).toSet)
+    val held = heldForces(plan, boards)
     val empireSites = plan.empire.fold(Map.empty[SiteId, StoredSite])(
       _.sites.map(stored => stored.site -> stored).toMap)
     val atlasSites = plan.atlasSites.map(stored => stored.site -> stored).toMap
     val map = MapState.inSlots(plan.orderedSites.map { siteId =>
       val drawn = relicsBySite.getOrElse(siteId, Vector.empty)
-      siteId -> empireSites.get(siteId).map(empireSite(_, purple(siteId)))
-        .orElse(atlasSites.get(siteId).map(atlasSite(_, drawn)))
+      siteId -> empireSites.get(siteId).map(stored => empireSite(stored,
+          held.getOrElse(siteId, empireForces(purple(siteId)))))
+        .orElse(atlasSites.get(siteId).map(stored =>
+          atlasSite(stored, drawn, held.get(siteId))))
         .getOrElse(firstGameSite(siteId, edifices.get(siteId), drawn))
     })
     val usedRelics = relicsBySite.valuesIterator.flatten.toSet
@@ -75,6 +80,27 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       site -> assigned
     }.toMap
 
+  /** The forces at each site a legacy gives an Exile holder's warbands:
+    * under Iron Hand the Empire's sites, or the former Empire's with no
+    * Empire. A lineage's 14 warbands go to its board first, then to its
+    * sites Cradlemost first; a site its supply misses takes bandits (R2). */
+  private def heldForces(plan: FirstGameSetupPlan,
+      boards: Map[PlayerId, Int]): Map[SiteId, SiteForces] =
+    val lineageBoards = plan.participants.map(p => p.lineageId ->
+      boards(p.playerId)).toMap
+    val formerEmpire = plan.empire.fold(plan.atlasSites)(_.sites)
+    val sites = plan.legacies.ironHand.toVector.flatMap(lineage =>
+      formerEmpire.map(lineage -> _.site))
+    sites.groupBy(_._1).flatMap { (lineage, held) =>
+      val reach = MaterialBankState.ExileWarbandsPerLineage -
+        lineageBoards.getOrElse(lineage, 3)
+      held.zipWithIndex.map { case ((_, site), index) =>
+        site -> (if index < reach then
+          SiteForces.Occupied(ForceKind.Exile(lineage), 1)
+        else bandits(site))
+      }
+    }
+
   private def bandits(site: SiteId): SiteForces =
     val capacity = catalog.site(site).get.capacity
     if capacity == 0 then SiteForces.Empty
@@ -89,23 +115,31 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
         EdificeState(id, EdificeSide.Ruined, Tokens.empty)),
       faceDown(drawn), catalog.site(site).get.startingResources)
 
+  /** An Empire site's forces: an Imperial warband while the supply the
+    * Imperial boards leave lasts (Empire ruling R30). A short site stays
+    * empty for game start's bandits. */
+  private def empireForces(purple: Boolean): SiteForces =
+    if purple then SiteForces.Occupied(ForceKind.Imperial, 1)
+    else SiteForces.Empty
+
   /** An Empire site: its stored edifice intact, its denizens faceup, its
-    * stored relics facedown, and an Imperial warband while the supply
-    * the Imperial boards leave lasts (Empire ruling R30). A short site stays empty for game start's
-    * bandits. */
-  private def empireSite(stored: StoredSite, purple: Boolean): SiteState =
-    SiteState(if purple then SiteForces.Occupied(ForceKind.Imperial, 1)
-        else SiteForces.Empty,
+    * stored relics facedown, with `forces`. */
+  private def empireSite(stored: StoredSite, forces: SiteForces): SiteState =
+    SiteState(forces,
       storedDenizens(stored, EdificeSide.Intact), faceDown(storedRelics(stored)),
       catalog.site(stored.site).get.startingResources)
 
   /** A former Empire's site with no Empire keeps its stored cards, its
     * edifice ruined, and fills its open relic slots, as an atlas site
-    * Imperial Maps places does (Empire ruling R27). */
-  private def atlasSite(stored: StoredSite, drawn: Vector[RelicId]): SiteState =
+    * Imperial Maps places does (Empire ruling R27). Under Iron Hand it
+    * takes `held` in place of its bandits. */
+  private def atlasSite(stored: StoredSite, drawn: Vector[RelicId],
+      held: Option[SiteForces]): SiteState =
     val printed = catalog.site(stored.site).get
-    SiteState.banditSite(printed.capacity, printed.startingResources,
-      storedDenizens(stored, EdificeSide.Ruined), storedRelics(stored) ++ drawn)
+    val site = SiteState.banditSite(printed.capacity,
+      printed.startingResources, storedDenizens(stored, EdificeSide.Ruined),
+      storedRelics(stored) ++ drawn)
+    held.fold(site)(forces => site.copy(forces = forces))
 
   private def storedDenizens(stored: StoredSite, side: EdificeSide)
       : Vector[SiteDenizenState] = stored.items.collect {
