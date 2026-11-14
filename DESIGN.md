@@ -455,8 +455,11 @@ count (implementation rulings R5 and R7). Pawns are one line that never
 wraps on the face at any scale: two pawns by name at rest, from three on the
 dot and the player's initial; the dot and the initial on the compact map,
 the dot alone from five pawns on and on the tiny map, where the dot is sized
-from the face's width (about 8px on screen at a tablet's Fit, 3px on a
-phone's); the name is kept as the pawn's name and hover note (R6). A
+from the face's width (about 8px on screen at a tablet's Fit). On a phone's
+face defense steps out and the pawns share the forces' row at the glance
+size, shrinking only as their number needs; the name is kept as the pawn's
+name and hover note (R6). There a cost badge wider than the face grows
+rightward over its own row. A
 decision's cost badge sits at the face's foot, over the name's tail, the
 one thing it may cover. A card holding three kinds of token or more gives
 its token band two lines, and on the mat the band wraps two kinds a line. Its

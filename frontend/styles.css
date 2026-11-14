@@ -611,22 +611,48 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   column-gap: 0.05em; padding: 0; }
 .map-tiny .mat-board .favor-bank > .token-glyph { width: 0.75em;
   height: 0.75em; }
-.map-tiny .mat-board .pawn-initial { display: none; }
-/* A phone's face is as tall as two rows of the glance size, the pawns' row
-   and the name: the rows close up and the dots take what height is left. */
+.map-tiny .mat-board .site-pawns .pawn-initial { display: none; }
+/* A phone's face holds two rows under the name. Defense steps out first
+   (ruling R5); the pawns share the forces' row, forces at its left and
+   pawns at its right, at the glance size, and shrink only as far as their
+   number needs to fit beside the forces' count (ruling R6, amended). A
+   cost badge wider than the face grows rightward over its own row. */
 @media (max-width: 620px) {
   .map-tiny .mat-board .site { --row: var(--glance-text); }
-  .map-tiny .mat-board :is(.site-tokens, .site-forces-short,
-    .site-defense-short) { line-height: 1; }
-  .map-tiny .mat-board :is(.site-forces-short,
-    .site-defense-short) .token-glyph { width: 1em; height: 1em; }
+  .map-tiny .mat-board :is(.site-tokens, .site-forces-short) { line-height: 1; }
+  .map-tiny .mat-board .site-forces-short .token-glyph { width: 1em;
+    height: 1em; }
   .map-tiny .mat-board .site-tokens .token-glyph { width: 0.85em;
     height: 0.85em; }
-  .map-tiny .mat-board .site > .target-detail-badge { line-height: 1;
-    padding: 0 0.3em; }
+  .map-tiny .mat-board .site-defense-short { display: none; }
+  .map-tiny .mat-board .site-forces-short .site-token-count { margin-right: 0; }
+  .map-tiny .mat-board .site-pawns { top: calc(6px + var(--row));
+    left: auto; right: calc(100% - var(--face-left) - var(--face-w) + 8px);
+    width: auto; max-width: calc(var(--face-w) - 16px - var(--glance-text) * 2.1);
+    height: var(--glance-text); align-items: center; justify-content: flex-end;
+    gap: 0.12em; line-height: 1; }
   .map-tiny .mat-board .site-pawns,
   .map-tiny .mat-board .site-pawns .festival-marker::after {
-    font-size: calc(var(--glance-text) * 0.33); }
+    font-size: var(--glance-text); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(3)),
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(3)) .festival-marker::after {
+    font-size: min(var(--glance-text), 37px); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(4)),
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(4)) .festival-marker::after {
+    font-size: min(var(--glance-text), 28px); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(5)),
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(5)) .festival-marker::after {
+    font-size: min(var(--glance-text), 22px); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(6)),
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(6)) .festival-marker::after {
+    font-size: min(var(--glance-text), 18px); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(7)),
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(7)) .festival-marker::after {
+    font-size: min(var(--glance-text), 16px); }
+  .map-tiny .mat-board .site > .target-detail-badge { line-height: 1;
+    padding: 0 0.3em; right: auto; left: var(--face-left); max-width: 100%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    box-sizing: border-box; }
 }
 /* What stays keeps one size: a deck's letter and count, and a cell's
    number, each at the glance size, inside the place the mat gives it. */
