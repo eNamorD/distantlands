@@ -43,5 +43,25 @@ Ruled by the owner on 2026-11-14.
 ## Slice 2
 
 [Plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice2.md).
+Ruled by the owner on 2026-11-14.
 
-None recorded yet. The plan's open questions wait for the owner's rulings.
+- **R6. Does Pathfinder also ignore Lost Lagoon?** *Decision:* yes.
+  *Reason:* Lost Lagoon makes its site an Island and is the Island power
+  there; `TravelTerrain.ignoredOnCoastRoute` already treats it as one.
+  *Slice/files:* slice 2, Task 2; `Pathfinder`.
+- **R7. How does Keeper of Order's user choose +2 or −2?** *Decision:*
+  choosing the plan asks a follow-up, "Add 2 attack dice" or "Remove 2
+  attack dice", as Mountain Giant does. *Reason:* one plan option per
+  source keeps the plan decision's shape and its Imperial Tactics consent
+  unchanged. *Slice/files:* slice 2, Task 5; `KeeperOfOrder`.
+- **R8. Do the passive powers write lines?** *Decision:* Ancestral Lands,
+  Pathfinder, Light Fingers and Beloved write none; Keeper of Order writes
+  "Added 2 attack dice." or "Removed 2 attack dice.", and Outriders'
+  "Skulls ignored." when it ignores a skull; High Priest's secrets show in
+  the deal's own lines. *Reason:* it matches the terrain powers and the
+  existing battle-plan lines. *Slice/files:* slice 2, Tasks 1-6.
+- **R9. How does a Negotiation saved before slice 2 resume?** *Decision:*
+  its start facts decode with an empty High Priest list, so the walk
+  resumes as it was. *Reason:* old saves must keep loading, and an empty
+  list is exactly what such a game had. *Slice/files:* slice 2, Task 6;
+  `NegotiationStartFacts.read`.

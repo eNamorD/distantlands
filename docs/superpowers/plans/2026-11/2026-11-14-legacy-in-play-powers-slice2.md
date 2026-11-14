@@ -53,33 +53,24 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-Raised for the owner's rulings before execution. Each names the plan's
-default, which the tasks below are written to.
+The plan's open questions were ruled on 2026-11-14 as implementation
+rulings R6-R9 ([rulings](../../specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)):
 
-- **Q1. Does Pathfinder ignore Lost Lagoon?** Lost Lagoon (E03, ruined)
-  is "Act as if this site is an Island": arriving costs 2 more Supply, as
-  a printed Island's power does. (a) Yes: it is an Island power, and the
-  Coast powers already ignore it as one (`TravelTerrain.ignoredOnCoastRoute`).
-  (b) No: only the printed Mountain, Island and Pass sites. *Default:
-  (a).* Task 2.
-- **Q2. How does Keeper of Order's user choose +2 or −2?** (a) Picking
-  the plan asks a second question, "Add 2 attack dice" or "Remove 2
-  attack dice", as Mountain Giant asks 1 or 3. (b) The plan decision
-  lists Keeper of Order twice, once per sign. *Default: (a)*: one plan,
-  one option, the shape the plan window and Imperial Tactics' lending
-  already take. Task 5.
-- **Q3. Do the passive powers write lines?** *Default:* Ancestral Lands,
-  Pathfinder, Light Fingers and Beloved write none, as the terrain powers
-  and Grand Canal write none: the start line's Supply cost and the
-  Trade's line already say what happened. Keeper of Order writes Mountain
-  Giant's "Added 2 attack dice." or "Removed 2 attack dice.", and
-  Outriders' "Skulls ignored." when it ignores a skull. High Priest's
-  secrets show in the deal's own lines. Tasks 1-6.
-- **Q4. A Negotiation saved mid-walk before this slice.** Its start facts
-  have no High Priest list. *Default:* read it as an empty list, so the
-  walk resumes as it was, rather than refusing it. Task 6.
+- **R6** (Task 2): Pathfinder also ignores Lost Lagoon, the Island power
+  at its site.
+- **R7** (Task 5): choosing Keeper of Order asks a follow-up, "Add 2
+  attack dice" or "Remove 2 attack dice", as Mountain Giant does.
+- **R8** (Tasks 1-6): Ancestral Lands, Pathfinder, Light Fingers and
+  Beloved write no lines; Keeper of Order writes "Added 2 attack dice."
+  or "Removed 2 attack dice.", and Outriders' "Skulls ignored." when it
+  ignores a skull; High Priest's secrets show in the deal's own lines.
+- **R9** (Task 6): a Negotiation's start facts saved before this slice
+  decode with an empty High Priest list, and a test decodes such facts.
+
+Each Travel, Trade and Campaign test builds its table as a named fixture
+with concrete sites and pieces in the test itself.
 
 ## Plan choices
 
@@ -138,7 +129,7 @@ default, which the tasks below are written to.
 - No `Branch`'s children or ids depend on state the walk itself changes;
   every new `Decide` has a resume test; no two decisions share an id.
 - Old saved streams still decode: no journaled wire format changes;
-  Negotiation start facts without the new list read as empty (Q4).
+  Negotiation start facts without the new list read as empty (R9).
 - TDD: write the failing test, run it and see it fail, implement, run it
   and see it pass, commit. One commit per task.
 - Statement coverage stays at or above 92% and branch coverage at or above
@@ -272,7 +263,7 @@ object AncestralLandsCard extends Legacy(LegacyId("L08"), "Ancestral Lands",
   * It folds after every other Travel power, Special Envoy included, so it
   * caps what they leave and never raises a cost one of them made lower or
   * removed. Way Station folds `Late` and can only lower it further. Only
-  * the cost changes: a Pass still restricts. It writes no line (Q3).
+  * the cost changes: a Pass still restricts. It writes no line (R8).
   */
 case object AncestralLands extends ContributingPower:
   val id: PowerId = AncestralLandsCard.power.id
@@ -320,7 +311,7 @@ git log -3
 
 ### Task 2: Pathfinder
 
-Written to Q1 (a).
+Written to R6.
 
 **Files:**
 - Create: `src/main/scala/distantlands/gameplay/powers/travel/Pathfinder.scala`
@@ -349,7 +340,7 @@ class PathfinderSuite extends munit.FunSuite:
     assertEquals(supplySpent(holder, to = islandSite),
       supplySpent(without, to = islandSite) - 2)
 
-  test("Lost Lagoon's Island add is ignored too (Q1)"):
+  test("Lost Lagoon's Island add is ignored too (R6)"):
     assertEquals(supplySpent(holderBesideLostLagoon, to = lagoonSite),
       supplySpent(withoutBesideLostLagoon, to = lagoonSite) - 2)
 
@@ -389,11 +380,11 @@ Expected: compile error, `PathfinderCard` is not in `gameplay.powers.travel`.
   * Its holder's Travel ignores them always, with no question, since
   * ignoring them is never worse. The ignore is the collector's named
   * ignore, so this power hooks each window those powers hook: `TravelCost`
-  * (the Mountain and Island adds, Lost Lagoon's included, Q1) and
+  * (the Mountain and Island adds, Lost Lagoon's included, R6) and
   * `TravelActionEligibility` (the Pass's restriction), contributing nothing
   * there but its vote. The Pass's campaign-targeting limit hooks
   * `CampaignTargetSelection`, which this power does not, so it still
-  * applies. It writes no line (Q3).
+  * applies. It writes no line (R8).
   */
 case object Pathfinder extends ContributingPower:
   val id: PowerId = PathfinderCard.power.id
@@ -551,7 +542,7 @@ case object TakeWealthPawnGate extends ContributingPower:
   * favor or secrets from your site even if enemy pawns are there" (Legacy
   * in-play powers design, ruling 17). Its holder's Take Wealth ignores
   * `TakeWealthPawnGate`, always and with no question; it hooks the gate's
-  * window only to cast that ignore. It writes no line (Q3). */
+  * window only to cast that ignore. It writes no line (R8). */
 case object LightFingers extends ContributingPower:
   val id: PowerId = LightFingersCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
@@ -690,7 +681,7 @@ Beloved adds to the decision (Legacy in-play powers ruling 18)."
   * site. Trade's own rules are unchanged: the cost goes on that adviser,
   * the favor comes from its suit's bank, and the bonus counts the trader's
   * own matching advisers. Tokens leave the card at its holder's Rest. It
-  * writes no line: the Trade's line names the card (Q3).
+  * writes no line: the Trade's line names the card (R8).
   */
 case object Beloved extends ContributingPower:
   val id: PowerId = BelovedCard.power.id
@@ -745,7 +736,7 @@ git log -3
 
 ### Task 5: Keeper of Order and the legacy plan source
 
-Written to Q2 (a) and Q3.
+Written to R7 and R8.
 
 **Files:**
 - Modify: `src/main/scala/distantlands/model/CampaignTypes.scala`
@@ -886,11 +877,11 @@ faceup).
   * enemy an Imperial player, as in Imperial Infighting; bandits are never
   * an Imperial. Its user is the holder, or another Imperial it is lent to
   * through Imperial Tactics (ruling 5). Once picked, its user chooses to
-  * add 2 attack dice or remove 2 (Q2), whichever side they are on. When
+  * add 2 attack dice or remove 2 (R7), whichever side they are on. When
   * its user attacks, every skull they roll is ignored, rescored as
   * Outriders rescores. It is used once per Campaign, as every plan is.
   *
-  * Lines (Q3): "Added 2 attack dice." or "Removed 2 attack dice.", and
+  * Lines (R8): "Added 2 attack dice." or "Removed 2 attack dice.", and
   * Outriders' "Skulls ignored." when it ignores a skull.
   */
 case object KeeperOfOrder extends BattlePlan:
@@ -978,7 +969,7 @@ git log -3
 
 ### Task 6: High Priest, when negotiating
 
-Written to Q3 and Q4.
+Written to R8 and R9.
 
 **Files:**
 - Create: `src/main/scala/distantlands/gameplay/actions/negotiation/NegotiationLegacyCards.scala`
@@ -1033,7 +1024,7 @@ Written to Q3 and Q4.
     assertEquals(NegotiationStartFacts.read(facts.refs), Right(facts))
     assertEquals(facts.rules(Vector(p1, p2)).secretGivers, Vector(p1))
 
-  test("facts written before High Priest's list read it as empty (Q4)"):
+  test("facts written before High Priest's list read it as empty (R9)"):
     val before = NegotiationStartFacts(Vector(p2), Vector.empty).refs
       .filterNot(_ == DecisionOptionRef.Button(
         NegotiationStartFacts.HighPriestMarker))
@@ -1083,7 +1074,7 @@ Vector.empty` last; `HighPriestMarker` appended to `Markers`; `refs`
 zips it in; `at` fills it with `NegotiationAdvisers.highPriestUsers`;
 `rules` passes `secretGivers = highPriestUsers.filter(participants.contains)`;
 `read` appends the marker when `refs` lacks it, then reads as now
-(Q4), and builds `lists(5)`.
+(R9), and builds `lists(5)`.
 
 - [ ] **Step 4: Run them and see them pass**
 
@@ -1205,7 +1196,7 @@ travels to a Cradle site for 1 Supply (Ancestral Lands). Each step through
 `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite -- *legacy-modifiers*"`,
 then the gamelog suites. Expected lines: "Took 1 favor from <site>", the
 Trade's "Traded with <p2's adviser> for N favor", and the Travel line with
-its 1-Supply cost span; no legacy line (Q3). Every other golden unchanged.
+its 1-Supply cost span; no legacy line (R8). Every other golden unchanged.
 
 - [ ] **Step 3: Docs**
 
