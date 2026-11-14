@@ -324,13 +324,14 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         Some(OathkeeperProcedure.passedToPlayer))),
       isSection = false)
     // Setup's own lines tell every decision it asks. Setup has no turn, so
-    // the kept and revealed lines post as decisions, which is where the
-    // rules they replaced posted them.
+    // the kept, discarded and revealed lines post as decisions, which is
+    // where the rules they replaced posted them.
     case TriggeredProcedureRef.Setup => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
         SetupProcedure.keptAdviser -> LogKind.Decision,
         SetupProcedure.keptLegacy -> LogKind.Decision,
         Matchmaker.keptFor -> LogKind.Decision,
+        SecretSociety.discarded -> LogKind.Decision,
         SetupProcedure.revealedCard -> LogKind.Decision) ++
         OathsOfLoyalty.noteKeys(TriggeredProcedureRef.Setup)
           .map(_ -> LogKind.Decision)),

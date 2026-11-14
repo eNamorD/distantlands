@@ -21,6 +21,7 @@ import distantlands.gameplay.powers.search.{MushroomsCard, WineOfWelcomeCard}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.legacies.SecretSociety
 import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship}
 import distantlands.model._
 import distantlands.protocol.projection.{LogKind, LogSpan}
@@ -229,6 +230,13 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       SetupProcedure.keptAdviser), LogKind.Decision)
     assertEquals(kindOf(TriggeredProcedureRef.Setup,
       SetupProcedure.revealedCard), LogKind.Decision)
+
+  test("Secret Society's excess discard posts at Decision in Setup, as at " +
+      "the first Wake"):
+    assertEquals(kindOf(TriggeredProcedureRef.Setup, SecretSociety.discarded),
+      LogKind.Decision)
+    assertEquals(kindOf(TriggeredProcedureRef.QuestFirstWake,
+      SecretSociety.wakeDiscarded), LogKind.Decision)
 
   test("a Negotiation with two partners joins them"):
     val third = PlayerId("p3")
