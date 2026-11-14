@@ -28,8 +28,10 @@ object TheMouthCard extends Legacy(LegacyId("L34"), "The Mouth",
   *
   * The targets are the holder's own dormant legacies, then the Public
   * Ambitions row, whose goal the holder meets now, read as Resolve
-  * Legacies reads it (`LegacyGoals.meeting`). With none the ACTION is
-  * shown unavailable with its reason (R30). An own legacy flips faceup,
+  * Legacies reads it but counting only faceup advisers and faceup relics,
+  * for every player (`LegacyGoals.meetingInPlay`; R31). With none the
+  * ACTION is shown unavailable with its reason (R30). An own legacy flips
+  * faceup,
   * which reveals it; a public one moves faceup into the lineage. The same
   * batch alters the foundation the legacy names, unless it already lists
   * that legacy, and discards an Iron Hand its Imperial holder activated,
@@ -80,7 +82,7 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
   def targets(catalog: ExecutableCatalog, ready: ReadyGame,
       player: PlayerId): Vector[LegacyId] =
     def meets(legacy: LegacyId): Boolean = catalog.legacy(legacy).exists(
-      card => LegacyGoals.meeting(ready, catalog, card)(player))
+      card => LegacyGoals.meetingInPlay(ready, catalog, card)(player))
     val own = ChronicleTasks.lineageOf(ready, player).toVector.flatMap(
       lineage => ready.game.campaign.lineages.get(lineage).toVector
         .flatMap(_.legacies).collect {

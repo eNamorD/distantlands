@@ -13,41 +13,56 @@ import distantlands.model._
   * includes any Exile is unfriendly, and nobody meets it (Chronicle ruling
   * 4). */
 object LegacyGoals:
-  def meeting(ready: ReadyGame, catalog: ExecutableCatalog, legacy: Legacy)
-      : Set[PlayerId] = legacy.goal match
+  def meeting(ready: ReadyGame, catalog: ExecutableCatalog, legacy: Legacy,
+      faceupOnly: Boolean = false): Set[PlayerId] = legacy.goal match
     case LegacyGoal.PeoplesFavor =>
       ready.game.current.banners.peoplesFavor.holder.toSet
     case LegacyGoal.DarkestSecret =>
       ready.game.current.banners.darkestSecret.holder.toSet
     case LegacyGoal.GrandScepter => scepter(ready)
     case goal => leaders(ready, ChronicleTasks.seated(ready).map(player =>
-      player -> score(ready, catalog, goal, legacy.suit, player)))
+      player -> score(ready, catalog, goal, legacy.suit, player, faceupOnly)))
+
+  /** Who meets `legacy`'s goal during the game, as The Mouth reads it: only
+    * faceup advisers and faceup relics count, for every player, since a
+    * facedown card has no suit (CR p. 17) and reading it would reveal it
+    * (Legacy in-play powers R31). The Chronicle, where every card is
+    * revealed, reads `meeting`. */
+  def meetingInPlay(ready: ReadyGame, catalog: ExecutableCatalog,
+      legacy: Legacy): Set[PlayerId] =
+    meeting(ready, catalog, legacy, faceupOnly = true)
 
   /** A seated player's score toward a counted goal: the sites their side
     * rules, the cards of `suit` there and among their own advisers (R23),
     * or their best held relic's printed value. A goal held by a single
-    * holder scores 0 here. */
+    * holder scores 0 here. `faceupOnly` leaves out facedown cards (R31). */
   def score(ready: ReadyGame, catalog: ExecutableCatalog, goal: LegacyGoal,
-      suit: Suit, player: PlayerId): Int = goal match
-    case LegacyGoal.MostSites => ruled(ready, player).size
-    case LegacyGoal.MostOfSuit =>
-      val current = ready.game.current
-      val atSites = ruled(ready, player).flatMap(site =>
-        current.map.sites.get(site).toVector.flatMap(_.denizens)).count {
-          case DenizenState(id, _, _) => catalog.denizen(id).exists(_.suit == suit)
-          case EdificeState(id, _, _) => catalog.edifice(id).exists(_.suit == suit)
+      suit: Suit, player: PlayerId, faceupOnly: Boolean = false): Int =
+    def counts(orientation: Orientation): Boolean =
+      !faceupOnly || orientation == Orientation.FaceUp
+    goal match
+      case LegacyGoal.MostSites => ruled(ready, player).size
+      case LegacyGoal.MostOfSuit =>
+        val current = ready.game.current
+        val atSites = ruled(ready, player).flatMap(site =>
+          current.map.sites.get(site).toVector.flatMap(_.denizens)).count {
+            case DenizenState(id, orientation, _) => counts(orientation) &&
+              catalog.denizen(id).exists(_.suit == suit)
+            case EdificeState(id, _, _) => catalog.edifice(id).exists(_.suit == suit)
+          }
+        val advised = current.player(player).toVector.flatMap(_.advisers).count {
+          case DenizenState(id, orientation, _) => counts(orientation) &&
+            catalog.denizen(id).exists(_.suit == suit)
+          case _: VisionState => false
         }
-      val advised = current.player(player).toVector.flatMap(_.advisers).count {
-        case DenizenState(id, _, _) => catalog.denizen(id).exists(_.suit == suit)
-        case _: VisionState => false
-      }
-      atSites + advised
-    case LegacyGoal.HighestRelic =>
-      ready.game.current.player(player).toVector.flatMap(_.relics)
-        .map(relic => if relic.id == TheGrandScepterCard.id then
-          TheGrandScepterCard.value
-          else catalog.relic(relic.id).fold(0)(_.value)).maxOption.getOrElse(0)
-    case _ => 0
+        atSites + advised
+      case LegacyGoal.HighestRelic =>
+        ready.game.current.player(player).toVector.flatMap(_.relics)
+          .filter(relic => counts(relic.orientation))
+          .map(relic => if relic.id == TheGrandScepterCard.id then
+            TheGrandScepterCard.value
+            else catalog.relic(relic.id).fold(0)(_.value)).maxOption.getOrElse(0)
+      case _ => 0
 
   /** The seated players in the game's turn order: seat order from the
     * player who started the last round (implementation ruling R21). */

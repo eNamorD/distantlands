@@ -1,6 +1,7 @@
 package distantlands.gameplay.powers.legacies
 
 import distantlands.gameplay.actions.negotiation.HighPriestCard
+import distantlands.gameplay.BanditCrownCard
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.chronicle.legacies.{IronHand, IronHandCard}
 import distantlands.gameplay.operations.TheGrandScepterCard
@@ -8,13 +9,13 @@ import distantlands.gameplay.phases.rest.ArbiterCard
 import distantlands.gameplay.powers.NoteText
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.gameplay.powers.economy.{AnimalPlaymatesCard,
-  BelovedCard, DefameCard}
+  BelovedCard, BirdsongCard, DefameCard}
 import distantlands.gameplay.setup.legacies.TheStandardBearerCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.{CardRefs, Look, PhasePowerHarness, Table}
 import distantlands.testkit.CardRefs.LegacyRef
-import distantlands.testkit.Table.p1
+import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Unwrap.accepted
 
 /** The Mouth (L34): "ACTION: Burn 2 favor to activate a dormant legacy if
@@ -162,3 +163,27 @@ class TheMouthSuite extends munit.FunSuite:
       .relic(p1, TheGrandScepterCard).legacy(p1, TheMouthCard, active = false)
       .legacy(p1, RuthlessCard, active = false).ready
     assert(!usableNow(dormant).exists(_.power.id == TheMouth.id))
+
+  test("another player's facedown adviser changes no target: a facedown " +
+      "card has no suit (R31)"):
+    // p1 advises Animal Playmates faceup, the only faceup Beast card, and
+    // holds Beloved dormant; p2's facedown Birdsong, a Beast card, counts
+    // for nobody.
+    val base = mouthHolder.legacy(p1, BelovedCard, active = false)
+      .adviser(p1, AnimalPlaymatesCard)
+    val hidden = base.adviser(p2, BirdsongCard, facedown = true).ready
+    assert(offered(base.ready).contains(legacy(BelovedCard)))
+    assertEquals(offered(hidden), offered(base.ready))
+
+  test("another player's facedown relic changes no target or reason (R31)"):
+    // p1's only legacy to activate is dormant Conspirator, a highest-relic
+    // goal p1 meets with Sticky Fire; p2's facedown Bandit Crown, worth
+    // more, counts for nobody.
+    val base = Table.start.imperial(p1).turn(p1, Phase.Act)
+      .pawn(p1, at = AncientCitySite).favor(p1, 2)
+      .relic(p1, StickyFireCard).legacy(p1, TheMouthCard)
+      .legacy(p1, ConspiratorCard, active = false)
+    val hidden = base.relic(p2, BanditCrownCard, facedown = true).ready
+    assertEquals(offered(base.ready), Vector(legacy(ConspiratorCard)))
+    assertEquals(offered(hidden), offered(base.ready))
+    assert(use(hidden, TheMouth, source).isRight)
