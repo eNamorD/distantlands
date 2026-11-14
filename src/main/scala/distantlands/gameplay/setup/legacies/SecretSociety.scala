@@ -3,6 +3,7 @@ package distantlands.gameplay.setup.legacies
 import distantlands.catalog.{ExecutableCatalog, Legacy, LegacyGoal,
   PrintedPower}
 import distantlands.gameplay.actions.{CardPlay, ProcedureNotes, VisionRules}
+import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   Transform}
 import distantlands.gameplay.powers.{AdviserLimit, PowerAnswers}
@@ -151,6 +152,7 @@ case object SecretSociety extends ContributingPower:
                   resultingOrientation = Some(Orientation.FaceDown)),
                 AdvanceVisionsDrawn)), required = true),
               Shuffle(ShufflePile.VisionPackets),
+              OathsOfLoyalty.rememberBurials,
               Note(noteId, _ => Some(tookVision.sourceless(
                 NoteArg.Player(holder), NoteArg.Card(SecretSocietyCard.id))))))))
     })

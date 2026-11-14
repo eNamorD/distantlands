@@ -4,7 +4,8 @@ import distantlands.gameplay.chronicle.legacies.OathsOfLoyaltyCard
 import distantlands.gameplay.setup.{LaterGameFixture, SetupDeal,
   SetupLegacyFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.gameplay.setup.legacies.{SecretSociety, SecretSocietyCard}
+import distantlands.gameplay.setup.legacies.{SecretSociety, SecretSocietyCard,
+  SeerCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.{Answers, Dice, Situation}
@@ -73,3 +74,11 @@ class OathsTeemingBurialSuite extends munit.FunSuite:
     val deck = ready.game.current.commonCards.worldDeck
     assertEquals(deck.takeRight(3), buried(chronicle))
     assert(deck.dropRight(3).forall(_.isInstanceOf[VisionId]), deck)
+
+  Vector(SeerCard.id -> "Seer's placement", SecretSocietyCard.id ->
+      "Secret Society's rebuild").foreach { (legacy, reorder) =>
+    test(s"after $reorder the holder still identifies the cards it " +
+        "buried; another seat and the public do not (R50)"):
+      val chronicle = teeming(legacy)
+      onlyTheHolderIdentifies(woken(chronicle), buried(chronicle))
+  }

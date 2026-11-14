@@ -2,6 +2,7 @@ package distantlands.gameplay.setup.legacies
 
 import distantlands.catalog.{Legacy, LegacyGoal, PrintedPower}
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   Transform}
 import distantlands.gameplay.walker.DecisionQueries
@@ -76,6 +77,7 @@ case object Seer extends ContributingPower:
             // the reorder, which forgets a shuffled pile's peeks (R20).
             positions.keys.toVector.sortBy(_.value).map(vision =>
               Peek(holder, vision, Location.Deck(CardDeck.World))) :+
+            OathsOfLoyalty.rememberBurials :+
             Note(noteId, _ => Some(placedVisions.sourceless(
               NoteArg.Player(holder), NoteArg.Card(SeerCard.id)))))))
     })

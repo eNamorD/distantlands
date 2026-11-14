@@ -81,6 +81,18 @@ case object OathsOfLoyalty extends ContributingPower:
     buriedKeys.get(ProcedureNotes.id(procedure)).toVector.flatMap((notes, _) =>
       notes.declared)
 
+  /** After a Setup reorder of the world deck (Seer's placement, Secret
+    * Society's rebuild), which forgets the deck's peeks: under Teeming
+    * World the holder knows again the cards they buried, the deck's only
+    * denizens, which did not move (Legacy Chronicle powers R50). */
+  def rememberBurials: Operation = Branch((state, _) =>
+    val teeming = state.game.campaign.foundations.get(FoundationNumber.IV)
+      .exists(_.face == FoundationFace.Altered)
+    ChronicleLegacyRules.keepsAdvisers(state).filter(_ => teeming).toVector
+      .flatMap(holder => state.game.current.commonCards.worldDeck.collect {
+        case card: DenizenId => Peek(holder, card, Location.Deck(CardDeck.World))
+      }))
+
   /** Gather Denizens' keep, before the gathering: the holder chooses up to
     * three of their faceup advisers. */
   def keep(catalog: ExecutableCatalog, state: ReadyGame): Vector[Operation] =
