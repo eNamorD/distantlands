@@ -10,7 +10,6 @@ edifice.e26.ruined
 legacy.ancestral-lands
 legacy.arbiter
 legacy.beloved
-legacy.circle-of-swords
 legacy.conspirator
 legacy.golden-key
 legacy.high-priest
@@ -22,7 +21,6 @@ legacy.peacemaker
 legacy.populist
 legacy.quest-to-distant-lands
 legacy.ruthless
-legacy.scepter-bearer
 legacy.secret-society
 legacy.seer
 legacy.the-mouth
