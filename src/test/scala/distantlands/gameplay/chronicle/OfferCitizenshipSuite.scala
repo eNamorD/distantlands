@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.phases.rest.ArbiterCard
 import distantlands.gameplay.powers.banner.TheNeedleCard
 import distantlands.gameplay.powers.legacies.PeacemakerCard
 import distantlands.gameplay.setup.legacies.SeerCard

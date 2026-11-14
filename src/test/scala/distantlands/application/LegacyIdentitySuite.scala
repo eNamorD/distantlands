@@ -1,6 +1,6 @@
 package distantlands.application
 
-import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.phases.rest.ArbiterCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.chronicle.legacies.RivalCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog

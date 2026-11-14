@@ -19,7 +19,8 @@ import distantlands.gameplay.actions.dice.RerollChoice
 import distantlands.gameplay.actions.travel.{TravelOptions, TravelProcedure}
 import distantlands.gameplay.phases.wake.{EndWakeProcedure, ForcedWakeProcedure,
   QuestFirstWakeProcedure, TakeWealthProcedure}
-import distantlands.gameplay.phases.rest.{BeginRestProcedure, FinishRestProcedure}
+import distantlands.gameplay.phases.rest.{ArbiterStep, BeginRestProcedure,
+  FinishRestProcedure}
 import distantlands.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
 import distantlands.gameplay.powerresolver.PhasePowers
@@ -316,6 +317,7 @@ object WalkerProcedureRegistry:
       Entry.withoutStartGates(distantlands.gameplay.setup.SetupProcedure.build),
     TriggeredProcedureRef.QuestFirstWake ->
       Entry.withoutStartGates(QuestFirstWakeProcedure.build),
+    TriggeredProcedureRef.Arbiter -> Entry.withoutStartGates(ArbiterStep.build),
     TriggeredProcedureRef.ChronicleBegin -> Entry.withoutStartGates(ChronicleBeginProcedure.build),
     TriggeredProcedureRef.ChronicleSun -> Entry.withoutStartGates(ChronicleSunProcedure.build),
     TriggeredProcedureRef.ChronicleThrone ->

@@ -3,6 +3,7 @@ package distantlands.gameplay.powers
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.chronicle.legacies.LegacyChroniclePowers
 import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.gameplay.phases.rest.Arbiter
 import distantlands.gameplay.powerresolver.{ContributingPower,
   IgnoresOwnLock, PowerUseRestriction}
 import distantlands.gameplay.powers.action._
@@ -98,7 +99,7 @@ object WalkerPowerCatalog:
       Vector(Dazzle, GreatMarket, BanditMarket, GreatForge, BrokenForge,
         ProvingGrounds, EmptyGrounds, HallOfMockery, LostGuardians,
         RuinedSchool, BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
-        TakeWealthPawnGate, LightFingers, Beloved, TheNeedle,
+        TakeWealthPawnGate, LightFingers, Beloved, TheNeedle, Arbiter,
         ConspiracyWhenPlayed) ++
       LegacyChroniclePowers.all ++
       LegacySetupPowers.all

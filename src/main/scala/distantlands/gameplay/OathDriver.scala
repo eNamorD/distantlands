@@ -5,7 +5,7 @@ import distantlands.engine.EventEvolution
 import distantlands.gameplay.chronicle.ChronicleSequence
 import distantlands.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
 import distantlands.gameplay.phases.PhaseMenu
-import distantlands.gameplay.phases.rest.{TurnBoundary,
+import distantlands.gameplay.phases.rest.{ArbiterStep, TurnBoundary,
   RoundEndRandomPort}
 import distantlands.gameplay.phases.wake.{ForcedWakeProcedure,
   QuestFirstWakeProcedure}
@@ -27,7 +27,9 @@ import distantlands.model.OathViolation._
   *     refill and the Oathkeeper check. A title walk the check starts hands
   *     back here when it ends.
   *  2. the turn's start, after a Finish Rest or Setup walk: the round's end
-  *     when the last player has rested, then Wake's entry: a pawnless
+  *     when the last player has rested, Arbiter's step first when its
+  *     holder may modify the end die, which hands back here when it ends
+  *     (Legacy in-play powers ruling 21), then Wake's entry: a pawnless
   *     player's first Wake placement, which hands back here when it ends,
   *     then the Wake checks and the Forced Wake walk when one is due, which
   *     hands back here when it ends.
@@ -115,18 +117,27 @@ private[gameplay] trait OathDriver:
     // A pawnless player's first Wake has placed their pawn: the Wake goes
     // on with its checks (Legacy Setup powers ruling 20; R32).
     case TriggeredProcedureRef.QuestFirstWake => wakeChecks(transition)
+    // Arbiter's step has run: roll the end die, then the Wake (Legacy
+    // in-play powers ruling 21).
+    case TriggeredProcedureRef.Arbiter => roundEnded(transition)
     case PhaseTransitionRef.FinishRest | TriggeredProcedureRef.Setup =>
-      val rounded = transition.state match
-        case Ready(ready) if ready.game.current.turn.phase ==
-            Phase.RoundEnd =>
-          TurnBoundary.finishRound(catalog, transition,
-            roundEndRandomPort, outsideActions)
-        case _ => Right(transition)
-      rounded.flatMap(after => after.state match
-        case Ready(ready) if ready.game.current.result.nonEmpty =>
-          Right(after)
-        case _ => enterWake(after))
+      transition.state match
+        case Ready(ready) if ArbiterStep.due(ready).nonEmpty =>
+          startTriggered(transition, TriggeredProcedureRef.Arbiter)
+        case _ => roundEnded(transition)
     case _ => phaseEnd(transition)
+
+  /** The round's end at Round End, then the Wake unless a result is set. */
+  private def roundEnded(transition: OathTransition) =
+    val rounded = transition.state match
+      case Ready(ready) if ready.game.current.turn.phase == Phase.RoundEnd =>
+        TurnBoundary.finishRound(catalog, transition, roundEndRandomPort,
+          outsideActions)
+      case _ => Right(transition)
+    rounded.flatMap(after => after.state match
+      case Ready(ready) if ready.game.current.result.nonEmpty =>
+        Right(after)
+      case _ => enterWake(after))
 
   /** A seated player with no pawn opens their Wake by placing it, before
     * anything else (Legacy Setup powers ruling 20; R32). */

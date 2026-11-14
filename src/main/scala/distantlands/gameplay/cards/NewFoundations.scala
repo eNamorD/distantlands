@@ -15,6 +15,7 @@ import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard, DeedWriter
   TravelingNegotiatorCard}
 import distantlands.gameplay.operations.{AncientBloodlineCard, BoilingLakeCard,
   HallOfMinistersCard, TheGrandScepterCard}
+import distantlands.gameplay.phases.rest.ArbiterCard
 import distantlands.gameplay.powers.action._
 import distantlands.gameplay.powers.banner._
 import distantlands.gameplay.powers.burn._

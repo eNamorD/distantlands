@@ -4,7 +4,8 @@ import distantlands.application._
 import distantlands.engine.{RecordedEvent, ReplayStep}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.phases.rest.{FinishRestProcedure,
+  RoundEndRandomPort}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.{DeltaPayload, LogNoted, ProcedureWalker,
   WalkerCompleted, WalkerStepRecorded}
@@ -131,9 +132,11 @@ object LogScriptSupport:
     * or its first command journals the bandit refill as well and the log
     * reads a "Bandits returned" line no script means to test. */
   def atTable(name: String, table: Table,
-      dice: CampaignDicePort = Dice.steady)(
+      dice: CampaignDicePort = Dice.steady,
+      roundEnd: RoundEndRandomPort = RoundEndRandomPort.random)(
       using munit.Location): (GameApplicationService, Situation) =
-    val (service, repository) = table.service(campaignDice = dice)
+    val (service, repository) = table.service(campaignDice = dice,
+      roundEnd = roundEnd)
     (service, table.situation(Situation.journaled(service, catalog, repository,
       name)))
 

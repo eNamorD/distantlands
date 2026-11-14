@@ -1,7 +1,7 @@
 package distantlands.serialization
 
 import distantlands.application.chronicle.ChronicleJson
-import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.phases.rest.ArbiterCard
 import distantlands.gameplay.powers.wake.LightFingersCard
 import distantlands.gameplay.chronicle.EvolvedChronicleFixture
 import distantlands.gameplay.setup.FirstGameSetupFixture.chronicle

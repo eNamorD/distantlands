@@ -21,7 +21,7 @@ import distantlands.gameplay.actions.negotiation.NegotiationProcedure
 import distantlands.gameplay.actions.recover.RecoverProcedure
 import distantlands.gameplay.actions.search.SearchProcedure
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
-import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.phases.rest.{ArbiterStep, FinishRestProcedure}
 import distantlands.gameplay.phases.PhaseMenu
 import distantlands.gameplay.phases.wake.QuestFirstWakeProcedure
 import distantlands.gameplay.setup.SetupProcedure
@@ -347,6 +347,14 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         OathsOfLoyalty.noteKeys(TriggeredProcedureRef.QuestFirstWake)
           .map(_ -> LogKind.Decision)),
       narratedPrefixes = Vector("wake.legacy.quest."), isSection = false)
+    // Arbiter's question before the end die (Legacy in-play powers R12):
+    // a modifier posts as a decision; Decline writes nothing.
+    case TriggeredProcedureRef.Arbiter => ProcedureLog(tag = None,
+      lines = ActionLineSource.Notes(Map(
+        ArbiterStep.raised -> LogKind.Decision,
+        ArbiterStep.lowered -> LogKind.Decision)),
+      narratedPrefixes = Vector("round-end.legacy.arbiter."),
+      isSection = false)
     // One decision id serves the Wake, Rest and Act menus, so all three
     // declare it.
     case TriggeredProcedureRef.WakeMenu | TriggeredProcedureRef.RestMenu |

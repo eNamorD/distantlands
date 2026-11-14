@@ -70,6 +70,10 @@ enum TriggeredProcedureRef(val key: String) extends ProcedureRef:
     * powers design, ruling 20; R32): the placement and the steps Setup
     * deferred. The driver starts it before the Wake checks. */
   case QuestFirstWake extends TriggeredProcedureRef("quest-first-wake")
+  /** Arbiter's question before the end die (Legacy in-play powers design,
+    * ruling 21; R11). The driver starts it at a round's end when the end
+    * die will be rolled and a seated player holds Arbiter active. */
+  case Arbiter extends TriggeredProcedureRef("round-end-arbiter")
   /** Asks a follow-up entry's actor: the action, or Skip (walker-driven
     * game loop design, ruling 6). The driver starts it when it dequeues an
     * `Offer` entry. */
@@ -157,7 +161,7 @@ object TriggeredProcedureRef:
   val all: Vector[TriggeredProcedureRef] = Vector(Oathkeeper, Setup,
     ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu, ChronicleBegin,
     ChronicleSun, ChronicleThrone, ChronicleWorld, ChronicleBeacon,
-    ChronicleStars, ChronicleFinish, QuestFirstWake)
+    ChronicleStars, ChronicleFinish, QuestFirstWake, Arbiter)
 
 object StartableRef:
   /** The finite references. The parameterized use-power reference is not

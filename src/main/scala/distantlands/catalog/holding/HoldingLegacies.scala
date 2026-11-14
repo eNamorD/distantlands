@@ -7,14 +7,6 @@ import distantlands.model.{Cost, FoundationNumber, LegacyId, PowerId,
 // Generated from the retired runtime JSON (card classes slice 1).
 // Hand-edited from here on; a card moves out when it is implemented.
 
-object ArbiterCard extends Legacy(LegacyId("L23"), "Arbiter",
-    LegacyGoal.DarkestSecret, Suit.Discord):
-  val power = PrintedPower(PowerId("legacy.arbiter"),
-    persistent = false, cost = Cost.free,
-    text = "**END OF ROUND:** Before the end die is rolled, you may " +
-      "choose to modify the roll by −1 to +3.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object ConspiratorCard extends Legacy(LegacyId("L26"), "Conspirator",
     LegacyGoal.HighestRelic, Suit.Discord):
   val power = PrintedPower(PowerId("legacy.conspirator"),

@@ -1,7 +1,7 @@
 package distantlands.gameplay.setup
 
 import distantlands.application.{ChronicleFirstGamePlan, FirstGameBootstrapConfig}
-import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.phases.rest.ArbiterCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.GreatSlumSite
 import distantlands.gameplay.powers.setup.HallOfDebateCard

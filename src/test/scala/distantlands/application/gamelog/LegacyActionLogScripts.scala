@@ -1,7 +1,10 @@
 package distantlands.application.gamelog
 
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import distantlands.gameplay.chronicle.legacies.TheEarCard
+import distantlands.gameplay.chronicle.legacies.{IronHandCard, TheEarCard}
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.phases.rest.{ArbiterCard, ArbiterStep}
+import distantlands.gameplay.powers.action.GrandScepterAction
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.gameplay.powers.economy.DefameCard
 import distantlands.gameplay.actions.negotiation.HighPriestCard
@@ -15,8 +18,8 @@ import distantlands.gameplay.powers.economy.BelovedCard
 import distantlands.gameplay.powers.travel.AncestralLandsCard
 import distantlands.gameplay.powers.wake.LightFingersCard
 import distantlands.model._
-import distantlands.testkit.{MenuPlay, Table}
-import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.{MenuPlay, RoundEndChoices, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 
 /** The legacies' ACTIONs (Legacy in-play powers design, slice 1), one Act
@@ -76,6 +79,37 @@ object LegacyActionLogScripts:
       MenuPlay.start(p1, ActionRef.Travel))
     Script("legacy-modifiers", service, p1)
 
+  /** The legacies' triggers and role powers (slice 3), the last turn of
+    * round 5 in an Empire: p1, the Chancellor, holds the Oathkeeper title of
+    * the People and the People's Favor, which keeps it there; p2, a Citizen, holds Arbiter; p3, an Exile at Broken Peaks
+    * in their Act, the round's last seat, holds the Grand Scepter, Iron Hand
+    * and 2 board warbands. p3 becomes a Citizen with the Scepter, which
+    * ends their Act, and Rest runs on to the round's end, where p2 raises
+    * the end die by 2: the 4 it rolls is a 6, and the Chancellor wins. The
+    * Needle's line stays in `TheNeedleSuite`: taking a banner needs a
+    * challenge or a raid with dice, which this turn does not hold. */
+  def legacyTriggers(using munit.Location): Script =
+    val table = Table.start.imperial(p1, p2)
+      .oathkeeperGoal(OathkeeperGoal.ThePeople).oathkeeper(Some(p1))
+      .peoplesFavor(Some(p1), favor = 1)
+      .turn(p3, Phase.Act).pawn(p3, at = BrokenPeaksSite)
+      .relic(p3, TheGrandScepterCard).boardWarbands(p3, 2)
+      .legacy(p2, ArbiterCard).legacy(p3, IronHandCard)
+      .allowingCitizenshipPowers
+      // No Table step sets the round.
+      .update(_.updateCurrent(c => c.copy(tracks =
+        c.tracks.copy(round = 5, usurperLimited = false))))
+      .banditsRefilled
+    val (service, acting) = atTable("legacy-triggers", table,
+      roundEnd = RoundEndChoices.endDie(4))
+    acting.withAnswers {
+      case park if park.decisionId == ArbiterStep.decisionId(p2) =>
+        DecisionAnswer.ChooseOneAnswer(ArbiterStep.by(2))
+    }.after(MenuPlay.start(p3, ActionRef.UsePower(GrandScepterAction.id),
+      Vector(DecisionOptionRef.Relic(TheGrandScepterCard.id))))
+    Script("legacy-triggers", service, p1)
+
   val named: Vector[(String, () => Script)] = Vector(
     "legacy-actions" -> (() => legacyActions),
-    "legacy-modifiers" -> (() => legacyModifiers))
+    "legacy-modifiers" -> (() => legacyModifiers),
+    "legacy-triggers" -> (() => legacyTriggers))

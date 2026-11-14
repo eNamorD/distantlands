@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.phases.rest.ArbiterCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.action.{BrassHorseCard, FaeMerchantCard}

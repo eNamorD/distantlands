@@ -1,7 +1,7 @@
 package distantlands.application.chronicle
 
 import distantlands.application.FirstGameBootstrapMapper.lineageOf
-import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.phases.rest.ArbiterCard
 import distantlands.gameplay.powers.wake.LightFingersCard
 import distantlands.gameplay.actions.challenge.SigilOfTheEyeCard
 import distantlands.gameplay.powers.search.CrackedHornCard

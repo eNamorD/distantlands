@@ -1,6 +1,6 @@
 package distantlands.gameplay
 
-import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.phases.rest.ArbiterCard
 import distantlands.gameplay.powers.search.CrackedHornCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DunesSite, GoldenValleySite}
