@@ -11,7 +11,9 @@ object SetupPawnSites:
     * R25). In a first game, any site. In a later game an Imperial player
     * places at any Empire site, and an Exile at the Hintermost Empire site
     * or a site the bandits rule, which after Setup With No Empire and in an
-    * exile-only game is every site that holds bandits. A site with no
+    * exile-only game is every site that holds bandits; an exile-only game
+    * whose only history was stored legacies, which the R40 wipe leaves
+    * with none, places as a first game does (R41). A site with no
     * warbands is ruled by nobody. A player with no such site may place
     * anywhere, so Setup never stalls. Under Iron Hand every player may
     * place at any site when its holder was in the previous game (Legacy
@@ -25,7 +27,8 @@ object SetupPawnSites:
         case SiteForces.Occupied(`kind`, _) => true
         case _ => false)
     val empire = map.hinterward.filter(held(ForceKind.Imperial))
-    // An exile-only game places its pawns as a later game's Exiles do.
+    // An exile-only game places its pawns as a later game's Exiles do,
+    // unless its wiped baseline carries no history (R41).
     val firstGame = EmpireSetupRules.isFirstGame(catalog,
       ready.game.campaign.baseline)
     val open =
