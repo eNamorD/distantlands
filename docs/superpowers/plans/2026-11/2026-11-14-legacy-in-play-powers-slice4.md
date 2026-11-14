@@ -159,6 +159,35 @@ itself.
   `HoldingLegacies.scala` is then empty and is deleted, and the
   `catalog.holding._` imports go.
 
+## Deviations from the plan
+
+- Slice 3's review fixes landed first, each its own commit: the
+  Challenge's line reads the holder at walk time; The Needle's tests for a
+  banner dealt at game start, its pinned options, both banners in one
+  raid and an off-turn holder; Iron Hand's resume test; the decode
+  refusals.
+- The Mouth's alteration test uses Beloved (Foundation IV): Arbiter names
+  no foundation. Its lines are `used` and `used.public`, since every
+  non-forced phase power declares a used line (`LogNoteCatalogSuite`).
+  Iron Hand's mid-game discard line is a new `discarded` key on Iron
+  Hand's own notes. Its relic goal in the tests is met with Sticky Fire,
+  since the Grand Scepter's printed value is 0.
+- Only `HoldingLegacies.scala` is deleted; the holding package keeps its
+  other cards, so `NewFoundations` keeps its import.
+- The reveal line names Conspirator in words: a Conspirator gone to the
+  deck, or dormant, is a card no other viewer may identify, and the line
+  names it either way. The victory line keeps the card.
+- "Round 2 asks nothing" stands for a Conspirator The Mouth activates
+  after round 1: the gate is the round. The secrecy suite checks every
+  other viewer's projection and log through the service; the holder's
+  answered options are not separately checked.
+- The `legacy-prediction` golden reaches round 5 by an `AdvanceRound`
+  arrangement in p3's Act, as planned, and lands with Task 4, since
+  `GameLogPropertiesSuite` needs a script completing `game-end-conspirator`.
+  The holder's private line shows in neither golden seat (p1, p2).
+- `GameLogFormatter.wonBy` gains its `Conspirator` words, which no event
+  posts: the reveal step writes the victory line.
+
 ## Global Constraints
 
 - Scala 3 with `-Werror`. Every Scala file stays at or under 800 lines.

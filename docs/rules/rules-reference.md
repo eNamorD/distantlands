@@ -50,7 +50,7 @@ A round gives each player one turn, clockwise from Chancellor; without a Chancel
 
 1. If an Exile holds Oathkeeper, flip it to Usurper unless limited; if already Usurper, they win.
 2. If an Exile has a revealed Vision and currently meets it, they win.
-3. Use any Wake powers once each.
+3. Use any Wake powers once each. Digital: at their round-1 Wake, Conspirator's holder secretly writes down a round and a winner, which no other viewer sees until the game ends ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 45, 46, 52 and 54).
 4. Built-in **Take Wealth**: take one favor or secret from the pawn's site if no enemy pawn is present (CR p. 17). Digital: Light Fingers' holder takes it even beside an enemy pawn ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), item 22).
 
 Digital: a seated player with no pawn, who stayed off the map with Quest to Distant Lands, first places their pawn at any site in play, then chooses an adviser, discards Secret Society's excess advisers, and reveals cards, before step 1 ([Legacy Setup powers rulings](ambiguities.md#legacy-setup-powers-rulings), items 36, 44, 46, 52 and 58).
@@ -119,7 +119,7 @@ Choose a banner not held by the actor. If enemy-held, pawns must share a site. C
 Default cost is 0 Supply. Core minor actions include:
 
 - play/discard a facedown adviser as if just searched;
-- use an Action power; Digital: a seated player's active legacy is a source of its ACTION, named in the Act menu, its burnt cost paid as a card's ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 1 to 6);
+- use an Action power; Digital: a seated player's active legacy is a source of its ACTION, named in the Act menu, its burnt cost paid as a card's ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 1 to 6); The Mouth activates a dormant or Public Ambitions legacy whose goal its holder meets (items 43, 44, 51 and 56);
 - reveal/peek at relics held by the player;
 - move warbands between board and a ruled site at the pawn;
 - negotiate with a co-located player, exchanging favor and relics (not secrets/banners), with mutual consent; Digital: High Priest's holder may give secrets, one way ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 24 and 28);
@@ -141,7 +141,7 @@ An Exile may reveal one true Vision. At the start of their turn they win if its 
 
 ### Empire endings
 
-At ends of rounds 5/6/7, if Chancellor or Citizen is Oathkeeper, roll the end die; Chancellor wins on 6, then 5-6, then 3-6 respectively. At round 8 resolve War Exhaustion: qualifying Imperial Oathkeeper -> Chancellor; Exile Usurper; qualifying revealed Vision (tie order Conquest, Rebellion, Sanctuary, Faith); otherwise Chancellor (CR p. 19). Digital: just before the roll, Arbiter's holder may modify it by −1 to +3, and the total is read against the printed rolls as "at least" ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 31 and 33 to 35).
+At ends of rounds 5/6/7, if Chancellor or Citizen is Oathkeeper, roll the end die; Chancellor wins on 6, then 5-6, then 3-6 respectively. At round 8 resolve War Exhaustion: qualifying Imperial Oathkeeper -> Chancellor; Exile Usurper; qualifying revealed Vision (tie order Conquest, Rebellion, Sanctuary, Faith); otherwise Chancellor (CR p. 19). Digital: just before the roll, Arbiter's holder may modify it by −1 to +3, and the total is read against the printed rolls as "at least" ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 31 and 33 to 35). Digital: when the game ends, a Conspirator prediction naming its round and its final winner, after any Successor, makes its holder the winner instead (items 47, 50 and 55).
 
 If Chancellor would win, a Citizen satisfying the current Successor goal wins instead. Successor mappings are: Supremacy -> more relics than Chancellor and every other Citizen; The People -> Darkest Secret; Protection -> People's Favor; Devotion -> Grand Scepter (CR p. 19).
 

@@ -332,7 +332,7 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 
 ## Legacy in-play powers rulings
 
-Rulings for the powers legacies use during a game ([Legacy in-play powers design](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)). Items 1 to 13 are the design's rulings 1 to 13, taken with the owner on 2026-11-14; items 14 to 18 are implementation rulings R1 to R5; items 19 to 24 are the design's rulings 14 to 19; items 25 to 29 are implementation rulings R6 to R10; items 30 to 32 are the design's rulings 20 to 22; items 33 to 40 are implementation rulings R11 to R18, and items 41 and 42 are R20 and R21 (R19 is a test's, not a rule's).
+Rulings for the powers legacies use during a game ([Legacy in-play powers design](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)). Items 1 to 13 are the design's rulings 1 to 13, taken with the owner on 2026-11-14; items 14 to 18 are implementation rulings R1 to R5; items 19 to 24 are the design's rulings 14 to 19; items 25 to 29 are implementation rulings R6 to R10; items 30 to 32 are the design's rulings 20 to 22; items 33 to 40 are implementation rulings R11 to R18, items 41 and 42 are R20 and R21 (R19 is a test's, not a rule's); items 43 to 47 are the design's rulings 23 to 27; items 48 to 56 are implementation rulings R22 to R30.
 
 1. **Only seated players' active legacies act.** Dormant legacies, a boxed lineage's legacies and the Public Ambitions row never act; The Mouth is the one way a legacy becomes active during a game (design, ruling 1).
 2. **"If you are an Imperial" is read when the power is used,** so the Crown and Citizenship change it during a game (design, ruling 2).
@@ -377,6 +377,20 @@ Rulings for the powers legacies use during a game ([Legacy in-play powers design
 40. **Imperial Infighting does not hide the enemy Imperial's lendable plans:** CR p. 35 makes the enemy a lawful lender, and the plan's own limit keeps the attacker from using it (R18).
 41. **Every banner taker keeps its question and its line** when a walk parks right after the take for The Needle's question and resumes: the question comes inside the taking walk, right after the take, as the design's ruling 20 times it (R20).
 42. **Beloved's token on another player's adviser leaves at the next Rest,** as every card's tokens do (R21).
+43. **The Mouth's targets.** The holder's own dormant legacies, and the Public Ambitions legacies, whose goals the holder meets when the ACTION is used, read as Resolve Legacies reads them; another player's dormant legacy is no target (design, ruling 23).
+44. **The Mouth's activation.** An own legacy flips faceup, which reveals it; a public one moves faceup into the holder's lineage. A legacy that alters a foundation alters it now; with more than three active legacies the holder discards to three, flipping no foundation back. The activated legacy is in effect at once (design, ruling 24).
+45. **Conspirator's prediction** is a forced Wake power in round 1: the holder writes a round from 1 to 8 and a winner among the seated players, themselves included. A Conspirator gained later never writes; a Quest to Distant Lands holder places their pawn first (design, ruling 25).
+46. **The prediction is hidden** from every other viewer until the game ends; the holder sees it (design, ruling 26).
+47. **At the game's end** the round it ended in and the final winner, after any Successor, are compared with the prediction; if both match and the holder still holds Conspirator active, the holder wins instead. The prediction is revealed either way, and a Conspirator lost during the game voids it (design, ruling 27).
+48. **A flip's line comes before the taker's line,** as The Needle's question parks right after the take (R22).
+49. **Iron Hand's in-game line** is a trigger line before the action's own line (R23).
+50. **The prediction is compared at the game's end,** before the Chronicle and so before Royal Line (R24).
+51. **The Mouth may activate Iron Hand for an Imperial holder;** the same batch then discards it, with Iron Hand's line (R25).
+52. **The holder sees the prediction** in a log line only they read (R26).
+53. **The slice's lines:** "p2 wrote down a prediction with Conspirator" for everyone; "p2 predicted p3 wins in round 6" for the holder; "p2 had written down p3 to win in round 6 with Conspirator" at the end; "p2 won with Conspirator". The Mouth: "p1 activated Arbiter with The Mouth", "p1 took Golden Key from the Public Ambitions with The Mouth", "Beloved set Foundation IV to Teeming World", "p1 discarded Seer with The Mouth" (R27).
+54. **The round is an amount** no log line names, and no "chose" line names the winner (R28).
+55. **A void prediction** is revealed with the same line (R29).
+56. **The Mouth with nothing to activate** is shown unavailable with "No legacy whose goal you meet" (R30).
 
 ## Source relationship cautions
 
