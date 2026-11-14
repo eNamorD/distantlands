@@ -206,7 +206,7 @@ class ResolveLegaciesSuite extends munit.FunSuite:
 
   test("an Exile winner's newly dormant legacies become active at Crown " +
       "Chancellor"):
-    // p1 rules no site, so Iron Hand goes dormant in step 3.
+    // p1 rules no site, so The Needle goes dormant in step 3.
     val run = sun(won.legacy(p1, TheNeedleCard))
     assertEquals(legaciesOf(run.ready, p1),
       Vector(LegacyState(TheNeedleCard.id, active = true)))
@@ -246,7 +246,7 @@ class ResolveLegaciesSuite extends munit.FunSuite:
 
   test("a winner capped in step 4 and again at Crown Chancellor answers " +
       "two different questions"):
-    // Four Grand Scepter legacies stay active (ruling 7); Iron Hand goes
+    // Four Grand Scepter legacies stay active (ruling 7); The Needle goes
     // dormant in step 3 and returns at Crown.
     val run = sun(holding(won, p1, KeeperOfOrderCard, AncestralLandsCard,
       GoldenKeyCard, GreatArchitectCard, TheNeedleCard))
