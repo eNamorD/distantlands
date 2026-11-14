@@ -196,7 +196,7 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 
 ## Legacy Chronicle powers rulings
 
-Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6. Later slices add the design's other rulings as they land.
+Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6; items 15 to 18 are the design's rulings 9 to 12; items 19 to 28 are implementation rulings R7 to R16. Later slices add the design's other rulings as they land.
 
 1. **Only seated players' active legacies act.** A legacy's Chronicle power applies when a seated player holds it active at the moment its window is reached. A boxed lineage's legacies never act; a dormant legacy has no power (design, ruling 1).
 2. **A role condition is read at the same moment,** so the Crown and Offer Citizenship change it for every later step (design, ruling 2).
@@ -212,6 +212,20 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 12. **The lines** say "p2 took Seer from p3 with Gatekeeper", "p2 declared Chronicler" and "p1 scored 2 lineage points (2 from Beast)" (R4).
 13. **Two Sun windows hold the added steps:** one before Flip Legacies, for Gatekeeper, and one after Shuffle, for Chronicler (R5).
 14. **Gatekeeper and Chronicler each ask one choose-one, Decline first.** Gatekeeper's other options are the takeable legacies, each naming its holder, and it asks only when one is takeable; Chronicler's other option is Declare (R6).
+15. **Rival protects with one choose-many.** In Shape Empire, after the warbands are removed, Rival's holder chooses any of the cards the step would discard; those stay, the rest are discarded as before (design, ruling 9).
+16. **Great Architect performs Build Edifice for an Imperial holder,** and may bury a card for any available edifice, the topmost of each suit, never the whole deck. When the holder is the Throne holder, only the matching rule changes (design, ruling 10).
+17. **Revolutionary discards with one choose-many** after Build Edifice, among the denizens at Imperial sites, sent where Shape Empire sends them (design, ruling 11).
+18. **Reformer is a step at the start of the Throne,** only when its holder won: moves and swaps between sites they rule, ignoring locks, each one decision, until Done (design, ruling 12).
+19. **A card with an unbuilt half leaves holding** with its whole text and counts as implemented; the ROADMAP names the unbuilt half. Rival does so now; The Ear, Oaths of Loyalty and Iron Hand will (R7).
+20. **Rival protects every card Shape Empire would discard,** ruined edifices included: an edifice is a denizen (R8).
+21. **Revolutionary discards denizens and ruined edifices;** intact edifices stay, as Shape Empire never discards them (R9; low confidence).
+22. **Reformer moves and swaps every card in a site's row,** edifices included, intact or ruined; its lock lifting has force only for locked cards such as intact edifices (R10; low confidence).
+23. **A Reformer pass is two choices:** a card with a destination, or Done (first); then another ruled site with room, a move, or a card at another ruled site, a swap. A swap is two moves, each card landing in the other's last slot (R11).
+24. **The Throne's lines** say "p1 protected 2 denizens with Rival", "p2 discarded 3 denizens with Revolutionary", "p1 moved Village Idiot to Broken Peaks with Reformer" and "p1 swapped Village Idiot and Map Library with Reformer". Great Architect writes none; Build Edifice's line names the builder. Two Throne windows hold the added steps: the start of the Throne, for Reformer, and after Build Edifice, for Revolutionary (R12).
+25. **Reformer's passes reuse their two decision ids** and read the latest answers, as Call for Help's passes do; a walk parked mid-pass resumes to the same question (R13).
+26. **A burial returns favor to the buried card's own suit bank** (R14).
+27. **A ruined edifice Revolutionary discards returns to the bottom of the edifice deck,** so nothing is left set aside after Build Edifice and the stored Chronicle passes game start's accounting (R16).
+28. **Inserting a Chronicle window** shifts a walk parked mid-Chronicle by an earlier build; no mid-phase save is kept across builds (R15).
 
 ## Source relationship cautions
 

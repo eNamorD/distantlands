@@ -171,7 +171,8 @@ Legacies, the scoring bonus and the display) landed with the
 [Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md).
 
 - [ ] **Legacy powers: setup.** The SETUP halves of the 36 legacies (Iron
-  Hand, Circle of Swords, World Crafter, Seer, Wealthy and the rest), each
+  Hand, Circle of Swords, World Crafter, Seer, Wealthy, Rival, whose card
+  counts as implemented for its Throne half, and the rest), each
   through Setup's windows, and Matchmaker choosing the kept legacy for the
   other players in the Setup deal ([Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md)).
 - [ ] **Legacy powers: Chronicle.** The CHRONICLE powers, through the

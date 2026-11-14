@@ -1,8 +1,9 @@
 # Legacy Chronicle powers
 
 **Status:** designed 2026-11-13, approved section by section by the owner.
-Slice 1 landed (plan:
-[slice 1](../../plans/2026-11/2026-11-13-legacy-chronicle-powers-slice1.md));
+Slices 1 and 2 landed (plans:
+[slice 1](../../plans/2026-11/2026-11-13-legacy-chronicle-powers-slice1.md),
+[slice 2](../../plans/2026-11/2026-11-13-legacy-chronicle-powers-slice2.md));
 its implementation rulings are in the
 [rulings file](2026-11-13-legacy-chronicle-powers-implementation-rulings.md).
 
