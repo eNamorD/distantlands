@@ -190,18 +190,18 @@ Legacies, the scoring bonus and the display) landed with the
 and the legacies' CHRONICLE powers with the
 [Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md).
 
-- [ ] **Legacy powers: setup.** The SETUP halves of the 36 legacies (Iron
-  Hand, whose card counts as implemented for its Chronicle half, and whose
-  stored sites the next game restores as the Empire's until its SETUP half
-  lands; Circle of Swords, World Crafter, Seer, Wealthy, Rival, whose card
-  counts as implemented for its Throne half, and the rest), each
-  through Setup's windows, and Matchmaker choosing the kept legacy for the
-  other players in the Setup deal ([Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md)).
+- [ ] **Legacy powers: setup.** The SETUP halves of the legacies
+  ([Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md)).
+  Circle of Swords, Scepter Bearer, Iron Hand, Rival, World Crafter,
+  Populist and Matchmaker have landed; Secret Society, Seer, The Standard
+  Bearer, Wealthy and Quest to Distant Lands remain.
 - [ ] **Legacy powers: in play.** The powers used during a game: actions,
   Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
   play and The Ear's ACTION half, peeking at a site's relics, among them
   (The Ear's card counts as implemented for its Chronicle half), and Iron
-  Hand's discard when its holder becomes an Imperial during a game. High
+  Hand's discard when its holder becomes an Imperial during a game, and
+  Matchmaker choosing for players who draw legacies during a game (Amber
+  Doors, Lost Doors, Ancient Writ). High
   Priest's When Negotiating power lets its holder
   give secrets in a deal: a `DealRules` term kind, as Council Arbiter opens
   advisers.

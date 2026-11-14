@@ -1,8 +1,9 @@
 # Legacy Setup powers
 
 **Status:** designed 2026-11-13, approved section by section by the owner.
-Slice 1 has landed (89f90563f to cc92ec496); slices 2 to 4 are not yet
-landed. It builds on the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
+Slice 1 has landed (89f90563f to cc92ec496, with review fixes a7cd809eb
+to e51f8eecf) and slice 2 (ad5bc9e36 to the commit that adds its
+goldens); slices 3 and 4 are not yet landed. It builds on the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
 batch, which has landed: this batch reuses its holder seam, and slice 4
 changes the Setup adviser step that batch's slice 3 changes for Oaths of
 Loyalty.

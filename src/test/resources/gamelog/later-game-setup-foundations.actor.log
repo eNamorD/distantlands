@@ -1,0 +1,26 @@
+0.0 round 0 | Setup
+5.0 action 1 | [player:p1|p1] took a relic from the Reliquary
+10.0 action 1 | [player:p3|p3] placed [site:site:buried-giant|Buried Giant] from Recent Sites with [card:L13|World Crafter]
+15.0 action 1 | [player:p3|p3] placed [site:site:golden-valley|Golden Valley] from Forgotten Sites with [card:L13|World Crafter]
+20.0 action 1 | [player:p3|p3] placed [site:site:deep-woods|Deep Woods] from Recent Sites with [card:L13|World Crafter]
+25.0 action 1 | [player:p3|p3] placed [site:site:desolate-shore|Desolate Shore] from Recent Sites with [card:L13|World Crafter]
+30.0 action 1 | [player:p3|p3] placed [site:site:dunes|Dunes] from Recent Sites with [card:L13|World Crafter]
+32.0 action 1 | [player:p3|p3] placed [site:site:fair-isle|Fair Isle] from Recent Sites with [card:L13|World Crafter]
+36.0 delta 1 | [player:p2|p2] gained 2 favor from the Arcane bank
+36.1 delta 1 | [player:p2|p2] gained 1 favor from the Hearth bank
+36.2 delta 1 | [player:p2|p2] gained 1 favor from the Beast bank
+37.0 action 1 | [player:p2|p2] divided the favor evenly among the banks with [card:L16|Populist] and took [amount:4 favor]
+42.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
+47.0 decision 1 | [player:p3|p3] kept a legacy for [player:p1|p1] with [card:L14|Matchmaker]
+52.0 decision 1 | [player:p1|p1] kept [card:207|Glamor]
+60.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+65.0 decision 1 | [player:p3|p3] kept a legacy for [player:p2|p2] with [card:L14|Matchmaker]
+70.0 decision 1 | [player:p2|p2] kept a Denizen
+78.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
+83.0 decision 1 | [player:p3|p3] kept a legacy
+88.0 decision 1 | [player:p3|p3] kept a Denizen
+89.0 round 0 | Round 1
+89.1 turn 0 | [player:p1|p1]'s turn
+89.2 phase 0 | Wake
+91.0 action 1 | Nothing happened in Wake
+91.1 phase 0 | Act

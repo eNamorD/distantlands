@@ -8,7 +8,8 @@ import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.{AtlasPlacement, ImperialMaps,
   LaterGameFixture, SetupLegacyFixture}
 import distantlands.gameplay.setup.legacies.{CircleOfSwordsCard,
-  ScepterBearerCard}
+  MatchmakerCard, Populist, PopulistCard, ScepterBearerCard, WorldCrafter,
+  WorldCrafterCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.{Answers, Dice, Look, Situation}
@@ -59,6 +60,25 @@ object LaterGameLogScripts:
         IronHandCard.id -> true, RivalCard.id -> true),
         LineageId("l2"), Role.Citizen, ScepterBearerCard.id -> true))
 
+  /** As [[laterGameWoken]], with the foundations' legacy powers: l3 an
+    * Exile holding World Crafter and Matchmaker active, l2 a Citizen
+    * holding Populist active (Legacy Setup powers, slice 2). World Crafter
+    * fills slot 2 from Forgotten Sites and every other slot from Recent
+    * Sites, Populist divides, and Matchmaker keeps each draw's first
+    * legacy for p1 and p2. */
+  def laterGameSetupFoundations(using munit.Location): Script =
+    laterGameWokenFrom("later-game-setup-foundations", chronicle =>
+      SetupLegacyFixture.holding(SetupLegacyFixture.holding(chronicle,
+        LineageId("l3"), Role.Exile, WorldCrafterCard.id -> true,
+        MatchmakerCard.id -> true),
+        LineageId("l2"), Role.Citizen, PopulistCard.id -> true), {
+      case park if park.decisionId ==
+          WorldCrafter.slotDecisionId(PlayerId("p3"), 2) =>
+        ChooseOneAnswer(AtlasPlacement.endOption(AtlasEnd.Forgotten))
+      case park if park.decisionId == Populist.decisionId(PlayerId("p2")) =>
+        ChooseOneAnswer(Populist.divide)
+    })
+
   /** A later game's Setup on stream `name`, from the fixture's Chronicle as
     * `changed` leaves it, each park answered by `answers` where it names
     * one and as the situation does by default otherwise. */
@@ -94,5 +114,6 @@ object LaterGameLogScripts:
   val named: Vector[(String, () => Script)] = Vector(
     "later-game-setup" -> (() => laterGameWoken),
     "later-game-setup-legacies" -> (() => laterGameSetupLegacies),
+    "later-game-setup-foundations" -> (() => laterGameSetupFoundations),
     "later-game-forgotten-sites" -> (() => laterGameFilledFromForgotten),
     "later-game-after-oaths" -> (() => laterGameAfterOaths))

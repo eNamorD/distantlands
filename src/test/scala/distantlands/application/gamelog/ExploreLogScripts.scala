@@ -4,6 +4,7 @@ import distantlands.application._
 import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
 import distantlands.gameplay.powers.setup.GreatMarketCard
+import distantlands.gameplay.setup.legacies.WorldCrafterCard
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.{Dice, MenuPlay, Situation, Table}
@@ -59,7 +60,16 @@ object ExploreLogScripts:
       p1AtHintermostOfThree.storedInAtlas(DeepWoodsSite, GreatMarketCard),
       AtlasEnd.Recent)._1, p1)
 
+  /** p1 explores while p2 holds World Crafter: p2 chooses the Forgotten
+    * end on p1's turn and p1 finds Golden Valley (Legacy Setup powers
+    * ruling 11). */
+  def exploreWorldCrafter(using munit.Location): Script =
+    Script("explore-world-crafter", exploring("explore-world-crafter",
+      p1AtHintermostOfThree.legacy(Table.p2, WorldCrafterCard),
+      AtlasEnd.Forgotten)._1, p1)
+
   val named: Vector[(String, () => Script)] = Vector(
     "explore" -> (() => explore),
+    "explore-world-crafter" -> (() => exploreWorldCrafter),
     "explore-stopped" -> (() => exploreStopped),
     "explore-bandit-market" -> (() => exploreBanditMarket))
