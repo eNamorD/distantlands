@@ -52,6 +52,14 @@ class ChronicleRecordSuite extends munit.FunSuite:
     assertEquals(ChronicleRecord.campaignFields(ready).lineages.head,
       LineageState(boxed, None, Role.Exile, Vector(legacy), Vector.empty))
 
+  test("a lineage that sat this game out is recorded with no previous " +
+      "player (R39)"):
+    val ready = Table.start.update(_.updateCampaign(campaign => campaign.copy(
+      baseline = campaign.baseline.copy(lineages = Vector(LineageState(boxed,
+        Some(PlayerId("p9")), Role.Exile, Vector(legacy), Vector.empty)))))).ready
+    assertEquals(ChronicleRecord.campaignFields(ready).lineages.head
+      .previousPlayer, None)
+
   test("a seated lineage the baseline lists takes its live state"):
     val start = Table.start.ready
     val lineage = lineageOf(start, p2)

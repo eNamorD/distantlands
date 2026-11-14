@@ -27,11 +27,13 @@ object ChronicleRecord:
     val seatedBy = ready.game.current.players
       .map(player => player.lineage -> player.player).toMap
     // A seated lineage the baseline lists is its live state: game start
-    // seated it from its record (`GameStartRules`).
+    // seated it from its record (`GameStartRules`). A lineage that sat this
+    // game out was in no previous game of the next one, so it is recorded
+    // with no previous player (Legacy Setup powers R39).
     val kept = campaign.baseline.lineages.map(lineage =>
       campaign.lineages.get(lineage.id)
         .map(_.copy(previousPlayer = seatedBy.get(lineage.id)))
-        .getOrElse(lineage.copy(role =
+        .getOrElse(lineage.copy(previousPlayer = None, role =
           campaign.boxRoles.getOrElse(lineage.id, lineage.role))))
     val known = kept.map(_.id).toSet
     val added = campaign.lineages.values.toVector
