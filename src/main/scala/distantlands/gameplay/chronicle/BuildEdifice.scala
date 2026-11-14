@@ -14,13 +14,19 @@ import distantlands.model._
   * deck: the whole deck is shuffled, so no order survives. A buried edifice
   * goes straight to the deck, which ends in the same place.
   *
-  * The builder is read when each suit's offer is reached: an Imperial
-  * holding Great Architect, who may bury a card of any suit for each
-  * available edifice, else the Throne holder (Legacy Chronicle powers
-  * design, ruling 10). A burial returns favor to the buried card's own
+  * The builders are read when each suit's offer is reached
+  * (`ChronicleLegacyRules.builders`): an Imperial holding Great Architect,
+  * who may bury a card of any suit for each available edifice, then the
+  * Iron Hand holder over their own sites; either alone; else the Throne
+  * holder (Legacy Chronicle powers design, rulings 10 and 19; R32). A
+  * second builder is offered a suit's edifice only if the first left it,
+  * under an id of its own. A burial returns favor to the buried card's own
   * suit bank (R14). */
 object BuildEdifice:
   def decisionId(suit: Suit): String = s"chronicle.build-edifice.${suit.key}"
+  /** The Iron Hand holder's question when a Great Architect builds first
+    * (R32). */
+  def ironHandDecisionId(suit: Suit): String = decisionId(suit) + ".iron-hand"
 
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone)
   private val notes = NoteSet(noteId)
@@ -40,34 +46,36 @@ object BuildEdifice:
     // The shuffle draws the random edifice per suit: the deck is otherwise
     // in catalog order.
     Shuffle(ShufflePile.EdificeDeck)) ++
-    // One Branch per suit: a resume re-reads a Branch against live state, and
-    // building one suit's last edifice must not change the node count the
-    // other suits' answers are replayed against.
-    Suit.all.map(suit => Branch((state, _) =>
-      ChronicleLegacyRules.builder(state).fold(
+    // Two Branches per suit, one per builder slot: a resume re-reads a Branch
+    // against live state, and building one suit's last edifice must not
+    // change the node count the other answers are replayed against.
+    Suit.all.flatMap(suit => Vector(0, 1).map(slot => Branch((state, _) =>
+      ChronicleLegacyRules.builders(state).fold(
         violation => Vector(ChronicleTasks.failing(violation)),
-        holder => available(catalog, state.game.current)
-          .find(_._1 == suit).toVector.flatMap((_, edifice) =>
-            offer(catalog, state, holder, suit, edifice))))) :+
+        builders => builders.lift(slot).toVector.flatMap(holder =>
+          available(catalog, state.game.current).find(_._1 == suit).toVector
+            .flatMap((_, edifice) => offer(catalog, state, holder, suit,
+              edifice, if slot == 0 then decisionId(suit)
+                else ironHandDecisionId(suit)))))))) :+
     BuildOps((state, _) => Right(state.game.current.setAsideEdifices.map(id =>
       Move(Piece.Card(id), PositionedLocation(Location.SetAsideEdifices),
         PositionedLocation(Location.Deck(CardDeck.Edifice),
           StackPosition.Bottom)))), required = true)
 
   /** The cards of `suit` at sites the holder rules, by site; of any suit
-    * under Great Architect (ruling 10). */
+    * for Great Architect's holder (ruling 10). */
   private def candidates(catalog: ExecutableCatalog, state: ReadyGame,
       holder: PlayerId, suit: Suit): Vector[(SiteId, SiteDenizenState)] =
     val map = state.game.current.map
-    val anySuit = ChronicleLegacyRules.anyEdifice(state)
+    val anySuit = ChronicleLegacyRules.anyEdifice(state, holder)
     map.inPlay.filter(ChronicleTasks.rules(state, holder, _)).flatMap(site =>
       map.sites(site).denizens.filter(card =>
         anySuit || catalog.suitOf(card.id).contains(suit)).map(site -> _))
 
   private def offer(catalog: ExecutableCatalog, state: ReadyGame,
-      holder: PlayerId, suit: Suit, edifice: EdificeId): Vector[Operation] =
+      holder: PlayerId, suit: Suit, edifice: EdificeId, id: String)
+      : Vector[Operation] =
     val cards = candidates(catalog, state, holder, suit)
-    val id = decisionId(suit)
     if cards.isEmpty then Vector.empty
     else Vector(
       Decide(id, holder, DecisionQuery.ChooseMany(0, 1, cards.map {

@@ -10,7 +10,10 @@ import distantlands.model._
   * 11 and 14). The Throne holder may remove any of their warbands from
   * sites but the last one on the map; with no site, they clear their pawn's
   * site and place one there. Then every denizen at a site they do not rule
-  * is discarded, except intact edifices and cards at Enduring sites. */
+  * is discarded, except intact edifices and cards at Enduring sites. Iron
+  * Hand's Exile holder, read when the step is reached, performs it in the
+  * Throne holder's place, over the sites they rule (Legacy Chronicle
+  * powers design, ruling 19; R31). */
 object ShapeEmpire:
   val removeDecisionId: String = "chronicle.shape-empire.remove"
 
@@ -21,10 +24,12 @@ object ShapeEmpire:
   def noteKeys: Vector[NoteKey] = notes.declared
 
   def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
-    Branch((state, _) => ChronicleTasks.forHolder(state,
-      ChronicleTask.Throne)(removal(state, _))),
-    Branch((state, _) => ChronicleTasks.forHolder(state,
-      ChronicleTask.Throne)(discards(catalog, state, _))))
+    Branch((state, _) => ChronicleLegacyRules.shaper(state).fold(
+      violation => Vector(ChronicleTasks.failing(violation)),
+      removal(state, _))),
+    Branch((state, _) => ChronicleLegacyRules.shaper(state).fold(
+      violation => Vector(ChronicleTasks.failing(violation)),
+      discards(catalog, state, _))))
 
   private def removal(state: ReadyGame, holder: PlayerId): Vector[Operation] =
     val current = state.game.current

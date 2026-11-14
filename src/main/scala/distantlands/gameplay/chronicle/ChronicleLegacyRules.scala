@@ -36,16 +36,26 @@ object ChronicleLegacyRules:
   /** The Imperial roles, for a power that says "if you are an Imperial". */
   val imperialRoles: Set[Role] = Role.values.filter(_.isImperial).toSet
 
-  /** Who performs Build Edifice: an Imperial holding Great Architect, else
-    * the Throne holder (ruling 10). */
-  def builder(state: ReadyGame): Either[OathViolation, PlayerId] =
-    holder(state, GreatArchitectCard.id, imperialRoles)
-      .fold(ChronicleTasks.holder(state, ChronicleTask.Throne))(Right(_))
+  /** Who performs Build Edifice, in order: an Imperial holding Great
+    * Architect, then Iron Hand's Exile holder; either alone; else the Throne
+    * holder (rulings 10 and 19; R32). */
+  def builders(state: ReadyGame): Either[OathViolation, Vector[PlayerId]] =
+    holder(state, GreatArchitectCard.id, imperialRoles).toVector ++
+      ironHand(state).toVector match
+      case Vector() => ChronicleTasks.holder(state, ChronicleTask.Throne)
+        .map(Vector(_))
+      case some => Right(some)
 
-  /** Whether the builder may bury any card for any available edifice
-    * (ruling 10). */
-  def anyEdifice(state: ReadyGame): Boolean =
-    holder(state, GreatArchitectCard.id, imperialRoles).nonEmpty
+  /** Whether `builder` may bury any card for any available edifice: the
+    * Imperial holding Great Architect (ruling 10). */
+  def anyEdifice(state: ReadyGame, builder: PlayerId): Boolean =
+    holder(state, GreatArchitectCard.id, imperialRoles).contains(builder)
+
+  /** Who performs Shape Empire: Iron Hand's Exile holder, else the Throne
+    * holder (ruling 19; R31). */
+  def shaper(state: ReadyGame): Either[OathViolation, PlayerId] =
+    ironHand(state).fold(ChronicleTasks.holder(state, ChronicleTask.Throne))(
+      Right(_))
 
   /** Who places the scattered relics: The Ear's holder (ruling 14). */
   def scatterer(state: ReadyGame): Option[PlayerId] =
