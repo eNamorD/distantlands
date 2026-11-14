@@ -2,10 +2,13 @@ package distantlands.application.gamelog
 
 import distantlands.application.{GameApplicationService,
   InMemoryEventStreamRepository}
+import distantlands.gameplay.chronicle.legacies.{IronHandCard, RivalCard}
 import distantlands.gameplay.powers.setup.GreatClockCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.{AtlasPlacement, ImperialMaps,
-  LaterGameFixture}
+  LaterGameFixture, SetupLegacyFixture}
+import distantlands.gameplay.setup.legacies.{CircleOfSwordsCard,
+  ScepterBearerCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.{Answers, Dice, Look, Situation}
@@ -45,6 +48,17 @@ object LaterGameLogScripts:
         ChooseOneAnswer(AtlasPlacement.endOption(AtlasEnd.Forgotten))
     })
 
+  /** As [[laterGameWoken]], with game start's legacy powers: l3 an Exile
+    * holding Circle of Swords, Iron Hand and Rival active, and l2 a
+    * Citizen holding Scepter Bearer active (Legacy Setup powers, slice 1).
+    * Setup's log opens with their lines. */
+  def laterGameSetupLegacies(using munit.Location): Script =
+    laterGameWokenFrom("later-game-setup-legacies", chronicle =>
+      SetupLegacyFixture.holding(SetupLegacyFixture.holding(chronicle,
+        LineageId("l3"), Role.Exile, CircleOfSwordsCard.id -> true,
+        IronHandCard.id -> true, RivalCard.id -> true),
+        LineageId("l2"), Role.Citizen, ScepterBearerCard.id -> true))
+
   /** A later game's Setup on stream `name`, from the fixture's Chronicle as
     * `changed` leaves it, each park answered by `answers` where it names
     * one and as the situation does by default otherwise. */
@@ -79,5 +93,6 @@ object LaterGameLogScripts:
 
   val named: Vector[(String, () => Script)] = Vector(
     "later-game-setup" -> (() => laterGameWoken),
+    "later-game-setup-legacies" -> (() => laterGameSetupLegacies),
     "later-game-forgotten-sites" -> (() => laterGameFilledFromForgotten),
     "later-game-after-oaths" -> (() => laterGameAfterOaths))

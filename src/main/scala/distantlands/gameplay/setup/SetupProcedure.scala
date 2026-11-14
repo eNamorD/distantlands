@@ -4,6 +4,7 @@ import distantlands.catalog.{ExecutableCatalog, SiteOnly}
 import distantlands.gameplay.actions.{CardPlay, ProcedureNotes}
 import distantlands.gameplay.chronicle.ChronicleLegacyRules
 import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
+import distantlands.gameplay.setup.legacies.LegacySetupPowers
 import distantlands.model._
 import distantlands.model.OathViolation._
 
@@ -15,6 +16,7 @@ import distantlands.model.OathViolation._
  *
  * {{{
  * Sequence(                                              // no window
+ *   Note(the legacies' game-start lines)                 // StartLines, always 18
  *   Note(Public Ambitions dealt ...)                     // when the row holds any
  *   Branch(                                              // a later game's
  *     Decide(reliquary-pick, chancellor),                // Chancellor, when the
@@ -80,7 +82,8 @@ object SetupProcedure:
   val dealtPublicLegacies: NoteKey = notes.key("dealt-public-legacies",
     Vector(NotePart.Text("Public Ambitions dealt "), NotePart.Arg(0)))
   def noteKeys: Vector[NoteKey] = notes.declared ++ ImperialMaps.noteKeys ++
-    OathsOfLoyalty.noteKeys(TriggeredProcedureRef.Setup)
+    OathsOfLoyalty.noteKeys(TriggeredProcedureRef.Setup) ++
+    LegacySetupPowers.noteKeys
 
   val reliquaryDecisionId: String = "setup.reliquary-pick"
   def pawnDecisionId(player: PlayerId): String =
@@ -121,7 +124,8 @@ object SetupProcedure:
     val chancellor = Imperials.chancellor(ready)
     val imperialMaps = chancellor.filter(_ => ImperialMaps.applies(ready))
       .map(ImperialMaps.step(catalog, ready, _))
-    Sequence(publicRow(ready) ++ chancellor.map(reliquaryPick).toVector ++
+    Sequence(LegacySetupPowers.startNotes ++ publicRow(ready) ++
+      chancellor.map(reliquaryPick).toVector ++
       imperialMaps ++ steps :+ setupEnd :+
       BeginTurn(participants.head.playerId, Phase.Wake))
 

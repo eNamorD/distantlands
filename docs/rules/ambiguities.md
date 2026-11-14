@@ -248,7 +248,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 48. **An Imperial Great Architect and the holder both build** from the shared available edifices, the Great Architect first for each suit; the holder's question has its own id (R32).
 49. **Iron Hand's scoring records its legacies** as scored (R33).
 50. **Iron Hand's lines** say "p2 discarded Iron Hand", "p3 scored 2 lineage points with Iron Hand (2 from Beast)" and "Buried Giant stays on the map with Iron Hand" (R34).
-51. **Until Iron Hand's SETUP half lands,** the next game restores the holder's stored sites as the Empire's (R35; low confidence).
+51. **Until Iron Hand's SETUP half lands,** the next game restores the holder's stored sites as the Empire's (R35; low confidence). Its SETUP half has landed: the next game restores those sites with the holder's warbands while they hold it active as an Exile ([Legacy Setup powers rulings](#legacy-setup-powers-rulings), item 7).
 52. **Tests that used Iron Hand as a plain legacy** use one with no Chronicle half instead (R36).
 53. **Royal Line chooses the winner of an Empire win:** only after a Chancellor's or a Successor's win, a Citizen holding it active chooses the winner from every Imperial player, in a new window before Reveal Relics. Choosing the Chancellor is choosing no one (design, ruling 22).
 54. **The new winner is journaled,** and every later step reads the winner from the game's result. A Citizen wins as the Successor; the Chancellor wins by the Empire win that ended the game (design, ruling 23).
@@ -260,6 +260,28 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 60. **Build Edifice builds each suit at most once beside Iron Hand:** when an Imperial Great Architect built a suit's edifice, the holder is not offered that suit (R43).
 61. **Build Edifice offers only the edifices available when the step began:** an edifice buried earlier in the step goes to the edifice deck but is not offered by a later suit (R45).
 62. **The Ear's and The Bright Beacon's peeks write no Game Log line;** each power writes its one line, and the holder still knows the cards (R47).
+
+## Legacy Setup powers rulings
+
+Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 17 are implementation rulings R1 to R8.
+
+1. **Only seated players' active legacies act.** A legacy's SETUP power applies when a seated player holds it active at the moment its step is reached. A boxed lineage's legacies never act, and neither does the Public Ambitions row, which nobody holds (design, ruling 1).
+2. **"If you are an Imperial" or "an Exile" is read at the same moment.** Game start's Empire setup has already chosen the Chancellor, so every role is settled (design, ruling 2).
+3. **Every "you may" is the holder's decision,** with its own id, `setup.legacy.<power>.<player>`, and a per-item suffix where one power asks more than once. Declining is always an option (design, ruling 3).
+4. **Choosing several cards is one choose-many** (design, ruling 4).
+5. **Circle of Swords.** The holder's board starts with 8 warbands instead of 3. An Exile takes them from their own colour's supply. An Imperial takes purple warbands after every other Imperial board takes its 3; the Empire's sites come after the boards, and a site the supply misses takes bandits (design, ruling 5).
+6. **Scepter Bearer.** An Imperial holder starts with the Grand Scepter instead of the Chancellor, who keeps the Oathkeeper title and the Reliquary pick. If the holder is the Chancellor, nothing changes; with no Empire the Grand Scepter stays in the box (design, ruling 6).
+7. **Iron Hand.** It always applies, whether or not the holder was in the previous game. Each site restored up to the Empire divider takes one of the holder's warbands instead of the Imperial warband, or instead of the bandits in Setup With No Empire, so the Empire may start ruling no site, which overrides [Empire ruling R28](#empire-rulings). Every player may place their pawn at any site in play, which overrides R25 (design, ruling 7).
+8. **Rival.** For an Exile holder, before the foundations, the three Cradlemost empty site slots take the next three Recent Sites, populated by the Empire rules, with one of the holder's warbands on each; fewer are placed if the map or the Atlas runs short. Their denizens add favor to the banks, Imperial Maps fills only the slots still empty, and the holder may place their pawn at these sites (design, ruling 8).
+9. **Game start's powers are logged** by Notes at the start of Setup, before the Public Ambitions line (design, ruling 9).
+10. **Game start reads a holder from the Chronicle:** a seated lineage whose stored record holds the legacy active. Chancellor and Citizen are Imperial; anything else, including a lineage the Chronicle does not list, is an Exile. The walk reads the holder with `ChronicleLegacyRules.holder` (R1).
+11. **An Exile's 14 warbands run out in a fixed order:** their board first (3, or Circle of Swords' 8), then Iron Hand's Empire sites, Cradlemost first, then Rival's sites. A site the holder's supply misses takes bandits equal to its capacity (R2).
+12. **An Imperial Circle of Swords holder takes** `min(8, 24 - 3 × other Imperial boards)` purple warbands; the Empire's sites share the rest, Cradlemost first (R3).
+13. **Only an Exile's Iron Hand acts at setup;** an Imperial holder would have discarded it in the Chronicle (R4).
+14. **Rival's sites take no relics from the relic deck,** and its holder may place their pawn at any site their own warbands hold (R5).
+15. **Imperial Maps counts from what game start fixed:** its empty slots are the map's slots less the Empire's stored sites less the sites Rival places, worked out again from the Chronicle and the seats (R6).
+16. **One line per power, first in Setup:** "p2 started with 8 warbands with Circle of Swords", "p1 started with the Grand Scepter with Scepter Bearer", and one line per site, "p3 placed a warband at Deep Woods with Iron Hand" and "p3 placed a warband at Deep Woods with Rival" (R7).
+17. **The game-start pass lives in the setup plan and the materializer;** only Scepter Bearer is applied in `LaterGameSetup` (R8).
 
 ## Source relationship cautions
 

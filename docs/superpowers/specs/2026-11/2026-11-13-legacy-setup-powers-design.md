@@ -268,7 +268,10 @@ deck it built.
   Empire's sites, then Rival. Rival's sites must exist before Foundation
   II's bank count and Imperial Maps' slot count read the map. Nothing at
   game start is journaled, so the slice 1 Notes are how the log learns of
-  these powers.
+  these powers. The boards and the map are built by
+  `FirstGameSetupMaterializer` from the setup plan, so the pass lives
+  there, and only Scepter Bearer is applied in `LaterGameSetup`
+  (implementation ruling R8).
 - **Walker steps.**
   - New empty windows where a step is added: `SetupBanks` after Imperial
     Maps (Populist) and `SetupWorldDeck` (Secret Society, then Seer).
@@ -282,7 +285,7 @@ deck it built.
   - Each card leaves `HoldingLegacies` as its SETUP half lands, and
     `PowerImplementationStatus` lists it. Rival left holding whole with the
     Chronicle batch (its implementation ruling R7), so only its status
-    changes; Iron Hand kept its SETUP half in holding and leaves now.
+    changes; Iron Hand left holding whole too, so only its status changes.
 - **New model pieces.** `DecisionQuery.ChooseAmounts`, with its codec,
   `DecisionQueries.wellFormed`, answer validation and a frontend control
   of one amount per item, its Confirm disabled while two amounts are
