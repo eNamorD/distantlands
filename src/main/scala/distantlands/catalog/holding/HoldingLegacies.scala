@@ -1,7 +1,7 @@
 package distantlands.catalog.holding
 
 import distantlands.catalog.{Legacy, LegacyGoal, PrintedPower}
-import distantlands.model.{Cost, FoundationNumber, LegacyId, PowerId,
+import distantlands.model.{Cost, LegacyId, PowerId,
   Suit}
 
 // Generated from the retired runtime JSON (card classes slice 1).
@@ -14,14 +14,4 @@ object ConspiratorCard extends Legacy(LegacyId("L26"), "Conspirator",
     text = "**WAKE:** On your first turn, secretly write down which " +
       "round the game will end on and who will win. If you are " +
       "correct, you win instead. _This even beats a Successor win._")
-  val powers: Vector[PrintedPower] = Vector(power)
-
-object TheMouthCard extends Legacy(LegacyId("L34"), "The Mouth",
-    LegacyGoal.MostOfSuit, Suit.Arcane, Some(FoundationNumber.VI)):
-  val power = PrintedPower(PowerId("legacy.the-mouth"),
-    persistent = false, cost = Cost(favorBurnt = 2),
-    text = "Set Foundation VI to Festival. **ACTION:** Burn " +
-      "[favor-burnt] [favor-burnt] to activate a dormant legacy if " +
-      "you meet its goal. _You can even activate legacies in the " +
-      "Public Ambitions foundation._")
   val powers: Vector[PrintedPower] = Vector(power)

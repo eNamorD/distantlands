@@ -6,7 +6,7 @@ import distantlands.gameplay.powers.search.ErrandBoyCard
 import distantlands.gameplay.powers.setup.HallOfDebateCard
 import distantlands.model.OathState.Ready
 import distantlands.catalog.PrintedPower
-import distantlands.catalog.holding.TheMouthCard
+import distantlands.gameplay.powers.legacies.TheMouthCard
 import distantlands.gameplay.powers.legacies.{GoldenKeyCard,
   LegacyActionFixture, RuthlessCard}
 import distantlands.gameplay.phases.{PhaseMenu, PhasePowerProcedure}

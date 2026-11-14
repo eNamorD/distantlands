@@ -8,6 +8,5 @@ edifice.e10.ruined
 edifice.e16.ruined
 edifice.e26.ruined
 legacy.conspirator
-legacy.the-mouth
 relic.ancient-grit
 site.ancient-city.enduring

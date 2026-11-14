@@ -53,6 +53,12 @@ case object IronHand extends ContributingPower:
     Vector(NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1),
       NotePart.Text(" on becoming the Chancellor")))
 
+  /** "p1 discarded Iron Hand": an Imperial's Iron Hand that The Mouth
+    * activated goes straight back to the legacy deck (Legacy in-play
+    * powers R25). */
+  val discardedNow: NoteKey = notes.key("discarded", Vector(NotePart.Arg(0),
+    NotePart.Text(" discarded "), NotePart.Arg(1)))
+
   /** The in-game discard's line for the `role` the holder reached. */
   def discardedOnBecoming(role: Role): NoteKey =
     if role == Role.Chancellor then onChancellor else onCitizen
