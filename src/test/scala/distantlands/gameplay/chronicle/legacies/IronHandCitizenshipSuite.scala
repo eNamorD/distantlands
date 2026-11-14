@@ -4,14 +4,18 @@ import distantlands.gameplay.OathRules
 import distantlands.gameplay.actions.negotiation.NegotiationDeal
 import distantlands.gameplay.cards.BrokenPeaksSite
 import distantlands.gameplay.operations.TheGrandScepterCard
-import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powerresolver.{Contribution, ExecutedBatch,
+  ExecutedTrigger}
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog}
 import distantlands.gameplay.powers.action.GrandScepterAction
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer,
   ProposeTerms}
 import distantlands.model.OathState.Ready
-import distantlands.testkit.{ActPowerHarness, Outcomes, RecordedOps, Table}
+import distantlands.testkit.{ActPowerHarness, Journal, Outcomes, PowerRules,
+  RecordedOps, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 
@@ -111,3 +115,33 @@ class IronHandCitizenshipSuite extends munit.FunSuite:
     assertEquals(Imperials.role(after, p1), Some(Role.Citizen))
     assert(holds(after, p1))
     assertEquals(lines(events), Vector.empty)
+
+  /** Parks right after a batch that changes a role, as a follow-up (a
+    * False Prophet claim) may, so the change's line is written on resume. */
+  private case object ParkAfterRoleChange extends ExecutedTrigger:
+    val id: PowerId = PowerId("test.park-after-role-change")
+    def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+    def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
+    def onExecuted(batch: ExecutedBatch): Option[Operation] =
+      Option.when(batch.executed.exists(_.isInstanceOf[RoleChanged]))(
+        Decide(parkId, p1, DecisionQuery.ChooseOne(
+          Vector(DecisionOption.Button(DecisionOptionRef.Button("ok"),
+            "OK")))))
+  private val parkId = "test.after-role-change"
+
+  test("a walk parked right after the change writes Iron Hand's line once, " +
+      "from the change's record, on resume"):
+    val parking = new OathRules(catalog,
+      walkerPowerCatalog = WalkerPowers(Vector(ParkAfterRoleChange),
+        declared = PowerRules.declared),
+      phasePowerCatalog = PhasePowerCatalog.default)
+    val start = scepterHolderWithIronHand().ready
+    val parked = accepted(ActPowerHarness.use(parking, start,
+      GrandScepterAction.id, scepter))
+    val at = accepted(Journal.evolved(parking, start, parked.events))
+    val resumed = accepted(parking.resolveWalker(at, p1, parkId,
+      DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Button("ok"))))
+    val events = parked.events ++ resumed.events
+    assertEquals(lines(events),
+      Vector(s"p1 discarded ${IronHandCard.id.value} on becoming a Citizen"))
+    assert(!holds(Outcomes.ready(resumed.state), p1))
