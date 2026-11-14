@@ -24,11 +24,12 @@ class HiddenChronicleCardsSuite extends munit.FunSuite:
   private val presentation = new GamePresentationProjector(catalog)
   private val projector = new GameProjector(catalog)
 
-  /** As `TheEarSuite`'s table: p2 holds The Ear and three relics. */
+  /** As `TheEarSuite`'s table, but the three relics are p3's, so p2, who
+    * holds The Ear, knows them only by its peeks. */
   private def earTable: Table = ChronicleWalk.throneHeldByChancellorP1
     .warbandsAt(AncientCitySite, p1, 1)
-    .relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
-    .relic(p2, BanditCrownCard).legacy(p2, TheEarCard)
+    .relic(p3, CupOfPlentyCard).relic(p3, GrandMaskCard)
+    .relic(p3, BanditCrownCard).legacy(p2, TheEarCard)
 
   test("the examined relics are named to the holder alone, and the holder " +
       "still knows each where it lies; another seat and the public do not " +
@@ -40,7 +41,7 @@ class HiddenChronicleCardsSuite extends munit.FunSuite:
     val relics = Vector(CupOfPlentyCard.id, GrandMaskCard.id,
       BanditCrownCard.id)
     assert(relics.forall(presentation.identifiesAt(ready, Some(p2), _)))
-    Vector(Some(p1), Some(p3), None).foreach(viewer =>
+    Vector(Some(p1), None).foreach(viewer =>
       assert(relics.forall(!presentation.identifiesAt(ready, viewer, _)),
         viewer))
     val loaded = LoadedGame(atEar.state, 1L)
@@ -51,11 +52,16 @@ class HiddenChronicleCardsSuite extends munit.FunSuite:
       assert(!view.walkerDecision.exists(_.query.nonEmpty)))
     val after = ChronicleWalk.endOf(rules, earTable.state, atEar,
       TriggeredProcedureRef.ChronicleThrone)
-    val site = ReliquaryAndRelics.emptySlots(catalog, earTable.ready).head
-    val first = after.game.current.map.sites(site).relics.head.id
-    assert(presentation.identifiesAt(after, Some(p2), first), first)
-    assert(!presentation.identifiesAt(after, Some(p1), first), first)
-    assert(!presentation.identifiesAt(after, None, first), first)
+    // Every relic The Ear placed is known to the holder where it lies.
+    val placed = ReliquaryAndRelics.emptySlots(catalog, earTable.ready)
+      .flatMap(site => after.game.current.map.sites(site).relics.map(_.id))
+      .filter(relics.contains)
+    assertEquals(placed.toSet, relics.toSet)
+    placed.foreach { relic =>
+      assert(presentation.identifiesAt(after, Some(p2), relic), relic)
+      assert(!presentation.identifiesAt(after, Some(p1), relic), relic)
+      assert(!presentation.identifiesAt(after, None, relic), relic)
+    }
 
   /** As `TheBrightBeaconSuite`'s table: p3 holds the Beacon task and The
     * Bright Beacon; five older and three newly Dispossessed denizens wait. */
