@@ -105,3 +105,25 @@ class WorldDeckLegaciesProjectionSuite extends munit.FunSuite:
     assertEquals(seenBy(at, Some(p2)), deckVisions(at))
     Vector(Some(p1), None).foreach(viewer =>
       assertEquals(seenBy(at, viewer), Vector.empty, viewer))
+
+  test("an Exile holder's Vision is named to other seats only once it is " +
+      "revealed at Reveal Cards (R38)"):
+    val exile = SetupLegacyFixture.holding(LaterGameFixture.chronicle(l1, l2),
+      l2, Role.Exile, SecretSocietyCard.id -> true)
+    def visionSlot(ready: ReadyGame): Option[(Int, CardId)] =
+      ready.game.current.player(p2).toVector.flatMap(_.advisers).zipWithIndex
+        .collectFirst { case (VisionState(id, Orientation.FaceDown), slot) =>
+          slot -> id }
+    val revealing = taking.orElse {
+      case park if park.decisionId == SetupProcedure.revealDecisionId(p2) =>
+        DecisionAnswer.ChooseManyAnswer(visionSlot(park.ready).toVector.map(
+          (slot, _) => DecisionOptionRef.AdviserSlot(p2, slot)))
+    }
+    val at = parkedAt(SetupProcedure.revealDecisionId(p2), revealing, exile)
+    val (_, vision) = visionSlot(at.ready).getOrElse(fail("no Vision taken"))
+    assert(presentation.identifiesAt(at.ready, Some(p2), vision))
+    Vector(Some(p1), None).foreach(viewer =>
+      assert(!presentation.identifiesAt(at.ready, viewer, vision), viewer))
+    val after = at.after().ready
+    Vector(Some(p1), Some(p2), None).foreach(viewer =>
+      assert(presentation.identifiesAt(after, viewer, vision), viewer))

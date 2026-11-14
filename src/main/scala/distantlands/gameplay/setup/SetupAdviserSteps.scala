@@ -71,7 +71,7 @@ final class SetupAdviserSteps(procedure: TriggeredProcedureRef):
           options, heading = Some("Reveal cards"),
           confirm = Some(CountedConfirm("Reveal", "card", "cards",
             Some("Reveal nothing"))))),
-        BuildOps(revealing(player, decisionId)),
+        BuildOps(revealing(catalog, player, decisionId)),
         // One line per card, as the rule posted one per recorded `Reveal`.
         // A second `Branch`, because the answer this reads does not exist
         // when the branch above is walked.
@@ -89,15 +89,19 @@ object SetupAdviserSteps:
     new SetupAdviserSteps(procedure)
 
   /** The cards `player` may reveal in Reveal Cards: facedown advisers that
-    * are not site-only, then facedown relics. They are offered by slot, as
-    * Hunger offers advisers, so the parked decision can be described to
-    * every other viewer without naming a facedown card. */
+    * are not site-only, a facedown Vision for a player with a Vision space
+    * (R38), then facedown relics. They are offered by slot, as Hunger
+    * offers advisers, so the parked decision can be described to every
+    * other viewer without naming a facedown card. */
   def revealable(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId)
       : Vector[DecisionOption] =
+    val visions = CardPlay.hasVisionSpace(ready, player)
     ready.game.current.player(player).toVector.flatMap { state =>
       state.advisers.zipWithIndex.collect {
         case (DenizenState(id, Orientation.FaceDown, _), slot)
             if !catalog.denizen(id).exists(_.isInstanceOf[SiteOnly]) =>
+          DecisionOption.AdviserSlot(DecisionOptionRef.AdviserSlot(player, slot))
+        case (VisionState(_, Orientation.FaceDown), slot) if visions =>
           DecisionOption.AdviserSlot(DecisionOptionRef.AdviserSlot(player, slot))
       } ++ state.relics.zipWithIndex.collect {
         case (RelicState(_, Orientation.FaceDown, _), slot) =>
@@ -124,13 +128,25 @@ object SetupAdviserSteps:
         }
     }
 
-  private def revealing(player: PlayerId, decisionId: String)
+  /** Each named card turned faceup: a Vision onto the Vision space as a
+    * faceup Vision play puts it, discarding any Vision there, with no When
+    * Played (R38); any other card in place. */
+  private def revealing(catalog: ExecutableCatalog, player: PlayerId,
+      decisionId: String)
       : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
     (ready, pending) =>
       revealed(ready, player, decisionId, pending.answered)
-        .map(_.map(card => Reveal(card, Location.PlayArea(player))))
         .toRight(InvalidEventOrder(
           s"no reveal answer is recorded for $decisionId"))
+        .flatMap(_.foldLeft[Either[OathViolation, Vector[CoreOperation]]](
+          Right(Vector.empty)) { (done, card) =>
+          done.flatMap(operations => (card match
+            case vision: VisionId => CardPlay.operations(catalog, ready,
+              player, vision, SearchPlacement.Adviser(Orientation.FaceUp, None),
+              CardPlay.Origin.FacedownAdviser)
+            case other => Right(Vector(Reveal(other,
+              Location.PlayArea(player))))).map(operations ++ _))
+        })
 
   /** The kept card to the advisers facedown, or buried under Oaths of
     * Loyalty (Legacy Chronicle powers design, ruling 16; R24), and the rest

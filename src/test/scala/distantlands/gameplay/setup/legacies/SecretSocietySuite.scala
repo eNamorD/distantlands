@@ -136,6 +136,52 @@ class SecretSocietySuite extends munit.FunSuite:
       said.text.startsWith("p2 discarded ") &&
         said.text.endsWith(s"with ${SecretSocietyCard.id.value}")))
 
+  /** Takes the first Vision offered and, at Reveal Cards, reveals every
+    * facedown Vision it is offered. */
+  private val takingAndRevealing: Answers =
+    case park if park.decisionId == SecretSociety.decisionId(p2) =>
+      ChooseOneAnswer(park.decide.query match
+        case one: DecisionQuery.ChooseOne => one.options(1).ref
+        case other => fail(s"expected a choose-one, got $other"))
+    case park if park.decisionId == SetupProcedure.revealDecisionId(p2) =>
+      DecisionAnswer.ChooseManyAnswer(visionSlots(park.ready))
+
+  /** p2's facedown Visions offered by slot. */
+  private def visionSlots(ready: ReadyGame): Vector[DecisionOptionRef] =
+    ready.game.current.player(p2).toVector.flatMap(_.advisers).zipWithIndex
+      .collect { case (VisionState(_, Orientation.FaceDown), slot) =>
+        DecisionOptionRef.AdviserSlot(p2, slot) }
+
+  test("an Exile holder may reveal the Vision at Reveal Cards, which puts " +
+      "it on their Vision space (R38)"):
+    val exile = SetupLegacyFixture.holding(LaterGameFixture.chronicle(l1, l2),
+      l2, Role.Exile, SecretSocietyCard.id -> true)
+    val at = Situation.start(rules.withAnswers(takingAndRevealing))
+      .parkedAt(SetupProcedure.revealDecisionId(p2))(GameCommand.Begin(exile,
+        LaterGameFixture.orders(exile, p1)))
+    val slots = visionSlots(at.ready)
+    assertEquals(slots.size, 1)
+    val vision = at.ready.game.current.player(p2).get.advisers(
+      slots.head.asInstanceOf[DecisionOptionRef.AdviserSlot].slot).id
+    decide(at).query match
+      case many: DecisionQuery.ChooseMany =>
+        assert(many.options.map(_.ref).contains(slots.head), many.options)
+      case other => fail(s"expected a choose-many, got $other")
+    val after = at.after().ready.game.current.player(p2).get
+    assertEquals(after.revealedVisions.map(_.id), Vector(vision))
+    assert(!after.advisers.exists(_.id == vision), after.advisers)
+
+  test("an Imperial holder is not offered the Vision at Reveal Cards (R38)"):
+    val at = Situation.start(rules.withAnswers(takingAndRevealing))
+      .parkedAt(SetupProcedure.revealDecisionId(p2))(GameCommand.Begin(record,
+        LaterGameFixture.orders(record, p1)))
+    val slots = visionSlots(at.ready)
+    assertEquals(slots.size, 1)
+    decide(at).query match
+      case many: DecisionQuery.ChooseMany =>
+        assert(!many.options.map(_.ref).contains(slots.head), many.options)
+      case other => fail(s"expected a choose-many, got $other")
+
   test("a holder within the limit is asked nothing"):
     // p2 holds no starting adviser and draws a hand, so the Vision leaves
     // them one adviser before Choose Adviser: a walk that never parks at

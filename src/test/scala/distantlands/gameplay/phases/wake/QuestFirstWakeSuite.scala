@@ -118,6 +118,33 @@ class QuestFirstWakeSuite extends munit.FunSuite:
     val pile = after.commonCards.discard(next)
     assertEquals(pile.takeRight(discarded.size).toSet, discarded.toSet)
 
+  test("an Exile holder may reveal Secret Society's Vision at the first " +
+      "Wake, onto their Vision space (R38)"):
+    val exile = SetupLegacyFixture.holding(LaterGameFixture.chronicle(l1, l2),
+      l2, Role.Exile, QuestToDistantLandsCard.id -> true,
+      SecretSocietyCard.id -> true)
+    def visions(ready: ReadyGame): Vector[DecisionOptionRef] =
+      ready.game.current.player(p2).toVector.flatMap(_.advisers).zipWithIndex
+        .collect { case (VisionState(_, Orientation.FaceDown), slot) =>
+          DecisionOptionRef.AdviserSlot(p2, slot) }
+    val answers = stayingOff.orElse {
+      case park if park.decisionId == SecretSociety.decisionId(p2) =>
+        park.decide.query match
+          case one: DecisionQuery.ChooseOne => ChooseOneAnswer(one.options(1).ref)
+          case other => fail(s"expected a choose-one, got $other")
+      case park if park.decisionId ==
+          QuestFirstWakeProcedure.revealDecisionId(p2) =>
+        DecisionAnswer.ChooseManyAnswer(visions(park.ready))
+    }
+    val at = parkedAt(QuestFirstWakeProcedure.revealDecisionId(p2), exile,
+      answers)
+    val slots = visions(at.ready)
+    assertEquals(slots.size, 1)
+    val vision = at.ready.game.current.player(p2).get.advisers(
+      slots.head.asInstanceOf[DecisionOptionRef.AdviserSlot].slot).id
+    val after = at.after().ready.game.current.player(p2).get
+    assertEquals(after.revealedVisions.map(_.id), Vector(vision))
+
   test("a Ties hand card swapped in is buried at the Wake's Choose Adviser " +
       "under Oaths of Loyalty"):
     val oaths = holding(QuestToDistantLandsCard.id -> true,
