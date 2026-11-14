@@ -239,13 +239,13 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 39. **The Bright Beacon's questions:** the box first; from the Dispossessed exactly six, taken without a question when exactly six remain (R25). Heirloom's step has its own window before Scatter Relics (R26).
 40. **Two goldens** show an Oaths and Heirloom Chronicle and the next game's Setup from its record (R27). No relic is deducible: Stock Reliquary first turns every held relic but the Grand Scepter facedown and clears every viewer's knowledge of it, so Scatter Relics' lines read "a Relic" to anyone who does not know it; each holder still sees their own (R28, re-ruled by the owner 2026-11-14).
 41. **Iron Hand is discarded when its holder is an Imperial,** at four checkpoints: the start of the Sun, before the Sun's legacy cap, after Crown Chancellor and after Offer Citizenship (design, ruling 18; R46).
-42. **Iron Hand takes over Shape Empire and Build Edifice** while a seated Exile holds it active: the holder performs both over the sites they rule, and an Imperial Great Architect still builds (design, ruling 19).
+42. **Iron Hand takes over Shape Empire and Build Edifice** while a seated Exile holds it active: the holder performs both over the sites they rule, but an Imperial Great Architect builds in the holder's place (design, ruling 19; R32).
 43. **Iron Hand scores its holder's legacies** in Score Lineage Points, after the winner, with no base and no gifts, skipping legacies already scored (design, ruling 20).
 44. **Iron Hand's sites are stored in place of the Empire's:** the Empire's are archived as rival sites, and the holder's stay on the map, Cradlemost first (design, ruling 21).
 45. **Only an active Iron Hand is discarded** at a checkpoint (R29).
 46. **The Crown's and Offer Citizenship's checkpoints sit between their reactivation and their cap,** so no one discards over the cap a legacy that Iron Hand's own discard would spare; the Sun's first opens Reveal Relics, and its second opens step 4, before the cap, for an Iron Hand an Imperial gained active by Flip Legacies or Gatekeeper (R30, R46).
 47. **The holder's Shape Empire discards every card at sites they do not rule,** the Empire's included, but intact edifices and Enduring sites' cards (R31).
-48. **An Imperial Great Architect and the holder both build** from the shared available edifices, the Great Architect first for each suit; the holder's question has its own id (R32).
+48. **An Imperial Great Architect performs Build Edifice instead of Iron Hand's holder,** who then does not build; one builder per suit (R32, re-ruled by the owner 2026-11-14).
 49. **Iron Hand's scoring records its legacies** as scored (R33).
 50. **Iron Hand's lines** say "p2 discarded Iron Hand", "p3 scored 2 lineage points with Iron Hand (2 from Beast)" and "Buried Giant stays on the map with Iron Hand" (R34).
 51. **Until Iron Hand's SETUP half lands,** the next game restores the holder's stored sites as the Empire's (R35; low confidence). Its SETUP half has landed: the next game restores those sites with the holder's warbands while they hold it active as an Exile ([Legacy Setup powers rulings](#legacy-setup-powers-rulings), item 7).
@@ -257,7 +257,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 57. **The journaled winner** is `WinnerNamed`, which refuses a game with no result, an unseated winner and a kind that is not an Empire win (R39).
 58. **Royal Line's window** is the Sun's first, before Reveal Relics and Iron Hand's Sun checkpoint (R40). Crown Chancellor and Assign Tasks read the winner when each is reached.
 59. **Royal Line's line** is "p3 named p2 the winner with Royal Line", only when the winner changes; the end-of-game line stays as it was, and the result banner follows the result (R41).
-60. **Build Edifice builds each suit at most once beside Iron Hand:** when an Imperial Great Architect built a suit's edifice, the holder is not offered that suit (R43).
+60. **Superseded:** Build Edifice's second builder slot beside Iron Hand, which R43 fixed, no longer exists (R43, superseded by R32's re-ruling).
 61. **Build Edifice offers only the edifices available when the step began:** an edifice buried earlier in the step goes to the edifice deck but is not offered by a later suit (R45).
 62. **The Ear's and The Bright Beacon's peeks write no Game Log line;** each power writes its one line, and the holder still knows the cards (R47).
 

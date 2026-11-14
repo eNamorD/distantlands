@@ -56,7 +56,9 @@ the Crown's and Offer Citizenship's checkpoints sit between their
 reactivation and their cap, the Sun's opens Reveal Relics' window (R30);
 the holder's Shape Empire discards every card at sites they do not rule
 (R31); an Imperial Great Architect and the holder both build, the holder's
-question under `chronicle.build-edifice.<suit>.iron-hand` (R32); Iron
+question under `chronicle.build-edifice.<suit>.iron-hand` (R32; re-ruled
+by the owner 2026-11-14: the Great Architect builds instead of the holder,
+and the `.iron-hand` id is gone, changed in slice 5); Iron
 Hand's scoring records `LegaciesScored` (R33); the lines as proposed
 (R34); the next game restores the stored sites as the Empire's until the
 setup batch, named on the ROADMAP (R35, low confidence); stand-ins swapped

@@ -36,15 +36,13 @@ object ChronicleLegacyRules:
   /** The Imperial roles, for a power that says "if you are an Imperial". */
   val imperialRoles: Set[Role] = Role.values.filter(_.isImperial).toSet
 
-  /** Who performs Build Edifice, in order: an Imperial holding Great
-    * Architect, then Iron Hand's Exile holder; either alone; else the Throne
-    * holder (rulings 10 and 19; R32). */
-  def builders(state: ReadyGame): Either[OathViolation, Vector[PlayerId]] =
-    holder(state, GreatArchitectCard.id, imperialRoles).toVector ++
-      ironHand(state).toVector match
-      case Vector() => ChronicleTasks.holder(state, ChronicleTask.Throne)
-        .map(Vector(_))
-      case some => Right(some)
+  /** Who performs Build Edifice: an Imperial holding Great Architect, even
+    * beside Iron Hand; else Iron Hand's Exile holder; else the Throne holder
+    * (rulings 10 and 19; R32, re-ruled by the owner 2026-11-14). */
+  def builder(state: ReadyGame): Either[OathViolation, PlayerId] =
+    holder(state, GreatArchitectCard.id, imperialRoles)
+      .orElse(ironHand(state))
+      .fold(ChronicleTasks.holder(state, ChronicleTask.Throne))(Right(_))
 
   /** Whether `builder` may bury any card for any available edifice: the
     * Imperial holding Great Architect (ruling 10). */

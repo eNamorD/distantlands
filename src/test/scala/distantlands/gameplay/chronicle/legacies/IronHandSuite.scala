@@ -150,32 +150,6 @@ class IronHandSuite extends munit.FunSuite:
     assertEquals(build.query.asInstanceOf[DecisionQuery.ChooseMany].options
       .map(_.ref), Vector(DecisionOptionRef.Denizen(ThreateningRoarCard.id)))
 
-  test("an Imperial Great Architect still builds over the Empire's sites, " +
-      "then the holder over theirs, under ids of their own (R32)"):
-    // p2 is a Citizen holding Great Architect; Village Idiot, at Enduring
-    // Ancient City, survives the holder's Shape Empire.
-    val table = ironThrone.imperial(p1, p2)
-      .denizen(VillageIdiotCard, at = AncientCitySite)
-      .legacy(p2, GreatArchitectCard)
-    val suit = catalog.denizen(ThreateningRoarCard.id).get.suit
-    val other = Suit.all.find(_ != suit).get
-    val run = through(table, TriggeredProcedureRef.ChronicleThrone, {
-      case decide if decide.decisionId == BuildEdifice.decisionId(other) =>
-        DecisionAnswer.ChooseManyAnswer(Vector(
-          DecisionOptionRef.Denizen(VillageIdiotCard.id)))
-    }, after = TriggeredProcedureRef.ChronicleSun)
-    val builds = run.asked.filter(_.decisionId.startsWith(
-      "chronicle.build-edifice."))
-    assert(builds.exists(decide => decide.owner == p2 &&
-      decide.decisionId == BuildEdifice.decisionId(other)))
-    assert(builds.exists(decide => decide.owner == p3 &&
-      decide.decisionId == BuildEdifice.ironHandDecisionId(suit)))
-    assertEquals(builds.map(_.decisionId).distinct.size, builds.size)
-    // Great Architect built the other suit's edifice: the holder is not
-    // offered it.
-    assert(!builds.exists(_.decisionId ==
-      BuildEdifice.ironHandDecisionId(other)))
-
   test("a walk resumed at the holder's removal question finds the same " +
       "sites"):
     val started = ChronicleWalk.started(rules, ironThrone,
@@ -253,34 +227,39 @@ class IronHandSuite extends munit.FunSuite:
       s"with ${IronHandCard.id.value}"), said)
 
   /** `ironThrone` with p2 a Citizen holding Great Architect and Village
-    * Idiot at Enduring Ancient City, so both p2 and p3 can build Beast. */
+    * Idiot at Enduring Ancient City, which Great Architect may bury. */
   private def twoBuilders: Table = ironThrone.imperial(p1, p2)
     .denizen(VillageIdiotCard, at = AncientCitySite)
     .legacy(p2, GreatArchitectCard)
 
   private val beast = catalog.denizen(ThreateningRoarCard.id).get.suit
 
-  test("a suit the Great Architect built is not offered to the holder " +
-      "(R32, R43)"):
-    val run = through(twoBuilders, TriggeredProcedureRef.ChronicleThrone, {
-      case decide if decide.decisionId == BuildEdifice.decisionId(beast) =>
-        DecisionAnswer.ChooseManyAnswer(Vector(
-          DecisionOptionRef.Denizen(VillageIdiotCard.id)))
-    }, after = TriggeredProcedureRef.ChronicleSun)
-    assert(run.asked.exists(_.decisionId == BuildEdifice.decisionId(beast)))
-    assert(!run.asked.exists(_.decisionId ==
-      BuildEdifice.ironHandDecisionId(beast)))
+  private def builds(run: ChronicleWalk.Run): Vector[Decide] =
+    run.asked.filter(_.decisionId.startsWith("chronicle.build-edifice."))
+
+  test("an Imperial Great Architect performs Build Edifice in the holder's " +
+      "place, and the holder does not build (R32, re-ruled)"):
+    val run = through(twoBuilders, TriggeredProcedureRef.ChronicleThrone,
+      after = TriggeredProcedureRef.ChronicleSun)
+    // Village Idiot survives the holder's Shape Empire, and Great Architect
+    // may bury it for every suit's edifice.
+    assertEquals(builds(run).map(_.decisionId),
+      Suit.all.map(BuildEdifice.decisionId))
+    assert(builds(run).forall(_.owner == p2), builds(run).map(_.owner))
+    assert(builds(run).forall(_.query.asInstanceOf[DecisionQuery.ChooseMany]
+      .options.map(_.ref) == Vector(DecisionOptionRef.Denizen(
+        VillageIdiotCard.id))))
     assert(onMap(run.ready, ThreateningRoarCard.id))
 
-  test("a walk parked at the holder's question after the Great Architect " +
-      "declined finds the same edifice (R43)"):
+  test("a walk resumed at a later suit's question beside Iron Hand asks the " +
+      "Great Architect alone (R32, re-ruled)"):
     val started = ChronicleWalk.started(rules, twoBuilders,
       TriggeredProcedureRef.ChronicleSun)
     val parked = ChronicleWalk.walkedTo(rules, started,
-      BuildEdifice.ironHandDecisionId(beast))
+      BuildEdifice.decisionId(beast))
     val decide = ChronicleWalk.parked(parked.state).get
     assertEquals((decide.decisionId, decide.owner),
-      (BuildEdifice.ironHandDecisionId(beast), p3))
+      (BuildEdifice.decisionId(beast), p2))
     val replayed = distantlands.testkit.Unwrap.accepted(parked.events
       .foldLeft[Either[OathViolation, OathState]](Right(twoBuilders.state))(
         (state, event) => state.flatMap(rules.evolve(_, event))))

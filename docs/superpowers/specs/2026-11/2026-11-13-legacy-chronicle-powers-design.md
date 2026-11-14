@@ -157,7 +157,9 @@ rulings then continue.
     Exile holds it active, the Empire's Shape Empire and Build Edifice are
     skipped; the holder performs both over the sites they rule. Great
     Architect's "even if the Iron Hand is in play" reads as this: an
-    Imperial Great Architect still builds.
+    Imperial Great Architect performs Build Edifice instead of the holder,
+    who then does not build (implementation ruling R32, re-ruled by the
+    owner 2026-11-14).
 20. **Iron Hand scores its holder's legacies.** In Score Lineage Points,
     after the winner, the holder scores the legacy bonus at the sites they
     rule, with no base points and no gifts, skipping legacies already

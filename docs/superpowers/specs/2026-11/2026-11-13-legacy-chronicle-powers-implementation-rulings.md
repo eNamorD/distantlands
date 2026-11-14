@@ -321,12 +321,20 @@ archive expects Shape Empire to have cleared them.
 Slice/files: 4; `ShapeEmpire`, `ChronicleLegacyRules.shaper`.
 
 **R32. An Imperial Great Architect beside Iron Hand.**
-Decision: both build from the shared available edifices, Great Architect
-first per suit, then the holder, whose question has its own id,
-`chronicle.build-edifice.<suit>.iron-hand`.
-Reason: Great Architect's "even if the Iron Hand is in play" means both
-act; distinct ids avoid the shared-id bug class.
-Slice/files: 4; `BuildEdifice`, `ChronicleLegacyRules.builders`.
+Re-ruled by the owner 2026-11-14.
+Decision: when an Imperial Great Architect is in play beside Iron Hand,
+the Great Architect performs Build Edifice instead of the Iron Hand
+holder; the holder does not build. Iron Hand still takes over Shape Empire
+(R31), and its holder still builds when there is no Imperial Great
+Architect. `ChronicleLegacyRules.builder` names one builder per suit; the
+second builder slot and its `chronicle.build-edifice.<suit>.iron-hand`
+decision id are removed, since nothing else needed them.
+Reason: the owner's reading of Great Architect's "even if the Iron Hand is
+in play": the Great Architect builds in Iron Hand's place.
+Earlier decision (2026-11-13): both built, the Great Architect first per
+suit, then the holder under its own id.
+Slice/files: 4 (changed in 5); `BuildEdifice`,
+`ChronicleLegacyRules.builder`.
 
 **R33. Iron Hand's scoring records its legacies.**
 Decision: yes, with `LegaciesScored`.
@@ -419,17 +427,15 @@ it live after Royal Line, and a test that a Royal Line change reaches at
 least the Crown, Reformer and Score Lineage Points.
 
 **R43. A suit built twice beside Iron Hand.** (A slice 4 review fault.)
+Superseded by the owner's re-ruling of R32, 2026-11-14.
 Question: Build Edifice's second slot recomputed the available edifices
 when reached, so after an Imperial Great Architect built a suit's edifice
 the Iron Hand holder was offered that suit's next one and could build a
-second edifice of the suit, against R32 and design ruling 10.
-Decision: the second slot skips a suit when the first slot's answer
-(`PowerAnswers.many(pending, decisionId(suit))`) buried a card; otherwise
-it offers what `available` returns.
-Reason: it reads only journaled answers, so it is resume-safe; capturing
-the edifice in an outer Branch before the first slot would reintroduce the
-bug class of a Branch recomputed on resume.
-Slice/files: 4 (fixed in 5); `BuildEdifice`.
+second edifice of the suit.
+Decision: moot. Re-ruled R32 leaves one builder per suit, so there is no
+second slot. The fix (the second slot skipped a suit the first slot built,
+read from the journaled answer) was removed with the slot.
+Slice/files: 4 (fixed in 5, then removed); `BuildEdifice`.
 
 **R44. The landed ROADMAP item.** (Narrows R42.)
 Decision: drop the landed "Legacy powers: Chronicle" item from the ROADMAP
@@ -446,10 +452,12 @@ buried earlier in the same step, now at the deck's bottom, could be offered
 by a later suit and rebuilt intact.
 Decision: the available edifices are those available when the step began
 (`docs/rules/chronicle.md`, Build Edifice). A suit's pool leaves out every
-edifice that an earlier suit's answered build question (`decisionId` or
-`ironHandDecisionId`) buried, read from journaled answers only.
-Reason: it matches the rule and stays resume-safe like R43; the pool is
-not captured in an outer Branch.
+edifice that an earlier suit's answered build question (`decisionId`)
+buried, read from journaled answers only. This stands after R32's
+re-ruling: it fixes a Great Architect bug that happens with no Iron Hand
+in play, rebuilding an edifice buried earlier in the same step.
+Reason: it matches the rule and stays resume-safe; the pool is not
+captured in an outer Branch.
 Slice/files: 2 (fixed in 5); `BuildEdifice`.
 
 **R46. An Iron Hand gained in the Sun before the cap.** (A whole-feature
