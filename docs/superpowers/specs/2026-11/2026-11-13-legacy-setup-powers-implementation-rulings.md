@@ -183,3 +183,64 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   are knowledge, not events worth a line each. *Slice/files:* slice 3
   (recorded after it); `DetailLines`, `SetupLegacyLogSuite`, the
   `later-game-setup-world-deck` golden.
+
+## Slice 4
+
+[Plan](../../plans/2026-11/2026-11-13-legacy-setup-powers-slice4.md).
+
+- **R27. Who placed, inside `SetupPawnPlaced`.** The placer is the latest
+  `setup.pawn-placement.*` answer, and the site is none if the player
+  stayed off. Inside the window the edifice powers come first, then The
+  Standard Bearer, then Wealthy, by registration order, which a test pins.
+  *Reason:* reading the last answer breaks as soon as a legacy asks inside
+  the window. *Slice/files:* slice 4; `SetupPawnPlacement`,
+  `EdificeSetupSupport`.
+- **R28. The Standard Bearer.** `setup.legacy.the-standard-bearer.<player>`:
+  Decline first, then the banners in the shared bank, the People's Favor
+  before the Darkest Secret, asked only when one is there. The banner goes
+  to the holder, then two of its own resource go onto it from the shared
+  bank, which has no count, so it always gives two. Line: "p2 took the
+  People's Favor with The Standard Bearer". *Reason:* spec ruling 16; "as
+  many as the bank holds" is two when the bank is unbounded.
+  *Slice/files:* slice 4; `TheStandardBearer`.
+- **R29. Wealthy.** `setup.legacy.wealthy.<player>`: "Take 1 favor from
+  two players", offered only when two or more other players hold favor,
+  then "Take 3 favor from the shared bank"; with one option nothing is
+  asked. Then `setup.legacy.wealthy.<player>.players`, a choose-many of
+  exactly two, in turn order. No Decline. Lines: "p2 took 1 favor from p1
+  and p3 with Wealthy", "p2 took 3 favor from the shared bank with
+  Wealthy". *Reason:* spec ruling 17. *Slice/files:* slice 4; `Wealthy`.
+- **R30. Quest's pawn step.** The holder's pawn question adds "Don't place
+  your pawn" after the sites; staying off writes "p2 placed no pawn with
+  Quest to Distant Lands". The `SetupPawnPlaced` window still runs, so The
+  Standard Bearer and Wealthy act, but no edifice power fires. The steps
+  that read the pawn's region (Secret Society's excess discard, Choose
+  Adviser, Reveal Cards) are skipped, keyed on the missing pawn. *Reason:*
+  spec ruling 18; keying on the missing pawn matches ruling 20.
+  *Slice/files:* slice 4; `SetupProcedure`, `QuestToDistantLands`.
+- **R31. Quest's swap.** In Setup, after the keep and before the point
+  where Choose Adviser would run, only for a holder with no pawn:
+  `setup.legacy.quest.<player>`, Decline then the Dispossessed in catalog
+  order, seen through a `Peek` of each card, which the holder keeps as The
+  Bright Beacon's holder does; then `setup.legacy.quest.<player>.give`, no
+  Decline, over their facedown advisers that are not Visions, or their
+  hand when they have none. The cards trade places. Line: "p2 swapped a
+  card with the Dispossessed with Quest to Distant Lands". *Reason:* the
+  holder looks through the Dispossessed at the table; a Secret Society
+  Vision cannot be given, since spec ruling 19 offers starting advisers
+  only and the Vision is not one (spec ruling 14). *Slice/files:* slice 4;
+  `QuestToDistantLands`.
+- **R32. The first Wake.** A new `TriggeredProcedureRef.QuestFirstWake`,
+  journal key `"quest-first-wake"`, started at the start of a pawnless
+  player's Wake before the Wake checks and Forced Wake: the placement
+  (`wake.legacy.quest.<player>`, any site in play, no Decline), "p2 placed
+  their pawn at Deep Woods", then Choose Adviser, Secret Society's excess
+  discard and Reveal Cards. A test pins that older streams still decode.
+  *Reason:* spec ruling 20 says "before anything else"; folded into Forced
+  Wake it would run too late. *Slice/files:* slice 4;
+  `QuestFirstWakeProcedure`, `OathDriver`, `ProcedureRef`.
+- **R33. The pawn-site audit.** A pawnless player stands at no site for
+  every other player's rule, and no read fails with `PawnSiteMissing`. A
+  reader that must decide something else about a pawnless player is
+  reported, not guessed. *Reason:* spec ruling 20. *Slice/files:* slice 4;
+  the readers the audit finds.

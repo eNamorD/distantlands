@@ -263,7 +263,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 
 ## Legacy Setup powers rulings
 
-Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 19 are implementation rulings R1 to R10; items 20 to 23 are the design's rulings 10 to 13; items 24 to 29 are implementation rulings R11 to R16; item 30 is implementation ruling R17; items 31 and 32 are the design's rulings 14 and 15; items 33 to 40 are implementation rulings R18 to R25; item 41 is implementation ruling R26.
+Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 19 are implementation rulings R1 to R10; items 20 to 23 are the design's rulings 10 to 13; items 24 to 29 are implementation rulings R11 to R16; item 30 is implementation ruling R17; items 31 and 32 are the design's rulings 14 and 15; items 33 to 40 are implementation rulings R18 to R25; item 41 is implementation ruling R26; items 42 to 46 are the design's rulings 16 to 20; items 47 to 53 are implementation rulings R27 to R33.
 
 1. **Only seated players' active legacies act.** A legacy's SETUP power applies when a seated player holds it active at the moment its step is reached. A boxed lineage's legacies never act, and neither does the Public Ambitions row, which nobody holds (design, ruling 1).
 2. **"If you are an Imperial" or "an Exile" is read at the same moment.** Game start's Empire setup has already chosen the Chancellor, so every role is settled (design, ruling 2).
@@ -306,6 +306,18 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 39. **Secret Society comes before Seer in one window,** `SetupWorldDeck` (R24).
 40. **The ChooseAmounts control** has steppers and a number field on each row, and refuses two equal amounts (R25).
 41. **Seer's peeks write no Game Log line;** Seer writes its one line, and the holder still knows the Visions (R26; [Legacy Chronicle powers rulings](#legacy-chronicle-powers-rulings), item 62).
+42. **The Standard Bearer.** In the holder's own pawn window, after the pawn's line, the holder may take a banner from the shared bank, the People's Favor or the Darkest Secret, and put two more of its own resource on it from the shared bank. No question when neither banner is there (design, ruling 16).
+43. **Wealthy.** In the same window, with no "may": the holder takes 1 favor from each of two other players, or 3 favor from the shared bank. "Two players" is offered only when two other players hold favor, and with one option nothing is asked (design, ruling 17).
+44. **Quest to Distant Lands, no pawn.** The holder's pawn question offers "Don't place your pawn". With no pawn the edifice powers of the pawn window do not act for them; The Standard Bearer and Wealthy still do. Their Choose Adviser, Secret Society discard and Reveal Cards wait for their first Wake (design, ruling 18).
+45. **Quest to Distant Lands, swap.** A holder with no pawn may swap one card from the Dispossessed, which only they see, for one of their starting advisers or, with none, a card of the hand they drew. A swap is not a gain, so Oaths of Loyalty does not bury a card swapped in as a facedown adviser (design, ruling 19).
+46. **Quest to Distant Lands, first Wake.** At the start of the Wake of a seated player with no pawn, before anything else, they must place it at any site in play; then the steps Setup deferred run. No pawn-window power fires. Until then the player stands at no site (design, ruling 20).
+47. **The pawn window reads who placed from the latest pawn answer,** so a question asked in it keeps its shape; the edifice powers come first, then The Standard Bearer, then Wealthy (R27).
+48. **The Standard Bearer's bank always gives two,** having no count (R28).
+49. **Wealthy's questions** are a choice between two players and the bank, then a choose-many of exactly two players (R29).
+50. **Staying off writes "p2 placed no pawn with Quest to Distant Lands",** and the steps that read the pawn's region are skipped for any player with no pawn (R30).
+51. **Quest's swap** peeks the Dispossessed for the holder, offers no Secret Society Vision, and comes before Choose Adviser would run (R31).
+52. **The first Wake is a procedure of its own,** run before the Wake checks and Forced Wake (R32).
+53. **A pawnless player stands at no site** for every other rule (R33).
 
 ## Source relationship cautions
 

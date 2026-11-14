@@ -30,7 +30,7 @@ suites with `./sbtw "frontend/test"`. Compiler flags
 **Spec:** [Legacy Setup powers design](../../specs/2026-11/2026-11-13-legacy-setup-powers-design.md),
 rulings 1-4 and 16-20 and section "Slice 4: player choices".
 [Implementation rulings](../../specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)
-(R1-R26 stand; this plan proposes R27-R33). Card text in
+(R1-R26 stand; this plan's are R27-R33). Card text in
 `src/main/scala/distantlands/catalog/holding/HoldingLegacies.scala` (The
 Standard Bearer L18, Quest to Distant Lands L30, Wealthy L31). CR p. 13
 (Setup's player choices) and the Wake rules
@@ -49,81 +49,18 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions (proposed rulings R27-R33)
+## Rulings
 
-The plan is written to the recommendation of each. Production code waits
-for the orchestrator's rulings.
-
-- **R27 (Task 1). Who placed, inside `SetupPawnPlaced`.**
-  `EdificeSetupSupport.pawnPlacement` reads the last answer, which a
-  decision asked inside the window (The Standard Bearer, Wealthy) would
-  change on resume, so the edifice powers' operations would vanish from
-  the refolded window and the walk would lose its place. *Recommended:*
-  the placer is the latest answer to a pawn-placement decision
-  (`setup.pawn-placement.*`), read by a shared `SetupPawnPlacement`; the
-  site is that answer's site, or none when the player stayed off (R30).
-  Within the window the edifice powers come first and the legacies after,
-  The Standard Bearer before Wealthy, by registration order, which a test
-  pins (the ROADMAP's "Simultaneous setup effects" stays open).
-- **R28 (Task 2). The Standard Bearer's question.**
-  `setup.legacy.the-standard-bearer.<player>`: a choose-one, Decline first,
-  then each banner in the shared bank (the People's Favor, the Darkest
-  Secret) in that order, headed "The Standard Bearer: you may take a
-  banner from the shared bank"; asked only when a banner is there. The
-  banner moves to the holder, then two of its own resource move from the
-  shared bank onto it (the shared bank has no count, so it always gives
-  two). Line: "p2 took the People's Favor with The Standard Bearer".
-- **R29 (Task 3). Wealthy's questions.** `setup.legacy.wealthy.<player>`:
-  a choose-one, "Take 1 favor from two players" first when at least two
-  other players hold favor, then "Take 3 favor from the shared bank";
-  with one option no question. Then `setup.legacy.wealthy.<player>.players`,
-  a `ChooseMany(2, 2)` over the other players who hold favor, in turn
-  order. No Decline: the card has no "may". Lines: "p2 took 1 favor from
-  p1 and p3 with Wealthy", "p2 took 3 favor from the shared bank with
-  Wealthy".
-- **R30 (Task 4). Quest in Setup's pawn step.** The holder's pawn decision
-  adds a button, "Don't place your pawn", after the sites. Staying off
-  writes "p2 placed no pawn with Quest to Distant Lands". The
-  `SetupPawnPlaced` window still runs, so The Standard Bearer and Wealthy
-  act, but no edifice power fires (no site). Every step that reads the
-  pawn's region is skipped for a player with no pawn, keyed on the missing
-  pawn, not on the legacy: Secret Society's excess discard, Choose Adviser
-  and Reveal Cards.
-- **R31 (Task 4). Quest's swap.** After the holder's keep, only when they
-  placed no pawn. `setup.legacy.quest.<player>`: a choose-one, Decline
-  first, then every Dispossessed card in catalog order, headed "Quest to
-  Distant Lands: you may swap a card with the Dispossessed". The holder
-  sees the Dispossessed by a `Peek` of each card, recorded as the question
-  is reached, as The Bright Beacon does (Legacy Chronicle powers R22); Setup
-  peeks write no line (R26). Then `setup.legacy.quest.<player>.give`: a
-  choose-one, no Decline, over their facedown advisers that are not Visions
-  (a Secret Society Vision is neither a starting adviser nor a Foundation
-  IV draw), or, with none, their hand. The cards trade places: a facedown
-  adviser's replacement joins the advisers facedown, a hand card's
-  replacement joins the hand, and the given card goes to the Dispossessed.
-  Line: "p2 swapped a card with the Dispossessed with Quest to Distant
-  Lands".
-- **R32 (Task 5). The first Wake.** A new triggered procedure,
-  `TriggeredProcedureRef.QuestFirstWake` (journal key
-  `"quest-first-wake"`), which the driver starts at the start of a Wake
-  whose player has no pawn, before the Wake checks and Forced Wake. Its
-  tree: `wake.legacy.quest.<player>`, a choose-one of every site in play,
-  no Decline; the pawn's placement; "p2 placed their pawn at Deep Woods";
-  then Choose Adviser (`wake.legacy.quest.<player>.adviser`, with Oaths'
-  burial), Secret Society's excess discard
-  (`wake.legacy.quest.<player>.discard`) and Reveal Cards
-  (`wake.legacy.quest.<player>.reveal`), built by the same step builders
-  as Setup's. No `SetupPawnPlaced` power fires. *Alternative:* fold the
-  placement into Forced Wake, which runs after the Wake checks and reuses
-  its key.
-- **R33 (Task 6). The pawn-site audit.** A player with no pawn stands at
-  no site: every rule that reads another player's pawn site treats them as
-  absent from every site, and no such read fails with `PawnSiteMissing`.
-  The holder's own actions cannot run before their placement, which opens
-  their Wake, so the audit covers other players' turns, round and turn
-  boundaries, and Setup's remaining steps. A reader the audit finds that
-  must decide something about the pawnless player is reported, not
-  guessed.
+This plan's choices are implementation rulings R27-R33
+([rulings](../../specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)),
+accepted as proposed with these notes: The Standard Bearer's bank always
+gives two (R28); the swap's peeks are lasting knowledge, a Secret Society
+Vision cannot be given, and the swap keeps its place in Setup, before
+where Choose Adviser would run (R31); a test pins that older streams still
+decode the new procedure key (R32); a reader the audit finds that must
+decide something else about a pawnless player is reported (R33). Test
+bodies are written from the fixture facts checked first, each failing
+first; a test that changes from the plan's intent is a deviation.
 
 ## Global Constraints
 
