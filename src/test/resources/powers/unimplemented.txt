@@ -13,7 +13,6 @@ legacy.beloved
 legacy.circle-of-swords
 legacy.conspirator
 legacy.golden-key
-legacy.great-architect
 legacy.heirloom
 legacy.high-priest
 legacy.iron-hand

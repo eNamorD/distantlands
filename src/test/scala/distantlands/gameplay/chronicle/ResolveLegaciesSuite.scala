@@ -1,10 +1,10 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.holding.{AncestralLandsCard, ArbiterCard,
-  CircleOfSwordsCard, GoldenKeyCard, GreatArchitectCard, IronHandCard,
-  KeeperOfOrderCard, MatchmakerCard, PeacemakerCard, SeerCard, WealthyCard}
-import distantlands.gameplay.chronicle.legacies.{ChroniclerCard, RivalCard,
-  SteadfastCard}
+  CircleOfSwordsCard, GoldenKeyCard, IronHandCard, KeeperOfOrderCard,
+  MatchmakerCard, PeacemakerCard, SeerCard, WealthyCard}
+import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
+  GreatArchitectCard, RivalCard, SteadfastCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import distantlands.gameplay.OathRules

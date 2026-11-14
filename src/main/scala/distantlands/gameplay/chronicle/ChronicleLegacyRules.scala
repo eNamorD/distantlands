@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.gameplay.chronicle.legacies.{RivalCard, SteadfastCard}
+import distantlands.gameplay.chronicle.legacies.{GreatArchitectCard, RivalCard,
+  SteadfastCard}
 import distantlands.model._
 
 /** The seam the legacies' Chronicle powers share (Legacy Chronicle powers
@@ -30,3 +31,17 @@ object ChronicleLegacyRules:
   /** Who keeps cards from Shape Empire's discard: Rival's holder (ruling 9). */
   def protector(state: ReadyGame): Option[PlayerId] =
     holder(state, RivalCard.id)
+
+  /** The Imperial roles, for a power that says "if you are an Imperial". */
+  val imperialRoles: Set[Role] = Role.values.filter(_.isImperial).toSet
+
+  /** Who performs Build Edifice: an Imperial holding Great Architect, else
+    * the Throne holder (ruling 10). */
+  def builder(state: ReadyGame): Either[OathViolation, PlayerId] =
+    holder(state, GreatArchitectCard.id, imperialRoles)
+      .fold(ChronicleTasks.holder(state, ChronicleTask.Throne))(Right(_))
+
+  /** Whether the builder may bury any card for any available edifice
+    * (ruling 10). */
+  def anyEdifice(state: ReadyGame): Boolean =
+    holder(state, GreatArchitectCard.id, imperialRoles).nonEmpty

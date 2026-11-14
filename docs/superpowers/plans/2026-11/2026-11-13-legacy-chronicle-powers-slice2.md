@@ -480,6 +480,15 @@ class GreatArchitectSuite extends munit.FunSuite:
     assert(builds(run).forall(_.query.asInstanceOf[DecisionQuery.ChooseMany]
       .options.map(_.ref) == Vector(DecisionOptionRef.Denizen(roar))))
 
+  test("an off-suit burial returns the buried card's favor to its own " +
+      "suit's bank (R14)"):
+    val table = empire.tokens(ThreateningRoarCard, favor = 2)
+      .bankFavor(roarSuit, 0).bankFavor(other, 0)
+      .legacy(p2, GreatArchitectCard)
+    val run = throne(table, building(other))
+    assertEquals((run.ready.banks.favor(roarSuit),
+      run.ready.banks.favor(other)), (2, 0))
+
   test("held by the Chancellor, only the matching rule changes"):
     val run = throne(empire.legacy(p1, GreatArchitectCard), building(other))
     assert(builds(run).forall(_.owner == p1))
@@ -493,13 +502,19 @@ class GreatArchitectSuite extends munit.FunSuite:
       Vector(BuildEdifice.decisionId(roarSuit)))
 
   test("a walk resumed at a later suit's question after an off-suit build " +
-      "finds the denizen gone"):
-    // The first suit's build buries the only card; no later suit asks.
+      "finds the denizen gone and the new edifice offered"):
+    // The first suit's build buries the only denizen; each later suit,
+    // asked of a walk rebuilt from the journal, offers the edifice just
+    // built in its place, as an edifice may be buried.
     val first = BuildEdifice.available(catalog, empire.ready.game.current)
       .head._1
     val run = throne(empire.legacy(p2, GreatArchitectCard), building(first))
-    assertEquals(builds(run).map(_.decisionId),
-      Vector(BuildEdifice.decisionId(first)))
+    val built = edificesAt(run.ready)
+    assertEquals(built.size, 1)
+    val later = builds(run).drop(1)
+    assert(later.nonEmpty)
+    assert(later.forall(_.query.asInstanceOf[DecisionQuery.ChooseMany]
+      .options.map(_.ref) == Vector(DecisionOptionRef.Edifice(built.head))))
 ```
 
 - [ ] **Step 2: Run the tests to verify they fail**

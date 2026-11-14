@@ -47,15 +47,6 @@ object CircleOfSwordsCard extends Legacy(LegacyId("L06"), "Circle of Swords",
       "fewer than three, you gain less.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object GreatArchitectCard extends Legacy(LegacyId("L07"), "Great Architect",
-    LegacyGoal.GrandScepter, Suit.Hearth):
-  val power = PrintedPower(PowerId("legacy.great-architect"),
-    persistent = false, cost = Cost.free,
-    text = "**IF YOU ARE AN IMPERIAL:** **CHRONICLE (THRONE):** You " +
-      "perform Build Edifice and may build any edifice _(not just " +
-      "a matching one)_. Do this even if the Iron Hand is in play.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object AncestralLandsCard extends Legacy(LegacyId("L08"), "Ancestral Lands",
     LegacyGoal.GrandScepter, Suit.Nomad):
   val power = PrintedPower(PowerId("legacy.ancestral-lands"),
