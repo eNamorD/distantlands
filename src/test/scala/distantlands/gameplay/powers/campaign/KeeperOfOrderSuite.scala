@@ -115,6 +115,25 @@ class KeeperOfOrderSuite extends munit.FunSuite:
       .pick(p3, KeeperOfOrder.decisionId, remove).finishPlanWindows
     assert(done.ops.contains(ModifyDicePool(CampaignIds.attackPool, -2)))
 
+  test("lent to the attacker through Imperial Tactics, the borrowing " +
+      "attacker's skulls are ignored"):
+    val attacking = AidWindow(p1, CampaignPlanSide.Attacker, p1)
+    val done = raided(raidOnP3(p1, p3)(_.legacy(p2, KeeperOfOrderCard)
+      .aid(p2, attacking, AidOffer(plans = Vector(keeper)))), skulls)
+      .pick(p1, CampaignIds.attackerPlan, keeper)
+      .pick(p1, KeeperOfOrder.decisionId, add).finishPlanWindows
+    assert(done.ops.contains(ModifyDicePool(CampaignIds.attackPool, 2)))
+    assertEquals(done.result.skullLosses, 0)
+
+  test("an Imperial defender against an Exile attacker is not offered it"):
+    // p1, an Exile, raids p3, a Citizen holding Keeper of Order and the
+    // Oathkeeper title, whose defense opens p3's plan window.
+    val run = raided(raidOnP3(p3)(_.legacy(p3, KeeperOfOrderCard)
+      .oathkeeper(Some(p3)))).finishAttackerPlans(p1)
+    assert(awaits(run, p3, CampaignIds.defenderPlan))
+    assert(run.offered(p1).nonEmpty)
+    assert(!run.offered(p1).contains(keeper))
+
   test("a walk resumed at its question applies the chosen sign"):
     val b = infighting
     val asked = raided(b).pick(p1, CampaignIds.attackerPlan, keeper)
