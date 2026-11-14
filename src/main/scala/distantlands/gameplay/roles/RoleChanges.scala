@@ -1,6 +1,7 @@
 package distantlands.gameplay.roles
 
 import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.chronicle.legacies.IronHand
 import distantlands.gameplay.operations.GrandScepterSource
 import distantlands.gameplay.powers.PlayerFacts
 import distantlands.model._
@@ -83,7 +84,8 @@ object RoleChanges:
       ready.game.current.tracks.usurperLimited)(UsurperLimiterRemoved)
     bank.toVector ++ title(ready, player, role) ++ vision(ready, state) ++
       sites ++ board.toVector ++
-      Vector(RoleChanged(state.lineage, role)) ++ gained.toVector ++
+      Vector(RoleChanged(state.lineage, role)) ++
+      IronHand.inGameDiscard(ready, state.lineage) ++ gained.toVector ++
       scepter ++ limiter.toVector ++ finish(ready, state)
 
   def exile(ready: ReadyGame, player: PlayerId)

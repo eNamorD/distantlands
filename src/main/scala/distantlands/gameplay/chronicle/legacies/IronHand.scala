@@ -30,14 +30,43 @@ object IronHandCard extends Legacy(LegacyId("L01"), "Iron Hand",
   * "If you were in the previous game", acts only when the holder's
   * lineage records a previous player (Legacy Setup powers ruling 7, as
   * R39 amends it): read at game start (`StartingLegacies`) and in Setup
-  * (`SetupLegacyRules.ironHand`, `SetupPawnSites`). Its discard during a
-  * game waits for its batch
-  * (R7). This power hooks
-  * no window; the steps read it. Line: "p2 discarded Iron Hand" (R34). */
+  * (`SetupLegacyRules.ironHand`, `SetupPawnSites`). During a game, a
+  * holder who becomes Imperial discards it in the change's own batch,
+  * right after `RoleChanged` (`RoleChanges.becomeImperial`; Legacy in-play
+  * powers ruling 22), with "p2 discarded Iron Hand on becoming a Citizen",
+  * or "... the Chancellor" (R12). This power hooks no window; the steps
+  * read it. Line: "p2 discarded Iron Hand" (R34). */
 case object IronHand extends ContributingPower:
   val id: PowerId = IronHandCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
+
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "p2 discarded Iron Hand on becoming a Citizen" (R12). */
+  private val onCitizen: NoteKey = notes.key("discarded-on-citizen", Vector(
+    NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1),
+    NotePart.Text(" on becoming a Citizen")))
+  /** "p2 discarded Iron Hand on becoming the Chancellor", with no Empire
+    * (R12). */
+  private val onChancellor: NoteKey = notes.key("discarded-on-chancellor",
+    Vector(NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1),
+      NotePart.Text(" on becoming the Chancellor")))
+
+  /** The in-game discard's line for the `role` the holder reached. */
+  def discardedOnBecoming(role: Role): NoteKey =
+    if role == Role.Chancellor then onChancellor else onCitizen
+
+  /** The discard when `lineage`'s player becomes Imperial during a game
+    * (ruling 22): Iron Hand returns to the legacy deck when the lineage
+    * holds it active, else nothing (ruling 1). */
+  def inGameDiscard(ready: ReadyGame, lineage: LineageId)
+      : Vector[CoreOperation] =
+    Option.when(ready.game.campaign.lineages.get(lineage).exists(
+      _.legacies.contains(LegacyState(IronHandCard.id, active = true))))(
+      Move(Piece.Card(IronHandCard.id),
+        PositionedLocation(Location.Legacies(lineage)),
+        PositionedLocation(Location.Deck(CardDeck.Legacy)))).toVector
 
   private val sunNotes = NoteSet(ProcedureNotes.id(
     TriggeredProcedureRef.ChronicleSun))

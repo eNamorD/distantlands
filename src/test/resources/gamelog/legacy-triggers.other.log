@@ -2,12 +2,12 @@
 0.1 turn 0 | [player:p3|p3]'s turn
 0.2 phase 0 | Act
 5.0 phase 0 | Rest
-7.0 action 1 use-power:relic.the-grand-scepter.action@4 | [card:grand-scepter|The Grand Scepter]: Became a Citizen.
-16.0 decision 1 | [player:p2|p2] modified the end die by +2 with [card:L23|Arbiter]
-18.0 roll 1 | The end die rolled 4, modified by +2 to 6. Stable Regime needed 6.
-18.1 victory 0 | [player:p1|p1] won by Stable Regime
-22.0 phase 0 | Chronicle
-25.0 delta 1 | [player:p3|p3] discarded [card:L01|Iron Hand]
+6.0 trigger 1 use-power:relic.the-grand-scepter.action@4 | [player:p3|p3] discarded [card:L01|Iron Hand] on becoming a Citizen
+9.0 action 1 use-power:relic.the-grand-scepter.action@4 | [card:grand-scepter|The Grand Scepter]: Became a Citizen.
+18.0 decision 1 | [player:p2|p2] modified the end die by +2 with [card:L23|Arbiter]
+20.0 roll 1 | The end die rolled 4, modified by +2 to 6. Stable Regime needed 6.
+20.1 victory 0 | [player:p1|p1] won by Stable Regime
+24.0 phase 0 | Chronicle
 27.0 delta 1 | [player:p1|p1] became Chancellor
 29.0 decision 1 | [player:p1|p1] took the Throne task
 31.0 decision 1 | [player:p1|p1] took the World task

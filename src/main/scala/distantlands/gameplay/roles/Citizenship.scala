@@ -1,5 +1,6 @@
 package distantlands.gameplay.roles
 
+import distantlands.gameplay.chronicle.legacies.{IronHand, IronHandCard}
 import distantlands.gameplay.phases.rest.RestEntry
 import distantlands.gameplay.powerresolver.Deferred
 import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
@@ -42,8 +43,37 @@ object Citizenship:
     BuildOps((live, pending) => for
       kept <- answered(live, actor, pending)
       ops <- RoleChanges.becomeImperial(live, actor, kept)
-    yield endingRecorded(live, actor, ops), required = true),
+    yield ironHandRecorded(actor, endingRecorded(live, actor, ops)),
+      required = true),
+    Note(IronHand.id, ironHandLine(actor)),
+    BuildOps((live, _) => Right(
+      Option.when(Deferred.held(live, ironHandKey(actor)).nonEmpty)(
+        TakeDeferred(ironHandKey(actor)): CoreOperation).toVector)),
     restStart(actor)))
+
+  /** Where the change records Iron Hand's discard for its line, per actor.
+    * The record, not the step before, carries it: the change may park on a
+    * follow-up before the line is written. */
+  private def ironHandKey(actor: PlayerId): DeferralKey =
+    DeferralKey(s"role.iron-hand.${actor.value}")
+
+  /** The change's `ops`, led by the record of Iron Hand's discard when
+    * they hold one (Legacy in-play powers ruling 22). */
+  private def ironHandRecorded(actor: PlayerId, ops: Vector[CoreOperation])
+      : Vector[CoreOperation] =
+    ops.collect { case discard @ Move(Piece.Card(IronHandCard.id), _, _, _,
+        _) => discard } match
+      case Vector() => ops
+      case discards => Defer(ironHandKey(actor), discards) +: ops
+
+  /** "p2 discarded Iron Hand on becoming a Citizen", or "... the
+    * Chancellor", when the change recorded the discard (R12). */
+  private def ironHandLine(actor: PlayerId)(states: NoteStates)
+      : Option[LogNote] = for
+    _ <- Deferred.held(states.now, ironHandKey(actor)).headOption
+    role <- Imperials.role(states.now, actor)
+  yield IronHand.discardedOnBecoming(role).sourceless(NoteArg.Player(actor),
+    NoteArg.Card(IronHandCard.id))
 
   /** `actor`, a Citizen, becomes an Exile. Nothing happens while Council
     * Seat guards them (catalog batch 10, slice 1). */
