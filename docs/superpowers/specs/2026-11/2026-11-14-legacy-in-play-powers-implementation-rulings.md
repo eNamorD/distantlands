@@ -39,3 +39,9 @@ Ruled by the owner on 2026-11-14.
   ruling 9 is about display, not an override of Foundations ruling 3, and
   with no Empire no holder is Imperial anyway. *Slice/files:* slice 1,
   Tasks 5 and 6; `GoldenKey`, `GamePresentationProjector.reliquary`.
+
+## Slice 2
+
+[Plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice2.md).
+
+None recorded yet. The plan's open questions wait for the owner's rulings.
