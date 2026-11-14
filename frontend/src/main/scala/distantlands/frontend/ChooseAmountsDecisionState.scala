@@ -17,7 +17,8 @@ private[frontend] final case class ChooseAmountsDecisionState(
   def drain(item: String): ChooseAmountsDecisionState = step(item, Int.MinValue)
   /** A typed amount, clamped to the slot's bounds. */
   def set(item: String, value: Int): ChooseAmountsDecisionState =
-    step(item, value - amount(item))
+    slots.find(_.item == item).fold(this)(bounds => copy(amounts =
+      amounts.updated(item, value.max(bounds.minimum).min(bounds.maximum))))
 
   /** The amounts two or more slots share, ascending. */
   def clashes: Vector[Int] =

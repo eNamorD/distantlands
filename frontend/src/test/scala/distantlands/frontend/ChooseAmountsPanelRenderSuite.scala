@@ -128,3 +128,10 @@ class ChooseAmountsPanelRenderSuite extends munit.FunSuite:
     val (field, ui) = typedAndRedrawn("vision:vision:b", "abc")
     assertEquals(field.value, "3")
     assertEquals(ui.staged, Vector.empty)
+
+  test("set clamps to the slot's bounds, even from the extreme integers"):
+    val state = ChooseAmountsDecisionState.opened(Vector(
+      DistributeSlotBounds("b", 1, 4)), distinct = true, None)
+    assertEquals(state.set("b", Int.MinValue).amount("b"), 1)
+    assertEquals(state.set("b", Int.MaxValue).amount("b"), 4)
+    assertEquals(state.set("b", 3).amount("b"), 3)
