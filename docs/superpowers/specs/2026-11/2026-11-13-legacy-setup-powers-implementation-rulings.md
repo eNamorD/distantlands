@@ -261,3 +261,9 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   rebuild the Oaths holder peeks their buried cards again (its R50).
   *Reason:* those rulings. *Slice/files:* slice 3; `WalkerShuffles`,
   `OathsOfLoyalty`, `Seer`, `SecretSociety`.
+- **R37. Quest's swap needs a card to give.** The swap, and its Peek of
+  each Dispossessed card, comes only when the Dispossessed holds a denizen
+  and the holder has a card to give; otherwise nothing is asked or shown.
+  *Reason:* a swap needs a card on both sides, and the Peeks would reveal
+  the Dispossessed for nothing. *Slice/files:* slice 4;
+  `QuestToDistantLands`.

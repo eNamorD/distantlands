@@ -323,6 +323,7 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 54. **Wealthy with exactly two givers:** when exactly two other players hold favor, both give and no choose-many is asked (R34, amending R29).
 55. **The first Wake's placement confirms as "Place your pawn at" and the site,** not Setup's "Start at" (R35).
 56. **The world deck's legacy powers beside Oaths' Teeming World burials:** Secret Society's rebuild keeps the burials below the Visions, and the Oaths holder still knows them after either reorder ([Legacy Chronicle powers rulings](#legacy-chronicle-powers-rulings), items 63 and 64; R36).
+57. **Quest's swap needs a card to give:** with no starting adviser and no hand card to give, no swap is asked and the Dispossessed are not shown (R37).
 
 ## Source relationship cautions
 
