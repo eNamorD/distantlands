@@ -364,3 +364,20 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
     overlay.hide()
     assertEquals(dom.document.activeElement, opener)
     opener.remove()
+
+  /** A printed card that is shown as words on the table has its box in the
+    * overlay, at its real ratio, where its image will go. */
+  test("a text overlay with a plate leads with the card's box"):
+    val mount = mountedOverlay()
+    mount.overlay.showText("The Sun", Vector("Deal the sites."),
+      focusableOpener(), plate = Some("foundation"))
+    val body = Dom.one(mount.root, ".card-overlay-body")
+    val plate = Dom.one(body, ".card-plate")
+    assert(plate.classList.contains("card-plate-foundation"))
+    assertEquals(Dom.one(plate, ".card-name.printed").textContent, "The Sun")
+    assertEquals(body.firstElementChild, plate)
+
+  test("a text overlay without a plate draws no box"):
+    val mount = mountedOverlay()
+    mount.overlay.showText("Supply", Vector("A line."), focusableOpener())
+    assertEquals(Dom.all(mount.root, ".card-plate"), Vector.empty)

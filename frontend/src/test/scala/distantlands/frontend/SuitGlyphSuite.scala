@@ -20,8 +20,8 @@ class SuitGlyphSuite extends munit.FunSuite:
     val banks = Dom.all(panel, ".favor-bank")
     assertEquals(banks.map(_.textContent), Vector("Arcane: 3", "Nomad: 0"))
     assertEquals(banks.flatMap(glyphs),
-      Vector("token-glyph token-suit-arcane", "token-glyph token-favor",
-        "token-glyph token-suit-nomad", "token-glyph token-favor"))
+      Vector("token-glyph token-suit-arcane printed", "token-glyph token-favor",
+        "token-glyph token-suit-nomad printed", "token-glyph token-favor"))
 
   test("a bank offered as a choice carries its symbol too"):
     val query = DecisionQueryState.ChooseOne(

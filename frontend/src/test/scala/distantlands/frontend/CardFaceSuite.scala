@@ -23,7 +23,8 @@ class CardFaceSuite extends munit.FunSuite:
 
   test("each card type gets its box, whichever way it faces"):
     Vector("denizen" -> "card-face-denizen", "vision" -> "card-face-denizen",
-      "edifice" -> "card-face-denizen", "relic" -> "card-face-relic").foreach {
+      "edifice" -> "card-face-denizen", "relic" -> "card-face-relic",
+      "legacy" -> "card-face-legacy").foreach {
       case (kind, box) =>
         val up = CardFace.render(CardDetails("c", kind, "Name",
           orientation = Some("face-up")))
@@ -32,6 +33,62 @@ class CardFaceSuite extends munit.FunSuite:
         assert(up.classList.contains(box), kind)
         assert(down.classList.contains(box), kind)
     }
+
+  /** A Vision is a denizen card on its side: it keeps the denizen box in a
+    * row, and carries a mark so the overlay can show it upright. */
+  test("a Vision keeps the denizen box and is marked as a Vision"):
+    val vision = CardFace.render(CardDetails("v", "vision", "Vision of Faith",
+      orientation = Some("face-up")))
+    assert(vision.classList.contains("card-face-vision"))
+    assert(!vision.classList.contains("card-face-legacy"))
+    val denizen = CardFace.render(CardDetails("d", "denizen", "Name",
+      orientation = Some("face-up")))
+    assert(!denizen.classList.contains("card-face-vision"))
+
+  /** What a card prints is marked, so licensed art can replace exactly
+    * that; what lies on the card in play is not (real proportions design). */
+  test("printed parts carry the printed mark and live state does not"):
+    val card = CardDetails("c", "denizen", "Sly Fox", suit = Some("beast"),
+      orientation = Some("face-up"), favor = 2, implemented = false)
+    val node = CardFace.render(card)
+    assertEquals(all(node, ".printed").map(_.getAttribute("class")
+      .split(" ").head), Vector("card-header"))
+    assertEquals(all(node, ".card-tokens.printed, " +
+      ".card-unimplemented-badge.printed"), Vector.empty)
+    val back = CardFace.render(CardDetails("hidden", "denizen",
+      "Facedown denizen", orientation = Some("face-down"), hidden = true))
+    assertEquals(all(back, ".card-back-letter.printed").size, 1)
+
+  /** Every part of a face, each on the side of the line it belongs to: what
+    * the card prints, which art replaces, or what lies on it in play. */
+  test("each printed part is marked and each part of play is not"):
+    import distantlands.protocol.projection.{LegacyGoalProjection,
+      ModifierMarkProjection}
+    val red = TrackedPawnProjection("red", distantlands.model.PlayerColor.Red,
+      "Tracking Red")
+    val inPlay = CardFace.render(faceUp.copy(favor = 1, secrets = 1,
+      tracking = Some(red), powers = Vector(PowerFace("Spend no Supply.",
+        modifier = Some(ModifierMarkProjection.Action(Vector("travel")))))))
+    val legacy = CardFace.render(CardDetails("l", "legacy", "Ancient Bloodline",
+      orientation = Some("face-up"),
+      legacyGoal = Some(LegacyGoalProjection("most-sites", "Rule sites."))))
+    val dormant = CardFace.render(CardDetails("l", "legacy", "Ancient Bloodline",
+      orientation = Some("face-down"),
+      legacyGoal = Some(LegacyGoalProjection("most-sites", "Rule sites."))))
+    val knowable = CardFace.render(CardDetails("r", "relic", "Crown",
+      orientation = Some("face-down")))
+    def marked(node: dom.Element, selector: String): Boolean =
+      all(node, selector).nonEmpty &&
+        all(node, selector).forall(_.classList.contains("printed"))
+    def unmarked(node: dom.Element, selector: String): Boolean =
+      all(node, selector).nonEmpty &&
+        !all(node, selector).exists(_.classList.contains("printed"))
+    assert(marked(inPlay, ".card-power-marks"))
+    assert(marked(legacy, ".legacy-goal"))
+    Vector(".card-tokens", ".card-token-count", ".card-tracking")
+      .foreach(selector => assert(unmarked(inPlay, selector), selector))
+    assert(unmarked(dormant, ".legacy-dormant"))
+    assert(unmarked(knowable, ".card-knowable-pip"))
 
   test("a face-up card shows its summary with no field names"):
     // favor and secrets restate faceUp's values so the counts read locally.

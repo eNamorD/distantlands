@@ -140,6 +140,7 @@ private[frontend] final class GameTableShell(mount: dom.Element,
     // The stylesheet reads the scale to hold the glance layer (names, pawns,
     // tokens) near one screen size while the board shrinks under it.
     mapContent.style.setProperty("--map-scale", scale.toString)
+    mapContent.classList.toggle("map-tiny", GameTableShell.tinyAtScale(scale))
     // A class and a property, no re-render: the face keeps every element and
     // CSS decides what is visible, so a degraded face-up card can never
     // adopt the face-down letter treatment.
@@ -199,8 +200,8 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   private val inspector = new CardInspectionOverlay(mount)
   CardInspection.onOpen:
     case CardInspection.Request.Card(card, origin) => inspector.show(card, origin)
-    case CardInspection.Request.Text(title, lines, origin) =>
-      inspector.showText(title, lines, origin)
+    case CardInspection.Request.Text(title, lines, origin, plate) =>
+      inspector.showText(title, lines, origin, plate)
     case CardInspection.Request.Festival(title, lines, at, origin) =>
       inspector.showFestival(title, lines, at, origin)
     case CardInspection.Request.Supply(panel, origin) =>
@@ -273,12 +274,17 @@ private[frontend] object GameTableShell:
   private val CompactBelow = NameFloorPx / 15.2
   def compactAtScale(scale: Double): Boolean = scale < CompactBelow
 
-  /** A map card on a site holding forces is 7.3rem wide, the common case
-    * once bandits are placed, so the room is reckoned for that card; on a
-    * site without forces the wider card only leaves room over. The compact
-    * name spans the face to its 1px border.
+  /** Below this a site's face holds its name, tokens, pawns and forces at
+    * the glance size and nothing more: its powers are read on a zoom. */
+  private val TinyBelow = 0.4
+  def tinyAtScale(scale: Double): Boolean = scale < TinyBelow
+
+  /** A card slot's width on the mat in the map's own pixels, the same for
+    * every card on the board: the mat fixes it. The compact name spans the
+    * face to its 1px border.
     */
-  private val CardWidthPx = 7.3 * 16
+  private val CardWidthPx =
+    MatLayout.DesignWidthPx * MatLayout.CardW / MatLayout.Width
   private val CardBorderScreenPx = 1.0
 
   /** The width one line of floor-sized text has on a map card at this

@@ -25,8 +25,8 @@ private[frontend] object ServerUiSupport:
     // Always appended, empty or not: the name is the middle cell of three,
     // and a missing cell would slide it off centre.
     heading.appendChild(tokens)
-    heading.appendChild(text("span", "site-name", site.label))
-    val defense = element("span", "site-defense")
+    heading.appendChild(text("span", "site-name printed", site.label))
+    val defense = element("span", "site-defense printed")
     defense.setAttribute("aria-label", s"Defense ${presentation.defense}")
     // Drawn as dice rather than a number because defense is rolled, and no
     // site in the catalog exceeds two. An undefended site says so in words,
@@ -36,6 +36,16 @@ private[frontend] object ServerUiSupport:
     else (0 until presentation.defense)
       .foreach(_ => defense.appendChild(RulesTextRenderer.glyph("defense-die")))
     heading.appendChild(defense)
+    // The form the far zoomed-out map shows in its place (implementation
+    // ruling R5): one die and the count. It is for the eye; the long form
+    // keeps the accessible name and the hover note carries it.
+    val short = element("span", "site-defense-short printed")
+    short.setAttribute("aria-hidden", "true")
+    HoverTip.set(short, s"Defense ${presentation.defense}")
+    short.appendChild(RulesTextRenderer.glyph("defense-die"))
+    short.appendChild(text("span", "site-defense-count",
+      presentation.defense.toString))
+    heading.appendChild(short)
     heading
 
   private def siteToken(token: String, count: Int): Vector[dom.Element] =
@@ -87,8 +97,11 @@ private[frontend] object ServerUiSupport:
       .foreach(_ => cards.appendChild(emptySlot("relic")))
     details.appendChild(cards)
     site.forces.foreach { forces =>
-      val row = text("p", s"site-forces ${forceCssClass(forces)}",
-        forceText(forces))
+      // The words cut inside the face and the count never does; together
+      // they read as forceText.
+      val row = element("p", s"site-forces ${forceCssClass(forces)}")
+      row.appendChild(text("span", "site-forces-label", s"${forces.label} "))
+      row.appendChild(text("span", "site-forces-count", s"x${forces.count}"))
       forces match
         case exile: SiteForces.Exile =>
           row.setAttribute("data-ruler-kind", "player")
@@ -98,6 +111,14 @@ private[frontend] object ServerUiSupport:
         case _: SiteForces.Bandit =>
           row.setAttribute("data-ruler-kind", "bandit")
       details.appendChild(row)
+      // The short form for the far zoomed-out map (ruling R5): the warband
+      // in the force's colour and its count, as a card shows warbands.
+      val short = element("span", s"site-forces-short ${forceCssClass(forces)}")
+      short.setAttribute("aria-hidden", "true")
+      HoverTip.set(short, forceText(forces))
+      short.appendChild(RulesTextRenderer.glyph("warband"))
+      short.appendChild(text("span", "site-token-count", forces.count.toString))
+      details.appendChild(short)
     }
     val footer = element("div", "site-footer")
     // Two lines of labels at most (`.site-powers`). Each label keeps its
@@ -107,7 +128,10 @@ private[frontend] object ServerUiSupport:
     val powers = element("p", "site-powers")
     site.powers.zipWithIndex.foreach { case (power, index) =>
       if index > 0 then powers.appendChild(dom.document.createTextNode(" · "))
-      val item = button(power.label, "site-power")
+      // The control is not printed; the label it shows is (ruling R9).
+      val item = button("", "site-power")
+      item.setAttribute("aria-label", power.label)
+      item.appendChild(text("span", "printed", power.label))
       HoverTip.set(item, power.description.fold(power.label)(
         description => s"${power.label}: $description"))
       item.onclick = (event: dom.MouseEvent) =>
@@ -127,7 +151,7 @@ private[frontend] object ServerUiSupport:
     * than a price, so it stays a number.
     */
   private def requirementCorner(value: SiteRequirement): dom.Element =
-    val node = element("span", "site-requirement")
+    val node = element("span", "site-requirement printed")
     value match
       case SiteRequirement.Forge(favor, secrets) =>
         node.appendChild(text("span", "site-requirement-label", "Forge"))
@@ -156,7 +180,7 @@ private[frontend] object ServerUiSupport:
     val node = element("span", s"card-face ${CardFace.boxClass(cardKind)} card-face-down")
     node.setAttribute("role", "img")
     node.setAttribute("aria-label", s"Facedown $cardKind")
-    node.appendChild(text("span", "card-back-letter", CardFace.backLetter(cardKind)))
+    node.appendChild(text("span", "card-back-letter printed", CardFace.backLetter(cardKind)))
     node
 
   private[frontend] def emptySlot(cardKind: String, label: String = "")
@@ -184,22 +208,6 @@ private[frontend] object ServerUiSupport:
     node.setAttribute("data-slot-index", at.toString)
     options.decorate(node, Vector(key))
     node
-
-  /** A pile set in a line of text: its label, one back for the top card,
-    * and the count. The relic deck, which no decision offers.
-    */
-  private[frontend] def pileDisplay(label: String, count: Int,
-      topCardKind: Option[String]): dom.Element =
-    val pile = element("div", "pile-display")
-    pile.appendChild(text("span", "pile-label", s"$label:"))
-    val symbol = pileSymbol(count, topCardKind)
-    val back = text("span", pileCardClasses(count),
-      if symbol.isEmpty then "\u00a0" else symbol)
-    back.setAttribute("role", "img")
-    back.setAttribute("aria-label", topCardLabel(count, topCardKind))
-    pile.appendChild(back)
-    pile.appendChild(text("span", "pile-count", s"x$count"))
-    pile
 
   /** A deck drawn as a card, with the top card's back letter and the count
     * on its face: the part a decision rings, with its cost badge under the
@@ -234,13 +242,14 @@ private[frontend] object ServerUiSupport:
       body: dom.Element): dom.Element =
     val figure = element("div", "deck-figure")
     figure.appendChild(body)
-    figure.appendChild(text("span", "deck-caption", caption))
+    // The mat prints the slot's name, so the caption is printed content.
+    figure.appendChild(text("span", "deck-caption printed", caption))
     figure
 
   private def deckCard(count: Int, topCardKind: Option[String]): dom.Element =
     val card = element("span", s"deck-card ${pileCardClasses(count)}")
     val symbol = pileSymbol(count, topCardKind)
-    val letter = text("span", "deck-letter",
+    val letter = text("span", "deck-letter printed",
       if symbol.isEmpty then "\u00a0" else symbol)
     letter.setAttribute("role", "img")
     letter.setAttribute("aria-label", topCardLabel(count, topCardKind))
@@ -253,6 +262,7 @@ private[frontend] object ServerUiSupport:
     else topCardKind match
       case Some("denizen") => "Denizen card on top"
       case Some("vision") => "Vision card on top"
+      case Some("relic") => "Relic card on top"
       case _ => "Facedown card; type hidden"
 
   /** The pile shows the same back letter a facedown card of that kind would,
@@ -263,7 +273,7 @@ private[frontend] object ServerUiSupport:
     if count == 0 then "" else topCardKind.fold("")(CardFace.backLetter)
 
   private[frontend] def pileCardClasses(count: Int): String =
-    if count == 0 then "pile-card pile-empty" else "pile-card pile-back"
+    if count == 0 then "pile-empty" else "pile-back"
 
   private[frontend] final case class ViewerPresentation(
       showGameplayControls: Boolean,

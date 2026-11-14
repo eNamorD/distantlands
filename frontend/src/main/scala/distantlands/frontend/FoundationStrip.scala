@@ -63,7 +63,8 @@ private[frontend] object FoundationStrip:
         // A control is named in one phrase; its parts alone open with "I".
         button.setAttribute("aria-label", label(card))
         button.onclick = _ =>
-          CardInspection.openText(title(card), Vector(rules), button)
+          CardInspection.openText(title(card), Vector(rules), button,
+            Some("foundation"))
         button
       // A plain row is read as its own text: numeral, name and mark. A
       // label on a span is ignored, so it carries none.

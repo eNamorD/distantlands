@@ -18,8 +18,11 @@ private[frontend] object CardInspection:
   object Request:
     final case class Card(card: CardDetails, origin: dom.html.Element)
         extends Request
+    /** `plate` names the printed card behind the words, when there is one:
+      * `foundation`, `oath-goal` or `oathkeeper-title`. */
     final case class Text(title: String, lines: Vector[String],
-        origin: dom.html.Element) extends Request
+        origin: dom.html.Element, plate: Option[String] = None)
+        extends Request
     /** The Darkest Secret on its Festival face: its printed lines, then a
       * copy of the festival marker and the site it lies at, `None` while
       * it lies beside the map. */
@@ -59,8 +62,8 @@ private[frontend] object CardInspection:
     handler.foreach(_(Request.Card(card, origin)))
 
   def openText(title: String, lines: Vector[String],
-      origin: dom.html.Element): Unit =
-    handler.foreach(_(Request.Text(title, lines, origin)))
+      origin: dom.html.Element, plate: Option[String] = None): Unit =
+    handler.foreach(_(Request.Text(title, lines, origin, plate)))
 
   def openFestival(title: String, lines: Vector[String], at: Option[String],
       origin: dom.html.Element): Unit =

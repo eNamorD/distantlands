@@ -6,19 +6,23 @@ import ServerUiSupport._
 
 /** The one place a projected `CardDetails` becomes DOM.
   *
-  * Every card occupies its type's box -- denizen 1:1.4, relic 1:1 -- in both
-  * states, so revealing or covering a card can never reflow the pane around
+  * Every card occupies its type's box, at the real card's ratio (the ratio
+  * table in `styles.css`), in both states, so revealing or covering a card can never reflow the pane around
   * it. Full rules live in the inspection overlay, not here: a summary fits a
   * small card and rules do not (measured p90 is 134 glyphs for a denizen).
   */
 private[frontend] object CardFace:
 
-  /** Edifices share the denizen box because they occupy denizen slots, and a
-    * differently shaped edifice would break the slot grid the moment one is
-    * built. Visions share it rather than earn a ratio used by one case.
+  /** Edifices share the denizen box because they occupy denizen slots. A
+    * legacy is a landscape card. A Vision is a denizen card on its side:
+    * in a row it keeps the denizen box, so the row stays one grid, and its
+    * mark lets the inspection overlay show it upright.
     */
-  def boxClass(cardKind: String): String =
-    if cardKind == "relic" then "card-face-relic" else "card-face-denizen"
+  def boxClass(cardKind: String): String = cardKind match
+    case "relic" => "card-face-relic"
+    case "legacy" => "card-face-legacy"
+    case "vision" => "card-face-denizen card-face-vision"
+    case _ => "card-face-denizen"
 
   /** Safe on a card the viewer cannot identify: a denizen back and a vision
     * back differ physically, so which one this is stays public even when the
@@ -107,14 +111,14 @@ private[frontend] object CardFace:
     if !card.hidden then HoverTip.set(node, card.name)
 
     if card.hidden then
-      node.appendChild(text("span", "card-back-letter", backLetter(card.cardKind)))
+      node.appendChild(text("span", "card-back-letter printed", backLetter(card.cardKind)))
     else if dormantLegacy(card) then
       summary(card).foreach(node.appendChild)
       node.appendChild(text("span", "legacy-dormant", "Dormant"))
     else if faceDown(card) then
       // Knowable: the back is what shows at rest; the summary is revealed by
       // CSS on hover only, inside the same box, so nothing moves.
-      node.appendChild(text("span", "card-back-letter", backLetter(card.cardKind)))
+      node.appendChild(text("span", "card-back-letter printed", backLetter(card.cardKind)))
       val pip = element("span", "card-knowable-pip")
       pip.setAttribute("aria-hidden", "true")
       node.appendChild(pip)
@@ -145,7 +149,7 @@ private[frontend] object CardFace:
     * overlay.
     */
   private def summary(card: CardDetails): Vector[dom.Element] =
-    val header = element("span", "card-header")
+    val header = element("span", "card-header printed")
     val suit = card.suit.map(value => RulesTextRenderer.glyph(s"suit-$value"))
     // One column for the glyph and the banner, so a name that does not fit
     // beside them drops under both whole, as it drops under a glyph alone.
@@ -196,12 +200,12 @@ private[frontend] object CardFace:
         node.appendChild(RulesTextRenderer.glyph("defense-die")))
       header.appendChild(node)
     }
-    val marks = element("span", "card-power-marks")
+    val marks = element("span", "card-power-marks printed")
     card.powers.foreach(power => power.modifier.foreach(mark =>
       PowerMarks.modifier(mark, power.persistent).foreach(marks.appendChild)))
     // A legacy's goal, in words until goals have icons (R34).
     val goal = card.legacyGoal.map(goal =>
-      text("span", s"legacy-goal legacy-goal-${goal.key}", goal.text))
+      text("span", s"legacy-goal legacy-goal-${goal.key} printed", goal.text))
     Vector(Some(header), goal,
       Option.when(tokens.childNodes.length > 0)(tokens),
       Option.when(marks.childNodes.length > 0)(marks),
