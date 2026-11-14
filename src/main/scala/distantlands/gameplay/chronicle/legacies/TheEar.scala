@@ -6,6 +6,7 @@ import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.ReliquaryAndRelics
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
 import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.powers.legacies.TheEarAction
 import distantlands.model._
 
 object TheEarCard extends Legacy(LegacyId("L19"), "The Ear",
@@ -26,14 +27,17 @@ object TheEarCard extends Legacy(LegacyId("L19"), "The Ear",
   * while two or more relics remain; the last is placed without a question.
   * It stops when relics or empty slots run out, and the rest return to the
   * relic deck as before. Each placed relic is peeked again for the holder
-  * at its site, so they still know it there (R22). Its ACTION half waits
-  * for the in-play batch (R7). This power hooks no window; it is registered
-  * so the card counts as implemented. Line: "p2 chose where the relics went
+  * at its site, so they still know it there (R22). Its ACTION half is
+  * `TheEarAction` (Legacy in-play powers ruling 12). This power hooks no
+  * window. Line: "p2 chose where the relics went
   * with The Ear". */
 case object TheEar extends ContributingPower:
   val id: PowerId = TheEarCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
+  /** The ACTION half's lines: a power listed in both catalogs declares the
+    * same notes in each. */
+  override def noteKeys: Vector[NoteKey] = TheEarAction.noteKeys
 
   def decisionId(player: PlayerId): String =
     s"chronicle.throne.legacy.the-ear.${player.value}"

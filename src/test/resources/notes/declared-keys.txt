@@ -504,6 +504,7 @@ legacy.golden-key used = {0} took a relic from the Reliquary with {1}
 legacy.high-priest used = {0} moved {1} from the Darkest Secret with {2}
 legacy.peacemaker used = {0} returned the {1} with {2}
 legacy.ruthless used = {0} buried {1} with {2}
+legacy.the-ear used = {0} peeked at the relics at {1} with {2}
 procedure.campaign activated-oathkeeper-title = {0} used the Oathkeeper title
 procedure.campaign activated-plan = Used {0}
 procedure.campaign activated-usurper-title = {0} used the Usurper title
