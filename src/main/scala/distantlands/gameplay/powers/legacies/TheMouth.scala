@@ -46,8 +46,9 @@ object TheMouthCard extends Legacy(LegacyId("L34"), "The Mouth",
   *
   * Lines (R27): "p1 activated Arbiter with The Mouth", "p1 took Golden
   * Key from the Public Ambitions with The Mouth", "Beloved set Foundation
-  * IV to Fellowship", "p1 discarded Seer with The Mouth"; Iron Hand's own
-  * "p1 discarded Iron Hand".
+  * IV to Teeming World", "p1 discarded Seer with The Mouth"; and for an
+  * Imperial's Iron Hand, "p1 activated Iron Hand with The Mouth" and Iron
+  * Hand's own "p1 discarded Iron Hand", in words (R32).
   */
 case object TheMouth extends PaidAction(TheMouthCard.power):
   val decisionId: String = "power.the-mouth.legacy"
