@@ -123,8 +123,9 @@ their own that overlaps neither tokens, forces, defense nor the name.
 Reason: ruling R5's "pawns never drop" needs a form that fits.
 Slice/files: slice 3 review; `WorldBoardRenderer.world`,
 `frontend/styles.css`.
-Amended after the browser round: from three pawns on, each shows its dot
-and initial at every scale, at rest too. On the phone's tiny face the short
+Amended after the browser round: at rest, from three pawns on, each shows
+its dot and initial; on the compact map the dot and initial, the dot alone
+from five pawns on; on the tiny map the dot alone. On the phone's tiny face the short
 defense is not shown (as R5 ordered) and the pawns share the forces' row,
 forces left and pawns right, at the glance size, shrinking only as far as
 their number needs to fit beside the forces' count.
@@ -146,7 +147,8 @@ drawn wheel nor keep the round.
 Decision: the wheel's eight segments and their numbers are printed, drawn
 in one neutral fill; the current round is a separate unmarked element over
 its segment, a wedge in the current brass fill; the limiter mark stays
-state. The tracker's accessible label is unchanged.
+state. The tracker's accessible label keeps its words; a later review fix
+(commit 17494ca23) added the Usurper's lock to it.
 Reason: the printed marking must split what art replaces from what lies on
 it in play.
 Slice/files: slice 3 review; `WorldBoardRenderer.roundTracker`.
@@ -172,6 +174,18 @@ hidden; where L3 places it over the art is L3's work.
 Confidence: low on the last point only (glance short forms over art).
 Slice/files: whole-feature review; `ServerUiSupport`, `WorldBoardRenderer`,
 `docs/ROADMAP.md`.
+
+**R10. Three or more pawns on a phone's site face at Fit.**
+Question: on a phone at Fit the face is about 43x33 screen px, and from
+three pawns on the dots shrink below a readable size.
+Decision: R6 as amended stands. From three pawns on the dots shrink
+(measured 5.8px for three, 4.4px for four, 2.5px for six with the festival
+marker) and the reader zooms for more. No "+N" form, which would hide which
+players stand there, and no rearrangement of the face for this case.
+Reason: every arrangement that keeps three or more pawns at 9px drops or
+overlaps other state at its worst case, and the case is rare.
+Confidence: low; the owner may prefer the site's name to give way instead.
+Slice/files: fix review; `frontend/styles.css`, `DESIGN.md`.
 
 ## As built
 

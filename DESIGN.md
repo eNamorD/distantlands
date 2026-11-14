@@ -440,8 +440,9 @@ the restriction banner stays, in the card's top-right corner, and the power
 marks are hidden. Text on the map may fall under 11px; the Eleven-Pixel Floor is
 a pane rule. On the map the glance layer's text holds about 9px or more on
 screen at every supported Fit; a few small marks do not (on a phone at Fit
-the wheel's limiter mark, a card's inspect button and a selected card's
-badge are smaller). The board has the mat's fixed ratio; the table's edge
+the wheel's limiter mark, a card's inspect button, a selected card's badge,
+and a site's pawns from three on, whose dots shrink to fit the face:
+implementation ruling R10). The board has the mat's fixed ratio; the table's edge
 under it grows as the scale falls, which only lowers Fit, so a Fit that
 lands near a threshold settles instead of flipping. The two glance sizes are named once on `.map-compact`
 (`--glance-name`, `--glance-text`, each capped at 3.6rem). A site face's
