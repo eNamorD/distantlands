@@ -340,11 +340,13 @@ site and no history, as a New Chronicle has none. Only a first game ignores
 "become a Citizen" powers and places its Homelands' edifices by suit.
 _Avoid_: new game, fresh game
 
-**Exile-only game**:
+**Exile-only game** (a first game played exile-only, `FirstGameExileOnly`):
 The game a Chronicle shaped like a first game's but carrying history starts,
 an imported one for example. The Atlas's first eight sites fill the map as
 bandit sites with their stored cards, and the stored foundations apply as
-stored, with no erosion.
+stored, with no erosion. Stored starting advisers and relics go to their
+players, but every stored legacy, seated or boxed, is wiped back into the
+legacy deck before the deal, since a first game has none.
 _Avoid_: imported first game
 
 **Set-aside Reliquary**:

@@ -97,8 +97,11 @@ erosion, stored advisers and relics are dealt, every stored legacy is
 wiped back into the legacy deck before the deal
 (`EmpireSetupRules.startingChronicle`, Legacy Setup powers R40), the
 Citizenship option is off and the Reliquary is set aside, as with no
-Empire. Exiles place their pawns as in a later game, and an Atlas of fewer
-than eight sites is refused. With a Chancellor seated, or a seated
+Empire. Exiles place their pawns as in a later game, except when stored
+legacies were the Chronicle's only history, whose wiped baseline places
+them as a first game does (Legacy Setup powers R41), and an Atlas of
+fewer than eight sites is refused. The projection's starting digest is
+the saved Chronicle's (`CampaignState.saved`), not the wiped baseline's. With a Chancellor seated, or a seated
 Citizen standing in for one, the Empire's sites return. Under Imperial Maps
 Setup's walk then asks the Chancellor, right after the Reliquary pick,
 whether the Recent or the Forgotten end fills the slots past them, and
