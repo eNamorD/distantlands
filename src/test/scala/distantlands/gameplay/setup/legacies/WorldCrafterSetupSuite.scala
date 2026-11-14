@@ -110,6 +110,20 @@ class WorldCrafterSetupSuite extends munit.FunSuite:
     assertEquals(map.inPlay.size, MapState.slots)
     assertEquals(map.inPlay.slice(2, 5), atlas.take(3))
 
+  test("a Chancellor holding World Crafter fills slot by slot (R13)"):
+    val chancellor = SetupLegacyFixture.holding(
+      LaterGameFixture.chronicle(l1, l2), l1, Role.Chancellor,
+      WorldCrafterCard.id -> true)
+    val ready = accepted(GameStartRules.evolve(catalog, chancellor,
+      LaterGameFixture.orders(chancellor, p1)))
+    val asked = SetupWalkDriver.driveWithEvents(ready, accepted(
+      SetupProcedure.build(catalog, ready, ready.game.current.turn
+        .activePlayer, Vector.empty)), TriggeredProcedureRef.Setup,
+      WalkerPowers.empty).asked.map(_.decisionId)
+    assertEquals(asked.filter(_.startsWith("setup.legacy.world")),
+      (1 to 5).toVector.map(WorldCrafter.slotDecisionId(p1, _)))
+    assert(!asked.contains(ImperialMaps.decisionId), asked)
+
   test("a dormant World Crafter leaves Imperial Maps to the Chancellor " +
       "(ruling 1)"):
     val dormant = SetupLegacyFixture.holding(
