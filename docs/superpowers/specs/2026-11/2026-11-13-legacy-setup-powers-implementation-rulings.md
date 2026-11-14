@@ -235,8 +235,10 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   journal key `"quest-first-wake"`, started at the start of a pawnless
   player's Wake before the Wake checks and Forced Wake: the placement
   (`wake.legacy.quest.<player>`, any site in play, no Decline), "p2 placed
-  their pawn at Deep Woods", then Choose Adviser, Secret Society's excess
-  discard and Reveal Cards. A test pins that older streams still decode.
+  their pawn at Deep Woods", then Choose Adviser
+  (`wake.legacy.quest.<player>.adviser`), Secret Society's excess discard
+  (`.discard`) and Reveal Cards (`.reveal`). A test pins that older streams
+  still decode.
   *Reason:* spec ruling 20 says "before anything else"; folded into Forced
   Wake it would run too late. *Slice/files:* slice 4;
   `QuestFirstWakeProcedure`, `OathDriver`, `ProcedureRef`.
@@ -267,3 +269,13 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   *Reason:* a swap needs a card on both sides, and the Peeks would reveal
   the Dispossessed for nothing. *Slice/files:* slice 4;
   `QuestToDistantLands`.
+- **R38. Secret Society's Vision at Reveal Cards.** An Exile may reveal the
+  facedown Vision Secret Society gave them at Reveal Cards, in Setup or at
+  the first Wake. Revealing it places it on their Vision space exactly as
+  a faceup Vision play does, discarding any Vision already there, and
+  triggers no When Played power. An Imperial holder cannot reveal it.
+  *Reason:* CR p. 13 lets a player reveal any adviser but a site-only one,
+  and the rules on playing Visions say Exiles can reveal Visions and the
+  Chancellor and Citizens cannot. No player held a Vision at Setup before
+  slice 3, so `revealable` never had to offer one. *Slice/files:* slice 4;
+  `SetupAdviserSteps`, `CardPlay.hasVisionSpace`.

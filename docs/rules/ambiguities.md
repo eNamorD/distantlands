@@ -265,7 +265,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 
 ## Legacy Setup powers rulings
 
-Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 19 are implementation rulings R1 to R10; items 20 to 23 are the design's rulings 10 to 13; items 24 to 29 are implementation rulings R11 to R16; item 30 is implementation ruling R17; items 31 and 32 are the design's rulings 14 and 15; items 33 to 40 are implementation rulings R18 to R25; item 41 is implementation ruling R26; items 42 to 46 are the design's rulings 16 to 20; items 47 to 53 are implementation rulings R27 to R33.
+Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 19 are implementation rulings R1 to R10; items 20 to 23 are the design's rulings 10 to 13; items 24 to 29 are implementation rulings R11 to R16; item 30 is implementation ruling R17; items 31 and 32 are the design's rulings 14 and 15; items 33 to 40 are implementation rulings R18 to R25; item 41 is implementation ruling R26; items 42 to 46 are the design's rulings 16 to 20; items 47 to 53 are implementation rulings R27 to R33; items 54 and 55 are R34 and R35; item 56 is R36, which ties in the Legacy Chronicle powers rulings R49 and R50; item 57 is R37; item 58 is R38.
 
 1. **Only seated players' active legacies act.** A legacy's SETUP power applies when a seated player holds it active at the moment its step is reached. A boxed lineage's legacies never act, and neither does the Public Ambitions row, which nobody holds (design, ruling 1).
 2. **"If you are an Imperial" or "an Exile" is read at the same moment.** Game start's Empire setup has already chosen the Chancellor, so every role is settled (design, ruling 2).
@@ -318,12 +318,13 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 49. **Wealthy's questions** are a choice between two players and the bank, then a choose-many of exactly two players (R29), unless exactly two can give (item 54).
 50. **Staying off writes "p2 placed no pawn with Quest to Distant Lands",** and the steps that read the pawn's region are skipped for any player with no pawn (R30).
 51. **Quest's swap** peeks the Dispossessed for the holder, offers no Secret Society Vision, and comes before Choose Adviser would run (R31).
-52. **The first Wake is a procedure of its own,** run before the Wake checks and Forced Wake (R32).
+52. **The first Wake is a procedure of its own,** run before the Wake checks and Forced Wake, its questions `wake.legacy.quest.<player>` and its `.adviser`, `.discard` and `.reveal` sub-ids (R32).
 53. **A pawnless player stands at no site** for every other rule (R33).
 54. **Wealthy with exactly two givers:** when exactly two other players hold favor, both give and no choose-many is asked (R34, amending R29).
 55. **The first Wake's placement confirms as "Place your pawn at" and the site,** not Setup's "Start at" (R35).
 56. **The world deck's legacy powers beside Oaths' Teeming World burials:** Secret Society's rebuild keeps the burials below the Visions, and the Oaths holder still knows them after either reorder ([Legacy Chronicle powers rulings](#legacy-chronicle-powers-rulings), items 63 and 64; R36).
 57. **Quest's swap needs a card to give:** with no starting adviser and no hand card to give, no swap is asked and the Dispossessed are not shown (R37).
+58. **An Exile may reveal Secret Society's Vision at Reveal Cards,** in Setup or at the first Wake: it goes to their Vision space as a faceup Vision play puts it, discarding any Vision there, with no When Played. An Imperial holder cannot reveal it (R38).
 
 ## Source relationship cautions
 
