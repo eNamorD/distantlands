@@ -1,8 +1,7 @@
 package distantlands.gameplay.setup
 
-import distantlands.catalog.{ExecutableCatalog, SiteOnly}
-import distantlands.gameplay.actions.{CardPlay, ProcedureNotes}
-import distantlands.gameplay.chronicle.ChronicleLegacyRules
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.gameplay.setup.legacies.{LegacySetupPowers,
   SecretSociety}
@@ -63,18 +62,18 @@ import distantlands.model.OathViolation._
  * powers. The step asks nothing when the player has nothing to reveal.
  */
 object SetupProcedure:
-  val adviserKeepKey: String = "keep"
-  val adviserDiscardKey: String = "discard"
+  val adviserKeepKey: String = SetupAdviserSteps.keepKey
+  val adviserDiscardKey: String = SetupAdviserSteps.discardKey
+  /** Choose Adviser and Reveal Cards, with Setup's lines. */
+  private val adviserSteps = SetupAdviserSteps(TriggeredProcedureRef.Setup)
 
   private val notes = NoteSet(ProcedureNotes.id(TriggeredProcedureRef.Setup))
   /** "p2 placed their pawn at Ancient City". Setup has no turn yet, so every line
     * names its player. */
   val placedPawn: NoteKey = notes.key("placed-pawn", Vector(
     NotePart.Arg(0), NotePart.Text(" placed their pawn at "), NotePart.Arg(1)))
-  val keptAdviser: NoteKey = notes.key("kept-adviser", Vector(
-    NotePart.Arg(0), NotePart.Text(" kept "), NotePart.Arg(1)))
-  val revealedCard: NoteKey = notes.key("revealed-card", Vector(
-    NotePart.Arg(0), NotePart.Text(" revealed "), NotePart.Arg(1)))
+  val keptAdviser: NoteKey = adviserSteps.keptAdviser
+  val revealedCard: NoteKey = adviserSteps.revealedCard
   /** "p1 took a relic from the Reliquary" (Empire ruling R29). */
   val tookRelic: NoteKey = notes.key("took-relic", Vector(
     NotePart.Arg(0), NotePart.Text(" took a relic from the Reliquary")))
@@ -83,7 +82,8 @@ object SetupProcedure:
   /** "Public Ambitions dealt Rival, Seer, Arbiter and Wealthy". */
   val dealtPublicLegacies: NoteKey = notes.key("dealt-public-legacies",
     Vector(NotePart.Text("Public Ambitions dealt "), NotePart.Arg(0)))
-  def noteKeys: Vector[NoteKey] = notes.declared ++ ImperialMaps.noteKeys ++
+  def noteKeys: Vector[NoteKey] = notes.declared ++ adviserSteps.noteKeys ++
+    ImperialMaps.noteKeys ++
     OathsOfLoyalty.noteKeys(TriggeredProcedureRef.Setup) ++
     LegacyKeep.noteKeys ++ LegacySetupPowers.noteKeys
 
@@ -102,22 +102,10 @@ object SetupProcedure:
     Either.cond(args.isEmpty, (),
       InvalidEventOrder("Setup selects nothing")).map(_ => tree(catalog, ready))
 
-  /** The cards `player` may reveal in Reveal Cards: facedown advisers that
-    * are not site-only, then facedown relics. They are offered by slot, as
-    * Hunger offers advisers, so the parked decision can be described to
-    * every other viewer without naming a facedown card. */
+  /** The cards `player` may reveal in Reveal Cards (`SetupAdviserSteps`). */
   def revealable(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId)
       : Vector[DecisionOption] =
-    ready.game.current.player(player).toVector.flatMap { state =>
-      state.advisers.zipWithIndex.collect {
-        case (DenizenState(id, Orientation.FaceDown, _), slot)
-            if !catalog.denizen(id).exists(_.isInstanceOf[SiteOnly]) =>
-          DecisionOption.AdviserSlot(DecisionOptionRef.AdviserSlot(player, slot))
-      } ++ state.relics.zipWithIndex.collect {
-        case (RelicState(_, Orientation.FaceDown, _), slot) =>
-          DecisionOption.RelicSlot(DecisionOptionRef.RelicSlot(player, slot))
-      }
-    }
+    SetupAdviserSteps.revealable(catalog, ready, player)
 
   private def tree(catalog: ExecutableCatalog, ready: ReadyGame): Operation =
     val participants = turnOrder(ready)
@@ -193,8 +181,6 @@ object SetupProcedure:
     val hand = ready.game.current.temporaryHands
       .getOrElse(participant.playerId, Vector.empty)
       .collect { case id: DenizenId => id }
-    val handOptions = hand.map(id =>
-      DecisionOption.Denizen(DecisionOptionRef.Denizen(id)))
     Sequence(Vector(
       // The sites are read when the question is reached: Imperial Maps
       // fills the map earlier in the same walk.
@@ -221,94 +207,15 @@ object SetupProcedure:
       // pawn (Legacy Setup powers ruling 14; R21).
       SecretSociety.excessStep(catalog, participant.playerId),
       LegacyKeep.step(participant),
-      // A player with starting advisers drew no hand (CR p. 11), and under
-      // Teeming World no one did: every card drawn is already an adviser.
-      Branch((_, _) =>
-        if hand.isEmpty then Vector.empty
-        else Vector(
-          Decide(adviserId, participant.playerId,
-            DecisionQuery.Partition(
-              Vector(DecisionSection(adviserKeepKey, "Keep", 1, Some(1)),
-                DecisionSection(adviserDiscardKey, "Discard", 0)),
-              handOptions, heading = Some("Choose your starting adviser"),
-              confirmLabel = Some("Confirm Adviser"))),
-          BuildOps(chooseAdviser(participant.playerId, adviserId)),
-          Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
-            keptAdviserNote(participant.playerId, adviserId)))),
-      revealCards(catalog, participant.playerId)))
+      adviserSteps.chooseAdviser(participant.playerId, adviserId, hand),
+      adviserSteps.reveal(catalog, participant.playerId,
+        revealDecisionId(participant.playerId))))
 
   /** Where `player`'s pawn stands once it has been placed. */
   private def placedPawnNote(player: PlayerId)(states: NoteStates)
       : Option[LogNote] = states.now.game.current.pawnSite(player).map(site =>
     placedPawn.sourceless(NoteArg.Player(player), NoteArg.Site(site)))
 
-
-  /** The adviser the answer kept. `adviserSelection` takes a `PendingTree`
-    * and a note has only `states.answered`, so this reads the placements
-    * directly rather than rebuilding a tree to borrow it. */
-  private def keptAdviserNote(player: PlayerId, decisionId: String)(
-      states: NoteStates): Option[LogNote] =
-    states.answered.collectFirst {
-      case Answered(`decisionId`, DecisionAnswer.PartitionAnswer(placements), _) =>
-        placements.collect {
-          case DecisionPlacement(DecisionOptionRef.Denizen(id),
-              `adviserKeepKey`) => id
-        }
-    }.flatMap(_.headOption).flatMap(kept =>
-      if ChronicleLegacyRules.buriesStartingAdvisers(states.now, player) then
-        OathsOfLoyalty.buriedLine(ProcedureNotes.id(TriggeredProcedureRef.Setup),
-          player, kept)
-      else Some(keptAdviser.sourceless(NoteArg.Player(player),
-        NoteArg.Card(kept))))
-
-  private def revealCards(catalog: ExecutableCatalog, player: PlayerId)
-      : Operation =
-    val decisionId = revealDecisionId(player)
-    Branch((state, _) =>
-      val options = revealable(catalog, state, player)
-      if options.isEmpty then Vector.empty
-      else Vector(
-        Decide(decisionId, player, DecisionQuery.ChooseMany(0, options.size,
-          options, heading = Some("Reveal cards"),
-          confirm = Some(CountedConfirm("Reveal", "card", "cards",
-            Some("Reveal nothing"))))),
-        BuildOps(reveal(player, decisionId)),
-        // One line per card, as the rule posted one per recorded `Reveal`.
-        // A second `Branch`, because the answer this reads does not exist
-        // when the branch above is walked.
-        Branch((live, pending) =>
-          revealed(live, player, decisionId, pending.answered)
-            .getOrElse(Vector.empty).map(card =>
-            Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
-              _ => Some(revealedCard.sourceless(NoteArg.Player(player),
-                NoteArg.Card(card))))))))
-
-  /** The cards `player`'s reveal answer names, by slot, or nothing when the
-    * first answer recorded under `decisionId` is not a choose-many. The one
-    * definition the operations and the lines both read: `reveal` turns the
-    * `None` into the rejection it has always made, and the note branch
-    * writes no line for what was not revealed. */
-  private def revealed(ready: ReadyGame, player: PlayerId, decisionId: String,
-      answered: Vector[Answered]): Option[Vector[CardId]] =
-    val held = ready.game.current.player(player)
-    answered.find(_.decisionId == decisionId).map(_.answer).collect {
-      case DecisionAnswer.ChooseManyAnswer(selected) =>
-        selected.flatMap {
-          case DecisionOptionRef.AdviserSlot(_, slot) =>
-            held.flatMap(_.advisers.lift(slot)).map(_.id: CardId)
-          case DecisionOptionRef.RelicSlot(_, slot) =>
-            held.flatMap(_.relics.lift(slot)).map(_.id: CardId)
-          case _ => None
-        }
-    }
-
-  private def reveal(player: PlayerId, decisionId: String)
-      : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
-    (ready, pending) =>
-      revealed(ready, player, decisionId, pending.answered)
-        .map(_.map(card => Reveal(card, Location.PlayArea(player))))
-        .toRight(InvalidEventOrder(
-          s"no reveal answer is recorded for $decisionId"))
 
   private def placePawn(player: PlayerId, decisionId: String)
       : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
@@ -323,45 +230,3 @@ object SetupProcedure:
         Right(site)
       case _ => Left(InvalidEventOrder(
         s"no pawn-placement answer is recorded for $decisionId"))
-
-  private def chooseAdviser(player: PlayerId, decisionId: String)
-      : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
-    (ready, pending) => for
-      selection <- adviserSelection(pending, decisionId)
-      (chosen, rejected) = selection
-      pawnSite <- ready.game.current.pawnSite(player)
-        .toRight(PawnSiteMissing(player))
-      region <- ready.game.current.map.regionOf(pawnSite)
-        .toRight(InvalidEventOrder(s"${pawnSite.value} is not in play"))
-    // An Oaths of Loyalty holder buries the adviser they would gain at the
-    // world deck bottom (Legacy Chronicle powers design, ruling 16; R24).
-    yield (if ChronicleLegacyRules.buriesStartingAdvisers(ready, player) then
-        Move(Piece.Card(chosen), PositionedLocation(Location.Hand(player)),
-          PositionedLocation(Location.Deck(CardDeck.World),
-            StackPosition.Bottom))
-      else Move(Piece.Card(chosen), PositionedLocation(Location.Hand(player)),
-        PositionedLocation(Location.PlayArea(player)),
-        resultingOrientation = Some(Orientation.FaceDown))) +:
-      rejected.map(id => Move(Piece.Card(id),
-        PositionedLocation(Location.Hand(player)),
-        PositionedLocation(Location.RegionalDiscard(CardPlay.nextRegion(region)),
-          StackPosition.Top)))
-
-  private def adviserSelection(pending: PendingTree, decisionId: String)
-      : Either[OathViolation, (DenizenId, Vector[DenizenId])] =
-    pending.answered.find(_.decisionId == decisionId).map(_.answer) match
-      case Some(DecisionAnswer.PartitionAnswer(placements)) =>
-        val kept = placements.filter(_.sectionKey == adviserKeepKey)
-          .flatMap(value => denizen(value.option))
-        val rejected = placements.filter(_.sectionKey == adviserDiscardKey)
-          .flatMap(value => denizen(value.option))
-        kept match
-          case Vector(id) => Right(id -> rejected)
-          case _ => Left(InvalidEventOrder(
-            s"adviser-choice must keep exactly one card for $decisionId"))
-      case _ => Left(InvalidEventOrder(
-        s"no adviser-choice answer is recorded for $decisionId"))
-
-  private def denizen(ref: DecisionOptionRef): Option[DenizenId] = ref match
-    case DecisionOptionRef.Denizen(id) => Some(id)
-    case _ => None
