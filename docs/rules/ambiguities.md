@@ -194,6 +194,25 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 31. **The Public Ambitions row** stands in the World pane above the regions, headed "Public Ambitions", while it holds a legacy (R38).
 32. **The Chronicle page lists each lineage** under its summary line with its legacies: "Red 9 · Seer, Iron Hand (dormant)" (R39).
 
+## Legacy Chronicle powers rulings
+
+Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6. Later slices add the design's other rulings as they land.
+
+1. **Only seated players' active legacies act.** A legacy's Chronicle power applies when a seated player holds it active at the moment its window is reached. A boxed lineage's legacies never act; a dormant legacy has no power (design, ruling 1).
+2. **A role condition is read at the same moment,** so the Crown and Offer Citizenship change it for every later step (design, ruling 2).
+3. **Every "you may" is the holder's decision,** with its own decision id, `chronicle.<task>.legacy.<power>.<player>`; declining is always an option (design, ruling 3).
+4. **Choosing several cards is one choose-many,** not a loop of single picks (design, ruling 4).
+5. **Steadfast is read at the start of Sun step 3.** If its holder holds it active then, none of their other legacies go dormant in that step. Steadfast itself can go dormant, and step 4's cap still discards, as being discarded is not becoming dormant (design, ruling 5).
+6. **Gatekeeper is a step between Sun steps 1 and 2,** after the relics are revealed. Its holder may take one active legacy from an enemy whose goal they meet, as counted then, or decline. The legacy joins them active; step 2 alters its foundation and step 4 applies the cap (design, ruling 6).
+7. **Chronicler is a step after Sun step 5.** If its holder declares, every seated player scores the Score Lineage Points bonus now, with no base points and no gifts; each player who scores a point gets one line (design, ruling 7).
+8. **A legacy scores once per game.** The journal records the legacies scored this Chronicle, by legacy; Score Lineage Points skips them (design, ruling 8).
+9. **Dormant legacies score under Chronicler,** as every legacy held does, the set Score Lineage Points would score (R1).
+10. **Every legacy held is recorded as scored** when Chronicler resolves, even one that scores 0: a legacy scored for 0 has still been scored, and denying the winner's later bonus is the card's point (R2).
+11. **The scorepad records each lineage's role at the Chronicle's end.** A role change after this game's row opens updates the lineage's entry, so a row Chronicler opens in the Sun still records the roles after the Crown (R3; [Chronicle rulings](#chronicle-rulings), item 19).
+12. **The lines** say "p2 took Seer from p3 with Gatekeeper", "p2 declared Chronicler" and "p1 scored 2 lineage points (2 from Beast)" (R4).
+13. **Two Sun windows hold the added steps:** one before Flip Legacies, for Gatekeeper, and one after Shuffle, for Chronicler (R5).
+14. **Gatekeeper and Chronicler each ask one choose-one, Decline first.** Gatekeeper's other options are the takeable legacies, each naming its holder, and it asks only when one is takeable; Chronicler's other option is Declare (R6).
+
 ## Source relationship cautions
 
 - NF is intentionally a change overview. When its simplification omits a detail, use CR, not inference.

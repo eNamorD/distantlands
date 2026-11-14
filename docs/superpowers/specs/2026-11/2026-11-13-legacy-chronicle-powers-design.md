@@ -1,7 +1,10 @@
 # Legacy Chronicle powers
 
 **Status:** designed 2026-11-13, approved section by section by the owner.
-Not yet planned.
+Slice 1 landed (plan:
+[slice 1](../../plans/2026-11/2026-11-13-legacy-chronicle-powers-slice1.md));
+its implementation rulings are in the
+[rulings file](2026-11-13-legacy-chronicle-powers-implementation-rulings.md).
 
 **Builds on** the [Legacies design](2026-11-13-legacies-design.md), which
 landed the legacy lifecycle and left every power in holding, and the
