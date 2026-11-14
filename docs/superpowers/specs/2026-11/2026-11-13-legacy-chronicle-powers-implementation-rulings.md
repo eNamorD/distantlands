@@ -259,3 +259,14 @@ Reason: each game is its own stream; the second golden proves the record
 reaches the next Setup.
 Slice/files: 3; `ChronicleLogScripts`, `LaterGameLogScripts`.
 
+**R28. A deducible Heirloom relic.**
+Question: after Heirloom, Scatter Relics' generic line ("p2 set aside
+Grand Mask") lets other seats deduce which revealed relic p2 kept.
+Decision: accepted.
+Reason: Sun step 1 reveals every held relic by rule, so the identity is
+already public knowledge to anyone tracking; R19 keeps the Heirloom lines
+themselves secret.
+Confidence: low; a physical table shuffles facedown, which makes the
+deduction harder there.
+Slice/files: 3; `Heirloom`, `ReliquaryAndRelics`.
+
