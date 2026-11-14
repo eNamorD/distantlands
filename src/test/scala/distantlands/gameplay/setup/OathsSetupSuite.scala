@@ -103,6 +103,12 @@ class OathsSetupSuite extends munit.FunSuite:
       assertEquals(placed.count(_ == card), 1, card))
 
   test("a dormant Oaths under Teeming World keeps every card drawn"):
-    val dormant = SetupDeal.of(holding(active = false,
-      FoundationFace.Altered), FirstGameSetupFixture.participants)
+    val chronicle = holding(active = false, FoundationFace.Altered)
+    val orders = LaterGameFixture.orders(chronicle, p1)
+    val dormant = SetupDeal.of(chronicle, orders.participants)
     assertEquals(dormant.draws.find(_._1 == p1).map(_._2), Some(3))
+    val kept = dormant.kept(orders.denizenOrder, p1)
+    assertEquals(kept.size, 3)
+    assertEquals(dormant.buried(orders.denizenOrder, p1), Vector.empty)
+    assertEquals(woken(chronicle).game.current.player(p1).get.advisers
+      .map(_.id), kept)
