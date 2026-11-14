@@ -65,10 +65,11 @@ case object SecretSociety extends ContributingPower:
     * exactly that many over their advisers by slot, each card to the top of
     * the discard pile of the region after the pawn's, where Setup's
     * rejected advisers go (R21). Read when reached: only this player's own
-    * steps came between the take and here. */
-  def excessStep(catalog: ExecutableCatalog, player: PlayerId,
-      decisionId: String = "", procedure: TriggeredProcedureRef =
-        TriggeredProcedureRef.Setup): Operation =
+    * steps came between the take and here. `id` names the question, and
+    * `procedure` the note id its line is written under: Setup's, or the
+    * first Wake's for a player who placed no pawn. */
+  def excessStep(catalog: ExecutableCatalog, player: PlayerId, id: String,
+      procedure: TriggeredProcedureRef): Operation =
     Branch((state, _) =>
       val excess = AdviserLimit.towardLimit(state, player) -
         AdviserLimit.of(catalog, state, player)
@@ -79,8 +80,6 @@ case object SecretSociety extends ContributingPower:
       else
         val held = state.game.current.player(player).toVector
           .flatMap(_.advisers).map(_.id: CardId)
-        val id = if decisionId.isEmpty then discardDecisionId(player)
-          else decisionId
         val lineId = ProcedureNotes.id(procedure)
         val line = if procedure == TriggeredProcedureRef.Setup then discarded
           else wakeDiscarded

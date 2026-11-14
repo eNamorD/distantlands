@@ -233,7 +233,9 @@ object SetupProcedure:
         Some(PowerWindow.SetupPawnPlaced)),
       // Secret Society's holder discards excess advisers right after their
       // pawn (Legacy Setup powers ruling 14; R21).
-      SecretSociety.excessStep(catalog, participant.playerId),
+      SecretSociety.excessStep(catalog, participant.playerId,
+        SecretSociety.discardDecisionId(participant.playerId),
+        TriggeredProcedureRef.Setup),
       LegacyKeep.step(participant),
       QuestToDistantLands.swapStep(participant.playerId),
       // A player with no pawn chooses and reveals at their first Wake,
