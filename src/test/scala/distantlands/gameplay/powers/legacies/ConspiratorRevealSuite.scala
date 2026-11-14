@@ -1,11 +1,14 @@
 package distantlands.gameplay.powers.legacies
 
 import distantlands.application.{GameAccepted, GameApplicationService,
-  ParkedServiceFixture}
+  ParkedServiceFixture, TreeDecision}
 import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.gameplay.actions.negotiation.HighPriestCard
 import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.setup.legacies.TheStandardBearerCard
 import distantlands.model._
-import distantlands.testkit.{MenuPlay, Outcomes, RoundEndChoices, Table}
+import distantlands.testkit.{Commands, MenuPlay, Outcomes, RoundEndChoices,
+  Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 
@@ -107,3 +110,33 @@ class ConspiratorRevealSuite extends munit.FunSuite:
     assertEquals(Outcomes.ready(done.state).game.current.result,
       Some(successor))
     assert(!lines(service).exists(_.contains("had written down")))
+
+  test("a Conspirator lost to The Mouth's cap in play voids the prediction " +
+      "at the game's end"):
+    // p3 also holds The Mouth, Golden Key and High Priest active, The
+    // Standard Bearer dormant, the People's Favor, which meets its goal,
+    // and 2 favor: activating The Standard Bearer takes p3 to five active
+    // legacies, and p3 discards Conspirator and Golden Key.
+    val table = lastAct(Prediction(5, p2)).legacy(p3, TheMouthCard)
+      .legacy(p3, GoldenKeyCard).legacy(p3, HighPriestCard)
+      .legacy(p3, TheStandardBearerCard, active = false)
+      .peoplesFavor(Some(p3), favor = 1).favor(p3, 2)
+    val (service, _) = table.service(roundEnd = RoundEndChoices.endDie(6))
+    val used = accepted(service.handle(gameId, 0L, MenuPlay.starting(p3,
+      ActionRef.UsePower(TheMouth.id),
+      Vector(DecisionOptionRef.Legacy(TheMouthCard.id)))))
+    val chosen = accepted(service.handle(gameId, used.nextSequence,
+      Commands.resolveWalker(p3, TreeDecision(TheMouth.decisionId,
+        DecisionAnswer.ChooseOneAnswer(
+          DecisionOptionRef.Legacy(TheStandardBearerCard.id))))))
+    val capped = accepted(service.handle(gameId, chosen.nextSequence,
+      Commands.resolveWalker(p3, TreeDecision(TheMouth.capDecisionId(p3),
+        DecisionAnswer.ChooseManyAnswer(Vector(
+          DecisionOptionRef.Legacy(ConspiratorCard.id),
+          DecisionOptionRef.Legacy(GoldenKeyCard.id)))))))
+    val done = accepted(service.handle(gameId, capped.nextSequence,
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))
+    val current = Outcomes.ready(done.state).game.current
+    assertEquals(current.result, Some(successor))
+    assertEquals(current.predictions, Map.empty)
+    assert(lines(service).contains(revealLine(p2, 5)), lines(service))
