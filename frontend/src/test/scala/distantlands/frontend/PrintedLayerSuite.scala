@@ -61,17 +61,27 @@ class PrintedLayerSuite extends munit.FunSuite:
     assertEquals(controls.filter(insidePrinted)
       .map(_.getAttribute("class")), Vector.empty)
 
-  test("no live state is printed or sits inside printed content"):
-    val live = Vector(".card-tokens", ".card-token-count", ".card-warbands",
+  private val live = Vector(".card-tokens", ".card-token-count", ".card-warbands",
       ".card-tracking", ".site-tokens", ".site-token-count", ".pawn",
       ".site-forces", ".site-forces-short", ".pile-count", ".favor-bank-count",
       ".vision-marker", ".round-current", ".limiter-marker", ".legacy-dormant",
       ".card-knowable-pip", ".board-option-badge", ".target-detail-badge",
       ".festival-marker")
+
+  test("no live state is printed or sits inside printed content"):
     live.foreach { selector =>
       val found = all(board, selector)
       assertEquals(found.filter(insidePrinted).map(_.getAttribute("class")),
         Vector.empty, selector)
+    }
+
+  /** Looking down as well as up: hiding the printed layer must leave each
+    * piece of live state whole. R9 permits no printed part inside one. */
+  test("no live state holds printed content"):
+    live.foreach { selector =>
+      val holding = all(board, selector).filter(node =>
+        Option(node.querySelector(".printed")).nonEmpty)
+      assertEquals(holding.map(_.getAttribute("class")), Vector.empty, selector)
     }
 
   test("the content a control shows is printed, inside the control"):
