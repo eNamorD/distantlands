@@ -8,7 +8,8 @@ import distantlands.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders,
 import distantlands.gameplay.powers.banner.BannerFacePowers
 import distantlands.gameplay.powers.cardplay.VowOfObedience
 import distantlands.gameplay.powers.economy.VowOfPoverty
-import distantlands.gameplay.powers.legacies.LegacyActionPowers
+import distantlands.gameplay.powers.legacies.{ConspiratorPrediction,
+  LegacyActionPowers}
 import distantlands.gameplay.powers.rest.{Insomnia, Naysayers, SilverTongue}
 import distantlands.gameplay.powers.wake.{HiddenPassages, Hunger,
   MarbleFountains, Quartermaster, RiverSitePower, SinkingPassages,
@@ -34,7 +35,7 @@ object PhasePowerCatalog:
       OtherActionPowers.all ++
       WorldActionPowers.all ++
       BannerFacePowers.phasePowers ++
-      Vector(Hunger) ++
+      Vector(Hunger, ConspiratorPrediction) ++
       LegacyActionPowers.all ++
       RiverSitePower.all,
       WalkerPowerCatalog.useRestrictions)

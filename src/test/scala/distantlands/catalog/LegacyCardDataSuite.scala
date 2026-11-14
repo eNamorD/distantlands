@@ -1,6 +1,5 @@
 package distantlands.catalog
 
-import distantlands.catalog.holding._
 import distantlands.gameplay.chronicle.legacies._
 import distantlands.gameplay.powers.legacies._
 import distantlands.gameplay.powers.travel.{AncestralLandsCard,
@@ -10,7 +9,7 @@ import distantlands.gameplay.powers.economy.BelovedCard
 import distantlands.gameplay.powers.campaign.KeeperOfOrderCard
 import distantlands.gameplay.actions.negotiation.HighPriestCard
 import distantlands.gameplay.phases.rest.ArbiterCard
-import distantlands.gameplay.powers.legacies.TheMouthCard
+import distantlands.gameplay.powers.legacies.{ConspiratorCard, TheMouthCard}
 import distantlands.gameplay.powers.banner.TheNeedleCard
 import distantlands.gameplay.setup.FirstGameSetupFixture
 import distantlands.gameplay.setup.legacies._
