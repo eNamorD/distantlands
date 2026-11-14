@@ -14,12 +14,13 @@ object SetupMode:
     * (`EmpireSetupRules.isFirstGame`). */
   case object FirstGame extends SetupMode
 
-  /** An exile-only game: a Chronicle shaped like a first game's that
-    * carries history, an import for example (owner, 2026-11-12). `sites`
-    * are the Atlas's first eight, from the Recent end, placed Hinterward
-    * as bandit sites with their stored cards. The stored foundations apply
-    * as stored. */
-  final case class ExileOnly(sites: Vector[StoredSite]) extends SetupMode
+  /** A first game played as an exile-only game: a Chronicle shaped like a
+    * first game's (no Chancellor, no Citizen, no Empire site) that carries
+    * history, an import for example (owner, 2026-11-12). `sites` are the
+    * Atlas's first eight, from the Recent end, placed Hinterward as bandit
+    * sites with their stored cards. The stored foundations apply as
+    * stored. */
+  final case class FirstGameExileOnly(sites: Vector[StoredSite]) extends SetupMode
 
   /** A later game with a Chancellor at the table. */
   final case class WithEmpire(empire: EmpireSetup) extends SetupMode
@@ -89,7 +90,7 @@ object EmpireSetupRules:
     val citizens = lineages(Role.Citizen)
     if isFirstGame(catalog, chronicle) then Right(SetupMode.FirstGame)
     else if chancellors.isEmpty && citizens.isEmpty && chronicle.world.isEmpty
-    then Right(SetupMode.ExileOnly(chronicle.atlasBox.take(MapState.slots)))
+    then Right(SetupMode.FirstGameExileOnly(chronicle.atlasBox.take(MapState.slots)))
     else
       val seatedCitizens = citizens.flatMap(seated.get)
       def empire(chancellor: PlayerId) = SetupMode.WithEmpire(EmpireSetup(

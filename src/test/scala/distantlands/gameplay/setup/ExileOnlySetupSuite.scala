@@ -99,7 +99,7 @@ class ExileOnlySetupSuite extends munit.FunSuite:
     withHistory.foreach { (history, chronicle) =>
       assert(EmpireSetupRules.hasHistory(catalog, chronicle), history)
       assertEquals(mode(chronicle),
-        SetupMode.ExileOnly(chronicle.atlasBox.take(MapState.slots)),
+        SetupMode.FirstGameExileOnly(chronicle.atlasBox.take(MapState.slots)),
         history)
     }
 
@@ -178,7 +178,7 @@ class ExileOnlySetupSuite extends munit.FunSuite:
     val site = firstSite(isHomeland = false)
     val edifice = unstoredEdifice(notOf = None)
     val chronicle = storing(site, Vector(edifice))
-    assertEquals(mode(chronicle), SetupMode.ExileOnly(
+    assertEquals(mode(chronicle), SetupMode.FirstGameExileOnly(
       chronicle.atlasBox.take(MapState.slots)))
     assertEquals(started(chronicle).game.current.map.sites(site.site)
       .denizens, Vector(EdificeState(edifice, EdificeSide.Ruined,
@@ -189,7 +189,7 @@ class ExileOnlySetupSuite extends munit.FunSuite:
     val site = firstSite(isHomeland = true)
     val offSuit = unstoredEdifice(notOf = homeland(site))
     val chronicle = storing(site, Vector(offSuit))
-    assertEquals(mode(chronicle), SetupMode.ExileOnly(
+    assertEquals(mode(chronicle), SetupMode.FirstGameExileOnly(
       chronicle.atlasBox.take(MapState.slots)))
     assertEquals(started(chronicle).game.current.map.sites(site.site)
       .denizens, Vector(EdificeState(offSuit, EdificeSide.Ruined,

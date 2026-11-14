@@ -53,7 +53,7 @@ object StartingLegacies:
     // Empire divider for the holder's warbands. "If you were in the
     // previous game": a holder whose lineage sat it out does nothing (R39).
     val ironHand = mode match
-      case SetupMode.ExileOnly(_) => None
+      case SetupMode.FirstGameExileOnly(_) => None
       case _ => holder(chronicle, seated, IronHandCard.id, exileRoles)
         .filter(lineage => chronicle.lineages.exists(stored =>
           stored.id == lineage && stored.previousPlayer.nonEmpty))
@@ -76,5 +76,5 @@ object StartingLegacies:
     * and an exile-only game's eight, else the Empire's stored sites, kept
     * or former. */
   def placedBefore(chronicle: Chronicle, mode: SetupMode): Int = mode match
-    case SetupMode.FirstGame | SetupMode.ExileOnly(_) => MapState.slots
+    case SetupMode.FirstGame | SetupMode.FirstGameExileOnly(_) => MapState.slots
     case _ => chronicle.world.size

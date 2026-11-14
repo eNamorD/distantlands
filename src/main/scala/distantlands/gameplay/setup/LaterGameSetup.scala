@@ -24,7 +24,7 @@ object LaterGameSetup:
       case SetupMode.NoEmpire(_, exiled) => withoutEmpire(advised, exiled)
       // No Empire existed, so no lineage is exiled; the Reliquary is set
       // aside as with no Empire.
-      case SetupMode.ExileOnly(_) => withoutEmpire(advised, Vector.empty)
+      case SetupMode.FirstGameExileOnly(_) => withoutEmpire(advised, Vector.empty)
 
   /** Setup With No Empire, off the map: every Imperial lineage in the box
     * becomes an Exile, and the Reliquary is set aside until the Chronicle

@@ -138,7 +138,7 @@ object GameStartRules:
       legacies = StartingLegacies.of(chronicle, orders.participants, mode)
     yield FirstGameSetupPlan(orders.participants, orders.firstPlayer,
       (chronicle.world ++ legacies.rivalSites ++ atlasSites ++ (mode match
-        case SetupMode.ExileOnly(sites) => sites
+        case SetupMode.FirstGameExileOnly(sites) => sites
         case _ => Vector.empty)).map(_.site), orders.denizenOrder,
       orders.worldDeckOrder, orders.relicOrder, homelands,
       chronicle.oathkeeperGoal, mode match
@@ -146,7 +146,7 @@ object GameStartRules:
         case _ => None,
       mode match
         case SetupMode.NoEmpire(sites, _) => sites
-        case SetupMode.ExileOnly(sites) => sites
+        case SetupMode.FirstGameExileOnly(sites) => sites
         case _ => Vector.empty,
       startingAdvisers(chronicle, orders), faces, legacies) -> mode
 
@@ -159,7 +159,7 @@ object GameStartRules:
     * start, whatever Foundation I's face. */
   private def atlasSlots(mode: SetupMode,
       faces: Map[FoundationNumber, FoundationState]): Int = mode match
-    case SetupMode.FirstGame | SetupMode.ExileOnly(_) => MapState.slots
+    case SetupMode.FirstGame | SetupMode.FirstGameExileOnly(_) => MapState.slots
     case SetupMode.WithEmpire(empire)
         if faces(FoundationNumber.I).face == FoundationFace.Normal =>
       MapState.slots - empire.sites.size
