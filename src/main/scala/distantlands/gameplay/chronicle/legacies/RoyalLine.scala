@@ -38,10 +38,6 @@ case object RoyalLine extends ContributingPower:
   def decisionId(player: PlayerId): String =
     s"chronicle.sun.legacy.royal-line.${player.value}"
 
-  /** The Empire's wins, the only ones Royal Line can change. */
-  private val empireWins: Set[VictoryKind] = Set(VictoryKind.Successor,
-    VictoryKind.StableRegime, VictoryKind.ChancellorExhaustion)
-
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleSun)
   private val notes = NoteSet(noteId)
   val named: NoteKey = notes.key("royal-line-named", Vector(NotePart.Arg(0),
@@ -55,7 +51,7 @@ case object RoyalLine extends ContributingPower:
     * options. */
   val step: Operation = Branch((state, _) =>
     (for
-      result <- state.game.current.result if empireWins(result.kind)
+      result <- state.game.current.result if EmpireEndings.empireWins(result.kind)
       holder <- ChronicleLegacyRules.holder(state, RoyalLineCard.id,
         Set(Role.Citizen))
       chancellor <- Imperials.chancellor(state)

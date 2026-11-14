@@ -41,6 +41,12 @@ object EmpireEndings:
     if imperialOathkeeper(ready) then VictoryKind.StableRegime
     else VictoryKind.ChancellorExhaustion
 
+  /** The Empire's wins: the Chancellor's and the Successor's in their
+    * place, the only ones Royal Line may name a winner of (Legacy Chronicle
+    * powers R39). */
+  val empireWins: Set[VictoryKind] = Set(VictoryKind.Successor,
+    VictoryKind.StableRegime, VictoryKind.ChancellorExhaustion)
+
   /** The Chancellor's win the ended game gave, before any Successor took
     * it, with the Successor substitution of `chancellorWins` skipped. Royal
     * Line hands it back to the Chancellor (Legacy Chronicle powers R37).
