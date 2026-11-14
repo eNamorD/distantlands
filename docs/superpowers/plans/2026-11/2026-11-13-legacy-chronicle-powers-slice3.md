@@ -50,114 +50,38 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-These change behaviour, data, saved formats or the public shape of the
-code and wait for the orchestrator's rulings (R17 onward). The tasks are
-written to each recommendation.
+The plan's open questions were ruled on 2026-11-13 as implementation
+rulings R17-R27 ([rulings](../../specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)),
+each as the plan recommended:
 
-1. **Heirloom held by the Throne holder.** Heirloom's step comes before
-   Scatter Relics, as the card and ruling 13 say, so after Stock Reliquary,
-   which has already put the Throne holder's relics, but the Grand
-   Scepter, into the Reliquary. A Throne holder's Heirloom then keeps
-   nothing. Options: (a) as the card says: the window sits between Stock
-   Reliquary and Scatter Relics; (b) Heirloom's step before Stock
-   Reliquary, so the winner may keep one too. Recommendation: (a), the
-   printed timing; the winner already scores and takes the Throne.
-2. **Heirloom's choice.** The card says "secretly choose one of your
-   relics", with no "may" (ruling 3's decline is for "you may"). Options:
-   (a) a choose-one over the holder's relics but the Grand Scepter, no
-   Decline; a single relic is kept without a question, as Legacies R9
-   keeps a single drawn legacy; none asks nothing; (b) always asked, with
-   Decline. Recommendation: (a).
-3. **Heirloom's lines.** All held relics were revealed in Sun step 1, so
-   every viewer identified the relic at the Throne's start, and a card
-   argument would name it to all. `LogNote.readers` can show a note to a
-   set of players but cannot hide it from one player and show it to
-   spectators. Options: (a) one line for every viewer, "p2 kept a relic
-   with Heirloom" (no card argument), and one line for the holder alone,
-   "p2 kept Cup of Plenty with Heirloom"; the holder reads both; (b) the
-   naming line for the holder and "kept a relic" for every other seated
-   player, so spectators read neither; (c) a new note feature that hides a
-   note from named players. Recommendation: (a), which keeps every viewer's
-   log complete with the private-line mechanism catalog batch 12 already
-   uses.
-4. **How the kept relic is journaled.** Ruling 13 asks for a new
-   `ChronicleOperation`. Proposed: `StartingRelicKept(player: PlayerId,
-   relic: RelicId)`, wire kind `"starting-relic-kept"` with fields
-   `"player"` and `"relic"`: the relic leaves the player's relics and joins
-   their lineage's `startingRelics`, outside play and outside the card
-   index (Legacies R2), as game start then hands it back facedown. It
-   refuses the Grand Scepter, a relic the player does not hold, and a relic
-   with tokens; the walk first returns the relic's secrets to its holder,
-   facedown, as `Discard.Relic` does. Recommendation: as proposed.
-5. **The Ear's choice.** Options for each empty slot, taken one at a time
-   in the step's Hinterward order (ruling 14) and read when reached:
-   (a) a choose-one over the relics still set aside, no Decline (the card
-   has no "may"); the last relic for a slot is placed without a question
-   when only one remains; one decision id,
-   `chronicle.throne.legacy.the-ear.<player>`, reused per slot and read
-   from the latest answer, as Reformer's are (R13); each relic placed is
-   peeked for the holder at its site, so they still know it there;
-   (b) one partition of all the relics among the slots. Recommendation:
-   (a), ruling 14's "slot by slot". The step's heading names the slot's
-   site. Line: one, "p2 chose where the relics went with The Ear", after
-   the last placement (a decision line); the generic move lines show
-   facedown relics to everyone else.
-6. **How hidden cards reach their holder alone.** The Ear's relics lie in
-   the set-aside pile; the Beacon's in the Dispossessed and the newly
-   Dispossessed; `identifiesCard` names none of them to anyone
-   (`case _ => false`). Options: (a) the step journals a `Peek` of each
-   card for the holder (which records `knowledge.heldRelics` for a relic
-   and `knowledge.advisers` for a denizen), and `identifiesCard` gains
-   `SetAsideRelics` and `Dispossessed`/`NewlyDispossessed` cases that read
-   that knowledge; nobody else's projection changes, and replay derives
-   the same knowledge; (b) presentation rules keyed on the legacy holder
-   and the step, as the Reliquary's Setup case is. Recommendation: (a):
-   knowledge follows journaled facts, and a decision is projected to its
-   owner alone anyway.
-7. **Oaths of Loyalty in Gather Denizens.** Proposed: before the gathering,
-   a `ChooseMany(0, min(3, n))` over the holder's faceup denizen advisers,
-   asked when they have one; id
-   `chronicle.world.legacy.oaths-of-loyalty.<player>`; each chosen
-   adviser's tokens return as Gather Denizens returns every adviser's, and
-   the card moves to `Location.StartingAdvisers(lineage)` facedown, as
-   Protect and Dispossess's keep does; the rest gather as before. Line:
-   "p2 kept Village Idiot and Map Library with Oaths of Loyalty" (the
-   cards were faceup, so every viewer names them), a decision line.
-   Recommendation: as proposed.
-8. **Oaths' burial of other starting advisers** (ruling 16). Options:
-   (a) the holder still answers the keep choice in Protect and Dispossess,
-   Welcome a Stranger and the next Setup's hand of three, and the kept
-   card is buried at the bottom of the world deck instead (the
-   "would gain" is the choice); the line becomes "p2 buried Fae Merchant
-   with Oaths of Loyalty", the card argument naming it only to viewers who
-   identify it, as the keep line does today; (b) no keep question for the
-   holder in the Chronicle steps, where all three go to the world deck
-   bottom anyway, and the question only in Setup, where the other two go
-   to a discard pile. Recommendation: (a), one rule in three places.
-   Under Teeming World, `SetupDeal.of` deals an Oaths holder no draw at
-   all (ruling 16), read from the stored Chronicle's active legacies.
-9. **The Bright Beacon's choices.** Proposed: when the Beacon holder holds
-   The Bright Beacon active, a first choose-one, "Suited box" (first) or
-   "The Dispossessed", id
-   `chronicle.beacon.legacy.the-bright-beacon.<player>`; the box runs the
-   ordinary step. The Dispossessed: a `Peek` of each card for the holder,
-   then a `ChooseMany(6, 6)` over the older Dispossessed then the newly
-   Dispossessed, denizens only (Welcome a Stranger keeps a denizen), id
-   `...<player>.cards`; when exactly six remain they are taken without a
-   question (a choose-many of all its options is ill-formed). The six move
-   to the holder's temporary hand and Welcome a Stranger runs on them.
-   Line: "p3 took six newcomers from the Dispossessed with The Bright
-   Beacon" (a decision line). Recommendation: as proposed.
-10. **The new window.** `PowerWindow.ChronicleBeforeScatterRelics`
-    (`chronicle.throne.before-scatter-relics`), between Stock Reliquary
-    and Scatter Relics. Recommendation: as proposed.
-11. **The golden log "into the next game's setup".** Each game is its own
-    event stream, so one golden cannot span the boundary. Options: (a) two
-    goldens: the Chronicle where Oaths and Heirloom act, and the next
-    game's Setup started from that Chronicle's journaled record;
-    (b) one golden of the Chronicle only. Recommendation: (a).
+- **R17** (Task 1): Heirloom's step after Stock Reliquary, so a Throne
+  holder's Heirloom keeps nothing Stock Reliquary took.
+- **R18** (Task 1): a choose-one, no Decline; one relic kept without a
+  question; none asks nothing.
+- **R19** (Task 1): a public "p2 kept a relic with Heirloom" plus a
+  holder-only line naming the relic.
+- **R20** (Task 1): `StartingRelicKept(player, relic)`, wire kind
+  `"starting-relic-kept"`, refusing the Grand Scepter, a relic not held
+  and a relic with tokens; the relic's secrets return first.
+- **R21** (Task 2): The Ear asks slot by slot in Hinterward order under one
+  reused id while two or more relics remain; the last is placed without a
+  question; it stops when relics or empty slots run out; each placed relic
+  is peeked for the holder at its site; a resume test parks mid-scatter
+  after a first pick and the next pick is a different relic.
+- **R22** (Tasks 2 and 5): hidden cards reach their holder by `Peek`, read
+  by new `identifiesCard` cases; tests check another seat and the public
+  view still see them hidden.
+- **R23** (Task 3): Oaths keeps zero to three faceup denizen advisers
+  before the gathering; the line names them.
+- **R24** (Tasks 3 and 4): the keep questions stay and the kept card is
+  buried; under Teeming World an Oaths holder draws nothing.
+- **R25** (Task 5): The Bright Beacon's source question, box first; from
+  the Dispossessed a peek, then exactly six, taken without a question when
+  exactly six remain.
+- **R26** (Task 1): `ChronicleBeforeScatterRelics`.
+- **R27** (Task 6): two goldens.
 
 ## Global Constraints
 
@@ -258,21 +182,97 @@ gains `StartingRelicKept(PlayerId("red"), RelicId("R07"))`.
 `"chronicle.throne.before-scatter-relics"` after
 `"chronicle.throne.stock-reliquary"`.
 
-`HeirloomSuite` (package `distantlands.gameplay.chronicle.legacies`), on
-`ChronicleWalk.throneHeldByChancellorP1` (p1 holds the Throne; p2 an
-Exile), Throne runs through `ChronicleWalk.through(..., after =
-ChronicleSun)` with `WalkerDiceFixture.reversingShuffle`:
+In `ChronicleLogScripts`, a script and its registration in `named`:
 
 ```scala
+  /** The game of [[chronicleStarted]] with Heirloom: p2, holding the
+    * Darkest Secret, holds Heirloom, Cup of Plenty and Grand Mask, and at
+    * the Throne keeps Cup of Plenty (Legacy Chronicle powers, slice 3). */
+  def throneHeirloom(using munit.Location): Script =
+    val (service, acting) = atTable("throne-heirloom", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .darkestSecret(Some(p2), 1).relic(p2, CupOfPlentyCard)
+      .relic(p2, GrandMaskCard).legacy(p2, HeirloomCard)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.withAnswers {
+      case park if park.decisionId == Heirloom.decisionId(p2) =>
+        ChooseOneAnswer(DecisionOptionRef.Relic(CupOfPlentyCard.id))
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("throne-heirloom", service, p1)
+```
+
+In `ChronicleLegacyLogSuite`:
+
+```scala
+  test("Heirloom's relic is named to its holder alone (ruling 13; R19)"):
+    val script = ChronicleLogScripts.throneHeirloom
+    val public = s"${p2.value} kept a relic with ${HeirloomCard.name}"
+    val named = s"${p2.value} kept ${CupOfPlentyCard.name} with " +
+      HeirloomCard.name
+    def heirloomLines(viewer: Option[PlayerId]) =
+      format(script, viewer).map(text).filter(line =>
+        line == public || line == named)
+    assertEquals(heirloomLines(Some(p2)), Vector(public, named))
+    Vector(Some(p1), Some(p3), None).foreach(viewer =>
+      assertEquals(heirloomLines(viewer), Vector(public), viewer))
+```
+
+The script is a golden too (Task 6 writes its files).
+
+`HeirloomSuite`:
+
+```scala
+package distantlands.gameplay.chronicle.legacies
+
+import distantlands.gameplay.{GrandMaskCard, OathRules, WalkerDiceFixture}
+import distantlands.gameplay.chronicle.ChronicleWalk
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.{PowerImplementationStatus,
+  WalkerPowerCatalog}
+import distantlands.gameplay.powers.economy.CupOfPlentyCard
+import distantlands.gameplay.setup.{ChronicleAccounting, GameStartRules,
+  LaterGameFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
+
+/** Heirloom (L20): "Before Scatter Relics, secretly choose one of your
+  * relics to keep facedown. You will start the next game with it."
+  * (ruling 13; R17-R20). p1, the Chancellor, holds the Throne; p2 is an
+  * Exile. */
+class HeirloomSuite extends munit.FunSuite:
+  private val rules = new OathRules(catalog,
+    walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
+    walkerDice = WalkerDiceFixture.reversingShuffle)
+
+  private def throne: Table = ChronicleWalk.throneHeldByChancellorP1
+
+  private def through(table: Table,
+      answers: PartialFunction[Decide, DecisionAnswer])(
+      using munit.Location): ChronicleWalk.Run =
+    ChronicleWalk.through(rules, table, TriggeredProcedureRef.ChronicleThrone,
+      answers, after = TriggeredProcedureRef.ChronicleSun)
+
+  private def keeping(relic: RelicId): PartialFunction[Decide, DecisionAnswer] =
+    case decide if decide.decisionId == Heirloom.decisionId(p2) =>
+      DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Relic(relic))
+
+  private def lineage(ready: ReadyGame, player: PlayerId): LineageState =
+    ready.game.campaign.lineages(ready.game.current.player(player).get.lineage)
+
   test("Heirloom is implemented"):
     assert(PowerImplementationStatus.implemented(HeirloomCard.power.id))
 
   test("the holder keeps one relic of their choice, never the Grand " +
-      "Scepter, before Scatter Relics (ruling 13)"):
+      "Scepter, before Scatter Relics (ruling 13; R18)"):
     val table = throne.relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
       .relic(p2, TheGrandScepterCard).legacy(p2, HeirloomCard)
     val run = through(table, keeping(GrandMaskCard.id))
     val asked = run.asked.find(_.decisionId == Heirloom.decisionId(p2)).get
+    assertEquals(asked.owner, p2)
     assertEquals(asked.query.asInstanceOf[DecisionQuery.ChooseOne].options
       .map(_.ref).toSet, Set[DecisionOptionRef](
         DecisionOptionRef.Relic(CupOfPlentyCard.id),
@@ -284,52 +284,54 @@ ChronicleSun)` with `WalkerDiceFixture.reversingShuffle`:
       Vector(TheGrandScepterCard.id))
 
   test("a single relic is kept without a question, and none asks nothing " +
-      "(R17 recommendation)"):
+      "(R18)"):
     val one = through(throne.relic(p2, CupOfPlentyCard)
       .legacy(p2, HeirloomCard), PartialFunction.empty)
     assert(!one.asked.exists(_.decisionId == Heirloom.decisionId(p2)))
     assertEquals(lineage(one.ready, p2).startingRelics,
       Vector(CupOfPlentyCard.id))
-    val none = through(throne.legacy(p2, HeirloomCard), PartialFunction.empty)
+    val none = through(throne.relic(p2, TheGrandScepterCard)
+      .legacy(p2, HeirloomCard), PartialFunction.empty)
+    assert(!none.asked.exists(_.decisionId == Heirloom.decisionId(p2)))
     assertEquals(lineage(none.ready, p2).startingRelics, Vector.empty)
 
   test("a Throne holder's relics are already in the Reliquary, so their " +
-      "Heirloom keeps nothing (open question 1)"):
+      "Heirloom keeps nothing (R17)"):
     val run = through(throne.relic(p1, CupOfPlentyCard)
       .legacy(p1, HeirloomCard), PartialFunction.empty)
     assertEquals(lineage(run.ready, p1).startingRelics, Vector.empty)
 
-  test("a kept relic's secrets return to its holder first"):
-    // Set the relic's secrets through `update` on p2's relics.
-    ...
-```
+  test("a dormant Heirloom keeps nothing (ruling 1)"):
+    val run = through(throne.relic(p2, CupOfPlentyCard)
+      .legacy(p2, HeirloomCard, active = false), PartialFunction.empty)
+    assertEquals(lineage(run.ready, p2).startingRelics, Vector.empty)
 
-For the last test, set `RelicState(CupOfPlentyCard.id, FaceUp,
-Tokens(0, 2))` in p2's relics with `update`, and assert p2 holds 2 more
-facedown secrets after the Throne and the startingRelics hold the cup.
+  test("a kept relic's secrets return to its holder first, facedown"):
+    val table = throne.relic(p2, CupOfPlentyCard)
+      .tokens(CupOfPlentyCard, secrets = 2).legacy(p2, HeirloomCard)
+    val before = table.ready.game.current.player(p2).get.board
+    val run = through(table, PartialFunction.empty)
+    assertEquals(lineage(run.ready, p2).startingRelics,
+      Vector(CupOfPlentyCard.id))
+    val after = run.ready.game.current.player(p2).get.board
+    assertEquals(after.faceDownSecrets, before.faceDownSecrets + 2)
 
-The lines and their redaction, through `NoteLines` in a gamelog test
-(`ChronicleLegacyLogSuite`), on a script in `ChronicleLogScripts`
-(`throneHeirloom`) where p2 holds Heirloom and two relics and keeps Cup of
-Plenty:
+  test("a walk resumed at Heirloom's question keeps the chosen relic"):
+    val table = throne.relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
+      .legacy(p2, HeirloomCard)
+    val started = accepted(rules.next(OathTransition(table.state,
+      Vector.empty), TriggeredProcedureRef.ChronicleSun))
+    val parked = ChronicleWalk.walkedTo(rules, started,
+      Heirloom.decisionId(p2))
+    val decide = ChronicleWalk.parked(parked.state).get
+    val replayed = accepted(parked.events.foldLeft[
+      Either[OathViolation, OathState]](Right(table.state))((state, event) =>
+        state.flatMap(rules.evolve(_, event))))
+    assertEquals(ChronicleWalk.parked(replayed), Some(decide))
 
-```scala
-  test("Heirloom's relic is named to its holder alone (ruling 13)"):
-    val script = ChronicleLogScripts.throneHeirloom
-    val public = s"${p2.value} kept a relic with ${HeirloomCard.name}"
-    val named = s"${p2.value} kept ${CupOfPlentyCard.name} with " +
-      HeirloomCard.name
-    assertEquals(format(script, Some(p2)).map(text).filter(line =>
-      line == public || line == named), Vector(public, named))
-    Vector(Some(p1), Some(p3), None).foreach(viewer =>
-      assertEquals(format(script, viewer).map(text).filter(line =>
-        line == public || line == named), Vector(public), viewer))
-```
-
-And the next game, in `HeirloomSuite`:
-
-```scala
-  test("the kept relic starts the next game with its holder, facedown"):
+  test("the kept relic starts the next game with its holder, facedown " +
+      "(ruling 13)"):
+    // p2 holds the Darkest Secret, so Heirloom stays active through the Sun.
     val run = ChronicleWalk.through(rules, ChronicleWalk.chronicleWonByP1
       .relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
       .darkestSecret(Some(p2), 1).legacy(p2, HeirloomCard),
@@ -337,16 +339,17 @@ And the next game, in `HeirloomSuite`:
     val record = run.ready.game.campaign.evolved.get
     assertEquals(ChronicleAccounting.knownAndUnique(catalog, record),
       Right(()))
+    assertEquals(ChronicleAccounting.conserves(
+      run.ready.game.campaign.baseline, record), Right(()))
+    val kept = lineage(run.ready, p2).id
+    assertEquals(record.lineages.find(_.id == kept).map(_.startingRelics),
+      Some(Vector(CupOfPlentyCard.id)))
     val next = accepted(GameStartRules.evolve(catalog, record,
       LaterGameFixture.orders(record, p1)))
-    val seat = next.game.current.players.find(player =>
-      player.lineage == lineage(run.ready, p2).id).get
+    val seat = next.game.current.players.find(_.lineage == kept).get
     assert(seat.relics.contains(RelicState(CupOfPlentyCard.id,
-      Orientation.FaceDown, Tokens.empty)))
+      Orientation.FaceDown, Tokens.empty)), seat.relics)
 ```
-
-(p2 holds the Darkest Secret so Heirloom, a Darkest Secret legacy, stays
-active through the Sun.)
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
@@ -496,65 +499,174 @@ session's changes are present.)
 
 - [ ] **Step 1: Write the failing tests**
 
-`TheEarSuite`, on `throneHeldByChancellorP1` with p2 holding The Ear and
-two relics, and the Empire at Ancient City (no relic slots): the relics
-set aside are p2's two plus any the Reliquary discards; the empty slots
-are those of Broken Peaks and Buried Giant (two each), in map order.
+`TheEarSuite`:
 
 ```scala
+package distantlands.gameplay.chronicle.legacies
+
+import distantlands.application.{GamePresentationProjector, GameProjector,
+  LoadedGame}
+import distantlands.gameplay.{BanditCrownCard, GrandMaskCard, OathRules,
+  WalkerDiceFixture}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.chronicle.{ChronicleWalk, ReliquaryAndRelics}
+import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
+  WalkerPowerCatalog}
+import distantlands.gameplay.powers.economy.CupOfPlentyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
+
+/** The Ear (L19), its Chronicle half: "In Scatter Relics, you examine the
+  * relics and choose which sites they go to." (ruling 14; R21, R22). p1,
+  * the Chancellor, holds the Throne and the Empire rules Ancient City,
+  * which has no relic slot; p2, an Exile, holds The Ear and three relics,
+  * which Scatter Relics sets aside. */
+class TheEarSuite extends munit.FunSuite:
+  private val rules = new OathRules(catalog,
+    walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
+    walkerDice = WalkerDiceFixture.reversingShuffle)
+
+  private def earTable: Table = ChronicleWalk.throneHeldByChancellorP1
+    .warbandsAt(AncientCitySite, p1, 1)
+    .relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
+    .relic(p2, BanditCrownCard).legacy(p2, TheEarCard)
+
+  private def through(table: Table,
+      answers: PartialFunction[Decide, DecisionAnswer])(
+      using munit.Location): ChronicleWalk.Run =
+    ChronicleWalk.through(rules, table, TriggeredProcedureRef.ChronicleThrone,
+      answers, after = TriggeredProcedureRef.ChronicleSun)
+
+  /** The Ear's questions answered with `relics`, in turn. */
+  private def placing(relics: RelicId*)
+      : PartialFunction[Decide, DecisionAnswer] =
+    var left = relics.toVector
+    {
+      case decide if decide.decisionId == TheEar.decisionId(p2) =>
+        val next = left.head
+        left = left.drop(1)
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Relic(next))
+    }
+
+  private def asked(run: ChronicleWalk.Run): Vector[Decide] =
+    run.asked.filter(_.decisionId == TheEar.decisionId(p2))
+
+  private def offered(decide: Decide): Vector[DecisionOptionRef] =
+    decide.query.asInstanceOf[DecisionQuery.ChooseOne].options.map(_.ref)
+
+  private def relicsAt(ready: ReadyGame, site: SiteId): Vector[RelicId] =
+    ready.game.current.map.sites(site).relics.map(_.id)
+
+  private def slots: Vector[SiteId] =
+    ReliquaryAndRelics.emptySlots(catalog, earTable.ready)
+
   test("The Ear is implemented"):
     assert(PowerImplementationStatus.implemented(TheEarCard.power.id))
 
   test("the holder chooses the relic for each empty slot in Hinterward " +
-      "order, and the rest return to the deck (ruling 14)"):
+      "order while two or more remain, the last is placed without a " +
+      "question, and nothing is left set aside (ruling 14; R21)"):
     val run = through(earTable, placing(GrandMaskCard.id, CupOfPlentyCard.id))
-    val asked = run.asked.filter(_.decisionId == TheEar.decisionId(p2))
-    assert(asked.nonEmpty && asked.forall(_.owner == p2))
-    val slots = ReliquaryAndRelics.emptySlots(catalog, earTable.ready)
-    assertEquals(relicsAt(run.ready, slots.head).head, GrandMaskCard.id)
+    assertEquals(asked(run).size, 2)
+    assert(asked(run).forall(_.owner == p2))
+    assertEquals(relicsAt(run.ready, slots(0)).take(1), Vector(GrandMaskCard.id))
+    val placed = slots.take(3).distinct.flatMap(relicsAt(run.ready, _))
+    assertEquals(placed.toSet, Set(GrandMaskCard.id, CupOfPlentyCard.id,
+      BanditCrownCard.id))
+    assert(run.ready.game.current.setAsideRelics.isEmpty)
+    val lines = NoteText.said(ProcedureNotes.id(
+      TriggeredProcedureRef.ChronicleThrone),
+      LegacyChroniclePowers.throneNoteKeys, run.events).map(_.text)
+    assert(lines.contains(s"p2 chose where the relics went with " +
+      TheEarCard.id.value), lines)
+
+  test("each question offers only the relics still set aside"):
+    val run = through(earTable, placing(GrandMaskCard.id, CupOfPlentyCard.id))
+    assertEquals(offered(asked(run)(0)).toSet, Set[DecisionOptionRef](
+      DecisionOptionRef.Relic(CupOfPlentyCard.id),
+      DecisionOptionRef.Relic(GrandMaskCard.id),
+      DecisionOptionRef.Relic(BanditCrownCard.id)))
+    assertEquals(offered(asked(run)(1)).toSet, Set[DecisionOptionRef](
+      DecisionOptionRef.Relic(CupOfPlentyCard.id),
+      DecisionOptionRef.Relic(BanditCrownCard.id)))
+
+  test("with fewer empty slots than relics the rest return to the relic " +
+      "deck as before"):
+    // Fill every empty slot but one with relics from the relic deck.
+    val deck = earTable.ready.game.current.commonCards.relicDeck
+    val filled = slots.drop(1).zip(deck).foldLeft(earTable)((table, pair) =>
+      table.relicAt(pair._2, pair._1))
+    val run = through(filled, PartialFunction.empty)
+    // One slot, three relics: one question, then the deck takes the rest.
+    assertEquals(asked(run).size, 1)
     assert(run.ready.game.current.setAsideRelics.isEmpty)
 
-  test("each choice offers only the relics still set aside"):
-    val run = through(earTable, placing(GrandMaskCard.id, CupOfPlentyCard.id))
-    val second = run.asked.filter(_.decisionId == TheEar.decisionId(p2))(1)
-    assert(!second.query.asInstanceOf[DecisionQuery.ChooseOne].options
-      .exists(_.ref == DecisionOptionRef.Relic(GrandMaskCard.id)))
+  test("without The Ear in effect the deal is the shuffled one, as before"):
+    val run = through(ChronicleWalk.throneHeldByChancellorP1
+      .warbandsAt(AncientCitySite, p1, 1)
+      .relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
+      .legacy(p2, TheEarCard, active = false), PartialFunction.empty)
+    assertEquals(asked(run), Vector.empty)
+    assert(run.ready.game.current.setAsideRelics.isEmpty)
 
-  test("a single relic left is placed without a question"):
-    // Two relics set aside and two empty slots: one question.
-    ...
+  test("a walk parked mid-scatter, after a first pick, resumes to the same " +
+      "question (R21)"):
+    val started = accepted(rules.next(OathTransition(earTable.state,
+      Vector.empty), TriggeredProcedureRef.ChronicleSun))
+    val first = ChronicleWalk.walkedTo(rules, started, TheEar.decisionId(p2))
+    val next = accepted(rules.resolveWalker(first.state, p2,
+      TheEar.decisionId(p2), DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.Relic(GrandMaskCard.id))))
+    val parked = OathTransition(next.state, first.events ++ next.events)
+    val decide = ChronicleWalk.parked(parked.state).get
+    assertEquals(decide.decisionId, TheEar.decisionId(p2))
+    // The second pass offers a different set: Grand Mask is placed.
+    assert(!offered(decide).contains(DecisionOptionRef.Relic(GrandMaskCard.id)))
+    val replayed = accepted(parked.events.foldLeft[
+      Either[OathViolation, OathState]](Right(earTable.state))((state, event) =>
+        state.flatMap(rules.evolve(_, event))))
+    assertEquals(ChronicleWalk.parked(replayed), Some(decide))
+    // The second pick is a different relic, and lands in the next slot.
+    val done = ChronicleWalk.answeringEverything(rules, OathTransition(
+      accepted(rules.resolveWalker(parked.state, p2, TheEar.decisionId(p2),
+        DecisionAnswer.ChooseOneAnswer(
+          DecisionOptionRef.Relic(BanditCrownCard.id)))).state, Vector.empty))
+    val ready = Outcomes.ready(done.state)
+    assertEquals(slots.take(2).flatMap(relicsAt(ready, _)).take(2),
+      Vector(GrandMaskCard.id, BanditCrownCard.id))
 
-  test("without The Ear the deal is the shuffled one, as before"):
-    // The same table with The Ear dormant: no question, the slots filled.
-    ...
-
-  test("a walk resumed at the second slot's question after the first " +
-      "placement finds the same options (R13)"):
-    // Park on the second question, rebuild from the replayed journal,
-    // and compare, as ReformerSuite's mid-pass test does.
-    ...
+  test("the examined relics are named to the holder alone, and the holder " +
+      "still knows each where it lies; another seat and the public do not " +
+      "(R22)"):
+    val started = accepted(rules.next(OathTransition(earTable.state,
+      Vector.empty), TriggeredProcedureRef.ChronicleSun))
+    val atEar = ChronicleWalk.walkedTo(rules, started, TheEar.decisionId(p2))
+    val ready = Outcomes.ready(atEar.state)
+    val presentation = new GamePresentationProjector(catalog)
+    val relics = Vector(CupOfPlentyCard.id, GrandMaskCard.id,
+      BanditCrownCard.id)
+    assert(relics.forall(presentation.identifiesAt(ready, Some(p2), _)))
+    Vector(Some(p1), Some(p3), None).foreach(viewer =>
+      assert(relics.forall(!presentation.identifiesAt(ready, viewer, _)),
+        viewer))
+    val projector = new GameProjector(catalog)
+    val loaded = LoadedGame(atEar.state, 1L)
+    assert(projector.project("ear", loaded, p2).walkerDecision
+      .exists(_.query.exists(_.offeredOptions.nonEmpty)))
+    Vector(projector.project("ear", loaded, p1),
+        projector.projectPublic("ear", loaded)).foreach(view =>
+      assert(!view.walkerDecision.exists(_.query.nonEmpty)))
+    val placed = ChronicleWalk.answeringEverything(rules, atEar)
+    val after = Outcomes.ready(placed.state)
+    val site = slots.head
+    val first = relicsAt(after, site).head
+    assert(presentation.identifiesAt(after, Some(p2), first))
+    assert(!presentation.identifiesAt(after, Some(p1), first))
 ```
-
-Write the three sketched tests in full when writing the suite, each from
-`earTable` with the named answers; the resume test follows
-`ReformerSuite`'s "parked mid-pass" test line for line.
-
-Visibility, in the application tests:
-
-```scala
-  test("a set-aside relic is named to a viewer who peeked it, and to no " +
-      "one else (open question 6)"):
-    val ready = Table.start.update(r => r.updateCurrent(c =>
-      c.copy(setAsideRelics = Vector(GrandMaskCard.id)))) ...
-```
-
-Build the state with Grand Mask set aside (through `Table` or a
-`Move` from a player's relics by `RawOperationBatch`), apply
-`Peek(p2, GrandMaskCard.id, Location.SetAsideRelics)`, and assert
-`identifiesAt(ready, Some(p2), GrandMaskCard.id)` and not for `Some(p1)`
-or `None`; and that the parked The Ear decision is not projected to p1 or
-the public view (`GameProjector.project` for those viewers shows no
-`walkerDecision` with The Ear's id).
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
@@ -655,56 +767,148 @@ git log -3
 
 - [ ] **Step 1: Write the failing tests**
 
-`OathsOfLoyaltySuite`, on `throneHeldByChancellorP1` walked through the
-World (`ChronicleWalk.through(..., ChronicleWorld, after =
-ChronicleSun)`), p2 holding Oaths and five faceup advisers:
+`OathsOfLoyaltySuite`:
 
 ```scala
+package distantlands.gameplay.chronicle.legacies
+
+import distantlands.gameplay.{ActingTroupeCard, OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.ChronicleWalk
+import distantlands.gameplay.powers.action.FaeMerchantCard
+import distantlands.gameplay.powers.economy.{BirdsongCard, GolemLegionsCard}
+import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
+  WalkerPowerCatalog}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p2, p3}
+import distantlands.testkit.Unwrap.accepted
+
+/** Oaths of Loyalty (L25) in the Chronicle: "When you would gain a starting
+  * adviser, bury it, except for— CHRONICLE (WORLD): In Gather Denizens,
+  * keep your faceup advisers. They will be your facedown starting advisers
+  * in the next game." (rulings 15 and 16; R23, R24). p1 holds the Throne,
+  * p2 the World and p3 the Beacon. */
+class OathsOfLoyaltySuite extends munit.FunSuite:
+  private val rules = new OathRules(catalog,
+    walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
+    walkerDice = WalkerDiceFixture.reversingShuffle)
+
+  private val five = Vector(BirdsongCard, GolemLegionsCard, ActingTroupeCard,
+    FaeMerchantCard, ThreateningRoarCard)
+
+  /** p2 holds Oaths of Loyalty and the five advisers, faceup. */
+  private def fiveAdvisers: Table =
+    five.foldLeft(ChronicleWalk.throneHeldByChancellorP1)(_.adviser(p2, _))
+      .legacy(p2, OathsOfLoyaltyCard)
+
+  private def through(table: Table, procedure: TriggeredProcedureRef,
+      answers: PartialFunction[Decide, DecisionAnswer] = PartialFunction.empty)(
+      using munit.Location): ChronicleWalk.Run =
+    ChronicleWalk.through(rules, table, procedure, answers,
+      after = TriggeredProcedureRef.ChronicleSun)
+
+  private def keeping(player: PlayerId, cards: distantlands.catalog.Denizen*)
+      : PartialFunction[Decide, DecisionAnswer] =
+    case decide if decide.decisionId == OathsOfLoyalty.keepDecisionId(player) =>
+      DecisionAnswer.ChooseManyAnswer(cards.toVector.map(card =>
+        DecisionOptionRef.Denizen(card.id)))
+
+  private def lineage(ready: ReadyGame, player: PlayerId): LineageState =
+    ready.game.campaign.lineages(ready.game.current.player(player).get.lineage)
+
+  private def lines(run: ChronicleWalk.Run, procedure: TriggeredProcedureRef)
+      : Vector[String] =
+    NoteText.said(ProcedureNotes.id(procedure),
+      OathsOfLoyalty.noteKeys(procedure), run.events).map(_.text)
+
   test("Oaths of Loyalty is implemented"):
     assert(PowerImplementationStatus.implemented(
       OathsOfLoyaltyCard.power.id))
 
   test("the holder keeps three of five faceup advisers as facedown " +
-      "starting advisers, and the rest are gathered (ruling 15)"):
-    val run = world(fiveAdvisers, keeping(VillageIdiotCard, FaeMerchantCard,
-      ThreateningRoarCard))
-    val query = asked(run).query.asInstanceOf[DecisionQuery.ChooseMany]
-    assertEquals((query.min, query.max, query.options.size), (0, 3, 5))
-    assertEquals(lineage(run.ready, p2).startingAdvisers.map(_.id).toSet,
-      Set[CardId](VillageIdiotCard.id, FaeMerchantCard.id,
-        ThreateningRoarCard.id))
-    assert(lineage(run.ready, p2).startingAdvisers.forall {
+      "starting advisers, and the rest are gathered (ruling 15; R23)"):
+    val run = through(fiveAdvisers, TriggeredProcedureRef.ChronicleWorld,
+      keeping(p2, BirdsongCard, GolemLegionsCard, ActingTroupeCard))
+    val asked = run.asked.find(_.decisionId ==
+      OathsOfLoyalty.keepDecisionId(p2)).get
+    val query = asked.query.asInstanceOf[DecisionQuery.ChooseMany]
+    assertEquals((asked.owner, query.min, query.max, query.options.size),
+      (p2, 0, 3, 5))
+    val kept = lineage(run.ready, p2).startingAdvisers
+    assert(Vector(BirdsongCard, GolemLegionsCard, ActingTroupeCard)
+      .forall(card => kept.exists(_.id == card.id)), kept)
+    assert(kept.forall {
       case DenizenState(_, orientation, tokens) =>
         orientation == Orientation.FaceDown && tokens.isEmpty
       case _ => false })
+    assert(!kept.exists(_.id == FaeMerchantCard.id))
+    assert(lines(run, TriggeredProcedureRef.ChronicleWorld).contains(
+      s"p2 kept ${BirdsongCard.id.value}, ${GolemLegionsCard.id.value} and " +
+        s"${ActingTroupeCard.id.value} with ${OathsOfLoyaltyCard.id.value}"))
 
   test("a kept adviser's tokens return to their banks first"):
-    ...
+    val suit = catalog.denizen(BirdsongCard.id).get.suit
+    val table = fiveAdvisers.tokens(BirdsongCard, favor = 2)
+      .bankFavor(suit, 0)
+    val run = through(table, TriggeredProcedureRef.ChronicleWorld,
+      keeping(p2, BirdsongCard))
+    assertEquals(run.ready.banks.favor(suit), 2)
 
-  test("facedown advisers are not offered; none faceup asks nothing"):
-    ...
+  test("facedown advisers are not offered, and none faceup asks nothing"):
+    val table = ChronicleWalk.throneHeldByChancellorP1
+      .adviser(p2, BirdsongCard, facedown = true)
+      .legacy(p2, OathsOfLoyaltyCard)
+    val run = through(table, TriggeredProcedureRef.ChronicleWorld)
+    assert(!run.asked.exists(_.decisionId ==
+      OathsOfLoyalty.keepDecisionId(p2)))
 
   test("the holder's Protect and Dispossess keep is buried at the world " +
-      "deck bottom (ruling 16)"):
-    // p2 holds the World task too; the plainest keep is the first card.
-    ...
+      "deck bottom (ruling 16; R24)"):
+    // p2 keeps no adviser with Oaths, then keeps the plainest card in
+    // Protect and Dispossess: it is buried, so p2's lineage stores none.
+    val run = through(fiveAdvisers, TriggeredProcedureRef.ChronicleWorld)
+    assertEquals(lineage(run.ready, p2).startingAdvisers, Vector.empty)
+    val buried = lines(run, TriggeredProcedureRef.ChronicleWorld)
+      .filter(_.startsWith("p2 buried "))
+    assertEquals(buried.size, 1)
+    assert(buried.head.endsWith(s" with ${OathsOfLoyaltyCard.id.value}"))
+    val card = buried.head.stripPrefix("p2 buried ")
+      .stripSuffix(s" with ${OathsOfLoyaltyCard.id.value}")
+    // The protected stack's three cards all went to the bottom.
+    assert(run.ready.game.current.commonCards.worldDeck.takeRight(3)
+      .map(_.value).contains(card))
 
   test("the holder's Welcome a Stranger keep is buried (ruling 16)"):
-    // p2 holds the Beacon task; walk through the Beacon.
-    ...
+    val table = ChronicleWalk.throneHeldByChancellorP1
+      .legacy(p3, OathsOfLoyaltyCard)
+    val run = through(table, TriggeredProcedureRef.ChronicleBeacon)
+    assertEquals(lineage(run.ready, p3).startingAdvisers, Vector.empty)
+    assertEquals(lines(run, TriggeredProcedureRef.ChronicleBeacon)
+      .count(_.startsWith("p3 buried ")), 1)
 
   test("a dormant Oaths keeps nothing and buries nothing (ruling 1)"):
-    ...
+    val table = five.foldLeft(ChronicleWalk.throneHeldByChancellorP1)(
+      _.adviser(p2, _)).legacy(p2, OathsOfLoyaltyCard, active = false)
+    val run = through(table, TriggeredProcedureRef.ChronicleWorld)
+    assert(!run.asked.exists(_.decisionId ==
+      OathsOfLoyalty.keepDecisionId(p2)))
+    assertEquals(lineage(run.ready, p2).startingAdvisers.size, 1)
 
   test("a walk resumed at the keep question finds the same five advisers"):
-    ...
+    val started = accepted(rules.next(OathTransition(fiveAdvisers.state,
+      Vector.empty), TriggeredProcedureRef.ChronicleSun))
+    val parked = ChronicleWalk.walkedTo(rules, started,
+      OathsOfLoyalty.keepDecisionId(p2))
+    val decide = ChronicleWalk.parked(parked.state).get
+    assertEquals(decide.decisionId, OathsOfLoyalty.keepDecisionId(p2))
+    val replayed = accepted(parked.events.foldLeft[
+      Either[OathViolation, OathState]](Right(fiveAdvisers.state))(
+      (state, event) => state.flatMap(rules.evolve(_, event))))
+    assertEquals(ChronicleWalk.parked(replayed), Some(decide))
 ```
-
-Write each sketched test in full when writing the suite: the card objects
-are `VillageIdiotCard`, `FaeMerchantCard`, `ThreateningRoarCard`,
-`MapLibraryCard` and `DowntroddenCard` (site or either-place denizens),
-the burial asserted by the card at `worldDeck.last` and the line
-`s"p2 buried ${card.id.value} with ${OathsOfLoyaltyCard.id.value}"`.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
@@ -770,28 +974,62 @@ git log -3
 
 - [ ] **Step 1: Write the failing tests**
 
+`OathsSetupSuite` (the Teeming World deal is its last test, so `SetupDealSuite` is unchanged):
+
 ```scala
-  test("under Teeming World an Oaths holder draws no starting adviser " +
-      "(ruling 16)"):
-    val record = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
-    val altered = record.copy(foundations = record.foundations.updated(
-      FoundationNumber.IV, FoundationState(FoundationFace.Altered, Set.empty)),
+package distantlands.gameplay.setup
+
+import distantlands.gameplay.chronicle.legacies.OathsOfLoyaltyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Situation
+
+/** Oaths of Loyalty in the next game's Setup: "When you would gain a
+  * starting adviser, bury it." (ruling 16; R24). l1, played by p1, holds
+  * Oaths of Loyalty active and stores no starting adviser. */
+class OathsSetupSuite extends munit.FunSuite:
+  private val p1 = PlayerId("p1")
+  private val l1 = LineageId("l1")
+
+  private def holding(active: Boolean, face: FoundationFace): Chronicle =
+    val record = LaterGameFixture.chronicle(l1, LineageId("l2"))
+    record.copy(
+      foundations = record.foundations.updated(FoundationNumber.IV,
+        FoundationState(face, Set.empty)),
       lineages = record.lineages.map(lineage =>
-        if lineage.id == LineageId("l1") then lineage.copy(legacies =
-          Vector(LegacyState(OathsOfLoyaltyCard.id, active = true)))
+        if lineage.id == l1 then lineage.copy(legacies =
+          Vector(LegacyState(OathsOfLoyaltyCard.id, active)))
         else lineage))
-    val deal = SetupDeal.of(altered, participants(altered))
+
+  private def woken(chronicle: Chronicle)(using munit.Location): ReadyGame =
+    Situation.wake(Situation.rules(catalog), chronicle,
+      LaterGameFixture.orders(chronicle, p1)).ready
+
+  test("under Ties of Fellowship the holder still picks from a hand of " +
+      "three, and the kept card is buried at the world deck bottom"):
+    val chronicle = holding(active = true, FoundationFace.Normal)
+    val hand = SetupDeal.of(chronicle, FirstGameSetupFixture.participants)
+      .hand(LaterGameFixture.orders(chronicle, p1).denizenOrder, p1)
+    assertEquals(hand.size, 3)
+    val ready = woken(chronicle)
+    assertEquals(ready.game.current.player(p1).get.advisers, Vector.empty)
+    assert(ready.game.current.commonCards.worldDeck.takeRight(3)
+      .exists(card => hand.contains(card)))
+
+  test("a dormant Oaths keeps the picked adviser as before (ruling 1)"):
+    val ready = woken(holding(active = false, FoundationFace.Normal))
+    assertEquals(ready.game.current.player(p1).get.advisers.size, 1)
+
+  test("under Teeming World the holder draws no starting adviser"):
+    val chronicle = holding(active = true, FoundationFace.Altered)
+    val deal = SetupDeal.of(chronicle, FirstGameSetupFixture.participants)
     assertEquals(deal.draws.find(_._1 == p1).map(_._2), Some(0))
+    assertEquals(woken(chronicle).game.current.player(p1).get.advisers,
+      Vector.empty)
+    val dormant = SetupDeal.of(holding(active = false,
+      FoundationFace.Altered), FirstGameSetupFixture.participants)
+    assertEquals(dormant.draws.find(_._1 == p1).map(_._2), Some(3))
 ```
-
-(Use the fixture's own field names for the Chronicle's foundations and the
-participants; adapt if the record stores foundation faces differently.)
-
-`OathsSetupSuite`: a later game from `LaterGameFixture`, Ties of
-Fellowship, l1 (p1) holding Oaths active and no starting adviser: p1 draws
-a hand of three; the Setup adviser question is asked as usual; the kept
-card goes to the world deck bottom and p1 holds no adviser; the line is
-"p1 buried {card} with Oaths of Loyalty"; a dormant Oaths keeps as before.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
@@ -852,42 +1090,170 @@ git log -3
 
 - [ ] **Step 1: Write the failing tests**
 
-`TheBrightBeaconSuite`, on the table `ChronicleWalk.beaconWalkedTo` uses
-(p3 holds the Beacon), with p3 holding The Bright Beacon and the older
-Dispossessed seeded by `Table.dispossessed`:
+`TheBrightBeaconSuite`:
 
 ```scala
+package distantlands.gameplay.chronicle.legacies
+
+import distantlands.application.GamePresentationProjector
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.{ChronicleWalk, IntroduceNewcomers,
+  WelcomeStranger}
+import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
+  WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
+
+/** The Bright Beacon (L24): "If you're resolving the Beacon, you may take
+  * any six cards from the Dispossessed (instead of choosing suits and
+  * taking from their matching dividers)." (ruling 17; R25). p3 holds the
+  * Beacon task and The Bright Beacon; five older Dispossessed and three
+  * newly Dispossessed denizens wait. */
+class TheBrightBeaconSuite extends munit.FunSuite:
+  private val rules = new OathRules(catalog,
+    walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
+    walkerDice = WalkerDiceFixture.reversingShuffle)
+
+  /** Tasks assigned, no Vision left in the world deck (as
+    * `BeaconTaskSuite`'s table), then `older` Dispossessed and `newly`
+    * newly Dispossessed taken from its denizens. */
+  private def beaconTable(older: Int, newly: Int): Table =
+    val base = Table.from(ChronicleWalk.throneHeldByChancellorP1.ready
+      .updateCurrent(current => current.copy(commonCards =
+        current.commonCards.copy(worldDeck = current.commonCards.worldDeck
+          .filterNot(_.isInstanceOf[VisionId])))))
+    val denizens = base.ready.game.current.commonCards.worldDeck
+      .collect { case id: DenizenId => id }
+    val (old, fresh) = denizens.take(older + newly).splitAt(older)
+    base.dispossessed(old*).update(_.updateCurrent(current => current.copy(
+      commonCards = current.commonCards.copy(worldDeck =
+        current.commonCards.worldDeck.filterNot(fresh.contains)),
+      newlyDispossessed = fresh))).legacy(p3, TheBrightBeaconCard)
+
+  private def all(table: Table): Vector[DenizenId] =
+    (table.ready.game.campaign.dispossessed ++
+      table.ready.game.current.newlyDispossessed)
+      .collect { case id: DenizenId => id }
+
+  private def beacon(table: Table,
+      answers: PartialFunction[Decide, DecisionAnswer] = PartialFunction.empty)(
+      using munit.Location): ChronicleWalk.Run =
+    ChronicleWalk.through(rules, table, TriggeredProcedureRef.ChronicleBeacon,
+      answers, after = TriggeredProcedureRef.ChronicleWorld)
+
+  private def fromDispossessed(cards: Vector[DenizenId])
+      : PartialFunction[Decide, DecisionAnswer] =
+    case decide if decide.decisionId == TheBrightBeacon.sourceId(p3) =>
+      DecisionAnswer.ChooseOneAnswer(TheBrightBeacon.dispossessed)
+    case decide if decide.decisionId == TheBrightBeacon.cardsId(p3) =>
+      DecisionAnswer.ChooseManyAnswer(cards.map(DecisionOptionRef.Denizen(_)))
+
+  private def lineage(ready: ReadyGame, player: PlayerId): LineageState =
+    ready.game.campaign.lineages(ready.game.current.player(player).get.lineage)
+
   test("The Bright Beacon is implemented"):
     assert(PowerImplementationStatus.implemented(
       TheBrightBeaconCard.power.id))
 
-  test("the holder first chooses the source, the box first, before seeing " +
-      "the Dispossessed (ruling 17)"):
-    ...
+  test("the holder first chooses the source, the box first (ruling 17)"):
+    val run = beacon(beaconTable(5, 3))
+    val source = run.asked.head
+    assertEquals((source.decisionId, source.owner),
+      (TheBrightBeacon.sourceId(p3), p3))
+    assertEquals(source.query.asInstanceOf[DecisionQuery.ChooseOne].options
+      .map(_.ref), Vector(TheBrightBeacon.box, TheBrightBeacon.dispossessed))
 
   test("the box runs the ordinary step"):
-    ...
+    val run = beacon(beaconTable(5, 3))
+    assert(run.asked.exists(_.decisionId ==
+      IntroduceNewcomers.suitDecisionId(3)))
+    assert(!run.asked.exists(_.decisionId == TheBrightBeacon.cardsId(p3)))
 
   test("from the Dispossessed the holder chooses exactly six of all of " +
       "them, the newly Dispossessed included, and Welcome a Stranger runs " +
-      "on those six"):
-    ...
+      "on those six (R25)"):
+    val table = beaconTable(5, 3)
+    val six = all(table).drop(2)
+    val run = beacon(table, fromDispossessed(six))
+    val asked = run.asked.find(_.decisionId == TheBrightBeacon.cardsId(p3)).get
+    val query = asked.query.asInstanceOf[DecisionQuery.ChooseMany]
+    assertEquals((query.min, query.max), (6, 6))
+    assertEquals(query.options.map(_.ref),
+      all(table).map(DecisionOptionRef.Denizen(_)))
+    assert(!run.asked.exists(_.decisionId ==
+      IntroduceNewcomers.suitDecisionId(3)))
+    val welcome = run.asked.find(_.decisionId ==
+      WelcomeStranger.keepDecisionId).get
+    assertEquals(welcome.query.asInstanceOf[DecisionQuery.Partition].options
+      .map(_.ref).toSet, six.map(DecisionOptionRef.Denizen(_)).toSet)
+    assertEquals(lineage(run.ready, p3).startingAdvisers.size, 1)
+    assert(six.contains(lineage(run.ready, p3).startingAdvisers.head.id))
+    val lines = NoteText.said(ProcedureNotes.id(
+      TriggeredProcedureRef.ChronicleBeacon),
+      LegacyChroniclePowers.beaconNoteKeys, run.events).map(_.text)
+    assert(lines.contains(s"p3 took six newcomers from the Dispossessed " +
+      s"with ${TheBrightBeaconCard.id.value}"), lines)
 
-  test("exactly six Dispossessed are taken without a question"):
-    ...
+  test("exactly six Dispossessed are taken without a question (R25)"):
+    val table = beaconTable(3, 3)
+    val run = beacon(table, fromDispossessed(Vector.empty))
+    assert(!run.asked.exists(_.decisionId == TheBrightBeacon.cardsId(p3)))
+    val welcome = run.asked.find(_.decisionId ==
+      WelcomeStranger.keepDecisionId).get
+    assertEquals(welcome.query.asInstanceOf[DecisionQuery.Partition].options
+      .map(_.ref).toSet, all(table).map(DecisionOptionRef.Denizen(_)).toSet)
 
-  test("a holder not resolving the Beacon is not asked"):
-    ...
+  test("a holder not resolving the Beacon is not asked (ruling 17)"):
+    val table = beaconTable(5, 3).update(_.updateCampaign(campaign =>
+      campaign.copy(lineages = campaign.lineages.view.mapValues(lineage =>
+        lineage.copy(legacies = lineage.legacies.filterNot(
+          _.id == TheBrightBeaconCard.id))).toMap)))
+      .legacy(p2, TheBrightBeaconCard)
+    val run = beacon(table)
+    assert(!run.asked.exists(_.decisionId.startsWith(
+      "chronicle.beacon.legacy.the-bright-beacon.")))
 
-  test("the Dispossessed are named to the holder after the source choice, " +
-      "and to no other viewer (open question 6)"):
-    ...
+  test("the Dispossessed are named to the holder only after choosing them " +
+      "as the source, and never to another seat or the public (R22)"):
+    val table = beaconTable(5, 3)
+    val started = accepted(rules.next(OathTransition(table.state,
+      Vector.empty), TriggeredProcedureRef.ChronicleWorld))
+    val atSource = ChronicleWalk.walkedTo(rules, started,
+      TheBrightBeacon.sourceId(p3))
+    val presentation = new GamePresentationProjector(catalog)
+    val older = table.ready.game.campaign.dispossessed
+    assert(older.forall(card => !presentation.identifiesAt(
+      Outcomes.ready(atSource.state), Some(p3), card)))
+    val chosen = accepted(rules.resolveWalker(atSource.state, p3,
+      TheBrightBeacon.sourceId(p3), DecisionAnswer.ChooseOneAnswer(
+        TheBrightBeacon.dispossessed)))
+    val ready = Outcomes.ready(chosen.state)
+    assertEquals(ChronicleWalk.parked(chosen.state).map(_.decisionId),
+      Some(TheBrightBeacon.cardsId(p3)))
+    assert(all(table).forall(presentation.identifiesAt(ready, Some(p3), _)))
+    Vector(Some(p1), Some(p2), None).foreach(viewer =>
+      assert(older.forall(card =>
+        !presentation.identifiesAt(ready, viewer, card)), viewer))
 
   test("a walk resumed at the six-card question finds the same cards"):
-    ...
+    val table = beaconTable(5, 3)
+    val started = accepted(rules.next(OathTransition(table.state,
+      Vector.empty), TriggeredProcedureRef.ChronicleWorld))
+    val atSource = ChronicleWalk.walkedTo(rules, started,
+      TheBrightBeacon.sourceId(p3))
+    val next = accepted(rules.resolveWalker(atSource.state, p3,
+      TheBrightBeacon.sourceId(p3), DecisionAnswer.ChooseOneAnswer(
+        TheBrightBeacon.dispossessed)))
+    val events = atSource.events ++ next.events
+    val decide = ChronicleWalk.parked(next.state).get
+    val replayed = accepted(events.foldLeft[Either[OathViolation, OathState]](
+      Right(table.state))((state, event) => state.flatMap(rules.evolve(_, event))))
+    assertEquals(ChronicleWalk.parked(replayed), Some(decide))
 ```
-
-Write each sketched test in full when writing the suite.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
@@ -957,13 +1323,66 @@ git log -3
 
 - [ ] **Step 1: Write the scripts**
 
-`chronicleOathsHeirloom`: the game of `throneOffered`, with p2 holding
-Oaths of Loyalty (and the Darkest Secret to keep it active) and two faceup
-advisers, and Heirloom and two relics; p2 keeps both advisers with Oaths
-and Cup of Plenty with Heirloom. `laterGameAfterOaths`: the next game,
-started from the record that script's stream journals, under Ties of
-Fellowship, with every Setup park answered as the situation does by
-default.
+In `ChronicleLogScripts` (registered in `named`, with Task 1's
+`throne-heirloom`):
+
+```scala
+  /** The game of [[chronicleStarted]] with Oaths of Loyalty and Heirloom:
+    * p2 holds the Darkest Secret, Cup of Plenty (the highest relic) and
+    * Grand Mask, two faceup advisers, Oaths of Loyalty and Heirloom. At the
+    * Throne p2 keeps Cup of Plenty with Heirloom; at the World p2 keeps both
+    * advisers with Oaths. The journaled Chronicle comes back too, for the
+    * next game's script. */
+  def oathsHeirloomPlayed(using munit.Location): (Script, Chronicle) =
+    val (service, acting) = atTable("chronicle-oaths-heirloom", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .darkestSecret(Some(p2), 1).relic(p2, CupOfPlentyCard)
+      .relic(p2, GrandMaskCard).adviser(p2, BirdsongCard)
+      .adviser(p2, GolemLegionsCard).legacy(p2, OathsOfLoyaltyCard)
+      .legacy(p2, HeirloomCard).turn(p3, Phase.Act).banditsRefilled)
+    val played = acting.withAnswers {
+      case park if park.decisionId == Heirloom.decisionId(p2) =>
+        ChooseOneAnswer(DecisionOptionRef.Relic(CupOfPlentyCard.id))
+      case park if park.decisionId == OathsOfLoyalty.keepDecisionId(p2) =>
+        ChooseManyAnswer(Vector(BirdsongCard.id, GolemLegionsCard.id)
+          .map(DecisionOptionRef.Denizen(_)))
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    (Script("chronicle-oaths-heirloom", service, p1),
+      played.ready.game.campaign.evolved.get)
+
+  def chronicleOathsHeirloom(using munit.Location): Script =
+    oathsHeirloomPlayed._1
+```
+
+In `LaterGameLogScripts` (registered in `named`):
+
+```scala
+  /** The next game, from the Chronicle [[ChronicleLogScripts.oathsHeirloomPlayed]]
+    * journals: p2's lineage starts with its two kept advisers and Cup of
+    * Plenty, facedown, and draws no hand (Legacy Chronicle powers, R27). */
+  def laterGameAfterOaths(using munit.Location): Script =
+    val record = ChronicleLogScripts.oathsHeirloomPlayed._2
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository,
+      campaignDicePort = Dice.steady)
+    val situation = Situation.wake(Situation.journaled(service, catalog,
+      repository, "later-game-after-oaths"), record,
+      LaterGameFixture.orders(record, p1))
+    Script("later-game-after-oaths", service, Look(situation.ready).active)
+```
+
+A test beside them, in `ChronicleLegacyLogSuite`:
+
+```scala
+  test("the next game starts p2's lineage with what Oaths and Heirloom " +
+      "kept, facedown (R27)"):
+    val record = ChronicleLogScripts.oathsHeirloomPlayed._2
+    val lineage = record.lineages.find(_.startingRelics.nonEmpty).get
+    assertEquals(lineage.startingRelics, Vector(CupOfPlentyCard.id))
+    assertEquals(lineage.startingAdvisers.map(_.id).toSet,
+      Set[CardId](BirdsongCard.id, GolemLegionsCard.id))
+```
 
 - [ ] **Step 2: Write and review the goldens**
 
@@ -993,7 +1412,8 @@ git log -3
   this slice's implementation rulings), `docs/rules/implementation-traceability.md`
   (Throne, World and Beacon rows; the later-game row for Oaths and the
   kept relic), `docs/ROADMAP.md` (the in-play item names The Ear's ACTION
-  half, R7), the design's status line.
+  half, R7; the "Legacy powers: Chronicle" item drops the four powers this
+  slice delivers, as slice 2's review asked), the design's status line.
 
 - [ ] **Step 1: Docs**, as slice 2's Task 5.
 
@@ -1037,13 +1457,9 @@ git log -3
   Protect and Dispossess's do.
 - Docs: Task 7.
 
-**Placeholder scan:** several tests are sketched with their scenario, card
-objects and assertions named, to be written in full with the suite; each
-says so. These suites depend on answers to open questions 2, 5, 8 and 9,
-whose rulings fix the questions' exact shapes, so their code is written
-after the rulings, in the same session, before execution starts. The
-sketched implementation of The Ear's `place` names its pattern
-(Reformer's `owed`).
+**Placeholder scan:** every test is written out. The Ear's `place` names
+its pattern (Reformer's `owed`), which Task 2 writes against this plan's
+tests.
 
 **Type consistency:** `StartingRelicKept(PlayerId, RelicId)`;
 `ChronicleLegacyRules.scatterer`, `keepsAdvisers`, `beaconFromDispossessed`

@@ -157,3 +157,105 @@ Reason: it restores the invariant that the set-aside list is empty after
 Build Edifice, matches the CR's "bottom of the edifice deck", and needs no
 new move kind; the R14 test proves game start's accounting.
 Slice/files: 2; `Revolutionary`.
+
+## Slice 3
+
+**R17. Heirloom held by the Throne holder.**
+Decision: the printed timing: Heirloom's step comes after Stock Reliquary,
+so a Throne holder with Heirloom keeps nothing Stock Reliquary took.
+Reason: "before Scatter Relics" is printed, and Stock Reliquary takes the
+winner's relics by rule.
+Slice/files: 3; `Heirloom`, `ChronicleWindows`.
+
+**R18. Heirloom's choice.**
+Decision: a choose-one over the holder's relics but the Grand Scepter, with
+no Decline; a single relic is kept without a question; holding none asks
+nothing.
+Reason: the card has no "may"; it matches Legacies R9.
+Slice/files: 3; `Heirloom`.
+
+**R19. Heirloom's lines.**
+Decision: a public "p2 kept a relic with Heirloom" for every viewer, plus a
+line only the holder reads naming the relic.
+Reason: no new note feature; which relic left is the only secret, and the
+holder's line keeps their log complete.
+Slice/files: 3; `Heirloom`, `ProcedureLog`.
+
+**R20. The kept relic's operation.**
+Decision: `StartingRelicKept(player, relic)`, wire kind
+`"starting-relic-kept"`: the relic leaves the player's relics for their
+lineage's `startingRelics`; the Grand Scepter, a relic not held and a relic
+with tokens are refused, and the walk first returns the relic's secrets to
+its holder, facedown.
+Reason: one operation; its refusals guard the invariants.
+Slice/files: 3; `ChronicleOperation`, `ChronicleStateOperations`, the codec.
+
+**R21. The Ear's choices.**
+Decision: slot by slot in Hinterward order, each read when reached, under
+one reused decision id, `chronicle.throne.legacy.the-ear.<player>`: a slot
+is asked whenever two or more relics remain set aside; the last remaining
+relic is placed without a question; the walk stops when relics or empty
+slots run out, the rest returning to the deck as before. Each placed relic
+is peeked again for the holder at its site. A resume test parks
+mid-scatter, as R13 asked for Reformer.
+Reason: per-slot picks match ruling 14; reused ids are the parked-decision
+bug class.
+Slice/files: 3; `TheEar`, `ReliquaryAndRelics`.
+
+**R22. Showing hidden cards to their holder alone.**
+Decision: the step journals a `Peek` of each card for the holder, and
+`identifiesCard` gains cases for the set-aside relics, the Dispossessed and
+the newly Dispossessed that read that knowledge. A test checks that another
+seated player and a spectator still see those cards hidden.
+Reason: one existing mechanism, which replay derives; the holder keeps
+knowing cards they really saw.
+Slice/files: 3; `TheEar`, `TheBrightBeacon`, `GamePresentationProjector`.
+
+**R23. Oaths of Loyalty in Gather Denizens.**
+Decision: before the gathering, a choose-many of zero to three over the
+holder's faceup denizen advisers, id
+`chronicle.world.legacy.oaths-of-loyalty.<player>`; each kept adviser's
+tokens return as Gather Denizens returns every adviser's, and it moves
+facedown to the lineage's starting advisers. The line names the kept
+advisers: "p2 kept X and Y with Oaths of Loyalty".
+Reason: up to three by owner ruling 15; faceup advisers were public, so the
+line may name them.
+Slice/files: 3; `OathsOfLoyalty`, `GatherDenizens`.
+
+**R24. Oaths' burial of other starting advisers.**
+Decision: the keep questions stay (Protect and Dispossess, Welcome a
+Stranger, the next Setup's hand of three) and the kept card is buried at
+the bottom of the world deck instead: "p2 buried X with Oaths of Loyalty".
+Under Teeming World an Oaths holder draws no starting adviser.
+Reason: one rule applied uniformly ("would gain, bury it"), with no
+special-case paths.
+Slice/files: 3; `StartingAdviserChoice`, `SetupProcedure`, `SetupDeal`.
+
+**R25. The Bright Beacon's choices.**
+Decision: a first choose-one, "Suited box" (first) or "The Dispossessed",
+id `chronicle.beacon.legacy.the-bright-beacon.<player>`; from the
+Dispossessed, a `Peek` of each card for the holder, then a choose-many of
+exactly six over the older then the newly Dispossessed, denizens only, id
+`...<player>.cards`; when exactly six remain they are taken without a
+question. The six go to the holder's temporary hand and Welcome a Stranger
+runs on them. Line: "p3 took six newcomers from the Dispossessed with The
+Bright Beacon".
+Reason: ruling 17 as the owner ruled it; a choose-many over all its
+options is not a legal question.
+Slice/files: 3; `TheBrightBeacon`, `IntroduceNewcomers`.
+
+**R26. The new window.**
+Decision: `PowerWindow.ChronicleBeforeScatterRelics`
+(`chronicle.throne.before-scatter-relics`), between Stock Reliquary and
+Scatter Relics.
+Reason: the plan's proposal.
+Slice/files: 3; `PowerWindow`, `ChronicleWindows`.
+
+**R27. The golden logs.**
+Decision: two goldens: the Chronicle where Oaths of Loyalty and Heirloom
+act, and the next game's Setup started from that Chronicle's journaled
+record.
+Reason: each game is its own stream; the second golden proves the record
+reaches the next Setup.
+Slice/files: 3; `ChronicleLogScripts`, `LaterGameLogScripts`.
+
