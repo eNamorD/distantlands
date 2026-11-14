@@ -1,6 +1,6 @@
 package distantlands.gameplay.setup.legacies
 
-import distantlands.gameplay.powers.PowerImplementationStatus
+import distantlands.gameplay.powers.{PlayerFacts, PowerImplementationStatus}
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
   SetupLegacyFixture, StartingLegacies}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -59,6 +59,41 @@ class CircleOfSwordsSuite extends munit.FunSuite:
     assertEquals(StartingLegacies.imperialBoard(others = 5), 8)
     assertEquals(StartingLegacies.imperialBoard(others = 6), 6)
     assertEquals(StartingLegacies.imperialBoard(others = 7), 3)
+
+  test("an Imperial holder beside four other Imperial boards takes 8, and " +
+      "the Empire's sites share the 4 purple left, the rest taking bandits " +
+      "(R3)"):
+    // Five Imperial boards: 3 + 3 + 3 + 3 + 8 = 20 of the 24 purple
+    // warbands, so only the 4 Cradlemost of an Empire of 8 take one.
+    val (l4, l5) = (LineageId("l4"), LineageId("l5"))
+    val record = SetupLegacyFixture.holding(
+      LaterGameFixture.chronicle(l1, Vector(l2, l3, l4, l5), 8), l5,
+      Role.Citizen, CircleOfSwordsCard.id -> true)
+    val ready = GameStartRules.evolve(catalog, record,
+      LaterGameFixture.orders(record, p1, LaterGameFixture.seats(5))).fold(
+      problem => fail(problem.toString), identity)
+    assertEquals(Vector("p1", "p2", "p3", "p4", "p5").map(board(ready, _)),
+      Vector(3, 3, 3, 3, 8))
+    val forces = record.world.map(stored =>
+      ready.game.current.map.sites(stored.site).forces)
+    assertEquals(forces.take(4).distinct,
+      Vector(SiteForces.Occupied(ForceKind.Imperial, 1)))
+    assertEquals(forces.drop(4), record.world.drop(4).map(stored =>
+      val capacity = catalog.site(stored.site).get.capacity
+      if capacity == 0 then SiteForces.Empty
+      else SiteForces.Occupied(ForceKind.Bandit, capacity)))
+    assertEquals(PlayerFacts.onBoards(ready, ForceKind.Imperial) +
+      PlayerFacts.atSites(ready, ForceKind.Imperial),
+      MaterialBankState.ImperialWarbands)
+    assertEquals(PlayerFacts.banked(ready, ForceKind.Imperial), 0)
+
+  test("a boxed lineage's active Circle of Swords does nothing (ruling 1)"):
+    // l4 holds it active but sits out: only l1 to l3 are seated.
+    val ready = started(SetupLegacyFixture.holding(
+      LaterGameFixture.chronicle(l1, l2), LineageId("l4"), Role.Exile,
+      CircleOfSwordsCard.id -> true))
+    assertEquals(Vector("p1", "p2", "p3").map(board(ready, _)),
+      Vector(3, 3, 3))
 
   test("the card has left holding and its power is registered"):
     assert(LegacySetupPowers.all.contains(CircleOfSwords))
