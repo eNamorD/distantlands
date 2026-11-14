@@ -1,7 +1,7 @@
 package distantlands.gameplay.chronicle.legacies
 
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
-import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.{CardPlay, ProcedureNotes}
 import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.ChronicleWalk
@@ -85,10 +85,12 @@ class RevolutionarySuite extends munit.FunSuite:
     Vector(ThreateningRoarCard.id, FaeMerchantCard.id, SchoolOfVinesCard.id)
       .foreach(card => assert(!onMap(run.ready, card), card))
     assert(onMap(run.ready, GreatMarketCard.id))
-    val discards = run.ready.game.current.commonCards.regionalDiscards
-      .values.flatten.toSet
-    assert(discards.contains(ThreateningRoarCard.id) &&
-      discards.contains(FaeMerchantCard.id))
+    // Each denizen goes to the discard pile of the region after its site's.
+    def nextPile(site: SiteId): Vector[WorldCardId] =
+      val region = empire.ready.game.current.map.regionOf(site).get
+      run.ready.game.current.commonCards.discard(CardPlay.nextRegion(region))
+    assert(nextPile(AncientCitySite.id).contains(ThreateningRoarCard.id))
+    assert(nextPile(BrokenPeaksSite.id).contains(FaeMerchantCard.id))
     // The ruined edifice returns to the edifice deck, so nothing is left
     // set aside after Build Edifice (R16).
     assert(run.ready.game.current.commonCards.edificeDeck
