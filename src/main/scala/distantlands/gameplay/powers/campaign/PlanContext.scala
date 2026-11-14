@@ -3,6 +3,7 @@ package distantlands.gameplay.powers.campaign
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.{BanditCrownRule, EffectiveSuit}
 import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.chronicle.ChronicleLegacyRules
 import distantlands.gameplay.actions.campaign.{CampaignAnswers, CampaignIds, CampaignPlans, CampaignSetup, PlanAid}
 import distantlands.gameplay.powerresolver.PowerCtx
 import distantlands.gameplay.powers.banner.CardPowerBanners
@@ -95,6 +96,7 @@ final case class PlanContext(catalog: ExecutableCatalog, ready: ReadyGame,
       case CampaignPlanSource.Adviser(player, _) => Some(player)
       case CampaignPlanSource.Relic(player, _) => Some(player)
       case CampaignPlanSource.Title(player) => Some(player)
+      case CampaignPlanSource.Legacy(player, _) => Some(player)
       case CampaignPlanSource.SiteCard(site, _) => rulerOf(site)
       case CampaignPlanSource.SiteEdifice(site, _) => rulerOf(site))
     owner.filter(owner => !user.contains(owner))
@@ -136,6 +138,17 @@ final case class PlanContext(catalog: ExecutableCatalog, ready: ReadyGame,
           CampaignPlanSource.SiteCard(site, id): CampaignPlanSource
       })
     }.nextOption())
+
+  /** A legacy the user's lineage holds active, else an Imperial ally's
+    * the ally lends (Legacy in-play powers ruling 5): an active legacy is
+    * in its holder's play area, as a faceup adviser is. */
+  def legacy(id: LegacyId): Option[CampaignPlanSource] =
+    val ref = DecisionOptionRef.Legacy(id)
+    def holds(player: PlayerId) =
+      ChronicleLegacyRules.holder(ready, id).contains(player)
+    user.filter(holds).map(CampaignPlanSource.Legacy(_, id))
+      .orElse(lenders.find(ally => holds(ally) && lends(ally, ref))
+        .map(CampaignPlanSource.Legacy(_, id)))
 
   /** A relic the user holds faceup, else one an ally holds faceup and
     * lends. A relic at a site is facedown, and a plan cannot use it.

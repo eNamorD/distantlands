@@ -1,7 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.LegacyGoal
-import distantlands.catalog.holding.KeeperOfOrderCard
+import distantlands.gameplay.powers.campaign.KeeperOfOrderCard
 import distantlands.gameplay.setup.legacies.WealthyCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.setup.legacies.MatchmakerCard

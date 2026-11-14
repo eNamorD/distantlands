@@ -15,15 +15,6 @@ object TheNeedleCard extends Legacy(LegacyId("L05"), "The Needle",
       "other side.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object KeeperOfOrderCard extends Legacy(LegacyId("L11"), "Keeper of Order",
-    LegacyGoal.GrandScepter, Suit.Order):
-  val power = PrintedPower(PowerId("legacy.keeper-of-order"),
-    persistent = false, cost = Cost.free,
-    text = "**IF YOU ARE AN IMPERIAL:** **BATTLE PLAN:** If your enemy " +
-      "is an Imperial, ±2 [attack-die] and you ignore all [skull] " +
-      "you roll when attacking.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object ArbiterCard extends Legacy(LegacyId("L23"), "Arbiter",
     LegacyGoal.DarkestSecret, Suit.Discord):
   val power = PrintedPower(PowerId("legacy.arbiter"),

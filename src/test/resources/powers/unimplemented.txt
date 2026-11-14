@@ -9,7 +9,6 @@ edifice.e16.ruined
 edifice.e26.ruined
 legacy.arbiter
 legacy.conspirator
-legacy.keeper-of-order
 legacy.the-mouth
 legacy.the-needle
 relic.ancient-grit

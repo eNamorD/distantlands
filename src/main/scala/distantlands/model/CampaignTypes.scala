@@ -94,6 +94,12 @@ object CampaignPlanSource:
       extends CampaignPlanSource:
     def stableKey: String = s"relic:${playerId.value}:${id.value}"
     def ref: DecisionOptionRef = DecisionOptionRef.Relic(id)
+  /** A legacy in its holder's play area (Legacy in-play powers ruling
+    * 5). */
+  final case class Legacy(playerId: PlayerId, id: LegacyId)
+      extends CampaignPlanSource:
+    def stableKey: String = s"legacy:${playerId.value}:${id.value}"
+    def ref: DecisionOptionRef = DecisionOptionRef.Legacy(id)
   final case class Title(playerId: PlayerId) extends CampaignPlanSource:
     def stableKey: String = s"title:${playerId.value}"
     def ref: DecisionOptionRef = DecisionOptionRef.Button("title")

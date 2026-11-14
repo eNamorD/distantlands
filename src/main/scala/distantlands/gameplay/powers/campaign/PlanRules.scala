@@ -27,7 +27,8 @@ import distantlands.gameplay.powerresolver.ContributingPower
   * Campaign offered back against its attacker) and Vow of Union
   * (warbands moved at the start of any Campaign), Keep (a Raid's defeat
   * replaced) and Relic Hunter (relics targeted when applied, taken in a
-  * won Conquest's placement). Each names its card, so all are always present.
+  * won Conquest's placement), and Keeper of Order (an amount asked when
+  * applied, and the attack scored again). Each names its card, so all are always present.
   */
 object PlanRules:
   val all: Vector[ContributingPower] =
@@ -41,4 +42,5 @@ object PlanRules:
       MountainGiant, MountedPatrol, ShieldWall,
       BillowingFog, TravelingDoctor, CursedCauldron,
       SaltTheEarth, SealingWard, Herald, SneakAttack,
-      VowOfUnion, KeepRule, RelicHunter, Glamor, ObsidianCage)
+      VowOfUnion, KeepRule, RelicHunter, Glamor, ObsidianCage,
+      KeeperOfOrder)

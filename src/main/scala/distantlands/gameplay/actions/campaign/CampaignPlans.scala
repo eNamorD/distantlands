@@ -22,6 +22,7 @@ object CampaignPlans:
     case CampaignPlanSource.SiteCard(_, id) => Some(id)
     case CampaignPlanSource.SiteEdifice(_, id) => Some(id)
     case CampaignPlanSource.Relic(_, id) => Some(id)
+    case CampaignPlanSource.Legacy(_, id) => Some(id)
     case CampaignPlanSource.Title(_) => None
 
   /** What a decision option names a source by: the card, or the title's button. */
@@ -70,10 +71,12 @@ object CampaignPlans:
     val owned = offered.offer.lender.fold(inner)(DecisionOption.Lent(inner, _))
     badgeOf(offered.offer.sides).fold(owned)(DecisionOption.Badged(owned, _))
 
-  /** The title first, then advisers, relics, and cards at sites. */
+  /** The title first, then advisers, legacies, relics, and cards at
+    * sites. */
   private def order(source: CampaignPlanSource): Int = source match
     case _: CampaignPlanSource.Title => 0
     case _: CampaignPlanSource.Adviser => 100
+    case _: CampaignPlanSource.Legacy => 150
     case _: CampaignPlanSource.Relic => 200
     case _: CampaignPlanSource.SiteCard => 300
     case _: CampaignPlanSource.SiteEdifice => 300
