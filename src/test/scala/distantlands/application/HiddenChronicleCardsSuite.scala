@@ -55,6 +55,7 @@ class HiddenChronicleCardsSuite extends munit.FunSuite:
     val first = after.game.current.map.sites(site).relics.head.id
     assert(presentation.identifiesAt(after, Some(p2), first), first)
     assert(!presentation.identifiesAt(after, Some(p1), first), first)
+    assert(!presentation.identifiesAt(after, None, first), first)
 
   /** As `TheBrightBeaconSuite`'s table: p3 holds the Beacon task and The
     * Bright Beacon; five older and three newly Dispossessed denizens wait. */
@@ -94,5 +95,5 @@ class HiddenChronicleCardsSuite extends munit.FunSuite:
       Some(TheBrightBeacon.cardsId(p3)))
     assert(all(table).forall(presentation.identifiesAt(ready, Some(p3), _)))
     Vector(Some(p1), Some(p2), None).foreach(viewer =>
-      assert(older.forall(card =>
+      assert(all(table).forall(card =>
         !presentation.identifiesAt(ready, viewer, card)), viewer))
