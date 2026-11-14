@@ -42,7 +42,9 @@ Cradle, Provinces and Hinterland discard piles, the first card dealt to a
 pile its top and each later card beneath; and the world deck is the five
 Visions, shuffled. A seated lineage that stores Oaths of Loyalty active
 buries every starting adviser it would gain: under Teeming World it draws
-none, keeping only the advisers Oaths kept, and under Ties of Fellowship it
+3 − x cards, x the advisers Oaths kept, and buries every card drawn at the
+bottom of the world deck, below the Visions (`SetupDeal.buried`), with one
+Setup line per card, and under Ties of Fellowship it
 still picks from its hand of three, the picked card going to the bottom of
 the world deck instead of to the player ([Legacy Chronicle powers
 rulings](../rules/ambiguities.md#legacy-chronicle-powers-rulings), items 32

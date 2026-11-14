@@ -76,7 +76,10 @@ each as the plan recommended:
 - **R23** (Task 3): Oaths keeps zero to three faceup denizen advisers
   before the gathering; the line names them.
 - **R24** (Tasks 3 and 4): the keep questions stay and the kept card is
-  buried; under Teeming World an Oaths holder draws nothing.
+  buried; under Teeming World an Oaths holder draws nothing. Re-ruled by
+  the owner on 2026-11-14: under Teeming World the holder draws 3 − x and
+  buries every card drawn; implemented in 990979190 (see R24 in the
+  rulings file).
 - **R25** (Task 5): The Bright Beacon's source question, box first; from
   the Dispossessed a peek, then exactly six, taken without a question when
   exactly six remain.
