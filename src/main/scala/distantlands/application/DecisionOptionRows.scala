@@ -288,6 +288,13 @@ private[application] final class DecisionOptionRows(
     * `viewer` is the decision's own owner -- `project` has already gated on
     * that -- which is why a permissive answer here is still owner-private.
     */
+  private def card(ready: ReadyGame, viewer: Option[PlayerId],
+      index: Option[CardIndex], id: CardId): Option[CardDetailsProjection] =
+    index.flatMap(_.get(id)).filter(located => presentation.identifiesCard(
+      ready, viewer, id, orientationOf(located.state),
+      located.location.container)).map(located => presentation.cardDetails(id,
+        orientationOf(located.state), hidden = false))
+
   /** "Held by p3" for a legacy a seated player other than `viewer` holds. */
   private def heldBy(ready: ReadyGame, viewer: Option[PlayerId],
       legacy: LegacyId): Option[String] =
@@ -295,13 +302,6 @@ private[application] final class DecisionOptionRows(
       ready.game.campaign.lineages.get(player.lineage)
         .exists(_.legacies.exists(_.id == legacy)))
       .map(holder => s"Held by ${presentation.playerLabel(holder.player)}")
-
-  private def card(ready: ReadyGame, viewer: Option[PlayerId],
-      index: Option[CardIndex], id: CardId): Option[CardDetailsProjection] =
-    index.flatMap(_.get(id)).filter(located => presentation.identifiesCard(
-      ready, viewer, id, orientationOf(located.state),
-      located.location.container)).map(located => presentation.cardDetails(id,
-        orientationOf(located.state), hidden = false))
 
   /** An unavailable option's reason as player text: a builder's own words,
     * or the note of the power that hid it, worded as the Game Log words it.
