@@ -70,3 +70,9 @@ Ruled by the owner on 2026-11-14.
   lands that half; The Ear set the precedent; no traceability note is
   needed once slice 2 lands. *Slice/files:* slices 1 and 2;
   `src/test/resources/powers/unimplemented.txt`.
+
+## Slice 3
+
+[Plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice3.md).
+
+None recorded yet. The plan's open questions wait for the owner's rulings.
