@@ -311,6 +311,8 @@ Ear's peeks still give its holder the identities.
 Reason: the owner's ruling: a physical table shuffles the relics facedown,
 and the digital table must not reveal more.
 Earlier decision (2026-11-13): the deduction was accepted.
+The journaled evolved Chronicle still names these relics to every viewer
+once the Chronicle ends (R48).
 Slice/files: 3 (changed in 5); `ReliquaryAndRelics.stock`, `RelicsHidden`,
 `ChronicleStateOperations.relicsHidden`, the codec.
 
@@ -512,3 +514,22 @@ peek; the knowledge records are unchanged.
 Reason: a peek line per card says nothing the power's own line does not,
 and floods the log.
 Slice/files: 3 (fixed in 5); `DetailLines`.
+
+**R48. The journaled evolved Chronicle names hidden cards.** (A re-ruling
+review finding.)
+Question: the evolved Chronicle the Chronicle Phase journals is projected
+the same to every viewer (`GameProjection`, `GameEventJsonSupport`), so
+after the Chronicle finishes it names each lineage's starting relics
+(Heirloom's relic) and starting advisers (Oaths of Loyalty), the
+Reliquary, and the relics stored at sites (The Ear's placements).
+Decision: accepted for now; Legacies R4's acceptance extends to these
+fields. R28 hides relic identities while the Chronicle Phase runs; the
+stored record that ends it stays one shared record, as the TTS export and
+the Chronicle page show it. A ROADMAP item, "Redact hidden cards in a
+shown Chronicle", tracks redacting it per viewer.
+Reason: the site relics the base Scatter Relics deals facedown were
+already named this way before these powers. Redacting the record per
+viewer touches the Chronicle page, the export codec and the next game's
+import, which is a feature of its own.
+Confidence: low; the owner may re-rule it.
+Slice/files: 5; `GameProjection`, `GameEventJsonSupport`, `docs/ROADMAP.md`.

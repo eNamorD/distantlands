@@ -212,6 +212,13 @@ and the legacies' CHRONICLE powers with the
   and Ruined Baths (E04, change Resolve Legacies). A draw during a game
   needs a random draw from the derived legacy deck, recorded as a hidden
   outcome: Legacies ruling 3 assumed every draw happens in setup.
+- [ ] **Redact hidden cards in a shown Chronicle.** The journaled evolved
+  Chronicle is projected the same to every viewer, so it names a
+  lineage's starting relics and advisers, the Reliquary and the site
+  relics to viewers who do not own them, during the next game and on the
+  Chronicle page. Redact them per viewer, across the Chronicle page, the
+  export codec and the next game's import (Legacy Chronicle powers
+  [R28 and R48](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)).
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the

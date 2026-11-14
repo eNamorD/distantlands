@@ -47,6 +47,10 @@ game, as the visible relic deck order already is; the next game's
 projection shows only the baseline's name and digest. Recorded in the
 `chronicleView` doc comment and in the "Legacies rulings" of
 `docs/rules/ambiguities.md`.
+Extended 2026-11-14 to the lineages' starting relics and advisers, the
+Reliquary and the site relics
+([Legacy Chronicle powers R48](2026-11-13-legacy-chronicle-powers-implementation-rulings.md);
+low confidence).
 
 **R5. A legacy moved between lineages with no face given.**
 Question: a legacy moved from one lineage to another with no resulting
