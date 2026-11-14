@@ -2,6 +2,7 @@ package distantlands.gameplay.setup
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.chronicle.ChronicleLegacyRules
+import distantlands.gameplay.chronicle.legacies.RivalCard
 import distantlands.model._
 
 object SetupPawnSites:
@@ -12,7 +13,8 @@ object SetupPawnSites:
     * exile-only game is every site that holds bandits. A site with no
     * warbands is ruled by nobody. A player with no such site may place
     * anywhere, so Setup never stalls. Under Iron Hand every player may
-    * place at any site (Legacy Setup powers ruling 7). */
+    * place at any site (Legacy Setup powers ruling 7), and Rival's Exile
+    * holder may also place at any site their own warbands hold (R5). */
   def legal(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId)
       : Vector[SiteId] =
     val map = ready.game.current.map
@@ -31,4 +33,9 @@ object SetupPawnSites:
       else if Imperials.isImperial(ready, player) then empire
       else map.hinterward.filter(site =>
         empire.lastOption.contains(site) || held(ForceKind.Bandit)(site))
-    if open.isEmpty then map.inPlay else open
+    // Rival: "You may place your pawn on these sites."
+    val own = ChronicleLegacyRules.holder(ready, RivalCard.id, Set(Role.Exile))
+      .filter(_ == player).flatMap(ready.game.current.player).toVector
+      .flatMap(state => map.inPlay.filter(held(ForceKind.Exile(state.lineage))))
+    val legal = open ++ own.filterNot(open.contains)
+    if legal.isEmpty then map.inPlay else legal

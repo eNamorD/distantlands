@@ -25,8 +25,9 @@ import distantlands.model.DecisionAnswer.ChooseOneAnswer
   * makes public; nothing else about the Atlas is shown before the fill.
   *
   * The step's shape reads only what game start fixed, the Chronicle's
-  * Empire and Atlas, so a walk resumed past it finds every node where it
-  * was once the map is full and the Atlas shorter.
+  * Empire and Atlas and the sites Rival placed from it, so a walk resumed
+  * past it finds every node where it was once the map is full and the
+  * Atlas shorter.
   */
 object ImperialMaps:
   val decisionId: String = "setup.imperial-maps"
@@ -51,17 +52,29 @@ object ImperialMaps:
     case AtlasEnd.Recent => filledFromRecent
     case AtlasEnd.Forgotten => filledFromForgotten
 
-  /** The slots past the Empire's sites, which the Chancellor fills: those
-    * the Chronicle's Empire leaves empty. */
-  private def emptySlots(ready: ReadyGame): Int =
-    math.max(0, MapState.slots - ready.game.campaign.baseline.world.size)
+  /** The slots past the Empire's and Rival's sites, which the Chancellor
+    * fills. Read from what game start fixed, the Chronicle and the seats,
+    * never from the live map (R6). */
+  def emptySlotsAtStart(ready: ReadyGame): Int =
+    math.max(0, MapState.slots - ready.game.campaign.baseline.world.size -
+      rivalCount(ready))
+
+  /** The Atlas's sites once Rival took its own, read as the slots are. */
+  private def atlasAtStart(ready: ReadyGame): Int =
+    ready.game.campaign.baseline.atlasBox.size - rivalCount(ready)
+
+  private def rivalCount(ready: ReadyGame): Int =
+    val baseline = ready.game.campaign.baseline
+    StartingLegacies.rivalSites(baseline,
+      ready.game.current.players.map(_.lineage), baseline.world.size)._2.size
 
   /** Whether Imperial Maps' step runs: a Chancellor is seated, Foundation I
-    * lies on its normal face, and a slot is left past the Empire's sites.
+    * lies on its normal face, and a slot is left past the Empire's sites
+    * and Rival's.
     * Under Wide Horizons and with no Empire nothing is filled at Setup,
     * and a first game has placed its eight sites. */
   def applies(ready: ReadyGame): Boolean =
-    Imperials.chancellor(ready).nonEmpty && emptySlots(ready) > 0 &&
+    Imperials.chancellor(ready).nonEmpty && emptySlotsAtStart(ready) > 0 &&
       ready.game.campaign.foundations.get(FoundationNumber.I)
         .forall(_.face == FoundationFace.Normal)
 
@@ -73,12 +86,12 @@ object ImperialMaps:
     }.flatMap(AtlasPlacement.endOf).getOrElse(AtlasEnd.Recent)
 
   /** The step for `chancellor`. Recent or Forgotten is asked while the
-    * Chronicle's Atlas holds two sites or more; either answer fills every
-    * empty slot from that end, one site at a time going Hinterward. */
+    * Chronicle's Atlas holds two sites or more past Rival's; either answer
+    * fills every empty slot from that end, one site at a time going
+    * Hinterward. */
   def step(catalog: ExecutableCatalog, ready: ReadyGame, chancellor: PlayerId)
       : Operation =
-    val atlas = ready.game.campaign.baseline.atlasBox
-    val question = Option.when(atlas.sizeIs >= 2)(
+    val question = Option.when(atlasAtStart(ready) >= 2)(
       Decide(decisionId, chancellor, DecisionQuery.ChooseOne(
         AtlasEnd.all.map(end => DecisionOption.Button(
           AtlasPlacement.endOption(end), optionLabel(catalog, ready, end))),

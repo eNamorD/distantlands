@@ -29,10 +29,14 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     val empireSites = plan.empire.fold(Map.empty[SiteId, StoredSite])(
       _.sites.map(stored => stored.site -> stored).toMap)
     val atlasSites = plan.atlasSites.map(stored => stored.site -> stored).toMap
+    val rivalSites = plan.legacies.rivalSites
+      .map(stored => stored.site -> stored).toMap
     val map = MapState.inSlots(plan.orderedSites.map { siteId =>
       val drawn = relicsBySite.getOrElse(siteId, Vector.empty)
       siteId -> empireSites.get(siteId).map(stored => empireSite(stored,
           held.getOrElse(siteId, empireForces(purple(siteId)))))
+        .orElse(rivalSites.get(siteId).map(stored =>
+          empireSite(stored, held(siteId))))
         .orElse(atlasSites.get(siteId).map(stored =>
           atlasSite(stored, drawn, held.get(siteId))))
         .getOrElse(firstGameSite(siteId, edifices.get(siteId), drawn))
@@ -62,17 +66,20 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
 
   /** A first game deals every relic slot. With no Empire, the former
     * Empire's sites take the slots their stored relics leave open, and an
-    * Empire's sites take none (Empire ruling R27); Imperial Maps' sites
+    * Empire's sites and Rival's take none (Empire ruling R27; R5); Imperial Maps' sites
     * are dealt theirs as Setup's walk places them (`PlaceAtlasSite`). Slots
     * are dealt Cradlemost first, and a relic deck that runs out leaves the
     * last ones empty. */
   private def assignRelics(plan: FirstGameSetupPlan): Map[SiteId, Vector[RelicId]] =
     val stored = plan.atlasSites.map(site => site.site -> site).toMap
-    val empire = plan.empire.fold(Set.empty[SiteId])(_.sites.map(_.site).toSet)
+    // Rival's sites are placed by the Empire rules, which fill no empty
+    // relic slot (R5).
+    val noDraw = plan.empire.fold(Set.empty[SiteId])(_.sites.map(_.site)
+      .toSet) ++ plan.legacies.rivalSites.map(_.site)
     var offset = 0
     plan.orderedSites.map { site =>
       val slots = catalog.site(site).get.relicSlots
-      val count = if empire(site) then 0
+      val count = if noDraw(site) then 0
         else stored.get(site).fold(slots)(atlas => SiteState.openRelicSlots(
           slots, atlas.items.count(_.isInstanceOf[RelicId])))
       val assigned = plan.relicOrder.slice(offset, offset + count)
@@ -82,7 +89,8 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
 
   /** The forces at each site a legacy gives an Exile holder's warbands:
     * under Iron Hand the Empire's sites, or the former Empire's with no
-    * Empire. A lineage's 14 warbands go to its board first, then to its
+    * Empire, then Rival's sites, which are built by the Empire rules
+    * (ruling 8). A lineage's 14 warbands go to its board first, then to its
     * sites Cradlemost first; a site its supply misses takes bandits (R2). */
   private def heldForces(plan: FirstGameSetupPlan,
       boards: Map[PlayerId, Int]): Map[SiteId, SiteForces] =
@@ -90,7 +98,9 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       boards(p.playerId)).toMap
     val formerEmpire = plan.empire.fold(plan.atlasSites)(_.sites)
     val sites = plan.legacies.ironHand.toVector.flatMap(lineage =>
-      formerEmpire.map(lineage -> _.site))
+      formerEmpire.map(lineage -> _.site)) ++
+      plan.legacies.rival.toVector.flatMap(lineage =>
+        plan.legacies.rivalSites.map(lineage -> _.site))
     sites.groupBy(_._1).flatMap { (lineage, held) =>
       val reach = MaterialBankState.ExileWarbandsPerLineage -
         lineageBoards.getOrElse(lineage, 3)

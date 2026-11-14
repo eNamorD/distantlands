@@ -124,8 +124,11 @@ object GameStartRules:
           atlasSites.map(emptyRelicSlots(catalog, _)).sum,
         (), UnsupportedChronicle("not enough relics to fill site slots"))
       _ <- validateDeal(catalog, chronicle, orders, deal)
+      // Rival's sites come right after the Empire's, before the
+      // foundations (Legacy Setup powers ruling 8).
+      legacies = StartingLegacies.of(chronicle, orders.participants, mode)
     yield FirstGameSetupPlan(orders.participants, orders.firstPlayer,
-      (chronicle.world ++ atlasSites ++ (mode match
+      (chronicle.world ++ legacies.rivalSites ++ atlasSites ++ (mode match
         case SetupMode.ExileOnly(sites) => sites
         case _ => Vector.empty)).map(_.site), orders.denizenOrder,
       orders.worldDeckOrder, orders.relicOrder, homelands,
@@ -136,8 +139,7 @@ object GameStartRules:
         case SetupMode.NoEmpire(sites, _) => sites
         case SetupMode.ExileOnly(sites) => sites
         case _ => Vector.empty,
-      startingAdvisers(chronicle, orders), faces,
-      StartingLegacies.of(chronicle, orders.participants, mode)) -> mode
+      startingAdvisers(chronicle, orders), faces, legacies) -> mode
 
   /** The slots filled from the atlas. A first game's eight are placed at
     * game start from the Recent end. With an Empire, Imperial Maps fills

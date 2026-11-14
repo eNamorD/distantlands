@@ -23,7 +23,8 @@ object RivalCard extends Legacy(LegacyId("L17"), "Rival",
   * `ChronicleLegacyRules.protector` before its discard (Legacy Chronicle
   * powers design, ruling 9): the holder keeps any of the cards it would
   * discard, ruined edifices included (R8), in one choose-many. Its SETUP
-  * half waits for the setup batch (R7). This power hooks no window; it is
+  * half is read at game start (`StartingLegacies`, Legacy Setup powers
+  * ruling 8) and by `SetupPawnSites`. This power hooks no window; it is
   * registered so the card counts as implemented. Line: "p1 protected 2
   * denizens with Rival" (R12). */
 case object Rival extends ContributingPower:

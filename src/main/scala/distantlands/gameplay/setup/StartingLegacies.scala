@@ -1,6 +1,6 @@
 package distantlands.gameplay.setup
 
-import distantlands.gameplay.chronicle.legacies.IronHandCard
+import distantlands.gameplay.chronicle.legacies.{IronHandCard, RivalCard}
 import distantlands.gameplay.setup.legacies.{CircleOfSwords,
   CircleOfSwordsCard, ScepterBearerCard}
 import distantlands.model._
@@ -54,5 +54,24 @@ object StartingLegacies:
     val ironHand = mode match
       case SetupMode.ExileOnly(_) => None
       case _ => holder(chronicle, seated, IronHandCard.id, exileRoles)
-    StartLegacies.none.copy(boardWarbands = circle.toMap,
-      ironHand = ironHand, scepterBearer = bearer)
+    val (rival, sites) = rivalSites(chronicle, seated,
+      placedBefore(chronicle, mode))
+    StartLegacies(circle.toMap, ironHand, rival, sites, bearer)
+
+  /** Rival's Exile holder and the sites it places before the foundations:
+    * the Atlas's next sites from the Recent end, into the three Cradlemost
+    * slots left empty once `placed` sites are on the map, fewer when the
+    * map or the Atlas runs short (ruling 8). */
+  def rivalSites(chronicle: Chronicle, seated: Vector[LineageId],
+      placed: Int): (Option[LineageId], Vector[StoredSite]) =
+    holder(chronicle, seated, RivalCard.id, exileRoles) match
+      case None => None -> Vector.empty
+      case some => some -> chronicle.atlasBox.take(math.min(3,
+        math.max(0, MapState.slots - placed)))
+
+  /** The sites game start places before Rival in `mode`: a first game's
+    * and an exile-only game's eight, else the Empire's stored sites, kept
+    * or former. */
+  def placedBefore(chronicle: Chronicle, mode: SetupMode): Int = mode match
+    case SetupMode.FirstGame | SetupMode.ExileOnly(_) => MapState.slots
+    case _ => chronicle.world.size
