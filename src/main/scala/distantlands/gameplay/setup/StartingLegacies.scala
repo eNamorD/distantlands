@@ -1,7 +1,7 @@
 package distantlands.gameplay.setup
 
 import distantlands.gameplay.setup.legacies.{CircleOfSwords,
-  CircleOfSwordsCard}
+  CircleOfSwordsCard, ScepterBearerCard}
 import distantlands.model._
 
 /** The legacies' SETUP powers that change what game start builds (Legacy
@@ -43,4 +43,9 @@ object StartingLegacies:
       .map(playerOf).map(player => player ->
         (if imperial(player) then imperialBoard(imperial.size - 1)
         else CircleOfSwords.warbands))
-    StartLegacies.none.copy(boardWarbands = circle.toMap)
+    // A seated Chancellor or Citizen always sets up an Empire, so an
+    // Imperial holder is one of its players.
+    val bearer = holder(chronicle, seated, ScepterBearerCard.id,
+      imperialRoles).map(playerOf)
+    StartLegacies.none.copy(boardWarbands = circle.toMap,
+      scepterBearer = bearer)

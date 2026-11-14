@@ -33,14 +33,6 @@ object AncestralLandsCard extends Legacy(LegacyId("L08"), "Ancestral Lands",
       "Cradle costs you only 1 Supply.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object ScepterBearerCard extends Legacy(LegacyId("L09"), "Scepter Bearer",
-    LegacyGoal.GrandScepter, Suit.Discord):
-  val power = PrintedPower(PowerId("legacy.scepter-bearer"),
-    persistent = false, cost = Cost.free,
-    text = "**IF YOU ARE AN IMPERIAL:** **SETUP:** You start with the " +
-      "Grand Scepter _(instead of the Chancellor)_.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object KeeperOfOrderCard extends Legacy(LegacyId("L11"), "Keeper of Order",
     LegacyGoal.GrandScepter, Suit.Order):
   val power = PrintedPower(PowerId("legacy.keeper-of-order"),

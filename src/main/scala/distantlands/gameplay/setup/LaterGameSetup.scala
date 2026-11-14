@@ -78,6 +78,9 @@ object LaterGameSetup:
     val goal = plan.oathkeeperGoal
     val scepter = RelicState(TheGrandScepterCard.id, Orientation.FaceUp,
       Tokens.empty)
+    // Scepter Bearer: an Imperial holder starts with the Grand Scepter in
+    // the Chancellor's place (Legacy Setup powers ruling 6).
+    val bearer = plan.legacies.scepterBearer.getOrElse(chancellor)
     val crowned = ready.updateCampaign(campaign => campaign.copy(
       lineages = campaign.lineages.map((id, lineage) => id ->
         (if chancellorLineage.contains(id) then
@@ -89,7 +92,7 @@ object LaterGameSetup:
         MaterialBankState.ImperialWarbands))).updateCurrent(current =>
       current.copy(
         players = current.players.map(state =>
-          if state.player == chancellor then
+          if state.player == bearer then
             state.copy(relics = state.relics :+ scepter)
           else state),
         title = OathkeeperState(Some(chancellor), TitleSide.Oathkeeper),
