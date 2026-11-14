@@ -15,14 +15,6 @@ object TheNeedleCard extends Legacy(LegacyId("L05"), "The Needle",
       "other side.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object AncestralLandsCard extends Legacy(LegacyId("L08"), "Ancestral Lands",
-    LegacyGoal.GrandScepter, Suit.Nomad):
-  val power = PrintedPower(PowerId("legacy.ancestral-lands"),
-    persistent = false, cost = Cost.free,
-    text = "**IF YOU ARE AN IMPERIAL:** **TRAVEL:** Traveling to the " +
-      "Cradle costs you only 1 Supply.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object KeeperOfOrderCard extends Legacy(LegacyId("L11"), "Keeper of Order",
     LegacyGoal.GrandScepter, Suit.Order):
   val power = PrintedPower(PowerId("legacy.keeper-of-order"),
