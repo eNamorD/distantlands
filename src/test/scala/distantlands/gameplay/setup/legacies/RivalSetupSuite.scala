@@ -1,6 +1,8 @@
 package distantlands.gameplay.setup.legacies
 
-import distantlands.gameplay.chronicle.legacies.RivalCard
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.legacies.{IronHandCard, RivalCard}
+import distantlands.gameplay.powers.{NoteText, PlayerFacts}
 import distantlands.application.GameCommand
 import distantlands.gameplay.setup.{AtlasPlacement, GameStartRules,
   ImperialMaps, LaterGameFixture, SetupLegacyFixture, SetupPawnSites,
@@ -90,6 +92,44 @@ class RivalSetupSuite extends munit.FunSuite:
     val other = SetupPawnSites.legal(catalog,
       ready, PlayerId("p2")).toSet
     assert(rivalSites.map(_.site).toSet.intersect(other).isEmpty, other)
+
+  test("one Exile's warbands reach Iron Hand's sites before Rival's (R2)"):
+    // Circle of Swords' 8 on the board leave 6 of the 14: the 5 Empire
+    // sites, then the first of Rival's 3; the other 2 take bandits.
+    val all = SetupLegacyFixture.holding(
+      LaterGameFixture.chronicle(l1, Vector(l2), 5), l3, Role.Exile,
+      CircleOfSwordsCard.id -> true, IronHandCard.id -> true,
+      RivalCard.id -> true)
+    val ready = started(all)
+    val held = SiteForces.Occupied(ForceKind.Exile(l3), 1)
+    val rivals = all.atlasBox.take(3)
+    def forces(stored: StoredSite) =
+      ready.game.current.map.sites(stored.site).forces
+    assertEquals(all.world.map(forces).distinct, Vector(held))
+    assertEquals(forces(rivals.head), held)
+    assertEquals(rivals.tail.map(forces), rivals.tail.map(stored =>
+      val capacity = catalog.site(stored.site).get.capacity
+      if capacity == 0 then SiteForces.Empty
+      else SiteForces.Occupied(ForceKind.Bandit, capacity)))
+    assertEquals(PlayerFacts.banked(ready, ForceKind.Exile(l3)), 0)
+    val said = NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
+      SetupProcedure.noteKeys, Situation.wake(Situation.rules(catalog), all,
+        LaterGameFixture.orders(all, p1)).events).map(_.text)
+    assertEquals(said.count(_.endsWith(s"with ${IronHandCard.id.value}")), 5)
+    assertEquals(said.filter(_.endsWith(s"with ${RivalCard.id.value}")),
+      Vector(s"p3 placed a warband at ${rivals.head.site.value} with " +
+        RivalCard.id.value))
+
+  test("an exile-only game fills every slot first, so Rival places " +
+      "nothing (R17)"):
+    val exileOnly = SetupLegacyFixture.holding(
+      distantlands.gameplay.setup.FirstGameSetupFixture.chronicle, l3,
+      Role.Exile, RivalCard.id -> true)
+    val ready = started(exileOnly)
+    assertEquals(ready.game.current.map.inPlay,
+      exileOnly.atlasBox.take(MapState.slots).map(_.site))
+    assertEquals(ready.game.current.map.sites.values.count(
+      _.forces.count(ForceKind.Exile(l3)) > 0), 0)
 
   test("an Imperial holder places nothing (ruling 8)"):
     val ready = started(SetupLegacyFixture.holding(
