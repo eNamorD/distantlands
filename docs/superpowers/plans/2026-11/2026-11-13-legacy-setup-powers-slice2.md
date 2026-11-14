@@ -18,9 +18,9 @@ is seated; Explore's end decision takes `exploreEndChooser` as its actor; a
 new empty `SetupBanks` window after Imperial Maps carries Populist's step;
 Quiet Ambitions' keep moves from `SetupProcedure` into a new `LegacyKeep`
 and asks `keeper` for its actor. The projection names another lineage's
-drawn legacies to Matchmaker's holder, not their owner, while that keep is
-still open (`LegacyKeep.matchmade`), worked out from the cards alone, so no
-state is stored.
+drawn legacies to Matchmaker's holder, and to nobody else, while that
+player's keep is the parked decision: it rebuilds Setup's tree and reads
+its open decisions, so no state is stored.
 
 **Tech Stack:** Scala 3.9.0, munit, `./sbtw` (sbt wrapper), compiler flags
 `-deprecation -feature -unchecked -Wunused:imports,privates,locals,implicits,nowarn -Werror`.
@@ -28,7 +28,7 @@ state is stored.
 **Spec:** [Legacy Setup powers design](../../specs/2026-11/2026-11-13-legacy-setup-powers-design.md),
 rulings 1-4 and 10-13 and section "Slice 2: foundations".
 [Implementation rulings](../../specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)
-(slice 1's R1-R10 stand; this plan's rulings start at R11). Card text in
+(slice 1's R1-R10 stand; this plan's are R11-R16). Card text in
 `src/main/scala/distantlands/catalog/holding/HoldingLegacies.scala` (World
 Crafter L13, Matchmaker L14, Populist L16). The rulebook's Foundations I-III,
 CR pp. 10-11 (`docs/rules/rules-reference.md#later-games`), the
@@ -48,45 +48,32 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions (proposed rulings R11-R16)
+## Rulings
 
-The plan is written to the recommendation of each. Production code waits
-for the orchestrator's rulings.
+This plan's choices are implementation rulings R11-R16
+([rulings](../../specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)):
 
-- **R11 (Task 1). World Crafter's Imperial Maps lines.** Spec ruling 10's
-  line, "p2 placed Deep Woods from Recent Sites with World Crafter",
-  replaces the single "filled the map from" line. Does it also replace the
-  per-site "p2 placed Deep Woods on the map" line? *Recommended:* yes, one
-  line per slot and no other Imperial Maps line, since the two would name
-  the same site twice.
-- **R12 (Task 1). World Crafter's last slot.** Imperial Maps and Explore
-  ask nothing when the Atlas holds one site. *Recommended:* World Crafter
-  asks for a slot only while two or more Atlas sites remain, counted from
-  what game start fixed (the Atlas less Rival's sites, less one per earlier
-  slot); a slot with one site left takes it with no question and its line
-  says "from Recent Sites". The alternative asks every slot.
-- **R13 (Task 1).** When World Crafter's holder is the Chancellor, the
-  holder still fills slot by slot. *Recommended:* yes; the card grants the
-  mix to whoever holds it.
-- **R14 (Task 3). Populist's question.** One `ChooseOne`, Decline first
-  (as Gatekeeper's), then "Divide evenly: 3 favor a bank, 1 for you"
-  worked out when asked. It is asked whenever a seated holder holds it
-  active, even when dividing would change nothing, so the step keeps one
-  shape. *Recommended:* as written.
-- **R15 (Task 3). Populist's line with no remainder.** Spec ruling 12's
-  line ends "and took 1 favor". *Recommended:* with no remainder the line
-  is "p2 divided the favor evenly among the banks with Populist", a second
-  key, rather than "and took 0 favor".
-- **R16 (Task 5). When Matchmaker's holder sees another player's draw.**
-  Spec ruling 13 says the holder sees both drawn legacies while choosing and
-  has no lasting view after. *Recommended:* in Setup, while another seated
-  player's draw still holds two legacies, they are named to Matchmaker's
-  holder and to nobody else, the owner included; once one is kept, it is
-  named to its owner alone, as every dormant legacy is. The holder so
-  knows the pair from game start until that keep, which the card's "you
-  draw" allows. Worked out from the cards (the drawn legacies are the
-  dormant ones the baseline record lacks), with no saved field. Matchmaker's
-  keep question is headed "Matchmaker: keep a legacy for another player".
+- **R11** (Task 1): World Crafter's line, "p2 placed Deep Woods from
+  Recent Sites with World Crafter", one per slot, replaces both the
+  "filled the map from" line and the "placed X on the map" lines.
+- **R12** (Task 1): World Crafter asks for a slot only while two or more
+  Atlas sites remain, counted from what game start fixed less the earlier
+  slots; a slot with one site left takes it with no question, and its line
+  says "from Recent Sites".
+- **R13** (Task 1): a World Crafter holder who is the Chancellor still
+  fills slot by slot.
+- **R14** (Task 3): Populist asks one choose-one, Decline first, whenever a
+  seated holder holds it active, even when dividing changes nothing.
+- **R15** (Task 3): with no remainder Populist's line is "p2 divided the
+  favor evenly among the banks with Populist", a second key.
+- **R16** (Task 5): Matchmaker's holder sees another player's two drawn
+  legacies only while that player's keep decision,
+  `setup.legacy-choice.<owner>`, is pending, which the projection reads
+  from the parked decision; no field is saved. Before and after, the draw
+  shows as backs to the holder and to the owner. Once one is kept, it is
+  named to its owner alone, and the returned one to nobody. The question is
+  headed "Matchmaker: keep a legacy for another player". If the projection
+  cannot read the pending decision, stop and report it.
 
 ## Global Constraints
 
@@ -107,7 +94,8 @@ for the orchestrator's rulings.
   Matchmaker's keep keeps its id, `setup.legacy-choice.<player>`, and
   Explore's end keeps `explore.end`; only the actor changes.
 - Hidden information: Matchmaker's drawn legacies are named to the holder
-  only (R16), each with a redaction test per viewer. World Crafter shows the
+  only, and only while that keep is pending (R16), each with a redaction
+  test per viewer. World Crafter shows the
   Atlas as Imperial Maps does: the Recent option names the Atlas's front
   site, read when the question is asked.
 - Old saved streams still decode: no wire format changes. A game saved
@@ -1116,7 +1104,8 @@ Add any test file the grep in Step 2 changed to the pathspec.
 - Produces:
   - `SetupLegacyRules.keeper(state: ReadyGame, owner: PlayerId): PlayerId`.
   - `MatchmakerCard`, `case object Matchmaker extends ContributingPower`; `Matchmaker.keptFor: NoteKey`; `Matchmaker.setupNoteKeys`.
-  - `LegacyKeep.matchmade(ready: ReadyGame, lineage: LineageId, legacy: LegacyId): Option[PlayerId]`: the player who identifies `legacy` in place of the lineage's owner, while Matchmaker's holder still chooses (R16).
+  - `LegacyKeep.matchmade(ready: ReadyGame, lineage: LineageId, legacy: LegacyId): Option[(PlayerId, PlayerId)]`: the owner and Matchmaker's holder, when `legacy` is part of a two-legacy draw that the holder keeps for that owner (R16).
+  - `GamePresentationProjector.keepPending(ready: ReadyGame, owner: PlayerId): Boolean` (private): whether Setup is parked on `LegacyKeep.decisionId(owner)`.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1256,6 +1245,13 @@ class MatchmakerProjectionSuite extends munit.FunSuite:
         ChooseOneAnswer(DecisionOptionRef.Legacy(drawn.last))
     }).parkedAt(decisionId)(GameCommand.Begin(record, orders))
 
+  test("before p2's keep is reached, nobody identifies p2's draw (R16)"):
+    val at = parkedAt(LegacyKeep.decisionId(p1))
+    drawn.foreach(legacy => Vector(Some(p3), Some(p2), Some(p1), None)
+      .foreach(viewer => assert(
+        !presentation.identifiesAt(at.ready, viewer, legacy),
+        s"$viewer $legacy")))
+
   test("while p2's keep waits, only the holder identifies p2's draw"):
     val at = parkedAt(LegacyKeep.decisionId(p2))
     drawn.foreach { legacy =>
@@ -1366,13 +1362,14 @@ with
 A one-legacy draw still writes "p2 kept a legacy" with no question. Add:
 
 ```scala
-  /** The player who identifies `legacy`, drawn for `lineage`'s player, in
-    * place of that player: Matchmaker's holder, during Setup, while the
-    * draw still holds two legacies and so waits for their choice (R16).
-    * None when the owner keeps for themselves, once one is kept, and
-    * outside Setup. */
+  /** The owner and Matchmaker's holder when `legacy` is in a two-legacy
+    * draw, during Setup, that the holder keeps for that owner (R16). The
+    * owner never identifies such a card; the holder does only while the
+    * owner's keep is the parked decision, which the projection checks. None
+    * when the owner keeps for themselves, once one is kept, and outside
+    * Setup. */
   def matchmade(ready: ReadyGame, lineage: LineageId, legacy: LegacyId)
-      : Option[PlayerId] =
+      : Option[(PlayerId, PlayerId)] =
     val waiting = drawn(ready, lineage)
     for
       owner <- ready.game.current.players.find(_.lineage == lineage)
@@ -1381,30 +1378,58 @@ A one-legacy draw still writes "p2 kept a legacy" with no question. Add:
         waiting.sizeIs >= 2 && waiting.contains(legacy)
       keeper = SetupLegacyRules.keeper(ready, owner)
       if keeper != owner
-    yield keeper
+    yield owner -> keeper
 ```
 
 `GamePresentationProjector.identifiesCard`, the lineage legacies case:
 
 ```scala
-      // Matchmaker's holder chooses another player's kept legacy: until
-      // they do, that draw is named to the holder alone, its owner
-      // included in the dark (Legacy Setup powers ruling 13; R16).
+      // Matchmaker's holder chooses another player's kept legacy: the
+      // draw is named to the holder alone, and only while that keep is the
+      // parked decision; the owner sees backs until one is kept (Legacy
+      // Setup powers ruling 13; R16).
       case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
-        id match
-          case legacy: LegacyId if !faceup &&
-              LegacyKeep.matchmade(ready, lineage, legacy).nonEmpty =>
-            viewer.exists(LegacyKeep.matchmade(ready, lineage, legacy)
-              .contains)
-          case _ =>
-            faceup || ready.game.current.turn.phase == Phase.Chronicle ||
-              viewer.exists(player => ready.game.current.players
-                .exists(seat => seat.player == player &&
-                  seat.lineage == lineage))
+        val matchmade = id match
+          case legacy: LegacyId if !faceup =>
+            LegacyKeep.matchmade(ready, lineage, legacy)
+          case _ => None
+        matchmade.fold(
+          faceup || ready.game.current.turn.phase == Phase.Chronicle ||
+            viewer.exists(player => ready.game.current.players
+              .exists(seat => seat.player == player &&
+                seat.lineage == lineage)))((owner, keeper) =>
+          viewer.contains(keeper) && keepPending(ready, owner))
 ```
 
-Add the Matchmaker sentence to the scaladoc's legacy bullet. Import
-`distantlands.gameplay.setup.LegacyKeep`. Check the legacy option rows in
+with, in the same class:
+
+```scala
+  /** The full walker catalog, for reading Setup's open decisions. */
+  private lazy val setupPowers: WalkerPowers =
+    WalkerPowers.selected(WalkerPowerCatalog.default(catalog), Vector.empty)
+
+  /** Whether Setup's walk is parked on `owner`'s keep (R16): the tree is
+    * rebuilt from the state and its open decisions read, as the decision
+    * projection reads them. Asked only for a card in a matchmade draw. */
+  private def keepPending(ready: ReadyGame, owner: PlayerId): Boolean =
+    val current = ready.game.current
+    (for
+      pending <- current.walkerPending
+      if current.walkerProcedure.contains(TriggeredProcedureRef.Setup)
+      tree <- SetupProcedure.build(catalog, ready, current.walkActor,
+        current.walkerStartArgs).toOption
+    yield ProcedureWalker.openDecisions(ready, tree, pending, setupPowers,
+      probing = false).exists(_.decisionId == LegacyKeep.decisionId(owner)))
+      .getOrElse(false)
+```
+
+Check during execution how `WalkerDecisionProjector.rebuild` builds Setup's
+tree (it may go through `WalkerProcedureRegistry`); build it the same way.
+If the parked state does not carry what the rebuild needs, stop and report
+it (R16). Add the Matchmaker sentence to the scaladoc's legacy bullet.
+Import `distantlands.gameplay.setup.{LegacyKeep, SetupProcedure}`,
+`distantlands.gameplay.powers.WalkerPowerCatalog` and
+`distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}`. Check the legacy option rows in
 `DecisionOptionRows` read `identifiesCard` for the lineage container (the
 keep's options must project for the holder, as the projection test
 checks); if they read a dormant legacy some other way, route that read
@@ -1508,19 +1533,18 @@ Expected: only the four new files. Review each line by line:
   lines, slot 2 from Forgotten Sites; no "filled the map from" and no
   "placed ... on the map" line; Populist's line; then each player's pawn,
   "p3 kept a legacy for p1 with Matchmaker" and "p3 kept a legacy for p2
-  with Matchmaker", and "p3 kept a legacy". For the `other` seat (not the
-  actor), no line names a drawn legacy of another player. If the log's
-  detail lines name a legacy the holder saw while choosing, in the holder's
-  log or the owner's, stop and report it: R16 says the holder keeps no
-  lasting view.
+  with Matchmaker", and "p3 kept a legacy". No line names a legacy drawn
+  for another player, in any seat's log. If a detail line names one the
+  holder saw while choosing, in the holder's log or the owner's, stop and
+  report it: R16 gives the holder no view outside the pending keep.
 - `explore-world-crafter`: "p2 chose Forgotten Sites with World Crafter"
   before "Explored Forgotten Site: Found Golden Valley", both in p1's turn.
 
 - [ ] **Step 4: Docs**
 
 - `docs/rules/ambiguities.md`, "Legacy Setup powers rulings": items 20 to
-  23 for the design's rulings 10 to 13, then items for R11 to R16 as
-  ruled; update the section's opening sentence to name them.
+  29 (the design's rulings 10 to 13, then R11 to R16) were recorded with
+  the rulings; check they still match what landed.
 - `docs/rules/implementation-traceability.md`: extend the "Legacy SETUP
   powers at game start" row, or add a "Legacy SETUP powers in the
   foundations" row after it, for World Crafter (`WorldCrafterSetupSuite`,

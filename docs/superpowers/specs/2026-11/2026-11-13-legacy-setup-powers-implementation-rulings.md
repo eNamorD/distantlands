@@ -65,3 +65,41 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   mid-phase save compatibility promise across builds (Legacy Chronicle
   powers R15). *Slice/files:* slice 1; `SetupProcedure.tree`,
   `StartLines`.
+
+## Slice 2
+
+[Plan](../../plans/2026-11/2026-11-13-legacy-setup-powers-slice2.md).
+
+- **R11. World Crafter's Imperial Maps lines.** One line per slot, "p2
+  placed Deep Woods from Recent Sites with World Crafter", replaces both
+  the "filled the map from" line and the per-site "placed X on the map"
+  lines. *Reason:* one line per placement, and no site is named twice.
+  *Slice/files:* slice 2; `WorldCrafter.mapStep`.
+- **R12. World Crafter's last slot.** World Crafter asks for a slot only
+  while two or more Atlas sites remain, counted from what game start fixed
+  less the earlier slots; a slot with one site left takes it with no
+  question, and its line says "from Recent Sites". *Reason:* with one site
+  the choice is empty; this matches Imperial Maps and Explore.
+  *Slice/files:* slice 2; `WorldCrafter.mapStep`.
+- **R13. World Crafter held by the Chancellor.** The holder fills slot by
+  slot. *Reason:* the power changes how the map is filled, not only who
+  fills it. *Slice/files:* slice 2; `ImperialMaps.step`.
+- **R14. Populist's question.** One choose-one, Decline first, asked
+  whenever a seated holder holds Populist active, even when dividing
+  changes nothing. *Reason:* the step keeps one shape, which keeps resume
+  safe, and Decline is always offered (spec ruling 3). *Slice/files:*
+  slice 2; `Populist`.
+- **R15. Populist with no remainder.** A second line key: "p2 divided the
+  favor evenly among the banks with Populist". *Reason:* "and took 0
+  favor" says nothing. *Slice/files:* slice 2; `Populist`.
+- **R16. When Matchmaker's holder sees another player's draw.** The holder
+  sees another player's two drawn legacies only while that player's keep
+  decision, `setup.legacy-choice.<owner>`, is pending, which the
+  projection reads from the parked decision, so no field is saved. Before
+  and after that, the draw shows as backs to the holder and to the owner.
+  Once one is kept, it is named to its owner alone, and the returned one to
+  nobody. The question is headed "Matchmaker: keep a legacy for another
+  player". *Reason:* spec ruling 13 says the holder sees them "while
+  choosing", and an earlier view would inform the holder's World Crafter
+  and Populist choices, which come first. *Slice/files:* slice 2;
+  `LegacyKeep`, `GamePresentationProjector.identifiesCard`.
