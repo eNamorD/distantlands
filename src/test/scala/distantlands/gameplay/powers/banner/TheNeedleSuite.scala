@@ -2,13 +2,17 @@ package distantlands.gameplay.powers.banner
 
 import distantlands.gameplay.{CampaignFixture, OathRules, WalkerDiceFixture}
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import distantlands.gameplay.powers.campaign.PlanDriver
+import distantlands.gameplay.powers.campaign.{GlamorCard, PlanDriver}
+import distantlands.gameplay.powers.search.DisciplesCard
+import distantlands.gameplay.powers.whenplayed.{WhenPlayedHarness,
+  WizardsConclave, WizardsConclaveCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.gameplay.walker.{ParkedDecisionAssertions,
+  ProcedureWalker}
 import distantlands.model._
 import distantlands.model.OathState.Ready
 import distantlands.testkit.{Journal, Outcomes, ParkedNode, Table}
-import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 
 /** The Needle (L05): after its holder takes a banner, they may flip it
@@ -158,4 +162,27 @@ class TheNeedleSuite extends munit.FunSuite:
       banners.darkestSecret.holder, banners.darkestSecret.active),
       (Some(p1), PeoplesFavorFace.GrandCouncil, Some(p1),
         DarkestSecretFace.WanderingFlame))
+    assertEquals(lines(done.events).map(_.key), Vector("flipped"))
+
+  test("off turn: Wizard's Conclave hands p2 the Darkest Secret on p1's " +
+      "turn, and p2, The Needle's holder, answers"):
+    // p1 plays Wizard's Conclave; p2 rules Disciples and Glamor, the most
+    // Arcane cards, holds The Needle, and takes the Darkest Secret, with 2
+    // secrets, from p3.
+    val ready = Table.start.adviser(p1, WizardsConclaveCard)
+      .adviser(p2, DisciplesCard).adviser(p2, GlamorCard)
+      .legacy(p2, TheNeedleCard).darkestSecret(Some(p3), 2).ready
+    val beside = WhenPlayedHarness.powersBeside(WizardsConclave, TheNeedle)
+    val hook = WhenPlayedHarness.hook(WizardsConclaveCard.id)
+    val parked = Outcomes.parked(ProcedureWalker.advance(ready, hook, None,
+      beside))
+    val at = WhenPlayedHarness.replayed(ready, parked.events)
+    val id = TheNeedle.decisionId(Banner.DarkestSecret)
+    def reply(by: PlayerId) = ProcedureWalker.resolve(at, hook, parked.tree,
+      Answered(id, DecisionAnswer.ChooseOneAnswer(TheNeedle.flip), by),
+      beside)
+    assert(reply(p1).isLeft, "the actor may not answer the holder's question")
+    val done = Outcomes.finished(reply(p2))
+    assertEquals(done.treeless.game.current.banners.darkestSecret.active,
+      DarkestSecretFace.Festival)
     assertEquals(lines(done.events).map(_.key), Vector("flipped"))
