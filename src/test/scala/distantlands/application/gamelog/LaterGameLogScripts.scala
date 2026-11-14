@@ -11,7 +11,7 @@ import distantlands.gameplay.setup.legacies.{CircleOfSwordsCard,
   MatchmakerCard, Populist, PopulistCard, QuestToDistantLands,
   QuestToDistantLandsCard, ScepterBearerCard, SecretSociety,
   SecretSocietyCard, Seer, SeerCard, TheStandardBearer,
-  TheStandardBearerCard, WealthyCard, WorldCrafter, WorldCrafterCard}
+  TheStandardBearerCard, Wealthy, WealthyCard, WorldCrafter, WorldCrafterCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.{Answers, Dice, Look, MenuPlay, Situation}
@@ -123,6 +123,8 @@ object LaterGameLogScripts:
         ChooseOneAnswer(QuestToDistantLands.stayOff)
       case park if park.decisionId == TheStandardBearer.decisionId(p2) =>
         ChooseOneAnswer(DecisionOptionRef.Banner(Banner.PeoplesFavor))
+      case park if park.decisionId == Wealthy.decisionId(p2) =>
+        ChooseOneAnswer(Wealthy.fromBank)
       case park if park.decisionId == QuestToDistantLands.swapDecisionId(p2) =>
         ChooseOneAnswer(DecisionOptionRef.Denizen(waiting.sortBy(_.value).head))
     val repository = new InMemoryEventStreamRepository
