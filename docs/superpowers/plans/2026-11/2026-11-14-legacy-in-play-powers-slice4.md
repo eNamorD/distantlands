@@ -185,6 +185,12 @@ itself.
   arrangement in p3's Act, as planned, and lands with Task 4, since
   `GameLogPropertiesSuite` needs a script completing `game-end-conspirator`.
   The holder's private line shows in neither golden seat (p1, p2).
+- `ConspiratorReveal` lives in `gameplay/chronicle/legacies`, beside
+  Royal Line, not in `gameplay/powers/legacies`: `ProcedureNotes`, in
+  `gameplay/actions`, names it and may not import `gameplay/powers`.
+- The coverage build's size limit also caught `insertCard`, whose
+  `CurrentGameState` copies grew with `predictions`; its current-game piles
+  moved to a helper.
 - `GameLogFormatter.wonBy` gains its `Conspirator` words, which no event
   posts: the reveal step writes the victory line.
 

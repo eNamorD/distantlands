@@ -22,7 +22,7 @@ import distantlands.gameplay.actions.recover.RecoverProcedure
 import distantlands.gameplay.actions.search.SearchProcedure
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
 import distantlands.gameplay.phases.rest.{ArbiterStep, FinishRestProcedure}
-import distantlands.gameplay.powers.legacies.ConspiratorReveal
+import distantlands.gameplay.chronicle.legacies.ConspiratorReveal
 import distantlands.gameplay.phases.PhaseMenu
 import distantlands.gameplay.phases.wake.QuestFirstWakeProcedure
 import distantlands.gameplay.setup.SetupProcedure

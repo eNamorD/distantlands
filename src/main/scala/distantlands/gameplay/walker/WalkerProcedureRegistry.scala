@@ -25,7 +25,7 @@ import distantlands.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
 import distantlands.gameplay.powerresolver.PhasePowers
 import distantlands.gameplay.powers.AdviserLimit
-import distantlands.gameplay.powers.legacies.ConspiratorReveal
+import distantlands.gameplay.chronicle.legacies.ConspiratorReveal
 import distantlands.model.{ActionRef, Answered, Decide, DecisionOption, DecisionOptionRef, OathViolation, Operation, PendingTree, PhaseTransitionRef, PlayerId, PowerId, PowerWindow, ProcedureRef, ReadyGame, TriggeredProcedureRef}
 
 /** The one place a procedure registers its walker tree-building functions,

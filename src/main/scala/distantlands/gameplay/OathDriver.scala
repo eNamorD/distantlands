@@ -10,7 +10,7 @@ import distantlands.gameplay.phases.rest.{ArbiterStep, TurnBoundary,
 import distantlands.gameplay.phases.wake.{ForcedWakeProcedure,
   QuestFirstWakeProcedure}
 import distantlands.gameplay.powerresolver.PhasePowers
-import distantlands.gameplay.powers.legacies.ConspiratorReveal
+import distantlands.gameplay.chronicle.legacies.ConspiratorReveal
 import distantlands.gameplay.walker.{ActionBoundaryRan, ProcedureDequeued}
 import distantlands.model._
 import distantlands.model.OathEvent._

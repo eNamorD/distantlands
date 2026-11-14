@@ -30,7 +30,7 @@ object ConspiratorCard extends Legacy(LegacyId("L26"), "Conspirator",
   * `WritePrediction` only after both answers, so what is due does not
   * change before the last question. Every viewer reads "p2 wrote down a
   * prediction with Conspirator"; only the holder reads "p2 predicted p3
-  * wins in round 6" (R26, R27). [[ConspiratorReveal]] reveals it at the
+  * wins in round 6" (R26, R27). `ConspiratorReveal` reveals it at the
   * game's end.
   */
 case object ConspiratorPrediction extends PhasePower:

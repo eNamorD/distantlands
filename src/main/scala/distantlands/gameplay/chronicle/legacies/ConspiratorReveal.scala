@@ -1,8 +1,9 @@
-package distantlands.gameplay.powers.legacies
+package distantlands.gameplay.chronicle.legacies
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.ChronicleLegacyRules
+import distantlands.gameplay.powers.legacies.ConspiratorCard
 import distantlands.model._
 
 /** Conspirator at the game's end (Legacy in-play powers design, ruling
