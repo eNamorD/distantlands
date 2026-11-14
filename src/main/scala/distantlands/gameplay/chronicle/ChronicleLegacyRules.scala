@@ -1,7 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.gameplay.chronicle.legacies.{GreatArchitectCard, RivalCard,
-  SteadfastCard}
+  SteadfastCard, TheEarCard}
 import distantlands.model._
 
 /** The seam the legacies' Chronicle powers share (Legacy Chronicle powers
@@ -45,3 +45,7 @@ object ChronicleLegacyRules:
     * (ruling 10). */
   def anyEdifice(state: ReadyGame): Boolean =
     holder(state, GreatArchitectCard.id, imperialRoles).nonEmpty
+
+  /** Who places the scattered relics: The Ear's holder (ruling 14). */
+  def scatterer(state: ReadyGame): Option[PlayerId] =
+    holder(state, TheEarCard.id)

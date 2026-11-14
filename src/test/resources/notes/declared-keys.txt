@@ -578,6 +578,7 @@ procedure.chronicle-throne rival-protected = {0} protected {1} {1?denizen|denize
 procedure.chronicle-throne scored = {0} scored {1}
 procedure.chronicle-throne scored-with-bonus = {0} scored {1} ({2} base, {3})
 procedure.chronicle-throne swore = The Oathkeeper goal became {0}
+procedure.chronicle-throne the-ear-placed = {0} chose where the relics went with {1}
 procedure.chronicle-world dispossessed = {0} were dispossessed
 procedure.chronicle-world kept-adviser = {0} kept {1} as a starting adviser
 procedure.chronicle-world protected = {0} protected the stack of {1}

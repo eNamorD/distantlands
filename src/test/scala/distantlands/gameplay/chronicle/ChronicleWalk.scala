@@ -82,6 +82,13 @@ object ChronicleWalk:
       Either[OathViolation, OathState]](Right(table.state))((state, event) =>
         state.flatMap(rules.evolve(_, event))))), events, asked)
 
+  /** The Chronicle started on `table` from the end of `after`, as
+    * [[through]] starts it, for a suite outside `gameplay`, which cannot
+    * reach the driver. */
+  def started(rules: OathRules, table: Table,
+      after: TriggeredProcedureRef)(using munit.Location): OathTransition =
+    accepted(rules.next(OathTransition(table.state, Vector.empty), after))
+
   /** The decision `state` is parked on, if any. */
   def parked(state: OathState)(using munit.Location): Option[Decide] =
     ParkedNode.of(state, catalog, WalkerPowerCatalog.default(catalog)) match

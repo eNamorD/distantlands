@@ -674,6 +674,13 @@ class TheEarSuite extends munit.FunSuite:
     assert(!presentation.identifiesAt(after, Some(p1), first))
 ```
 
+As written, the suite's last test (the visibility test) moves to a new
+`src/test/scala/distantlands/application/HiddenChronicleCardsSuite.scala`:
+`GamePresentationProjector` is `private[application]`, and the driver's
+`rules.next` is `private[gameplay]`, so the test starts the Throne through
+a new `ChronicleWalk.started(rules, table, after)` and reads the Throne's
+end through `ChronicleWalk.endOf`. Task 5's visibility test joins it.
+
 - [ ] **Step 2: Run the tests to verify they fail**
 
 Expected: FAIL to compile: `Not found: TheEarCard` in the new package.

@@ -29,7 +29,6 @@ legacy.scepter-bearer
 legacy.secret-society
 legacy.seer
 legacy.the-bright-beacon
-legacy.the-ear
 legacy.the-mouth
 legacy.the-needle
 legacy.the-standard-bearer

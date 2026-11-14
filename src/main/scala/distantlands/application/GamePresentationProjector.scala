@@ -373,6 +373,11 @@ private[application] final class GamePresentationProjector(
             .exists(seat => seat.player == player && seat.lineage == lineage))
       // The Public Ambitions row is faceup.
       case CardContainer.PublicLegacies => true
+      // A set-aside relic a player peeked: The Ear's holder examines the
+      // scattered relics (Legacy Chronicle powers design, ruling 14; R22).
+      case CardContainer.SetAsideRelics =>
+        viewer.exists(player => ready.knowledge.heldRelics
+          .getOrElse(player, Vector.empty).contains(id))
       // The Chancellor chooses a Reliquary relic in Setup (CR p. 8, Empire
       // ruling R29); nobody else, and nobody later, sees the pile.
       case CardContainer.Reliquary =>

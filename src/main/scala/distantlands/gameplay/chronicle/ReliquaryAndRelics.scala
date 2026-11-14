@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.legacies.TheEar
 import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
@@ -70,14 +71,24 @@ object ReliquaryAndRelics:
         PositionedLocation(Location.PlayArea(player.player)),
         relic.tokens.secrets, player.player)))), required = true),
     Shuffle(ShufflePile.SetAsideRelics),
+    // The Ear's holder, read once the relics are set aside, places them
+    // slot by slot first (Legacy Chronicle powers design, ruling 14).
+    Branch((state, _) => ChronicleLegacyRules.scatterer(state).toVector
+      .flatMap(TheEar.steps(catalog, state, _))),
     BuildOps((state, _) => Right(deal(catalog, state)), required = true))
+
+  /** One entry per empty relic slot of the sites in play, in Hinterward
+    * order: the slots Scatter Relics deals to. */
+  def emptySlots(catalog: ExecutableCatalog, state: ReadyGame)
+      : Vector[SiteId] =
+    val map = state.game.current.map
+    map.inPlay.flatMap(site => Vector.fill(math.max(0,
+      catalog.site(site).fold(0)(_.relicSlots) -
+        map.sites.get(site).fold(0)(_.relics.size)))(site))
 
   private def deal(catalog: ExecutableCatalog, state: ReadyGame)
       : Vector[CoreOperation] =
-    val map = state.game.current.map
-    val slots = map.inPlay.flatMap(site => Vector.fill(math.max(0,
-      catalog.site(site).fold(0)(_.relicSlots) -
-        map.sites.get(site).fold(0)(_.relics.size)))(site))
+    val slots = emptySlots(catalog, state)
     val relics = state.game.current.setAsideRelics
     val from = PositionedLocation(Location.SetAsideRelics)
     relics.zip(slots).map((relic, site) => Move(Piece.Card(relic), from,

@@ -129,15 +129,6 @@ object TheStandardBearerCard extends Legacy(LegacyId("L18"), "The Standard Beare
       "on it from the shared bank.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object TheEarCard extends Legacy(LegacyId("L19"), "The Ear",
-    LegacyGoal.DarkestSecret, Suit.Hearth):
-  val power = PrintedPower(PowerId("legacy.the-ear"),
-    persistent = false, cost = Cost.free,
-    text = "**ACTION:** You may peek at the relics at any site. " +
-      "**CHRONICLE (THRONE):** In Scatter Relics, you examine the " +
-      "relics and choose which sites they go to.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object HighPriestCard extends Legacy(LegacyId("L21"), "High Priest",
     LegacyGoal.DarkestSecret, Suit.Order):
   val power = PrintedPower(PowerId("legacy.high-priest"),
