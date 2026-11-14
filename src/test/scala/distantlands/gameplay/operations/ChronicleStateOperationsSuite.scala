@@ -1,6 +1,6 @@
 package distantlands.gameplay.operations
 
-import distantlands.catalog.holding.PathfinderCard
+import distantlands.gameplay.powers.travel.PathfinderCard
 import distantlands.gameplay.setup.legacies.WealthyCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}

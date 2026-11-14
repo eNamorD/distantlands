@@ -67,11 +67,3 @@ object TheMouthCard extends Legacy(LegacyId("L34"), "The Mouth",
       "you meet its goal. _You can even activate legacies in the " +
       "Public Ambitions foundation._")
   val powers: Vector[PrintedPower] = Vector(power)
-
-object PathfinderCard extends Legacy(LegacyId("L36"), "Pathfinder",
-    LegacyGoal.MostOfSuit, Suit.Nomad, Some(FoundationNumber.I)):
-  val power = PrintedPower(PowerId("legacy.pathfinder"),
-    persistent = false, cost = Cost.free,
-    text = "Set Foundation I to Wide Horizons. **TRAVEL:** You may " +
-      "ignore the Mountain, Island, and Pass powers.")
-  val powers: Vector[PrintedPower] = Vector(power)

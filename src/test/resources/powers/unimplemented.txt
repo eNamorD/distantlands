@@ -12,7 +12,6 @@ legacy.beloved
 legacy.conspirator
 legacy.keeper-of-order
 legacy.light-fingers
-legacy.pathfinder
 legacy.the-mouth
 legacy.the-needle
 relic.ancient-grit

@@ -3,7 +3,8 @@ package distantlands.catalog
 import distantlands.catalog.holding._
 import distantlands.gameplay.chronicle.legacies._
 import distantlands.gameplay.powers.legacies._
-import distantlands.gameplay.powers.travel.AncestralLandsCard
+import distantlands.gameplay.powers.travel.{AncestralLandsCard,
+  PathfinderCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture
 import distantlands.gameplay.setup.legacies._
 import distantlands.model.{FoundationNumber, Suit}
