@@ -210,6 +210,7 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   exactly two, in turn order. No Decline. Lines: "p2 took 1 favor from p1
   and p3 with Wealthy", "p2 took 3 favor from the shared bank with
   Wealthy". *Reason:* spec ruling 17. *Slice/files:* slice 4; `Wealthy`.
+  Amended by R34 for exactly two givers.
 - **R30. Quest's pawn step.** The holder's pawn question adds "Don't place
   your pawn" after the sites; staying off writes "p2 placed no pawn with
   Quest to Distant Lands". The `SetupPawnPlaced` window still runs, so The
@@ -244,3 +245,11 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   reader that must decide something else about a pawnless player is
   reported, not guessed. *Reason:* spec ruling 20. *Slice/files:* slice 4;
   the readers the audit finds.
+- **R34. Wealthy with exactly two givers** (amends R29). When exactly two
+  other players hold favor, both give and no choose-many is asked.
+  *Reason:* a `ChooseMany(2,2)` over two options has one answer.
+  *Slice/files:* slice 4; `Wealthy`.
+- **R35. The first Wake's confirm label.** The placement's Confirm reads
+  "Place your pawn at" and the site, not Setup's "Start at". *Reason:* the
+  Wake is not Setup, and the question reads "Place your pawn at any site".
+  *Slice/files:* slice 4; `QuestFirstWakeProcedure`.

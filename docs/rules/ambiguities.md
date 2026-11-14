@@ -313,11 +313,13 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 46. **Quest to Distant Lands, first Wake.** At the start of the Wake of a seated player with no pawn, before anything else, they must place it at any site in play; then the steps Setup deferred run. No pawn-window power fires. Until then the player stands at no site (design, ruling 20).
 47. **The pawn window reads who placed from the latest pawn answer,** so a question asked in it keeps its shape; the edifice powers come first, then The Standard Bearer, then Wealthy (R27).
 48. **The Standard Bearer's bank always gives two,** having no count (R28).
-49. **Wealthy's questions** are a choice between two players and the bank, then a choose-many of exactly two players (R29).
+49. **Wealthy's questions** are a choice between two players and the bank, then a choose-many of exactly two players (R29), unless exactly two can give (item 54).
 50. **Staying off writes "p2 placed no pawn with Quest to Distant Lands",** and the steps that read the pawn's region are skipped for any player with no pawn (R30).
 51. **Quest's swap** peeks the Dispossessed for the holder, offers no Secret Society Vision, and comes before Choose Adviser would run (R31).
 52. **The first Wake is a procedure of its own,** run before the Wake checks and Forced Wake (R32).
 53. **A pawnless player stands at no site** for every other rule (R33).
+54. **Wealthy with exactly two givers:** when exactly two other players hold favor, both give and no choose-many is asked (R34, amending R29).
+55. **The first Wake's placement confirms as "Place your pawn at" and the site,** not Setup's "Start at" (R35).
 
 ## Source relationship cautions
 
