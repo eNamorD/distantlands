@@ -378,9 +378,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .mat-board .site-footer { position: absolute; bottom: var(--name-band);
   margin: 0; left: calc(var(--face-left) + 8px);
   width: calc(var(--face-w) - 16px); }
-.mat-board .site > .target-detail-badge { position: absolute;
-  top: calc(6px + var(--row));
-  right: calc(100% - var(--face-left) - var(--face-w) + 8px); margin: 0; }
+/* A decision's cost badge sits at the face's foot, over the name's tail,
+   the one thing on the face it may cover. */
+.mat-board .site > .target-detail-badge { position: absolute; bottom: 2px;
+  right: calc(100% - var(--face-left) - var(--face-w) + 4px); margin: 0;
+  z-index: 1; }
 /* A card fills the slot the mat gives it. */
 .mat-board .site-cards > .mat-slot > .card-face { width: 100%; height: 100%;
   aspect-ratio: auto; }
@@ -394,6 +396,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   height: 100%; margin: 0; padding: 0; }
 .mat-board .deck-card { width: 100%; height: 100%; padding-bottom: 0;
   font-size: 2.6rem; }
+/* The letter and the count each have a row of their own, the letter's of a
+   set height, so the count stays put whether or not the back's letter is
+   drawn. */
+.mat-board .deck-card { display: grid; justify-items: center;
+  grid-template-rows: 1fr 1.1em auto 1fr; row-gap: 0.1em; }
+.mat-board .deck-card > .deck-letter { grid-row: 2; }
+.mat-board .deck-card > .pile-count { grid-row: 3; }
 .mat-board .deck-caption { position: absolute; top: 6px; right: 0; left: 0;
   text-align: center; pointer-events: none; }
 .mat-board .deck-body > .target-detail-badge { position: absolute;
@@ -485,13 +494,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    it holds is set against the scale, its rows grow with it, and the name
    keeps one line, cut, its whole text being the site's name for assistive
    technology and on a zoom. */
-.map-compact .mat-board .site { --row: calc(var(--glance-text) * 1.2);
+.map-compact .mat-board .site { --row: calc(var(--glance-text) * 1.3);
   --name-band: calc(var(--glance-name) * 1.05 + 10px); }
 .map-compact .mat-board .site-name { font-size: var(--glance-name);
   line-height: 1.05; white-space: nowrap; overflow: hidden;
   text-overflow: ellipsis; }
 .map-compact .mat-board :is(.site-tokens, .site-defense, .site-pawns,
-  .site-forces, .site-footer, .site > .target-detail-badge, .track-note,
+  .site-forces, .site-footer, .target-detail-badge, .track-note,
   .vision-cell, .visions-drawn-label, .deck-caption, .favor-bank) {
   font-size: var(--glance-text); }
 /* One line of powers, cut, beside the requirement: each power's words are
@@ -509,18 +518,38 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    its whole name its label. */
 .pawn-initial { display: none; }
 .map-compact .mat-board .site-pawns { display: flex; flex-wrap: nowrap;
-  gap: 0.2em; overflow: hidden; white-space: nowrap; margin: 0;
-  justify-content: flex-start; font-size: calc(var(--glance-text) * 0.9);
+  gap: 0.12em; overflow: hidden; white-space: nowrap; margin: 0;
+  justify-content: flex-start; font-size: calc(var(--glance-text) * 0.85);
   line-height: 1.15; }
+/* A black pawn's pill keeps its colour readable on the dark face; it holds
+   no padding there, so six pawns keep the room they need. */
+.map-compact .mat-board :is(.pawn-dot, .pawn-initial).player-black {
+  padding: 0 0.1em; }
 .map-compact .mat-board .pawn-long { position: absolute; width: 1px;
   height: 1px; overflow: hidden; clip-path: inset(50%); }
 .map-compact .mat-board .pawn-initial { display: inline; font-weight: 700; }
+/* At rest a face holds two pawns by name on its one line; from three on,
+   each shows its dot and initial there too. */
+.mat-board .site-pawns { flex-wrap: nowrap; overflow: hidden;
+  white-space: nowrap; min-height: 0; }
+.mat-board .site-pawns:has(> :nth-child(3)) .pawn-long { position: absolute;
+  width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.mat-board .site-pawns:has(> :nth-child(3)) .pawn-initial { display: inline;
+  font-weight: 700; }
+.mat-board .site-pawns:has(> :nth-child(3)) .festival-marker { font-size: 0;
+  padding: 0 0.2em; }
+.mat-board .site-pawns:has(> :nth-child(3)) .festival-marker::after {
+  content: "F"; font-size: 0.72rem; }
+/* Five pawns or more on one zoomed-out face leave no room for initials:
+   each is its dot, its player's name still its name and hover note. */
+.map-compact .mat-board .site-pawns:has(> :nth-child(5)) .pawn-initial {
+  display: none; }
 .map-compact .mat-board .site-pawns .festival-marker { font-size: 0;
   padding: 0 0.2em; }
 .map-compact .mat-board .site-pawns .festival-marker::after { content: "F";
-  font-size: calc(var(--glance-text) * 0.9); }
+  font-size: calc(var(--glance-text) * 0.85); }
 .map-tiny .mat-board .site-pawns .festival-marker::after {
-  font-size: min(var(--glance-text), 44px); }
+  font-size: min(var(--glance-text), 32px); line-height: 1.05; }
 /* A deck's letter and count at the glance size, the count under the
    letter. */
 .map-compact .mat-board .deck-card { font-size: calc(var(--glance-text) * 1.5);
@@ -571,26 +600,38 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   right: auto; left: calc(var(--face-left) + 8px); }
 .map-tiny .mat-board .site-defense-short { top: calc(6px + var(--row)); }
 /* Each pawn is its dot alone, sized so six pawns and the festival marker
-   fit the face's width; the row never wraps. */
+   fit the face's width (seven items of about 1.12em in its 256px); the row
+   never wraps. */
 .map-tiny .mat-board .site-pawns { top: calc(6px + var(--row) * 2);
-  font-size: min(var(--glance-text), 44px); line-height: 1.05; }
+  font-size: min(var(--glance-text), 32px); line-height: 1.05; }
+.map-tiny .mat-board .site-tokens .site-token-count { margin-right: 0.1em; }
+/* A bank is its suit's glyph and its count there, the glyph a little
+   smaller so a two-digit count fits the bank's place. */
+.map-tiny .mat-board .favor-bank { grid-template-columns: 0.75em auto;
+  column-gap: 0.05em; padding: 0; }
+.map-tiny .mat-board .favor-bank > .token-glyph { width: 0.75em;
+  height: 0.75em; }
 .map-tiny .mat-board .pawn-initial { display: none; }
-/* A decision's cost badge goes to the face's foot, over the name's tail,
-   the one thing on the face it may cover. */
-.map-tiny .mat-board .site > .target-detail-badge { top: auto; bottom: 2px;
-  z-index: 1; }
 /* A phone's face is as tall as two rows of the glance size, the pawns' row
    and the name: the rows close up and the dots take what height is left. */
 @media (max-width: 620px) {
   .map-tiny .mat-board .site { --row: var(--glance-text); }
+  .map-tiny .mat-board :is(.site-tokens, .site-forces-short,
+    .site-defense-short) { line-height: 1; }
+  .map-tiny .mat-board :is(.site-forces-short,
+    .site-defense-short) .token-glyph { width: 1em; height: 1em; }
+  .map-tiny .mat-board .site-tokens .token-glyph { width: 0.85em;
+    height: 0.85em; }
+  .map-tiny .mat-board .site > .target-detail-badge { line-height: 1;
+    padding: 0 0.3em; }
   .map-tiny .mat-board .site-pawns,
   .map-tiny .mat-board .site-pawns .festival-marker::after {
-    font-size: calc(var(--glance-text) * 0.36); }
+    font-size: calc(var(--glance-text) * 0.33); }
 }
 /* What stays keeps one size: a deck's letter and count, and a cell's
    number, each at the glance size, inside the place the mat gives it. */
 .map-tiny .mat-board .deck-card { font-size: var(--glance-text);
-  line-height: 1; }
+  line-height: 1; grid-template-rows: 1fr 1em auto 1fr; row-gap: 0; }
 .map-tiny .mat-board .deck-card > .pile-count { font-size: 1em; }
 .map-tiny .mat-board .vision-cell { padding-top: 0; line-height: 1; }
 
@@ -763,7 +804,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* A button that opens the power: it reads as the label it was. */
 .site-power { appearance: none; background: none; border: 0; padding: 0;
   margin: 0; font: inherit; color: inherit; cursor: pointer;
-  text-decoration: underline dotted; text-underline-offset: 2px; }
+  text-decoration: underline dotted; text-underline-offset: 2px;
+  /* Its label is printed; the button keeps a hit area of its own. */
+  min-width: 1.5em; min-height: 1.2em; }
 .site-power:hover { color: var(--cream-bright); }
 .site-requirement { display: flex; align-items: center; flex: 0 0 auto;
   gap: 0.15em; align-self: flex-end; color: var(--cream-bright); font-weight: 700; }
@@ -1006,13 +1049,16 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   border: 1px solid transparent; border-radius: 0.35em;
   background: var(--base); color: var(--cream); font: inherit; line-height: 1.15; }
 .card-face-denizen { border-color: var(--line); }
-.card-face-relic { height: auto; aspect-ratio: var(--ratio-relic);
+/* Heights are worked out from the table rather than left to
+   `aspect-ratio`, so a card in a row that stretches its items keeps its
+   shape. */
+.card-face-relic { height: calc(var(--card-w) / (var(--ratio-relic)));
   border-color: #7a6a4c; }
-.banner-face { aspect-ratio: var(--ratio-banner); }
+.banner-face { height: calc(var(--card-w) / (var(--ratio-banner))); }
 /* A legacy is the denizen card turned on its side: the same two lengths,
    exchanged. */
-.card-face-legacy { width: var(--card-h); height: auto;
-  aspect-ratio: var(--ratio-legacy); border-color: var(--line); }
+.card-face-legacy { width: var(--card-h);
+  height: calc(var(--card-h) / (var(--ratio-legacy))); border-color: var(--line); }
 .card-face-unimplemented { border-style: dashed; border-color: var(--unimplemented); }
 /* An empty slot is a place, not a card: nothing to inspect, so no ring. */
 .card-face:not(.card-slot-empty):hover, .card-face:focus-visible {
@@ -1666,6 +1712,24 @@ button.festival-marker:hover,
 .map-compact .card-header .token-glyph { position: absolute; top: 0.2em;
   left: 0.2em; width: 1.5em; height: 1.5em; }
 .map-compact .card-tokens { bottom: 0.25em; justify-content: center; }
+/* A card holding three kinds of token or more takes a band of two lines,
+   and the face keeps the room for both. */
+.card-tokens { flex-wrap: wrap-reverse; align-content: flex-start;
+  row-gap: 0; }
+:is(.card-face, .card-hover-summary):has(> .card-tokens > :nth-child(5)) {
+  --band-h: 2.6em; }
+/* A card's tokens keep their glyphs whole, and on the mat a crowded band
+   wraps upward from the card's foot, two kinds a line. Further out the band
+   is sized from the card's width, as the pawns' dots are from the face's. */
+.card-tokens > *, .card-tokens .token-glyph { flex: none; }
+.card-warbands { display: inline-flex; align-items: center; }
+.map-compact .mat-board .site-cards .card-tokens { height: auto;
+  flex-wrap: wrap-reverse; align-content: flex-start; row-gap: 0; }
+.map-compact .mat-board .site-cards .card-tokens .token-glyph { width: 1em;
+  height: 1em; }
+.map-compact .mat-board .site-cards .card-token-count { margin-right: 0.1em; }
+.map-tiny .mat-board .site-cards .card-tokens {
+  font-size: min(var(--glance-text), 28px); }
 .map-compact .card-face .card-defense, .map-compact .card-face .card-power-marks,
 .map-compact .card-face .card-unimplemented-badge { display: none; }
 /* The banner takes the corner opposite the suit glyph, in the room the
@@ -2014,7 +2078,7 @@ button.festival-marker:hover,
 /* The overlay reads a Vision upright, in the landscape box it is printed
    in. */
 .card-overlay-body > .card-face-vision { width: var(--card-h);
-  height: auto; aspect-ratio: var(--ratio-legacy); }
+  height: calc(var(--card-h) / (var(--ratio-legacy))); }
 /* A card the table shows as words has its box here, at its real ratio,
    where its image will go. */
 .card-plate { display: flex; align-items: center; justify-content: center;

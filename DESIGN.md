@@ -452,8 +452,14 @@ name, its tokens and its pawns, and its forces and defense in a short form,
 the warband glyph and its count in the force's colour (the Empire's glyph
 ringed, so it does not rest on colour alone) and one defense die with its
 count (implementation rulings R5 and R7). Pawns are one line that never
-wraps: the dot and the player's initial on the compact map, the dot alone
-on the tiny one, the name kept as the pawn's name and hover note (R6). Its
+wraps on the face at any scale: two pawns by name at rest, from three on the
+dot and the player's initial; the dot and the initial on the compact map,
+the dot alone from five pawns on and on the tiny map, where the dot is sized
+from the face's width (about 8px on screen at a tablet's Fit, 3px on a
+phone's); the name is kept as the pawn's name and hover note (R6). A
+decision's cost badge sits at the face's foot, over the name's tail, the
+one thing it may cover. A card holding three kinds of token or more gives
+its token band two lines, and on the mat the band wraps two kinds a line. Its
 powers, the wheel's numbers and a bank's favor glyph leave the board at
 that scale; the tracker's words, the slots' names and the track's label
 leave the screen but stay in the accessibility tree, and the Usurper's
