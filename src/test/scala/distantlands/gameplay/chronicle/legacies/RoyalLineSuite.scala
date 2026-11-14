@@ -54,13 +54,26 @@ class RoyalLineSuite extends munit.FunSuite:
   test("Royal Line is implemented"):
     assert(PowerImplementationStatus.implemented(RoyalLineCard.power.id))
 
-  test("the holder chooses from every Imperial, the Chancellor first, with " +
-      "no Decline (ruling 22; R38)"):
+  test("the holder may decline, or choose from every Imperial, the " +
+      "Chancellor first (ruling 22; R38)"):
     val decide = asked(through(ended(stable),
       TriggeredProcedureRef.ChronicleSun)).get
     assertEquals(decide.owner, p3)
     assertEquals(decide.query.asInstanceOf[DecisionQuery.ChooseOne].options
-      .map(_.ref), Vector(p1, p2, p3).map(DecisionOptionRef.Player(_)))
+      .map(_.ref), RoyalLine.decline +: Vector(p1, p2, p3)
+        .map(DecisionOptionRef.Player(_)))
+
+  test("declining keeps the result, journals nothing and writes nothing " +
+      "(R38)"):
+    val declined = through(ended(GameResult(p2, VictoryKind.Successor)),
+      TriggeredProcedureRef.ChronicleSun)
+    assertEquals(asked(declined).map(_.owner), Some(p3))
+    assertEquals(declined.ready.game.current.result,
+      Some(GameResult(p2, VictoryKind.Successor)))
+    assert(!RecordedOps.all(declined.events).exists(
+      _.isInstanceOf[WinnerNamed]))
+    assertEquals(sunLines(declined).filter(_.contains(" named ")),
+      Vector.empty)
 
   test("the Chancellor is the first option when seated after a Citizen " +
       "(R38)"):
@@ -70,7 +83,8 @@ class RoyalLineSuite extends munit.FunSuite:
       .legacy(p3, RoyalLineCard)
     val decide = asked(through(table, TriggeredProcedureRef.ChronicleSun)).get
     assertEquals(decide.query.asInstanceOf[DecisionQuery.ChooseOne].options
-      .map(_.ref), Vector(p2, p1, p3).map(DecisionOptionRef.Player(_)))
+      .map(_.ref), RoyalLine.decline +: Vector(p2, p1, p3)
+        .map(DecisionOptionRef.Player(_)))
 
   test("naming a Citizen makes them the Successor, whom the Crown and the " +
       "tasks follow (ruling 23)"):
@@ -100,7 +114,6 @@ class RoyalLineSuite extends munit.FunSuite:
 
   test("naming the current winner keeps the result, journals nothing and " +
       "writes nothing (R38, R41)"):
-    // The Chancellor in a Chancellor's win is also the plainest answer.
     val kept = through(ended(stable), TriggeredProcedureRef.ChronicleSun,
       naming(p1))
     assertEquals(kept.ready.game.current.result, Some(stable))

@@ -253,7 +253,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 53. **Royal Line chooses the winner of an Empire win:** only after a Chancellor's or a Successor's win, a Citizen holding it active chooses the winner from every Imperial player, in a new window before Reveal Relics. Choosing the Chancellor is choosing no one (design, ruling 22).
 54. **The new winner is journaled,** and every later step reads the winner from the game's result. A Citizen wins as the Successor; the Chancellor wins by the Empire win that ended the game (design, ruling 23).
 55. **The Chancellor's Empire win is derived** from the ended game's state, by the same code that decided the ending, with the Successor substitution skipped (R37; low confidence).
-56. **Royal Line's question** lists every Imperial player, the Chancellor first, with no Decline; choosing the current winner keeps the result and journals nothing (R38).
+56. **Royal Line's question** offers Decline first, then every Imperial player, the Chancellor first; declining or choosing the current winner keeps the result and journals nothing (R38, re-ruled by the owner 2026-11-14).
 57. **The journaled winner** is `WinnerNamed`, which refuses a game with no result, an unseated winner and a kind that is not an Empire win (R39).
 58. **Royal Line's window** is the Sun's first, before Reveal Relics and Iron Hand's Sun checkpoint (R40). Crown Chancellor and Assign Tasks read the winner when each is reached.
 59. **Royal Line's line** is "p3 named p2 the winner with Royal Line", only when the winner changes; the end-of-game line stays as it was, and the result banner follows the result (R41).

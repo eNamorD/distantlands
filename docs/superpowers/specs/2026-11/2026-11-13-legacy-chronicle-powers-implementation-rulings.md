@@ -384,12 +384,15 @@ Empire endings appear; revisit then.
 Slice/files: 5; `EmpireEndings`, `RoyalLine`.
 
 **R38. Royal Line's question.**
-Decision: the owner's shape: the question lists every Imperial player, the
-Chancellor first, and nothing else; there is no Decline. Choosing the
-current winner keeps the result and journals nothing, which meets design
-ruling 3's decline.
-Reason: the owner asked for exactly "list all the Imperial players and let
-the Royal Line holder choose the winner".
+Re-ruled by the owner 2026-11-14.
+Decision: Royal Line is a "may" power, so the question offers Decline
+first, which keeps the result, then every Imperial player, the Chancellor
+first. Choosing the current winner still keeps the result and journals
+nothing.
+Reason: the owner's ruling: a "may" power offers Decline (design ruling
+3).
+Earlier decision (2026-11-13): every Imperial player, the Chancellor
+first, and no Decline.
 Slice/files: 5; `RoyalLine`.
 
 **R39. The operation.**

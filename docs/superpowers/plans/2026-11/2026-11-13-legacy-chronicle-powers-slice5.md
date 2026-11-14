@@ -60,7 +60,9 @@ rulings R37-R42 ([rulings](../../specs/2026-11/2026-11-13-legacy-chronicle-power
   engine produces.
 - **R38** (Task 3): the owner's shape: every Imperial player, the
   Chancellor first, and no Decline; choosing the current winner keeps the
-  result and journals nothing.
+  result and journals nothing. Re-ruled by the owner 2026-11-14: Decline first,
+  then every Imperial player, the Chancellor first; changed after the
+  slice landed.
 - **R39** (Task 1): `WinnerNamed(winner, kind)`, wire kind
   `"winner-named"`, fields `"winner"` and `"victory"`.
 - **R40** (Task 2): `ChronicleStartOfSun` (`chronicle.sun.start-of-sun`).

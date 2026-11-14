@@ -22,7 +22,8 @@ object RoyalLineCard extends Legacy(LegacyId("L10"), "Royal Line",
   * You may choose no one." Its step is the Sun's first window (Legacy
   * Chronicle powers design, ruling 22; R40). Only after a Chancellor's or a
   * Successor's win, a seated Citizen holding it active, read when reached,
-  * chooses any Imperial, the Chancellor first, with no Decline (R38). A
+  * may decline, which keeps the result, or choose any Imperial, the
+  * Chancellor first (R38, re-ruled by the owner 2026-11-14). A
   * Citizen then wins as the Successor; the Chancellor wins by the ended
   * game's Empire win (`EmpireEndings.empireWin`, R37). `WinnerNamed` (R39)
   * journals a changed winner (ruling 23); every later step reads it from
@@ -37,6 +38,7 @@ case object RoyalLine extends ContributingPower:
 
   def decisionId(player: PlayerId): String =
     s"chronicle.sun.legacy.royal-line.${player.value}"
+  val decline: DecisionOptionRef.Button = DecisionOptionRef.Button("decline")
 
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleSun)
   private val notes = NoteSet(noteId)
@@ -57,8 +59,9 @@ case object RoyalLine extends ContributingPower:
       chancellor <- Imperials.chancellor(state)
     yield Vector(
       Decide(decisionId(holder), holder, DecisionQuery.ChooseOne(
-        ChronicleTasks.playerOptions(chancellor +:
-          Imperials.players(state).filterNot(_ == chancellor)),
+        DecisionOption.Button(decline, "Decline") +:
+          ChronicleTasks.playerOptions(chancellor +:
+            Imperials.players(state).filterNot(_ == chancellor)),
         heading = Some("Royal Line: you may choose the winner"),
         confirmVerb = Some("Name"))),
       Branch((live, pending) => ChronicleTasks.chosenPlayer(pending,
