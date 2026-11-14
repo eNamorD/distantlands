@@ -39,6 +39,22 @@ class GameEventFactsWireSuite extends munit.FunSuite:
         Some(GameResult(PlayerId("p2"), VictoryKind.Successor))))
     assertStreamRoundTrips("end-die", events)
 
+  test("an end die without a modifier, as saved before Arbiter, decodes " +
+      "with modifier 0, and a modified one round-trips"):
+    val unmodified = accepted(GameEventWire.encodeEvent("end-die", 0,
+      OathEvent.EndDieRolled(6, 5, None)))
+    assert(!unmodified("payload").obj.contains("modifier"))
+    // An event saved before Arbiter is exactly an unmodified one.
+    assertEquals(accepted(GameEventWire.decode(unmodified)).event,
+      OathEvent.EndDieRolled(6, 5, None, 0))
+    val modified = OathEvent.EndDieRolled(5, 4,
+      Some(GameResult(PlayerId("p1"), VictoryKind.StableRegime)), 2)
+    val encoded = accepted(GameEventWire.encodeEvent("end-die", 1, modified))
+    assertEquals(encoded("payload")("modifier"), ujson.Num(2))
+    assertEquals(accepted(GameEventWire.decode(encoded)).event, modified)
+    assertStreamRoundTrips("end-die-modified", Vector(modified,
+      OathEvent.EndDieRolled(7, 3, None, -1)))
+
   test("an end die with half a win or an unknown kind is refused"):
     def encodedWin = accepted(GameEventWire.encodeEvent("end-die", 0,
       OathEvent.EndDieRolled(6, 5,

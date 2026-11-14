@@ -81,6 +81,8 @@ private[operations] object LeafApplication:
       BoardControlOperations.setFestivalMarker(ready, site)
     case FlipBanner(banner) =>
       Right(BoardControlOperations.flipBanner(ready, banner))
+    case SetEndDieModifier(amount) =>
+      Right(TurnStateOperations.setEndDieModifier(ready, amount))
     case OpenPick(decisionId, option, label) =>
       Right(TurnStateOperations.openPick(ready, decisionId, option, label))
     case ClosePick() => Right(TurnStateOperations.closePick(ready))

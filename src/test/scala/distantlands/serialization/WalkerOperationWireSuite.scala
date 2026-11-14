@@ -386,6 +386,8 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     SetFestivalMarker(None),
     FlipBanner(Banner.PeoplesFavor),
     FlipBanner(Banner.DarkestSecret),
+    SetEndDieModifier(2),
+    SetEndDieModifier(-1),
     QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
         Vector.empty,
         Some(PowerSourceRef.Card(KnightsErrantCard.id)),

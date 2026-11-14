@@ -181,6 +181,16 @@ class GameLogHeadlineSuite extends munit.FunSuite:
       Vector(OathEvent.EndDieRolled(5, 2, None))).last
     assertEquals(text(five), "The end die rolled 2. Stable Regime needed 6.")
 
+  test("a modified end die posts its face, the modifier and the total"):
+    val script = recordedEventsBoard
+    assertEquals(text(formatAppended(script,
+      Vector(OathEvent.EndDieRolled(5, 4, None, 2))).last),
+      "The end die rolled 4, modified by +2 to 6. Stable Regime needed 6.")
+    assertEquals(text(formatAppended(script,
+      Vector(OathEvent.EndDieRolled(6, 5, None, -1))).last),
+      "The end die rolled 5, modified by -1 to 4. Stable Regime needed 5 " +
+        "or more.")
+
   test("a winning end die posts the roll, then the victory"):
     val script = recordedEventsBoard
     val winner = script.actor

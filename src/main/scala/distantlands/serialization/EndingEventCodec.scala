@@ -3,7 +3,8 @@ package distantlands.serialization
 import distantlands.model._
 import distantlands.model.OathEvent._
 
-private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
+private[serialization] trait EndingEventCodec { this: GameEventJsonSupport
+  & WalkerValueCodec =>
   import GameEventWire._
   import WireError._
 
@@ -25,13 +26,18 @@ private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
         "victoryKind" -> kind.key,
         "visionIds" -> stringArray(visions.map(_.value)),
         "randomCandidatePlayerIds" -> stringArray(candidates.map(_.value)))
-      case EndDieRolled(round, face, result) => ujson.Obj(
-        "round" -> round,
-        "face" -> face,
-        "winnerPlayerId" -> result.fold[ujson.Value](ujson.Null)(r =>
-          ujson.Str(r.winner.value)),
-        "victoryKind" -> result.fold[ujson.Value](ujson.Null)(r =>
-          ujson.Str(r.kind.key)))
+      case EndDieRolled(round, face, result, modifier) =>
+        val payload = ujson.Obj(
+          "round" -> round,
+          "face" -> face,
+          "winnerPlayerId" -> result.fold[ujson.Value](ujson.Null)(r =>
+            ujson.Str(r.winner.value)),
+          "victoryKind" -> result.fold[ujson.Value](ujson.Null)(r =>
+            ujson.Str(r.kind.key)))
+        // An unmodified roll writes no modifier, as every end die saved
+        // before Arbiter reads.
+        if modifier != 0 then payload("modifier") = modifier
+        payload
       case BanditsRefilled(sites) => ujson.Obj("sites" -> ujson.Arr.from(
         sites.map { case (site, count) =>
           ujson.Obj("siteId" -> site.value, "count" -> count)
@@ -73,7 +79,9 @@ private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
             case (winner, kind) =>
               victoryKind(kind, s"$path.victoryKind").map(k =>
                 Some(GameResult(PlayerId(winner.str), k)))
-        yield EndDieRolled(round, face, result)
+          modifier <- payload.obj.get("modifier").fold[Either[WireError, Int]](
+            Right(0))(value => decodeSignedInt(value, s"$path.modifier"))
+        yield EndDieRolled(round, face, result, modifier)
         case BanditsRefilledType => for
           sites <- traverse(payload("sites").arr.toVector) { value => for
             count <- safeIntField(value.obj, "count", s"$path.sites")

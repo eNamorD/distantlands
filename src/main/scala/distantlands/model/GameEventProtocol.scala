@@ -38,9 +38,12 @@ object OathEvent:
   /** The purple end die at the end of round 5, 6 or 7, rolled while an
     * Imperial player holds the Oathkeeper title (CR p. 19). `result` is the
     * win the face gives, the Chancellor's or a Successor's; a winning roll
-    * ends the game, and after a losing one `RoundEnded` follows. */
+    * ends the game, and after a losing one `RoundEnded` follows.
+    * `modifier` is Arbiter's change to the roll, from -1 to +3, added to
+    * the face (Legacy in-play powers ruling 21); 0, the default, is none,
+    * as every end die saved before Arbiter reads. */
   final case class EndDieRolled(round: Int, face: Int,
-      result: Option[GameResult]) extends OathEvent
+      result: Option[GameResult], modifier: Int = 0) extends OathEvent
   final case class WarExhaustionResolved(
       winner: PlayerId,
       kind: VictoryKind,

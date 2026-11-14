@@ -322,7 +322,12 @@ final case class CurrentGameState(
     // (catalog batch 10, slice 14). Not walker scratch: it outlives the
     // turn, and the holder's next End Wake clears it. Public, as the choice
     // was made openly.
-    trackedPawns: Map[PlayerId, PlayerId] = Map.empty
+    trackedPawns: Map[PlayerId, PlayerId] = Map.empty,
+    // Arbiter's modifier, chosen before the end die and read by the roll,
+    // which clears it (Legacy in-play powers ruling 21; R11). A round that
+    // ends without a roll consuming it clears it too, so none outlives its
+    // round. Public, as the choice was made openly.
+    endDieModifier: Int = 0
 ):
   /** The warbands of `kind` on `card`. */
   def warbandsOn(card: CardId, kind: ForceKind): Int =

@@ -105,6 +105,9 @@ private[operations] object TurnStateOperations:
     * The turn's used-power set is cleared wholesale when the turn advances,
     * which is why nothing here has to expire anything.
     */
+  def setEndDieModifier(ready: ReadyGame, amount: Int): ReadyGame =
+    ready.updateCurrent(_.copy(endDieModifier = amount))
+
   def recordPowerUse(ready: ReadyGame, power: PowerUseRef): ReadyGame =
     ready.updateCurrent(current => current.copy(turn = current.turn.copy(
       usedPowers = current.turn.usedPowers + power)))

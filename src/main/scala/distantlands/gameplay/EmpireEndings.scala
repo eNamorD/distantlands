@@ -27,9 +27,11 @@ object EmpireEndings:
     hasEmpire(ready) && imperialOathkeeper(ready) &&
       threshold(ready.game.current.tracks.round).nonEmpty
 
-  /** The win `face` gives at the end of the current round, or none. */
-  def stableRegime(ready: ReadyGame, face: Int): Option[GameResult] =
-    threshold(ready.game.current.tracks.round).filter(face >= _).flatMap(_ =>
+  /** The win the end die's `total` gives at the end of the current round,
+    * or none. The total is the face plus Arbiter's modifier (Legacy in-play
+    * powers ruling 21), read as "at least" the printed roll. */
+  def stableRegime(ready: ReadyGame, total: Int): Option[GameResult] =
+    threshold(ready.game.current.tracks.round).filter(total >= _).flatMap(_ =>
       chancellorWins(ready, endDieWin))
 
   /** The Chancellor's win on the end die. */

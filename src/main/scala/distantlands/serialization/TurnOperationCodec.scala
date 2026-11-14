@@ -62,6 +62,8 @@ private[serialization] trait TurnOperationCodec extends CampaignResultCodec
         "siteId" -> site.fold[ujson.Value](ujson.Null)(at => ujson.Str(at.value)))
       case FlipBanner(banner) => ujson.Obj("kind" -> "flip-banner",
         "bannerKey" -> banner.key)
+      case SetEndDieModifier(amount) => ujson.Obj(
+        "kind" -> "set-end-die-modifier", "amount" -> amount)
       case OpenPick(decisionId, option, label) => ujson.Obj(
         "kind" -> "open-pick", "decisionId" -> decisionId,
         "option" -> DecisionAnswerCodec.encodeRef(option),
@@ -122,6 +124,11 @@ private[serialization] trait TurnOperationCodec extends CampaignResultCodec
     case "flip-banner" => Banner.fromKey(value("bannerKey").str)
       .map(FlipBanner(_))
       .toRight(InvalidValue(s"$path.bannerKey", "unknown banner"))
+    case "set-end-die-modifier" =>
+      decodeSignedInt(value("amount"), s"$path.amount").flatMap(amount =>
+        if amount >= -1 && amount <= 3 then Right(SetEndDieModifier(amount))
+        else Left(InvalidValue(s"$path.amount",
+          "an end die modifier runs from -1 to +3")))
     case "open-pick" => DecisionAnswerCodec.decodeRef(value("option"),
       s"$path.option").map(OpenPick(value("decisionId").str, _,
         value("label").strOpt))

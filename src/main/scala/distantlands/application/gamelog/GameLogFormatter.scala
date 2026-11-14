@@ -201,8 +201,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
           wonBy(VictoryKind.Visionary, visions))), run)
       case OathEvent.WarExhaustionResolved(winner, kind, visions, _) =>
         (Vector(victory(winner, wonBy(kind, visions))), run)
-      case OathEvent.EndDieRolled(round, face, result) =>
-        (Posted(LogKind.Roll, Vector(Text(endDie(round, face)))) +:
+      case OathEvent.EndDieRolled(round, face, result, modifier) =>
+        (Posted(LogKind.Roll, Vector(Text(endDie(round, face, modifier)))) +:
           result.map(won => victory(won.winner,
             wonBy(won.kind, won.visions))).toVector, run)
       case _: ConsentEvent => (consent.lines(journal, at, viewer), run)
@@ -324,10 +324,16 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
 
   /** "The end die rolled 4. Stable Regime needed 5 or more." The die is
     * rolled only at rounds 5 to 7, which all have a threshold. */
-  private def endDie(round: Int, face: Int): String =
+  /** The roll, and with Arbiter's modifier the total (Legacy in-play
+    * powers R12), then what Stable Regime needed. */
+  private def endDie(round: Int, face: Int, modifier: Int): String =
     val needed = EmpireEndings.threshold(round).fold("")(least =>
       s" Stable Regime needed $least${if least == 6 then "" else " or more"}.")
-    s"The end die rolled $face.$needed"
+    val modified =
+      if modifier == 0 then ""
+      else s", modified by ${if modifier > 0 then "+" else "-"}" +
+        s"${modifier.abs} to ${face + modifier}"
+    s"The end die rolled $face$modified.$needed"
 
   /** The rest of a victory line after the winner's name, for every way a
     * game ends. */
