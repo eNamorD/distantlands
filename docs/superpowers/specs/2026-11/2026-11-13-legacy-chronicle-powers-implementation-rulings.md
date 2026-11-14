@@ -270,3 +270,64 @@ Confidence: low; a physical table shuffles facedown, which makes the
 deduction harder there.
 Slice/files: 3; `Heirloom`, `ReliquaryAndRelics`.
 
+## Slice 4
+
+**R29. A dormant Iron Hand at a checkpoint.**
+Decision: only an active Iron Hand is discarded at a checkpoint.
+Reason: design ruling 1; after Sun step 2 a seated Imperial holds no
+dormant legacy, so a dormant one is settled by step 2 and caught after the
+Crown.
+Slice/files: 4; `IronHand.discard`.
+
+**R30. Where the checkpoints sit.**
+Decision: the Crown and Offer Citizenship place the discard after their
+reactivation and before their cap; the Sun's checkpoint opens Reveal
+Relics' window.
+Reason: no one should discard over the cap a legacy that Iron Hand's own
+discard would spare.
+Slice/files: 4; `ChronicleSunProcedure`, `OfferCitizenship`.
+
+**R31. What the holder's Shape Empire discards.**
+Decision: every card at a site the holder does not rule, the Empire's
+included, with the usual intact-edifice and Enduring exceptions.
+Reason: those sites are archived as rival sites (ruling 21), and the
+archive expects Shape Empire to have cleared them.
+Slice/files: 4; `ShapeEmpire`, `ChronicleLegacyRules.shaper`.
+
+**R32. An Imperial Great Architect beside Iron Hand.**
+Decision: both build from the shared available edifices, Great Architect
+first per suit, then the holder, whose question has its own id,
+`chronicle.build-edifice.<suit>.iron-hand`.
+Reason: Great Architect's "even if the Iron Hand is in play" means both
+act; distinct ids avoid the shared-id bug class.
+Slice/files: 4; `BuildEdifice`, `ChronicleLegacyRules.builders`.
+
+**R33. Iron Hand's scoring records its legacies.**
+Decision: yes, with `LegaciesScored`.
+Reason: "scored once per game" (design ruling 8) is a fact about the
+legacy, kept whether or not a later step reads it.
+Slice/files: 4; `LineageScoring`.
+
+**R34. Iron Hand's lines.**
+Decision: "p2 discarded Iron Hand" at each checkpoint; "p3 scored 2
+lineage points with Iron Hand (2 from Beast)" after the winner's lines,
+none for a bonus of 0; "Buried Giant stays on the map with Iron Hand" for
+each of the holder's stored sites; all delta lines.
+Reason: the plan's proposal.
+Slice/files: 4; `IronHand`, `ProcedureLog`.
+
+**R35. The next game until the setup batch.**
+Decision: accepted for now: the next game restores the holder's stored
+sites as the Empire's until Iron Hand's SETUP half lands; the ROADMAP's
+setup item names it, and a test checks the record passes game start.
+Reason: the SETUP half is out of scope by the design.
+Confidence: low; the next game is wrong until then.
+Slice/files: 4; `ChronicleExtraction`, `docs/ROADMAP.md`.
+
+**R36. Test fixtures that used Iron Hand as a stand-in.**
+Decision: swap each for a most-sites legacy with no Chronicle half,
+listed in the commit, and confirm no golden log changes as a result.
+Reason: Iron Hand's Chronicle half now acts, and the tests' intent is a
+plain legacy.
+Slice/files: 4; the affected suites.
+

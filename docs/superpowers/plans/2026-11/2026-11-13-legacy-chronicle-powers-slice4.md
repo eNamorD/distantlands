@@ -47,76 +47,20 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-These change behaviour, data or the public shape of the code and wait for
-the orchestrator's rulings (R29 onward). The tasks are written to each
-recommendation.
-
-1. **A dormant Iron Hand at a checkpoint.** The card prints "If you are
-   Imperial, discard Iron Hand." Ruling 1 says a dormant legacy has no
-   power. Options: (a) a checkpoint discards only an active Iron Hand; a
-   dormant one an Imperial holds stays until Flip Legacies activates it and
-   the next checkpoint (after Crown Chancellor) finds it; (b) any Iron Hand
-   an Imperial holds, active or dormant. Recommendation: (a), ruling 1.
-2. **Where the checkpoints sit.** Ruling 18 names the start of the Sun,
-   after Crown Chancellor and after Offer Citizenship. The Crown and Offer
-   Citizenship steps end with a reactivation and then the three-legacy
-   cap (Legacies R19, R20). Options: (a) the discard runs after the
-   reactivation and before the cap, so a player is never asked to discard
-   a legacy over the cap that Iron Hand's own discard would have spared;
-   placed by the steps themselves (a changed step, as Steadfast's), the
-   Sun's as the first node of Reveal Relics' window; (b) `Transform`s
-   appended to the Crown and Offer Citizenship windows and prepended to
-   Reveal Relics', after each cap, as the design's Approach groups the
-   checkpoints with the added steps. Recommendation: (a).
-3. **What the holder's Shape Empire discards.** The step discards "the
-   denizens you do not rule". Options: (a) literally: every denizen and
-   ruined edifice at a site the holder does not rule, the Empire's sites
-   included, but intact edifices and Enduring sites (the holder's sites
-   are the ones stored, ruling 21, so the rest are archived as rivals);
-   (b) only cards at sites neither the holder nor the Empire rules.
-   Recommendation: (a).
-4. **An Imperial Great Architect beside Iron Hand.** Ruling 19: "an
-   Imperial Great Architect still builds"; ruling 19 also has the holder
-   perform Build Edifice. Options: (a) both build, sharing the available
-   edifices: for each suit, the Great Architect is offered the suit's
-   available edifice first over the Empire's sites (any card buried, ruling
-   10), then, if it is still available, the Iron Hand holder over theirs
-   (matching cards only). The holder's question takes its own id,
-   `chronicle.build-edifice.<suit>.iron-hand`, so no two decisions share
-   one; (b) only the Great Architect builds. Recommendation: (a).
-5. **Does Iron Hand's scoring record its legacies?** R2 left it to this
-   slice. Options: (a) one `LegaciesScored` of every legacy the holder
-   holds, as Chronicler records, though no later scoring reads it; (b) no
-   record. Recommendation: (a), so "a legacy scores once per game" is a
-   journaled fact wherever a legacy scores outside Score Lineage Points'
-   winner.
-6. **The lines.** Proposed: "p2 discarded Iron Hand" at each checkpoint (a
-   delta line, the spec's wording); "p3 scored 2 lineage points with Iron
-   Hand (2 from Beast)" after the winner's lines (a delta line), none when
-   the bonus is 0; in the Stars, "Buried Giant stays on the map with Iron
-   Hand" for each of the holder's sites, in place of "... stays in the
-   Empire" (a delta line). Shape Empire's and Build Edifice's existing
-   lines name their actor already. Recommendation: as proposed.
-7. **The next game until the setup batch.** Ruling 21 stores the holder's
-   sites in the Chronicle's `world`, which game start restores as the
-   Empire's sites, with a purple warband each (`LaterGameSetup`). Iron
-   Hand's SETUP half ("you place one warband on all sites coming from the
-   Atlas until the Empire divider") is out of scope, so until the setup
-   batch the stored sites start the next game as the Empire's. Options:
-   (a) accept it, name it on the ROADMAP's setup item, and test that the
-   record passes game start; (b) build the SETUP half's placement now.
-   Recommendation: (a).
-8. **Test fixtures that used Iron Hand as a stand-in.** Iron Hand is the
-   first `MostSites` legacy, and 11 test files use it as a plain legacy.
-   Where its Chronicle half now acts (an Imperial holding it in the Sun,
-   or an active Exile holder reaching the Throne), the outcome changes.
-   Proposed: in each such test, Iron Hand is swapped for a `MostSites`
-   legacy with no Chronicle half that the test does not already hold
-   (Peacemaker, The Needle or Circle of Swords), keeping the test's intent;
-   tests about Iron Hand's goal keep it. Recommendation: as proposed, a
-   mechanical change, listed in the report.
+The plan's open questions were ruled on 2026-11-13 as implementation
+rulings R29-R36 ([rulings](../../specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)),
+each as the plan recommended: only an active Iron Hand is discarded (R29);
+the Crown's and Offer Citizenship's checkpoints sit between their
+reactivation and their cap, the Sun's opens Reveal Relics' window (R30);
+the holder's Shape Empire discards every card at sites they do not rule
+(R31); an Imperial Great Architect and the holder both build, the holder's
+question under `chronicle.build-edifice.<suit>.iron-hand` (R32); Iron
+Hand's scoring records `LegaciesScored` (R33); the lines as proposed
+(R34); the next game restores the stored sites as the Empire's until the
+setup batch, named on the ROADMAP (R35, low confidence); stand-ins swapped
+and listed, with no golden change (R36).
 
 ## Global Constraints
 
