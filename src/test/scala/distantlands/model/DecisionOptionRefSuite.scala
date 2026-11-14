@@ -28,6 +28,13 @@ class DecisionOptionRefSuite extends munit.FunSuite:
       Some(seer))
     assertEquals(DecisionOption.forRef(seer), Some(DecisionOption.Legacy(seer)))
 
+  test("a legacy names itself as a card option and as a power source, and " +
+      "back (in-play powers ruling 6)"):
+    assertEquals(DecisionOptionRef.ofCard(SeerCard.id), Some(seer))
+    assertEquals(DecisionOptionRef.cardOf(seer), Some(SeerCard.id))
+    assertEquals(PowerSourceRef.of(seer),
+      Some(PowerSourceRef.Card(SeerCard.id)))
+
   private val slot = DecisionOptionRef.RelicSlot(PlayerId("blue"), 2)
   private val banner =
     DecisionOptionRef.Banner(distantlands.model.Banner.DarkestSecret)

@@ -207,6 +207,10 @@ object PhasePowerProcedure:
       PowerSourceRef.Banner(banner) -> DecisionOptionRef.Banner(banner))
     case RuleSourceRef.Site(id) =>
       Some(PowerSourceRef.Site(id) -> DecisionOptionRef.Site(id))
+    // A legacy in its holder's play area (Legacy in-play powers ruling 6):
+    // access has already kept only the actor's active ones.
+    case RuleSourceRef.Legacy(_, id) =>
+      Some(PowerSourceRef.Card(id) -> DecisionOptionRef.Legacy(id))
     case _ => None
 
   private def sourceOf(source: DecisionOptionRef)
@@ -216,5 +220,6 @@ object PhasePowerProcedure:
     case DecisionOptionRef.Edifice(id) => Right(PowerSourceRef.Card(id))
     case DecisionOptionRef.Banner(banner) => Right(PowerSourceRef.Banner(banner))
     case DecisionOptionRef.Site(id) => Right(PowerSourceRef.Site(id))
+    case DecisionOptionRef.Legacy(id) => Right(PowerSourceRef.Card(id))
     case other => Left(InvalidEventOrder(
       s"${other.kind}/${other.wireId} is not a power source"))

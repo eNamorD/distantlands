@@ -45,7 +45,7 @@ object KeeperOfOrderCard extends Legacy(LegacyId("L11"), "Keeper of Order",
 object GoldenKeyCard extends Legacy(LegacyId("L12"), "Golden Key",
     LegacyGoal.GrandScepter, Suit.Arcane):
   val power = PrintedPower(PowerId("legacy.golden-key"),
-    persistent = false, cost = Cost.free,
+    persistent = false, cost = Cost(favorBurnt = 1, secretBurnt = 1),
     text = "**IF YOU ARE AN IMPERIAL:** You may always peek at the " +
       "Reliquary. **ACTION:** Burn [secret-burnt] [favor-burnt] to " +
       "take a relic from the Reliquary.")
@@ -88,7 +88,7 @@ object LightFingersCard extends Legacy(LegacyId("L27"), "Light Fingers",
 object RuthlessCard extends Legacy(LegacyId("L29"), "Ruthless",
     LegacyGoal.HighestRelic, Suit.Order):
   val power = PrintedPower(PowerId("legacy.ruthless"),
-    persistent = false, cost = Cost.free,
+    persistent = false, cost = Cost(favorBurnt = 2),
     text = "**ACTION:** Burn [favor-burnt] [favor-burnt] to bury a " +
       "denizen at your site.")
   val powers: Vector[PrintedPower] = Vector(power)
@@ -105,7 +105,7 @@ object BelovedCard extends Legacy(LegacyId("L33"), "Beloved",
 object TheMouthCard extends Legacy(LegacyId("L34"), "The Mouth",
     LegacyGoal.MostOfSuit, Suit.Arcane, Some(FoundationNumber.VI)):
   val power = PrintedPower(PowerId("legacy.the-mouth"),
-    persistent = false, cost = Cost.free,
+    persistent = false, cost = Cost(favorBurnt = 2),
     text = "Set Foundation VI to Festival. **ACTION:** Burn " +
       "[favor-burnt] [favor-burnt] to activate a dormant legacy if " +
       "you meet its goal. _You can even activate legacies in the " +

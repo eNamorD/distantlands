@@ -6,6 +6,9 @@ import distantlands.gameplay.powers.search.ErrandBoyCard
 import distantlands.gameplay.powers.setup.HallOfDebateCard
 import distantlands.model.OathState.Ready
 import distantlands.catalog.PrintedPower
+import distantlands.catalog.holding.{GoldenKeyCard, RuthlessCard,
+  TheMouthCard}
+import distantlands.gameplay.powers.legacies.LegacyActionFixture
 import distantlands.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
 import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
@@ -257,3 +260,50 @@ class PhasePowerSuite extends munit.FunSuite:
     assertEquals(rules(relicPower).startWalker(Ready(holdingRelic(facedown = true)),
       ActionRef.UsePower(relicPower.id), p1, Vector(DecisionOptionRef.Relic(relic))).left.toOption, Some(OathViolation.InvalidEventOrder(
         s"relic/${relic.value} is not an accessible source of relic.brass-horse")))
+
+  private val ruthless = DecisionOptionRef.Legacy(RuthlessCard.id)
+
+  /** p1's lineage holds Ruthless, active unless `active` is false, with 3
+    * favor, in p1's Act. */
+  private def holdingRuthless(active: Boolean = true)(
+      using munit.Location): ReadyGame =
+    Table.start.legacy(p1, RuthlessCard, active).favor(p1, 3)
+      .turn(p1, Phase.Act).ready
+
+  test("an active legacy is a source of its power for its seated holder " +
+      "only (in-play powers rulings 1 and 6)"):
+    val power = TestPower(RuthlessCard.power.id, PowerTiming.Act)
+    def menu(ready: ReadyGame) = PhasePowerHarness.menuPowers(catalog, ready,
+      p1, PhasePowers(Vector(power)), WalkerPowers.empty).map(_.ref)
+    assertEquals(menu(holdingRuthless()), Vector(ruthless))
+    assertEquals(menu(holdingRuthless(active = false)), Vector.empty)
+    assertEquals(menu(Table.start.legacy(p2, RuthlessCard)
+      .turn(p1, Phase.Act).ready), Vector.empty)
+    assertEquals(menu(LegacyActionFixture.boxed(holdingRuthless(), p1)),
+      Vector.empty)
+
+  test("a legacy ACTION pays its burnt cost from its holder's board, and " +
+      "its use replays (in-play powers rulings 3 and 6)"):
+    val choice = "test-legacy-choice"
+    val power = TestPower(RuthlessCard.power.id, PowerTiming.Act,
+      player => Decide(choice, player, DecisionQuery.ChooseOne(Vector(
+        DecisionOption.Button(DecisionOptionRef.Button("go"), "Go")))),
+      cost = RuthlessCard.power.cost)
+    val start = Ready(holdingRuthless())
+    val parked = accepted(rules(power).startWalker(MenuPlay.withoutMenu(start),
+      ActionRef.UsePower(power.id), p1, Vector(ruthless)))
+    assertEquals(Look(Outcomes.ready(parked.state)).favor(p1), 1)
+    val done = accepted(rules(power).resolveWalker(parked.state, p1, choice,
+      DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Button("go"))))
+    assertEquals((parked.events ++ done.events)
+      .foldLeft[Either[OathViolation, OathState]](Right(start))(
+        (state, event) => state.flatMap(rules(power).evolve(_, event))),
+      Right(done.state))
+    // The parked walk carries the legacy as its start selection; it
+    // survives the wire as a legacy.
+    Outcomes.assertWireRoundTrips(parked.events ++ done.events)
+
+  test("Golden Key and The Mouth print their burnt costs (ruling 6)"):
+    assertEquals(GoldenKeyCard.power.cost, Cost(favorBurnt = 1,
+      secretBurnt = 1))
+    assertEquals(TheMouthCard.power.cost, Cost(favorBurnt = 2))

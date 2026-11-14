@@ -150,6 +150,7 @@ object PowerSourceRef:
     case DecisionOptionRef.Relic(id) => Some(Card(id))
     case DecisionOptionRef.Vision(id) => Some(Card(id))
     case DecisionOptionRef.Edifice(id) => Some(Card(id))
+    case DecisionOptionRef.Legacy(id) => Some(Card(id))
     case DecisionOptionRef.Site(id) => Some(Site(id))
     case DecisionOptionRef.Banner(banner) => Some(Banner(banner))
     case _ => None

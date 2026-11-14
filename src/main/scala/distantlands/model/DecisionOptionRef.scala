@@ -134,13 +134,14 @@ object DecisionOptionRef:
     val kind: String = "discard-pile"
     def wireId: String = region.key
 
-  /** The option that names `card` by itself: a denizen, relic or edifice.
-    * A vision or legacy has none, so a consent keyed by a card cannot name
+  /** The option that names `card` by itself: a denizen, relic, edifice or
+    * legacy. A vision has none, so a consent keyed by a card cannot name
     * one. */
   def ofCard(card: CardId): Option[DecisionOptionRef] = card match
     case id: DenizenId => Some(Denizen(id))
     case id: RelicId => Some(Relic(id))
     case id: EdificeId => Some(Edifice(id))
+    case id: LegacyId => Some(Legacy(id))
     case _ => None
 
   /** The card `ref` names by itself: the inverse of `ofCard`. */
@@ -148,6 +149,7 @@ object DecisionOptionRef:
     case Denizen(id) => Some(id)
     case Relic(id) => Some(id)
     case Edifice(id) => Some(id)
+    case Legacy(id) => Some(id)
     case _ => None
 
   /** The denizen or edifice `ref` names: the card an economy action can

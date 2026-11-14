@@ -9,6 +9,7 @@ import distantlands.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
 import distantlands.serialization.WalkerWireEvents.{encodedStream,
   encodedStreamThatRoundTrips, recordedOperation}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
 import distantlands.testkit.Unwrap.accepted
 
 /** Walker step events on the wire across operation families: locations,
@@ -413,6 +414,20 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assertEquals(ujson.read(encoded).arr.map(
       _("payload")("step")("ops")(0)("kind").str).toVector.distinct.size,
       everyOperation.map(_.getClass.getSimpleName).distinct.size)
+
+  test("a legacy's power source and a denizen's with the same id stay " +
+      "apart through the codec and replay (in-play powers ruling 6)"):
+    val id = "L29"
+    val sources = Vector[CardId](LegacyId(id), DenizenId(id))
+      .map(PowerSourceRef.Card(_))
+    assertNotEquals(sources(0), sources(1))
+    val uses = sources.map(source => recordedOperation(RecordPowerUse(
+      PowerUseRef(PowerTiming.Wake, source, PowerId("legacy.ruthless")))))
+    assertWireRoundTrips(uses)
+    val encoded = encodedStreamThatRoundTrips("legacy-source", uses)
+    assertEquals(ujson.read(encoded).arr.map(
+      _("payload")("step")("ops")(0)("cardKind").str).toVector,
+      Vector("legacy", "denizen"))
 
   /** The family an operation belongs to. Exhaustive, so a new family fails
     * to compile here until it is named. */
