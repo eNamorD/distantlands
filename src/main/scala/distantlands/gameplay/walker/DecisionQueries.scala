@@ -254,40 +254,8 @@ object DecisionQueries:
               "suggests a distribution it would not accept"), Right(_))
       yield ()
 
-    case DecisionQuery.ChooseAmounts(slots, distinct, heading,
-        confirmLabel) =>
-      val refs = slots.map(_.ref)
-      val suggested = slots.flatMap(_.suggested)
-      val lowest = slots.map(_.minimum).minOption.getOrElse(0).toLong
-      val highest = slots.map(_.maximum).maxOption.getOrElse(0).toLong
-      for
-        _ <- require(heading.exists(_.trim.nonEmpty), decisionId,
-          "declares no heading")
-        _ <- require(confirmLabel.trim.nonEmpty, decisionId,
-          "declares a blank confirm label")
-        _ <- require(slots.nonEmpty, decisionId, "declares no slot")
-        _ <- require(refs.distinct.size == refs.size, decisionId,
-          "declares duplicate options")
-        _ <- refs.find(DecisionOption.forRef(_).isEmpty) match
-          case Some(ref) => reject(decisionId,
-            s"declares slot ${label(ref)}, which has no presentable option")
-          case None => Right(())
-        _ <- slots.find(s => s.minimum < 0 || s.minimum > s.maximum) match
-          case Some(s) => reject(decisionId, s"declares slot ${label(s.ref)} " +
-            s"with bounds ${s.minimum}..${s.maximum}")
-          case None => Right(())
-        _ <- require(!distinct || slots.size.toLong <= highest - lowest + 1,
-          decisionId, "declares more distinct slots than its bounds hold")
-        _ <- require(slots.exists(s => s.minimum < s.maximum), decisionId,
-          "declares no variable slot, leaving nothing to decide")
-        _ <- require(suggested.isEmpty || suggested.size == slots.size,
-          decisionId, "suggests amounts for some slots but not all")
-        _ <- if suggested.isEmpty then Right(())
-          else acceptsAmounts(decisionId, slots, distinct,
-              slots.zip(suggested).map((s, n) => DistributeAmount(s.ref, n)))
-            .fold(_ => reject(decisionId,
-              "suggests amounts it would not accept"), Right(_))
-      yield ()
+    case amounts: DecisionQuery.ChooseAmounts =>
+      wellFormedAmounts(decisionId, amounts)
 
   /** Check on a submitted answer: the failure here is a bad or stale
     * submission, not a bug in the tree.
@@ -429,6 +397,45 @@ object DecisionQueries:
         if minTotal == maxTotal then
           s"distributes an amount other than its total of $maxTotal"
         else s"distributes an amount outside $minTotal..$maxTotal")
+    yield ()
+
+  /** `wellFormed` for a [[DecisionQuery.ChooseAmounts]], apart so that
+    * `wellFormed` stays small enough for coverage instrumentation. */
+  private def wellFormedAmounts(decisionId: String,
+      query: DecisionQuery.ChooseAmounts): Either[OathViolation, Unit] =
+    val DecisionQuery.ChooseAmounts(slots, distinct, heading, confirmLabel) =
+      query
+    val refs = slots.map(_.ref)
+    val suggested = slots.flatMap(_.suggested)
+    val lowest = slots.map(_.minimum).minOption.getOrElse(0).toLong
+    val highest = slots.map(_.maximum).maxOption.getOrElse(0).toLong
+    for
+      _ <- require(heading.exists(_.trim.nonEmpty), decisionId,
+        "declares no heading")
+      _ <- require(confirmLabel.trim.nonEmpty, decisionId,
+        "declares a blank confirm label")
+      _ <- require(slots.nonEmpty, decisionId, "declares no slot")
+      _ <- require(refs.distinct.size == refs.size, decisionId,
+        "declares duplicate options")
+      _ <- refs.find(DecisionOption.forRef(_).isEmpty) match
+        case Some(ref) => reject(decisionId,
+          s"declares slot ${label(ref)}, which has no presentable option")
+        case None => Right(())
+      _ <- slots.find(s => s.minimum < 0 || s.minimum > s.maximum) match
+        case Some(s) => reject(decisionId, s"declares slot ${label(s.ref)} " +
+          s"with bounds ${s.minimum}..${s.maximum}")
+        case None => Right(())
+      _ <- require(!distinct || slots.size.toLong <= highest - lowest + 1,
+        decisionId, "declares more distinct slots than its bounds hold")
+      _ <- require(slots.exists(s => s.minimum < s.maximum), decisionId,
+        "declares no variable slot, leaving nothing to decide")
+      _ <- require(suggested.isEmpty || suggested.size == slots.size,
+        decisionId, "suggests amounts for some slots but not all")
+      _ <- if suggested.isEmpty then Right(())
+        else acceptsAmounts(decisionId, slots, distinct,
+            slots.zip(suggested).map((s, n) => DistributeAmount(s.ref, n)))
+          .fold(_ => reject(decisionId,
+            "suggests amounts it would not accept"), Right(_))
     yield ()
 
   /** One amount per declared slot, each within its bounds, and with
