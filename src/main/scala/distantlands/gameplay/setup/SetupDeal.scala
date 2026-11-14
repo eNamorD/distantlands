@@ -15,13 +15,17 @@ import distantlands.model._
   * Visions as the world deck.
   *
   * Teeming World, the altered face: each player draws until they hold three
-  * starting advisers and keeps every card drawn, then the whole rest of the
+  * starting advisers and keeps every card drawn, or, holding Oaths of
+  * Loyalty, buries every card drawn (`buried`), then the whole rest of the
   * stack is dealt to the discard piles one card at a time, each card
   * beneath the ones its pile already holds, and the world deck gets no
   * denizen.
   */
 final case class SetupDeal(face: FoundationFace,
-    draws: Vector[(PlayerId, Int)]):
+    draws: Vector[(PlayerId, Int)],
+    /** The players whose draws Oaths of Loyalty buries under Teeming World
+      * (Legacy Chronicle powers R24, re-ruled 2026-11-14). */
+    burying: Set[PlayerId] = Set.empty):
   private val teeming = face == FoundationFace.Altered
   /** Ties of Fellowship seeds each discard pile before the hands. */
   private val seeded = if teeming then 0 else 2 * Region.all.size
@@ -48,7 +52,15 @@ final case class SetupDeal(face: FoundationFace,
   /** The denizens `player` keeps as facedown advisers without a choice:
     * their draws under Teeming World, nothing under Ties of Fellowship. */
   def kept(stack: Vector[DenizenId], player: PlayerId): Vector[DenizenId] =
-    if teeming then drawnBy(stack, player) else Vector.empty
+    if teeming && !burying(player) then drawnBy(stack, player)
+    else Vector.empty
+
+  /** The denizens an Oaths of Loyalty holder buries at the bottom of the
+    * world deck in place of keeping them: their draws under Teeming World,
+    * nothing otherwise (Legacy Chronicle powers R24, re-ruled). */
+  def buried(stack: Vector[DenizenId], player: PlayerId): Vector[DenizenId] =
+    if teeming && burying(player) then drawnBy(stack, player)
+    else Vector.empty
 
   /** The discard piles the deal leaves, each in stored order, top last.
     * Teeming World deals the rest of the stack to the Cradle, the Provinces
@@ -79,10 +91,11 @@ object SetupDeal:
       : SetupDeal =
     val stored = chronicle.lineages.map(lineage =>
       lineage.id -> lineage.startingAdvisers.size).toMap
-    // Under Teeming World an Oaths of Loyalty holder draws no starting
-    // adviser beyond the ones it kept (Legacy Chronicle powers design,
-    // ruling 16; R24). Under Ties of Fellowship they draw a hand as usual,
-    // and Setup buries the one they pick.
+    // Under Teeming World an Oaths of Loyalty holder draws 3 - x, x the
+    // starting advisers it kept, and buries every card drawn (Legacy
+    // Chronicle powers design, ruling 16; R24, re-ruled 2026-11-14). Under
+    // Ties of Fellowship they draw a hand as usual, and Setup buries the
+    // one they pick.
     val oaths = chronicle.lineages.filter(ChronicleLegacyRules.oathsHolds)
       .map(_.id).toSet
     val face = StartingFoundations.of(chronicle)(FoundationNumber.IV).face
@@ -90,9 +103,12 @@ object SetupDeal:
       val held = stored.getOrElse(participant.lineageId, 0)
       participant.playerId -> (face match
         case FoundationFace.Normal => if held == 0 then 3 else 0
-        case FoundationFace.Altered =>
-          if oaths(participant.lineageId) then 0 else math.max(0, 3 - held))
-    })
+        case FoundationFace.Altered => math.max(0, 3 - held))
+    }, burying =
+      if face == FoundationFace.Altered then participants.collect {
+        case participant if oaths(participant.lineageId) => participant.playerId
+      }.toSet
+      else Set.empty)
 
   /** A first game's deal: Ties of Fellowship, and every player draws. */
   def firstGame(participants: Vector[FirstGameParticipant]): SetupDeal =

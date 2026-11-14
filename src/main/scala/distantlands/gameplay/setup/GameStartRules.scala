@@ -82,9 +82,18 @@ object GameStartRules:
         plan.participants.map(p => p.playerId -> p.color).toMap,
         orders.firstPlayer, material.favorBanks,
         ignoreCitizenshipPowers = mode == SetupMode.FirstGame), plan, mode)
-      problems = DomainValidation.validate(ready.game)
+      // An Oaths holder knows the Teeming World cards it drew and buried
+      // (Legacy Chronicle powers R24, re-ruled).
+      known = ready.copy(knowledge = orders.participants.foldLeft(
+        ready.knowledge)((knowledge, participant) =>
+        val buried = deal.buried(orders.denizenOrder, participant.playerId)
+        if buried.isEmpty then knowledge
+        else knowledge.copy(advisers = knowledge.advisers.updated(
+          participant.playerId, knowledge.advisers.getOrElse(
+            participant.playerId, Vector.empty) ++ buried))))
+      problems = DomainValidation.validate(known.game)
       _ <- Either.cond(problems.isEmpty, (), InvalidAggregate(problems))
-    yield ready
+    yield known
 
   private def buildPlan(catalog: ExecutableCatalog, chronicle: Chronicle,
       orders: SetupOrders, deal: SetupDeal)

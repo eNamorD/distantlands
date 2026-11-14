@@ -54,12 +54,55 @@ class OathsSetupSuite extends munit.FunSuite:
     val ready = woken(holding(active = false, FoundationFace.Normal))
     assertEquals(ready.game.current.player(p1).get.advisers.size, 1)
 
-  test("under Teeming World the holder draws no starting adviser"):
-    val chronicle = holding(active = true, FoundationFace.Altered)
-    val deal = SetupDeal.of(chronicle, FirstGameSetupFixture.participants)
-    assertEquals(deal.draws.find(_._1 == p1).map(_._2), Some(0))
-    assertEquals(woken(chronicle).game.current.player(p1).get.advisers,
-      Vector.empty)
+  /** `holding` under Teeming World, l1 storing `stored` starting advisers
+    * taken from the world deck. */
+  private def teeming(stored: Int): Chronicle =
+    val record = holding(active = true, FoundationFace.Altered)
+    val (advisers, deck) = record.worldDeck.splitAt(stored)
+    record.copy(worldDeck = deck, lineages = record.lineages.map(lineage =>
+      if lineage.id != l1 then lineage
+      else lineage.copy(startingAdvisers = advisers.map(id =>
+        DenizenState(id, Orientation.FaceDown, Tokens.empty)))))
+
+  Vector(0, 1, 3).foreach { stored =>
+    test(s"under Teeming World a holder storing $stored starting advisers " +
+        s"draws ${3 - stored} and buries every card drawn below the " +
+        "Visions (R24 re-ruled)"):
+      val chronicle = teeming(stored)
+      val orders = LaterGameFixture.orders(chronicle, p1)
+      val deal = SetupDeal.of(chronicle, orders.participants)
+      assertEquals(deal.draws.find(_._1 == p1).map(_._2), Some(3 - stored))
+      assertEquals(deal.kept(orders.denizenOrder, p1), Vector.empty)
+      val buried = deal.buried(orders.denizenOrder, p1)
+      assertEquals(buried.size, 3 - stored)
+      val situation = wake(chronicle)
+      val ready = situation.ready
+      assertEquals(ready.game.current.player(p1).get.advisers.map(_.id),
+        chronicle.lineages.find(_.id == l1).get.startingAdvisers.map(_.id))
+      val deck = ready.game.current.commonCards.worldDeck
+      assertEquals(deck.takeRight(buried.size), buried)
+      assert(deck.dropRight(buried.size).forall(_.isInstanceOf[VisionId]),
+        deck)
+      val keys = SetupProcedure.noteKeys
+      val lines = NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
+        keys, situation.events).map(_.text).filter(_.startsWith("p1 buried "))
+      assertEquals(lines, buried.map(card =>
+        s"p1 buried ${card.value} with ${OathsOfLoyaltyCard.id.value}"))
+  }
+
+  test("under Teeming World the deal accounts for every denizen once"):
+    val chronicle = teeming(1)
+    val orders = LaterGameFixture.orders(chronicle, p1)
+    val ready = woken(chronicle)
+    val current = ready.game.current
+    val placed = current.players.flatMap(_.advisers.map(_.id: CardId)) ++
+      current.commonCards.worldDeck ++
+      Region.all.flatMap(current.commonCards.discard) ++
+      current.temporaryHands.values.flatten
+    orders.denizenOrder.foreach(card =>
+      assertEquals(placed.count(_ == card), 1, card))
+
+  test("a dormant Oaths under Teeming World keeps every card drawn"):
     val dormant = SetupDeal.of(holding(active = false,
       FoundationFace.Altered), FirstGameSetupFixture.participants)
     assertEquals(dormant.draws.find(_._1 == p1).map(_._2), Some(3))

@@ -2,6 +2,7 @@ package distantlands.gameplay.setup
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.ChronicleLegacyRules
 import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.gameplay.setup.legacies.{LegacySetupPowers,
   QuestToDistantLands, SecretSociety, SetupLegacyRules}
@@ -17,6 +18,7 @@ import distantlands.model.OathViolation._
  * {{{
  * Sequence(                                              // no window
  *   Note(the legacies' game-start lines)                 // StartLines, always 18
+ *   Note(Oaths' Teeming World burials)                   // always 3
  *   Note(Public Ambitions dealt ...)                     // when the row holds any
  *   Branch(                                              // a later game's
  *     Decide(reliquary-pick, chancellor),                // Chancellor, when the
@@ -120,10 +122,32 @@ object SetupProcedure:
     // The world deck game start built is changed here: Secret Society and
     // then Seer hook it (Legacy Setup powers rulings 14 and 15).
     val worldDeck = Sequence(Vector.empty, Some(PowerWindow.SetupWorldDeck))
-    Sequence(LegacySetupPowers.startNotes ++ publicRow(ready) ++
+    Sequence(LegacySetupPowers.startNotes ++ teemingBurials ++
+      publicRow(ready) ++
       chancellor.map(reliquaryPick).toVector ++
       imperialMaps ++ Vector(banks, worldDeck) ++ steps :+ setupEnd :+
       BeginTurn(participants.head.playerId, Phase.Wake))
+
+  /** One line per card an Oaths of Loyalty holder drew and buried under
+    * Teeming World at game start (Legacy Chronicle powers R24, re-ruled):
+    * those are the world deck's only denizens when Setup begins, since
+    * Teeming World leaves the deck nothing but Visions. Three Notes, the
+    * most a holder draws, each writing nothing past the cards buried. The
+    * log names a card only to viewers who know it: the holder. */
+  private def teemingBurials: Vector[Operation] =
+    (0 until 3).toVector.map(slot => Note(ProcedureNotes.id(
+      TriggeredProcedureRef.Setup), states =>
+      val state = states.now
+      val teeming = state.game.campaign.foundations.get(FoundationNumber.IV)
+        .exists(_.face == FoundationFace.Altered)
+      for
+        holder <- ChronicleLegacyRules.keepsAdvisers(state)
+        if teeming
+        card <- state.game.current.commonCards.worldDeck.collect {
+          case id: DenizenId => id }.lift(slot)
+        line <- OathsOfLoyalty.buriedLine(ProcedureNotes.id(
+          TriggeredProcedureRef.Setup), holder, card)
+      yield line))
 
   /** The Public Ambitions row game start dealt, named once and first
     * (implementation ruling R14). Nothing when the row is empty. */

@@ -51,7 +51,12 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
         Vector.empty, Vector.empty)
     }
     FirstGameSetupMaterial(players, map,
-      CardZones(plan.worldDeckOrder, plan.relicOrder.filterNot(usedRelics),
+      // An Oaths of Loyalty holder's Teeming World draws go to the bottom
+      // of the world deck, below the Visions (Legacy Chronicle powers R24,
+      // re-ruled), so every card of the deal is somewhere once.
+      CardZones(plan.worldDeckOrder ++ plan.participants.flatMap(p =>
+          deal.buried(plan.denizenOrder, p.playerId)),
+        plan.relicOrder.filterNot(usedRelics),
         catalog.edifices.map(e => EdificeId(e.id.value))
           .filterNot(edificesOn(map)),
         deal.discards(plan.denizenOrder)),
