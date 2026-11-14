@@ -187,14 +187,11 @@ After the all-Exile alpha, implement the Chronicle and persistent campaign:
 legacy powers and era scoring. The legacy lifecycle (dealing, Resolve
 Legacies, the scoring bonus and the display) landed with the
 [Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md),
-and the legacies' CHRONICLE powers with the
-[Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md).
+the legacies' CHRONICLE powers with the
+[Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md),
+and their SETUP powers with the
+[Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md).
 
-- [x] **Legacy powers: setup.** The SETUP halves of the legacies
-  ([Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md)):
-  Circle of Swords, Scepter Bearer, Iron Hand, Rival, World Crafter,
-  Populist, Matchmaker, Secret Society, Seer, The Standard Bearer, Wealthy
-  and Quest to Distant Lands.
 - [ ] **Legacy powers: in play.** The powers used during a game: actions,
   Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
   play and The Ear's ACTION half, peeking at a site's relics, among them
