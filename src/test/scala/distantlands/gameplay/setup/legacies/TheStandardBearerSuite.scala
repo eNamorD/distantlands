@@ -111,6 +111,24 @@ class TheStandardBearerSuite extends munit.FunSuite:
     assertEquals(asked.filter(_.decisionId.contains("the-standard-bearer"))
       .map(_.owner), Vector(p2))
 
+  test("with neither banner in the shared bank nothing is asked"):
+    val started = accepted(GameStartRules.evolve(catalog, record,
+      LaterGameFixture.orders(record, p1)))
+    val ready = started.updateCurrent(current => current.copy(banners =
+      current.banners.copy(
+        peoplesFavor = current.banners.peoplesFavor.copy(holder = Some(p1)),
+        darkestSecret = current.banners.darkestSecret.copy(
+          holder = Some(p1)))))
+    val walked = SetupWalkDriver.driveWithEvents(ready, accepted(
+      SetupProcedure.build(catalog, ready, ready.game.current.turn
+        .activePlayer, Vector.empty)), TriggeredProcedureRef.Setup,
+      WalkerPowers.selected(WalkerPowerCatalog.default(catalog),
+        Vector.empty))
+    assertEquals(walked.asked.filter(_.decisionId.contains(
+      "the-standard-bearer")), Vector.empty)
+    assertEquals(walked.ready.game.current.banners.peoplesFavor.holder,
+      Some(p1))
+
   test("the card has left holding and its power is registered"):
     assert(LegacySetupPowers.all.contains(TheStandardBearer))
     assert(PowerImplementationStatus.implemented(
