@@ -131,3 +131,20 @@ Ruled by the owner on 2026-11-14.
   `power.the-needle.<banner key>`. *Reason:* the card says "a banner",
   each take is its own choice, and distinct ids keep two decisions from
   sharing one id. *Slice/files:* slice 3, Task 2; `TheNeedle`.
+- **R20. How does The Needle's question park after a take?** *Decision:*
+  inside the taking walk, right after the take: every banner taker's tree
+  shape is made independent of the banner's current holder. Challenge's
+  custody and line read the holder inside a `BuildOps` at walk time;
+  Favored Son and Wizard's Conclave decide "already held" inside their own
+  `BuildOps`; every other banner taker is audited for the same shape. Each
+  fix is its own commit with a resume test that parks right after the
+  take, and no golden or log line changes. *Reason:* it keeps the design's
+  ruling 20 timing, since a flip mid-action can change what follows, and
+  removes a latent resume bug. *Slice/files:* slice 3;
+  `ChallengeProcedure`, `FavoredSon`, `WizardsConclave` and the audited
+  takers.
+- **R21. When does Beloved's token leave another player's adviser?**
+  *Decision:* at the next Rest, as every card's tokens do; no engine
+  change, and the design's ruling 18 wording is corrected. *Reason:* the
+  engine already follows the rulebook's clean-up; only the spec's wording
+  was narrower. *Slice/files:* the design; `Beloved`'s doc.

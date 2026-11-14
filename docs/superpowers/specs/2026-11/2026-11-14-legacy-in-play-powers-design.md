@@ -133,8 +133,9 @@ rulings then continue.
     No consent is needed. Trade's own rules are unchanged: the token goes
     on that adviser, the favor comes from its suit's bank, and the bonus
     counts the trader's own faceup matching advisers. A facedown adviser is
-    excluded, since its suit is hidden. Tokens later leave the card under
-    its holder's own Rest.
+    excluded, since its suit is hidden. Tokens later leave the card at the
+    next Rest, as every card's tokens do (CR, "clean up favor and secrets";
+    implementation ruling R21).
 19. **High Priest, when negotiating.** The holder may give secrets in a
     deal. The term is one-way: the other side still cannot give secrets
     unless something else opens them. A new negotiation start-fact marker

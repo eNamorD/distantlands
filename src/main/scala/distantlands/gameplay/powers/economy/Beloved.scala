@@ -29,7 +29,8 @@ object BelovedCard extends Legacy(LegacyId("L33"), "Beloved",
   * suit is hidden, and one holding tokens is shown unavailable, as at a
   * site. Trade's own rules are unchanged: the cost goes on that adviser,
   * the favor comes from its suit's bank, and the bonus counts the trader's
-  * own matching advisers. Tokens leave the card at its holder's Rest. It
+  * own matching advisers. Tokens leave the card at the next Rest, as
+  * every card's do (implementation ruling R21). It
   * writes no line: the Trade's line names the card (implementation ruling
   * R8).
   */
