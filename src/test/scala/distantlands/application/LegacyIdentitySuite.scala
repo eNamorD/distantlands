@@ -110,14 +110,14 @@ class LegacyIdentitySuite extends munit.FunSuite:
       "goal"):
     // Iron Hand's goal is the only one of its kind on this table.
     val dormant = Table.start.legacy(p1, SeerCard)
-      .legacy(p1, distantlands.catalog.holding.IronHandCard, active = false)
+      .legacy(p1, distantlands.gameplay.chronicle.legacies.IronHandCard, active = false)
       .ready
     Vector(projector.project("g", loaded(dormant), p2),
         projector.projectPublic("g", loaded(dormant))).foreach { view =>
       val json = distantlands.protocol.projection.GameProjectionCodec
         .encode(view)
-      Vector(distantlands.catalog.holding.IronHandCard.id.value,
-        distantlands.catalog.holding.IronHandCard.name,
+      Vector(distantlands.gameplay.chronicle.legacies.IronHandCard.id.value,
+        distantlands.gameplay.chronicle.legacies.IronHandCard.name,
         distantlands.catalog.LegacyGoal.MostSites.printed).foreach(secret =>
         assert(!json.contains(secret), secret))
     }

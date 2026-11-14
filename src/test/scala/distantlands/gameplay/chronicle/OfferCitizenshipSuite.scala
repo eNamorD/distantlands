@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.{ArbiterCard, IronHandCard,
+import distantlands.catalog.holding.{ArbiterCard, CircleOfSwordsCard,
   PeacemakerCard, SeerCard, TheNeedleCard}
 import distantlands.gameplay.chronicle.legacies.{ChroniclerCard, RivalCard,
   SteadfastCard}
@@ -193,21 +193,21 @@ class OfferCitizenshipSuite extends munit.FunSuite:
 
   test("an Exile who accepts Citizenship reactivates their newly dormant " +
       "legacies, and one who declines keeps them dormant (R20)"):
-    val table = exilesHoldSites.legacy(p2, IronHandCard, active = false)
+    val table = exilesHoldSites.legacy(p2, CircleOfSwordsCard, active = false)
       .legacy(p3, SeerCard, active = false)
     val asked = offered(throneStarted(table), p2, p3)
     val done = replied(replied(asked, p2, OfferCitizenship.accept), p3,
       OfferCitizenship.decline)
     assertEquals(legaciesOf(done, p2),
-      Vector(LegacyState(IronHandCard.id, active = true)))
+      Vector(LegacyState(CircleOfSwordsCard.id, active = true)))
     assertEquals(legaciesOf(done, p3),
       Vector(LegacyState(SeerCard.id, active = false)))
     assert(lines(done.events).contains(
-      s"p2 reactivated ${IronHandCard.id.value}"), lines(done.events))
+      s"p2 reactivated ${CircleOfSwordsCard.id.value}"), lines(done.events))
 
   test("an accepting Exile left above three active legacies discards the " +
       "excess once every answer is in, even when no Exile is left (R19)"):
-    val table = exilesHoldSites.legacy(p2, IronHandCard).legacy(p2, SeerCard)
+    val table = exilesHoldSites.legacy(p2, CircleOfSwordsCard).legacy(p2, SeerCard)
       .legacy(p2, RivalCard).legacy(p2, ArbiterCard, active = false)
     val asked = replied(replied(offered(throneStarted(table), p2, p3), p2,
       OfferCitizenship.accept), p3, OfferCitizenship.accept)
@@ -217,12 +217,12 @@ class OfferCitizenshipSuite extends munit.FunSuite:
     val capped = answer(asked, p2, cap.decisionId, ChooseManyAnswer(
       Vector(DecisionOptionRef.Legacy(SeerCard.id))))
     assertEquals(legaciesOf(capped, p2).map(_.id),
-      Vector(IronHandCard.id, RivalCard.id, ArbiterCard.id))
+      Vector(CircleOfSwordsCard.id, RivalCard.id, ArbiterCard.id))
     assert(legaciesOf(capped, p2).forall(_.active))
 
   test("two Exiles who accept in reverse seat order are each capped, in " +
       "seat order"):
-    val table = exilesHoldSites.legacy(p2, IronHandCard).legacy(p2, SeerCard)
+    val table = exilesHoldSites.legacy(p2, CircleOfSwordsCard).legacy(p2, SeerCard)
       .legacy(p2, RivalCard).legacy(p2, ArbiterCard, active = false)
       .legacy(p3, SteadfastCard).legacy(p3, ChroniclerCard)
       .legacy(p3, PeacemakerCard).legacy(p3, TheNeedleCard, active = false)
@@ -237,7 +237,7 @@ class OfferCitizenshipSuite extends munit.FunSuite:
     val capped3 = answer(capped2, p3, second.decisionId, ChooseManyAnswer(
       Vector(DecisionOptionRef.Legacy(ChroniclerCard.id))))
     assertEquals(legaciesOf(capped3, p2).map(_.id),
-      Vector(IronHandCard.id, RivalCard.id, ArbiterCard.id))
+      Vector(CircleOfSwordsCard.id, RivalCard.id, ArbiterCard.id))
     assertEquals(legaciesOf(capped3, p3).map(_.id),
       Vector(SteadfastCard.id, PeacemakerCard.id, TheNeedleCard.id))
     assert((legaciesOf(capped3, p2) ++ legaciesOf(capped3, p3))

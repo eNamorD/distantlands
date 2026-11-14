@@ -1,9 +1,10 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.LegacyGoal
-import distantlands.catalog.holding.{IronHandCard, KeeperOfOrderCard,
-  MatchmakerCard, SeerCard, WealthyCard}
-import distantlands.gameplay.chronicle.legacies.OathsOfLoyaltyCard
+import distantlands.catalog.holding.{KeeperOfOrderCard, MatchmakerCard,
+  SeerCard, WealthyCard}
+import distantlands.gameplay.chronicle.legacies.{IronHandCard,
+  OathsOfLoyaltyCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DesolateShoreSite, DunesSite, FairIsleSite}
 import distantlands.gameplay.operations.TheGrandScepterCard

@@ -1,14 +1,14 @@
 package distantlands.application.gamelog
 
-import distantlands.catalog.holding.{IronHandCard, SeerCard}
+import distantlands.catalog.holding.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship,
   ShapeFoundation}
 import distantlands.gameplay.GrandMaskCard
 import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
-  Gatekeeper, GatekeeperCard, Heirloom, HeirloomCard, OathsOfLoyalty,
-  OathsOfLoyaltyCard}
+  Gatekeeper, GatekeeperCard, Heirloom, HeirloomCard, IronHandCard,
+  OathsOfLoyalty, OathsOfLoyaltyCard}
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
   DowntroddenCard, GolemLegionsCard, MapLibraryCard}
 import distantlands.model._

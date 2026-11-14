@@ -14,7 +14,6 @@ legacy.circle-of-swords
 legacy.conspirator
 legacy.golden-key
 legacy.high-priest
-legacy.iron-hand
 legacy.keeper-of-order
 legacy.light-fingers
 legacy.matchmaker

@@ -1,7 +1,8 @@
 package distantlands.gameplay
 
 import distantlands.gameplay.powers.economy.HallowedSpringCard
-import distantlands.catalog.holding.{ArbiterCard, IronHandCard}
+import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.chronicle.legacies.IronHandCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
 import distantlands.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}

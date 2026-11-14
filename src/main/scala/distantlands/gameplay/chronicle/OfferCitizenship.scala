@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.legacies.IronHand
 import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
 import distantlands.model._
 
@@ -91,6 +92,9 @@ object OfferCitizenship:
     else Vector(Note(noteId, _ => Some(offered.sourceless(
         NoteArg.Player(holder), NoteArg.Players(ordered)))),
       Simultaneous(ordered.map(exile => new Sequence(answer(exile)))),
+      // Iron Hand's third checkpoint: a new Citizen discards it before the
+      // cap (Legacy Chronicle powers design, ruling 18; R30).
+      IronHand.discard(TriggeredProcedureRef.ChronicleThrone),
       // Once every answer is in, each new Citizen left above three active
       // legacies discards the excess (R19), in seat order: a simultaneous
       // answer cannot ask a second question.

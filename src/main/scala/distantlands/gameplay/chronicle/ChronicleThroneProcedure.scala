@@ -1,7 +1,8 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
-import distantlands.gameplay.chronicle.legacies.LegacyChroniclePowers
+import distantlands.gameplay.chronicle.legacies.{IronHand,
+  LegacyChroniclePowers}
 import distantlands.gameplay.walker.ProcedureStart
 import distantlands.model._
 
@@ -21,7 +22,8 @@ object ChronicleThroneProcedure:
   def noteKeys: Vector[NoteKey] = OfferCitizenship.noteKeys ++
     ShapeEmpire.noteKeys ++
     BuildEdifice.noteKeys ++ LineageScoring.noteKeys ++ SwearOath.noteKeys ++
-    LegacyChroniclePowers.throneNoteKeys
+    LegacyChroniclePowers.throneNoteKeys ++
+    IronHand.noteKeys(TriggeredProcedureRef.ChronicleThrone)
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     ChronicleWindows.step(PowerWindow.ChronicleStartOfThrone, Vector.empty),

@@ -108,21 +108,12 @@ object ResolveLegacies:
       cap(player, capDecisionId(player), noteId, capped))))
 
   /** `player`'s newly dormant legacies turned active, each with a
-    * `reactivatedKey` line under `notesOf`, then `cap` again if that leaves
-    * more than three active (R19, R20). Every dormant legacy on a seated
-    * lineage after Sun step 3 is newly dormant (ruling 2). Crown Chancellor
-    * and Offer Citizenship both run it. The cap is a sibling of the flips,
-    * not their child: a walk resumed at its question rebuilds only the
-    * nodes on its path, and the flips' branch would read no dormant legacy
-    * by then. */
-  def reactivate(player: PlayerId, capId: String, notesOf: PowerId,
-      reactivatedKey: NoteKey, cappedKey: NoteKey): Vector[Operation] =
-    Vector(reactivation(player, notesOf, reactivatedKey),
-      cap(player, capId, notesOf, cappedKey))
-
-  /** `reactivate` without the cap, for a caller that runs the cap later:
-    * Offer Citizenship, whose answers are simultaneous and so cannot ask a
-    * second question inside one. */
+    * `reactivatedKey` line under `notesOf` (R19, R20). Every dormant legacy
+    * on a seated lineage after Sun step 3 is newly dormant (ruling 2).
+    * Crown Chancellor and Offer Citizenship both run it, then Iron Hand's
+    * checkpoint, then `cap` as a later sibling: a walk resumed at the cap's
+    * question rebuilds only the nodes on its path, and this branch would
+    * read no dormant legacy by then (Legacy Chronicle powers R30). */
   def reactivation(player: PlayerId, notesOf: PowerId,
       reactivatedKey: NoteKey): Operation =
     Branch((state, _) =>

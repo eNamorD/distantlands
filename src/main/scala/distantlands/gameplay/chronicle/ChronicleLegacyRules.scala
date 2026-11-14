@@ -1,7 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.gameplay.chronicle.legacies.{GreatArchitectCard,
-  OathsOfLoyaltyCard, RivalCard, SteadfastCard, TheBrightBeaconCard,
+  IronHandCard, OathsOfLoyaltyCard, RivalCard, SteadfastCard, TheBrightBeaconCard,
   TheEarCard}
 import distantlands.model._
 
@@ -71,3 +71,8 @@ object ChronicleLegacyRules:
   def beaconFromDispossessed(state: ReadyGame): Option[PlayerId] =
     ChronicleTasks.holder(state, ChronicleTask.Beacon).toOption
       .filter(holder(state, TheBrightBeaconCard.id).contains)
+
+  /** The seated Exile holding Iron Hand active, who shapes, builds, scores
+    * and is stored in the Empire's place (rulings 19-21). */
+  def ironHand(state: ReadyGame): Option[PlayerId] =
+    holder(state, IronHandCard.id, Set(Role.Exile))

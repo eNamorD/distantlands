@@ -41,7 +41,7 @@ object ChronicleCrown:
     * warbands are of their colour, so their bank holds 14 less those; the
     * step assumes an unlimited supply and adds what the bank lacks. The
     * winner's newly dormant legacies become active after these operations
-    * (`ResolveLegacies.reactivate`, in the Crown window).
+    * (`ResolveLegacies.reactivation`, in the Crown window).
     *
     * The winner's board warbands go back to their own bank first: the
     * winner swaps boards for the Chancellor's, and once they are Imperial

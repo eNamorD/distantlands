@@ -153,8 +153,9 @@ class IronHandSuite extends munit.FunSuite:
 
   private def lines(run: ChronicleWalk.Run, procedure: TriggeredProcedureRef)
       : Vector[String] =
-    NoteText.said(ProcedureNotes.id(procedure),
-      IronHand.noteKeys(procedure), run.events).map(_.text)
+    val keys = IronHand.noteKeys(procedure)
+    NoteText.said(ProcedureNotes.id(procedure), keys, run.events)
+      .filter(said => keys.exists(_.name == said.key)).map(_.text)
 
   private val discardLine = s"p3 discarded ${IronHandCard.id.value}"
 
@@ -171,9 +172,10 @@ class IronHandSuite extends munit.FunSuite:
 
   test("a dormant Iron Hand an Imperial holds stays until Flip Legacies " +
       "activates it, then the Crown checkpoint discards it (R29)"):
-    // The Empire rules Ancient City, so the Imperials meet Iron Hand's goal.
-    val run = through(ChronicleWalk.chronicleWonByP1.imperial(p2, p3)
-      .warbandsAt(AncientCitySite, p2, 1)
+    // p1, the Chancellor, wins; the Empire rules Ancient City, so the
+    // Imperials meet Iron Hand's goal, and p3 stays a Citizen at the Crown.
+    val run = through(ChronicleWalk.chronicleWonByP1.imperial(p1, p3)
+      .warbandsAt(AncientCitySite, p1, 1)
       .legacy(p3, IronHandCard, active = false),
       TriggeredProcedureRef.ChronicleSun)
     assert(!holds(run.ready, p3))

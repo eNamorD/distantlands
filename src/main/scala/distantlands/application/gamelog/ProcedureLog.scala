@@ -6,7 +6,7 @@ import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   SwearOath, WelcomeStranger,
   ChronicleStarsProcedure}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, Gatekeeper,
-  Heirloom, OathsOfLoyalty, Reformer, Revolutionary, Rival,
+  Heirloom, IronHand, OathsOfLoyalty, Reformer, Revolutionary, Rival,
   TheBrightBeacon, TheEar}
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
@@ -398,6 +398,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       ResolveLegacies.wentDormant -> LogKind.Delta,
       ResolveLegacies.capped -> LogKind.Decision,
       ResolveLegacies.reactivated -> LogKind.Delta,
+      IronHand.discarded(TriggeredProcedureRef.ChronicleSun) -> LogKind.Delta,
       Gatekeeper.took -> LogKind.Decision,
       Chronicler.declared -> LogKind.Decision,
       Chronicler.scored -> LogKind.Delta) ++
@@ -424,6 +425,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       OfferCitizenship.reactivated -> LogKind.Delta,
       OfferCitizenship.capped -> LogKind.Decision,
       Rival.protectedWith -> LogKind.Decision,
+      IronHand.discarded(TriggeredProcedureRef.ChronicleThrone) ->
+        LogKind.Delta,
       Revolutionary.discardedWith -> LogKind.Decision,
       Reformer.moved -> LogKind.Decision,
       Reformer.swapped -> LogKind.Decision,

@@ -1,8 +1,8 @@
 package distantlands.application.gamelog
 
-import distantlands.catalog.holding.{IronHandCard, SeerCard}
+import distantlands.catalog.holding.SeerCard
 import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
-  GatekeeperCard, HeirloomCard}
+  GatekeeperCard, HeirloomCard, IronHandCard}
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
   GolemLegionsCard}
 import distantlands.model.PlayerId

@@ -2,7 +2,8 @@ package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.chronicle.legacies.LegacyChroniclePowers
+import distantlands.gameplay.chronicle.legacies.{IronHand,
+  LegacyChroniclePowers}
 import distantlands.gameplay.walker.ProcedureStart
 import distantlands.model._
 
@@ -26,7 +27,8 @@ object ChronicleSunProcedure:
       .toMap
   def tookTask(task: ChronicleTask): NoteKey = tookKeys(task)
   def noteKeys: Vector[NoteKey] = notes.declared ++ ResolveLegacies.noteKeys ++
-    LegacyChroniclePowers.sunNoteKeys
+    LegacyChroniclePowers.sunNoteKeys ++
+    IronHand.noteKeys(TriggeredProcedureRef.ChronicleSun)
 
   private def name(task: ChronicleTask): String = task match
     case ChronicleTask.Throne => "Throne"
@@ -42,7 +44,10 @@ object ChronicleSunProcedure:
 
   private def steps(catalog: ExecutableCatalog, winner: PlayerId)
       : Vector[Operation] = Vector(
+    // Iron Hand's first checkpoint opens the Sun (Legacy Chronicle powers
+    // design, ruling 18; R30).
     ChronicleWindows.step(PowerWindow.ChronicleRevealRelics, Vector(
+      IronHand.discard(TriggeredProcedureRef.ChronicleSun),
       BuildOps((state, _) => Right(revealHeldRelics(state)), required = true))),
     ChronicleWindows.step(PowerWindow.ChronicleBeforeResolveLegacies,
       Vector.empty),
@@ -67,10 +72,13 @@ object ChronicleSunProcedure:
       // An Exile's win: their newly dormant legacies become active (CR
       // "If an Exile won, the Empire breaks"), then the cap if need be. An
       // Imperial winner holds no dormant legacy after step 3 (ruling 2), so
-      // this asks nothing of them.
-      ResolveLegacies.reactivate(winner,
-        ResolveLegacies.crownCapDecisionId(winner), noteId,
-        ResolveLegacies.reactivated, ResolveLegacies.capped)),
+      // this asks nothing of them. Iron Hand's second checkpoint sits
+      // between the reactivation and the cap (R30).
+      Vector(ResolveLegacies.reactivation(winner, noteId,
+          ResolveLegacies.reactivated),
+        IronHand.discard(TriggeredProcedureRef.ChronicleSun),
+        ResolveLegacies.cap(winner, ResolveLegacies.crownCapDecisionId(winner),
+          noteId, ResolveLegacies.capped))),
     ChronicleWindows.step(PowerWindow.ChronicleAssignTasks,
       ChronicleTaskAssignment.steps(winner, tookNote)))
 

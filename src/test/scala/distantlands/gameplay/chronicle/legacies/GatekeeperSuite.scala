@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle.legacies
 
-import distantlands.catalog.holding.{IronHandCard, SeerCard, WealthyCard}
+import distantlands.catalog.holding.{PeacemakerCard, SeerCard, WealthyCard}
 import distantlands.gameplay.OathRules
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.cards.AncientCitySite
@@ -58,7 +58,7 @@ class GatekeeperSuite extends munit.FunSuite:
     won.imperial(p2).warbandsAt(AncientCitySite, p2, 1)
       .denizen(VillageIdiotCard, AncientCitySite)
       .legacy(p2, GatekeeperCard).legacy(p2, SeerCard)
-      .legacy(p2, IronHandCard).legacy(p3, WealthyCard)
+      .legacy(p2, PeacemakerCard).legacy(p3, WealthyCard)
 
   test("Gatekeeper is implemented"):
     assert(PowerImplementationStatus.implemented(GatekeeperCard.power.id))
@@ -117,7 +117,7 @@ class GatekeeperSuite extends munit.FunSuite:
     val run = sun(empireTakesWealthy, taking(WealthyCard.id).orElse {
       case decide if decide.decisionId == ResolveLegacies.capDecisionId(p2) =>
         DecisionAnswer.ChooseManyAnswer(Vector(
-          DecisionOptionRef.Legacy(IronHandCard.id)))
+          DecisionOptionRef.Legacy(PeacemakerCard.id)))
     })
     assertEquals(legaciesOf(run.ready, p2).toSet,
       Set(GatekeeperCard.id, SeerCard.id, WealthyCard.id))
