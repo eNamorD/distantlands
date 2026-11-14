@@ -6,6 +6,7 @@ import distantlands.gameplay.PlayerSecretSummary
 import distantlands.gameplay.phases.rest.FinishRestProcedure
 import distantlands.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementationStatus,
   WalkerPowerCatalog}
+import distantlands.gameplay.powers.legacies.GoldenKey
 import distantlands.gameplay.powers.wake.TrackerWake
 import distantlands.gameplay.setup.{LegacyKeep, SetupProcedure}
 import distantlands.gameplay.setup.legacies.{SecretSociety, Seer,
@@ -214,6 +215,17 @@ private[application] final class GamePresentationProjector(
     ready.game.current.commonCards.publicLegacies.map(id =>
       cardDetails(id, Some(Orientation.FaceUp), hidden = false))
 
+  /** The Reliquary in play as `viewer` may see it (Legacy in-play powers
+    * rulings 9 and 10): facedown, a face where `identifiesCard` names the
+    * relic, a relic back elsewhere; empty while it is set aside (R5). */
+  def reliquary(ready: ReadyGame, viewer: Option[PlayerId])
+      : Vector[CardDetailsProjection] =
+    ready.game.campaign.reliquaryInPlay.map(id =>
+      if identifiesCard(ready, viewer, id, Some(Orientation.FaceDown),
+          CardContainer.Reliquary) then
+        cardDetails(id, Some(Orientation.FaceDown), hidden = false)
+      else hiddenCard("relic"))
+
   /** The warbands standing on `card` (Obsidian Cage, False Prophet), one entry per
     * force: an Exile's by the colour of the player of that lineage. */
   private def withWarbands(details: CardDetailsProjection, ready: ReadyGame,
@@ -318,8 +330,10 @@ private[application] final class GamePresentationProjector(
     *    public row to every viewer. A draw Matchmaker's holder keeps for
     *    another player is named to the holder alone while that keep is the
     *    parked decision, and to nobody before (R16).
-    *  - The Reliquary is named only to the Chancellor, and only in Setup,
-    *    where they pick one of its relics (Empire ruling R29).
+    *  - The Reliquary is named to the Chancellor in Setup, where they pick
+    *    one of its relics (Empire ruling R29), and to Golden Key's Imperial
+    *    holder whenever they look (Legacy in-play powers ruling 10;
+    *    implementation ruling R1).
     *  - Everything else -- other decks, set-aside relics, the
     *    dispossessed pile, suited reserves, atlas sites -- is never
     *    identified. A card in a deck has no orientation at all, so it must be
@@ -404,10 +418,13 @@ private[application] final class GamePresentationProjector(
         viewer.exists(player => ready.knowledge.advisers
           .getOrElse(player, Vector.empty).contains(id))
       // The Chancellor chooses a Reliquary relic in Setup (CR p. 8, Empire
-      // ruling R29); nobody else, and nobody later, sees the pile.
+      // ruling R29); Golden Key's Imperial holder may always peek at it
+      // (Legacy in-play powers rulings 2 and 10). Nobody else sees it.
       case CardContainer.Reliquary =>
-        ready.game.current.turn.phase == Phase.Setup &&
-          viewer.exists(Imperials.chancellor(ready).contains)
+        viewer.exists(player =>
+          (ready.game.current.turn.phase == Phase.Setup &&
+            Imperials.chancellor(ready).contains(player)) ||
+            GoldenKey.peeker(ready).contains(player))
       case _ => false
 
   /** The full walker catalog, for reading Setup's open decisions. */

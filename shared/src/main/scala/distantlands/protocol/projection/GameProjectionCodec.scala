@@ -21,7 +21,7 @@ object GameProjectionCodec:
     "walkerDecision", "walkerWaiting", "viewerPlayerId",
     "supplyMaximum", "supplyBands", "undo", "redo", "logRevision",
     "consentWaiting", "consentPrompt", "consentPreferences", "chronicle",
-    "planAidPrompt", "foundations", "publicLegacies")
+    "planAidPrompt", "foundations", "publicLegacies", "reliquary")
 
   def encode(value: GameProjection): String = ujson.write(encodeValue(value))
   def decode(json: String): Either[ProtocolDecodeFailure, GameProjection] =
@@ -82,7 +82,8 @@ object GameProjectionCodec:
       "number" -> f.number, "face" -> f.face, "name" -> f.name,
       "rulesText" -> f.rulesText)),
     "publicLegacies" -> encoded(value.publicLegacies)(
-      WorldProjectionCodec.encodeCard))
+      WorldProjectionCodec.encodeCard),
+    "reliquary" -> encoded(value.reliquary)(WorldProjectionCodec.encodeCard))
     value.viewerPlayerId.foreach(player => result("viewerPlayerId") = ujson.Str(player))
     value.planAidPrompt.foreach(prompt => result("planAidPrompt") =
       PlanAidProjectionCodec.encodePrompt(prompt))
@@ -155,6 +156,10 @@ object GameProjectionCodec:
       Vector.empty[ujson.Value])(array)
     publicLegacies <- traverse(publicRaws, s"$path.publicLegacies")(
       WorldProjectionCodec.decodeCard)
+    reliquaryRaws <- default(value, "reliquary", path,
+      Vector.empty[ujson.Value])(array)
+    reliquary <- traverse(reliquaryRaws, s"$path.reliquary")(
+      WorldProjectionCodec.decodeCard)
   yield GameProjection(game, sequence, phase, active, players, world, pawns,
     ready, completed, resources, siteResources,
     deckCount, deckTop, boards, oathkeeper, banners,
@@ -162,7 +167,7 @@ object GameProjectionCodec:
     walkerDecision, walkerWaiting, viewer,
     supplyMaximum, bands, undo, redo, logRevision,
     consentWaiting, consentPrompt, consentPreferences, chronicle,
-    planAidPrompt, foundations, publicLegacies)
+    planAidPrompt, foundations, publicLegacies, reliquary)
 
   private def decodeFoundation(raw: ujson.Value, path: String)
       : Result[FoundationProjection] = for

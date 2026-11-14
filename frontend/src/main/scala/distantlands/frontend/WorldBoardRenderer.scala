@@ -538,6 +538,17 @@ private[frontend] object WorldBoardRenderer:
         banners.appendChild(BannerFace.place(banner, options,
           BannerFace.festivalSite(value))))
       section.appendChild(banners)
+    // The Reliquary, facedown, while it holds a relic (Legacy in-play
+    // powers ruling 9): a face only where its viewer may peek. Each relic
+    // is keyed by its card when known, so Golden Key's question marks it.
+    if value.reliquary.nonEmpty then
+      val reliquary = element("div", "shared-reliquary")
+      reliquary.setAttribute("aria-label", "Reliquary")
+      reliquary.appendChild(text("h4", "shared-reliquary-label", "Reliquary"))
+      value.reliquary.foreach(card => reliquary.appendChild(options.card(
+        CardFace.render(card), card,
+        Option.unless(card.hidden)(BoardOptions.cardKey(card)).toVector)))
+      section.appendChild(reliquary)
     // The setup cards close the bank: they are read once or twice a game,
     // so they stand under what changes every turn.
     if value.foundations.nonEmpty then

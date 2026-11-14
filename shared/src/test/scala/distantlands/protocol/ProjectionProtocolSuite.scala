@@ -211,6 +211,17 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       (value.publicLegacies, value.playerBoards.map(_.legacies))),
       Right((Vector.empty, projection.playerBoards.map(_ => Vector.empty))))
 
+  test("the Reliquary round-trips, and a payload without it decodes to " +
+      "none"):
+    val relic = known.copy(cardId = "R19", cardKind = "relic")
+    val held = projection.copy(reliquary =
+      Vector(relic, hidden.copy(cardKind = "relic")))
+    assertRoundTrips(held)
+    val raw = ujson.read(GameProjectionCodec.encode(held))
+    raw.obj.remove("reliquary")
+    assertEquals(GameProjectionCodec.decode(ujson.write(raw))
+      .map(_.reliquary), Right(Vector.empty))
+
   test("a board's bag figures and the Supply bands round-trip"):
     val withBag = projection.copy(
       playerBoards = projection.playerBoards.map(_.copy(bankedWarbands = 5,

@@ -1456,6 +1456,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .shared-banners { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px; margin-top: 10px; }
 .shared-banners .board-option-card { width: 100%; }
+/* The Reliquary, facedown, under the unheld banners (Legacy in-play
+   powers ruling 9). */
+.shared-reliquary { display: flex; flex-wrap: wrap; gap: var(--card-gap);
+  margin-top: 10px; }
+.shared-reliquary-label { flex: 1 1 100%; margin: 0; font-size: 0.9rem; }
 .shared-banners .banner-face { width: 100%; height: auto;
   aspect-ratio: var(--ratio-banner); }
 /* The six foundation setup cards (Foundations design, slice 1), a card a

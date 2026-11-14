@@ -39,6 +39,10 @@ final case class GameProjection(
     /** The Public Ambitions row, faceup; empty unless Foundation III is
       * altered and the Chronicle has not resolved it. */
     ,publicLegacies: Vector[CardDetailsProjection] = Vector.empty
+    /** The Reliquary in play, facedown, one entry per relic: a face only
+      * where its viewer may peek (Legacy in-play powers rulings 9 and 10);
+      * empty while it holds none or is set aside. */
+    ,reliquary: Vector[CardDetailsProjection] = Vector.empty
 )
 
 /** Every seat's view of the game's Chronicle (Chronicle browsing design,
