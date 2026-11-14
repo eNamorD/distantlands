@@ -175,12 +175,15 @@ Legacies, the scoring bonus and the display) landed with the
   counts as implemented for its Throne half, and the rest), each
   through Setup's windows, and Matchmaker choosing the kept legacy for the
   other players in the Setup deal ([Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md)).
-- [ ] **Legacy powers: Chronicle.** The CHRONICLE powers, through the
-  Chronicle's step windows: Iron Hand and Chronicler scoring players other
-  than the winner, Steadfast keeping legacies active, Gatekeeper taking an
-  enemy's active legacy before Resolve Legacies, Royal Line choosing the
-  Successor, Heirloom keeping a starting relic, and the others that hook a
-  task's steps.
+- [ ] **Legacy powers: Chronicle.** The CHRONICLE powers still to build,
+  through the Chronicle's step windows
+  ([Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md)):
+  Heirloom keeping a starting relic, The Ear choosing where relics scatter,
+  Oaths of Loyalty keeping advisers, The Bright Beacon taking newcomers
+  from the Dispossessed, Iron Hand scoring and shaping the Empire, and
+  Royal Line choosing the Successor. Slices 1 and 2 built Steadfast,
+  Gatekeeper, Chronicler, Rival's Throne half, Great Architect,
+  Revolutionary and Reformer.
 - [ ] **Legacy powers: in play.** The powers used during a game: actions,
   Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
   play among them. High Priest's When Negotiating power lets its holder
