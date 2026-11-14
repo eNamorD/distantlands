@@ -64,3 +64,22 @@ class StylesheetProportionsSuite extends munit.FunSuite:
     val surface = """\.map-content \{ position: absolute; width: ([0-9]+)px; padding: ([0-9]+)px;""".r
       .findFirstMatchIn(css).getOrElse(fail("no map surface width"))
     assertEquals(surface.group(1).toInt, design + 2 * surface.group(2).toInt)
+
+  /** Each box reads its own kind's ratio in its own rule, so a box worked
+    * out from another length cannot pass for reading the table. */
+  test("each box's own rule reads its own ratio"):
+    def rules(selector: String): Vector[String] =
+      (s"(?m)^${java.util.regex.Pattern.quote(selector)} \\{([^}]*)\\}").r
+        .findAllMatchIn(css).map(_.group(1)).toVector
+    Vector(
+      ".card-face-relic" -> "--ratio-relic",
+      ".banner-face" -> "--ratio-banner",
+      ".card-face-legacy" -> "--ratio-legacy",
+      ".card-overlay-body > .card-face-vision" -> "--ratio-legacy",
+      ".card-plate-foundation" -> "--ratio-foundation",
+      ".card-plate-oath-goal" -> "--ratio-oath-goal",
+      ".card-plate-oathkeeper-title" -> "--ratio-oathkeeper-title",
+      ".mat-board" -> "--ratio-mat").foreach { (selector, ratio) =>
+      assert(rules(selector).exists(_.contains(s"var($ratio)")),
+        s"$selector does not read $ratio")
+    }
