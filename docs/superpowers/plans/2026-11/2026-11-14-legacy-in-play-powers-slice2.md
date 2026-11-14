@@ -111,6 +111,12 @@ with concrete sites and pieces in the test itself.
   (`RuleSourceRef.Adviser(owner, id)`) so a cost on it is placed on that
   player's card.
 
+- Take Wealth's enemy-pawn gate, now a restriction, refuses after the
+  build's resource check: with an enemy pawn there and the resource
+  missing, the refusal is `ResourceUnavailable` (R16, from the review).
+- Pathfinder ignores Lost Lagoon only as the Island add on arriving at its
+  site, never its Coast power on leaving (R15, from the review).
+
 ## Global Constraints
 
 - Scala 3 with `-Werror`: no unused imports, private members or locals, no

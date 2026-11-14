@@ -71,6 +71,36 @@ Ruled by the owner on 2026-11-14.
   needed once slice 2 lands. *Slice/files:* slices 1 and 2;
   `src/test/resources/powers/unimplemented.txt`.
 
+### Slice 2 review
+
+Ruled by the owner on 2026-11-14, from the review of slice 2.
+
+- **R15. Which of Lost Lagoon's powers does Pathfinder ignore?**
+  *Decision:* only its Island add on arriving at its site, never its Coast
+  power on leaving it. Narrows R6. *Reason:* R6 means "the Island power";
+  the card's ignore never makes travel worse (design, ruling 15).
+  *Slice/files:* slice 2 fix; `Pathfinder.ignored`.
+- **R16. May Take Wealth's pawn gate refuse after the resource check?**
+  *Decision:* yes: with an enemy pawn there and the resource missing, the
+  refusal is `ResourceUnavailable`. *Reason:* the menu leaves the option
+  out either way, and keeping the gate a restriction is what lets Light
+  Fingers ignore it; only an invalid submission's reason changes.
+  *Slice/files:* slice 2 fix; `TakeWealthProcedureSuite`.
+- **R17. Does Old Songs stack with Beloved?** *Decision:* yes: a Beloved
+  source with exactly one secret and no favor qualifies. *Reason:* Old
+  Songs already admits sources Map Library and Skilled Merchants add;
+  Beloved's "empty" is the Trade's ordinary requirement Old Songs relaxes.
+  *Slice/files:* slice 2 fix; `BelovedSuite`.
+- **R18. Should Imperial Infighting hide the enemy Imperial's lendable
+  plans?** *Decision:* no change to `PlanAid.allies`. *Reason:* CR p. 35
+  makes the enemy a lawful lender, and the attacker-used guard enforces
+  Imperial Infighting's limit; the extra offer window is noise, not a
+  rules defect, and out of this batch's scope. *Slice/files:* none.
+- **R19. May `StylesheetTableEdgeSuite` assert literal CSS?** *Decision:*
+  yes. *Reason:* the assertions pin the two rules the app check
+  confirmed; their brittleness is cheap to update. *Slice/files:* slice
+  2, Task 7.
+
 ## Slice 3
 
 [Plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice3.md).
