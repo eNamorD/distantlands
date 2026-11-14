@@ -111,3 +111,65 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   choosing", and an earlier view would inform the holder's World Crafter
   and Populist choices, which come first. *Slice/files:* slice 2;
   `LegacyKeep`, `GamePresentationProjector.identifiesCard`.
+
+## Slice 3
+
+[Plan](../../plans/2026-11/2026-11-13-legacy-setup-powers-slice3.md).
+
+- **R18. ChooseAmounts' answer.** `DecisionQuery.ChooseAmounts` reuses
+  `DistributeSlot` for its slots and is answered by
+  `DecisionAnswer.DistributeAnswer`, sent as the `DistributeWire`; no new
+  answer form. *Reason:* no new saved or wire format, and the answer's
+  shape, one amount per slot, is the same. *Slice/files:* slice 3;
+  `Decisions.scala`, `DecisionQueries`.
+- **R19. Secret Society's reshuffle.** A new `ShufflePile.VisionPackets`,
+  journaled like any shuffle, with the operation-codec kind
+  `{"kind": "vision-packets"}`; older streams still decode, which a test
+  pins. *Reason:* a plain shuffle would reorder the denizens, against spec
+  ruling 14. *Slice/files:* slice 3; `ShufflePile`, `WalkerShuffles`,
+  `CardOperationCodec`.
+- **R20. How each holder sees the Visions.** Secret Society records no
+  `Peek` and shows no deck position: while its question is parked, the
+  holder learns the Visions' names only through the question's options,
+  and the world deck stays hidden. Seer records a `Peek` of each Vision for
+  the holder when its answer applies, and the holder keeps that knowledge
+  as any `Peek` is kept. *Reason:* Secret Society acts "before building the
+  world deck", so the holder learns which Visions exist, not where they
+  lie; after a take the deck is rebuilt at random, and after a Decline a
+  lasting view would leak the order. Seer's card says "peek at the
+  Visions", and the holder chose their positions. *Slice/files:* slice 3;
+  `SecretSociety`, `Seer`, `GamePresentationProjector.identifiesCard`.
+- **R21. Secret Society's excess discard.** After the holder's own
+  `SetupPawnPlaced` window and before their keep, only when they are over
+  the adviser limit: one choose-many of exactly the excess, over the
+  advisers by slot, `setup.legacy.secret-society.<player>.discard`, with no
+  Decline. The cards go where Setup's rejected advisers go. It is logged
+  with Setup's line for discarded advisers, or, as Setup writes none, with
+  a line naming the discarded cards, since a discard is public. *Reason:*
+  the spec puts the discard right after the pawn, and the limit rule is
+  mandatory. *Slice/files:* slice 3; `SecretSociety.excessStep`.
+- **R22. Secret Society's question.** `setup.legacy.secret-society.<player>`,
+  a choose-one: Decline, then the deck's Visions except the Conspiracy in
+  catalog order (by card id), headed "Secret Society: you may take a Vision
+  as a facedown adviser"; asked whenever a seated holder holds it active
+  and the deck holds such a Vision. *Reason:* deck order would leak the
+  Visions' relative positions after a Decline. *Slice/files:* slice 3;
+  `SecretSociety`.
+- **R23. Seer's question.** `setup.legacy.seer.<player>`: one slot per
+  Vision, each from 1 to n + v, distinct, suggesting the current
+  positions; headed "Seer: place the Visions in the world deck", confirmed
+  "Place the Visions"; no Decline. It is skipped only when the query cannot
+  be formed: no Vision in the deck, or a deck of one card. *Reason:* spec
+  ruling 15 has no "may". *Slice/files:* slice 3; `Seer`.
+- **R24. One window for both.** Secret Society and Seer both hook
+  `SetupWorldDeck`, Secret Society first by registration order, which a
+  test pins. *Reason:* spec rulings 14 and 15 put Secret Society before
+  Seer, and one window is enough. *Slice/files:* slice 3;
+  `LegacySetupPowers.all`.
+- **R25. The ChooseAmounts control.** Distribute-style rows with `−` and
+  `+` steppers, Shift+click to the bound, and an editable number field on
+  each row bound to the same `SessionDrafts` draft. Confirm stays disabled
+  on a clash, with the line "Two cards share position N". *Reason:* in a
+  40-card deck steppers alone mean dozens of clicks; the draft in
+  `SessionDrafts` keeps a typed value across redraws. *Slice/files:*
+  slice 3; `ChooseAmountsPanelRenderer`, `ChooseAmountsDecisionState`.

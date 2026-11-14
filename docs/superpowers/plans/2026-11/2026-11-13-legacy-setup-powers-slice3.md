@@ -21,7 +21,8 @@ with the card's layout from its random source and journals (R19). Seer's
 placement is a `Shuffle` of the world deck with its order already filled.
 The projection names the world deck's Visions to a holder only while that
 holder's Secret Society or Seer question is the parked decision, read as
-R16 reads the keep (R20). Secret Society's excess advisers are discarded in
+R16 reads the keep; Seer's answer also records a `Peek` of each Vision for
+the holder (R20). Secret Society's excess advisers are discarded in
 a step right after the holder's pawn (R21).
 
 **Tech Stack:** Scala 3.9.0 (JVM and Scala.js), munit, `./sbtw` (sbt
@@ -31,7 +32,7 @@ wrapper); frontend suites with `./sbtw "frontend/test"`. Compiler flags
 **Spec:** [Legacy Setup powers design](../../specs/2026-11/2026-11-13-legacy-setup-powers-design.md),
 rulings 1-4 and 14-15 and section "Slice 3: world deck".
 [Implementation rulings](../../specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)
-(R1-R17 stand; this plan proposes R18-R25). Card text in
+(R1-R17 stand; this plan's are R18-R25). Card text in
 `src/main/scala/distantlands/catalog/holding/HoldingLegacies.scala` (Seer
 L22, Secret Society L28). The rulebook's world deck, CR p. 12
 (`docs/rules/rules-reference.md#later-games`, step 6).
@@ -49,73 +50,44 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions (proposed rulings R18-R25)
+## Rulings
 
-The plan is written to the recommendation of each. Production code waits
-for the orchestrator's rulings.
+This plan's choices are implementation rulings R18-R25
+([rulings](../../specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)):
 
-- **R18 (Task 1). `ChooseAmounts`' slots and answer.** *Recommended:*
-  `DecisionQuery.ChooseAmounts(slots: Vector[DistributeSlot], distinct:
-  Boolean, heading: Option[String], confirmLabel: String)`, answered by the
-  existing `DecisionAnswer.DistributeAnswer` and sent as the existing
-  `DecisionAnswerWire.DistributeWire`: "one amount per slot" is that
-  answer's shape, so the journal codec, the command codec and
-  `GameIntentMapper` are unchanged. The validator tells the two queries
-  apart. *Alternative:* a new `ChooseAmountsAnswer` with its own journal
-  codec, wire form and intent mapping.
-- **R19 (Task 4). Secret Society's random reshuffle.** *Recommended:* a
-  new `ShufflePile.VisionPackets`, whose cards are the world deck. The
-  walker fills its order from its random source with the card's layout:
-  the denizens keep their order; with 25 denizens or more two Visions go to
-  random places among the first 12 cards and two among the next 17, which
-  two going where chosen at random; with fewer, every Vision goes to a
-  random place in the whole deck. The filled `Shuffle` is journaled like
-  any shuffle. This adds one pile kind to the operation codec
-  (`{"kind": "vision-packets"}`); older streams still decode. *Alternative:*
-  a plain world-deck `Shuffle`, which reorders the denizens too, against
-  spec ruling 14.
-- **R20 (Task 4). How the holder sees the deck's Visions.** The options of
-  both questions name Visions that lie in the world deck, which the
-  projection names to nobody. *Recommended:* as R16 does for Matchmaker,
-  the projection names the world deck's Visions to the holder only while
-  their Secret Society or Seer question is the parked decision; before and
-  after, the deck is as hidden as before for everyone. No `Peek` is
-  recorded, so no lasting knowledge is kept. *Alternative:* a `Peek` of
-  each Vision for the holder before the question, which leaves the holder
-  knowing them in the deck afterwards (`CardKnowledge.advisers`) until a
-  shuffle clears it, after a declined Secret Society included.
-- **R21 (Task 5). Secret Society's excess discard.** *Recommended:* right
-  after the holder's own `SetupPawnPlaced` window and before their keep,
-  when their advisers exceed `AdviserLimit.of`, one `ChooseMany(k, k)` over
-  all their advisers, `setup.legacy.secret-society.<player>.discard`, where
-  `k` is the excess. The cards go to the discard pile of the region after
-  the pawn's, top, as Setup's rejected advisers do. No line of its own: the
-  moves' own lines and the discard pile's visibility apply. It has no
-  Decline; the adviser limit is not a "may".
-- **R22 (Task 4). Secret Society's question.** *Recommended:*
-  `setup.legacy.secret-society.<player>`, a `ChooseOne` with Decline first
-  and then the world deck's Visions except the Conspiracy, in deck order,
-  headed "Secret Society: you may take a Vision as a facedown adviser". It
-  is asked whenever a seated holder holds it active and the deck holds one
-  such Vision; the reshuffle and Visions Drawn follow only a take.
-- **R23 (Task 6). Seer's question.** *Recommended:*
-  `setup.legacy.seer.<player>`, one `ChooseAmounts` with a slot per Vision
-  in deck order, each `1 to n + v`, `distinct`, suggesting each Vision's
-  current position, headed "Seer: place the Visions in the world deck",
-  confirmed "Place the Visions". With no Decline (no "may"). It is skipped
-  only when it would be malformed, a deck of one card and no other.
-- **R24 (Task 4). One window for both.** Secret Society and Seer both
-  hook `SetupWorldDeck`; Secret Society's step comes first because it is
-  registered first in `LegacySetupPowers.all`, which a test pins.
-  *Recommended:* as written; the alternative is two windows.
-- **R25 (Task 3). The frontend control.** *Recommended:* one row per slot,
-  the card drawn as on the Distribute panel, a `−` and a `+` stepper
-  (Shift+click to the slot's bound), the amount, and a Confirm button
-  disabled while two amounts are equal, with a line naming the clash ("Two
-  cards share position 3"). It mirrors the Distribute panel, so its draft
-  survives redraws through `SessionDrafts`. *Alternative:* a number field
-  per row (`AmountCombobox`), quicker for a long deck but with no draft
-  across redraws.
+- **R18** (Task 1): `ChooseAmounts` reuses `DistributeSlot`, and is
+  answered by `DecisionAnswer.DistributeAnswer` sent as the
+  `DistributeWire`; no new answer form.
+- **R19** (Task 4): Secret Society's reshuffle is a `Shuffle` of a new
+  `ShufflePile.VisionPackets`, journaled like any shuffle, codec kind
+  `{"kind": "vision-packets"}`; a test pins that older streams still decode.
+- **R20** (Tasks 4 and 6): Secret Society records no `Peek` and shows no
+  deck position; while its question is parked the holder learns the
+  Visions' names only through its options, and the world deck stays
+  hidden. Seer records a `Peek` of each Vision for the holder when its
+  answer applies, after the reorder, and the holder keeps that knowledge.
+  While either question is parked, its options are named to the holder
+  through the parked-decision rule (as R16).
+- **R21** (Task 5): the excess discard runs after the holder's own
+  `SetupPawnPlaced` window and before their keep, only over the limit: one
+  choose-many of exactly the excess, over the advisers by slot,
+  `setup.legacy.secret-society.<player>.discard`, no Decline; the cards go
+  where Setup's rejected advisers go. Setup writes no line for discarded
+  advisers, so a line names the discarded cards: "p2 discarded Tinker with
+  Secret Society".
+- **R22** (Task 4): Secret Society's choose-one is Decline, then the deck's
+  Visions except the Conspiracy in catalog order (by card id), headed
+  "Secret Society: you may take a Vision as a facedown adviser".
+- **R23** (Task 6): Seer's question, `setup.legacy.seer.<player>`: one slot
+  per Vision, 1 to n + v, distinct, suggesting the current positions,
+  "Seer: place the Visions in the world deck", "Place the Visions", no
+  Decline; skipped only with no Vision in the deck or a deck of one card.
+- **R24** (Tasks 4 and 6): both hook `SetupWorldDeck`, Secret Society first
+  by registration order, which a test pins.
+- **R25** (Task 3): Distribute-style rows with `−`/`+` steppers,
+  Shift+click to the bound, and an editable number field on each row bound
+  to the same `SessionDrafts` draft; Confirm disabled on a clash with "Two
+  cards share position N".
 
 ## Global Constraints
 
@@ -539,7 +511,7 @@ Add the frontend files the compiler made you extend.
 **Interfaces:**
 - Consumes: `DecisionQueryState.ChooseAmounts` (the projection, Task 2), `DistributeSlotBounds`, `WalkerPartitionDraft.itemId`, `DecisionAnswerWire.DistributeWire`.
 - Produces:
-  - `ChooseAmountsDecisionState(slots: Vector[DistributeSlotBounds], distinct: Boolean, amounts: Map[String, Int])` with `amount`, `increment`, `decrement`, `fill`, `drain`, `clashes: Vector[Int]` (the amounts two or more slots share) and `canConfirm`.
+  - `ChooseAmountsDecisionState(slots: Vector[DistributeSlotBounds], distinct: Boolean, amounts: Map[String, Int])` with `amount`, `increment`, `decrement`, `fill`, `drain`, `set(item, value)` (clamped), `clashes: Vector[Int]` (the amounts two or more slots share) and `canConfirm`.
   - `WalkerChooseAmountsDraft(context, decisionId, query, state)` with `command: Option[GameCommand.ResolveWalker]` and `reconcile`.
 
 - [ ] **Step 1: Write the failing test**
@@ -617,6 +589,18 @@ class ChooseAmountsPanelRenderSuite extends munit.FunSuite:
         DistributeAmountWire("vision", "vision:a", 1),
         DistributeAmountWire("vision", "vision:b", 3))))))
 
+  test("a typed amount stages the draft, clamped to the slot's bounds (R25)"):
+    val ui = new RecordingControls()
+    val field = one(render(ui, opened()),
+      """[data-option-id="vision:vision:b"] .amounts-field""")
+      .asInstanceOf[dom.html.Input]
+    field.value = "9"
+    field.dispatchEvent(new dom.Event("change"))
+    ui.lastStaged match
+      case Some(Draft.ChooseAmounts(draft)) =>
+        assertEquals(draft.state.amount("vision:vision:b"), 4)
+      case other => fail(s"expected a staged draft, got $other")
+
   test("a viewer who may not answer sees the steppers disabled"):
     val panel = render(new RecordingControls(), opened(), canControl = false)
     assert(one(panel, ".amounts-increment").asInstanceOf[dom.html.Button]
@@ -657,6 +641,9 @@ private[frontend] final case class ChooseAmountsDecisionState(
   def fill(item: String): ChooseAmountsDecisionState = step(item, Int.MaxValue)
   /** To the slot's minimum. */
   def drain(item: String): ChooseAmountsDecisionState = step(item, Int.MinValue)
+  /** A typed amount, clamped to the slot's bounds. */
+  def set(item: String, value: Int): ChooseAmountsDecisionState =
+    step(item, value - amount(item))
 
   /** The amounts two or more slots share, ascending. */
   def clashes: Vector[Int] =
@@ -696,6 +683,8 @@ private[frontend] final case class WalkerChooseAmountsDraft(
     copy(state = state.fill(item))
   def drain(item: String): WalkerChooseAmountsDraft =
     copy(state = state.drain(item))
+  def set(item: String, value: Int): WalkerChooseAmountsDraft =
+    copy(state = state.set(item, value))
   def canConfirm: Boolean = state.canConfirm
 
   def command: Option[GameCommand.ResolveWalker] =
@@ -729,7 +718,14 @@ private[frontend] object WalkerChooseAmountsDraft:
 `ChooseAmountsPanelRenderer.scala`: as `DistributePanelRenderer`, with
 class names `amounts-slots`, `amounts-slot`, `amounts-label`,
 `amounts-decrement`, `amounts-amount`, `amounts-increment`,
-`amounts-maximum` (text "of {maximum}"), then, for each clash, a
+`amounts-maximum` (text "of {maximum}"), and between the steppers, in
+place of a bare amount, an `input.amounts-field` (text, `inputmode`
+numeric, labelled "Position of {label}") holding the amount, which on
+`change` parses an integer and stages `Draft.ChooseAmounts(draft.set(item,
+value))`, ignoring text that is no integer; the field is disabled when
+`!canControl`. Keep a `span.amounts-amount` with the amount for screen
+readers and tests, or read the field's value in the tests instead; pick
+one and keep the tests in step. Then, for each clash, a
 `p.amounts-clash` "Two cards share position {n}", then the
 `amounts-confirm` button labelled `query.confirmLabel`, disabled when
 `!canControl || !draft.canConfirm`. Steppers stage
@@ -883,7 +879,7 @@ class SecretSocietySuite extends munit.FunSuite:
     ready.game.current.commonCards.worldDeck.collect { case id: VisionId => id }
 
   test("the holder is offered every Vision but the Conspiracy, Decline " +
-      "first"):
+      "first, then in catalog order (R22)"):
     val at = parked()
     val asked = decide(at)
     assertEquals(asked.owner, p2)
@@ -891,7 +887,7 @@ class SecretSocietySuite extends munit.FunSuite:
       case one: DecisionQuery.ChooseOne =>
         assertEquals(one.options.map(_.ref), SecretSociety.decline +:
           deckVisions(at.ready).filterNot(_ == VisionRules.Conspiracy)
-            .map(DecisionOptionRef.Vision(_)))
+            .sortBy(_.value).map(DecisionOptionRef.Vision(_)))
       case other => fail(s"expected a choose-one, got $other")
 
   test("a walk resumed at the question takes the Vision facedown, advances " +
@@ -1127,7 +1123,8 @@ returned against `ShufflePile.cards` as the existing body does.
 /** Secret Society (legacy L28), its SETUP power (Legacy Setup powers
   * design, ruling 14). In the `SetupWorldDeck` window, before Seer, its
   * holder may take one Vision but the Conspiracy from the world deck, as a
-  * facedown adviser (R22). A take advances Visions Drawn once and rebuilds
+  * facedown adviser, offered in catalog order and seen only through the
+  * question's options (R20, R22). A take advances Visions Drawn once and rebuilds
   * the deck in the card's layout (`ShufflePile.VisionPackets`, R19). The
   * Vision is not a starting adviser, so Oaths of Loyalty does not bury it;
   * excess advisers are discarded after the holder's pawn (R21). Line: "p2
@@ -1149,10 +1146,12 @@ case object SecretSociety extends ContributingPower:
     NotePart.Arg(1)))
   def setupNoteKeys: Vector[NoteKey] = notes.declared
 
-  /** The Visions the holder may take, in deck order. */
+  /** The Visions the holder may take, in catalog order: deck order would
+    * tell their places after a Decline (R22). */
   private def takeable(state: ReadyGame): Vector[VisionId] =
     state.game.current.commonCards.worldDeck.collect {
       case id: VisionId if id != VisionRules.Conspiracy => id }
+      .sortBy(_.value)
 
   private def step: Operation = Branch((state, _) =>
     SetupLegacyRules.secretSociety(state).toVector.flatMap { holder =>
@@ -1252,9 +1251,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 git log -3
 ```
 
-Add a codec round-trip test for the new pile kind beside the existing
-shuffle codec test (`git grep -ln "set-aside-relics" -- src/test`) and
-stage it.
+Add a codec test beside the existing shuffle codec test
+(`git grep -ln "set-aside-relics" -- src/test`) and stage it: the new pile
+kind round-trips, and a `Shuffle` written before this slice, as JSON
+literals of the existing pile kinds, still decodes to the same operation
+(R19).
 
 ### Task 5: Secret Society's excess discard
 
@@ -1265,7 +1266,7 @@ stage it.
 
 **Interfaces:**
 - Consumes: `AdviserLimit.of`, `AdviserLimit.towardLimit`, `CardPlay.nextRegion`.
-- Produces: `SecretSociety.discardDecisionId(player: PlayerId): String` (`setup.legacy.secret-society.<player>.discard`); `SecretSociety.excessStep(catalog: ExecutableCatalog, player: PlayerId): Operation`.
+- Produces: `SecretSociety.discardDecisionId(player: PlayerId): String` (`setup.legacy.secret-society.<player>.discard`); `SecretSociety.excessStep(catalog: ExecutableCatalog, player: PlayerId): Operation`; `SecretSociety.discarded: NoteKey` ("{0} discarded {1} with {2}", R21).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1291,8 +1292,14 @@ In `SecretSocietySuite`:
         val excess = held.advisers.size - 3
         assertEquals((many.min, many.max), (excess, excess))
       case other => fail(s"expected a choose-many, got $other")
-    val after = at.parkedAt(LegacyKeep.decisionId(p2))().ready
+    val resumed = at.parkedAt(LegacyKeep.decisionId(p2))()
+    val after = resumed.ready
     assertEquals(after.game.current.player(p2).get.advisers.size, 3)
+    // The discard is public: its line names the card (R21).
+    assert(NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
+      SetupProcedure.noteKeys, resumed.events).exists(said =>
+      said.text.startsWith("p2 discarded ") &&
+        said.text.endsWith(s"with ${SecretSocietyCard.id.value}")))
 
   test("a holder within the limit is asked nothing"):
     // p2 holds no starting adviser and draws a hand, so the Vision leaves
@@ -1345,8 +1352,17 @@ Expected: compile error, `discardDecisionId` is not found.
             excess, excess, held.map(adviser => adviserOption(adviser)),
             heading = Some("Secret Society: discard your excess advisers"),
             confirm = Some(CountedConfirm("Discard", "adviser", "advisers")))),
-          BuildOps(discard(player), required = true)))
+          BuildOps(discard(player), required = true),
+          // A discard is public: the line names the cards (R21).
+          Note(noteId, states => discardedCards(states.answered, held)
+            .map(cards => discarded.sourceless(NoteArg.Player(player),
+              NoteArg.Cards(cards), NoteArg.Card(SecretSocietyCard.id))))))
 ```
+
+with `discarded` declared beside `tookVision` (`"secret-society-discarded"`,
+`{0} discarded {1} with {2}`) and `discardedCards` reading the answer's
+slots against `held`, the advisers as they were when asked. Regenerate the
+note snapshot in this task.
 
 `adviserOption` names a facedown adviser as the reveal step does, by slot
 (`DecisionOption.AdviserSlot`), so the owner sees their own cards and the
@@ -1369,7 +1385,8 @@ Expected: every test passes; goldens unchanged.
 
 ```bash
 git add src/main/scala/distantlands/gameplay/setup \
-  src/test/scala/distantlands/gameplay/setup/legacies/SecretSocietySuite.scala
+  src/test/scala/distantlands/gameplay/setup/legacies/SecretSocietySuite.scala \
+  src/test/resources/notes/declared-keys.txt
 git commit -m "feat(legacies): Secret Society's holder discards excess advisers after their pawn
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -1538,6 +1555,13 @@ class SeerSuite extends munit.FunSuite:
       Map(v1 -> 5, v2 -> 2)), Vector(d1, v2, d2, d3, v1))
 ```
 
+`SeerSuite` also checks that after the answer the holder still
+identifies each Vision in the deck (`ready.knowledge.advisers(p2)`
+holds them) and p1 identifies none; check that a `Peek` of a world-deck
+card writes no Game Log line (The Ear's peeks write none, R47) and that
+`CardKnowledge` records a `Peek` at `Location.Deck(CardDeck.World)` in
+`knowledge.advisers`.
+
 `WorldDeckLegaciesProjectionSuite` gains, with `record` now holding
 `SeerCard.id -> true` too (Seer's question follows Secret Society's; the
 earlier tests stand):
@@ -1629,9 +1653,13 @@ case object Seer extends ContributingPower:
           positions => Vector(
             Shuffle(ShufflePile.Search(SearchSource.WorldDeck), Some(placed(
               live.game.current.commonCards.worldDeck, positions)
-              .map(card => card: CardId))),
+              .map(card => card: CardId)))) ++
+            // "peek at the Visions": the holder keeps knowing them, after
+            // the reorder, which forgets a shuffled pile's peeks (R20).
+            positions.keys.toVector.sortBy(_.value).map(vision =>
+              Peek(holder, vision, Location.Deck(CardDeck.World))) :+
             Note(noteId, _ => Some(placedVisions.sourceless(
-              NoteArg.Player(holder), NoteArg.Card(SeerCard.id))))))))
+              NoteArg.Player(holder), NoteArg.Card(SeerCard.id)))))))
     })
 
   private def answered(pending: PendingTree, holder: PlayerId)
