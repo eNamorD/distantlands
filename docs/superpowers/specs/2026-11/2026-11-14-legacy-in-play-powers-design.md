@@ -1,11 +1,12 @@
 # Legacy in-play powers
 
 **Status:** designed 2026-11-14, approved section by section by the owner.
-Not yet planned. It follows the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
-batch, which has landed, and the [Legacy Setup powers](2026-11-13-legacy-setup-powers-design.md)
-batch, which is being implemented in another session. Plan each slice
-after the Setup batch's last slice lands: slice 4 here meets Quest to
-Distant Lands' first Wake.
+Slice 1 has landed ([plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice1.md),
+[implementation rulings](2026-11-14-legacy-in-play-powers-implementation-rulings.md)).
+It follows the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
+and [Legacy Setup powers](2026-11-13-legacy-setup-powers-design.md)
+batches, which have landed; slice 4 here meets Quest to Distant Lands'
+first Wake.
 
 **Builds on** the [Legacies design](2026-11-13-legacies-design.md), which
 landed the legacy lifecycle, and the Chronicle batch's holder seam,
@@ -69,7 +70,9 @@ rulings then continue.
    `DecisionOptionRef.ofCard` and `cardOf`. `model/Decisions.scala` is near
    the 800-line limit and is split first. The printed costs of Ruthless
    (burn 2 favor), Golden Key (burn 1 secret and 1 favor) and The Mouth
-   (burn 2 favor) are corrected from `Cost.free`.
+   (burn 2 favor) are corrected from `Cost.free`. In the event `payable`
+   needed no case: a legacy source is `PowerSourceRef.Card`, which it
+   already pays from.
 7. **Ruthless.** The holder buries any denizen at their site: a faceup
    site card, locked or not (bury ignores locked), edifices included (CR:
    "You can bury locked cards, including edifices"). Tokens on the card

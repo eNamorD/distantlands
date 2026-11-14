@@ -1,0 +1,8 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+10.0 action 1 use-power:legacy.ruthless@4 | [player:p1|p1] buried [card:102|Defame] with [card:L29|Ruthless]
+25.0 action 1 use-power:legacy.golden-key@18 | [player:p1|p1] took a relic from the Reliquary with [card:L12|Golden Key]
+38.0 action 1 use-power:legacy.high-priest@33 | [player:p1|p1] moved [amount:1 secret] from the Darkest Secret with [card:L21|High Priest]
+51.0 action 1 use-power:legacy.the-ear@46 | [player:p1|p1] peeked at the relics at [site:site:broken-peaks|Broken Peaks] with [card:L19|The Ear]
+64.0 action 1 use-power:legacy.peacemaker@59 | [player:p1|p1] returned the People's Favor with [card:L04|Peacemaker]

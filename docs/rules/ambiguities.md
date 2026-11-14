@@ -330,6 +330,29 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 61. **A first game played exile-only whose only history was stored legacies** places its sites exile-only and, once the legacies are wiped, its pawns as in a first game, at any site (R41; marked for a second look).
 62. **A game journaled before R39 and R40 may not replay:** an exile-only Chronicle with stored legacies, and a Chronicle whose Iron Hand holder's previous player reads differently, are refused or differ on replay; the alpha data policy makes no compatibility promise for them (R42).
 
+## Legacy in-play powers rulings
+
+Rulings for the powers legacies use during a game ([Legacy in-play powers design](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)). Items 1 to 13 are the design's rulings 1 to 13, taken with the owner on 2026-11-14; items 14 to 18 are implementation rulings R1 to R5.
+
+1. **Only seated players' active legacies act.** Dormant legacies, a boxed lineage's legacies and the Public Ambitions row never act; The Mouth is the one way a legacy becomes active during a game (design, ruling 1).
+2. **"If you are an Imperial" is read when the power is used,** so the Crown and Citizenship change it during a game (design, ruling 2).
+3. **A legacy ACTION is a minor action** in the Act menu, with the legacy named as its source, under the same reuse and cost rules as any other ACTION power; its burnt cost is paid as a card's is (design, ruling 3).
+4. **Passive powers check their holder; chosen powers carry a source** (design, ruling 4).
+5. **A legacy is in its holder's play area,** so rules that read a play area for powers, such as Imperial Tactics, reach it (design, ruling 5).
+6. **The seam.** A legacy is a power source wherever a menu, a cost or a decision resolves one. Ruthless, Golden Key and The Mouth print their burnt costs (design, ruling 6).
+7. **Ruthless.** The holder buries any card in their site's denizen row, locked or not, edifices included; its tokens return as a bury returns them. It is not offered when the site has none (design, ruling 7).
+8. **Peacemaker.** Offered while the holder holds a banner; holding both, they choose which. The banner goes to the shared bank with its tokens on it, then every site and every player board keeps one warband of what it holds, the holder's included: removed warbands return to their bank, bandits to the bandit supply (design, ruling 8).
+9. **The Reliquary is always in play.** A non-empty Reliquary is shown in the shared bank, facedown; its faces only to a viewer allowed to see them (design, ruling 9).
+10. **Golden Key.** An Imperial holder may always peek at the Reliquary; its ACTION takes any relic from it, facedown, as the Chancellor takes one at Setup. It is not a Recover, and is not offered while the Reliquary is empty (design, ruling 10).
+11. **High Priest's ACTION.** Offered while the holder holds the Darkest Secret with a secret on it; they move 1 to all of its secrets to their board (design, ruling 11).
+12. **The Ear's ACTION.** Free: the holder picks a site with a relic they have not identified and peeks at all its relics, knowing them while they stay there (design, ruling 12).
+13. **Each power writes one line naming the legacy:** "p1 buried Herbalist with Ruthless", "p2 returned the People's Favor with Peacemaker", "p3 took a relic from the Reliquary with Golden Key"; The Ear's is public and never names the relics (design, ruling 13).
+14. **Golden Key's Imperial condition gates both halves:** an Exile holder neither peeks nor is offered the ACTION (R1).
+15. **The Ear's "not identified" is recorded knowledge:** a relic its holder has not peeked counts, at their own pawn's site too (R2).
+16. **High Priest's and The Ear's lines** are "p2 moved 3 secrets from the Darkest Secret with High Priest" and "p2 peeked at the relics at Deep Woods with The Ear" (R3).
+17. **An ACTION with nothing to do is shown unavailable with its reason,** as card ACTIONs are; only Golden Key for an Exile holder is left out of the menu (R4).
+18. **A set-aside Reliquary shows nothing and gives nothing:** the shared bank and Golden Key read the Reliquary in play, so the design's ruling 9 does not override [Foundations ruling 3](#foundations-rulings) (R5).
+
 ## Source relationship cautions
 
 - NF is intentionally a change overview. When its simplification omits a detail, use CR, not inference.
