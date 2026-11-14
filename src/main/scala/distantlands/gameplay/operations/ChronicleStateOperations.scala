@@ -7,17 +7,33 @@ import distantlands.model._
 private[operations] object ChronicleStateOperations:
   import OperationError.InvalidDescription
 
+  /** A seated lineage's entry in this game's open scorepad row, if
+    * Chronicler or Score Lineage Points has opened it, takes the new role
+    * too: an entry's `endingRole` follows its lineage's role until the
+    * Chronicle ends, since Chronicler can open the row in the Sun, before
+    * the Crown (Legacy Chronicle powers implementation ruling R3). */
   def roleChanged(ready: ReadyGame, lineage: LineageId, role: Role)
       : Either[OperationError, ReadyGame] =
     val campaign = ready.game.campaign
     campaign.lineages.get(lineage) match
       case Some(state) => Right(ready.updateCampaign(_.copy(
-        lineages = campaign.lineages.updated(lineage, state.copy(role = role)))))
+        lineages = campaign.lineages.updated(lineage, state.copy(role = role)),
+        era = withEndingRole(campaign, lineage, role))))
       case None if campaign.baseline.lineages.exists(_.id == lineage) =>
         Right(ready.updateCampaign(_.copy(
           boxRoles = campaign.boxRoles.updated(lineage, role))))
       case None => Left(InvalidDescription(
         s"no lineage ${lineage.value} to change the role of"))
+
+  /** `campaign`'s era with `lineage`'s entry in this game's row, when the
+    * row is open, ending as `role`. */
+  private def withEndingRole(campaign: CampaignState, lineage: LineageId,
+      role: Role): EraState =
+    val era = campaign.era
+    if era.games.size <= campaign.baseline.era.games.size then era
+    else era.copy(games = era.games.init :+ EraGame(era.games.last.entries
+      .map(entry => if entry.lineage == lineage then
+        entry.copy(endingRole = role) else entry)))
 
   def taskAssigned(ready: ReadyGame, task: ChronicleTask, player: PlayerId)
       : Either[OperationError, ReadyGame] =
@@ -74,7 +90,8 @@ private[operations] object ChronicleStateOperations:
   /** Only a seated lineage scores (gifts go to seated players, Chronicle
     * ruling 13). The game's first points open its scorepad row: an entry
     * per seated lineage, in seating order, at its total before this game
-    * and its live role, which the Sun has already crowned (ruling 19). */
+    * and its live role; a later role change updates it (`roleChanged`), so
+    * the row records the roles after the Crown (ruling 19). */
   def lineagePointsScored(ready: ReadyGame, lineage: LineageId, points: Int)
       : Either[OperationError, ReadyGame] =
     val campaign = ready.game.campaign

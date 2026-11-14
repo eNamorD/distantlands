@@ -216,3 +216,18 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     rejected(run(once, LegaciesScored(Vector(SeerCard.id, WealthyCard.id))))
     rejected(run(Table.start.ready,
       LegaciesScored(Vector(SeerCard.id, SeerCard.id))))
+
+  test("a role change after this game's first points updates the open " +
+      "scorepad row (Chronicle ruling 19, R3)"):
+    val ready = Table.start.ready
+    val lineage = lineageOf(ready, p1)
+    val after = accepted(run(ready, LineagePointsScored(lineage, 2),
+      RoleChanged(lineage, Role.Chancellor)))
+    assertEquals(after.game.campaign.era.games.last.entries
+      .find(_.lineage == lineage).map(_.endingRole), Some(Role.Chancellor))
+
+  test("a role change before any points leaves the scorepad alone"):
+    val ready = Table.start.ready
+    val after = accepted(run(ready,
+      RoleChanged(lineageOf(ready, p1), Role.Chancellor)))
+    assertEquals(after.game.campaign.era, ready.game.campaign.era)
