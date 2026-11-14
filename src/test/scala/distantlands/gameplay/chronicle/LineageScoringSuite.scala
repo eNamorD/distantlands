@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.TheNeedleCard
+import distantlands.gameplay.powers.banner.TheNeedleCard
 import distantlands.gameplay.setup.legacies.WealthyCard
 import distantlands.gameplay.chronicle.legacies.HeirloomCard
 import distantlands.gameplay.SacredGroundCard

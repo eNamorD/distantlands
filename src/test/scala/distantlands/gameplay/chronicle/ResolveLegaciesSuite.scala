@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.{ArbiterCard, TheNeedleCard}
+import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.powers.banner.TheNeedleCard
 import distantlands.gameplay.powers.campaign.KeeperOfOrderCard
 import distantlands.gameplay.powers.travel.AncestralLandsCard
 import distantlands.gameplay.powers.legacies.{GoldenKeyCard, PeacemakerCard}

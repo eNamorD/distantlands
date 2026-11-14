@@ -7,14 +7,6 @@ import distantlands.model.{Cost, FoundationNumber, LegacyId, PowerId,
 // Generated from the retired runtime JSON (card classes slice 1).
 // Hand-edited from here on; a card moves out when it is implemented.
 
-object TheNeedleCard extends Legacy(LegacyId("L05"), "The Needle",
-    LegacyGoal.MostSites, Suit.Beast):
-  val power = PrintedPower(PowerId("legacy.the-needle"),
-    persistent = false, cost = Cost.free,
-    text = "After you take a banner in any way, you may flip it to its " +
-      "other side.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object ArbiterCard extends Legacy(LegacyId("L23"), "Arbiter",
     LegacyGoal.DarkestSecret, Suit.Discord):
   val power = PrintedPower(PowerId("legacy.arbiter"),

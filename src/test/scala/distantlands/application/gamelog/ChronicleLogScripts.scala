@@ -1,6 +1,6 @@
 package distantlands.application.gamelog
 
-import distantlands.catalog.holding.TheNeedleCard
+import distantlands.gameplay.powers.banner.TheNeedleCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}

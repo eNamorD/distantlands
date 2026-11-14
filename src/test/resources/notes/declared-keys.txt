@@ -508,6 +508,7 @@ legacy.keeper-of-order removed = Removed {0}{0? attack die.| attack dice.}
 legacy.peacemaker used = {0} returned the {1} with {2}
 legacy.ruthless used = {0} buried {1} with {2}
 legacy.the-ear used = {0} peeked at the relics at {1} with {2}
+legacy.the-needle flipped = {0} flipped the {1} with {2}
 procedure.campaign activated-oathkeeper-title = {0} used the Oathkeeper title
 procedure.campaign activated-plan = Used {0}
 procedure.campaign activated-usurper-title = {0} used the Usurper title

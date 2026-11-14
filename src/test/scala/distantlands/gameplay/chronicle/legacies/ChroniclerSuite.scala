@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle.legacies
 
-import distantlands.catalog.holding.TheNeedleCard
+import distantlands.gameplay.powers.banner.TheNeedleCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
