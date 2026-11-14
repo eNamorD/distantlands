@@ -3,15 +3,16 @@ package distantlands.application.gamelog
 import distantlands.catalog.holding.{SeerCard, TheNeedleCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
-import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship,
-  ShapeFoundation}
+import distantlands.gameplay.chronicle.{BuildEdifice, LineageScoring,
+  OfferCitizenship, ShapeFoundation}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
-  Gatekeeper, GatekeeperCard, Heirloom, HeirloomCard, IronHandCard,
-  OathsOfLoyalty, OathsOfLoyaltyCard, RoyalLine, RoyalLineCard,
-  TheBrightBeacon, TheBrightBeaconCard, TheEarCard}
+  Gatekeeper, GatekeeperCard, GreatArchitectCard, Heirloom, HeirloomCard,
+  IronHandCard, OathsOfLoyalty, OathsOfLoyaltyCard, Reformer, ReformerCard,
+  Revolutionary, RevolutionaryCard, Rival, RivalCard, RoyalLine,
+  RoyalLineCard, TheBrightBeacon, TheBrightBeaconCard, TheEarCard}
 import distantlands.gameplay.{BanditCrownCard, GrandMaskCard}
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
-  DowntroddenCard, GolemLegionsCard, MapLibraryCard}
+  DowntroddenCard, GolemLegionsCard, MapLibraryCard, VillageIdiotCard}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
@@ -195,6 +196,51 @@ object ChronicleLogScripts:
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("chronicle-ear-beacon", service, p1)
 
+  /** The first offered card, and for a choose-one the first that is not a
+    * button. */
+  private def firstCard(decide: Decide): DecisionAnswer = decide.query match
+    case many: DecisionQuery.ChooseMany =>
+      ChooseManyAnswer(many.options.filter(_.available).take(1).map(_.ref))
+    case one: DecisionQuery.ChooseOne => ChooseOneAnswer(one.options
+      .filter(_.available).map(_.ref)
+      .find(!_.isInstanceOf[DecisionOptionRef.Button]).get)
+    case other => throw IllegalStateException(s"no card answer for $other")
+
+  /** An Empire game that ends at round eight, as [[chronicleRoyalLine]]'s,
+    * with the Throne's legacies acting: p1, the winner, moves a card with
+    * Reformer; p2 builds with Great Architect; p3 keeps a card from Shape
+    * Empire's discard with Rival and discards one at an Imperial site with
+    * Revolutionary (Legacy Chronicle powers, slice 2). */
+  def throneLegacies(using munit.Location): Script =
+    val (service, acting) = atTable("throne-legacies", Table.start
+      .imperial(p1, p2, p3)
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Oathkeeper)
+      .roundMarkerAt(8)
+      .warbandsAt(AncientCitySite, p1, 1).warbandsAt(BrokenPeaksSite, p1, 1)
+      .denizen(ThreateningRoarCard, AncientCitySite)
+      .denizen(VillageIdiotCard, BrokenPeaksSite)
+      .denizen(MapLibraryCard, DeepWoodsSite)
+      .legacy(p1, ReformerCard).legacy(p2, GreatArchitectCard)
+      .legacy(p3, RivalCard).legacy(p3, RevolutionaryCard)
+      .turn(p3, Phase.Act).banditsRefilled)
+    var reformed = false
+    acting.withAnswers {
+      case park if park.decisionId == Reformer.pickId(p1) =>
+        val answer = if reformed then ChooseOneAnswer(Reformer.done)
+          else firstCard(park.decide)
+        reformed = true
+        answer
+      case park if park.decisionId == Reformer.destinationId(p1) =>
+        firstCard(park.decide)
+      case park if park.decisionId == Rival.decisionId(p3) ||
+          park.decisionId == Revolutionary.decisionId(p3) =>
+        firstCard(park.decide)
+      case park if park.decisionId == BuildEdifice.decisionId(Suit.Discord) =>
+        firstCard(park.decide)
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("throne-legacies", service, p1)
+
   /** The first game, with Foundation I on Wide Horizons: at the Beacon
     * p1, who holds it, restores it to Imperial Maps (Foundations design,
     * slice 7). */
@@ -233,5 +279,7 @@ object ChronicleLogScripts:
       "chronicle-oaths-heirloom" -> (() => chronicleOathsHeirloom),
       "chronicle-iron-hand" -> (() => chronicleIronHand),
       "chronicle-royal-line" -> (() => chronicleRoyalLine),
+      "chronicle-ear-beacon" -> (() => chronicleEarBeacon),
+      "throne-legacies" -> (() => throneLegacies),
       "beacon-restored-foundation" -> (() => beaconRestoredFoundation),
       "beacon-kept-foundations" -> (() => beaconKeptFoundations))
