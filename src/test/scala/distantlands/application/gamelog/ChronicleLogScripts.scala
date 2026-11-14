@@ -1,8 +1,8 @@
 package distantlands.application.gamelog
 
-import distantlands.catalog.holding.SeerCard
+import distantlands.catalog.holding.{SeerCard, TheNeedleCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
-  BuriedGiantSite}
+  BuriedGiantSite, DeepWoodsSite}
 import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship,
   ShapeFoundation}
 import distantlands.gameplay.GrandMaskCard
@@ -11,6 +11,7 @@ import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
   OathsOfLoyalty, OathsOfLoyaltyCard}
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
   DowntroddenCard, GolemLegionsCard, MapLibraryCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import distantlands.testkit.{MenuPlay, Table}
@@ -141,6 +142,22 @@ object ChronicleLogScripts:
   def chronicleOathsHeirloom(using munit.Location): Script =
     oathsHeirloomPlayed._1
 
+  /** The game of [[chronicleStarted]] with Iron Hand: p3 rules Buried
+    * Giant and Deep Woods, holds Iron Hand and The Needle, and Threatening
+    * Roar lies at Buried Giant. p3 shapes and builds in the Empire's place,
+    * scores after p1, and their sites are stored (Legacy Chronicle powers,
+    * slice 4). */
+  def chronicleIronHand(using munit.Location): Script =
+    val (service, acting) = atTable("chronicle-iron-hand", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .warbandsAt(BuriedGiantSite, p3, 1).warbandsAt(DeepWoodsSite, p3, 1)
+      .denizen(ThreateningRoarCard, at = BuriedGiantSite)
+      .legacy(p3, IronHandCard).legacy(p3, TheNeedleCard)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("chronicle-iron-hand", service, p1)
+
   /** The first game, with Foundation I on Wide Horizons: at the Beacon
     * p1, who holds it, restores it to Imperial Maps (Foundations design,
     * slice 7). */
@@ -177,5 +194,6 @@ object ChronicleLogScripts:
       "sun-gatekeeper-chronicler" -> (() => sunGatekeeperChronicler),
       "throne-heirloom" -> (() => throneHeirloom),
       "chronicle-oaths-heirloom" -> (() => chronicleOathsHeirloom),
+      "chronicle-iron-hand" -> (() => chronicleIronHand),
       "beacon-restored-foundation" -> (() => beaconRestoredFoundation),
       "beacon-kept-foundations" -> (() => beaconKeptFoundations))
