@@ -135,6 +135,63 @@ object LaterGameLogScripts:
       .endingWake(p1).after(MenuPlay.start(p1, PhaseTransitionRef.BeginRest))
     Script(name, service, p2)
 
+  /** The six-power later game the whole-feature review played (Legacy
+    * Setup powers, slice 4): l3, an Exile, holds Rival, Iron Hand, Circle
+    * of Swords, Quest to Distant Lands, Secret Society and Wealthy, and
+    * stays off the map; l2, a Citizen, holds Matchmaker, World Crafter,
+    * Populist, Seer and The Standard Bearer; two denizens wait in the
+    * Dispossessed. Secret Society takes the first Vision, Seer puts the
+    * rest on top in order, Populist divides, The Standard Bearer takes the
+    * People's Favor, and Quest swaps the first Dispossessed card. p1
+    * campaigns against p3's Iron Hand site while p3 has no pawn; p1 and p2
+    * then rest, and p3's first Wake places the pawn. */
+  def laterGameCombinedLegacies(using munit.Location): Script =
+    combinedLegacies._1
+
+  /** [[laterGameCombinedLegacies]] and its Chronicle. */
+  def combinedLegacies(using munit.Location): (Script, Chronicle) =
+    val name = "later-game-combined-legacies"
+    val (p2, p3) = (PlayerId("p2"), PlayerId("p3"))
+    val base = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
+    val (waiting, deck) = base.worldDeck.splitAt(2)
+    val record = SetupLegacyFixture.holding(SetupLegacyFixture.holding(
+      base.copy(worldDeck = deck, dispossessed = waiting),
+      LineageId("l3"), Role.Exile, RivalCard.id -> true,
+      IronHandCard.id -> true, CircleOfSwordsCard.id -> true,
+      QuestToDistantLandsCard.id -> true, SecretSocietyCard.id -> true,
+      WealthyCard.id -> true),
+      LineageId("l2"), Role.Citizen, MatchmakerCard.id -> true,
+      WorldCrafterCard.id -> true, PopulistCard.id -> true,
+      SeerCard.id -> true, TheStandardBearerCard.id -> true)
+    val answers: Answers =
+      case park if park.decisionId == SetupProcedure.pawnDecisionId(p3) =>
+        ChooseOneAnswer(QuestToDistantLands.stayOff)
+      case park if park.decisionId == SecretSociety.decisionId(p3) =>
+        park.decide.query match
+          case one: DecisionQuery.ChooseOne => ChooseOneAnswer(one.options(1).ref)
+          case other => throw new AssertionError(s"unexpected query $other")
+      case park if park.decisionId == Seer.decisionId(p2) =>
+        park.decide.query match
+          case amounts: DecisionQuery.ChooseAmounts =>
+            DecisionAnswer.DistributeAnswer(amounts.slots.zipWithIndex.map(
+              (slot, n) => DistributeAmount(slot.ref, n + 1)))
+          case other => throw new AssertionError(s"unexpected query $other")
+      case park if park.decisionId == Populist.decisionId(p2) =>
+        ChooseOneAnswer(Populist.divide)
+      case park if park.decisionId == TheStandardBearer.decisionId(p2) =>
+        ChooseOneAnswer(DecisionOptionRef.Banner(Banner.PeoplesFavor))
+      case park if park.decisionId == QuestToDistantLands.swapDecisionId(p3) =>
+        ChooseOneAnswer(DecisionOptionRef.Denizen(waiting.sortBy(_.value).head))
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository,
+      campaignDicePort = Dice.steady)
+    Situation.wake(Situation.journaled(service, catalog, repository, name)
+      .withAnswers(answers), record, LaterGameFixture.orders(record, p1))
+      .endingWake(p1).after(MenuPlay.start(p1, ActionRef.Campaign))
+      .after(MenuPlay.start(p1, PhaseTransitionRef.BeginRest))
+      .endingWake(p2).after(MenuPlay.start(p2, PhaseTransitionRef.BeginRest))
+    (Script(name, service, p3), record)
+
   /** A later game's Setup on stream `name`, from the fixture's Chronicle as
     * `changed` leaves it, each park answered by `answers` where it names
     * one and as the situation does by default otherwise. */
@@ -173,5 +230,6 @@ object LaterGameLogScripts:
     "later-game-setup-foundations" -> (() => laterGameSetupFoundations),
     "later-game-setup-world-deck" -> (() => laterGameSetupWorldDeck),
     "later-game-quest-first-wake" -> (() => laterGameQuestFirstWake),
+    "later-game-combined-legacies" -> (() => laterGameCombinedLegacies),
     "later-game-forgotten-sites" -> (() => laterGameFilledFromForgotten),
     "later-game-after-oaths" -> (() => laterGameAfterOaths))
