@@ -93,12 +93,18 @@ class ChronicleOperationWireSuite extends munit.FunSuite:
       ujson.Obj("kind" -> "starting-relic-kept", "player" -> "red",
         "relic" -> "R1"))
 
-  test("hidden relics name each relic"):
+  test("hidden relics name each relic, and an empty list decodes to a " +
+      "typed WireError"):
     val encoded = encodedStreamThatRoundTrips("relics-hidden",
       Vector(recordedOperation(RelicsHidden(Vector(RelicId("R1"),
         RelicId("R2"))))))
     assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
       ujson.Obj("kind" -> "relics-hidden", "relics" -> ujson.Arr("R1", "R2")))
+    val injected = ujson.read(encoded).arr
+    injected(0)("payload")("step")("ops")(0)("relics") = ujson.Arr()
+    assertEquals(GameEventWire.decodeStream(ujson.write(injected)),
+      Left(WireError.InvalidValue("$[0].payload.step.ops[0].relics",
+        "hides at least one relic")))
 
   test("a named winner names its winner and victory, and an unknown victory " +
       "decodes to a typed WireError"):
