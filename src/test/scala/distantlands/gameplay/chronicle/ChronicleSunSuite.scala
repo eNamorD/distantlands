@@ -7,7 +7,9 @@ import distantlands.gameplay.{GrandMaskCard, OathRules, WalkerDiceFixture}
 import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.gameplay.walker.WalkerCompleted
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
+  Transform}
+import distantlands.gameplay.walker.{WalkerCompleted, WalkerPowers}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.{Outcomes, Table}
@@ -250,3 +252,26 @@ class ChronicleSunSuite extends munit.FunSuite:
     assertEquals(accepted(done.events.foldLeft[
       Either[OathViolation, OathState]](Right(start))((state, event) =>
         state.flatMap(rules.evolve(_, event)))), done.state)
+
+  test("Crown Chancellor and Assign Tasks read the winner when reached"):
+    // A power at the Sun's first window names p2 the winner; the Crown and
+    // the Throne task then go to p2.
+    final case class NamesP2() extends ContributingPower:
+      val id: PowerId = PowerId("test.chronicle.names-p2")
+      val source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+      val contributions: Map[PowerWindow, Vector[Contribution]] = Map(
+        PowerWindow.ChronicleStartOfSun -> Vector(Transform((_, ops) =>
+          ops :+ BuildOps((_, _) => Right(Vector(
+            WinnerNamed(p2, VictoryKind.Successor))), required = true))))
+    val table = ChronicleWalk.chronicleWonByP1.imperial(p1, p2)
+      .update(_.updateCurrent(_.copy(result =
+        Some(GameResult(p1, VictoryKind.StableRegime)))))
+    val custom = new OathRules(catalog, walkerPowerCatalog =
+      WalkerPowers(Vector(NamesP2())), walkerDice =
+      WalkerDiceFixture.reversingShuffle)
+    val run = ChronicleWalk.through(custom, table,
+      TriggeredProcedureRef.ChronicleSun)
+    assertEquals(Imperials.chancellor(run.ready), Some(p2))
+    assertEquals(run.ready.game.current.chronicleTasks
+      .get(ChronicleTask.Throne), Some(p2))
+

@@ -13,7 +13,16 @@ import distantlands.model._
   * (Legacies design, ruling 3). Two empty windows hold the legacies' added
   * steps: one before step 2, where Gatekeeper acts, and one after step 5,
   * where Chronicler does (Legacy Chronicle powers design, rulings 6 and
-  * 7). */
+  * 7); the first window, before Reveal Relics, is Royal Line's (ruling 22).
+  *
+  * Every step reads the winner from the game's result when it is reached,
+  * so Royal Line's choice reaches them all (ruling 23): Crown Chancellor and
+  * Assign Tasks here (`forWinner`); and, read the same way elsewhere,
+  * Reformer's "if you won", Score Lineage Points and Iron Hand's scoring
+  * after it, the Grand Scepter goal's "if none, win" (`LegacyGoals`), Swear
+  * an Oath, and the Stars' and the extraction's winner-ruled sites, with
+  * Iron Hand's holder in the winner's place. The Throne holder is the
+  * journaled Throne task. */
 object ChronicleSunProcedure:
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleSun)
   private val notes = NoteSet(noteId)
@@ -39,11 +48,19 @@ object ChronicleSunProcedure:
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     for
       _ <- ProcedureStart.noSelection("the Sun", args)
-      winner <- ChronicleTasks.winner(ready)
-    yield Sequence(steps(catalog, winner))
+      _ <- ChronicleTasks.winner(ready)
+    yield Sequence(steps(catalog))
 
-  private def steps(catalog: ExecutableCatalog, winner: PlayerId)
-      : Vector[Operation] = Vector(
+  /** The nodes `steps` builds for the winner the result names when the
+    * step is reached: Royal Line, at the Sun's first window, may have named
+    * another (Legacy Chronicle powers design, ruling 23). A shape that reads
+    * only the result, which nothing in the step changes, holds on resume. */
+  private def forWinner(steps: PlayerId => Vector[Operation]): Operation =
+    Branch((state, _) => ChronicleTasks.winner(state).fold(
+      violation => Vector(ChronicleTasks.failing(violation)), steps))
+
+  private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
+    ChronicleWindows.step(PowerWindow.ChronicleStartOfSun, Vector.empty),
     // Iron Hand's first checkpoint opens the Sun (Legacy Chronicle powers
     // design, ruling 18; R30).
     ChronicleWindows.step(PowerWindow.ChronicleRevealRelics, Vector(
@@ -63,24 +80,26 @@ object ChronicleSunProcedure:
     ChronicleWindows.step(PowerWindow.ChronicleShuffleLegacies, Vector.empty),
     ChronicleWindows.step(PowerWindow.ChronicleAfterResolveLegacies,
       Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleCrown, Vector(
-      BuildOps((state, _) => ChronicleCrown.operations(state, winner),
-        required = true),
-      Note(noteId, states => Option.when(brokeTheEmpire(states, winner))(
-        empireBroke.sourceless())),
-      Note(noteId, _ => Some(crowned.sourceless(NoteArg.Player(winner))))) ++
-      // An Exile's win: their newly dormant legacies become active (CR
-      // "If an Exile won, the Empire breaks"), then the cap if need be. An
-      // Imperial winner holds no dormant legacy after step 3 (ruling 2), so
-      // this asks nothing of them. Iron Hand's second checkpoint sits
-      // between the reactivation and the cap (R30).
-      Vector(ResolveLegacies.reactivation(winner, noteId,
+    ChronicleWindows.step(PowerWindow.ChronicleCrown, Vector(forWinner(
+      winner => Vector(
+        BuildOps((state, _) => ChronicleCrown.operations(state, winner),
+          required = true),
+        Note(noteId, states => Option.when(brokeTheEmpire(states, winner))(
+          empireBroke.sourceless())),
+        Note(noteId, _ => Some(crowned.sourceless(NoteArg.Player(winner)))),
+        // An Exile's win: their newly dormant legacies become active (CR
+        // "If an Exile won, the Empire breaks"), then the cap if need be.
+        // An Imperial winner holds no dormant legacy after step 3 (ruling
+        // 2), so this asks nothing of them. Iron Hand's second checkpoint
+        // sits between the reactivation and the cap (R30).
+        ResolveLegacies.reactivation(winner, noteId,
           ResolveLegacies.reactivated),
         IronHand.discard(TriggeredProcedureRef.ChronicleSun),
-        ResolveLegacies.cap(winner, ResolveLegacies.crownCapDecisionId(winner),
-          noteId, ResolveLegacies.capped))),
-    ChronicleWindows.step(PowerWindow.ChronicleAssignTasks,
-      ChronicleTaskAssignment.steps(winner, tookNote)))
+        ResolveLegacies.cap(winner,
+          ResolveLegacies.crownCapDecisionId(winner), noteId,
+          ResolveLegacies.capped))))),
+    ChronicleWindows.step(PowerWindow.ChronicleAssignTasks, Vector(forWinner(
+      ChronicleTaskAssignment.steps(_, tookNote)))))
 
   /** Reveal all facedown relics held by players; relics at sites stay. */
   private def revealHeldRelics(ready: ReadyGame): Vector[CoreOperation] =

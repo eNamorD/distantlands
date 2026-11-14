@@ -47,7 +47,7 @@ class ChronicleWindowsSuite extends munit.FunSuite:
   test("Chronicle window keys stay as power data spells them"):
     assertEquals(
       (ChronicleWindows.sun.map(_.key), ChronicleWindows.throne.map(_.key)), (
-      Vector("chronicle.sun.reveal-relics",
+      Vector("chronicle.sun.start-of-sun", "chronicle.sun.reveal-relics",
         "chronicle.sun.before-resolve-legacies", "chronicle.sun.flip-legacies",
         "chronicle.sun.exile-dormancy", "chronicle.sun.legacy-cap",
         "chronicle.sun.shuffle-legacies",

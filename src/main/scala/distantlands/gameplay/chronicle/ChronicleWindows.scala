@@ -8,7 +8,8 @@ import distantlands.model._
   * `Transform` adds to them or replaces them. */
 object ChronicleWindows:
   import PowerWindow._
-  val sun: Vector[PowerWindow] = Vector(ChronicleRevealRelics,
+  val sun: Vector[PowerWindow] = Vector(ChronicleStartOfSun,
+    ChronicleRevealRelics,
     ChronicleBeforeResolveLegacies, ChronicleFlipLegacies,
     ChronicleExileDormancy, ChronicleLegacyCap, ChronicleShuffleLegacies,
     ChronicleAfterResolveLegacies, ChronicleCrown, ChronicleAssignTasks)
