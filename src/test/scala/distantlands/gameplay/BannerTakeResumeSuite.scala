@@ -2,18 +2,22 @@ package distantlands.gameplay
 
 import distantlands.gameplay.BannerTakeParkFixture.{ParkAfterBannerTake,
   decisionId, resumeAnswer}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powerresolver.ContributingPower
-import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.campaign.GlamorCard
 import distantlands.gameplay.powers.search.DisciplesCard
-import distantlands.gameplay.powers.whenplayed.{FavoredSon, FavoredSonCard,
-  WhenPlayedHarness, WizardsConclave, WizardsConclaveCard}
+import distantlands.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
+  FavoredSon, FavoredSonCard, WhenPlayedHarness, WizardsConclave,
+  WizardsConclaveCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
 import distantlands.model._
 import distantlands.model.OathState.Ready
-import distantlands.testkit.{Journal, Outcomes, Table}
+import distantlands.testkit.{Journal, Outcomes, PlacementPicks, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 
@@ -33,8 +37,13 @@ class BannerTakeResumeSuite extends munit.FunSuite:
     * by `taker`: the state the resumed walk reaches. */
   private def resumed(start: ReadyGame, events: Vector[OathEvent],
       taker: PlayerId): ReadyGame =
-    Outcomes.ready(answer(accepted(Journal.evolved(rules, start, events)),
-      taker, decisionId, resumeAnswer).state)
+    Outcomes.ready(resumedWith(start, events, taker).state)
+
+  /** As `resumed`, the resuming command's transition. */
+  private def resumedWith(start: ReadyGame, events: Vector[OathEvent],
+      taker: PlayerId): OathTransition =
+    answer(accepted(Journal.evolved(rules, start, events)), taker,
+      decisionId, resumeAnswer)
 
   test("Challenge: a walk parked after the take resumes and keeps the " +
       "banner with the challenger"):
@@ -93,3 +102,30 @@ class BannerTakeResumeSuite extends munit.FunSuite:
       Some(p2))
     assertEquals(WhenPlayedHarness.said(WizardsConclave, done.events)
       .map(_.key), Vector("took"))
+
+  test("Conspiracy: a walk parked after the take resumes, writes its line " +
+      "and removes the card"):
+    // p1 at Ancient City searches the world deck, with Conspiracy on top,
+    // and keeps it faceup; p2, also at Ancient City, holds the People's
+    // Favor with 1 favor, its only target.
+    val board = Table.start.pawn(p1, at = AncientCitySite)
+      .pawn(p2, at = AncientCitySite).peoplesFavor(Some(p2), favor = 1)
+      .darkestSecret(None, secrets = 1)
+      .worldDeckTop(VisionRules.Conspiracy).ready
+    val started = accepted(SearchPlay.searched(rules, Ready(board), p1))
+    val placed = answer(started.state, p1,
+      PlacementFixture.cardPlayDecisionId(VisionRules.Conspiracy, "place"),
+      PlacementPicks.parkedAnswer(started.state, PlayedAs.Faceup, powers))
+    val target = answer(placed.state, p1, ConspiracyWhenPlayed.decisionId,
+      DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.Banner(Banner.PeoplesFavor)))
+    val resume = resumedWith(board,
+      started.events ++ placed.events ++ target.events, p1)
+    val end = Outcomes.ready(resume.state)
+    assertEquals(end.game.current.banners.peoplesFavor.holder, Some(p1))
+    assertEquals(end.game.current.temporaryHands(p1), Vector.empty)
+    assert(!accepted(CardIndex.from(end.game)).ids
+      .contains(VisionRules.Conspiracy))
+    assertEquals(NoteText.said(ConspiracyWhenPlayed.id,
+      ConspiracyWhenPlayed.noteKeys, resume.events).map(_.key),
+      Vector("seized"))
