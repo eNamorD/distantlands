@@ -18,7 +18,19 @@ class EnumWireKeySuite extends munit.FunSuite:
       Vector("oathkeeper", "setup", "forced-wake", "follow-up-offer",
         "wake-menu", "rest-menu", "act-menu", "chronicle-begin",
         "chronicle-sun", "chronicle-throne", "chronicle-world",
-        "chronicle-beacon", "chronicle-stars", "chronicle-finish"))
+        "chronicle-beacon", "chronicle-stars", "chronicle-finish",
+        "quest-first-wake"))
+
+  test("every older triggered procedure key still decodes, and the first " +
+      "Wake's is new (R32)"):
+    Vector("oathkeeper", "setup", "forced-wake", "follow-up-offer",
+        "wake-menu", "rest-menu", "act-menu", "chronicle-begin",
+        "chronicle-sun", "chronicle-throne", "chronicle-world",
+        "chronicle-beacon", "chronicle-stars", "chronicle-finish")
+      .foreach(key => assertEquals(TriggeredProcedureRef.all
+        .find(_.key == key).map(_.key), Some(key)))
+    assertEquals(TriggeredProcedureRef.all.find(_.key == "quest-first-wake"),
+      Some(TriggeredProcedureRef.QuestFirstWake))
 
 
   test("Phase.Chronicle round-trips through its wire key"):

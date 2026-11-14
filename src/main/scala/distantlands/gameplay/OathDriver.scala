@@ -7,7 +7,8 @@ import distantlands.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
 import distantlands.gameplay.phases.PhaseMenu
 import distantlands.gameplay.phases.rest.{TurnBoundary,
   RoundEndRandomPort}
-import distantlands.gameplay.phases.wake.ForcedWakeProcedure
+import distantlands.gameplay.phases.wake.{ForcedWakeProcedure,
+  QuestFirstWakeProcedure}
 import distantlands.gameplay.powerresolver.PhasePowers
 import distantlands.gameplay.walker.{ActionBoundaryRan, ProcedureDequeued}
 import distantlands.model._
@@ -26,8 +27,10 @@ import distantlands.model.OathViolation._
   *     refill and the Oathkeeper check. A title walk the check starts hands
   *     back here when it ends.
   *  2. the turn's start, after a Finish Rest or Setup walk: the round's end
-  *     when the last player has rested, then Wake's entry and the Forced
-  *     Wake walk when one is due, which hands back here when it ends.
+  *     when the last player has rested, then Wake's entry: a pawnless
+  *     player's first Wake placement, which hands back here when it ends,
+  *     then the Wake checks and the Forced Wake walk when one is due, which
+  *     hands back here when it ends.
   *  3. the phase's menu: in Wake and Rest, the menu, or the phase's ending
   *     when it is the only option available (ruling 3). Act always asks.
   *
@@ -109,6 +112,9 @@ private[gameplay] trait OathDriver:
     * first Wake runs these hooks too. */
   private def turnStart(transition: OathTransition, finished: ProcedureRef)
       : Either[OathViolation, OathTransition] = finished match
+    // A pawnless player's first Wake has placed their pawn: the Wake goes
+    // on with its checks (Legacy Setup powers ruling 20; R32).
+    case TriggeredProcedureRef.QuestFirstWake => wakeChecks(transition)
     case PhaseTransitionRef.FinishRest | TriggeredProcedureRef.Setup =>
       val rounded = transition.state match
         case Ready(ready) if ready.game.current.turn.phase ==
@@ -122,7 +128,16 @@ private[gameplay] trait OathDriver:
         case _ => enterWake(after))
     case _ => phaseEnd(transition)
 
+  /** A seated player with no pawn opens their Wake by placing it, before
+    * anything else (Legacy Setup powers ruling 20; R32). */
   private def enterWake(transition: OathTransition) =
+    transition.state match
+      case Ready(ready) if QuestFirstWakeProcedure.due(ready,
+          ready.game.current.turn.activePlayer) =>
+        startTriggered(transition, TriggeredProcedureRef.QuestFirstWake)
+      case _ => wakeChecks(transition)
+
+  private def wakeChecks(transition: OathTransition) =
     StateBasedEvaluation.atWake(transition.state).flatMap {
       case Some(win: UsurperVictory) => append(transition, win)
       case Some(flip: UsurperFlipped) => append(transition, flip)

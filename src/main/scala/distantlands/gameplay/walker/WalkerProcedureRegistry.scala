@@ -18,7 +18,7 @@ import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.dice.RerollChoice
 import distantlands.gameplay.actions.travel.{TravelOptions, TravelProcedure}
 import distantlands.gameplay.phases.wake.{EndWakeProcedure, ForcedWakeProcedure,
-  TakeWealthProcedure}
+  QuestFirstWakeProcedure, TakeWealthProcedure}
 import distantlands.gameplay.phases.rest.{BeginRestProcedure, FinishRestProcedure}
 import distantlands.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
@@ -314,6 +314,8 @@ object WalkerProcedureRegistry:
     TriggeredProcedureRef.Oathkeeper -> Entry.withoutStartGates(OathkeeperProcedure.build),
     TriggeredProcedureRef.Setup ->
       Entry.withoutStartGates(distantlands.gameplay.setup.SetupProcedure.build),
+    TriggeredProcedureRef.QuestFirstWake ->
+      Entry.withoutStartGates(QuestFirstWakeProcedure.build),
     TriggeredProcedureRef.ChronicleBegin -> Entry.withoutStartGates(ChronicleBeginProcedure.build),
     TriggeredProcedureRef.ChronicleSun -> Entry.withoutStartGates(ChronicleSunProcedure.build),
     TriggeredProcedureRef.ChronicleThrone ->

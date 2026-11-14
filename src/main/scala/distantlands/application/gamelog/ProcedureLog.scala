@@ -23,8 +23,9 @@ import distantlands.gameplay.actions.search.SearchProcedure
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
 import distantlands.gameplay.phases.rest.FinishRestProcedure
 import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.phases.wake.QuestFirstWakeProcedure
 import distantlands.gameplay.setup.SetupProcedure
-import distantlands.gameplay.setup.legacies.Matchmaker
+import distantlands.gameplay.setup.legacies.{Matchmaker, SecretSociety}
 import distantlands.gameplay.walker.FollowUpOffer
 import distantlands.model._
 import distantlands.protocol.projection.{LogKind, LogSpan}
@@ -334,6 +335,17 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         OathsOfLoyalty.noteKeys(TriggeredProcedureRef.Setup)
           .map(_ -> LogKind.Decision)),
       narratedPrefixes = Vector("setup."), isSection = false)
+    // A pawnless player's first Wake (Legacy Setup powers R32): its lines
+    // tell its decisions, the kept, discarded and revealed ones posting as
+    // decisions, as Setup's do.
+    case TriggeredProcedureRef.QuestFirstWake => ProcedureLog(tag = None,
+      lines = ActionLineSource.Notes(Map(
+        QuestFirstWakeProcedure.keptAdviser -> LogKind.Decision,
+        QuestFirstWakeProcedure.revealedCard -> LogKind.Decision,
+        SecretSociety.wakeDiscarded -> LogKind.Decision) ++
+        OathsOfLoyalty.noteKeys(TriggeredProcedureRef.QuestFirstWake)
+          .map(_ -> LogKind.Decision)),
+      narratedPrefixes = Vector("wake.legacy.quest."), isSection = false)
     // One decision id serves the Wake, Rest and Act menus, so all three
     // declare it.
     case TriggeredProcedureRef.WakeMenu | TriggeredProcedureRef.RestMenu |

@@ -18,6 +18,7 @@ import distantlands.gameplay.actions.search.SearchProcedure
 import distantlands.gameplay.actions.travel.TravelProcedure
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
 import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.phases.wake.QuestFirstWakeProcedure
 import distantlands.gameplay.setup.SetupProcedure
 import distantlands.gameplay.phases.wake.TakeWealthProcedure
 import distantlands.model.{ActionRef, NoteKey, PhaseTransitionRef, PowerId,
@@ -98,6 +99,8 @@ object ProcedureNotes:
       case PhaseTransitionRef.FinishRest => FinishRestProcedure.noteKeys
       case TriggeredProcedureRef.Oathkeeper => OathkeeperProcedure.noteKeys
       case TriggeredProcedureRef.Setup => SetupProcedure.noteKeys
+      case TriggeredProcedureRef.QuestFirstWake =>
+        QuestFirstWakeProcedure.noteKeys
       case TriggeredProcedureRef.ChronicleSun => ChronicleSunProcedure.noteKeys
       case TriggeredProcedureRef.ChronicleThrone =>
         ChronicleThroneProcedure.noteKeys

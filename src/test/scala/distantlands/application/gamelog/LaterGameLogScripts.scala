@@ -6,13 +6,15 @@ import distantlands.gameplay.chronicle.legacies.{IronHandCard, RivalCard}
 import distantlands.gameplay.powers.setup.GreatClockCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.{AtlasPlacement, ImperialMaps,
-  LaterGameFixture, SetupLegacyFixture}
+  LaterGameFixture, SetupLegacyFixture, SetupProcedure}
 import distantlands.gameplay.setup.legacies.{CircleOfSwordsCard,
-  MatchmakerCard, Populist, PopulistCard, ScepterBearerCard, SecretSociety,
-  SecretSocietyCard, Seer, SeerCard, WorldCrafter, WorldCrafterCard}
+  MatchmakerCard, Populist, PopulistCard, QuestToDistantLands,
+  QuestToDistantLandsCard, ScepterBearerCard, SecretSociety,
+  SecretSocietyCard, Seer, SeerCard, TheStandardBearer,
+  TheStandardBearerCard, WealthyCard, WorldCrafter, WorldCrafterCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
-import distantlands.testkit.{Answers, Dice, Look, Situation}
+import distantlands.testkit.{Answers, Dice, Look, MenuPlay, Situation}
 import distantlands.testkit.Table.p1
 
 /** [[LogScripts]]' scripts for a later game. */
@@ -100,6 +102,37 @@ object LaterGameLogScripts:
           case other => throw new AssertionError(s"unexpected query $other")
     })
 
+  /** A later game from Setup through a Quest holder's first Wake (Legacy
+    * Setup powers, slice 4): l2, a Citizen, holds The Standard Bearer,
+    * Wealthy and Quest to Distant Lands active, and two denizens wait in
+    * the Dispossessed. p2 stays off the map, takes the People's Favor and
+    * 3 favor from the bank, and swaps the first Dispossessed card for the
+    * first card of their hand; p1 plays a turn; p2's first Wake places the
+    * pawn at the first site, keeps an adviser and reveals nothing. */
+  def laterGameQuestFirstWake(using munit.Location): Script =
+    val name = "later-game-quest-first-wake"
+    val p2 = PlayerId("p2")
+    val base = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
+    val (waiting, deck) = base.worldDeck.splitAt(2)
+    val record = SetupLegacyFixture.holding(base.copy(worldDeck = deck,
+      dispossessed = waiting), LineageId("l2"), Role.Citizen,
+      TheStandardBearerCard.id -> true, WealthyCard.id -> true,
+      QuestToDistantLandsCard.id -> true)
+    val answers: Answers =
+      case park if park.decisionId == SetupProcedure.pawnDecisionId(p2) =>
+        ChooseOneAnswer(QuestToDistantLands.stayOff)
+      case park if park.decisionId == TheStandardBearer.decisionId(p2) =>
+        ChooseOneAnswer(DecisionOptionRef.Banner(Banner.PeoplesFavor))
+      case park if park.decisionId == QuestToDistantLands.swapDecisionId(p2) =>
+        ChooseOneAnswer(DecisionOptionRef.Denizen(waiting.sortBy(_.value).head))
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository,
+      campaignDicePort = Dice.steady)
+    Situation.wake(Situation.journaled(service, catalog, repository, name)
+      .withAnswers(answers), record, LaterGameFixture.orders(record, p1))
+      .endingWake(p1).after(MenuPlay.start(p1, PhaseTransitionRef.BeginRest))
+    Script(name, service, p2)
+
   /** A later game's Setup on stream `name`, from the fixture's Chronicle as
     * `changed` leaves it, each park answered by `answers` where it names
     * one and as the situation does by default otherwise. */
@@ -137,5 +170,6 @@ object LaterGameLogScripts:
     "later-game-setup-legacies" -> (() => laterGameSetupLegacies),
     "later-game-setup-foundations" -> (() => laterGameSetupFoundations),
     "later-game-setup-world-deck" -> (() => laterGameSetupWorldDeck),
+    "later-game-quest-first-wake" -> (() => laterGameQuestFirstWake),
     "later-game-forgotten-sites" -> (() => laterGameFilledFromForgotten),
     "later-game-after-oaths" -> (() => laterGameAfterOaths))

@@ -66,6 +66,10 @@ enum TriggeredProcedureRef(val key: String) extends ProcedureRef:
     * N8). The turn boundary or the end of Setup starts it; nothing else may
     * run until it ends. */
   case ForcedWake extends TriggeredProcedureRef("forced-wake")
+  /** The first Wake of a player who placed no pawn in Setup (Legacy Setup
+    * powers design, ruling 20; R32): the placement and the steps Setup
+    * deferred. The driver starts it before the Wake checks. */
+  case QuestFirstWake extends TriggeredProcedureRef("quest-first-wake")
   /** Asks a follow-up entry's actor: the action, or Skip (walker-driven
     * game loop design, ruling 6). The driver starts it when it dequeues an
     * `Offer` entry. */
@@ -153,7 +157,7 @@ object TriggeredProcedureRef:
   val all: Vector[TriggeredProcedureRef] = Vector(Oathkeeper, Setup,
     ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu, ChronicleBegin,
     ChronicleSun, ChronicleThrone, ChronicleWorld, ChronicleBeacon,
-    ChronicleStars, ChronicleFinish)
+    ChronicleStars, ChronicleFinish, QuestFirstWake)
 
 object StartableRef:
   /** The finite references. The parameterized use-power reference is not

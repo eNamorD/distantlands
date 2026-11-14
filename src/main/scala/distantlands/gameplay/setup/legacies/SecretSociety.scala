@@ -48,6 +48,14 @@ case object SecretSociety extends ContributingPower:
     NotePart.Text(" with "), NotePart.Arg(2)))
   def setupNoteKeys: Vector[NoteKey] = notes.declared
 
+  /** The discard's line when the first Wake runs it (ruling 20). */
+  private val wakeNotes = NoteSet(ProcedureNotes.id(
+    TriggeredProcedureRef.QuestFirstWake))
+  val wakeDiscarded: NoteKey = wakeNotes.key("secret-society-discarded",
+    Vector(NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1),
+      NotePart.Text(" with "), NotePart.Arg(2)))
+  def wakeNoteKeys: Vector[NoteKey] = wakeNotes.declared
+
   def discardDecisionId(player: PlayerId): String =
     s"${decisionId(player)}.discard"
 
@@ -57,7 +65,9 @@ case object SecretSociety extends ContributingPower:
     * the discard pile of the region after the pawn's, where Setup's
     * rejected advisers go (R21). Read when reached: only this player's own
     * steps came between the take and here. */
-  def excessStep(catalog: ExecutableCatalog, player: PlayerId): Operation =
+  def excessStep(catalog: ExecutableCatalog, player: PlayerId,
+      decisionId: String = "", procedure: TriggeredProcedureRef =
+        TriggeredProcedureRef.Setup): Operation =
     Branch((state, _) =>
       val excess = AdviserLimit.towardLimit(state, player) -
         AdviserLimit.of(catalog, state, player)
@@ -68,7 +78,11 @@ case object SecretSociety extends ContributingPower:
       else
         val held = state.game.current.player(player).toVector
           .flatMap(_.advisers).map(_.id: CardId)
-        val id = discardDecisionId(player)
+        val id = if decisionId.isEmpty then discardDecisionId(player)
+          else decisionId
+        val lineId = ProcedureNotes.id(procedure)
+        val line = if procedure == TriggeredProcedureRef.Setup then discarded
+          else wakeDiscarded
         Vector(
           Decide(id, player, DecisionQuery.ChooseMany(excess, excess,
             held.indices.toVector.map(slot => DecisionOption.AdviserSlot(
@@ -77,8 +91,8 @@ case object SecretSociety extends ContributingPower:
             confirm = Some(CountedConfirm("Discard", "adviser", "advisers")))),
           BuildOps((live, pending) => discards(live, player, held,
             chosen(pending.answered, id, held)), required = true),
-          Note(noteId, states => Option(chosen(states.answered, id, held))
-            .filter(_.nonEmpty).map(cards => discarded.sourceless(
+          Note(lineId, states => Option(chosen(states.answered, id, held))
+            .filter(_.nonEmpty).map(cards => line.sourceless(
               NoteArg.Player(player), NoteArg.Cards(cards),
               NoteArg.Card(SecretSocietyCard.id))))))
 

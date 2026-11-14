@@ -54,7 +54,7 @@ case object OathsOfLoyalty extends ContributingPower:
     * own "buried" line. */
   private val burying: Vector[TriggeredProcedureRef] = Vector(
     TriggeredProcedureRef.ChronicleWorld, TriggeredProcedureRef.ChronicleBeacon,
-    TriggeredProcedureRef.Setup)
+    TriggeredProcedureRef.Setup, TriggeredProcedureRef.QuestFirstWake)
 
   private val buriedKeys: Map[PowerId, (NoteSet, NoteKey)] =
     burying.map(procedure =>
