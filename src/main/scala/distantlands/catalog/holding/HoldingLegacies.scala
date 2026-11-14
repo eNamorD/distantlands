@@ -32,15 +32,6 @@ object KeeperOfOrderCard extends Legacy(LegacyId("L11"), "Keeper of Order",
       "you roll when attacking.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object HighPriestCard extends Legacy(LegacyId("L21"), "High Priest",
-    LegacyGoal.DarkestSecret, Suit.Order):
-  val power = PrintedPower(PowerId("legacy.high-priest"),
-    persistent = false, cost = Cost.free,
-    text = "**ACTION:** If you have the Darkest Secret, you may move " +
-      "any number of [secret] from the Darkest Secret to your " +
-      "player board. **WHEN NEGOTIATING:** You may give [secret].")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object ArbiterCard extends Legacy(LegacyId("L23"), "Arbiter",
     LegacyGoal.DarkestSecret, Suit.Discord):
   val power = PrintedPower(PowerId("legacy.arbiter"),

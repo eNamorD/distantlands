@@ -11,7 +11,6 @@ legacy.ancestral-lands
 legacy.arbiter
 legacy.beloved
 legacy.conspirator
-legacy.high-priest
 legacy.keeper-of-order
 legacy.light-fingers
 legacy.pathfinder

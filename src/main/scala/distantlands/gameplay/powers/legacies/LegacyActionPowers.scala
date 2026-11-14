@@ -6,4 +6,5 @@ import distantlands.gameplay.powerresolver.PhasePower
   * registered by `PhasePowerCatalog`. Each is offered with its legacy as
   * its source (ruling 3). */
 object LegacyActionPowers:
-  val all: Vector[PhasePower] = Vector(Ruthless, Peacemaker, GoldenKey)
+  val all: Vector[PhasePower] = Vector(Ruthless, Peacemaker, GoldenKey,
+    HighPriest)
