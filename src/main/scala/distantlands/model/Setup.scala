@@ -74,7 +74,9 @@ final case class FirstGameSetupPlan(
     startingAdvisers: Map[PlayerId, Vector[AdviserState]] = Map.empty,
     /** The foundation faces the game starts with. A number the map does
       * not list lies normal. */
-    foundations: Map[FoundationNumber, FoundationState] = Map.empty
+    foundations: Map[FoundationNumber, FoundationState] = Map.empty,
+    /** What the legacies' SETUP powers change (`StartingLegacies`). */
+    legacies: StartLegacies = StartLegacies.none
 ):
   /** Whether foundation `number` starts on its altered face. */
   def altered(number: FoundationNumber): Boolean =
@@ -87,6 +89,22 @@ final case class FirstGameSetupPlan(
 final case class EmpireSetup(chancellor: PlayerId,
     imperial: Set[PlayerId], sites: Vector[StoredSite],
     absentChancellor: Option[LineageId])
+
+/** What the legacies' SETUP powers change at game start (Legacy Setup
+  * powers design, slice 1), worked out from the Chronicle and the seats by
+  * `StartingLegacies`. `boardWarbands` holds only the boards that start
+  * with other than 3; `ironHand` and `rival` are the holders' lineages;
+  * `rivalSites` are the Atlas sites Rival places, Cradlemost first. */
+final case class StartLegacies(
+    boardWarbands: Map[PlayerId, Int],
+    ironHand: Option[LineageId],
+    rival: Option[LineageId],
+    rivalSites: Vector[StoredSite],
+    scepterBearer: Option[PlayerId])
+
+object StartLegacies:
+  val none: StartLegacies =
+    StartLegacies(Map.empty, None, None, Vector.empty, None)
 
 /** Pure CR pp. 6-7 table setup, shared by `GameStartRules`. */
 final case class FirstGameSetupMaterial(
