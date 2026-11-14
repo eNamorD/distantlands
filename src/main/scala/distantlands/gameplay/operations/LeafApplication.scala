@@ -118,6 +118,8 @@ private[operations] object LeafApplication:
       ChronicleStateOperations.foundationRestored(ready, number)
     case FoundationAltered(number, source) =>
       ChronicleStateOperations.foundationAltered(ready, number, source)
+    case WinnerNamed(winner, kind) =>
+      ChronicleStateOperations.winnerNamed(ready, winner, kind)
     case StartingRelicKept(player, relic) =>
       ChronicleStateOperations.startingRelicKept(ready, player, relic)
     case LegaciesScored(legacies) =>

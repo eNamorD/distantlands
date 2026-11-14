@@ -92,3 +92,19 @@ class ChronicleOperationWireSuite extends munit.FunSuite:
     assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
       ujson.Obj("kind" -> "starting-relic-kept", "player" -> "red",
         "relic" -> "R1"))
+
+  test("a named winner names its winner and victory, and an unknown victory " +
+      "decodes to a typed WireError"):
+    val encoded = encodedStreamThatRoundTrips("winner-named",
+      Vector(recordedOperation(WinnerNamed(PlayerId("red"),
+        VictoryKind.Successor))))
+    assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
+      ujson.Obj("kind" -> "winner-named", "winner" -> "red",
+        "victory" -> "successor"))
+    val injected = ujson.read(encoded).arr
+    injected(0)("payload")("step")("ops")(0)("victory") = "luck"
+    GameEventWire.decodeStream(ujson.write(injected)) match
+      case Left(WireError.InvalidValue(path, _)) =>
+        assert(path.endsWith(".victory"), path)
+      case other => fail(other.toString)
+

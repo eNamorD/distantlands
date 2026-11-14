@@ -358,6 +358,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     FoundationAltered(FoundationNumber.III, LegacyId("L32")),
     LegaciesScored(Vector(LegacyId("L02"))),
     StartingRelicKept(PlayerId("red"), RelicId("R1")),
+    WinnerNamed(PlayerId("red"), VictoryKind.StableRegime),
     PlaceAtlasSite(AtlasEnd.Forgotten, Region.Provinces, capacity = 2,
       relicSlots = 1, Tokens(3, 0)),
     SuitedReserveFromBox(Suit.Beast,

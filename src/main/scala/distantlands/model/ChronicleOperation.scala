@@ -77,6 +77,14 @@ final case class FoundationRestored(number: FoundationNumber)
 final case class FoundationAltered(number: FoundationNumber,
     source: LegacyId) extends ChronicleOperation, LeafOperation
 
+/** Royal Line's choice of an Empire win's winner (Legacy Chronicle powers
+  * design, rulings 22 and 23; R39): the game's result becomes `winner`'s win
+  * of `kind`, `Successor` for a Citizen and the ended game's Empire win for
+  * the Chancellor. A game with no result, a winner not seated and a kind
+  * that is not an Empire win are refused. */
+final case class WinnerNamed(winner: PlayerId, kind: VictoryKind)
+    extends ChronicleOperation, LeafOperation
+
 /** Keeps a held relic for the next game (Heirloom; Legacy Chronicle powers
   * design, ruling 13; R20): it leaves the player's relics for their
   * lineage's `startingRelics`, outside play and the card index (Legacies

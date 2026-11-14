@@ -187,3 +187,23 @@ private[operations] object ChronicleStateOperations:
           else state))).updateCampaign(campaign => campaign.copy(lineages =
         campaign.lineages.updatedWith(id)(_.map(state => state.copy(
           startingRelics = state.startingRelics :+ relic))))))
+
+  /** The Empire wins Royal Line may name a winner of (R39). */
+  private val empireWins: Set[VictoryKind] = Set(VictoryKind.Successor,
+    VictoryKind.StableRegime, VictoryKind.ChancellorExhaustion)
+
+  /** The game's result becomes `winner`'s win of `kind` (Royal Line;
+    * R39). A game with no result, a winner not seated and a kind that is
+    * not an Empire win are refused. */
+  def winnerNamed(ready: ReadyGame, winner: PlayerId, kind: VictoryKind)
+      : Either[OperationError, ReadyGame] =
+    val current = ready.game.current
+    if current.result.isEmpty then
+      Left(InvalidDescription("a game with no result has no winner to name"))
+    else if !current.players.exists(_.player == winner) then
+      Left(InvalidDescription(s"${winner.value} is not seated"))
+    else if !empireWins(kind) then
+      Left(InvalidDescription(s"${kind.key} is not an Empire win"))
+    else Right(ready.updateCurrent(_.copy(result =
+      Some(GameResult(winner, kind)))))
+

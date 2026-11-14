@@ -103,3 +103,39 @@ class EmpireRoundEndSuite extends munit.FunSuite:
     assertEquals(rejected(replayed(ready, Vector(RoundEnded(8, None),
       WarExhaustionResolved(p3, VictoryKind.Oathkeeper, Vector.empty,
         Vector.empty)))).getClass, classOf[OathViolation.InvalidEventOrder])
+
+  /** The game `ready`'s round end ends, through the engine, with the
+    * Empire win `empireWin` reads back. */
+  private def empireWinAfter(ready: ReadyGame, random: RoundEndRandomPort)
+      : (Option[GameResult], VictoryKind) =
+    val after = Outcomes.ready(accepted(replayed(ready, ended(ready, random))))
+    (after.game.current.result, EmpireEndings.empireWin(after))
+
+  test("the Empire win read back after each end-die ending (R37)"):
+    Vector(5 -> 6, 6 -> 5, 7 -> 3).foreach((round, face) =>
+      assertEquals(empireWinAfter(roundEnd(round), RoundEndChoices.endDie(face)),
+        (Some(GameResult(p1, VictoryKind.StableRegime)),
+          VictoryKind.StableRegime), clue(round)))
+
+  test("the Empire win read back after each round-eight ending (R37)"):
+    // An Imperial Oathkeeper gives Stable Regime; an Exile's gives
+    // Chancellor Exhaustion.
+    assertEquals(empireWinAfter(roundEnd(8), RoundEndChoices.endDie(1)),
+      (Some(GameResult(p1, VictoryKind.StableRegime)),
+        VictoryKind.StableRegime))
+    assertEquals(empireWinAfter(roundEnd(8, holder = Some(p3)),
+      RoundEndChoices.endDie(1)),
+      (Some(GameResult(p1, VictoryKind.ChancellorExhaustion)),
+        VictoryKind.ChancellorExhaustion))
+
+  test("a Successor's result still reads back the Chancellor's Empire win " +
+      "(R37)"):
+    val atEight = Table.from(roundEnd(8, holder = None))
+      .darkestSecret(Some(p2), secrets = 1).ready
+    assertEquals(empireWinAfter(atEight, RoundEndChoices.endDie(1)),
+      (Some(GameResult(p2, VictoryKind.Successor)),
+        VictoryKind.ChancellorExhaustion))
+    val onTheDie = Table.from(roundEnd(7)).darkestSecret(Some(p2),
+      secrets = 1).ready
+    assertEquals(empireWinAfter(onTheDie, RoundEndChoices.endDie(3)),
+      (Some(GameResult(p2, VictoryKind.Successor)), VictoryKind.StableRegime))

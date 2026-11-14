@@ -251,3 +251,19 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     rejected(run(Table.start.relic(p1, CupOfPlentyCard)
       .tokens(CupOfPlentyCard, secrets = 1).ready,
       StartingRelicKept(p1, CupOfPlentyCard.id)))
+
+  test("a named winner replaces the game's result"):
+    val ended = Table.start.imperial(p1, p2).update(_.updateCurrent(_.copy(
+      result = Some(GameResult(p1, VictoryKind.StableRegime))))).ready
+    val after = accepted(run(ended, WinnerNamed(p2, VictoryKind.Successor)))
+    assertEquals(after.game.current.result,
+      Some(GameResult(p2, VictoryKind.Successor)))
+
+  test("a winner is named only for a game with a result, a seated player " +
+      "and an Empire kind"):
+    val ended = Table.start.imperial(p1, p2).update(_.updateCurrent(_.copy(
+      result = Some(GameResult(p1, VictoryKind.StableRegime))))).ready
+    rejected(run(Table.start.ready, WinnerNamed(p2, VictoryKind.Successor)))
+    rejected(run(ended, WinnerNamed(PlayerId("p9"), VictoryKind.Successor)))
+    rejected(run(ended, WinnerNamed(p2, VictoryKind.Usurper)))
+

@@ -36,6 +36,8 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
       case FoundationAltered(number, source) => ujson.Obj(
         "kind" -> "foundation-altered", "number" -> number.value,
         "source" -> source.value)
+      case WinnerNamed(winner, kind) => ujson.Obj("kind" -> "winner-named",
+        "winner" -> winner.value, "victory" -> kind.key)
       case StartingRelicKept(player, relic) => ujson.Obj(
         "kind" -> "starting-relic-kept", "player" -> player.value,
         "relic" -> relic.value)
@@ -79,6 +81,11 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
       foundationNumber(value, path).map(FoundationRestored.apply)
     case "foundation-altered" => foundationNumber(value, path)
       .map(FoundationAltered(_, LegacyId(value("source").str)))
+    case "winner-named" =>
+      val key = value("victory").str
+      VictoryKind.values.find(_.key == key).toRight(InvalidValue(
+        s"$path.victory", s"unknown victory kind '$key'"))
+        .map(WinnerNamed(PlayerId(value("winner").str), _))
     case "starting-relic-kept" => Right(StartingRelicKept(
       PlayerId(value("player").str), RelicId(value("relic").str)))
     case "legacies-scored" =>
