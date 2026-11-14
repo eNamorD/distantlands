@@ -19,8 +19,9 @@ import distantlands.model._
   * who may bury a card of any suit for each available edifice, then the
   * Iron Hand holder over their own sites; either alone; else the Throne
   * holder (Legacy Chronicle powers design, rulings 10 and 19; R32). A
-  * second builder is offered a suit's edifice only if the first left it,
-  * under an id of its own. A burial returns favor to the buried card's own
+  * second builder is offered a suit's edifice only if the first built
+  * none, read from the first's journaled answer (R43), under an id of its
+  * own. A burial returns favor to the buried card's own
   * suit bank (R14). */
 object BuildEdifice:
   def decisionId(suit: Suit): String = s"chronicle.build-edifice.${suit.key}"
@@ -49,14 +50,19 @@ object BuildEdifice:
     // Two Branches per suit, one per builder slot: a resume re-reads a Branch
     // against live state, and building one suit's last edifice must not
     // change the node count the other answers are replayed against.
-    Suit.all.flatMap(suit => Vector(0, 1).map(slot => Branch((state, _) =>
+    // The second slot skips a suit the first built: it reads the first's
+    // journaled answer, never a recomputed pool, so a resumed walk finds
+    // the same question (Legacy Chronicle powers R43).
+    Suit.all.flatMap(suit => Vector(0, 1).map(slot => Branch((state, pending) =>
       ChronicleLegacyRules.builders(state).fold(
         violation => Vector(ChronicleTasks.failing(violation)),
-        builders => builders.lift(slot).toVector.flatMap(holder =>
-          available(catalog, state.game.current).find(_._1 == suit).toVector
-            .flatMap((_, edifice) => offer(catalog, state, holder, suit,
-              edifice, if slot == 0 then decisionId(suit)
-                else ironHandDecisionId(suit)))))))) :+
+        builders => builders.lift(slot)
+          .filterNot(_ => slot == 1 && builtBy(pending, decisionId(suit)))
+          .toVector.flatMap(holder =>
+            available(catalog, state.game.current).find(_._1 == suit).toVector
+              .flatMap((_, edifice) => offer(catalog, state, holder, suit,
+                edifice, if slot == 0 then decisionId(suit)
+                  else ironHandDecisionId(suit)))))))) :+
     BuildOps((state, _) => Right(state.game.current.setAsideEdifices.map(id =>
       Move(Piece.Card(id), PositionedLocation(Location.SetAsideEdifices),
         PositionedLocation(Location.Deck(CardDeck.Edifice),
@@ -93,6 +99,10 @@ object BuildEdifice:
       Branch((_, pending) => chosen(pending, id, cards).toVector.map(
         (site, _) => Note(noteId, _ => Some(built.sourceless(
           NoteArg.Player(holder), NoteArg.Card(edifice), NoteArg.Site(site)))))))
+
+  /** Whether the question `id` was answered with a card buried. */
+  private def builtBy(pending: PendingTree, id: String): Boolean =
+    PowerAnswers.many(pending, id).exists(_.nonEmpty)
 
   private def name(catalog: ExecutableCatalog, edifice: EdificeId): String =
     catalog.edifice(edifice).fold(edifice.value)(_.intact.name)

@@ -392,3 +392,16 @@ audit of every Chronicle step and power that reads the winner, each reading
 it live after Royal Line, and a test that a Royal Line change reaches at
 least the Crown, Reformer and Score Lineage Points.
 
+**R43. A suit built twice beside Iron Hand.** (A slice 4 review fault.)
+Question: Build Edifice's second slot recomputed the available edifices
+when reached, so after an Imperial Great Architect built a suit's edifice
+the Iron Hand holder was offered that suit's next one and could build a
+second edifice of the suit, against R32 and design ruling 10.
+Decision: the second slot skips a suit when the first slot's answer
+(`PowerAnswers.many(pending, decisionId(suit))`) buried a card; otherwise
+it offers what `available` returns.
+Reason: it reads only journaled answers, so it is resume-safe; capturing
+the edifice in an outer Branch before the first slot would reintroduce the
+bug class of a Branch recomputed on resume.
+Slice/files: 4 (fixed in 5); `BuildEdifice`.
+

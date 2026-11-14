@@ -236,3 +236,38 @@ class IronHandSuite extends munit.FunSuite:
     assert(said.contains(s"${AncientCitySite.id.value} was archived"), said)
     assert(said.contains(s"${BuriedGiantSite.id.value} stays on the map " +
       s"with ${IronHandCard.id.value}"), said)
+
+  /** `ironThrone` with p2 a Citizen holding Great Architect and Village
+    * Idiot at Enduring Ancient City, so both p2 and p3 can build Beast. */
+  private def twoBuilders: Table = ironThrone.imperial(p1, p2)
+    .denizen(VillageIdiotCard, at = AncientCitySite)
+    .legacy(p2, GreatArchitectCard)
+
+  private val beast = catalog.denizen(ThreateningRoarCard.id).get.suit
+
+  test("a suit the Great Architect built is not offered to the holder " +
+      "(R32, R43)"):
+    val run = through(twoBuilders, TriggeredProcedureRef.ChronicleThrone, {
+      case decide if decide.decisionId == BuildEdifice.decisionId(beast) =>
+        DecisionAnswer.ChooseManyAnswer(Vector(
+          DecisionOptionRef.Denizen(VillageIdiotCard.id)))
+    }, after = TriggeredProcedureRef.ChronicleSun)
+    assert(run.asked.exists(_.decisionId == BuildEdifice.decisionId(beast)))
+    assert(!run.asked.exists(_.decisionId ==
+      BuildEdifice.ironHandDecisionId(beast)))
+    assert(onMap(run.ready, ThreateningRoarCard.id))
+
+  test("a walk parked at the holder's question after the Great Architect " +
+      "declined finds the same edifice (R43)"):
+    val started = ChronicleWalk.started(rules, twoBuilders,
+      TriggeredProcedureRef.ChronicleSun)
+    val parked = ChronicleWalk.walkedTo(rules, started,
+      BuildEdifice.ironHandDecisionId(beast))
+    val decide = ChronicleWalk.parked(parked.state).get
+    assertEquals((decide.decisionId, decide.owner),
+      (BuildEdifice.ironHandDecisionId(beast), p3))
+    val replayed = distantlands.testkit.Unwrap.accepted(parked.events
+      .foldLeft[Either[OathViolation, OathState]](Right(twoBuilders.state))(
+        (state, event) => state.flatMap(rules.evolve(_, event))))
+    assertEquals(ChronicleWalk.parked(replayed), Some(decide))
+
