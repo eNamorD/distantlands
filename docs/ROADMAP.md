@@ -171,21 +171,25 @@ Legacies, the scoring bonus and the display) landed with the
 [Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md).
 
 - [ ] **Legacy powers: setup.** The SETUP halves of the 36 legacies (Iron
-  Hand, Circle of Swords, World Crafter, Seer, Wealthy, Rival, whose card
+  Hand, whose card counts as implemented for its Chronicle half, and whose
+  stored sites the next game restores as the Empire's until its SETUP half
+  lands; Circle of Swords, World Crafter, Seer, Wealthy, Rival, whose card
   counts as implemented for its Throne half, and the rest), each
   through Setup's windows, and Matchmaker choosing the kept legacy for the
   other players in the Setup deal ([Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md)).
 - [ ] **Legacy powers: Chronicle.** The CHRONICLE powers still to build,
   through the Chronicle's step windows
   ([Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md)):
-  Iron Hand scoring and shaping the Empire, and Royal Line choosing the
-  Successor. Slices 1 to 3 built Steadfast, Gatekeeper, Chronicler, Rival's
-  Throne half, Great Architect, Revolutionary, Reformer, Heirloom, The
-  Ear's Chronicle half, Oaths of Loyalty and The Bright Beacon.
+  Royal Line choosing the Successor. Slices 1 to 4 built Steadfast,
+  Gatekeeper, Chronicler, Rival's Throne half, Great Architect,
+  Revolutionary, Reformer, Heirloom, The Ear's Chronicle half, Oaths of
+  Loyalty, The Bright Beacon and Iron Hand's Chronicle half.
 - [ ] **Legacy powers: in play.** The powers used during a game: actions,
   Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
   play and The Ear's ACTION half, peeking at a site's relics, among them
-  (The Ear's card counts as implemented for its Chronicle half). High Priest's When Negotiating power lets its holder
+  (The Ear's card counts as implemented for its Chronicle half), and Iron
+  Hand's discard when its holder becomes an Imperial during a game. High
+  Priest's When Negotiating power lets its holder
   give secrets in a deal: a `DealRules` term kind, as Council Arbiter opens
   advisers.
 - [ ] **Cards that act on legacies.** The non-legacy cards whose powers

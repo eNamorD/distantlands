@@ -196,7 +196,7 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 
 ## Legacy Chronicle powers rulings
 
-Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6; items 15 to 18 are the design's rulings 9 to 12; items 19 to 28 are implementation rulings R7 to R16; items 29 to 33 are the design's rulings 13 to 17; items 34 to 40 are implementation rulings R17 to R27. Later slices add the design's other rulings as they land.
+Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6; items 15 to 18 are the design's rulings 9 to 12; items 19 to 28 are implementation rulings R7 to R16; items 29 to 33 are the design's rulings 13 to 17; items 34 to 40 are implementation rulings R17 to R28; items 41 to 44 are the design's rulings 18 to 21; items 45 to 52 are implementation rulings R29 to R36. Later slices add the design's other rulings as they land.
 
 1. **Only seated players' active legacies act.** A legacy's Chronicle power applies when a seated player holds it active at the moment its window is reached. A boxed lineage's legacies never act; a dormant legacy has no power (design, ruling 1).
 2. **A role condition is read at the same moment,** so the Crown and Offer Citizenship change it for every later step (design, ruling 2).
@@ -237,7 +237,19 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 37. **Hidden cards reach their holder by peeking:** The Ear's set-aside relics and The Bright Beacon's Dispossessed are named to the holder alone, and still hidden from every other seat and spectator (R22).
 38. **Oaths' keep and burial:** a choose-many of zero to three faceup denizen advisers, named in the line; the other keep questions stay and the kept card is buried; under Teeming World the holder draws none (R23, R24).
 39. **The Bright Beacon's questions:** the box first; from the Dispossessed exactly six, taken without a question when exactly six remain (R25). Heirloom's step has its own window before Scatter Relics (R26).
-40. **Two goldens** show an Oaths and Heirloom Chronicle and the next game's Setup from its record (R27).
+40. **Two goldens** show an Oaths and Heirloom Chronicle and the next game's Setup from its record (R27). A Heirloom relic other seats can deduce from Scatter Relics' line is accepted, since the Sun revealed every held relic (R28).
+41. **Iron Hand is discarded when its holder is an Imperial,** at three checkpoints: the start of the Sun, after Crown Chancellor and after Offer Citizenship (design, ruling 18).
+42. **Iron Hand takes over Shape Empire and Build Edifice** while a seated Exile holds it active: the holder performs both over the sites they rule, and an Imperial Great Architect still builds (design, ruling 19).
+43. **Iron Hand scores its holder's legacies** in Score Lineage Points, after the winner, with no base and no gifts, skipping legacies already scored (design, ruling 20).
+44. **Iron Hand's sites are stored in place of the Empire's:** the Empire's are archived as rival sites, and the holder's stay on the map, Cradlemost first (design, ruling 21).
+45. **Only an active Iron Hand is discarded** at a checkpoint (R29).
+46. **The Crown's and Offer Citizenship's checkpoints sit between their reactivation and their cap,** so no one discards over the cap a legacy that Iron Hand's own discard would spare; the Sun's opens Reveal Relics (R30).
+47. **The holder's Shape Empire discards every card at sites they do not rule,** the Empire's included, but intact edifices and Enduring sites' cards (R31).
+48. **An Imperial Great Architect and the holder both build** from the shared available edifices, the Great Architect first for each suit; the holder's question has its own id (R32).
+49. **Iron Hand's scoring records its legacies** as scored (R33).
+50. **Iron Hand's lines** say "p2 discarded Iron Hand", "p3 scored 2 lineage points with Iron Hand (2 from Beast)" and "Buried Giant stays on the map with Iron Hand" (R34).
+51. **Until Iron Hand's SETUP half lands,** the next game restores the holder's stored sites as the Empire's (R35; low confidence).
+52. **Tests that used Iron Hand as a plain legacy** use one with no Chronicle half instead (R36).
 
 ## Source relationship cautions
 
