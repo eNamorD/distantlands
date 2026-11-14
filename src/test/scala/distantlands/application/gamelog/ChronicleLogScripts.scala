@@ -8,7 +8,7 @@ import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship,
 import distantlands.gameplay.GrandMaskCard
 import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
   Gatekeeper, GatekeeperCard, Heirloom, HeirloomCard, IronHandCard,
-  OathsOfLoyalty, OathsOfLoyaltyCard}
+  OathsOfLoyalty, OathsOfLoyaltyCard, RoyalLine, RoyalLineCard}
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
   DowntroddenCard, GolemLegionsCard, MapLibraryCard}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
@@ -158,6 +158,23 @@ object ChronicleLogScripts:
     acting.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("chronicle-iron-hand", service, p1)
 
+  /** An Empire game that ends at round eight: p1 is the Chancellor and the
+    * Oathkeeper, p2 and p3 Citizens, and p3 holds Royal Line. p3 rests last
+    * in the round, the Empire wins, and in the Sun p3 names p2 the winner
+    * (Legacy Chronicle powers, slice 5). */
+  def chronicleRoyalLine(using munit.Location): Script =
+    val (service, acting) = atTable("chronicle-royal-line", Table.start
+      .imperial(p1, p2, p3)
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Oathkeeper)
+      .roundMarkerAt(8).legacy(p3, RoyalLineCard)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.withAnswers {
+      case park if park.decisionId == RoyalLine.decisionId(p3) =>
+        ChooseOneAnswer(DecisionOptionRef.Player(p2))
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("chronicle-royal-line", service, p1)
+
   /** The first game, with Foundation I on Wide Horizons: at the Beacon
     * p1, who holds it, restores it to Imperial Maps (Foundations design,
     * slice 7). */
@@ -195,5 +212,6 @@ object ChronicleLogScripts:
       "throne-heirloom" -> (() => throneHeirloom),
       "chronicle-oaths-heirloom" -> (() => chronicleOathsHeirloom),
       "chronicle-iron-hand" -> (() => chronicleIronHand),
+      "chronicle-royal-line" -> (() => chronicleRoyalLine),
       "beacon-restored-foundation" -> (() => beaconRestoredFoundation),
       "beacon-kept-foundations" -> (() => beaconKeptFoundations))
