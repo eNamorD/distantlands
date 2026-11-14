@@ -65,3 +65,8 @@ Ruled by the owner on 2026-11-14.
   resumes as it was. *Reason:* old saves must keep loading, and an empty
   list is exactly what such a game had. *Slice/files:* slice 2, Task 6;
   `NegotiationStartFacts.read`.
+- **R10. May `legacy.high-priest` leave the unimplemented list in slice 1,
+  before its WHEN NEGOTIATING half?** *Decision:* yes. *Reason:* slice 2
+  lands that half; The Ear set the precedent; no traceability note is
+  needed once slice 2 lands. *Slice/files:* slices 1 and 2;
+  `src/test/resources/powers/unimplemented.txt`.
