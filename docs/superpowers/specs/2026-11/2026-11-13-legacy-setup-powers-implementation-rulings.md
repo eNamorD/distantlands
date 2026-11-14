@@ -143,11 +143,14 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   `SetupPawnPlaced` window and before their keep, only when they are over
   the adviser limit: one choose-many of exactly the excess, over the
   advisers by slot, `setup.legacy.secret-society.<player>.discard`, with no
-  Decline. The cards go where Setup's rejected advisers go. It is logged
-  with Setup's line for discarded advisers, or, as Setup writes none, with
-  a line naming the discarded cards, since a discard is public. *Reason:*
-  the spec puts the discard right after the pawn, and the limit rule is
-  mandatory. *Slice/files:* slice 3; `SecretSociety.excessStep`.
+  Decline. The cards go where Setup's rejected advisers go. Setup writes no
+  line for discarded advisers, so a line of its own names the discarded
+  cards, each by the log's knowledge rule: regional discard piles are
+  hidden, so a seat that did not know a card reads "a Denizen" or "a
+  Vision". *Reason:* the spec puts the discard right after the pawn, and
+  the limit rule is mandatory; the line says what happened without naming
+  a card to a seat the discard pile hides it from. *Slice/files:* slice 3;
+  `SecretSociety.excessStep`.
 - **R22. Secret Society's question.** `setup.legacy.secret-society.<player>`,
   a choose-one: Decline, then the deck's Visions except the Conspiracy in
   catalog order (by card id), headed "Secret Society: you may take a Vision
@@ -173,3 +176,10 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   40-card deck steppers alone mean dozens of clicks; the draft in
   `SessionDrafts` keeps a typed value across redraws. *Slice/files:*
   slice 3; `ChooseAmountsPanelRenderer`, `ChooseAmountsDecisionState`.
+- **R26. Seer's peeks write no line.** Setup joins
+  `DetailLines.knowledgeOnlyPeeks`, so Seer writes only "p2 placed the
+  Visions with Seer"; its peeks stay knowledge only, and the holder keeps
+  knowing the Visions. *Reason:* as Legacy Chronicle powers R47, the peeks
+  are knowledge, not events worth a line each. *Slice/files:* slice 3
+  (recorded after it); `DetailLines`, `SetupLegacyLogSuite`, the
+  `later-game-setup-world-deck` golden.
