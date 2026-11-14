@@ -56,14 +56,19 @@ case object QuestToDistantLands extends ContributingPower:
       NoteArg.Card(QuestToDistantLandsCard.id))
 
   /** The swap, after the holder's keep and before where Choose Adviser
-    * would run, for Quest's holder with no pawn (R31). The holder peeks
+    * would run, for Quest's holder with no pawn (R31), when the
+    * Dispossessed holds a denizen and the holder a card to give (R37). The
+    * holder peeks
     * every Dispossessed card first, as The Bright Beacon's holder does, and
     * keeps knowing them; Setup's peeks write no line (R26). */
   def swapStep(player: PlayerId): Operation = Branch((state, _) =>
     val cards = state.game.campaign.dispossessed
       .collect { case id: DenizenId => id }.sortBy(_.value)
+    // A swap needs a card on both sides; with none to give, the Peeks
+    // would show the Dispossessed for nothing (R37).
     if !SetupLegacyRules.mayStayOff(state, player) ||
-        state.game.current.pawnSite(player).nonEmpty || cards.isEmpty then
+        state.game.current.pawnSite(player).nonEmpty || cards.isEmpty ||
+        giveOptions(state, player).isEmpty then
       Vector.empty
     else cards.map(card => Peek(player, card, Location.Dispossessed)) ++
       Vector(
@@ -82,15 +87,7 @@ case object QuestToDistantLands extends ContributingPower:
     * with none, a card of the hand drawn in Foundation IV (R31). */
   private def give(ready: ReadyGame, player: PlayerId, taken: DenizenId)
       : Vector[Operation] =
-    val advisers = ready.game.current.player(player).toVector
-      .flatMap(_.advisers).zipWithIndex.collect {
-        case (adviser: DenizenState, slot) => slot -> adviser.id }
-    val hand = ready.game.current.temporaryHands.getOrElse(player, Vector.empty)
-      .collect { case id: DenizenId => id }
-    val options =
-      if advisers.nonEmpty then advisers.map((slot, _) =>
-        DecisionOption.AdviserSlot(DecisionOptionRef.AdviserSlot(player, slot)))
-      else hand.map(id => DecisionOption.Denizen(DecisionOptionRef.Denizen(id)))
+    val options = giveOptions(ready, player)
     if options.isEmpty then Vector.empty
     else Vector(
       Decide(giveDecisionId(player), player, DecisionQuery.ChooseOne(options,
@@ -100,6 +97,19 @@ case object QuestToDistantLands extends ContributingPower:
         PowerAnswers.one(pending, giveDecisionId(player))), required = true),
       Note(noteId, _ => Some(swapped.sourceless(NoteArg.Player(player),
         NoteArg.Card(QuestToDistantLandsCard.id)))))
+
+  /** The cards `player` may give, by slot for a facedown adviser that is
+    * no Vision, or, with none, from the hand drawn in Foundation IV. */
+  private def giveOptions(ready: ReadyGame, player: PlayerId)
+      : Vector[DecisionOption] =
+    val advisers = ready.game.current.player(player).toVector
+      .flatMap(_.advisers).zipWithIndex.collect {
+        case (_: DenizenState, slot) => slot }
+    val hand = ready.game.current.temporaryHands.getOrElse(player, Vector.empty)
+      .collect { case id: DenizenId => id }
+    if advisers.nonEmpty then advisers.map(slot =>
+      DecisionOption.AdviserSlot(DecisionOptionRef.AdviserSlot(player, slot)))
+    else hand.map(id => DecisionOption.Denizen(DecisionOptionRef.Denizen(id)))
 
   /** The two cards trade places: a facedown adviser's replacement joins
     * the advisers facedown, a hand card's the hand, and the given card goes

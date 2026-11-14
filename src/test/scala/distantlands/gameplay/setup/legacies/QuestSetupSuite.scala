@@ -151,6 +151,25 @@ class QuestSetupSuite extends munit.FunSuite:
         Tokens.empty)))
     assert(ready.game.campaign.dispossessed.contains(stored))
 
+  test("with nothing to give, no swap is asked and the Dispossessed stay " +
+      "unseen (R37)"):
+    val held = chronicle(adviser = false, QuestToDistantLandsCard.id -> true,
+      OathsOfLoyaltyCard.id -> true)
+    val teeming = held.copy(foundations = held.foundations.updated(
+      FoundationNumber.IV, FoundationState(FoundationFace.Altered, Set.empty)))
+    val notSwapping = stayingOff.orElse {
+      case park if park.decisionId.startsWith("setup.legacy.quest") =>
+        fail(s"asked ${park.decisionId}")
+    }
+    val ready = Situation.wake(rules.withAnswers(notSwapping), teeming,
+      LaterGameFixture.orders(teeming, p1)).ready
+    assertEquals(ready.game.current.pawnSite(p2), None)
+    assertEquals(ready.game.current.player(p2).get.advisers, Vector.empty)
+    assertEquals(ready.game.current.temporaryHands.getOrElse(p2, Vector.empty),
+      Vector.empty)
+    val known = ready.knowledge.advisers.getOrElse(p2, Vector.empty)
+    assert(teeming.dispossessed.forall(card => !known.contains(card)), known)
+
   test("placing the pawn: no swap is offered"):
     val walked = asked(record, PartialFunction.empty)
     assert(!walked.exists(_.startsWith("setup.legacy.quest")), walked)
