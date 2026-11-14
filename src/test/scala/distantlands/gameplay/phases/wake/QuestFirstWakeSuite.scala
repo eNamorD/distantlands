@@ -59,6 +59,13 @@ class QuestFirstWakeSuite extends munit.FunSuite:
         at.ready.game.current.map.inPlay.map(DecisionOptionRef.Site(_)))
       case other => fail(s"expected a choose-one, got $other")
 
+  test("the placement confirms as Place your pawn at, not Setup's Start at " +
+      "(R35)"):
+    decide(parkedAt(QuestFirstWakeProcedure.placeDecisionId(p2))).query match
+      case one: DecisionQuery.ChooseOne =>
+        assertEquals(one.confirmVerb, Some("Place your pawn at"))
+      case other => fail(s"expected a choose-one, got $other")
+
   test("then Choose Adviser, discarding by the new pawn's region, then the " +
       "line; a walk resumed at each question places once"):
     val placed = parkedAt(QuestFirstWakeProcedure.adviserDecisionId(p2))

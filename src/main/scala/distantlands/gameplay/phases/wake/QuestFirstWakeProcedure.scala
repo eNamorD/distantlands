@@ -68,7 +68,7 @@ object QuestFirstWakeProcedure:
           state.game.current.map.inPlay.map(site =>
             DecisionOption.Site(DecisionOptionRef.Site(site))),
           heading = Some("Place your pawn at any site"),
-          confirmVerb = Some("Start at"))),
+          confirmVerb = Some("Place your pawn at"))),
         BuildOps((_, pending) => site(pending, decisionId).map(at => Vector(
           Move(Piece.Pawn(actor), PositionedLocation(Location.PlayArea(actor)),
             PositionedLocation(Location.Site(at))))), required = true),
