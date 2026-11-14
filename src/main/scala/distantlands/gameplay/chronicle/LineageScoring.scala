@@ -2,6 +2,7 @@ package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.legacies.IronHand
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
 
@@ -68,7 +69,13 @@ object LineageScoring:
     Vector(Branch((state, _) =>
       ChronicleTasks.winner(state).fold(violation =>
         Vector(ChronicleTasks.failing(violation)),
-        winner => score(state, winner, bonus(state, catalog, winner)))))
+        winner => score(state, winner, bonus(state, catalog, winner)))),
+      // Iron Hand's Exile holder then scores their legacies' bonus, with no
+      // base and no gifts, recording them (Legacy Chronicle powers design,
+      // ruling 20; R33).
+      Branch((state, _) => ChronicleLegacyRules.ironHand(state).toVector
+        .flatMap(holder => IronHand.scoring(state, holder,
+          unscored(state, holder), bonus(state, catalog, holder)))))
 
   private def points(amount: Int): NoteArg =
     NoteArg.Amount(amount, NoteUnit.LineagePoint)

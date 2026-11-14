@@ -427,6 +427,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       Rival.protectedWith -> LogKind.Decision,
       IronHand.discarded(TriggeredProcedureRef.ChronicleThrone) ->
         LogKind.Delta,
+      IronHand.scored -> LogKind.Delta,
       Revolutionary.discardedWith -> LogKind.Decision,
       Reformer.moved -> LogKind.Decision,
       Reformer.swapped -> LogKind.Decision,

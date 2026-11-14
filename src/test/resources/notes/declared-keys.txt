@@ -572,6 +572,7 @@ procedure.chronicle-throne gave-up = {0} gave up {1} {1?point|points} to give {2
 procedure.chronicle-throne heirloom-kept = {0} kept a relic with {1}
 procedure.chronicle-throne heirloom-kept-named = {0} kept {1} with {2}
 procedure.chronicle-throne iron-hand-discarded = {0} discarded {1}
+procedure.chronicle-throne iron-hand-scored = {0} scored {1} with {2} ({3})
 procedure.chronicle-throne keeps = {0} keeps {1} {1?point|points}
 procedure.chronicle-throne offered = {0} offered Citizenship to {1}
 procedure.chronicle-throne reactivated-legacy = {0} reactivated {1}

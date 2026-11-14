@@ -38,6 +38,29 @@ case object IronHand extends ContributingPower:
     TriggeredProcedureRef.ChronicleSun))
   private val throneNotes = NoteSet(ProcedureNotes.id(
     TriggeredProcedureRef.ChronicleThrone))
+  /** "p3 scored 2 lineage points with Iron Hand (2 from Beast)" (R34). */
+  val scored: NoteKey = throneNotes.key("iron-hand-scored", Vector(
+    NotePart.Arg(0), NotePart.Text(" scored "), NotePart.Arg(1),
+    NotePart.Text(" with "), NotePart.Arg(2), NotePart.Text(" ("),
+    NotePart.Arg(3), NotePart.Text(")")))
+
+  /** Score Lineage Points' second scorer (ruling 20): `holder`'s `legacies`
+    * not yet scored are recorded (R33), and a positive `shares` total is
+    * scored with its line. */
+  def scoring(state: ReadyGame, holder: PlayerId, legacies: Vector[LegacyId],
+      shares: Vector[(Suit, Int)]): Vector[Operation] =
+    val total = shares.map(_._2).sum
+    val ops = Option.when(legacies.nonEmpty)(LegaciesScored(legacies))
+      .toVector ++ Option.when(total > 0)(ChronicleTasks.lineageOf(state,
+        holder).map(LineagePointsScored(_, total))).flatten.toVector
+    Option.when(ops.nonEmpty)(BuildOps((_, _) => Right(ops),
+      required = true)).toVector ++
+      Option.when(total > 0)(Note(ProcedureNotes.id(
+        TriggeredProcedureRef.ChronicleThrone), _ => Some(scored.sourceless(
+        NoteArg.Player(holder), NoteArg.Amount(total, NoteUnit.LineagePoint),
+        NoteArg.Card(IronHandCard.id), NoteArg.SuitShares(
+          shares.map((suit, points) => points -> suit)))))).toVector
+
   private def discardKey(notes: NoteSet): NoteKey =
     notes.key("iron-hand-discarded", Vector(NotePart.Arg(0),
       NotePart.Text(" discarded "), NotePart.Arg(1)))

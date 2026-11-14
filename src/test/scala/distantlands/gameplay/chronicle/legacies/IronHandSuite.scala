@@ -12,6 +12,7 @@ import distantlands.gameplay.powers.action.FaeMerchantCard
 import distantlands.gameplay.powers.economy.VillageIdiotCard
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.catalog.holding.TheNeedleCard
 import distantlands.model._
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2, p3}
@@ -180,3 +181,27 @@ class IronHandSuite extends munit.FunSuite:
       .foldLeft[Either[OathViolation, OathState]](Right(ironThrone.state))(
         (state, event) => state.flatMap(rules.evolve(_, event))))
     assertEquals(ChronicleWalk.parked(replayed), Some(decide))
+
+  test("the holder scores the legacy bonus at the sites they rule after " +
+      "the winner, with no base and no gifts (ruling 20; R33)"):
+    // p3 holds The Needle (Beast) beside Iron Hand (Order); Threatening
+    // Roar, a Beast denizen, lies at Buried Giant.
+    val run = through(ironThrone.legacy(p3, TheNeedleCard),
+      TriggeredProcedureRef.ChronicleThrone,
+      after = TriggeredProcedureRef.ChronicleSun)
+    val lineage = run.ready.game.current.player(p3).get.lineage
+    assertEquals(run.ready.game.campaign.era.score(lineage), 1)
+    assert(run.ready.game.current.scoredLegacies.contains(TheNeedleCard.id))
+    assert(lines(run, TriggeredProcedureRef.ChronicleThrone).contains(
+      s"p3 scored 1 lineage point with ${IronHandCard.id.value} " +
+        "(1 from Beast)"))
+
+  test("the holder's scoring skips legacies Chronicler scored (ruling 8)"):
+    val table = ironThrone.legacy(p3, TheNeedleCard).update(
+      _.updateCurrent(_.copy(scoredLegacies = Set(TheNeedleCard.id))))
+    val run = through(table, TriggeredProcedureRef.ChronicleThrone,
+      after = TriggeredProcedureRef.ChronicleSun)
+    val lineage = run.ready.game.current.player(p3).get.lineage
+    assertEquals(run.ready.game.campaign.era.score(lineage), 0)
+    assert(!lines(run, TriggeredProcedureRef.ChronicleThrone)
+      .exists(_.startsWith("p3 scored")))
