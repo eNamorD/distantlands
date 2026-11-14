@@ -174,10 +174,6 @@ final case class SetFestivalMarker(site: Option[SiteId])
 final case class FlipBanner(banner: Banner) extends TurnOperation,
     LeafOperation
 
-/** Sets `CurrentGameState.endDieModifier`, Arbiter's change to the coming
-  * end die, from -1 to +3 (Legacy in-play powers ruling 21; R11). The end
-  * die reads and clears it. The journal records it, so a reloaded game
-  * rolls with the same modifier. */
 /** Records `holder`'s Conspirator prediction, `round` from 1 to 8 and a
   * seated `winner`, in `CurrentGameState.predictions` (Legacy in-play
   * powers rulings 25-26). A holder writes one. */
@@ -190,6 +186,10 @@ final case class WritePrediction(holder: PlayerId, round: Int,
 final case class ResolvePrediction(holder: PlayerId, fulfilled: Boolean)
     extends TurnOperation, LeafOperation
 
+/** Sets `CurrentGameState.endDieModifier`, Arbiter's change to the coming
+  * end die, from -1 to +3 (Legacy in-play powers ruling 21; R11). The end
+  * die reads and clears it. The journal records it, so a reloaded game
+  * rolls with the same modifier. */
 final case class SetEndDieModifier(amount: Int) extends TurnOperation,
     LeafOperation:
   require(amount >= -1 && amount <= 3,
