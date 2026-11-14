@@ -336,25 +336,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         OathsOfLoyalty.noteKeys(TriggeredProcedureRef.Setup)
           .map(_ -> LogKind.Decision)),
       narratedPrefixes = Vector("setup."), isSection = false)
-    // A pawnless player's first Wake (Legacy Setup powers R32): its lines
-    // tell its decisions, the kept, discarded and revealed ones posting as
-    // decisions, as Setup's do.
-    case TriggeredProcedureRef.QuestFirstWake => ProcedureLog(tag = None,
-      lines = ActionLineSource.Notes(Map(
-        QuestFirstWakeProcedure.keptAdviser -> LogKind.Decision,
-        QuestFirstWakeProcedure.revealedCard -> LogKind.Decision,
-        SecretSociety.wakeDiscarded -> LogKind.Decision) ++
-        OathsOfLoyalty.noteKeys(TriggeredProcedureRef.QuestFirstWake)
-          .map(_ -> LogKind.Decision)),
-      narratedPrefixes = Vector("wake.legacy.quest."), isSection = false)
-    // Arbiter's question before the end die (Legacy in-play powers R12):
-    // a modifier posts as a decision; Decline writes nothing.
-    case TriggeredProcedureRef.Arbiter => ProcedureLog(tag = None,
-      lines = ActionLineSource.Notes(Map(
-        ArbiterStep.raised -> LogKind.Decision,
-        ArbiterStep.lowered -> LogKind.Decision)),
-      narratedPrefixes = Vector("round-end.legacy.arbiter."),
-      isSection = false)
+    case TriggeredProcedureRef.QuestFirstWake => questFirstWake
+    case TriggeredProcedureRef.Arbiter => arbiter
     // One decision id serves the Wake, Rest and Act menus, so all three
     // declare it.
     case TriggeredProcedureRef.WakeMenu | TriggeredProcedureRef.RestMenu |
@@ -411,6 +394,27 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
 
   // The Sun's and the Throne's entries stand apart from `rules`, whose
   // body would otherwise outgrow coverage instrumentation.
+  /** A pawnless player's first Wake (Legacy Setup powers R32): its lines
+    * tell its decisions, the kept, discarded and revealed ones posting as
+    * decisions, as Setup's do. */
+  private lazy val questFirstWake: ProcedureLog = ProcedureLog(tag = None,
+    lines = ActionLineSource.Notes(Map(
+      QuestFirstWakeProcedure.keptAdviser -> LogKind.Decision,
+      QuestFirstWakeProcedure.revealedCard -> LogKind.Decision,
+      SecretSociety.wakeDiscarded -> LogKind.Decision) ++
+      OathsOfLoyalty.noteKeys(TriggeredProcedureRef.QuestFirstWake)
+        .map(_ -> LogKind.Decision)),
+    narratedPrefixes = Vector("wake.legacy.quest."), isSection = false)
+
+  /** Arbiter's question before the end die (Legacy in-play powers R12): a
+    * modifier posts as a decision; Decline writes nothing. */
+  private lazy val arbiter: ProcedureLog = ProcedureLog(tag = None,
+    lines = ActionLineSource.Notes(Map(
+      ArbiterStep.raised -> LogKind.Decision,
+      ArbiterStep.lowered -> LogKind.Decision)),
+    narratedPrefixes = Vector("round-end.legacy.arbiter."),
+    isSection = false)
+
   private lazy val chronicleSun: ProcedureLog = ProcedureLog(tag = None,
     lines = ActionLineSource.Notes(Map(
       ChronicleSunProcedure.empireBroke -> LogKind.Delta,
