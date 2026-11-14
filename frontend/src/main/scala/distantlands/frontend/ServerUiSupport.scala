@@ -130,6 +130,7 @@ private[frontend] object ServerUiSupport:
       if index > 0 then powers.appendChild(dom.document.createTextNode(" · "))
       // The control is not printed; the label it shows is (ruling R9).
       val item = button("", "site-power")
+      item.setAttribute("aria-label", power.label)
       item.appendChild(text("span", "printed", power.label))
       HoverTip.set(item, power.description.fold(power.label)(
         description => s"${power.label}: $description"))

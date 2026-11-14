@@ -256,3 +256,13 @@ class SiteFaceSuite extends munit.FunSuite:
     assertEquals(all(row, ":scope > span").map(_.getAttribute("class")),
       Vector("site-forces-label", "site-forces-count"))
     assertEquals(row.textContent, "Bandit Warbands x12")
+
+  /** The label inside is printed and may be hidden; the button keeps its
+    * name in its own attribute (ruling R9). */
+  test("a site-power button is named by its own label"):
+    val details = ServerUiSupport.siteDetails(woods.copy(powers = Vector(
+      distantlands.protocol.projection.SitePowerProjection("action",
+        "Mountain", Some("Rule")))))
+    val power = firstMatch(details, ".site-power").getOrElse(fail("no power"))
+    assertEquals(power.getAttribute("aria-label"), "Mountain")
+    assertEquals(power.textContent, "Mountain")
