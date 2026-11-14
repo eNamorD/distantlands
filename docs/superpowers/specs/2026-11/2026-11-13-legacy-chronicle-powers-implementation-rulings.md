@@ -137,9 +137,23 @@ Slice/files: 2; the four powers, `BuildEdifice`.
 
 **R14. Burial favor and late edifice discards.**
 Decision: Build Edifice's burial returns favor to the buried card's own
-suit bank. A ruined edifice Revolutionary discards after Build Edifice
-returned the set-aside list stays set aside, which is harmless; a test
-checks the stored Chronicle still passes game start's card accounting.
+suit bank. A ruined edifice Revolutionary discards after Build Edifice is
+not left set aside: R16 returns it to the edifice deck. A test checks the
+stored Chronicle still passes game start's card accounting.
 Reason: the favor follows the card that leaves; game start rebuilds the
 edifice deck from the catalog.
 Slice/files: 2; `BuildEdifice`, `Revolutionary`.
+
+**R16. A ruined edifice Revolutionary discards.** (Narrows R14's second
+half.)
+Question: `ChronicleExtraction` refuses a card left on the set-aside
+edifice list, so a ruined edifice Revolutionary discards after Build
+Edifice stopped the Chronicle Phase ("the Chronicle cannot store E27
+(SetAsideEdifices)").
+Decision: after its discards, Revolutionary returns each ruined edifice it
+discarded from the set-aside list to the edifice deck, with the same move
+Build Edifice's closing step uses. R9 stands.
+Reason: it restores the invariant that the set-aside list is empty after
+Build Edifice, matches the CR's "bottom of the edifice deck", and needs no
+new move kind; the R14 test proves game start's accounting.
+Slice/files: 2; `Revolutionary`.
