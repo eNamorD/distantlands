@@ -81,6 +81,10 @@ private[operations] object LeafApplication:
       BoardControlOperations.setFestivalMarker(ready, site)
     case FlipBanner(banner) =>
       Right(BoardControlOperations.flipBanner(ready, banner))
+    case WritePrediction(holder, round, winner) =>
+      TurnStateOperations.writePrediction(ready, holder, round, winner)
+    case ResolvePrediction(holder, fulfilled) =>
+      TurnStateOperations.resolvePrediction(ready, holder, fulfilled)
     case SetEndDieModifier(amount) =>
       Right(TurnStateOperations.setEndDieModifier(ready, amount))
     case OpenPick(decisionId, option, label) =>

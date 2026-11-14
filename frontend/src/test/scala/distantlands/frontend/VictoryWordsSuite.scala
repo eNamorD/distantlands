@@ -11,7 +11,8 @@ class VictoryWordsSuite extends munit.FunSuite:
       "random-selection" -> "victory by random selection",
       "stable-regime" -> "Stable Regime victory",
       "chancellor-exhaustion" -> "War Exhaustion victory",
-      "successor" -> "Successor to the Chancellor")
+      "successor" -> "Successor to the Chancellor",
+      "conspirator" -> "Conspirator's prediction")
     names.foreach { case (key, name) =>
       assertEquals(VictoryWords.of(Some(key)), name, clue(key))
     }

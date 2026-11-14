@@ -62,6 +62,12 @@ private[serialization] trait TurnOperationCodec extends CampaignResultCodec
         "siteId" -> site.fold[ujson.Value](ujson.Null)(at => ujson.Str(at.value)))
       case FlipBanner(banner) => ujson.Obj("kind" -> "flip-banner",
         "bannerKey" -> banner.key)
+      case WritePrediction(holder, round, winner) => ujson.Obj(
+        "kind" -> "write-prediction", "holder" -> holder.value,
+        "round" -> round, "winner" -> winner.value)
+      case ResolvePrediction(holder, fulfilled) => ujson.Obj(
+        "kind" -> "resolve-prediction", "holder" -> holder.value,
+        "fulfilled" -> fulfilled)
       case SetEndDieModifier(amount) => ujson.Obj(
         "kind" -> "set-end-die-modifier", "amount" -> amount)
       case OpenPick(decisionId, option, label) => ujson.Obj(
@@ -124,6 +130,13 @@ private[serialization] trait TurnOperationCodec extends CampaignResultCodec
     case "flip-banner" => Banner.fromKey(value("bannerKey").str)
       .map(FlipBanner(_))
       .toRight(InvalidValue(s"$path.bannerKey", "unknown banner"))
+    case "write-prediction" =>
+      decodeSignedInt(value("round"), s"$path.round").map(round =>
+        WritePrediction(PlayerId(value("holder").str), round,
+          PlayerId(value("winner").str)))
+    case "resolve-prediction" =>
+      Right(ResolvePrediction(PlayerId(value("holder").str),
+        value("fulfilled").bool))
     case "set-end-die-modifier" =>
       decodeSignedInt(value("amount"), s"$path.amount").flatMap(amount =>
         if amount >= -1 && amount <= 3 then Right(SetEndDieModifier(amount))

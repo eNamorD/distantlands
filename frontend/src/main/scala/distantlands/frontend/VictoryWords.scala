@@ -12,5 +12,6 @@ private[frontend] object VictoryWords:
     case Some("stable-regime") => "Stable Regime victory"
     case Some("chancellor-exhaustion") => "War Exhaustion victory"
     case Some("successor") => "Successor to the Chancellor"
+    case Some("conspirator") => "Conspirator's prediction"
     case Some(other) => s"${other.replace('-', ' ')} victory"
     case None => "victory"

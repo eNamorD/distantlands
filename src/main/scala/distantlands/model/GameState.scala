@@ -191,6 +191,10 @@ final case class GameTracks(
   require(round <= 8, "round must be eight or less")
   require(visionsDrawn >= 0, "Visions Drawn must be non-negative")
 
+/** A prediction Conspirator's holder wrote down: the round the game will
+  * end in and who will win (Legacy in-play powers ruling 25). */
+final case class Prediction(round: Int, winner: PlayerId)
+
 enum VictoryKind(val key: String):
   case Usurper extends VictoryKind("usurper")
   case Visionary extends VictoryKind("visionary")
@@ -204,6 +208,9 @@ enum VictoryKind(val key: String):
   /** A Citizen's win in the Chancellor's place (Successor to the
     * Chancellor). */
   case Successor extends VictoryKind("successor")
+  /** Conspirator's holder's win, when they wrote down the round the game
+    * ended in and its final winner (Legacy in-play powers ruling 27). */
+  case Conspirator extends VictoryKind("conspirator")
 
 /** `visions` is a Visionary win's qualifying Visions, which Swear an Oath
   * reads (catalog batch 11, ruling 30); empty for every other win. */
@@ -327,7 +334,12 @@ final case class CurrentGameState(
     // which clears it (Legacy in-play powers ruling 21; R11). A round that
     // ends without a roll consuming it clears it too, so none outlives its
     // round. Public, as the choice was made openly.
-    endDieModifier: Int = 0
+    endDieModifier: Int = 0,
+    // Conspirator's predictions, by holder: hidden information, written at
+    // the holder's first Wake and read at the game's end, which clears it
+    // (Legacy in-play powers rulings 25-27). Never projected; the holder
+    // reads it in their own log line.
+    predictions: Map[PlayerId, Prediction] = Map.empty
 ):
   /** The warbands of `kind` on `card`. */
   def warbandsOn(card: CardId, kind: ForceKind): Int =
