@@ -48,6 +48,15 @@ object SetupLegacyRules:
   def wealthy(state: ReadyGame): Option[PlayerId] =
     ChronicleLegacyRules.holder(state, WealthyCard.id)
 
+  /** Iron Hand's Exile holder when its SETUP half acts: "If you were in
+    * the previous game" (R39), so only when the holder's lineage was, as
+    * its stored previous player records. */
+  def ironHand(state: ReadyGame): Option[PlayerId] =
+    ChronicleLegacyRules.ironHand(state).filter(player =>
+      state.game.current.player(player).flatMap(held =>
+        state.game.campaign.lineages.get(held.lineage))
+        .exists(_.previousPlayer.nonEmpty))
+
   /** Whether `player` may stay off the map in Setup: Quest to Distant
     * Lands' holder (ruling 18). */
   def mayStayOff(state: ReadyGame, player: PlayerId): Boolean =

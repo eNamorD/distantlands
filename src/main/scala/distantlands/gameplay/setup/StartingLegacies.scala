@@ -50,10 +50,13 @@ object StartingLegacies:
       ChronicleLegacyRules.imperialRoles).map(playerOf)
     // Only an Exile's Iron Hand acts: an Imperial discarded it (R4). An
     // exile-only game restored no Empire, so it has no site up to the
-    // Empire divider for the holder's warbands.
+    // Empire divider for the holder's warbands. "If you were in the
+    // previous game": a holder whose lineage sat it out does nothing (R39).
     val ironHand = mode match
       case SetupMode.ExileOnly(_) => None
       case _ => holder(chronicle, seated, IronHandCard.id, exileRoles)
+        .filter(lineage => chronicle.lineages.exists(stored =>
+          stored.id == lineage && stored.previousPlayer.nonEmpty))
     val (rival, sites) = rivalSites(chronicle, seated,
       placedBefore(chronicle, mode))
     StartLegacies(circle.toMap, ironHand, rival, sites, bearer)
