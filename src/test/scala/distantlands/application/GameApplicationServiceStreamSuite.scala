@@ -13,7 +13,8 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
 import distantlands.serialization.GameEventWire
 import distantlands.gameplay.chronicle.ChronicleBeginProcedure
-import distantlands.gameplay.setup.{LegacyDeal, SetupProcedure}
+import distantlands.gameplay.setup.{LegacyDeal, SetupAdviserSteps,
+  SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.testkit.{Commands, Look, Outcomes, PlacementPicks,
   RoundEndChoices, Table}
@@ -240,13 +241,13 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
           PartitionAnswer(Vector(
             DecisionPlacement(DecisionOptionRef.Denizen(
               WizardsConclaveCard.id),
-              SetupProcedure.adviserKeepKey),
+              SetupAdviserSteps.keepKey),
             DecisionPlacement(DecisionOptionRef.Denizen(
               ErrandBoyCard.id),
-              SetupProcedure.adviserDiscardKey),
+              SetupAdviserSteps.discardKey),
             DecisionPlacement(DecisionOptionRef.Denizen(
               NatureWorshipCard.id),
-              SetupProcedure.adviserDiscardKey)))))
+              SetupAdviserSteps.discardKey)))))
       ),
       Left(GameApplicationError.StaleClientPosition(1L, 2L)))
     assertEquals(

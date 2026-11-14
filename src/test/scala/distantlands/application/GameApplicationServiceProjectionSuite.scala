@@ -17,7 +17,8 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer,
   PartitionAnswer}
 import distantlands.server.GameHttpWire
-import distantlands.gameplay.setup.{LegacyDeal, SetupProcedure}
+import distantlands.gameplay.setup.{LegacyDeal, SetupAdviserSteps,
+  SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.model.OathState.Ready
 import distantlands.gameplay.actions.VisionRules
@@ -418,11 +419,11 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
         SetupProcedure.adviserDecisionId(firstPlayer),
         PartitionAnswer(Vector(
           DecisionPlacement(DecisionOptionRef.Denizen(wizardsConclave),
-            SetupProcedure.adviserKeepKey),
+            SetupAdviserSteps.keepKey),
           DecisionPlacement(DecisionOptionRef.Denizen(errandBoy),
-            SetupProcedure.adviserDiscardKey),
+            SetupAdviserSteps.discardKey),
           DecisionPlacement(DecisionOptionRef.Denizen(natureWorship),
-            SetupProcedure.adviserDiscardKey)))))))
+            SetupAdviserSteps.discardKey)))))))
     // Wizard's Conclave may be revealed, so Reveal Cards follows while p2
     // holds it facedown: everyone else is told who is deciding, and nothing
     // names the card.

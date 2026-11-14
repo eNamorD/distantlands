@@ -64,8 +64,6 @@ import distantlands.model.OathViolation._
  * powers. The step asks nothing when the player has nothing to reveal.
  */
 object SetupProcedure:
-  val adviserKeepKey: String = SetupAdviserSteps.keepKey
-  val adviserDiscardKey: String = SetupAdviserSteps.discardKey
   /** Choose Adviser and Reveal Cards, with Setup's lines. */
   private val adviserSteps = SetupAdviserSteps(TriggeredProcedureRef.Setup)
 
@@ -103,11 +101,6 @@ object SetupProcedure:
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     Either.cond(args.isEmpty, (),
       InvalidEventOrder("Setup selects nothing")).map(_ => tree(catalog, ready))
-
-  /** The cards `player` may reveal in Reveal Cards (`SetupAdviserSteps`). */
-  def revealable(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId)
-      : Vector[DecisionOption] =
-    SetupAdviserSteps.revealable(catalog, ready, player)
 
   private def tree(catalog: ExecutableCatalog, ready: ReadyGame): Operation =
     val participants = turnOrder(ready)
