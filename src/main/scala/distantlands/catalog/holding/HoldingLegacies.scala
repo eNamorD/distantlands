@@ -32,15 +32,6 @@ object KeeperOfOrderCard extends Legacy(LegacyId("L11"), "Keeper of Order",
       "you roll when attacking.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object GoldenKeyCard extends Legacy(LegacyId("L12"), "Golden Key",
-    LegacyGoal.GrandScepter, Suit.Arcane):
-  val power = PrintedPower(PowerId("legacy.golden-key"),
-    persistent = false, cost = Cost(favorBurnt = 1, secretBurnt = 1),
-    text = "**IF YOU ARE AN IMPERIAL:** You may always peek at the " +
-      "Reliquary. **ACTION:** Burn [secret-burnt] [favor-burnt] to " +
-      "take a relic from the Reliquary.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object HighPriestCard extends Legacy(LegacyId("L21"), "High Priest",
     LegacyGoal.DarkestSecret, Suit.Order):
   val power = PrintedPower(PowerId("legacy.high-priest"),
