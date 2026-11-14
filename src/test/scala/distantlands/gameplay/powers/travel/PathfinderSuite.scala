@@ -66,12 +66,17 @@ class PathfinderSuite extends munit.FunSuite:
     assertEquals(candidates(holder).get(provincePlains), Some(2))
     assert(travel(holder, provincePlains).isRight)
 
-  test("the Pass still limits a campaign: Pathfinder casts no vote at " +
-      "target selection"):
-    assert(!Pathfinder.contributions.contains(
-      PowerWindow.CampaignTargetSelection))
-    assert(Pathfinder.contributions.contains(
-      PowerWindow.TravelActionEligibility))
+  test("the Pass still limits a campaign's targets with Pathfinder held"):
+    // `CampaignConsentFixture`: p1 at Ancient City, in the Cradle, starts a
+    // Conquest of the bandits; the bandit-held Narrow Pass, in the
+    // Provinces, forbids Deep Woods there as an extra target.
+    import distantlands.gameplay.CampaignConsentFixture.{deepWoodsRef,
+      passHeldByBandits, started, targetOptions}
+    val withPathfinder = on(passHeldByBandits)(
+      _.legacy(actor, PathfinderCard))
+    val woods = targetOptions(started(withPathfinder))
+      .find(_.ref == deepWoodsRef)
+    assert(woods.exists(!_.available), woods.toString)
 
   test("a dormant Pathfinder ignores nothing (ruling 1)"):
     assertEquals(candidates(passRuled(dormant)).get(mountain), Some(3))
