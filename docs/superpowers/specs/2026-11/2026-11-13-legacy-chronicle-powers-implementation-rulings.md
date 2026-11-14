@@ -241,8 +241,8 @@ line may name them.
 Slice/files: 3; `OathsOfLoyalty`, `GatherDenizens`.
 
 **R24. Oaths' burial of other starting advisers.**
-Re-ruled by the owner 2026-11-14 for Teeming World; not yet implemented
-(who makes the change is still to be decided).
+Re-ruled by the owner 2026-11-14 for Teeming World; not yet implemented.
+The owner assigned the change to the Setup powers session.
 Decision: the keep questions stay (Protect and Dispossess, Welcome a
 Stranger, the next Setup's hand of three) and the kept card is buried at
 the bottom of the world deck instead: "p2 buried X with Oaths of Loyalty".
