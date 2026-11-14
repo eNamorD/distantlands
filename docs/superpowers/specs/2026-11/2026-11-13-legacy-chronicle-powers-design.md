@@ -306,8 +306,8 @@ Each slice updates, as it lands:
   changes;
 - `docs/rules/ambiguities.md`: the rulings above;
 - `docs/rules/implementation-traceability.md`: each legacy's row;
-- `docs/ROADMAP.md`: the "Legacy powers: Chronicle" item ticked when
-  slice 5 lands; the setup and in-play items still name Iron Hand's,
+- `docs/ROADMAP.md`: the "Legacy powers: Chronicle" item dropped when
+  slice 5 landed (implementation ruling R44); the setup and in-play items still name Iron Hand's,
   Rival's, Oaths' and The Ear's other halves, and the in-play item gains
   Iron Hand's discard during a game.
 

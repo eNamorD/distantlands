@@ -196,7 +196,7 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 
 ## Legacy Chronicle powers rulings
 
-Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6; items 15 to 18 are the design's rulings 9 to 12; items 19 to 28 are implementation rulings R7 to R16; items 29 to 33 are the design's rulings 13 to 17; items 34 to 40 are implementation rulings R17 to R28; items 41 to 44 are the design's rulings 18 to 21; items 45 to 52 are implementation rulings R29 to R36; items 53 and 54 are the design's rulings 22 and 23; items 55 to 60 are implementation rulings R37 to R41 and R43; item 61 is implementation ruling R45.
+Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6; items 15 to 18 are the design's rulings 9 to 12; items 19 to 28 are implementation rulings R7 to R16; items 29 to 33 are the design's rulings 13 to 17; items 34 to 40 are implementation rulings R17 to R28; items 41 to 44 are the design's rulings 18 to 21; items 45 to 52 are implementation rulings R29 to R36; items 53 and 54 are the design's rulings 22 and 23; items 55 to 60 are implementation rulings R37 to R41 and R43; item 61 is implementation ruling R45; item 62 is implementation ruling R47.
 
 1. **Only seated players' active legacies act.** A legacy's Chronicle power applies when a seated player holds it active at the moment its window is reached. A boxed lineage's legacies never act; a dormant legacy has no power (design, ruling 1).
 2. **A role condition is read at the same moment,** so the Crown and Offer Citizenship change it for every later step (design, ruling 2).
@@ -259,6 +259,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 59. **Royal Line's line** is "p3 named p2 the winner with Royal Line", only when the winner changes; the end-of-game line stays as it was, and the result banner follows the result (R41).
 60. **Build Edifice builds each suit at most once beside Iron Hand:** when an Imperial Great Architect built a suit's edifice, the holder is not offered that suit (R43).
 61. **Build Edifice offers only the edifices available when the step began:** an edifice buried earlier in the step goes to the edifice deck but is not offered by a later suit (R45).
+62. **The Ear's and The Bright Beacon's peeks write no Game Log line;** each power writes its one line, and the holder still knows the cards (R47).
 
 ## Source relationship cautions
 
