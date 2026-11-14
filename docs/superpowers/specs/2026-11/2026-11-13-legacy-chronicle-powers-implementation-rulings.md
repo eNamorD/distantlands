@@ -442,3 +442,16 @@ placement.
 Slice/files: 4 (fixed in 5); `ChronicleSunProcedure`, `IronHand`; the
 design's ruling 18, `docs/rules/chronicle.md`, `docs/rules/ambiguities.md`
 items 41 and 46.
+
+**R47. The Ear's and The Bright Beacon's peeks in the Game Log.** (A
+whole-feature review finding.)
+Question: each knowledge-only Peek The Ear and The Bright Beacon record
+wrote a "peeked at" line, one per relic or denizen and again at placement,
+flooding every viewer's log.
+Decision: these peeks write no log lines; each power keeps its one line
+(the design's "One line per power used"). The Game Log's detail lines
+skip peeks in the Throne and the Beacon, where only these two powers
+peek; the knowledge records are unchanged.
+Reason: a peek line per card says nothing the power's own line does not,
+and floods the log.
+Slice/files: 3 (fixed in 5); `DetailLines`.

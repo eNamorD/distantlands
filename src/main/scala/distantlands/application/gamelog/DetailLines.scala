@@ -150,8 +150,11 @@ private[gamelog] final class DetailLines(words: LogWords,
           words.one(asItLay(discard.card)))
       case Bury(buried, _, _) =>
         line(LogSpan.Text("Buried ") +: words.one(card(buried.id)))
+      // The Ear's and The Bright Beacon's peeks only record what the holder
+      // knows; each power writes its one line (Legacy Chronicle powers R47).
       case Peek(peeker, id, _) if run.procedure != ActionRef.Negotiation &&
-          run.procedure != ActionRef.PeekSiteRelics =>
+          run.procedure != ActionRef.PeekSiteRelics &&
+          !DetailLines.knowledgeOnlyPeeks(run.procedure) =>
         line(words.subject(peeker, actor, "peeked at") ++ words.one(card(id)))
       case Reveal(id, _) if run.procedure != ActionRef.RevealOwnedRelic =>
         line(LogSpan.Text("Revealed ") +: words.one(card(id)))
@@ -198,6 +201,11 @@ private[gamelog] final class DetailLines(words: LogWords,
     }.flatten
 
 private[gamelog] object DetailLines:
+  /** The procedures whose peeks write no line: in the Chronicle only The
+    * Ear (Throne) and The Bright Beacon (Beacon) peek (R47). */
+  val knowledgeOnlyPeeks: Set[ProcedureRef] = Set(
+    TriggeredProcedureRef.ChronicleThrone, TriggeredProcedureRef.ChronicleBeacon)
+
   private[gamelog] sealed trait Found
   private[gamelog] final case class Line(posted: Posted) extends Found
   private[gamelog] final case class Discarded(who: Vector[LogSpan],

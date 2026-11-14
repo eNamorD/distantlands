@@ -2,7 +2,8 @@ package distantlands.application.gamelog
 
 import distantlands.catalog.holding.SeerCard
 import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
-  GatekeeperCard, HeirloomCard, IronHandCard}
+  GatekeeperCard, HeirloomCard, IronHandCard, TheBrightBeaconCard,
+  TheEarCard}
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
   GolemLegionsCard}
 import distantlands.model.PlayerId
@@ -38,6 +39,19 @@ class ChronicleLegacyLogSuite extends munit.FunSuite:
       assert(said.contains(s"${p2.value} declared ${ChroniclerCard.name}"),
         viewer)
       assert(said.exists(_.startsWith(s"${p2.value} scored ")), viewer)
+    }
+
+  test("The Ear's and The Bright Beacon's peeks write no line; each power " +
+      "writes its one line (R47)"):
+    val script = ChronicleLogScripts.chronicleEarBeacon
+    Vector(Some(p1), Some(p2), Some(p3), None).foreach { viewer =>
+      val said = format(script, viewer).map(text)
+      assertEquals(said.filter(_.toLowerCase.contains("peeked at")),
+        Vector.empty, viewer)
+      assertEquals(said.count(_ == s"${p2.value} chose where the relics " +
+        s"went with ${TheEarCard.name}"), 1, viewer)
+      assertEquals(said.count(_ == s"${p2.value} took six newcomers from " +
+        s"the Dispossessed with ${TheBrightBeaconCard.name}"), 1, viewer)
     }
 
   test("Heirloom's relic is named to its holder alone (ruling 13; R19)"):

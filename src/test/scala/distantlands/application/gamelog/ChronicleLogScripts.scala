@@ -5,10 +5,11 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
 import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship,
   ShapeFoundation}
-import distantlands.gameplay.GrandMaskCard
 import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
   Gatekeeper, GatekeeperCard, Heirloom, HeirloomCard, IronHandCard,
-  OathsOfLoyalty, OathsOfLoyaltyCard, RoyalLine, RoyalLineCard}
+  OathsOfLoyalty, OathsOfLoyaltyCard, RoyalLine, RoyalLineCard,
+  TheBrightBeacon, TheBrightBeaconCard, TheEarCard}
+import distantlands.gameplay.{BanditCrownCard, GrandMaskCard}
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
   DowntroddenCard, GolemLegionsCard, MapLibraryCard}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
@@ -174,6 +175,25 @@ object ChronicleLogScripts:
         ChooseOneAnswer(DecisionOptionRef.Player(p2))
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("chronicle-royal-line", service, p1)
+
+  /** The game of [[chronicleStarted]] with The Ear and The Bright Beacon:
+    * p2 holds both, the Darkest Secret, which keeps them active and brings
+    * the Beacon task, and three relics. In Scatter Relics p2 chooses where
+    * the relics go, and at the Beacon takes the six newcomers from the
+    * Dispossessed (Legacy Chronicle powers, slice 3; R47). */
+  def chronicleEarBeacon(using munit.Location): Script =
+    val (service, acting) = atTable("chronicle-ear-beacon", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .darkestSecret(Some(p2), 1).relic(p2, CupOfPlentyCard)
+      .relic(p2, GrandMaskCard).relic(p2, BanditCrownCard)
+      .legacy(p2, TheEarCard).legacy(p2, TheBrightBeaconCard)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.withAnswers {
+      case park if park.decisionId == TheBrightBeacon.sourceId(p2) =>
+        ChooseOneAnswer(TheBrightBeacon.dispossessed)
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("chronicle-ear-beacon", service, p1)
 
   /** The first game, with Foundation I on Wide Horizons: at the Beacon
     * p1, who holds it, restores it to Imperial Maps (Foundations design,
