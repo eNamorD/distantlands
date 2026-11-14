@@ -19,7 +19,7 @@ class EnumWireKeySuite extends munit.FunSuite:
         "wake-menu", "rest-menu", "act-menu", "chronicle-begin",
         "chronicle-sun", "chronicle-throne", "chronicle-world",
         "chronicle-beacon", "chronicle-stars", "chronicle-finish",
-        "quest-first-wake", "round-end-arbiter"))
+        "quest-first-wake", "round-end-arbiter", "game-end-conspirator"))
 
   test("every older triggered procedure key still decodes, and the first " +
       "Wake's is new (R32)"):

@@ -74,6 +74,10 @@ enum TriggeredProcedureRef(val key: String) extends ProcedureRef:
     * ruling 21; R11). The driver starts it at a round's end when the end
     * die will be rolled and a seated player holds Arbiter active. */
   case Arbiter extends TriggeredProcedureRef("round-end-arbiter")
+  /** Conspirator's prediction revealed, and its win, at the game's end
+    * (Legacy in-play powers ruling 27; R24). The driver starts it once a
+    * result is set and a prediction is stored, before the Chronicle. */
+  case ConspiratorReveal extends TriggeredProcedureRef("game-end-conspirator")
   /** Asks a follow-up entry's actor: the action, or Skip (walker-driven
     * game loop design, ruling 6). The driver starts it when it dequeues an
     * `Offer` entry. */
@@ -161,7 +165,8 @@ object TriggeredProcedureRef:
   val all: Vector[TriggeredProcedureRef] = Vector(Oathkeeper, Setup,
     ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu, ChronicleBegin,
     ChronicleSun, ChronicleThrone, ChronicleWorld, ChronicleBeacon,
-    ChronicleStars, ChronicleFinish, QuestFirstWake, Arbiter)
+    ChronicleStars, ChronicleFinish, QuestFirstWake, Arbiter,
+    ConspiratorReveal)
 
 object StartableRef:
   /** The finite references. The parameterized use-power reference is not

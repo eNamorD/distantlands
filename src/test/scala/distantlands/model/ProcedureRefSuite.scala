@@ -36,7 +36,8 @@ class ProcedureRefSuite extends munit.FunSuite:
         TriggeredProcedureRef.ChronicleBeacon,
         TriggeredProcedureRef.ChronicleStars,
         TriggeredProcedureRef.ChronicleFinish,
-        TriggeredProcedureRef.QuestFirstWake, TriggeredProcedureRef.Arbiter))
+        TriggeredProcedureRef.QuestFirstWake, TriggeredProcedureRef.Arbiter,
+        TriggeredProcedureRef.ConspiratorReveal))
     assertEquals(TriggeredProcedureRef.ActMenu.key, "act-menu")
 
   test("a key resolves only under its own family"):

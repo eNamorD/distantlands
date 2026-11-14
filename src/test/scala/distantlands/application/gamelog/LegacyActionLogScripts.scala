@@ -8,6 +8,9 @@ import distantlands.gameplay.powers.action.GrandScepterAction
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.gameplay.powers.economy.DefameCard
 import distantlands.gameplay.actions.negotiation.HighPriestCard
+import distantlands.gameplay.powers.legacies.{ConspiratorCard,
+  ConspiratorPrediction, TheMouth, TheMouthCard}
+import distantlands.gameplay.setup.legacies.TheStandardBearerCard
 import distantlands.gameplay.powers.legacies.{GoldenKey, GoldenKeyCard,
   HighPriest, Peacemaker, PeacemakerCard, Ruthless, RuthlessCard,
   TheEarAction}
@@ -18,7 +21,7 @@ import distantlands.gameplay.powers.economy.BelovedCard
 import distantlands.gameplay.powers.travel.AncestralLandsCard
 import distantlands.gameplay.powers.wake.LightFingersCard
 import distantlands.model._
-import distantlands.testkit.{MenuPlay, RoundEndChoices, Table}
+import distantlands.testkit.{MenuPlay, RoundEndChoices, Step, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 
@@ -109,7 +112,46 @@ object LegacyActionLogScripts:
       Vector(DecisionOptionRef.Relic(TheGrandScepterCard.id))))
     Script("legacy-triggers", service, p1)
 
+  /** The legacies' activation and prediction (slice 4), from round 1 to
+    * the game's end. p1, the Chancellor, holds the Oathkeeper title of
+    * Devotion and the Darkest Secret; p2, a Citizen, holds the Grand
+    * Scepter, Devotion's Successor goal; p3, an Exile at Broken Peaks and
+    * the round's last seat, holds Conspirator and The Mouth active, The
+    * Standard Bearer dormant, the People's Favor, which meets its goal, and
+    * 2 favor. p2 rests; at p3's first Wake Conspirator writes down p2 and
+    * round 5; in p3's Act The Mouth activates The Standard Bearer, a SETUP
+    * power that does nothing now. An arrangement moves the round marker to
+    * 5; p3 rests, the end die rolls 6, p2 wins as Successor, and the
+    * prediction, revealed, makes p3 the winner. */
+  def legacyPrediction(using munit.Location): Script =
+    val table = Table.start.imperial(p1, p2)
+      .oathkeeperGoal(OathkeeperGoal.Devotion).oathkeeper(Some(p1))
+      .darkestSecret(Some(p1), secrets = 1).relic(p2, TheGrandScepterCard)
+      .pawn(p3, at = BrokenPeaksSite).favor(p3, 2)
+      .peoplesFavor(Some(p3), favor = 1)
+      .legacy(p3, ConspiratorCard).legacy(p3, TheMouthCard)
+      .legacy(p3, TheStandardBearerCard, active = false)
+      .turn(p2, Phase.Act).banditsRefilled
+    val (service, acting) = atTable("legacy-prediction", table,
+      roundEnd = RoundEndChoices.endDie(6))
+    acting.withAnswers {
+      case park if park.decisionId == ConspiratorPrediction.roundDecisionId =>
+        DecisionAnswer.ChooseAmountAnswer(5)
+      case park if park.decisionId == ConspiratorPrediction.winnerDecisionId =>
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(p2))
+      case park if park.decisionId == TheMouth.decisionId =>
+        DecisionAnswer.ChooseOneAnswer(
+          DecisionOptionRef.Legacy(TheStandardBearerCard.id))
+    }.after(MenuPlay.starting(p2, PhaseTransitionRef.BeginRest))
+      .endingWake(p3)
+      .after(MenuPlay.start(p3, ActionRef.UsePower(TheMouth.id),
+          Vector(DecisionOptionRef.Legacy(TheMouthCard.id))),
+        Step.Arrange(Vector.fill(4)(AdvanceRound)),
+        MenuPlay.starting(p3, PhaseTransitionRef.BeginRest))
+    Script("legacy-prediction", service, p1)
+
   val named: Vector[(String, () => Script)] = Vector(
     "legacy-actions" -> (() => legacyActions),
     "legacy-modifiers" -> (() => legacyModifiers),
-    "legacy-triggers" -> (() => legacyTriggers))
+    "legacy-triggers" -> (() => legacyTriggers),
+    "legacy-prediction" -> (() => legacyPrediction))

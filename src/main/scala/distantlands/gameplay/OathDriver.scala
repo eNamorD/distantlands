@@ -10,6 +10,7 @@ import distantlands.gameplay.phases.rest.{ArbiterStep, TurnBoundary,
 import distantlands.gameplay.phases.wake.{ForcedWakeProcedure,
   QuestFirstWakeProcedure}
 import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.legacies.ConspiratorReveal
 import distantlands.gameplay.walker.{ActionBoundaryRan, ProcedureDequeued}
 import distantlands.model._
 import distantlands.model.OathEvent._
@@ -73,6 +74,11 @@ private[gameplay] trait OathDriver:
     * done (Chronicle steps design, "Chaining"). */
   private def openChronicle(transition: OathTransition) =
     transition.state match
+      // Conspirator's prediction is read at the game's end, before the
+      // Chronicle opens for the winner (Legacy in-play powers R24).
+      case Ready(ready) if ConspiratorReveal.due(ready).nonEmpty &&
+          ChronicleSequence.opening(ready.game.current).nonEmpty =>
+        startTriggered(transition, TriggeredProcedureRef.ConspiratorReveal)
       case Ready(ready) =>
         ChronicleSequence.opening(ready.game.current)
           .fold(Right(transition))(startTriggered(transition, _))
