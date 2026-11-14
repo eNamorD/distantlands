@@ -38,6 +38,9 @@ private[operations] object PileOperations:
       case ShufflePile.Search(source) => current.copy(commonCards =
         current.commonCards.withPile(source,
           cards.collect { case id: WorldCardId => id }))
+      case ShufflePile.VisionPackets => current.copy(commonCards =
+        current.commonCards.withPile(SearchSource.WorldDeck,
+          cards.collect { case id: WorldCardId => id }))
       case ShufflePile.EdificeDeck => current.copy(commonCards =
         current.commonCards.copy(
           edificeDeck = cards.collect { case id: EdificeId => id }))

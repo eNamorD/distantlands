@@ -657,6 +657,7 @@ procedure.setup placed-site = {0} placed {1} on the map
 procedure.setup populist-divided = {0} divided the favor evenly among the banks with {1}
 procedure.setup populist-divided-took = {0} divided the favor evenly among the banks with {1} and took {2}
 procedure.setup revealed-card = {0} revealed {1}
+procedure.setup secret-society-took = {0} took a Vision as a facedown adviser with {1}
 procedure.setup took-relic = {0} took a relic from the Reliquary
 procedure.setup world-crafter-placed-forgotten = {0} placed {1} from Forgotten Sites with {2}
 procedure.setup world-crafter-placed-recent = {0} placed {1} from Recent Sites with {2}

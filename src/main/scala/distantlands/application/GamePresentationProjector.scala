@@ -8,6 +8,7 @@ import distantlands.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementat
   WalkerPowerCatalog}
 import distantlands.gameplay.powers.wake.TrackerWake
 import distantlands.gameplay.setup.{LegacyKeep, SetupProcedure}
+import distantlands.gameplay.setup.legacies.{SecretSociety, SetupLegacyRules}
 import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
 import distantlands.model._
 import distantlands.protocol.projection._
@@ -354,7 +355,9 @@ private[application] final class GamePresentationProjector(
       // was discarded.
       case CardContainer.Deck(CardDeck.World) | CardContainer.RegionalDiscard(_) =>
         viewer.exists(player => ready.knowledge.advisers
-          .getOrElse(player, Vector.empty).exists(_ == id))
+          .getOrElse(player, Vector.empty).exists(_ == id) ||
+          (container == CardContainer.Deck(CardDeck.World) &&
+            id.isInstanceOf[VisionId] && deckQuestionPending(ready, player)))
       // The World task deals two stacks faceup and one facedown (CR p. 38).
       // The facedown stack is the last three gathered cards, also after
       // the protected stack leaves; every card before it is on the table
@@ -410,10 +413,24 @@ private[application] final class GamePresentationProjector(
   private lazy val setupPowers: WalkerPowers =
     WalkerPowers.selected(WalkerPowerCatalog.default(catalog), Vector.empty)
 
-  /** Whether Setup's walk is parked on `owner`'s keep (R16): the tree is
-    * rebuilt from the state and its open decisions read, as the decision
-    * projection reads them. Asked only for a card in a matchmade draw. */
+  /** Whether Setup's walk is parked on `owner`'s keep (R16). */
   private def keepPending(ready: ReadyGame, owner: PlayerId): Boolean =
+    setupOpen(ready).contains(LegacyKeep.decisionId(owner))
+
+  /** Whether Setup's walk is parked on `viewer`'s Secret Society question,
+    * whose options name the world deck's Visions (R20, R22). Checked only
+    * for a Vision in the world deck during Setup, held by a seated holder,
+    * so a plain projection never rebuilds Setup's tree. */
+  private def deckQuestionPending(ready: ReadyGame, viewer: PlayerId)
+      : Boolean =
+    ready.game.current.turn.phase == Phase.Setup &&
+      SetupLegacyRules.secretSociety(ready).contains(viewer) &&
+      setupOpen(ready).contains(SecretSociety.decisionId(viewer))
+
+  /** The ids of Setup's open decisions: the tree is rebuilt from the state
+    * and read as the decision projection reads it. Empty when Setup is not
+    * parked. */
+  private def setupOpen(ready: ReadyGame): Vector[String] =
     val current = ready.game.current
     (for
       pending <- current.walkerPending
@@ -421,8 +438,7 @@ private[application] final class GamePresentationProjector(
       tree <- SetupProcedure.build(catalog, ready, current.walkActor,
         current.walkerStartArgs).toOption
     yield ProcedureWalker.openDecisions(ready, tree, pending, setupPowers,
-      probing = false).exists(_.decisionId == LegacyKeep.decisionId(owner)))
-      .getOrElse(false)
+      probing = false).map(_.decisionId)).getOrElse(Vector.empty)
 
   /** [[identifiesCard]] for the card wherever it lies in `ready`: its own
     * orientation and container, looked up rather than passed. False for a

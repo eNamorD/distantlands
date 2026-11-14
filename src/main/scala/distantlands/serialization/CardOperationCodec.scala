@@ -253,6 +253,7 @@ private[serialization] trait CardOperationCodec extends CampaignResultCodec
       ujson.Obj("kind" -> "suited-reserve", "suit" -> suit.key)
     case ShufflePile.Reliquary => ujson.Obj("kind" -> "reliquary")
     case ShufflePile.Dispossessed => ujson.Obj("kind" -> "dispossessed")
+    case ShufflePile.VisionPackets => ujson.Obj("kind" -> "vision-packets")
 
   private def decodeShufflePile(value: ujson.Value, path: String)
       : Either[WireError, ShufflePile] =
@@ -262,6 +263,7 @@ private[serialization] trait CardOperationCodec extends CampaignResultCodec
       case Some("card-gathering") => Right(ShufflePile.CardGathering)
       case Some("reliquary") => Right(ShufflePile.Reliquary)
       case Some("dispossessed") => Right(ShufflePile.Dispossessed)
+      case Some("vision-packets") => Right(ShufflePile.VisionPackets)
       case Some("suited-reserve") => decodeSuit(value("suit").str,
         s"$path.suit").map(ShufflePile.SuitedReserve.apply)
       case _ => decodeSearchSource(value, path).map(ShufflePile.Search.apply)

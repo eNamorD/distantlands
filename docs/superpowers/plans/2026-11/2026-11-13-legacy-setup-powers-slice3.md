@@ -901,7 +901,7 @@ class SecretSocietySuite extends munit.FunSuite:
         ChooseOneAnswer(DecisionOptionRef.Vision(vision))
     }.parkedAt(SetupProcedure.pawnDecisionId(p1))().ready
     assert(after.game.current.player(p2).get.advisers.contains(
-      VisionState(vision, Orientation.FaceDown, Tokens.empty)))
+      VisionState(vision, Orientation.FaceDown)))
     assertEquals(after.game.current.tracks.visionsDrawn, drawn + 1)
     val deck = after.game.current.commonCards.worldDeck
     assertEquals(deck.take(12).count(_.isInstanceOf[VisionId]), 2)
@@ -1013,7 +1013,7 @@ class WorldDeckLegaciesProjectionSuite extends munit.FunSuite:
     Vector(Some(p2), Some(p1), None).foreach(viewer =>
       assertEquals(seenBy(at, viewer), Vector.empty, viewer))
     val taken = at.game.current.player(p2).get.advisers.collect {
-      case VisionState(id, _, _) => id }
+      case VisionState(id, _) => id }
     assertEquals(taken.size, 1)
     assert(presentation.identifiesAt(at, Some(p2), taken.head))
     Vector(Some(p1), None).foreach(viewer =>
@@ -1523,7 +1523,7 @@ class SeerSuite extends munit.FunSuite:
           case other => fail(s"expected a choose-one, got $other")
     })
     val taken = at.ready.game.current.player(p2).get.advisers.collect {
-      case VisionState(id, _, _) => id }
+      case VisionState(id, _) => id }
     assertEquals(taken.size, 1)
     assertEquals(asked(at).slots.map(_.ref),
       visions(at.ready).map(DecisionOptionRef.Vision(_)))

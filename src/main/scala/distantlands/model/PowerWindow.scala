@@ -192,6 +192,10 @@ object PowerWindow:
     * when the favor banks are set up (Legacy Setup powers design, ruling
     * 12). Populist hooks here. Empty with no power. */
   case object SetupBanks extends OtherWindow { val key = "setup.banks" }
+  /** After the banks, before any pawn: where the world deck game start
+    * built is changed (Legacy Setup powers design, rulings 14 and 15).
+    * Secret Society and then Seer hook here. Empty with no power. */
+  case object SetupWorldDeck extends OtherWindow { val key = "setup.world-deck" }
   /** Where the placing player's site is fixed for this player's Setup turn
     * (2026-09-21 Chronicle design, "Setup powers"): Great Forge and Broken
     * Forge hook here. */

@@ -120,6 +120,21 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assertEquals(op(0)("placedAt")("kind").str, "card-gathering")
     assertEquals(op(1)("pile")("kind").str, "card-gathering")
 
+  test("Secret Society's packets are vision-packets on the wire, and the " +
+      "world deck's shuffle keeps its older spelling (R19)"):
+    val cards = Vector[CardId](DenizenId("denizen"), VisionId("vision:faith"))
+    val events = Vector(
+      recordedOperation(Shuffle(ShufflePile.VisionPackets, Some(cards))),
+      recordedOperation(Shuffle(ShufflePile.Search(SearchSource.WorldDeck),
+        Some(cards))))
+    val encoded =
+      ujson.read(encodedStreamThatRoundTrips("walker", events)).arr
+    def pile(at: Int): ujson.Value =
+      encoded(at)("payload")("step")("ops")(0)("pile")
+    assertEquals(pile(0), ujson.Obj("kind" -> "vision-packets"))
+    // A stream written before this pile kind existed reads the same.
+    assertEquals(pile(1), ujson.Obj("kind" -> "world"))
+
   test("an unknown walker location kind, deck, operation kind or negative " +
       "cost decodes to a typed WireError"):
     val player = PlayerId("red")

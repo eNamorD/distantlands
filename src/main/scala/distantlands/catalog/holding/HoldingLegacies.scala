@@ -102,16 +102,6 @@ object LightFingersCard extends Legacy(LegacyId("L27"), "Light Fingers",
       "[secret] from your site even if enemy pawns are there.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object SecretSocietyCard extends Legacy(LegacyId("L28"), "Secret Society",
-    LegacyGoal.HighestRelic, Suit.Arcane):
-  val power = PrintedPower(PowerId("legacy.secret-society"),
-    persistent = false, cost = Cost.free,
-    text = "**SETUP:** Before building the world deck, you may secretly " +
-      "choose a Vision except the Conspiracy to take as a facedown " +
-      "adviser _(discard excess advisers)_. If you do, advance the " +
-      "Visions Drawn marker once.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object RuthlessCard extends Legacy(LegacyId("L29"), "Ruthless",
     LegacyGoal.HighestRelic, Suit.Order):
   val power = PrintedPower(PowerId("legacy.ruthless"),

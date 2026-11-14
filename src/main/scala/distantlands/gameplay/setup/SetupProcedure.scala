@@ -25,6 +25,7 @@ import distantlands.model.OathViolation._
  *   ImperialMaps.step(chancellor)                        // with a Chancellor and
  *                                                        // Foundation I normal
  *   Sequence(Vector.empty)                               // window = SetupBanks
+ *   Sequence(Vector.empty)                               // window = SetupWorldDeck
  *   Sequence(                                            // per participant
  *     Branch(Decide(pawn-placement, participant)),       // legal sites only
  *     BuildOps(place the pawn)                           // window = SetupPawnPlaced
@@ -126,9 +127,12 @@ object SetupProcedure:
     // The banks are set up after Imperial Maps, or where it would run:
     // Populist hooks here (Legacy Setup powers ruling 12).
     val banks = Sequence(Vector.empty, Some(PowerWindow.SetupBanks))
+    // The world deck game start built is changed here: Secret Society and
+    // then Seer hook it (Legacy Setup powers rulings 14 and 15).
+    val worldDeck = Sequence(Vector.empty, Some(PowerWindow.SetupWorldDeck))
     Sequence(LegacySetupPowers.startNotes ++ publicRow(ready) ++
       chancellor.map(reliquaryPick).toVector ++
-      imperialMaps ++ Vector(banks) ++ steps :+ setupEnd :+
+      imperialMaps ++ Vector(banks, worldDeck) ++ steps :+ setupEnd :+
       BeginTurn(participants.head.playerId, Phase.Wake))
 
   /** The Public Ambitions row game start dealt, named once and first

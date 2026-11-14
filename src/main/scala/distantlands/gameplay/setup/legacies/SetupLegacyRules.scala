@@ -29,3 +29,8 @@ object SetupLegacyRules:
     * every player but themselves, else the owner (ruling 13). */
   def keeper(state: ReadyGame, owner: PlayerId): PlayerId =
     ChronicleLegacyRules.holder(state, MatchmakerCard.id).getOrElse(owner)
+
+  /** Who may take a Vision before the world deck is built: Secret
+    * Society's holder (ruling 14). */
+  def secretSociety(state: ReadyGame): Option[PlayerId] =
+    ChronicleLegacyRules.holder(state, SecretSocietyCard.id)

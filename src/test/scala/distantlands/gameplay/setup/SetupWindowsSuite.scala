@@ -19,10 +19,15 @@ class SetupWindowsSuite extends munit.FunSuite:
     private val notes = NoteSet(ProcedureNotes.id(TriggeredProcedureRef.Setup))
     val marked: NoteKey = notes.key("test-banks",
       Vector(NotePart.Text("banks")))
-    val contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-      PowerWindow.SetupBanks -> Vector(Transform((_, ops) => ops :+ Note(
+    val markedDeck: NoteKey = notes.key("test-world-deck",
+      Vector(NotePart.Text("world deck")))
+    private def mark(key: NoteKey): Vector[Contribution] =
+      Vector(Transform((_, ops) => ops :+ Note(
         ProcedureNotes.id(TriggeredProcedureRef.Setup),
-        _ => Some(marked.sourceless())))))
+        _ => Some(key.sourceless()))))
+    val contributions: Map[PowerWindow, Vector[Contribution]] = Map(
+      PowerWindow.SetupBanks -> mark(marked),
+      PowerWindow.SetupWorldDeck -> mark(markedDeck))
 
   private def keys(chronicle: Chronicle): Vector[String] =
     Situation.wake(Situation.rules(catalog, WalkerPowers(Vector(MarkBanks))),
@@ -43,5 +48,14 @@ class SetupWindowsSuite extends munit.FunSuite:
     assertEquals(said.count(_ == "test-banks"), 1)
     assert(said.indexOf("test-banks") < said.indexOf("placed-pawn"), said)
 
+  test("SetupWorldDeck runs once, after SetupBanks and before the first " +
+      "pawn"):
+    val said = keys(LaterGameFixture.chronicle(l1, l2))
+    assertEquals(said.count(_ == "test-world-deck"), 1)
+    assert(said.indexOf("test-banks") < said.indexOf("test-world-deck"), said)
+    assert(said.indexOf("test-world-deck") < said.indexOf("placed-pawn"),
+      said)
+
   test("Setup window keys stay as power data spells them"):
     assertEquals(PowerWindow.SetupBanks.key, "setup.banks")
+    assertEquals(PowerWindow.SetupWorldDeck.key, "setup.world-deck")
