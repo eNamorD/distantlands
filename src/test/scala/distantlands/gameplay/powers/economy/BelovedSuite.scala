@@ -1,6 +1,8 @@
 package distantlands.gameplay.powers.economy
 
 import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.phases.RestCleanupPlan
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.actions.economy.TradeProcedure
 import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import distantlands.gameplay.powers.action.AlchemistCard
@@ -84,6 +86,22 @@ class BelovedSuite extends munit.FunSuite:
   test("a boxed lineage's Beloved adds nothing (ruling 1)"):
     assertEquals(sources(LegacyActionFixture.boxed(holder.ready, p1)),
       Some(Vector("denizen" -> alchemist.value)))
+
+  test("with Old Songs, p2's adviser holding exactly one secret is a " +
+      "source (R17)"):
+    val ready = holder.adviser(p1, OldSongsCard).tokens(wrestlers, secrets = 1)
+      .ready
+    val done = EconomyActions.trade(rules, ready, p1, Vector(OldSongs.id),
+      "favor", onWrestlers)
+    assertEquals(Look(done.result).adviserTokens(p2, wrestlers), Tokens(0, 2))
+
+  test("the secret placed on p2's adviser returns at the next Rest, as " +
+      "every card's does"):
+    val done = EconomyActions.trade(rules, holder.ready, p1, Vector.empty,
+      "favor", onWrestlers)
+    val plan = accepted(RestCleanupPlan.derive(catalog, done.result, p1))
+    assert(plan.cards.exists(card => card.id == wrestlers &&
+      card.secrets == 1), plan.toString)
 
   test("a walk resumed at the source decision trades on p2's adviser"):
     val ready = holder.ready
