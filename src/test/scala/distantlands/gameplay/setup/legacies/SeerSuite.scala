@@ -5,8 +5,9 @@ import distantlands.gameplay.OathRules
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
-import distantlands.gameplay.setup.{LaterGameFixture, SetupLegacyFixture,
-  SetupProcedure}
+import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
+  SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
+import distantlands.gameplay.walker.WalkerPowers
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer}
@@ -112,6 +113,26 @@ class SeerSuite extends munit.FunSuite:
     assertEquals(asked(at).slots.map(_.ref),
       visions(at.ready).map(DecisionOptionRef.Vision(_)))
     assert(!visions(at.ready).contains(taken.head))
+
+  /** Seer's questions asked when game start's world deck is `deck`. */
+  private def seerAsked(deck: Vector[WorldCardId]): Vector[Decide] =
+    val ready = accepted(GameStartRules.evolve(catalog, record,
+      LaterGameFixture.orders(record, p1))).updateCurrent(current =>
+        current.copy(commonCards = current.commonCards.copy(worldDeck = deck)))
+    SetupWalkDriver.driveWithEvents(ready, accepted(SetupProcedure.build(
+      catalog, ready, ready.game.current.turn.activePlayer, Vector.empty)),
+      TriggeredProcedureRef.Setup, WalkerPowers.selected(
+        WalkerPowerCatalog.default(catalog), Vector.empty)).asked
+      .filter(_.decisionId == Seer.decisionId(p2))
+
+  test("a deck with no Vision, or of one card, asks nothing (R23)"):
+    val start = accepted(GameStartRules.evolve(catalog, record,
+      LaterGameFixture.orders(record, p1))).game.current.commonCards.worldDeck
+    assertEquals(seerAsked(start.filterNot(_.isInstanceOf[VisionId])),
+      Vector.empty)
+    assertEquals(seerAsked(start.filter(_.isInstanceOf[VisionId]).take(1)),
+      Vector.empty)
+    assertEquals(seerAsked(start).size, 1)
 
   test("the line names no Vision"):
     val woken = Situation.wake(rules, record,
