@@ -125,6 +125,15 @@ class RoyalLineSuite extends munit.FunSuite:
     assertEquals(asked(through(table, TriggeredProcedureRef.ChronicleSun)),
       None)
 
+  test("not asked of a Chancellor holding it (ruling 22)"):
+    val table = ChronicleWalk.chronicleWonByP1.imperial(p1, p2, p3)
+      .update(_.updateCurrent(_.copy(result = Some(stable))))
+      .legacy(p1, RoyalLineCard)
+    val run = through(table, TriggeredProcedureRef.ChronicleSun)
+    assertEquals(run.asked.find(_.decisionId == RoyalLine.decisionId(p1)),
+      None)
+    assertEquals(run.ready.game.current.result, Some(stable))
+
   test("a named winner reaches the Crown, Reformer and Score Lineage " +
       "Points (the audit)"):
     // p2 holds Reformer; the Empire rules Ancient City and Broken Peaks,
