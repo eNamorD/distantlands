@@ -177,13 +177,13 @@ Legacies, the scoring bonus and the display) landed with the
   counts as implemented for its Throne half, and the rest), each
   through Setup's windows, and Matchmaker choosing the kept legacy for the
   other players in the Setup deal ([Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md)).
-- [ ] **Legacy powers: Chronicle.** The CHRONICLE powers still to build,
-  through the Chronicle's step windows
-  ([Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md)):
-  Royal Line choosing the Successor. Slices 1 to 4 built Steadfast,
-  Gatekeeper, Chronicler, Rival's Throne half, Great Architect,
-  Revolutionary, Reformer, Heirloom, The Ear's Chronicle half, Oaths of
-  Loyalty, The Bright Beacon and Iron Hand's Chronicle half.
+- [x] **Legacy powers: Chronicle.** The CHRONICLE powers, through the
+  Chronicle's step windows
+  ([Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md)),
+  landed in five slices: Steadfast, Gatekeeper, Chronicler, Rival's Throne
+  half, Great Architect, Revolutionary, Reformer, Heirloom, The Ear's
+  Chronicle half, Oaths of Loyalty, The Bright Beacon, Iron Hand's
+  Chronicle half and Royal Line.
 - [ ] **Legacy powers: in play.** The powers used during a game: actions,
   Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
   play and The Ear's ACTION half, peeking at a site's relics, among them

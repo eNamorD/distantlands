@@ -196,7 +196,7 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 
 ## Legacy Chronicle powers rulings
 
-Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6; items 15 to 18 are the design's rulings 9 to 12; items 19 to 28 are implementation rulings R7 to R16; items 29 to 33 are the design's rulings 13 to 17; items 34 to 40 are implementation rulings R17 to R28; items 41 to 44 are the design's rulings 18 to 21; items 45 to 52 are implementation rulings R29 to R36. Later slices add the design's other rulings as they land.
+Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6; items 15 to 18 are the design's rulings 9 to 12; items 19 to 28 are implementation rulings R7 to R16; items 29 to 33 are the design's rulings 13 to 17; items 34 to 40 are implementation rulings R17 to R28; items 41 to 44 are the design's rulings 18 to 21; items 45 to 52 are implementation rulings R29 to R36; items 53 and 54 are the design's rulings 22 and 23; items 55 to 60 are implementation rulings R37 to R41 and R43.
 
 1. **Only seated players' active legacies act.** A legacy's Chronicle power applies when a seated player holds it active at the moment its window is reached. A boxed lineage's legacies never act; a dormant legacy has no power (design, ruling 1).
 2. **A role condition is read at the same moment,** so the Crown and Offer Citizenship change it for every later step (design, ruling 2).
@@ -250,6 +250,14 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 50. **Iron Hand's lines** say "p2 discarded Iron Hand", "p3 scored 2 lineage points with Iron Hand (2 from Beast)" and "Buried Giant stays on the map with Iron Hand" (R34).
 51. **Until Iron Hand's SETUP half lands,** the next game restores the holder's stored sites as the Empire's (R35; low confidence).
 52. **Tests that used Iron Hand as a plain legacy** use one with no Chronicle half instead (R36).
+53. **Royal Line chooses the winner of an Empire win:** only after a Chancellor's or a Successor's win, a Citizen holding it active chooses the winner from every Imperial player, in a new window before Reveal Relics. Choosing the Chancellor is choosing no one (design, ruling 22).
+54. **The new winner is journaled,** and every later step reads the winner from the game's result. A Citizen wins as the Successor; the Chancellor wins by the Empire win that ended the game (design, ruling 23).
+55. **The Chancellor's Empire win is derived** from the ended game's state, by the same code that decided the ending, with the Successor substitution skipped (R37; low confidence).
+56. **Royal Line's question** lists every Imperial player, the Chancellor first, with no Decline; choosing the current winner keeps the result and journals nothing (R38).
+57. **The journaled winner** is `WinnerNamed`, which refuses a game with no result, an unseated winner and a kind that is not an Empire win (R39).
+58. **Royal Line's window** is the Sun's first, before Reveal Relics and Iron Hand's Sun checkpoint (R40). Crown Chancellor and Assign Tasks read the winner when each is reached.
+59. **Royal Line's line** is "p3 named p2 the winner with Royal Line", only when the winner changes; the end-of-game line stays as it was, and the result banner follows the result (R41).
+60. **Build Edifice builds each suit at most once beside Iron Hand:** when an Imperial Great Architect built a suit's edifice, the holder is not offered that suit (R43).
 
 ## Source relationship cautions
 

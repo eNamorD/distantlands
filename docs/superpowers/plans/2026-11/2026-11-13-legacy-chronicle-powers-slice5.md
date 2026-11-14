@@ -80,6 +80,13 @@ reaches the Crown, Reformer and Score Lineage Points (Task 3).
   when reached (a `Branch` each), as the design's "every later step reads
   the winner from the game's result" requires. The build still refuses a
   game with no result.
+- The Royal Line test of the Chancellor named in a Successor's place
+  expected Stable Regime, but the fixture ends at War Exhaustion with no
+  Imperial Oathkeeper, which gives exhaustion. The test now checks both
+  cases: no Oathkeeper gives Chancellor Exhaustion, an Imperial
+  Oathkeeper Stable Regime.
+- The ROADMAP's convention drops landed items; R42 says tick, so the
+  item is ticked and reworded as landed.
 
 ## Global Constraints
 
