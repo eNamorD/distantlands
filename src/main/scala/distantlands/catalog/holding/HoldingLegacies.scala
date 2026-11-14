@@ -85,14 +85,6 @@ object LightFingersCard extends Legacy(LegacyId("L27"), "Light Fingers",
       "[secret] from your site even if enemy pawns are there.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object RuthlessCard extends Legacy(LegacyId("L29"), "Ruthless",
-    LegacyGoal.HighestRelic, Suit.Order):
-  val power = PrintedPower(PowerId("legacy.ruthless"),
-    persistent = false, cost = Cost(favorBurnt = 2),
-    text = "**ACTION:** Burn [favor-burnt] [favor-burnt] to bury a " +
-      "denizen at your site.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object BelovedCard extends Legacy(LegacyId("L33"), "Beloved",
     LegacyGoal.MostOfSuit, Suit.Beast, Some(FoundationNumber.IV)):
   val power = PrintedPower(PowerId("legacy.beloved"),

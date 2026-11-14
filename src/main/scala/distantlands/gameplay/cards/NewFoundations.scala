@@ -21,6 +21,7 @@ import distantlands.gameplay.powers.campaign._
 import distantlands.gameplay.powers.cardplay._
 import distantlands.gameplay.powers.dice._
 import distantlands.gameplay.powers.economy._
+import distantlands.gameplay.powers.legacies._
 import distantlands.gameplay.powers.poweruse._
 import distantlands.gameplay.powers.recover._
 import distantlands.gameplay.powers.rest._
