@@ -62,7 +62,22 @@ class PopulistSuite extends munit.FunSuite:
         assertEquals(ready.banks.favor, Suit.all.map(_ -> each).toMap)
         assertEquals(ready.game.current.player(p2).get.board.favor,
           favor + rest)
+        // Read apart from `shares`: no favor is made or lost.
+        assertEquals(banks.values.sum, ready.banks.favor.values.sum +
+          ready.game.current.player(p2).get.board.favor - favor)
   }
+
+  test("under Powerful Tribes 22 favor leaves each bank 3 and the holder " +
+      "4 more"):
+    // 3 a bank, and 1 more per denizen of its suit on the map: Arcane 5,
+    // Hearth 4, Beast 4, the others 3.
+    val (banks, favor) = before(record)
+    assertEquals(banks, Map(Suit.Discord -> 3, Suit.Arcane -> 5,
+      Suit.Order -> 3, Suit.Hearth -> 4, Suit.Beast -> 4, Suit.Nomad -> 3))
+    assertEquals(favor, 1)
+    val ready = atPawn(record, dividing).ready
+    assertEquals(ready.banks.favor, Suit.all.map(_ -> 3).toMap)
+    assertEquals(ready.game.current.player(p2).get.board.favor, 5)
 
   test("the line names the remainder taken (R15)"):
     val (banks, _) = before(record)
