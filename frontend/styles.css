@@ -454,6 +454,10 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .table-edge { --banner-edge-side: 8.6rem; }
 .table-edge .shared-banners { grid-template-columns: repeat(2, var(--banner-edge-side));
   margin-top: 0; }
+/* The Reliquary's relics stand as large as the banners beside them,
+   square as a relic is (Legacy in-play powers ruling 9). */
+.table-edge .shared-reliquary { --card-w: var(--banner-edge-side);
+  margin-top: 0; }
 .table-edge .foundations { flex: 1; margin-top: 0; }
 .table-edge .foundation-strip {
   grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -466,7 +470,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .map-compact .table-edge, .map-compact .table-edge .shared-bank {
   flex-wrap: wrap; }
 .map-compact .table-edge :is(.shared-bank > h3, .oathkeeper-status,
-  .public-legacies-label, .foundations-title) {
+  .public-legacies-label, .shared-reliquary-label, .foundations-title) {
   font-size: var(--glance-text); }
 /* Set larger, the foundations take a row of their own, so their names
    keep the room to be read. */
