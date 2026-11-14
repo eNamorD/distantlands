@@ -60,16 +60,6 @@ object MatchmakerCard extends Legacy(LegacyId("L14"), "Matchmaker",
       "Doors edifice does not trigger this._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object PopulistCard extends Legacy(LegacyId("L16"), "Populist",
-    LegacyGoal.PeoplesFavor, Suit.Beast):
-  val power = PrintedPower(PowerId("legacy.populist"),
-    persistent = false, cost = Cost.free,
-    text = "**SETUP:** When setting up the favor banks, you may choose " +
-      "to divide the favor among the banks evenly. If you do, take " +
-      "any remainder. _For example, dividing 19 favor among the " +
-      "banks leaves you one favor._")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object TheStandardBearerCard extends Legacy(LegacyId("L18"), "The Standard Bearer",
     LegacyGoal.PeoplesFavor, Suit.Arcane):
   val power = PrintedPower(PowerId("legacy.the-standard-bearer"),

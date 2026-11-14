@@ -188,6 +188,10 @@ object PowerWindow:
   case object ExploreRoll extends ExploreWindow { val key = "explore.roll" }
   case object RestStart extends OtherWindow { val key = "rest.start" }
   case object RestReturnFavor extends OtherWindow { val key = "rest.return-favor" }
+  /** Right after Imperial Maps, or where it would run, before any pawn:
+    * when the favor banks are set up (Legacy Setup powers design, ruling
+    * 12). Populist hooks here. Empty with no power. */
+  case object SetupBanks extends OtherWindow { val key = "setup.banks" }
   /** Where the placing player's site is fixed for this player's Setup turn
     * (2026-09-21 Chronicle design, "Setup powers"): Great Forge and Broken
     * Forge hook here. */

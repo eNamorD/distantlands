@@ -18,7 +18,6 @@ legacy.light-fingers
 legacy.matchmaker
 legacy.pathfinder
 legacy.peacemaker
-legacy.populist
 legacy.quest-to-distant-lands
 legacy.ruthless
 legacy.secret-society

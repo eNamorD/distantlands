@@ -24,6 +24,7 @@ import distantlands.model.OathViolation._
  *     Note(took a relic))
  *   ImperialMaps.step(chancellor)                        // with a Chancellor and
  *                                                        // Foundation I normal
+ *   Sequence(Vector.empty)                               // window = SetupBanks
  *   Sequence(                                            // per participant
  *     Branch(Decide(pawn-placement, participant)),       // legal sites only
  *     BuildOps(place the pawn)                           // window = SetupPawnPlaced
@@ -124,9 +125,12 @@ object SetupProcedure:
     val chancellor = Imperials.chancellor(ready)
     val imperialMaps = chancellor.filter(_ => ImperialMaps.applies(ready))
       .map(ImperialMaps.step(catalog, ready, _))
+    // The banks are set up after Imperial Maps, or where it would run:
+    // Populist hooks here (Legacy Setup powers ruling 12).
+    val banks = Sequence(Vector.empty, Some(PowerWindow.SetupBanks))
     Sequence(LegacySetupPowers.startNotes ++ publicRow(ready) ++
       chancellor.map(reliquaryPick).toVector ++
-      imperialMaps ++ steps :+ setupEnd :+
+      imperialMaps ++ Vector(banks) ++ steps :+ setupEnd :+
       BeginTurn(participants.head.playerId, Phase.Wake))
 
   /** The Public Ambitions row game start dealt, named once and first

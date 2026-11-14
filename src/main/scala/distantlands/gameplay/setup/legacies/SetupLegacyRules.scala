@@ -19,3 +19,8 @@ object SetupLegacyRules:
   def exploreEndChooser(state: ReadyGame, explorer: PlayerId): PlayerId =
     ChronicleLegacyRules.holder(state, WorldCrafterCard.id)
       .getOrElse(explorer)
+
+  /** Who may divide the banks' favor evenly: Populist's holder (ruling
+    * 12). */
+  def populist(state: ReadyGame): Option[PlayerId] =
+    ChronicleLegacyRules.holder(state, PopulistCard.id)
