@@ -529,21 +529,29 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   height: 1px; overflow: hidden; clip-path: inset(50%); }
 .map-compact .mat-board .pawn-initial { display: inline; font-weight: 700; }
 /* At rest a face holds two pawns by name on its one line; from three on,
-   each shows its dot and initial there too. */
+   each shows its dot and initial there too. A name too long for its share
+   of the line is cut with an ellipsis; a dot never is. The thresholds count
+   pawns, not the festival marker. */
 .mat-board .site-pawns { flex-wrap: nowrap; overflow: hidden;
   white-space: nowrap; min-height: 0; }
-.mat-board .site-pawns:has(> :nth-child(3)) .pawn-long { position: absolute;
-  width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.mat-board .site-pawns:has(> :nth-child(3)) .pawn-initial { display: inline;
-  font-weight: 700; }
-.mat-board .site-pawns:has(> :nth-child(3)) .festival-marker { font-size: 0;
-  padding: 0 0.2em; }
-.mat-board .site-pawns:has(> :nth-child(3)) .festival-marker::after {
+.mat-board .pawn { display: inline-flex; flex: 0 1 auto; min-width: 0;
+  overflow: hidden; }
+.mat-board .pawn-dot, .mat-board .pawn-initial { flex: none; }
+.mat-board .pawn-long { min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; white-space: pre; }
+.mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .pawn-long {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); }
+.mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .pawn-initial {
+  display: inline; font-weight: 700; }
+.mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .festival-marker {
+  font-size: 0; padding: 0 0.2em; }
+.mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .festival-marker::after {
   content: "F"; font-size: 0.72rem; }
 /* Five pawns or more on one zoomed-out face leave no room for initials:
    each is its dot, its player's name still its name and hover note. */
-.map-compact .mat-board .site-pawns:has(> :nth-child(5)) .pawn-initial {
-  display: none; }
+.map-compact .mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn ~ .pawn ~ .pawn)
+  .pawn-initial { display: none; }
 .map-compact .mat-board .site-pawns .festival-marker { font-size: 0;
   padding: 0 0.2em; }
 .map-compact .mat-board .site-pawns .festival-marker::after { content: "F";
