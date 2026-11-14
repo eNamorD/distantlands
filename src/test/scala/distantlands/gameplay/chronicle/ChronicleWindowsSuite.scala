@@ -55,6 +55,7 @@ class ChronicleWindowsSuite extends munit.FunSuite:
         "chronicle.sun.assign-tasks"),
       Vector("chronicle.throne.offer-citizenship",
         "chronicle.throne.shape-empire", "chronicle.throne.build-edifice",
+        "chronicle.throne.after-build-edifice",
         "chronicle.throne.stock-reliquary", "chronicle.throne.scatter-relics",
         "chronicle.throne.score-lineage", "chronicle.throne.swear-oath")))
 

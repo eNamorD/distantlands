@@ -110,14 +110,6 @@ object MatchmakerCard extends Legacy(LegacyId("L14"), "Matchmaker",
       "Doors edifice does not trigger this._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object RevolutionaryCard extends Legacy(LegacyId("L15"), "Revolutionary",
-    LegacyGoal.PeoplesFavor, Suit.Discord):
-  val power = PrintedPower(PowerId("legacy.revolutionary"),
-    persistent = false, cost = Cost.free,
-    text = "**CHRONICLE (THRONE):** After Build Edifice, you may " +
-      "discard any number of denizens at Imperial sites.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object PopulistCard extends Legacy(LegacyId("L16"), "Populist",
     LegacyGoal.PeoplesFavor, Suit.Beast):
   val power = PrintedPower(PowerId("legacy.populist"),

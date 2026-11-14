@@ -226,6 +226,10 @@ object PowerWindow:
     val key = "chronicle.throne.shape-empire"
   case object ChronicleBuildEdifice extends OtherWindow:
     val key = "chronicle.throne.build-edifice"
+  /** After Build Edifice: Revolutionary's step (Legacy Chronicle powers
+    * design, ruling 11). Empty with no power. */
+  case object ChronicleAfterBuildEdifice extends OtherWindow:
+    val key = "chronicle.throne.after-build-edifice"
   case object ChronicleStockReliquary extends OtherWindow:
     val key = "chronicle.throne.stock-reliquary"
   case object ChronicleScatterRelics extends OtherWindow:

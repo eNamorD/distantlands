@@ -6,7 +6,7 @@ import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   SwearOath, WelcomeStranger,
   ChronicleStarsProcedure}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, Gatekeeper,
-  Rival}
+  Revolutionary, Rival}
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
@@ -415,7 +415,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       OfferCitizenship.declined -> LogKind.Decision,
       OfferCitizenship.reactivated -> LogKind.Delta,
       OfferCitizenship.capped -> LogKind.Decision,
-      Rival.protectedWith -> LogKind.Decision)),
+      Rival.protectedWith -> LogKind.Decision,
+      Revolutionary.discardedWith -> LogKind.Decision)),
     narratedPrefixes = Vector("chronicle.throne.offer",
       "chronicle.throne.legacy-cap.",
       "chronicle.throne.citizenship.", "chronicle.shape-empire.",

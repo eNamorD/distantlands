@@ -50,7 +50,7 @@ Expected: `ready`.
 ## Rulings
 
 The plan's open questions were ruled on 2026-11-13 as implementation
-rulings R7-R14 ([rulings](../../specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md));
+rulings R7-R14 and R16 ([rulings](../../specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md));
 R15 accepts that inserted windows shift a walk saved mid-Chronicle.
 
 - **R7** (Tasks 1 and 5): Rival leaves holding with its whole text and
@@ -85,9 +85,12 @@ R15 accepts that inserted windows shift a walk saved mid-Chronicle.
   the prefix `chronicle.throne.legacy.`. Reformer gets a resume test that
   parks mid-pass after a completed move and resumes to the same question.
 - **R14** (Tasks 2 and 3): a burial returns favor to the buried card's own
-  suit bank; a ruined edifice Revolutionary discards after Build Edifice
-  stays set aside, and a test checks the stored Chronicle still passes game
-  start's card accounting.
+  suit bank; a test checks the stored Chronicle still passes game start's
+  card accounting after Revolutionary discards a ruined edifice.
+- **R16** (Task 3, narrows R14): after its discards, Revolutionary returns
+  each ruined edifice it discarded from the set-aside list to the bottom of
+  the edifice deck, with Build Edifice's closing move, since
+  `ChronicleExtraction` refuses a card left set aside.
 
 ## Global Constraints
 
@@ -703,6 +706,11 @@ class RevolutionarySuite extends munit.FunSuite:
       .values.flatten.toSet
     assert(discards.contains(ThreateningRoarCard.id) &&
       discards.contains(FaeMerchantCard.id))
+    // The ruined edifice returns to the edifice deck, so nothing is left
+    // set aside after Build Edifice (R16).
+    assert(run.ready.game.current.commonCards.edificeDeck
+      .contains(SchoolOfVinesCard.id))
+    assertEquals(run.ready.game.current.setAsideEdifices, Vector.empty)
     assertEquals(lines(run), Vector(
       s"p3 discarded 3 denizens with ${RevolutionaryCard.id.value}"))
 
@@ -839,6 +847,14 @@ case object Revolutionary extends ContributingPower:
 
 with `option` the `Denizen` or `Edifice` option of the card (Task 1's
 helper, made package-visible in `ShapeEmpire` if it lives there).
+
+R16: after the discards' batch, and only when a ruined edifice was
+discarded, a second required `BuildOps` moves each discarded ruined
+edifice from `Location.SetAsideEdifices` to the bottom of the edifice deck
+(`Move(Piece.Card(id), PositionedLocation(Location.SetAsideEdifices),
+PositionedLocation(Location.Deck(CardDeck.Edifice), StackPosition.Bottom))`),
+the move Build Edifice's closing step uses, so `ChronicleExtraction` finds
+nothing set aside.
 
 `LegacyChroniclePowers`: `all :+ Revolutionary`; `throneNoteKeys ++
 Revolutionary.throneNoteKeys`. `ProcedureLog.chronicleThrone`:

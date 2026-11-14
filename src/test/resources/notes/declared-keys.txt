@@ -569,6 +569,7 @@ procedure.chronicle-throne gave-up = {0} gave up {1} {1?point|points} to give {2
 procedure.chronicle-throne keeps = {0} keeps {1} {1?point|points}
 procedure.chronicle-throne offered = {0} offered Citizenship to {1}
 procedure.chronicle-throne reactivated-legacy = {0} reactivated {1}
+procedure.chronicle-throne revolutionary-discarded = {0} discarded {1} {1?denizen|denizens} with {2}
 procedure.chronicle-throne rival-protected = {0} protected {1} {1?denizen|denizens} with {2}
 procedure.chronicle-throne scored = {0} scored {1}
 procedure.chronicle-throne scored-with-bonus = {0} scored {1} ({2} base, {3})
