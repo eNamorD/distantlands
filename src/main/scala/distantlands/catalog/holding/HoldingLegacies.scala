@@ -51,15 +51,6 @@ object GoldenKeyCard extends Legacy(LegacyId("L12"), "Golden Key",
       "take a relic from the Reliquary.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object TheStandardBearerCard extends Legacy(LegacyId("L18"), "The Standard Bearer",
-    LegacyGoal.PeoplesFavor, Suit.Arcane):
-  val power = PrintedPower(PowerId("legacy.the-standard-bearer"),
-    persistent = false, cost = Cost.free,
-    text = "**SETUP:** After placing your pawn, you may take a banner " +
-      "from the shared bank and place two more [favor] or [secret] " +
-      "on it from the shared bank.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object HighPriestCard extends Legacy(LegacyId("L21"), "High Priest",
     LegacyGoal.DarkestSecret, Suit.Order):
   val power = PrintedPower(PowerId("legacy.high-priest"),

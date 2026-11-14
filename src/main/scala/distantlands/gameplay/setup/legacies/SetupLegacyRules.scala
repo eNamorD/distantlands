@@ -38,3 +38,8 @@ object SetupLegacyRules:
   /** Who places the world deck's Visions: Seer's holder (ruling 15). */
   def seer(state: ReadyGame): Option[PlayerId] =
     ChronicleLegacyRules.holder(state, SeerCard.id)
+
+  /** Who may take a banner after their pawn: The Standard Bearer's holder
+    * (ruling 16). */
+  def standardBearer(state: ReadyGame): Option[PlayerId] =
+    ChronicleLegacyRules.holder(state, TheStandardBearerCard.id)
