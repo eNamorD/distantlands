@@ -163,16 +163,6 @@ object TheBrightBeaconCard extends Legacy(LegacyId("L24"), "The Bright Beacon",
       "choosing suits and taking from their matching dividers)_.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object OathsOfLoyaltyCard extends Legacy(LegacyId("L25"), "Oaths of Loyalty",
-    LegacyGoal.HighestRelic, Suit.Hearth):
-  val power = PrintedPower(PowerId("legacy.oaths-of-loyalty"),
-    persistent = false, cost = Cost.free,
-    text = "When you would gain a starting adviser, bury it, except " +
-      "for—**CHRONICLE (WORLD):** In Gather Denizens, keep your " +
-      "faceup advisers. They will be your facedown starting " +
-      "advisers in the next game.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object ConspiratorCard extends Legacy(LegacyId("L26"), "Conspirator",
     LegacyGoal.HighestRelic, Suit.Discord):
   val power = PrintedPower(PowerId("legacy.conspirator"),

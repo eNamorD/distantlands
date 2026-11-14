@@ -1,7 +1,7 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.gameplay.chronicle.legacies.{GreatArchitectCard, RivalCard,
-  SteadfastCard, TheEarCard}
+import distantlands.gameplay.chronicle.legacies.{GreatArchitectCard,
+  OathsOfLoyaltyCard, RivalCard, SteadfastCard, TheEarCard}
 import distantlands.model._
 
 /** The seam the legacies' Chronicle powers share (Legacy Chronicle powers
@@ -49,3 +49,18 @@ object ChronicleLegacyRules:
   /** Who places the scattered relics: The Ear's holder (ruling 14). */
   def scatterer(state: ReadyGame): Option[PlayerId] =
     holder(state, TheEarCard.id)
+
+  /** Who keeps faceup advisers in Gather Denizens: Oaths of Loyalty's
+    * holder (ruling 15). */
+  def keepsAdvisers(state: ReadyGame): Option[PlayerId] =
+    holder(state, OathsOfLoyaltyCard.id)
+
+  /** Whether a starting adviser `player` would gain is buried instead
+    * (ruling 16; R24). */
+  def buriesStartingAdvisers(state: ReadyGame, player: PlayerId): Boolean =
+    keepsAdvisers(state).contains(player)
+
+  /** Whether a stored lineage holds Oaths of Loyalty active, for a deal
+    * read from the Chronicle before a game starts (ruling 16). */
+  def oathsHolds(lineage: LineageState): Boolean =
+    lineage.legacies.contains(LegacyState(OathsOfLoyaltyCard.id, active = true))

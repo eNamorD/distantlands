@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.gameplay.walker.ProcedureStart
 import distantlands.model._
 
@@ -13,7 +14,8 @@ object ChronicleWorldProcedure:
       .map(_ => Sequence(steps(catalog)))
 
   /** The notes the World's steps write. */
-  def noteKeys: Vector[NoteKey] = ProtectAndDispossess.noteKeys
+  def noteKeys: Vector[NoteKey] = ProtectAndDispossess.noteKeys ++
+    OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleWorld)
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     ChronicleWindows.step(PowerWindow.ChronicleSeparateVisions,

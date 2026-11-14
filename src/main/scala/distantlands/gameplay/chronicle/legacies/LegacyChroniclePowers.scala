@@ -8,7 +8,7 @@ import distantlands.model.NoteKey
 object LegacyChroniclePowers:
   val all: Vector[ContributingPower] = Vector(Steadfast, Gatekeeper,
     Chronicler, Rival, GreatArchitect, Revolutionary, Reformer,
-    Heirloom, TheEar)
+    Heirloom, TheEar, OathsOfLoyalty)
   /** The lines the powers write in the Sun, on the Sun's note id, which
     * `ChronicleSunProcedure.noteKeys` declares. */
   def sunNoteKeys: Vector[NoteKey] =

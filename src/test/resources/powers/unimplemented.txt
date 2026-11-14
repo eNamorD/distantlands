@@ -18,7 +18,6 @@ legacy.iron-hand
 legacy.keeper-of-order
 legacy.light-fingers
 legacy.matchmaker
-legacy.oaths-of-loyalty
 legacy.pathfinder
 legacy.peacemaker
 legacy.populist

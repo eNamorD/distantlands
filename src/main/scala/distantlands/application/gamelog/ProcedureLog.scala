@@ -6,7 +6,7 @@ import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   SwearOath, WelcomeStranger,
   ChronicleStarsProcedure}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, Gatekeeper,
-  Heirloom, Reformer, Revolutionary, Rival, TheEar}
+  Heirloom, OathsOfLoyalty, Reformer, Revolutionary, Rival, TheEar}
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
@@ -352,7 +352,9 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       lines = ActionLineSource.Notes(Map(
         ProtectAndDispossess.protectedStack -> LogKind.Decision,
         ProtectAndDispossess.keptAdviser -> LogKind.Decision,
-        ProtectAndDispossess.dispossessed -> LogKind.Delta)),
+        ProtectAndDispossess.dispossessed -> LogKind.Delta) ++
+        OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleWorld)
+          .map(_ -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.world."), isSection = false)
     case TriggeredProcedureRef.ChronicleBeacon => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
@@ -360,7 +362,9 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         IntroduceNewcomers.returned -> LogKind.Delta,
         WelcomeStranger.keptAdviser -> LogKind.Decision,
         ShapeFoundation.keptAll -> LogKind.Decision) ++
-        ShapeFoundation.restored.values.map(_ -> LogKind.Decision)),
+        ShapeFoundation.restored.values.map(_ -> LogKind.Decision) ++
+        OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleBeacon)
+          .map(_ -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.beacon."), isSection = false)
     case TriggeredProcedureRef.ChronicleStars => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(

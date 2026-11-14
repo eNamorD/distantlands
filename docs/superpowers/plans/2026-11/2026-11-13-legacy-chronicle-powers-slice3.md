@@ -859,7 +859,8 @@ class OathsOfLoyaltySuite extends munit.FunSuite:
       case _ => false })
     assert(!kept.exists(_.id == FaeMerchantCard.id))
     assert(lines(run, TriggeredProcedureRef.ChronicleWorld).contains(
-      s"p2 kept ${BirdsongCard.id.value}, ${GolemLegionsCard.id.value} and " +
+      // NoteText joins a card list with commas; the Game Log words it.
+      s"p2 kept ${BirdsongCard.id.value}, ${GolemLegionsCard.id.value}, " +
         s"${ActingTroupeCard.id.value} with ${OathsOfLoyaltyCard.id.value}"))
 
   test("a kept adviser's tokens return to their banks first"):
