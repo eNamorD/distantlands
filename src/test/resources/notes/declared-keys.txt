@@ -540,6 +540,7 @@ procedure.chronicle-beacon restored-foundation-v = {0} restored Foundation V to 
 procedure.chronicle-beacon restored-foundation-vi = {0} restored Foundation VI to Wandering Flame
 procedure.chronicle-beacon returned-dispossessed = {0} returned to the box
 procedure.chronicle-stars archived = {0} was archived
+procedure.chronicle-stars iron-hand-stored = {0} stays on the map with {1}
 procedure.chronicle-stars kept-in-empire = {0} stays in the Empire
 procedure.chronicle-sun activated-legacy = {0} activated {1}
 procedure.chronicle-sun altered-foundation-i = {0} set Foundation I to Wide Horizons

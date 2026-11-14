@@ -373,7 +373,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     case TriggeredProcedureRef.ChronicleStars => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
         ChronicleStarsProcedure.archived -> LogKind.Delta,
-        ChronicleStarsProcedure.keptInEmpire -> LogKind.Delta)),
+        ChronicleStarsProcedure.keptInEmpire -> LogKind.Delta,
+        IronHand.stored -> LogKind.Delta)),
       narratedPrefixes = Vector.empty, isSection = false)
     case TriggeredProcedureRef.ChronicleFinish =>
       ProcedureLog(tag = None, isSection = false,

@@ -205,3 +205,34 @@ class IronHandSuite extends munit.FunSuite:
     assertEquals(run.ready.game.campaign.era.score(lineage), 0)
     assert(!lines(run, TriggeredProcedureRef.ChronicleThrone)
       .exists(_.startsWith("p3 scored")))
+
+  test("the holder's sites are stored in place of the Empire's, Cradlemost " +
+      "first, and the Empire's are archived; the record passes game start " +
+      "(ruling 21; R35)"):
+    // p1 wins and rules Ancient City; p3, an Exile, rules Broken Peaks and
+    // Buried Giant, the most sites, so keeps Iron Hand through the Sun.
+    val table = ChronicleWalk.chronicleWonByP1
+      .warbandsAt(AncientCitySite, p1, 1)
+      .warbandsAt(BrokenPeaksSite, p3, 1).warbandsAt(BuriedGiantSite, p3, 1)
+      .legacy(p3, IronHandCard)
+    val run = through(table, TriggeredProcedureRef.ChronicleFinish)
+    val record = run.ready.game.campaign.evolved.get
+    val stored = run.ready.game.current.map.hinterward.filter(site =>
+      site == BrokenPeaksSite.id || site == BuriedGiantSite.id)
+    assertEquals(record.world.map(_.site), stored)
+    assert(record.atlasBox.exists(_.site == AncientCitySite.id))
+    assertEquals(distantlands.gameplay.setup.ChronicleAccounting
+      .knownAndUnique(catalog, record), Right(()))
+    assertEquals(distantlands.gameplay.setup.ChronicleAccounting.conserves(
+      run.ready.game.campaign.baseline, record), Right(()))
+    assert(distantlands.gameplay.setup.GameStartRules.evolve(catalog, record,
+      distantlands.gameplay.setup.LaterGameFixture.orders(record, p1))
+      .isRight)
+    val said = NoteText.said(ProcedureNotes.id(
+      TriggeredProcedureRef.ChronicleStars),
+      IronHand.noteKeys(TriggeredProcedureRef.ChronicleStars) ++
+        distantlands.gameplay.chronicle.ChronicleStarsProcedure.noteKeys,
+      run.events).map(_.text)
+    assert(said.contains(s"${AncientCitySite.id.value} was archived"), said)
+    assert(said.contains(s"${BuriedGiantSite.id.value} stays on the map " +
+      s"with ${IronHandCard.id.value}"), said)

@@ -38,6 +38,13 @@ case object IronHand extends ContributingPower:
     TriggeredProcedureRef.ChronicleSun))
   private val throneNotes = NoteSet(ProcedureNotes.id(
     TriggeredProcedureRef.ChronicleThrone))
+  private val starsNotes = NoteSet(ProcedureNotes.id(
+    TriggeredProcedureRef.ChronicleStars))
+  /** "Buried Giant stays on the map with Iron Hand", for each of the
+    * holder's stored sites (ruling 21; R34). */
+  val stored: NoteKey = starsNotes.key("iron-hand-stored", Vector(
+    NotePart.Arg(0), NotePart.Text(" stays on the map with "),
+    NotePart.Arg(1)))
   /** "p3 scored 2 lineage points with Iron Hand (2 from Beast)" (R34). */
   val scored: NoteKey = throneNotes.key("iron-hand-scored", Vector(
     NotePart.Arg(0), NotePart.Text(" scored "), NotePart.Arg(1),
@@ -77,6 +84,7 @@ case object IronHand extends ContributingPower:
     procedure match
       case TriggeredProcedureRef.ChronicleSun => sunNotes.declared
       case TriggeredProcedureRef.ChronicleThrone => throneNotes.declared
+      case TriggeredProcedureRef.ChronicleStars => starsNotes.declared
       case _ => Vector.empty
 
   /** A checkpoint (ruling 18): an active Iron Hand a seated Imperial holds
