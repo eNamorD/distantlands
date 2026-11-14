@@ -220,3 +220,18 @@ class TheMouthSuite extends munit.FunSuite:
       assert(seen.contains("p1 activated Iron Hand with The Mouth"), seen)
       assert(seen.contains("p1 discarded Iron Hand"), seen)
     }
+
+  test("a walk resumed at The Mouth's own question activates the answer, " +
+      "once"):
+    val ready = mouthHolder.ready
+    val started = accepted(use(ready, TheMouth, source))
+    assert(awaits(started, TheMouth.decisionId))
+    val resumed = accepted(replayed(ready, started.events))
+    val done = accepted(rules.resolveWalker(resumed, p1, TheMouth.decisionId,
+      DecisionAnswer.ChooseOneAnswer(legacy(ArbiterCard))))
+    assert(legacies(after(done)).contains(
+      LegacyState(ArbiterCard.id, active = true)))
+    assertEquals(lines(done.events), Vector(
+      s"p1 activated ${ArbiterCard.id.value} with ${TheMouthCard.id.value}"))
+    assertEquals(replayed(ready, started.events ++ done.events),
+      Right(done.state))
