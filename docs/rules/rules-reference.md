@@ -40,7 +40,7 @@ No one begins Chancellor or Oathkeeper; the first player to satisfy Supremacy ta
 4. With no Chancellor: force Foundation I to Wide Horizons and V to Mob's Favor; restore sites with ruined edifices, stored relics, capacity bandits; clear Reliquary; fill empty relic slots; turn stored Citizens into Exiles; choose first player; use Usurper Limiter and no end die (CR p. 9).
 5. Resolve six foundation setup cards in order. Their normal/altered faces determine map filling, banks/resources, player wealth, world composition, and banner side (CR pp. 10-11). Digital: before them, Rival's Exile holder fills the three Cradlemost empty slots with the next Recent Sites by the Empire rules, one of their warbands on each; Foundation II counts their denizens and Imperial Maps fills only the slots left ([Legacy Setup powers rulings](ambiguities.md#legacy-setup-powers-rulings), item 8). Digital: World Crafter's holder fills Imperial Maps' slots in the Chancellor's place, choosing the end for each slot, and chooses the end of every Explore under Wide Horizons; Populist's holder may divide the six banks' favor evenly and take the remainder; Matchmaker's holder keeps a legacy for every other player in Quiet Ambitions ([Legacy Setup powers rulings](ambiguities.md#legacy-setup-powers-rulings), items 20 to 23).
 6. Populate site resources, then build the world deck from the foundation-determined starting denizen stack, combining Vision packets as instructed (CR p. 12). Digital: Secret Society's holder may first take a Vision but the Conspiracy as a facedown adviser, advancing Visions Drawn, and the other four are shuffled back in the packets' layout; then Seer's holder places every Vision at the position they choose ([Legacy Setup powers rulings](ambiguities.md#legacy-setup-powers-rulings), items 31 and 32).
-7. In order, players place pawn (subject to Imperial placement; Exiles at the Hintermost Empire site or a bandit site, [R25](ambiguities.md#empire-rulings)), choose adviser, and reveal cards as allowed (CR p. 13). Digital: under Iron Hand every player may place at any site, and Rival's holder also at the sites their warbands hold ([Legacy Setup powers rulings](ambiguities.md#legacy-setup-powers-rulings), items 7 and 8).
+7. In order, players place pawn (subject to Imperial placement; Exiles at the Hintermost Empire site or a bandit site, [R25](ambiguities.md#empire-rulings)), choose adviser, and reveal cards as allowed (CR p. 13). Digital: under Iron Hand every player may place at any site, and Rival's holder also at the sites their warbands hold ([Legacy Setup powers rulings](ambiguities.md#legacy-setup-powers-rulings), items 7 and 8). Quest to Distant Lands' holder may place no pawn; their Choose Adviser and Reveal Cards then wait for their first Wake (items 44 and 46).
 
 ## Round and turn flow
 
@@ -52,6 +52,8 @@ A round gives each player one turn, clockwise from Chancellor; without a Chancel
 2. If an Exile has a revealed Vision and currently meets it, they win.
 3. Use any Wake powers once each.
 4. Built-in **Take Wealth**: take one favor or secret from the pawn's site if no enemy pawn is present (CR p. 17).
+
+Digital: a seated player with no pawn, who stayed off the map with Quest to Distant Lands, first places their pawn at any site in play, then chooses an adviser and reveals cards, before step 1 ([Legacy Setup powers rulings](ambiguities.md#legacy-setup-powers-rulings), items 46 and 52).
 
 ### Act
 
