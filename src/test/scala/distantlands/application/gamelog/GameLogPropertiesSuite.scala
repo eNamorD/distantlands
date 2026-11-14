@@ -105,11 +105,11 @@ class GameLogPropertiesSuite extends munit.FunSuite:
       val steps = script.history.steps
       script.players.foreach { player =>
         formatter.format(steps, Some(player)).foreach { entry =>
-          val step = steps(entry.sequence.toInt)
+          val states = runStates(steps, entry.sequence.toInt)
           entry.spans.collect { case card: LogSpan.Card => card }
             .foreach { card =>
-              val id = cardId(card.id, step)
-              val known = runStates(steps, entry.sequence.toInt).exists {
+              val id = cardId(card.id, states)
+              val known = states.exists {
                 case OathState.Ready(ready) => id.exists(value =>
                   presentation.identifiesAt(ready, Some(player), value))
                 case _ => false
@@ -219,13 +219,15 @@ class GameLogPropertiesSuite extends munit.FunSuite:
 
   /** The card a span's id names, found among the cards either side of its
     * step. */
-  private def cardId(value: String,
-      step: distantlands.engine.ReplayStep[OathState, OathEvent])
+  /** The card a span names, found in any state of its run: a card the run
+    * took out of the index, such as a relic Heirloom keeps (Legacies R2),
+    * is still found where it lay before. */
+  private def cardId(value: String, states: Vector[OathState])
       : Option[CardId] =
-    Vector(step.before, step.after).collectFirst {
+    states.iterator.collect {
       case OathState.Ready(ready) => CardIndex.from(ready.game).toOption
         .flatMap(_.ids.find(_.value == value))
-    }.flatten
+    }.flatten.nextOption()
 
   /** Every procedure says which of three things it is, so a procedure that
     * journals its own notes is not read as one that posts nothing
