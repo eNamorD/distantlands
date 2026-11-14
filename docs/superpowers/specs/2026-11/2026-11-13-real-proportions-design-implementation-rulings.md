@@ -123,6 +123,11 @@ their own that overlaps neither tokens, forces, defense nor the name.
 Reason: ruling R5's "pawns never drop" needs a form that fits.
 Slice/files: slice 3 review; `WorldBoardRenderer.world`,
 `frontend/styles.css`.
+Amended after the browser round: from three pawns on, each shows its dot
+and initial at every scale, at rest too. On the phone's tiny face the short
+defense is not shown (as R5 ordered) and the pawns share the forces' row,
+forces left and pawns right, at the glance size, shrinking only as far as
+their number needs to fit beside the forces' count.
 
 **R7. A non-colour cue for the Empire's short forces.**
 Question: with the warband glyph in the force's colour, an Imperial force
@@ -162,6 +167,8 @@ printed content stay printed; whether L3 keeps a glance layer over art is
 L3's question, recorded in the roadmap.
 Reason: hiding the printed layer must never take a control or state with
 it.
+A site-power button keeps a minimum hit area when its printed label is
+hidden; where L3 places it over the art is L3's work.
 Confidence: low on the last point only (glance short forms over art).
 Slice/files: whole-feature review; `ServerUiSupport`, `WorldBoardRenderer`,
 `docs/ROADMAP.md`.
