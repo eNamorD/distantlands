@@ -69,8 +69,9 @@ class IronHandSuite extends munit.FunSuite:
       TriggeredProcedureRef.ChronicleSun),
       distantlands.gameplay.chronicle.ChronicleSunProcedure.noteKeys,
       run.events).map(_.text)
-    assert(said.indexOf(s"p3 activated ${IronHandCard.id.value}") <
-      said.indexOf(discardLine), said)
+    val activated = s"p3 activated ${IronHandCard.id.value}"
+    assert(said.contains(activated) && said.contains(discardLine), said)
+    assert(said.indexOf(activated) < said.indexOf(discardLine), said)
 
   test("an Exile winner holding Iron Hand discards it after Crown " +
       "Chancellor (ruling 18)"):
