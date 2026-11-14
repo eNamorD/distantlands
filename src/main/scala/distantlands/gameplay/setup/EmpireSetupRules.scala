@@ -74,6 +74,26 @@ object EmpireSetupRules:
     suits == catalog.site(stored.site).flatMap(_.homeland).toVector
       .map(Some(_))
 
+  /** Whether `chronicle` starts a first game played exile-only: shaped like
+    * a first game's, with no Chancellor, no Citizen and no Empire site, but
+    * carrying history (owner, 2026-11-12). */
+  def isFirstGameExileOnly(catalog: ExecutableCatalog, chronicle: Chronicle)
+      : Boolean =
+    !isFirstGame(catalog, chronicle) && chronicle.world.isEmpty &&
+      chronicle.lineages.forall(lineage => lineage.role != Role.Chancellor &&
+        lineage.role != Role.Citizen)
+
+  /** The Chronicle a game starts from: `chronicle` itself, but in a first
+    * game played exile-only every lineage's stored legacies, seated and
+    * boxed, are wiped back into the derived legacy deck before the deal, as
+    * a first game has none (R40). Starting advisers and relics stay. The
+    * game's setup mode is read from `chronicle`, before the wipe. */
+  def startingChronicle(catalog: ExecutableCatalog, chronicle: Chronicle)
+      : Chronicle =
+    if !isFirstGameExileOnly(catalog, chronicle) then chronicle
+    else chronicle.copy(lineages = chronicle.lineages.map(
+      _.copy(legacies = Vector.empty)))
+
   /** The seated Chancellor leads the Empire. With none seated, because the
     * Chancellor's lineage sits out or the Chronicle lists none, a seated
     * Citizen stands in, and must be the first player (R6); with no Citizen
@@ -89,7 +109,7 @@ object EmpireSetupRules:
     val chancellors = lineages(Role.Chancellor)
     val citizens = lineages(Role.Citizen)
     if isFirstGame(catalog, chronicle) then Right(SetupMode.FirstGame)
-    else if chancellors.isEmpty && citizens.isEmpty && chronicle.world.isEmpty
+    else if isFirstGameExileOnly(catalog, chronicle)
     then Right(SetupMode.FirstGameExileOnly(chronicle.atlasBox.take(MapState.slots)))
     else
       val seatedCitizens = citizens.flatMap(seated.get)

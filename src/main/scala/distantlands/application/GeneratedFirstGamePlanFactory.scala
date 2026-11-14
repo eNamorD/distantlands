@@ -2,7 +2,7 @@ package distantlands.application
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.powers.PowerImplementationStatus
-import distantlands.gameplay.setup.{LegacyDeal, SetupDeal}
+import distantlands.gameplay.setup.{EmpireSetupRules, LegacyDeal, SetupDeal}
 import distantlands.model._
 
 /**
@@ -42,14 +42,17 @@ final class GeneratedFirstGamePlanFactory(
       case ChronicleChoice.Saved(saved) => Right(saved)
     chronicle.map { chronicle =>
       val seated = seating(config, chronicle)
+      // The deal is the starting Chronicle's: a first game played
+      // exile-only has its stored legacies back in the deck (R40).
+      val starting = EmpireSetupRules.startingChronicle(catalog, chronicle)
       FirstGamePlan(chronicle, seated, ChronicleFirstGamePlan.dealOrder(
-        seated, SetupDeal.of(chronicle, seated.participants),
+        seated, SetupDeal.of(starting, seated.participants),
         policy.order(chronicle.worldDeck,
           ImplementedCardCatalog.denizens(catalog, implemented), random),
         policy.order(chronicle.relicDeck,
           ImplementedCardCatalog.ordinaryRelics(catalog, implemented),
           random),
-        random.shuffle(LegacyDeal.deck(catalog, chronicle)),
+        random.shuffle(LegacyDeal.deck(catalog, starting)),
         random.shuffle))
     }
 

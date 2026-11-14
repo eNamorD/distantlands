@@ -3,9 +3,9 @@ package distantlands.gameplay.setup.legacies
 import distantlands.application.GameCommand
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus}
-import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules,
-  LaterGameFixture, LegacyDeal, LegacyKeep, SetupLegacyFixture,
-  SetupProcedure, SetupWalkDriver}
+import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
+  LegacyDeal, LegacyKeep, SetupLegacyFixture, SetupProcedure,
+  SetupWalkDriver}
 import distantlands.gameplay.walker.WalkerPowers
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -68,16 +68,18 @@ class MatchmakerSuite extends munit.FunSuite:
   test("a player who drew one legacy keeps it with no question"):
     // Box lineages hold every legacy but Matchmaker and 3 others, so the
     // derived deck is short: p1 draws 2, p2 draws 1 and p3 none (Legacies
-    // R9). Lineages holding legacies are history: an exile-only game.
+    // R9). A later game with a Chancellor keeps them; a first game played
+    // exile-only would wipe them back into the deck (R40).
     val held = catalog.legacies.map(_.id).filterNot(_ == MatchmakerCard.id)
       .dropRight(3)
     val boxed = held.grouped(12).zipWithIndex.map((ids, n) => LineageState(
       LineageId(s"boxed-$n"), None, Role.Exile,
       ids.map(LegacyState(_, active = true)), Vector.empty)).toVector
+    val later = LaterGameFixture.chronicle(l1, l2)
     val short = SetupLegacyFixture.holding(
-      FirstGameSetupFixture.chronicle.copy(lineages = boxed), l3, Role.Exile,
+      later.copy(lineages = later.lineages ++ boxed), l3, Role.Exile,
       MatchmakerCard.id -> true)
-    val shortOrders = FirstGameSetupFixture.orders.copy(
+    val shortOrders = LaterGameFixture.orders(short, p1).copy(
       legacyOrder = LegacyDeal.deck(catalog, short))
     assertEquals(shortOrders.legacyOrder.size, 3)
     val ready = accepted(GameStartRules.evolve(catalog, short, shortOrders))

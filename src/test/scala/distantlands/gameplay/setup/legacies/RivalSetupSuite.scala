@@ -120,8 +120,8 @@ class RivalSetupSuite extends munit.FunSuite:
       Vector(s"p3 placed a warband at ${rivals.head.site.value} with " +
         RivalCard.id.value))
 
-  test("an exile-only game fills every slot first, so Rival places " +
-      "nothing (R17)"):
+  test("a first game played exile-only wipes a held Rival, which does " +
+      "nothing (R40)"):
     val exileOnly = SetupLegacyFixture.holding(
       distantlands.gameplay.setup.FirstGameSetupFixture.chronicle, l3,
       Role.Exile, RivalCard.id -> true)
@@ -130,6 +130,8 @@ class RivalSetupSuite extends munit.FunSuite:
       exileOnly.atlasBox.take(MapState.slots).map(_.site))
     assertEquals(ready.game.current.map.sites.values.count(
       _.forces.count(ForceKind.Exile(l3)) > 0), 0)
+    assert(!ready.game.campaign.lineages(l3).legacies.exists(
+      _.id == RivalCard.id))
 
   test("an Imperial holder places nothing (ruling 8)"):
     val ready = started(SetupLegacyFixture.holding(

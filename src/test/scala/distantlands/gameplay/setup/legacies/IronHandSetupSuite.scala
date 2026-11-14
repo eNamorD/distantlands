@@ -80,12 +80,14 @@ class IronHandSetupSuite extends munit.FunSuite:
       if capacity == 0 then SiteForces.Empty
       else SiteForces.Occupied(ForceKind.Bandit, capacity)))
 
-  test("an exile-only game has no Empire divider, so no site takes the " +
-      "holder's warband"):
+  test("a first game played exile-only wipes a held Iron Hand, which does " +
+      "nothing (R40)"):
     val record = holding(FirstGameSetupFixture.chronicle)
     val ready = started(record)
     assertEquals(ready.game.current.map.sites.values.count(
       _.forces.count(ForceKind.Exile(l3)) > 0), 0)
+    assert(!ready.game.campaign.lineages(l3).legacies.exists(
+      _.id == IronHandCard.id))
 
   /** `holding`, the holder's lineage having sat out the previous game. */
   private def satOut(chronicle: Chronicle): Chronicle =

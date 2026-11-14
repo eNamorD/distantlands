@@ -4,7 +4,7 @@ import distantlands.catalog.holding.ArbiterCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.action.{BrassHorseCard, FaeMerchantCard}
-import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
@@ -117,19 +117,21 @@ class ChronicleRecordSuite extends munit.FunSuite:
 
   test("a game started from a lineage's legacies and starting relic records " +
       "the same legacies, and the relic no longer as a starting relic"):
-    val (chronicle, orders) =
-      (FirstGameSetupFixture.chronicle, FirstGameSetupFixture.orders)
-    val seated = orders.participants.head.lineageId
+    // A later game with a Chancellor: a first game played exile-only would
+    // wipe the stored legacies (R40).
+    val chronicle = LaterGameFixture.chronicle(LineageId("l1"),
+      LineageId("l2"))
+    val seated = LineageId("l1")
     val relic = chronicle.relicDeck.head
     val legacies = Vector(LegacyState(SeerCard.id, active = true),
       LegacyState(ArbiterCard.id, active = false))
     val keeping = chronicle.copy(relicDeck = chronicle.relicDeck.tail,
-      lineages = Vector(LineageState(seated, None, Role.Exile, legacies,
-        Vector.empty, startingRelics = Vector(relic))))
-    val ready = GameStartRules.evolve(catalog, keeping, orders.copy(
-      relicOrder = orders.relicOrder.filterNot(_ == relic),
-      legacyOrder = orders.legacyOrder.filterNot(
-        Set(SeerCard.id, ArbiterCard.id)))).toOption.get
+      lineages = chronicle.lineages.map(lineage =>
+        if lineage.id == seated then lineage.copy(legacies = legacies,
+          startingRelics = Vector(relic))
+        else lineage))
+    val ready = GameStartRules.evolve(catalog, keeping,
+      LaterGameFixture.orders(keeping, p1)).toOption.get
     val recorded = ChronicleRecord.campaignFields(ready).lineages
       .find(_.id == seated)
     // Quiet Ambitions' draw follows them; Setup has not run.

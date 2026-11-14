@@ -96,6 +96,20 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
       legacies.sortBy(_.value))
     assertEquals(plan.chronicle, saved)
 
+  test("a first game played exile-only deals its stored legacies back in " +
+      "the legacy deck, and the game starts from that deal (R40)"):
+    val stored = catalog.legacies.map(_.id).take(2)
+    val saved = FirstGameSetupFixture.chronicle.copy(lineages = Vector(
+      LineageState(FirstGameSetupFixture.participants.head.lineageId, None,
+        Role.Exile, stored.map(LegacyState(_, active = true)), Vector.empty),
+      LineageState(LineageId("boxed"), None, Role.Exile, Vector.empty,
+        Vector.empty)))
+    val plan = accepted(factory.build(config, ChronicleChoice.Saved(saved)))
+    assertEquals(plan.chronicle, saved)
+    assertEquals(plan.orders.legacyOrder.sortBy(_.value),
+      catalog.legacies.map(_.id).sortBy(_.value))
+    accepted(GameStartRules.evolve(catalog, plan.chronicle, plan.orders))
+
   test("a Teeming World Chronicle is dealt a world deck of the five " +
       "Visions, shuffled, and the game starts from that deal"):
     val saved = FirstGameSetupFixture.chronicle.copy(foundations = Map(

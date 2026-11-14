@@ -13,6 +13,11 @@ class LegacySetupSuite extends munit.FunSuite:
   private val orders = FirstGameSetupFixture.orders
   private val seats = orders.participants
 
+  /** A later game with a Chancellor on l1, where stored legacies stay: a
+    * first game played exile-only wipes them (R40). */
+  private val later = LaterGameFixture.chronicle(LineageId("l1"),
+    LineageId("l2"))
+
   private def publicAmbitions(base: Chronicle): Chronicle = base.copy(
     foundations = base.foundations.updated(FoundationNumber.III,
       FoundationState(FoundationFace.Altered, Set.empty)))
@@ -21,11 +26,13 @@ class LegacySetupSuite extends munit.FunSuite:
       "after those it holds"):
     val seated = seats.head.lineageId
     val kept = LegacyState(SeerCard.id, active = true)
-    val keeping = chronicle.copy(lineages = Vector(LineageState(seated,
-      None, Role.Exile, Vector(kept), Vector.empty)))
+    val keeping = later.copy(lineages = later.lineages.map(lineage =>
+      if lineage.id == seated then lineage.copy(legacies = Vector(kept))
+      else lineage))
     val order = LegacyDeal.deck(catalog, keeping)
     val ready = accepted(GameStartRules.evolve(catalog, keeping,
-      orders.copy(legacyOrder = order)))
+      LaterGameFixture.orders(keeping, seats.head.playerId)
+        .copy(legacyOrder = order)))
     val deal = LegacyDeal.of(keeping, seats)
     seats.foreach(seat => assertEquals(
       ready.game.campaign.lineages(seat.lineageId).legacies,
@@ -92,14 +99,15 @@ class LegacySetupSuite extends munit.FunSuite:
   test("a short deck draws 2, 1 and 0 in seat order: the first keeper is " +
       "asked, the second keeps theirs unasked, the third gets none (R9)"):
     // Box lineages hold every legacy but 3, so the derived deck is short.
-    // Lineages holding legacies are history, so this starts an exile-only
-    // game; Foundation III deals the same.
+    // A later game with a Chancellor keeps them; a first game played
+    // exile-only would wipe them back into the deck (R40).
     val held = catalog.legacies.map(_.id).dropRight(3)
     val boxed = held.grouped(12).zipWithIndex.map((ids, n) => LineageState(
       LineageId(s"boxed-$n"), None, Role.Exile,
       ids.map(LegacyState(_, active = true)), Vector.empty)).toVector
-    val short = chronicle.copy(lineages = boxed)
-    val shortOrders = orders.copy(legacyOrder = LegacyDeal.deck(catalog, short))
+    val short = later.copy(lineages = later.lineages ++ boxed)
+    val shortOrders = LaterGameFixture.orders(short, seats.head.playerId)
+      .copy(legacyOrder = LegacyDeal.deck(catalog, short))
     assertEquals(shortOrders.legacyOrder.size, 3)
     val started = accepted(GameStartRules.evolve(catalog, short, shortOrders))
     val Vector(two, one, none) = seats

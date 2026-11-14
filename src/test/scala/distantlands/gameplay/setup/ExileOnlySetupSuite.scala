@@ -172,6 +172,16 @@ class ExileOnlySetupSuite extends munit.FunSuite:
     val firstGame = cradlemostCleared(started(brandNew))
     assertEquals(SetupPawnSites.legal(catalog, firstGame, p1),
       firstGame.game.current.map.inPlay)
+    // When stored legacies were its only history, the wipe leaves a
+    // starting Chronicle with none, so its pawns are placed as in a first
+    // game, though its sites were placed exile-only (R40; an open
+    // question to the owner).
+    val legacyOnly = cradlemostCleared(started(brandNew.copy(lineages =
+      Vector(LineageState(LineageId("l1"), None, Role.Exile,
+        Vector(LegacyState(catalog.legacies.head.id, active = true)),
+        Vector.empty)))))
+    assertEquals(SetupPawnSites.legal(catalog, legacyOnly, p1),
+      legacyOnly.game.current.map.inPlay)
 
   test("an edifice stored at a site that is no Homeland makes an " +
       "exile-only game, which keeps it ruined at its site"):
@@ -194,3 +204,35 @@ class ExileOnlySetupSuite extends munit.FunSuite:
     assertEquals(started(chronicle).game.current.map.sites(site.site)
       .denizens, Vector(EdificeState(offSuit, EdificeSide.Ruined,
         Tokens.empty)))
+
+  test("a first game played exile-only wipes every stored legacy, seated " +
+      "and boxed, back into the legacy deck before the deal (R40)"):
+    val stored = catalog.legacies.map(_.id).take(3)
+    val boxed = LineageState(LineageId("boxed"), None, Role.Exile,
+      Vector(LegacyState(stored(2), active = true)), Vector.empty)
+    val record = SetupLegacyFixture.holding(brandNew.copy(lineages =
+      brandNew.lineages :+ boxed), LineageId("l1"), Role.Exile,
+      stored(0) -> true, stored(1) -> false)
+    assert(mode(record).isInstanceOf[SetupMode.FirstGameExileOnly])
+    val orders = LaterGameFixture.orders(record, p1)
+    assert(stored.forall(orders.legacyOrder.contains), orders.legacyOrder)
+    val ready = accepted(GameStartRules.evolve(catalog, record, orders))
+    val deal = LegacyDeal.of(record, orders.participants)
+    orders.participants.foreach(seat => assertEquals(
+      ready.game.campaign.lineages(seat.lineageId).legacies,
+      deal.drawn(orders.legacyOrder, seat.playerId)
+        .map(LegacyState(_, active = false))))
+    assertEquals(ready.game.campaign.baseline.lineages.flatMap(_.legacies),
+      Vector.empty)
+
+  test("a first game played exile-only keeps starting advisers and relics " +
+      "(R40)"):
+    val adviser = brandNew.worldDeck.head
+    val record = brandNew.copy(worldDeck = brandNew.worldDeck.tail,
+      lineages = Vector(LineageState(LineageId("l1"), None, Role.Exile,
+        Vector.empty, Vector(DenizenState(adviser, Orientation.FaceDown,
+          Tokens.empty)))))
+    val ready = started(record)
+    assertEquals(ready.game.current.player(p1).get.advisers.map(_.id),
+      Vector(adviser))
+

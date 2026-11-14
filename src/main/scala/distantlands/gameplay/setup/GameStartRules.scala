@@ -24,12 +24,15 @@ import distantlands.model.OathViolation._
  * generation time rather than again at every setup.
  */
 object GameStartRules:
-  def evolve(catalog: ExecutableCatalog, chronicle: Chronicle,
+  def evolve(catalog: ExecutableCatalog, saved: Chronicle,
       orders: SetupOrders): Either[OathViolation, ReadyGame] =
+    // A first game played exile-only starts with no stored legacy (R40);
+    // its mode is read from the Chronicle as saved.
+    val chronicle = EmpireSetupRules.startingChronicle(catalog, saved)
     val deal = SetupDeal.of(chronicle, orders.participants)
     val legacyDeal = LegacyDeal.of(chronicle, orders.participants)
     for
-      planned <- buildPlan(catalog, chronicle, orders, deal)
+      planned <- buildPlan(catalog, saved, chronicle, orders, deal)
       (plan, mode) = planned
       material = new FirstGameSetupMaterializer(catalog)
         .materialize(plan, deal)
@@ -95,12 +98,12 @@ object GameStartRules:
       _ <- Either.cond(problems.isEmpty, (), InvalidAggregate(problems))
     yield known
 
-  private def buildPlan(catalog: ExecutableCatalog, chronicle: Chronicle,
-      orders: SetupOrders, deal: SetupDeal)
+  private def buildPlan(catalog: ExecutableCatalog, saved: Chronicle,
+      chronicle: Chronicle, orders: SetupOrders, deal: SetupDeal)
       : Either[OathViolation, (FirstGameSetupPlan, SetupMode)] =
     for
       _ <- validateParticipants(orders)
-      mode <- EmpireSetupRules.resolve(catalog, chronicle, orders)
+      mode <- EmpireSetupRules.resolve(catalog, saved, orders)
       // Setup With No Empire erodes the faces before the foundations are
       // resolved; an exile-only game had no Empire to erode them. Every
       // face of every foundation starts a game.

@@ -12,6 +12,14 @@ class GameStartRulesSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
   private val chronicle = FirstGameSetupFixture.chronicle
   private val orders = FirstGameSetupFixture.orders
+  /** A later game with a Chancellor on l1, where stored legacies stay: a
+    * first game played exile-only wipes them (R40). */
+  private val later = LaterGameFixture.chronicle(LineageId("l1"),
+    LineageId("l2"))
+  private def holdingOnL1(legacies: Vector[LegacyState]): Chronicle =
+    later.copy(lineages = later.lineages.map(lineage =>
+      if lineage.id == LineageId("l1") then lineage.copy(legacies = legacies)
+      else lineage))
 
   test("a valid Chronicle evolves into a Ready game in Phase.Setup with the " +
       "first player active and no pawns or advisers"):
@@ -62,15 +70,13 @@ class GameStartRulesSuite extends munit.FunSuite:
         "the deal does not hold the legacy deck")))
 
   test("the legacy deck a deal holds leaves out the legacies lineages hold"):
-    val seated = orders.participants.head.lineageId
-    val keeping = chronicle.copy(lineages = Vector(LineageState(seated, None,
-      Role.Exile, Vector(LegacyState(SeerCard.id, active = true)),
-      Vector.empty)))
-    assertEquals(GameStartRules.evolve(catalog, keeping, orders).left
+    val keeping = holdingOnL1(Vector(LegacyState(SeerCard.id, active = true)))
+    val dealt = LaterGameFixture.orders(later, PlayerId("p1"))
+    assertEquals(GameStartRules.evolve(catalog, keeping, dealt).left
       .toOption, Some(OathViolation.UnsupportedChronicle(
         "the deal does not hold the legacy deck")))
-    assert(GameStartRules.evolve(catalog, keeping, orders.copy(legacyOrder =
-      orders.legacyOrder.filterNot(_ == SeerCard.id))).isRight)
+    assert(GameStartRules.evolve(catalog, keeping, dealt.copy(legacyOrder =
+      dealt.legacyOrder.filterNot(_ == SeerCard.id))).isRight)
 
   test("a seated lineage's starting relics go facedown to its player"):
     val participant = orders.participants.head
@@ -105,14 +111,12 @@ class GameStartRulesSuite extends munit.FunSuite:
       None, Role.Exile, drawn(1), Vector.empty))
 
   test("a seated lineage's legacies start with their stored faces"):
-    val seated = orders.participants.head.lineageId
+    val seated = LineageId("l1")
     val legacies = Vector(LegacyState(SeerCard.id, active = true),
       LegacyState(ArbiterCard.id, active = false))
-    val keeping = chronicle.copy(lineages = Vector(LineageState(seated, None,
-      Role.Exile, legacies, Vector.empty)))
-    val ready = accepted(GameStartRules.evolve(catalog, keeping, orders.copy(
-      legacyOrder = orders.legacyOrder.filterNot(
-        Set(SeerCard.id, ArbiterCard.id)))))
+    val keeping = holdingOnL1(legacies)
+    val ready = accepted(GameStartRules.evolve(catalog, keeping,
+      LaterGameFixture.orders(keeping, PlayerId("p1"))))
     // Quiet Ambitions' draw follows them (`LegacySetupSuite`).
     assertEquals(ready.game.campaign.lineages(seated).legacies
       .take(legacies.size), legacies)
