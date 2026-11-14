@@ -89,7 +89,7 @@ object SetupProcedure:
 
   val reliquaryDecisionId: String = "setup.reliquary-pick"
   def pawnDecisionId(player: PlayerId): String =
-    s"setup.pawn-placement.${player.value}"
+    s"${SetupPawnPlacement.prefix}${player.value}"
   def adviserDecisionId(player: PlayerId): String =
     s"setup.adviser-choice.${player.value}"
   def revealDecisionId(player: PlayerId): String =

@@ -6,6 +6,8 @@ import distantlands.gameplay.powers.action.DowsingSticksCard
 import distantlands.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
 import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
+  Transform}
 import distantlands.gameplay.walker.{LogNoted, WalkerPowers}
 import distantlands.model._
 import distantlands.testkit.{Look, Table}
@@ -103,3 +105,34 @@ class GreatForgeRulesSuite extends munit.FunSuite:
     assertEquals(written.take(2), Vector(
       s"${ProcedureNotes.id(TriggeredProcedureRef.Setup).value}/placed-pawn",
       s"${great.id.value}/${NoteKey.Used}"))
+
+  /** A power after Great Forge that asks twice inside the pawn window, so
+    * the walk resumes there after a window answer (R27). */
+  private case object AskInWindow extends ContributingPower:
+    val id: PowerId = PowerId("test.setup.ask-in-window")
+    val source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+    val contributions: Map[PowerWindow, Vector[Contribution]] = Map(
+      PowerWindow.SetupPawnPlaced -> Vector(Transform((ctx, ops) =>
+        if !ctx.answered.lastOption.exists(answer =>
+            SetupProcedure.pawnDecisionId(firstPlayer) == answer.decisionId ||
+              answer.decisionId.startsWith("test.window.ask")) then ops
+        else ops ++ Vector("test.window.ask", "test.window.ask2").map(id =>
+          Decide(id, firstPlayer, DecisionQuery.ChooseOne(Vector(
+            DecisionOption.Button(DecisionOptionRef.Button("a"), "A"),
+            DecisionOption.Button(DecisionOptionRef.Button("b"), "B"))))))))
+
+  test("a question asked in the pawn window keeps Great Forge's draw on " +
+      "resume: the relic is drawn once (R27)"):
+    val asking = WalkerPowers.selected(WalkerPowerCatalog.default(catalog)
+      .copy(powers = WalkerPowerCatalog.default(catalog).powers :+
+        AskInWindow), Vector.empty)
+    val staged = stagedAt(EdificeSide.Intact)
+    val walked = SetupWalkDriver.driveWithEvents(staged, accepted(
+      SetupProcedure.build(catalog, staged,
+        staged.game.current.turn.activePlayer, Vector.empty)),
+      TriggeredProcedureRef.Setup, asking)
+    assertEquals(walked.asked.map(_.decisionId).filter(
+      _.startsWith("test.window")), Vector("test.window.ask",
+      "test.window.ask2"))
+    assertEquals(Look(walked.ready).player(firstPlayer).relics
+      .count(_.id == topRelic), 1)
