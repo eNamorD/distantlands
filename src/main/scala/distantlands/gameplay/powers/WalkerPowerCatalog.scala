@@ -22,6 +22,7 @@ import distantlands.gameplay.powers.travel._
 import distantlands.gameplay.powers.wake._
 import distantlands.gameplay.powers.whenplayed._
 import distantlands.gameplay.roles.CouncilSeat
+import distantlands.gameplay.setup.legacies.LegacySetupPowers
 import distantlands.gameplay.walker.WalkerPowers
 import distantlands.model.{CardId, PowerId}
 
@@ -57,7 +58,8 @@ import distantlands.model.{CardId, PowerId}
   * Jinx is inert until a roll step asks for rerolls.
   * The legacies' Chronicle powers (`LegacyChroniclePowers`) are inert until
   * a Chronicle walks their windows; Steadfast hooks none, as Sun step 3
-  * reads it.
+  * reads it. The legacies' SETUP powers (`LegacySetupPowers`) hook no
+  * window: game start and Setup's steps read them.
   * `restrictionSet` gives every walker step the catalog's global operation
   * restrictions.
   */
@@ -97,7 +99,8 @@ object WalkerPowerCatalog:
         ProvingGrounds, EmptyGrounds, HallOfMockery, LostGuardians,
         RuinedSchool, BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
         ConspiracyWhenPlayed) ++
-      LegacyChroniclePowers.all
+      LegacyChroniclePowers.all ++
+      LegacySetupPowers.all
 
   /** The power-use restrictions the walker powers declare, for the phase
     * powers (catalog batch 8, slice 10). */

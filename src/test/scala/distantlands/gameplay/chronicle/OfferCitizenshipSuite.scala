@@ -1,7 +1,7 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.{ArbiterCard, CircleOfSwordsCard,
-  PeacemakerCard, SeerCard, TheNeedleCard}
+import distantlands.catalog.holding.{ArbiterCard, PeacemakerCard,
+  SeerCard, TheNeedleCard}
 import distantlands.gameplay.chronicle.legacies.{ChroniclerCard, RivalCard,
   SteadfastCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
@@ -9,6 +9,7 @@ import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.legacies.CircleOfSwordsCard
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import distantlands.testkit.{Look, Outcomes, ParkedNode, Table}

@@ -3,6 +3,7 @@ package distantlands.catalog
 import distantlands.catalog.holding._
 import distantlands.gameplay.chronicle.legacies._
 import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.setup.legacies._
 import distantlands.model.{FoundationNumber, Suit}
 
 /** The goal and suit each legacy prints (CR section 12; Legacies design,

@@ -25,15 +25,6 @@ object TheNeedleCard extends Legacy(LegacyId("L05"), "The Needle",
       "other side.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object CircleOfSwordsCard extends Legacy(LegacyId("L06"), "Circle of Swords",
-    LegacyGoal.MostSites, Suit.Nomad):
-  val power = PrintedPower(PowerId("legacy.circle-of-swords"),
-    persistent = false, cost = Cost.free,
-    text = "**SETUP:** You gain eight starting warbands _(instead of " +
-      "three)_. If you're Imperial and other Imperials would gain " +
-      "fewer than three, you gain less.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object AncestralLandsCard extends Legacy(LegacyId("L08"), "Ancestral Lands",
     LegacyGoal.GrandScepter, Suit.Nomad):
   val power = PrintedPower(PowerId("legacy.ancestral-lands"),

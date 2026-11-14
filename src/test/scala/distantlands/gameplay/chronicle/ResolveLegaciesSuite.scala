@@ -1,8 +1,8 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.holding.{AncestralLandsCard, ArbiterCard,
-  CircleOfSwordsCard, GoldenKeyCard, KeeperOfOrderCard, MatchmakerCard,
-  PeacemakerCard, SeerCard, TheNeedleCard, WealthyCard}
+  GoldenKeyCard, KeeperOfOrderCard, MatchmakerCard, PeacemakerCard,
+  SeerCard, TheNeedleCard, WealthyCard}
 import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
   GreatArchitectCard, IronHandCard, RivalCard, SteadfastCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
@@ -11,6 +11,7 @@ import distantlands.gameplay.OathRules
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.legacies.CircleOfSwordsCard
 import distantlands.model._
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2, p3}

@@ -1,6 +1,6 @@
 package distantlands.gameplay.setup
 
-import distantlands.catalog.holding.CircleOfSwordsCard
+import distantlands.gameplay.setup.legacies.CircleOfSwordsCard
 import distantlands.model._
 
 class StartingLegaciesSuite extends munit.FunSuite:

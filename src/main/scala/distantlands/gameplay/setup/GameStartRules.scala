@@ -136,7 +136,8 @@ object GameStartRules:
         case SetupMode.NoEmpire(sites, _) => sites
         case SetupMode.ExileOnly(sites) => sites
         case _ => Vector.empty,
-      startingAdvisers(chronicle, orders), faces) -> mode
+      startingAdvisers(chronicle, orders), faces,
+      StartingLegacies.of(chronicle, orders.participants, mode)) -> mode
 
   /** The slots filled from the atlas. A first game's eight are placed at
     * game start from the Recent end. With an Empire, Imperial Maps fills

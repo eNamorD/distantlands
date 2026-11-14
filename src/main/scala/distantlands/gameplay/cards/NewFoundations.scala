@@ -3,6 +3,7 @@ package distantlands.gameplay.cards
 import distantlands.catalog.{Denizen, Edifice, ExecutableCatalog, Legacy, Relic, Site}
 import distantlands.catalog.holding._
 import distantlands.gameplay.chronicle.legacies._
+import distantlands.gameplay.setup.legacies._
 import distantlands.gameplay.{ActingTroupeCard, BanditCrownCard, GrandMaskCard,
   MarriageCard, PledgeToDiscordCard, SacredGroundCard, SpitefulMirrorCard,
   VowOfKinshipCard}

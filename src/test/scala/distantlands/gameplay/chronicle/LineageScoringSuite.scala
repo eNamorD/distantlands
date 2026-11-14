@@ -1,7 +1,6 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.{CircleOfSwordsCard, TheNeedleCard,
-  WealthyCard}
+import distantlands.catalog.holding.{TheNeedleCard, WealthyCard}
 import distantlands.gameplay.chronicle.legacies.HeirloomCard
 import distantlands.gameplay.SacredGroundCard
 import distantlands.gameplay.GrandMaskCard
@@ -15,6 +14,7 @@ import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.legacies.CircleOfSwordsCard
 import distantlands.model._
 import distantlands.testkit.{Outcomes, RecordedOps, Table}
 import distantlands.testkit.Table.{p1, p2, p3}

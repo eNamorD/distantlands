@@ -1,5 +1,7 @@
 package distantlands.gameplay.setup
 
+import distantlands.gameplay.setup.legacies.{CircleOfSwords,
+  CircleOfSwordsCard}
 import distantlands.model._
 
 /** The legacies' SETUP powers that change what game start builds (Legacy
@@ -21,3 +23,24 @@ object StartingLegacies:
       roles(lineage.role) &&
       lineage.legacies.contains(LegacyState(legacy, active = true)))
       .map(_.id)
+
+  /** The purple warbands an Imperial Circle of Swords holder takes when
+    * `others` other Imperial boards each take 3 first (R3). */
+  def imperialBoard(others: Int): Int =
+    math.max(0, math.min(CircleOfSwords.warbands,
+      MaterialBankState.ImperialWarbands - 3 * others))
+
+  /** What the SETUP powers change for `chronicle` seated as `seats` in
+    * `mode`. A first game's legacies are all dormant, so nothing acts. */
+  def of(chronicle: Chronicle, seats: Vector[FirstGameParticipant],
+      mode: SetupMode): StartLegacies =
+    val seated = seats.map(_.lineageId)
+    val playerOf = seats.map(seat => seat.lineageId -> seat.playerId).toMap
+    val imperial = mode match
+      case SetupMode.WithEmpire(empire) => empire.imperial
+      case _ => Set.empty[PlayerId]
+    val circle = holder(chronicle, seated, CircleOfSwordsCard.id)
+      .map(playerOf).map(player => player ->
+        (if imperial(player) then imperialBoard(imperial.size - 1)
+        else CircleOfSwords.warbands))
+    StartLegacies.none.copy(boardWarbands = circle.toMap)

@@ -12,9 +12,17 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       : FirstGameSetupMaterial =
     val relicsBySite = assignRelics(plan)
     val edifices = plan.homelandEdifices.toMap
+    // Each board's starting warbands: 3, or what Circle of Swords gives
+    // (`StartingLegacies`). The Empire's sites take purple warbands from
+    // what the Imperial boards leave of the 24 (R3).
+    val boards = plan.participants.map(p => p.playerId ->
+      plan.legacies.boardWarbands.getOrElse(p.playerId, 3)).toMap
+    val purpleBoards = plan.empire.fold(0)(_.imperial.toVector
+      .map(boards).sum)
     val purple = plan.empire.fold(Set.empty[SiteId])(empire =>
-      empire.sites.take(MaterialBankState.ImperialWarbands -
-        3 * empire.imperial.size).map(_.site).toSet)
+      empire.sites.take(math.max(0,
+        MaterialBankState.ImperialWarbands - purpleBoards))
+        .map(_.site).toSet)
     val empireSites = plan.empire.fold(Map.empty[SiteId, StoredSite])(
       _.sites.map(stored => stored.site -> stored).toMap)
     val atlasSites = plan.atlasSites.map(stored => stored.site -> stored).toMap
@@ -27,7 +35,8 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     val usedRelics = relicsBySite.valuesIterator.flatten.toSet
     val players = plan.participants.map { participant =>
       PlayerState(participant.playerId, participant.lineageId, None,
-        PlayerBoardState(startingFavor(plan), 1, 0, 3, SupplyTrack.full),
+        PlayerBoardState(startingFavor(plan), 1, 0,
+          boards(participant.playerId), SupplyTrack.full),
         deal.kept(plan.denizenOrder, participant.playerId).map(id =>
           DenizenState(id, Orientation.FaceDown, Tokens.empty)),
         Vector.empty, Vector.empty)
@@ -82,7 +91,7 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
 
   /** An Empire site: its stored edifice intact, its denizens faceup, its
     * stored relics facedown, and an Imperial warband while the supply
-    * lasts (Empire ruling R30). A short site stays empty for game start's
+    * the Imperial boards leave lasts (Empire ruling R30). A short site stays empty for game start's
     * bandits. */
   private def empireSite(stored: StoredSite, purple: Boolean): SiteState =
     SiteState(if purple then SiteForces.Occupied(ForceKind.Imperial, 1)
