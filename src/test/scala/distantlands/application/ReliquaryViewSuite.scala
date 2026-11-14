@@ -1,6 +1,7 @@
 package distantlands.application
 
-import distantlands.gameplay.powers.legacies.GoldenKeyCard
+import distantlands.gameplay.powers.legacies.{GoldenKeyCard,
+  LegacyActionFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.protocol.projection.GameProjectionCodec
@@ -43,6 +44,16 @@ class ReliquaryViewSuite extends munit.FunSuite:
     assertEquals(view(citizen, Some(p1)).reliquary.map(_.hidden),
       Vector(false, false))
     assertEquals(view(citizen, Some(p2)).reliquary.map(_.hidden),
+      Vector(true, true))
+
+  test("a dormant Golden Key, or a boxed lineage's, gives no peek " +
+      "(ruling 1)"):
+    val dormant = Table.start.imperial(p1).turn(p1, Phase.Act)
+      .legacy(p1, GoldenKeyCard, active = false).reliquaryFromDeck(2).ready
+    assertEquals(view(dormant, Some(p1)).reliquary.map(_.hidden),
+      Vector(true, true))
+    val boxed = LegacyActionFixture.boxed(keyed, p1)
+    assertEquals(view(boxed, Some(p1)).reliquary.map(_.hidden),
       Vector(true, true))
 
   test("the peek is gone once its holder becomes an Exile (ruling 2)"):
