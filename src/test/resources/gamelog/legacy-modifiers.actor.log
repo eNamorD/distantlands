@@ -1,0 +1,9 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Wake
+6.0 action 1 | Took 1 favor from [site:site:buried-giant|Buried Giant]
+10.0 phase 0 | Act
+21.0 section 1 trade@17 | Trade[cost:1 Supply]
+24.0 action 1 trade@17 | Traded with [card:1|Wrestlers] for 1 favor
+36.0 section 1 travel@32 | Travel[cost:1 Supply]
+38.0 action 1 travel@32 | Traveled to [site:site:ancient-city|Ancient City]

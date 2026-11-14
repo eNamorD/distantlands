@@ -1,7 +1,8 @@
 # Legacy in-play powers
 
 **Status:** designed 2026-11-14, approved section by section by the owner.
-Slice 1 has landed ([plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice1.md),
+Slices 1 and 2 have landed ([slice 1 plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice1.md),
+[slice 2 plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice2.md),
 [implementation rulings](2026-11-14-legacy-in-play-powers-implementation-rulings.md)).
 It follows the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
 and [Legacy Setup powers](2026-11-13-legacy-setup-powers-design.md)

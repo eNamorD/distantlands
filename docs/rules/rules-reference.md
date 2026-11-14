@@ -51,7 +51,7 @@ A round gives each player one turn, clockwise from Chancellor; without a Chancel
 1. If an Exile holds Oathkeeper, flip it to Usurper unless limited; if already Usurper, they win.
 2. If an Exile has a revealed Vision and currently meets it, they win.
 3. Use any Wake powers once each.
-4. Built-in **Take Wealth**: take one favor or secret from the pawn's site if no enemy pawn is present (CR p. 17).
+4. Built-in **Take Wealth**: take one favor or secret from the pawn's site if no enemy pawn is present (CR p. 17). Digital: Light Fingers' holder takes it even beside an enemy pawn ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), item 22).
 
 Digital: a seated player with no pawn, who stayed off the map with Quest to Distant Lands, first places their pawn at any site in play, then chooses an adviser, discards Secret Society's excess advisers, and reveals cards, before step 1 ([Legacy Setup powers rulings](ambiguities.md#legacy-setup-powers-rulings), items 36, 44, 46, 52 and 58).
 
@@ -81,7 +81,7 @@ Choose a destination and pay the region matrix:
 | Provinces | 2 | 2 | 2 |
 | Hinterland | 4 | 2 | 3 (other Hinterland) |
 
-Then move the pawn. Site powers such as Coast, Island, Mountain, and Pass modify or restrict this (CR p. 21).
+Then move the pawn. Site powers such as Coast, Island, Mountain, and Pass modify or restrict this (CR p. 21). Digital: an Imperial holding Ancestral Lands spends at most 1 Supply to reach the Cradle, and Pathfinder's holder ignores the Mountain, Island (Lost Lagoon's included) and Pass travel powers ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 19, 20 and 25).
 
 ### Campaign - 2 Supply
 
@@ -100,7 +100,7 @@ Place one favor on an empty denizen at the pawn's site. Gain one warband to boar
 
 ### Trade - 1 Supply
 
-Use an empty denizen at the pawn's site. For favor, place one secret and gain one favor plus one per matching faceup adviser from the matching suit bank. For secrets, place one favor and burn one favor, then gain one secret per matching faceup adviser (including zero) (CR p. 24; NF p. 13).
+Use an empty denizen at the pawn's site. For favor, place one secret and gain one favor plus one per matching faceup adviser from the matching suit bank. For secrets, place one favor and burn one favor, then gain one secret per matching faceup adviser (including zero) (CR p. 24; NF p. 13). Digital: Beloved's holder may also trade on the faceup advisers of other players whose pawns are at their site ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), item 23).
 
 ### Forge - 1 Supply
 
@@ -122,7 +122,7 @@ Default cost is 0 Supply. Core minor actions include:
 - use an Action power; Digital: a seated player's active legacy is a source of its ACTION, named in the Act menu, its burnt cost paid as a card's ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 1 to 6);
 - reveal/peek at relics held by the player;
 - move warbands between board and a ruled site at the pawn;
-- negotiate with a co-located player, exchanging favor and relics (not secrets/banners), with mutual consent;
+- negotiate with a co-located player, exchanging favor and relics (not secrets/banners), with mutual consent; Digital: High Priest's holder may give secrets, one way ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 24 and 28);
 - banner-specific resource placement;
 - self-exile under its cost/conditions;
 - applicable Imperial warband transfers (CR p. 27; CR pp. 32, 34-35).
@@ -155,7 +155,7 @@ Without Empire, round 8 uses War Exhaustion while skipping Stable Regime and Cha
 - **Refreshing Supply.** The Chancellor refreshes by the warbands in the purple bank; a Citizen matches the Chancellor's current Supply and keeps their unspent Supply, capped at 7 (CR p. 35).
 - **Chancellor's Eye.** A Citizen asks the Chancellor's consent to move warbands from their site to their board (CR p. 35).
 - **Warband Transfers.** An Imperial player may move warbands to or from another Imperial player's board when that player's pawn is at their site and that player consents (CR p. 35).
-- **Imperial Infighting.** An Imperial player may raid another Imperial player, and a Citizen may conquer Imperial sites, which the Chancellor defends (CR p. 35).
+- **Imperial Infighting.** An Imperial player may raid another Imperial player, and a Citizen may conquer Imperial sites, which the Chancellor defends (CR p. 35). Digital: Keeper of Order is an Imperial's battle plan against an Imperial, ±2 attack dice, the attacker's skulls ignored, lent through Imperial Tactics ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 5, 21 and 26).
 - **Imperial Tactics.** In a Campaign, an Imperial player may use battle plans in another Imperial player's play area with their consent, and plans at Imperial sites with the Chancellor's consent; any Imperial player may pay a plan's costs or meet its requirements, even split between players. The Oathkeeper title is a defensive battle plan. The attacker and defender cannot use the same plan (CR p. 35).
 
 ## Role changes

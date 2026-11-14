@@ -332,7 +332,7 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 
 ## Legacy in-play powers rulings
 
-Rulings for the powers legacies use during a game ([Legacy in-play powers design](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)). Items 1 to 13 are the design's rulings 1 to 13, taken with the owner on 2026-11-14; items 14 to 18 are implementation rulings R1 to R5.
+Rulings for the powers legacies use during a game ([Legacy in-play powers design](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)). Items 1 to 13 are the design's rulings 1 to 13, taken with the owner on 2026-11-14; items 14 to 18 are implementation rulings R1 to R5; items 19 to 24 are the design's rulings 14 to 19; items 25 to 29 are implementation rulings R6 to R10.
 
 1. **Only seated players' active legacies act.** Dormant legacies, a boxed lineage's legacies and the Public Ambitions row never act; The Mouth is the one way a legacy becomes active during a game (design, ruling 1).
 2. **"If you are an Imperial" is read when the power is used,** so the Crown and Citizenship change it during a game (design, ruling 2).
@@ -352,6 +352,18 @@ Rulings for the powers legacies use during a game ([Legacy in-play powers design
 16. **High Priest's and The Ear's lines** are "p2 moved 3 secrets from the Darkest Secret with High Priest" and "p2 peeked at the relics at Deep Woods with The Ear" (R3).
 17. **An ACTION with nothing to do is shown unavailable with its reason,** as card ACTIONs are; only Golden Key for an Exile holder is left out of the menu (R4).
 18. **A set-aside Reliquary shows nothing and gives nothing:** the shared bank and Golden Key read the Reliquary in play, so the design's ruling 9 does not override [Foundations ruling 3](#foundations-rulings) (R5).
+
+19. **Ancestral Lands.** An Imperial holder's travel to a Cradle site costs 1 Supply, applied after every other travel-cost change unless one has already made it lower; only the cost changes, so a Pass still restricts (design, ruling 14).
+20. **Pathfinder.** The holder's travel ignores the Mountain and Island cost powers and the Pass's travel restriction, always and without a question; the Pass's campaign-targeting limit still applies (design, ruling 15).
+21. **Keeper of Order.** A battle plan with the legacy as its source, usable once per campaign by the attacker or the defender while the enemy is an Imperial player: its user adds or removes 2 attack dice, and an attacker ignores every skull they roll. Another Imperial may use it through Imperial Tactics with the holder's consent (design, ruling 16).
+22. **Light Fingers.** Take Wealth's "no enemy pawns" gate is a restriction, which Light Fingers' holder ignores, always and without a question (design, ruling 17).
+23. **Beloved.** When the holder trades, the sources widen to the faceup, empty advisers of other players whose pawns are at their site, with no consent; Trade's own rules are unchanged, and a facedown adviser is excluded (design, ruling 18).
+24. **High Priest, when negotiating.** The holder may give secrets in a deal, one way; a start-fact marker keeps the term on resume (design, ruling 19).
+25. **Pathfinder ignores Lost Lagoon,** the Island power at its site (R6).
+26. **Keeper of Order's sign is a follow-up question,** "Add 2 attack dice" or "Remove 2 attack dice", as Mountain Giant asks (R7).
+27. **The passive modifiers write no lines;** Keeper of Order writes "Added 2 attack dice." or "Removed 2 attack dice.", and "Skulls ignored." when it ignores a skull; High Priest's secrets show in the deal's own lines (R8).
+28. **A Negotiation saved before High Priest's list** resumes with it empty (R9).
+29. **High Priest left the unimplemented list with its ACTION,** before its WHEN NEGOTIATING half landed (R10).
 
 ## Source relationship cautions
 
