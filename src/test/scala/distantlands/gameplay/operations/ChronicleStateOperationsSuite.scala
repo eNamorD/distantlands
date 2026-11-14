@@ -1,6 +1,7 @@
 package distantlands.gameplay.operations
 
-import distantlands.catalog.holding.{PathfinderCard, WealthyCard}
+import distantlands.catalog.holding.PathfinderCard
+import distantlands.gameplay.setup.legacies.WealthyCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.powers.economy.CupOfPlentyCard

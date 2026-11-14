@@ -105,15 +105,6 @@ object QuestToDistantLandsCard extends Legacy(LegacyId("L30"), "Quest to Distant
       "at any site.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object WealthyCard extends Legacy(LegacyId("L31"), "Wealthy",
-    LegacyGoal.MostOfSuit, Suit.Hearth, Some(FoundationNumber.II)):
-  val power = PrintedPower(PowerId("legacy.wealthy"),
-    persistent = false, cost = Cost.free,
-    text = "Set Foundation II to Movers and Shakers. **SETUP:** After " +
-      "placing your pawn, take [favor] from two players or take " +
-      "[favor] [favor] [favor] from the shared bank.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object BelovedCard extends Legacy(LegacyId("L33"), "Beloved",
     LegacyGoal.MostOfSuit, Suit.Beast, Some(FoundationNumber.IV)):
   val power = PrintedPower(PowerId("legacy.beloved"),

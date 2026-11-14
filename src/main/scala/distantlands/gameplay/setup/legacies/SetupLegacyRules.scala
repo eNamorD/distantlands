@@ -43,3 +43,7 @@ object SetupLegacyRules:
     * (ruling 16). */
   def standardBearer(state: ReadyGame): Option[PlayerId] =
     ChronicleLegacyRules.holder(state, TheStandardBearerCard.id)
+
+  /** Who takes favor after their pawn: Wealthy's holder (ruling 17). */
+  def wealthy(state: ReadyGame): Option[PlayerId] =
+    ChronicleLegacyRules.holder(state, WealthyCard.id)

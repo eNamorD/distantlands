@@ -21,6 +21,5 @@ legacy.quest-to-distant-lands
 legacy.ruthless
 legacy.the-mouth
 legacy.the-needle
-legacy.wealthy
 relic.ancient-grit
 site.ancient-city.enduring
