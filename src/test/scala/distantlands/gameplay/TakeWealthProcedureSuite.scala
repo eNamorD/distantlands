@@ -136,6 +136,12 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
     assertEquals(rejected(take(ready)),
       ResourceUnavailable(home, WakeResource.Favor): OathViolation)
 
+  test("with an enemy pawn there and the resource missing, the missing " +
+      "resource is the reason (Legacy in-play powers R16)"):
+    assertEquals(rejected(take(wake(favor = 0, secrets = 1,
+      sharedEnemy = true))),
+      ResourceUnavailable(home, WakeResource.Favor): OathViolation)
+
   test("the start selection must name exactly one known resource"):
     val ready = wake(favor = 1, secrets = 1)
     assertEquals(Vector(
