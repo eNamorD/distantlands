@@ -278,15 +278,23 @@ reaches the next Setup.
 Slice/files: 3; `ChronicleLogScripts`, `LaterGameLogScripts`.
 
 **R28. A deducible Heirloom relic.**
+Re-ruled by the owner 2026-11-14.
 Question: after Heirloom, Scatter Relics' generic line ("p2 set aside
 Grand Mask") lets other seats deduce which revealed relic p2 kept.
-Decision: accepted.
-Reason: Sun step 1 reveals every held relic by rule, so the identity is
-already public knowledge to anyone tracking; R19 keeps the Heirloom lines
-themselves secret.
-Confidence: low; a physical table shuffles facedown, which makes the
-deduction harder there.
-Slice/files: 3; `Heirloom`, `ReliquaryAndRelics`.
+Decision: relics must not be deducible. At the start of Stock Reliquary
+every relic players hold turns facedown, the Grand Scepter excepted (it is
+set aside and public), and every viewer's card knowledge of those relics
+is cleared, by a new `RelicsHidden(relics)` Chronicle operation (wire kind
+`"relics-hidden"`, field `"relics"`). Scatter Relics' set-aside lines then
+read "p2 set aside a Relic" to anyone who does not know the card. An owner
+still sees their own facedown relics, so Heirloom's holder names theirs in
+its question; R19's holder-only line still names the kept relic, and The
+Ear's peeks still give its holder the identities.
+Reason: the owner's ruling: a physical table shuffles the relics facedown,
+and the digital table must not reveal more.
+Earlier decision (2026-11-13): the deduction was accepted.
+Slice/files: 3 (changed in 5); `ReliquaryAndRelics.stock`, `RelicsHidden`,
+`ChronicleStateOperations.relicsHidden`, the codec.
 
 ## Slice 4
 

@@ -268,3 +268,18 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     rejected(run(ended, WinnerNamed(PlayerId("p9"), VictoryKind.Successor)))
     rejected(run(ended, WinnerNamed(p2, VictoryKind.Usurper)))
 
+  test("hidden relics turn facedown, and nobody's record of them remains " +
+      "(R28)"):
+    val table = Table.start.relic(p1, CupOfPlentyCard)
+    val known = table.ready.copy(knowledge = CardKnowledge(heldRelics =
+      Map(p2 -> Vector(CupOfPlentyCard.id))))
+    val after = accepted(run(known, RelicsHidden(Vector(CupOfPlentyCard.id))))
+    assertEquals(after.game.current.player(p1).get.relics.map(_.orientation),
+      Vector(Orientation.FaceDown))
+    assertEquals(after.knowledge.heldRelics.getOrElse(p2, Vector.empty),
+      Vector.empty)
+
+  test("the Grand Scepter and a relic no player holds are not hidden"):
+    rejected(run(Table.start.relic(p1, TheGrandScepterCard).ready,
+      RelicsHidden(Vector(TheGrandScepterCard.id))))
+    rejected(run(Table.start.ready, RelicsHidden(Vector(CupOfPlentyCard.id))))

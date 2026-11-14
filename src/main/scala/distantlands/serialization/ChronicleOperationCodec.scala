@@ -38,6 +38,8 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
         "source" -> source.value)
       case WinnerNamed(winner, kind) => ujson.Obj("kind" -> "winner-named",
         "winner" -> winner.value, "victory" -> kind.key)
+      case RelicsHidden(relics) => ujson.Obj("kind" -> "relics-hidden",
+        "relics" -> relics.map(relic => ujson.Str(relic.value)))
       case StartingRelicKept(player, relic) => ujson.Obj(
         "kind" -> "starting-relic-kept", "player" -> player.value,
         "relic" -> relic.value)
@@ -86,6 +88,10 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
       VictoryKind.values.find(_.key == key).toRight(InvalidValue(
         s"$path.victory", s"unknown victory kind '$key'"))
         .map(WinnerNamed(PlayerId(value("winner").str), _))
+    case "relics-hidden" =>
+      val relics = value("relics").arr.toVector.map(id => RelicId(id.str))
+      Either.cond(relics.nonEmpty, RelicsHidden(relics),
+        InvalidValue(s"$path.relics", "hides at least one relic"))
     case "starting-relic-kept" => Right(StartingRelicKept(
       PlayerId(value("player").str), RelicId(value("relic").str)))
     case "legacies-scored" =>

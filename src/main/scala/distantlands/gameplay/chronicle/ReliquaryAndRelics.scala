@@ -16,9 +16,13 @@ object ReliquaryAndRelics:
 
   /** The Throne holder adds every relic they hold but the Grand Scepter to
     * the Reliquary, facedown, then discards down to five of their choice.
-    * Before any relic leaves its holder, warbands on a card go back to
-    * their supply. */
+    * First every relic players hold but the Grand Scepter turns facedown
+    * and is forgotten by every viewer, so no relic is deducible from here
+    * on; each owner still sees their own (Legacy Chronicle powers R28,
+    * re-ruled by the owner 2026-11-14). Before any relic leaves its holder,
+    * warbands on a card go back to their supply. */
   val stock: Vector[Operation] = Vector(
+    BuildOps((state, _) => Right(hidden(state)), required = true),
     BuildOps((state, _) => Right(returnFromCards(state)), required = true),
     Branch((state, _) =>
     ChronicleTasks.forHolder(state, ChronicleTask.Throne)(holder => Vector(
@@ -37,6 +41,12 @@ object ReliquaryAndRelics:
         Move(Piece.Warbands(kind, n),
           PositionedLocation(Location.OnCard(card)),
           PositionedLocation(Location.WarbandBank(kind)))))
+
+  /** Every relic players hold but the Grand Scepter, hidden (R28). */
+  private def hidden(state: ReadyGame): Vector[CoreOperation] =
+    val relics = state.game.current.players.flatMap(player =>
+      held(state, player.player).map(_.id))
+    Option.when(relics.nonEmpty)(RelicsHidden(relics)).toVector
 
   private def held(state: ReadyGame, player: PlayerId): Vector[RelicState] =
     state.game.current.player(player).toVector

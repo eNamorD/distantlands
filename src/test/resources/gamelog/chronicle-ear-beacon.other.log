@@ -13,22 +13,22 @@
 25.0 decision 1 | [player:p1|p1] took the World task
 27.0 decision 1 | [player:p2|p2] took the Beacon task
 32.0 delta 1 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
-34.0 delta 1 | [player:p2|p2] set aside [card:R07|Cup of Plenty]
-34.1 delta 1 | [player:p2|p2] set aside [card:R05|Grand Mask]
-34.2 delta 1 | [player:p2|p2] set aside [card:R11|Bandit Crown]
-46.0 decision 1 | [player:p2|p2] chose where the relics went with [card:L19|The Ear]
-47.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
-56.0 decision 1 | The Oathkeeper goal became Protection
-65.0 decision 1 | [player:p1|p1] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
-70.0 decision 1 | [player:p1|p1] kept a Denizen as a starting adviser
-71.0 delta 1 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
-79.0 decision 1 | [player:p2|p2] took six newcomers from the Dispossessed with [card:L24|The Bright Beacon]
-84.0 decision 1 | [player:p2|p2] welcomed [card:182|Pied Piper] as a starting adviser
-86.0 delta 1 | [site:site:broken-peaks|Broken Peaks] was archived
-87.0 delta 1 | [site:site:buried-giant|Buried Giant] was archived
-88.0 delta 1 | [site:site:deep-woods|Deep Woods] was archived
-89.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
-90.0 delta 1 | [site:site:dunes|Dunes] was archived
-91.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
-92.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
-93.0 delta 1 | [site:site:ancient-city|Ancient City] stays in the Empire
+35.0 delta 1 | [player:p2|p2] set aside [card:R07|Cup of Plenty]
+35.1 delta 1 | [player:p2|p2] set aside [card:R05|Grand Mask]
+35.2 delta 1 | [player:p2|p2] set aside [card:R11|Bandit Crown]
+47.0 decision 1 | [player:p2|p2] chose where the relics went with [card:L19|The Ear]
+48.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
+57.0 decision 1 | The Oathkeeper goal became Protection
+66.0 decision 1 | [player:p1|p1] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+71.0 decision 1 | [player:p1|p1] kept a Denizen as a starting adviser
+72.0 delta 1 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
+80.0 decision 1 | [player:p2|p2] took six newcomers from the Dispossessed with [card:L24|The Bright Beacon]
+85.0 decision 1 | [player:p2|p2] welcomed [card:182|Pied Piper] as a starting adviser
+87.0 delta 1 | [site:site:broken-peaks|Broken Peaks] was archived
+88.0 delta 1 | [site:site:buried-giant|Buried Giant] was archived
+89.0 delta 1 | [site:site:deep-woods|Deep Woods] was archived
+90.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
+91.0 delta 1 | [site:site:dunes|Dunes] was archived
+92.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
+93.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
+94.0 delta 1 | [site:site:ancient-city|Ancient City] stays in the Empire

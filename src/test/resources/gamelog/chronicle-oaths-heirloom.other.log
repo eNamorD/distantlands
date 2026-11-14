@@ -13,22 +13,22 @@
 25.0 decision 1 | [player:p1|p1] took the World task
 27.0 decision 1 | [player:p2|p2] took the Beacon task
 32.0 delta 1 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
-38.0 decision 1 | [player:p2|p2] kept a relic with [card:L20|Heirloom]
-39.0 decision 1 | [player:p2|p2] kept [card:R07|Cup of Plenty] with [card:L20|Heirloom]
-40.0 delta 1 | [player:p2|p2] set aside [card:R05|Grand Mask]
-43.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
-52.0 decision 1 | The Oathkeeper goal became Protection
-59.0 decision 1 | [player:p2|p2] kept [card:176|Birdsong] and [card:199|Golem Legions] with [card:L25|Oaths of Loyalty]
-66.0 decision 1 | [player:p1|p1] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
-71.0 decision 1 | [player:p1|p1] kept a Denizen as a starting adviser
-72.0 delta 1 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
-84.0 decision 1 | [player:p2|p2] chose Discord, Arcane and Order
-94.0 decision 1 | [player:p2|p2] buried [card:21|Naysayers] with [card:L25|Oaths of Loyalty]
-96.0 delta 1 | [site:site:broken-peaks|Broken Peaks] was archived
-97.0 delta 1 | [site:site:buried-giant|Buried Giant] was archived
-98.0 delta 1 | [site:site:deep-woods|Deep Woods] was archived
-99.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
-100.0 delta 1 | [site:site:dunes|Dunes] was archived
-101.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
-102.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
-103.0 delta 1 | [site:site:ancient-city|Ancient City] stays in the Empire
+39.0 decision 1 | [player:p2|p2] kept a relic with [card:L20|Heirloom]
+40.0 decision 1 | [player:p2|p2] kept [card:R07|Cup of Plenty] with [card:L20|Heirloom]
+41.0 delta 1 | [player:p2|p2] set aside [card:R05|Grand Mask]
+44.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
+53.0 decision 1 | The Oathkeeper goal became Protection
+60.0 decision 1 | [player:p2|p2] kept [card:176|Birdsong] and [card:199|Golem Legions] with [card:L25|Oaths of Loyalty]
+67.0 decision 1 | [player:p1|p1] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+72.0 decision 1 | [player:p1|p1] kept a Denizen as a starting adviser
+73.0 delta 1 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
+85.0 decision 1 | [player:p2|p2] chose Discord, Arcane and Order
+95.0 decision 1 | [player:p2|p2] buried [card:21|Naysayers] with [card:L25|Oaths of Loyalty]
+97.0 delta 1 | [site:site:broken-peaks|Broken Peaks] was archived
+98.0 delta 1 | [site:site:buried-giant|Buried Giant] was archived
+99.0 delta 1 | [site:site:deep-woods|Deep Woods] was archived
+100.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
+101.0 delta 1 | [site:site:dunes|Dunes] was archived
+102.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
+103.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
+104.0 delta 1 | [site:site:ancient-city|Ancient City] stays in the Empire

@@ -6,6 +6,7 @@ import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
   TheEarCard}
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
   GolemLegionsCard}
+import distantlands.gameplay.GrandMaskCard
 import distantlands.model.PlayerId
 import distantlands.protocol.projection.LogSpan
 import distantlands.testkit.Table.{p1, p2, p3}
@@ -65,6 +66,17 @@ class ChronicleLegacyLogSuite extends munit.FunSuite:
     assertEquals(heirloomLines(Some(p2)), Vector(public, named))
     Vector(Some(p1), Some(p3), None).foreach(viewer =>
       assertEquals(heirloomLines(viewer), Vector(public), viewer))
+
+  test("after Stock Reliquary no other seat or the public can name the " +
+      "relics Scatter Relics sets aside (R28)"):
+    val script = ChronicleLogScripts.throneHeirloom
+    Vector(Some(p1), Some(p3), None).foreach { viewer =>
+      val said = format(script, viewer).map(text)
+      assert(said.contains(s"${p2.value} set aside a Relic"), viewer)
+      assert(!said.exists(_.contains(GrandMaskCard.name)), viewer)
+    }
+    assert(format(script, Some(p2)).map(text).contains(
+      s"${p2.value} set aside ${GrandMaskCard.name}"))
 
   test("the next game starts p2's lineage with what Oaths and Heirloom " +
       "kept, facedown (R27)"):

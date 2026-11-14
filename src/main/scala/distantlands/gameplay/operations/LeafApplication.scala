@@ -122,6 +122,8 @@ private[operations] object LeafApplication:
       ChronicleStateOperations.winnerNamed(ready, winner, kind)
     case StartingRelicKept(player, relic) =>
       ChronicleStateOperations.startingRelicKept(ready, player, relic)
+    case RelicsHidden(relics) =>
+      ChronicleStateOperations.relicsHidden(ready, relics)
     case LegaciesScored(legacies) =>
       ChronicleStateOperations.legaciesScored(ready, legacies)
     case placement: PlaceAtlasSite => AtlasOperations.placeSite(ready, placement)

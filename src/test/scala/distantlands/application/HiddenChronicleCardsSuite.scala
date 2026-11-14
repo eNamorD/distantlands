@@ -4,8 +4,9 @@ import distantlands.gameplay.{BanditCrownCard, GrandMaskCard, OathRules,
   WalkerDiceFixture}
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.chronicle.{ChronicleWalk, ReliquaryAndRelics}
-import distantlands.gameplay.chronicle.legacies.{TheBrightBeacon,
-  TheBrightBeaconCard, TheEar, TheEarCard}
+import distantlands.gameplay.chronicle.legacies.{Heirloom, HeirloomCard,
+  TheBrightBeacon, TheBrightBeaconCard, TheEar, TheEarCard}
+import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.powers.economy.CupOfPlentyCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -103,3 +104,27 @@ class HiddenChronicleCardsSuite extends munit.FunSuite:
     Vector(Some(p1), Some(p2), None).foreach(viewer =>
       assert(all(table).forall(card =>
         !presentation.identifiesAt(ready, viewer, card)), viewer))
+
+  test("Stock Reliquary hides every held relic but the Grand Scepter: at " +
+      "Heirloom's question its holder still names their own, and no other " +
+      "seat or the public does (R28)"):
+    val table = ChronicleWalk.throneHeldByChancellorP1
+      .warbandsAt(AncientCitySite, p1, 1)
+      .relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
+      .relic(p3, TheGrandScepterCard).legacy(p2, HeirloomCard)
+    val started = ChronicleWalk.started(rules, table,
+      TriggeredProcedureRef.ChronicleSun)
+    val atHeirloom = ChronicleWalk.walkedTo(rules, started,
+      Heirloom.decisionId(p2))
+    val ready = Outcomes.ready(atHeirloom.state)
+    val relics = Vector(CupOfPlentyCard.id, GrandMaskCard.id)
+    assert(relics.forall(presentation.identifiesAt(ready, Some(p2), _)))
+    Vector(Some(p1), Some(p3), None).foreach(viewer =>
+      assert(relics.forall(!presentation.identifiesAt(ready, viewer, _)),
+        viewer))
+    Vector(Some(p1), Some(p2), None).foreach(viewer =>
+      assert(presentation.identifiesAt(ready, viewer,
+        TheGrandScepterCard.id), viewer))
+    assertEquals(ChronicleWalk.parked(atHeirloom.state).toVector.flatMap(
+      _.query.asInstanceOf[DecisionQuery.ChooseOne].options.map(_.ref)).toSet,
+      relics.map(id => DecisionOptionRef.Relic(id): DecisionOptionRef).toSet)

@@ -165,6 +165,25 @@ private[operations] object ChronicleStateOperations:
       case None => Right(ready.updateCurrent(current => current.copy(
         scoredLegacies = current.scoredLegacies ++ legacies)))
 
+  /** `relics` turn facedown in their holders' play areas, and every
+    * viewer's record of them is forgotten (R28). The Grand Scepter and a
+    * relic no player holds are refused. */
+  def relicsHidden(ready: ReadyGame, relics: Vector[RelicId])
+      : Either[OperationError, ReadyGame] =
+    val held = ready.game.current.players.flatMap(_.relics.map(_.id)).toSet
+    relics.find(relic => relic == TheGrandScepterCard.id || !held(relic))
+      match
+        case Some(relic) => Left(InvalidDescription(
+          s"${relic.value} is not a held relic to hide"))
+        case None =>
+          val hidden = relics.toSet
+          Right(ready.updateCurrent(current => current.copy(players =
+            current.players.map(state => state.copy(relics = state.relics.map(
+              relic => if hidden(relic.id) then
+                relic.copy(orientation = Orientation.FaceDown) else relic)))))
+            .copy(knowledge = relics.foldLeft(ready.knowledge)(
+              CardKnowledgeMoves.forget)))
+
   /** `relic` from `player`'s relics to their lineage's starting relics
     * (Heirloom; R20). The Grand Scepter, a relic the player does not hold
     * and a relic with tokens are refused. */
