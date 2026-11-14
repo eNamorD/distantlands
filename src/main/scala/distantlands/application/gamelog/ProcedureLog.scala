@@ -7,7 +7,7 @@ import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   ChronicleStarsProcedure}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, Gatekeeper,
   Heirloom, IronHand, OathsOfLoyalty, Reformer, Revolutionary, Rival,
-  TheBrightBeacon, TheEar}
+  RoyalLine, TheBrightBeacon, TheEar}
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
@@ -402,7 +402,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       IronHand.discarded(TriggeredProcedureRef.ChronicleSun) -> LogKind.Delta,
       Gatekeeper.took -> LogKind.Decision,
       Chronicler.declared -> LogKind.Decision,
-      Chronicler.scored -> LogKind.Delta) ++
+      Chronicler.scored -> LogKind.Delta,
+      RoyalLine.named -> LogKind.Decision) ++
       ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
       ChronicleTask.all.map(task =>
         ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),

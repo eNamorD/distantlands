@@ -428,13 +428,18 @@ class RoyalLineSuite extends munit.FunSuite:
     assert(lines(run).contains(
       s"p3 named p2 the winner with ${RoyalLineCard.id.value}"))
 
-  test("naming the Chancellor in a Successor's place hands back the Empire's " +
-      "win (ruling 23; R37)"):
-    val run = through(ended(GameResult(p2, VictoryKind.Successor)),
-      TriggeredProcedureRef.ChronicleSun, naming(p1))
-    assertEquals(run.ready.game.current.result,
-      Some(GameResult(p1, VictoryKind.StableRegime)))
-    assertEquals(Imperials.chancellor(run.ready), Some(p1))
+  test("naming the Chancellor in a Successor's place hands back the " +
+      "Empire's win the game ended in (ruling 23; R37)"):
+    // Round 1, no end die: War Exhaustion, whose Chancellor's win is Stable
+    // Regime with an Imperial Oathkeeper and exhaustion otherwise.
+    val successor = GameResult(p2, VictoryKind.Successor)
+    Vector(None -> VictoryKind.ChancellorExhaustion,
+        Some(p2) -> VictoryKind.StableRegime).foreach((oathkeeper, kind) =>
+      val run = through(ended(successor).oathkeeper(oathkeeper),
+        TriggeredProcedureRef.ChronicleSun, naming(p1))
+      assertEquals(run.ready.game.current.result, Some(GameResult(p1, kind)),
+        oathkeeper)
+      assertEquals(Imperials.chancellor(run.ready), Some(p1)))
 
   test("naming the current winner keeps the result, journals nothing and " +
       "writes nothing (R38, R41)"):

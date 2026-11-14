@@ -50,15 +50,6 @@ object ScepterBearerCard extends Legacy(LegacyId("L09"), "Scepter Bearer",
       "Grand Scepter _(instead of the Chancellor)_.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object RoyalLineCard extends Legacy(LegacyId("L10"), "Royal Line",
-    LegacyGoal.GrandScepter, Suit.Beast):
-  val power = PrintedPower(PowerId("legacy.royal-line"),
-    persistent = false, cost = Cost.free,
-    text = "**IF YOU ARE A CITIZEN:** **CHRONICLE (SUN):** You may " +
-      "choose which Imperial meets the Successor goal. _Ignore the " +
-      "printed goal. You may choose no one._")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object KeeperOfOrderCard extends Legacy(LegacyId("L11"), "Keeper of Order",
     LegacyGoal.GrandScepter, Suit.Order):
   val power = PrintedPower(PowerId("legacy.keeper-of-order"),

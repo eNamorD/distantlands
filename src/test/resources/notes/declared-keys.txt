@@ -560,6 +560,7 @@ procedure.chronicle-sun iron-hand-discarded = {0} discarded {1}
 procedure.chronicle-sun legacy-went-dormant = {0}'s {1} went dormant
 procedure.chronicle-sun reactivated-legacy = {0} reactivated {1}
 procedure.chronicle-sun returned-public-legacy = {0} returned to the legacy deck
+procedure.chronicle-sun royal-line-named = {0} named {1} the winner with {2}
 procedure.chronicle-sun took-beacon = {0} took the Beacon task
 procedure.chronicle-sun took-public-legacy = {0} took {1}
 procedure.chronicle-sun took-throne = {0} took the Throne task

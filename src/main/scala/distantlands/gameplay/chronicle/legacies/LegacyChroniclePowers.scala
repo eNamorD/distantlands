@@ -8,11 +8,12 @@ import distantlands.model.NoteKey
 object LegacyChroniclePowers:
   val all: Vector[ContributingPower] = Vector(Steadfast, Gatekeeper,
     Chronicler, Rival, GreatArchitect, Revolutionary, Reformer,
-    Heirloom, TheEar, OathsOfLoyalty, TheBrightBeacon, IronHand)
+    Heirloom, TheEar, OathsOfLoyalty, TheBrightBeacon, IronHand, RoyalLine)
   /** The lines the powers write in the Sun, on the Sun's note id, which
     * `ChronicleSunProcedure.noteKeys` declares. */
   def sunNoteKeys: Vector[NoteKey] =
-    Gatekeeper.sunNoteKeys ++ Chronicler.sunNoteKeys
+    Gatekeeper.sunNoteKeys ++ Chronicler.sunNoteKeys ++
+      RoyalLine.sunNoteKeys
   /** The lines the powers write in the Throne, on the Throne's note id,
     * which `ChronicleThroneProcedure.noteKeys` declares. */
   def throneNoteKeys: Vector[NoteKey] =
