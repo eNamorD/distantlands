@@ -89,10 +89,13 @@ starting relics, a scored era game, an Oathkeeper goal other than
 Supremacy, a stocked Reliquary, a denizen or relic stored at an Atlas
 site, or an Atlas edifice a new Chronicle would not store: one at a site
 that is no Homeland, or a Homeland storing none or another suit's; the
-check reads the catalog). With history it starts an exile-only game
-(`SetupMode.ExileOnly`): the Atlas's first eight sites are placed as bandit sites with their stored
-cards and open relic slots filled, whatever Foundation I's face, the
-stored faces apply with no erosion, stored advisers are dealt, the
+check reads the catalog). With history it starts a first game played
+exile-only (`SetupMode.FirstGameExileOnly`): the Atlas's first eight sites
+are placed as bandit sites with their stored cards and open relic slots
+filled, whatever Foundation I's face, the stored faces apply with no
+erosion, stored advisers and relics are dealt, every stored legacy is
+wiped back into the legacy deck before the deal
+(`EmpireSetupRules.startingChronicle`, Legacy Setup powers R40), the
 Citizenship option is off and the Reliquary is set aside, as with no
 Empire. Exiles place their pawns as in a later game, and an Atlas of fewer
 than eight sites is refused. With a Chancellor seated, or a seated

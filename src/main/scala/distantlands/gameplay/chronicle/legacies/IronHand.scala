@@ -26,9 +26,12 @@ object IronHandCard extends Legacy(LegacyId("L01"), "Iron Hand",
   * before that step's cap (R29, R30, R46). While a seated Exile holds it active
   * (`ChronicleLegacyRules.ironHand`), they perform Shape Empire and Build
   * Edifice in the Empire's place, score the legacy bonus after the winner,
-  * and their sites are stored in place of the Empire's. Its SETUP half is
-  * read at game start (`StartingLegacies`, Legacy Setup powers ruling 7)
-  * and by `SetupPawnSites`; its discard during a game waits for its batch
+  * and their sites are stored in place of the Empire's. Its SETUP half,
+  * "If you were in the previous game", acts only when the holder's
+  * lineage records a previous player (Legacy Setup powers ruling 7, as
+  * R39 amends it): read at game start (`StartingLegacies`) and in Setup
+  * (`SetupLegacyRules.ironHand`, `SetupPawnSites`). Its discard during a
+  * game waits for its batch
   * (R7). This power hooks
   * no window; the steps read it. Line: "p2 discarded Iron Hand" (R34). */
 case object IronHand extends ContributingPower:

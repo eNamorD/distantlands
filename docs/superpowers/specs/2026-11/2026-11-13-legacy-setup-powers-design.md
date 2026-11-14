@@ -104,8 +104,10 @@ batch's powers needs an order choice.
    and the Reliquary pick. If the holder is the Chancellor, nothing
    changes. With no Empire the Grand Scepter stays in the box, and the
    power does nothing.
-7. **Iron Hand.** It always applies, whether or not the holder was in the
-   previous game. Each site restored up to the Empire divider takes one of
+7. **Iron Hand.** (Amended by implementation ruling R39, 2026-11-14.) It
+   applies only when the holder's lineage was in the previous game, as the
+   printed "If you were in the previous game" says; otherwise it does
+   nothing at setup. Each site restored up to the Empire divider takes one of
    the holder's warbands instead of the Imperial warband, or instead of
    the bandits in Setup With No Empire. Those sites are the holder's, so
    the Empire may start ruling no site, which overrides Empire ruling R28.

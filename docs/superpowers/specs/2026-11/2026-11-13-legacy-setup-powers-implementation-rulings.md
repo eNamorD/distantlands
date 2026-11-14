@@ -16,7 +16,7 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   reads the holder with `ChronicleLegacyRules.holder`, as the Chronicle
   powers do. *Reason:* game start asks no question and has no walk; the
   stored record is what it builds from.
-- **R2. An Exile's warbands run out in a fixed order.** An Exile's 14
+- **R2. An Exile's warbands run out in a fixed order.** (Iron Hand's part amended by R39: it acts only for a holder in the previous game.) An Exile's 14
   warbands go to their board first (3, or Circle of Swords' 8), then to
   Iron Hand's Empire sites, Cradlemost first, then to Rival's sites. A site
   the holder's supply misses takes bandits equal to its capacity.
@@ -27,7 +27,7 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   the Empire's sites share the rest, Cradlemost first, and a site the
   supply misses takes bandits (R30). *Reason:* "if other Imperials would
   gain fewer than three, you gain less" protects only the other boards.
-- **R4. Only an Exile's Iron Hand acts at setup.** *Reason:* an Imperial
+- **R4. Only an Exile's Iron Hand acts at setup.** (Iron Hand's part amended by R39: it acts only for a holder in the previous game.) *Reason:* an Imperial
   holder would have discarded it in the Chronicle (Chronicle powers
   ruling 18); its discard during a game is out of scope.
 - **R5. Rival's sites take no relics from the deck, and their holder may
@@ -51,7 +51,9 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   the map are built by `FirstGameSetupMaterializer`; the spec's
   "`LaterGameSetup` gains a legacy pass" names the wrong place for three
   of the four.
-- **R9. Iron Hand places no warbands in an exile-only game.** In
+- **R9. Iron Hand places no warbands in an exile-only game.** *Superseded
+  by R40:* a first game played exile-only wipes every stored legacy, so no
+  Iron Hand is held there. In
   `SetupMode.ExileOnly` the holder's warbands go to no site, and every
   player may still place their pawn at any site. *Reason:* spec ruling 7
   places the holder's warbands only on sites restored up to the Empire
@@ -65,7 +67,9 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   mid-phase save compatibility promise across builds (Legacy Chronicle
   powers R15). *Slice/files:* slice 1; `SetupProcedure.tree`,
   `StartLines`.
-- **R17. Rival places no sites in an exile-only game.** Game start counts
+- **R17. Rival places no sites in an exile-only game.** *Superseded by
+  R40:* a first game played exile-only wipes every stored legacy, so no
+  Rival is held there. Game start counts
   the exile-only game's eight sites as placed before Rival
   (`StartingLegacies.placedBefore`), so Rival's "three Cradlemost empty
   slots" are none. *Reason:* an exile-only game fills all eight slots at
@@ -279,3 +283,36 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   Chancellor and Citizens cannot. No player held a Vision at Setup before
   slice 3, so `revealable` never had to offer one. *Slice/files:* slice 4;
   `SetupAdviserSteps`, `CardPlay.hasVisionSpace`.
+- **R39. Iron Hand's previous-game clause.** (Owner re-ruling of spec
+  ruling 7's first sentence, 2026-11-14; the printed text wins.) Iron
+  Hand's SETUP half applies only when the holder's lineage was in the
+  previous game: both clauses, the holder's warbands on the sites up to
+  the Empire divider and every player placing their pawn at any site, in
+  Setup With an Empire and With No Empire. A holder whose lineage sat it
+  out does nothing at setup: Imperial warbands or bandits as usual, and
+  the usual pawn sites. "Was in the previous game" is the lineage's
+  stored `previousPlayer`; the Chronicler now records a lineage that sits
+  a game out with none, so the field names only the immediately previous
+  game and survives an era reset, which the scorepad would not. Saved
+  Chronicles are not migrated; they correct themselves after one game.
+  *Second look:* a TTS-imported Chronicle carries no previous player, so
+  Iron Hand does nothing after a TTS import. *Reason:* the printed text,
+  which the owner ruled to favor. *Slice/files:* re-ruling;
+  `ChronicleRecord`, `StartingLegacies`, `SetupLegacyRules.ironHand`,
+  `SetupPawnSites`, `StartLines`.
+- **R40. A first game played exile-only starts with no legacy.** (Owner
+  ruling, 2026-11-14; supersedes R9 and R17.) `SetupMode.ExileOnly` is
+  renamed `FirstGameExileOnly`. That mode wipes the seated and boxed
+  lineages' stored legacies at game start, because a first game has none:
+  they return to the derived legacy deck before the legacy deal, so they
+  can be drawn, and the deal's card accounting stays exact. The wipe needs
+  no new random outcome: the plan factory shuffles the starting
+  Chronicle's deck into the `legacyOrder` the Begin command already
+  journals. Starting advisers and starting relics are unchanged. No legacy
+  acts in this mode. The setup mode is read from the Chronicle as saved,
+  before the wipe; the game's baseline is the wiped Chronicle. *Open:*
+  when stored legacies were a Chronicle's only history, the wiped baseline
+  carries none, so its pawns are placed as in a first game, at any site,
+  though its sites were placed exile-only. *Reason:* the owner's ruling.
+  *Slice/files:* re-ruling; `EmpireSetupRules.startingChronicle`,
+  `GameStartRules`, `GeneratedFirstGamePlanFactory`.

@@ -48,10 +48,10 @@ object StartingLegacies:
     // Imperial holder is one of its players.
     val bearer = holder(chronicle, seated, ScepterBearerCard.id,
       ChronicleLegacyRules.imperialRoles).map(playerOf)
-    // Only an Exile's Iron Hand acts: an Imperial discarded it (R4). An
-    // exile-only game restored no Empire, so it has no site up to the
-    // Empire divider for the holder's warbands. "If you were in the
-    // previous game": a holder whose lineage sat it out does nothing (R39).
+    // Only an Exile's Iron Hand acts: an Imperial discarded it (R4). A
+    // first game played exile-only holds no legacy (R40), and restored no
+    // Empire. "If you were in the previous game": a holder whose lineage
+    // sat it out does nothing (R39).
     val ironHand = mode match
       case SetupMode.FirstGameExileOnly(_) => None
       case _ => holder(chronicle, seated, IronHandCard.id, exileRoles)
