@@ -47,62 +47,31 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-These change behaviour, data, saved formats or the public shape of the
-code and wait for the orchestrator's rulings (R37 onward). The tasks are
-written to each recommendation.
+The plan's open questions were ruled on 2026-11-13 as implementation
+rulings R37-R42 ([rulings](../../specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)):
 
-1. **Where the Chancellor's Empire win comes from on a Successor result.**
-   A Successor's result is `GameResult(citizen, Successor)`: the Empire win
-   that ended the game (`StableRegime` or `ChancellorExhaustion`) is gone.
-   When Royal Line names the Chancellor, ruling 23 has the operation carry
-   it. Options: (a) derive it from the ended game's state as
-   `EmpireEndings` decided it: before round eight the end die ended it
-   (`StableRegime`); at round eight an Imperial Oathkeeper gives
-   `StableRegime`, and otherwise `ChancellorExhaustion`; a new
-   `EmpireEndings.empireWin(ready)` holds the rule beside the one that
-   decides it, with a test per ending; (b) keep it on the result:
-   `GameResult` gains `empireWin: Option[VictoryKind]`, set by
-   `chancellorWins` when the Successor takes the win, and written by the
-   ending event's codec (an optional field, so older streams decode with
-   none, and naming the Chancellor then falls back to (a)).
-   Recommendation: (a): no saved-format change, and the rule lives beside
-   the code that decided the ending. (b) is sturdier if the endings grow
-   another way for the Chancellor to win.
-2. **The question.** The card says "You may choose which Imperial meets the
-   Successor goal... You may choose no one." Ruling 22 has the holder
-   choose from every Imperial, the Chancellor (no one) included. Options:
-   (a) a choose-one, Decline first (ruling 3: the result stands), then
-   every Imperial player in seat order, the Chancellor first among them;
-   choosing the current winner is the same as Decline; (b) no Decline,
-   since choosing the current winner already keeps the result.
-   Recommendation: (a), for ruling 3's uniform Decline. Id
-   `chronicle.sun.legacy.royal-line.<player>`.
-3. **The operation.** Proposed: `WinnerNamed(winner: PlayerId, kind:
-   VictoryKind)`, wire kind `"winner-named"` with fields `"winner"` and
-   `"kind"` (the result's key spelling): the game's result becomes
-   `GameResult(winner, kind)`. It refuses a game with no result, a winner
-   who is not seated, and a kind other than `Successor`, `StableRegime` or
-   `ChancellorExhaustion`. A choice that keeps the result journals
-   nothing. Recommendation: as proposed.
-4. **The new window.** `PowerWindow.ChronicleStartOfSun`
-   (`chronicle.sun.start-of-sun`), the Sun's first window, before Reveal
-   Relics, so before Iron Hand's Sun checkpoint too. Recommendation: as
-   proposed.
-5. **The lines and the display.** Proposed: "p3 named p2 the winner with
-   Royal Line" (a decision line, the spec's wording), only when the winner
-   changes; "p3 named p1 the winner with Royal Line" when the Chancellor is
-   chosen in a Successor's place. The game's end line ("p2 won as the
-   Successor") stays as journaled; the result banner and the Chronicle's
-   later lines follow the new result, since they read it. No other marker
-   says Royal Line changed the winner. Recommendation: as proposed.
-6. **The ROADMAP item.** With this slice every CHRONICLE power of the design
-   is built. Proposed: tick "Legacy powers: Chronicle"; the setup item keeps
-   Iron Hand's and Rival's SETUP halves (and R35's interim next game), and
-   the in-play item keeps The Ear's ACTION half and Iron Hand's discard
-   during a game, as the design's Docs section says. Recommendation: as
-   proposed.
+- **R37** (Task 1, low confidence): the Chancellor's Empire win is derived
+  from the ended game's state by `EmpireEndings.empireWin`, which reuses
+  the code that decided the ending: `rollsEndDie` and the kinds
+  `stableRegime` and `warExhaustion` pass to `chancellorWins`, with the
+  Successor substitution skipped. It is tested against each ending the
+  engine produces.
+- **R38** (Task 3): the owner's shape: every Imperial player, the
+  Chancellor first, and no Decline; choosing the current winner keeps the
+  result and journals nothing.
+- **R39** (Task 1): `WinnerNamed(winner, kind)`, wire kind
+  `"winner-named"`, fields `"winner"` and `"victory"`.
+- **R40** (Task 2): `ChronicleStartOfSun` (`chronicle.sun.start-of-sun`).
+- **R41** (Tasks 3 and 4): "p3 named p2 the winner with Royal Line", only
+  when the winner changes.
+- **R42** (Task 5): tick "Legacy powers: Chronicle".
+
+The Sun reading the winner live is accepted, with an audit: every
+Chronicle step and power that reads the winner reads it from the result
+when reached (Task 2 lists them), and a test checks a Royal Line change
+reaches the Crown, Reformer and Score Lineage Points (Task 3).
 
 ## Deviations from the spec
 
@@ -181,23 +150,50 @@ decodes to a typed `WireError` at `.victory` (the field is named
 `WalkerOperationWireSuite.everyOperation` gains
 `WinnerNamed(PlayerId("red"), VictoryKind.StableRegime)`.
 
-`EmpireEndingsSuite`:
+`EmpireRoundEndSuite`, against each Empire ending the engine produces
+(R37), on the suite's own `roundEnd`, `ended` and `replayed`:
 
 ```scala
-  test("the Empire win a Successor took: the end die before round eight, " +
-      "an Imperial Oathkeeper at round eight, else exhaustion (R37)"):
-    val empire = Table.start.imperial(p1, p2)
-    assertEquals(EmpireEndings.empireWin(empire.roundMarkerAt(6).ready),
-      VictoryKind.StableRegime)
-    assertEquals(EmpireEndings.empireWin(empire.roundMarkerAt(8)
-      .oathkeeper(Some(p2), TitleSide.Oathkeeper).ready),
-      VictoryKind.StableRegime)
-    assertEquals(EmpireEndings.empireWin(empire.roundMarkerAt(8)
-      .oathkeeper(Some(p3), TitleSide.Usurper).ready),
-      VictoryKind.ChancellorExhaustion)
+  /** The game `ready`'s round end ends, through the engine, with the
+    * Empire win `empireWin` reads back. */
+  private def empireWinAfter(ready: ReadyGame, random: RoundEndRandomPort)
+      : (Option[GameResult], VictoryKind) =
+    val after = Outcomes.ready(accepted(replayed(ready, ended(ready, random))))
+    (after.game.current.result, EmpireEndings.empireWin(after))
+
+  test("the Empire win read back after each end-die ending (R37)"):
+    Vector(5 -> 6, 6 -> 5, 7 -> 3).foreach((round, face) =>
+      assertEquals(empireWinAfter(roundEnd(round), RoundEndChoices.endDie(face)),
+        (Some(GameResult(p1, VictoryKind.StableRegime)),
+          VictoryKind.StableRegime), clue(round)))
+
+  test("the Empire win read back after each round-eight ending (R37)"):
+    // An Imperial Oathkeeper gives Stable Regime; an Exile's gives
+    // Chancellor Exhaustion.
+    assertEquals(empireWinAfter(roundEnd(8), RoundEndChoices.endDie(1)),
+      (Some(GameResult(p1, VictoryKind.StableRegime)),
+        VictoryKind.StableRegime))
+    assertEquals(empireWinAfter(roundEnd(8, holder = Some(p3)),
+      RoundEndChoices.endDie(1)),
+      (Some(GameResult(p1, VictoryKind.ChancellorExhaustion)),
+        VictoryKind.ChancellorExhaustion))
+
+  test("a Successor's result still reads back the Chancellor's Empire win " +
+      "(R37)"):
+    val atEight = Table.from(roundEnd(8, holder = None))
+      .darkestSecret(Some(p2), secrets = 1).ready
+    assertEquals(empireWinAfter(atEight, RoundEndChoices.endDie(1)),
+      (Some(GameResult(p2, VictoryKind.Successor)),
+        VictoryKind.ChancellorExhaustion))
+    val onTheDie = Table.from(roundEnd(7)).darkestSecret(Some(p2),
+      secrets = 1).ready
+    assertEquals(empireWinAfter(onTheDie, RoundEndChoices.endDie(3)),
+      (Some(GameResult(p2, VictoryKind.Successor)), VictoryKind.StableRegime))
 ```
 
-(`Table.roundMarkerAt` sets the round.)
+(If the Successor goal under the suite's Oathkeeper goal is not the
+Darkest Secret at round seven, give p2 whatever the existing round-eight
+Successor test gives them.)
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
@@ -218,19 +214,31 @@ final case class WinnerNamed(winner: PlayerId, kind: VictoryKind)
 `ChronicleStateOperations.winnerNamed` checks the three refusals and sets
 `current.result = Some(GameResult(winner, kind))`. The codec writes and
 reads `winner` and `victory` (`VictoryKind.key`, decoded as the ending
-codec decodes it). `EmpireEndings.empireWin(ready)`:
+codec decodes it). `EmpireEndings`: the kinds the endings pass to `chancellorWins` become
+two named members the endings use, and `empireWin` reads the same
+predicate the round end used to pick the ending:
 
 ```scala
-  /** The Chancellor's win the ended game gave, which a Successor took in
-    * the Chancellor's place: the end die before round eight; at round
-    * eight an Imperial Oathkeeper's `StableRegime`, else
-    * `ChancellorExhaustion` (`stableRegime`, `warExhaustion`). Royal Line
-    * hands it back to the Chancellor (Legacy Chronicle powers R37). */
-  def empireWin(ready: ReadyGame): VictoryKind =
-    if ready.game.current.tracks.round < 8 || imperialOathkeeper(ready) then
-      VictoryKind.StableRegime
+  /** The Chancellor's win on the end die. */
+  val endDieWin: VictoryKind = VictoryKind.StableRegime
+
+  /** The Chancellor's win at War Exhaustion: an Imperial Oathkeeper's
+    * Stable Regime, otherwise exhaustion. */
+  def exhaustionWin(ready: ReadyGame): VictoryKind =
+    if imperialOathkeeper(ready) then VictoryKind.StableRegime
     else VictoryKind.ChancellorExhaustion
+
+  /** The Chancellor's win the ended game gave, before any Successor took
+    * it: the same predicate and kinds the round end used (`rollsEndDie`,
+    * `stableRegime`, `warExhaustion`), with the Successor substitution of
+    * `chancellorWins` skipped. Royal Line hands it back to the Chancellor
+    * (Legacy Chronicle powers R37). */
+  def empireWin(ready: ReadyGame): VictoryKind =
+    if rollsEndDie(ready) then endDieWin else exhaustionWin(ready)
 ```
+
+`stableRegime` passes `endDieWin`; `warExhaustion` passes
+`exhaustionWin(ready)` in both of its Chancellor branches.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
@@ -301,6 +309,17 @@ children the same over `ChronicleTaskAssignment.steps(winner, tookNote)`.
 reads only the result, which nothing in the Crown's own window changes,
 so a walk resumed inside it finds the same nodes.
 
+The audit (each reads the result when reached, so needs no change):
+Reformer's "if you won" (`ChronicleTasks.winner(state)` in its step's
+`Branch`); Score Lineage Points (`LineageScoring.steps`' `Branch`); the
+Throne holder, from Assign Tasks' journaled task; the Grand Scepter goal's
+"if none, win" (`LegacyGoals`, read per question); the Stars' and the
+extraction's winner-ruled sites (`ChronicleExtraction.layout`, read at the
+Stars and the Finish), with Iron Hand's holder in the winner's place;
+Swear an Oath (the result's kind and Visions); the reactivation and the
+cap at the Crown (inside the Crown's `Branch`). Write the list in the
+Sun's doc comment.
+
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run `./sbtw test` and read the result: PASS; no golden changes (the
@@ -332,7 +351,6 @@ git log -3
 - Produces: `RoyalLineCard`; `RoyalLine` (power);
   `RoyalLine.decisionId(player)` =
   `s"chronicle.sun.legacy.royal-line.${player.value}"`;
-  `RoyalLine.decline` (`DecisionOptionRef.Button("decline")`);
   `RoyalLine.named: NoteKey` ("{0} named {1} the winner with {2}").
 
 - [ ] **Step 1: Write the failing tests**
@@ -342,9 +360,11 @@ package distantlands.gameplay.chronicle.legacies
 
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.{ChronicleWalk, LineageScoring}
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
+import distantlands.gameplay.powers.economy.VillageIdiotCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
@@ -388,15 +408,13 @@ class RoyalLineSuite extends munit.FunSuite:
   test("Royal Line is implemented"):
     assert(PowerImplementationStatus.implemented(RoyalLineCard.power.id))
 
-  test("the holder chooses from Decline and every Imperial, the Chancellor " +
-      "first (ruling 22; R38)"):
+  test("the holder chooses from every Imperial, the Chancellor first, with " +
+      "no Decline (ruling 22; R38)"):
     val decide = asked(through(ended(stable),
       TriggeredProcedureRef.ChronicleSun)).get
     assertEquals(decide.owner, p3)
     assertEquals(decide.query.asInstanceOf[DecisionQuery.ChooseOne].options
-      .map(_.ref), Vector(RoyalLine.decline,
-        DecisionOptionRef.Player(p1), DecisionOptionRef.Player(p2),
-        DecisionOptionRef.Player(p3)))
+      .map(_.ref), Vector(p1, p2, p3).map(DecisionOptionRef.Player(_)))
 
   test("naming a Citizen makes them the Successor, whom the Crown and the " +
       "tasks follow (ruling 23)"):
@@ -418,14 +436,17 @@ class RoyalLineSuite extends munit.FunSuite:
       Some(GameResult(p1, VictoryKind.StableRegime)))
     assertEquals(Imperials.chancellor(run.ready), Some(p1))
 
-  test("declining, or naming the current winner, keeps the result and " +
-      "writes nothing (R38, R40)"):
-    val declined = through(ended(stable), TriggeredProcedureRef.ChronicleSun)
-    assertEquals(declined.ready.game.current.result, Some(stable))
+  test("naming the current winner keeps the result, journals nothing and " +
+      "writes nothing (R38, R41)"):
     val kept = through(ended(stable), TriggeredProcedureRef.ChronicleSun,
       naming(p1))
     assertEquals(kept.ready.game.current.result, Some(stable))
+    assert(!distantlands.testkit.RecordedOps.all(kept.events).exists(
+      _.isInstanceOf[WinnerNamed]))
     assertEquals(lines(kept).filter(_.contains(" named ")), Vector.empty)
+    // So does the plainest answer, the Chancellor in a Chancellor's win.
+    val plain = through(ended(stable), TriggeredProcedureRef.ChronicleSun)
+    assertEquals(plain.ready.game.current.result, Some(stable))
 
   test("not asked on an Exile's or a Vision's win"):
     Vector(GameResult(p1, VictoryKind.Usurper),
@@ -440,9 +461,18 @@ class RoyalLineSuite extends munit.FunSuite:
     assertEquals(asked(through(table, TriggeredProcedureRef.ChronicleSun)),
       None)
 
-  test("Score Lineage Points scores the new winner"):
-    val run = through(ended(stable), TriggeredProcedureRef.ChronicleThrone,
+  test("a named winner reaches the Crown, Reformer and Score Lineage " +
+      "Points (the audit)"):
+    // p2 holds Reformer; the Empire rules Ancient City and Broken Peaks,
+    // and Village Idiot lies at Ancient City, so Reformer has a move.
+    val table = ended(stable).warbandsAt(AncientCitySite, p1, 1)
+      .warbandsAt(BrokenPeaksSite, p1, 1)
+      .denizen(VillageIdiotCard, at = AncientCitySite)
+      .legacy(p2, ReformerCard)
+    val run = through(table, TriggeredProcedureRef.ChronicleThrone,
       naming(p2))
+    assertEquals(Imperials.chancellor(run.ready), Some(p2))
+    assert(run.asked.exists(_.decisionId == Reformer.pickId(p2)))
     val lineage = run.ready.game.current.player(p2).get.lineage
     assert(run.ready.game.campaign.era.score(lineage) >=
       LineageScoring.basePoints)
@@ -529,7 +559,7 @@ Expected: FAIL to compile: `Not found: RoyalLineCard` in the new package.
   * You may choose no one." Its step is the Sun's first window (Legacy
   * Chronicle powers design, ruling 22; R39). Only after a Chancellor's or a
   * Successor's win, a seated Citizen holding it active, read when reached,
-  * chooses Decline or any Imperial, the Chancellor first (R38). A Citizen
+  * chooses any Imperial, the Chancellor first, with no Decline (R38). A Citizen
   * then wins as the Successor; the Chancellor wins by the ended game's
   * Empire win (`EmpireEndings.empireWin`, R37). `WinnerNamed` journals a
   * changed winner (ruling 23); every later step reads it from the result.
@@ -543,7 +573,6 @@ case object RoyalLine extends ContributingPower:
 
   def decisionId(player: PlayerId): String =
     s"chronicle.sun.legacy.royal-line.${player.value}"
-  val decline: DecisionOptionRef.Button = DecisionOptionRef.Button("decline")
 
   private val empireWins: Set[VictoryKind] = Set(VictoryKind.Successor,
     VictoryKind.StableRegime, VictoryKind.ChancellorExhaustion)
@@ -563,9 +592,8 @@ case object RoyalLine extends ContributingPower:
       chancellor <- Imperials.chancellor(state)
     yield Vector(
       Decide(decisionId(holder), holder, DecisionQuery.ChooseOne(
-        DecisionOption.Button(decline, "Decline") +:
-          ChronicleTasks.playerOptions(chancellor +:
-            Imperials.players(state).filterNot(_ == chancellor)),
+        ChronicleTasks.playerOptions(chancellor +:
+          Imperials.players(state).filterNot(_ == chancellor)),
         heading = Some("Royal Line: you may choose the winner"),
         confirmVerb = Some("Name"))),
       Branch((live, pending) => ChronicleTasks.chosenPlayer(pending,
@@ -711,4 +739,5 @@ use `Table.roundMarkerAt`, the testkit's round setter.
 
 **Type consistency:** `WinnerNamed(PlayerId, VictoryKind)`;
 `EmpireEndings.empireWin(ReadyGame): VictoryKind`; `RoyalLine.decisionId`,
-`RoyalLine.decline`, `RoyalLine.named`; `PowerWindow.ChronicleStartOfSun`.
+`RoyalLine.named`; `PowerWindow.ChronicleStartOfSun`;
+`EmpireEndings.endDieWin` and `exhaustionWin`.

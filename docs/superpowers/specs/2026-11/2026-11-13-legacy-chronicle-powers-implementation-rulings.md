@@ -331,3 +331,64 @@ Reason: Iron Hand's Chronicle half now acts, and the tests' intent is a
 plain legacy.
 Slice/files: 4; the affected suites.
 
+## Slice 5
+
+**R37. Where the Chancellor's Empire win comes from.**
+Question: a Successor's result does not keep the Empire win that ended the
+game, which the Chancellor takes back when Royal Line names them.
+Decision: derive it from the ended game's state, with no saved-format
+change. `EmpireEndings.empireWin` reuses the code that decided the ending
+(the same predicate and kinds `stableRegime` and `warExhaustion` pass to
+`chancellorWins`, with the Successor substitution skipped), not a
+parallel restatement of the rules, and is tested against each Empire
+ending the engine produces (the end die at rounds 5-7, and each round-8
+case).
+Reason: the ended game's state is fixed, and one source of truth cannot
+drift.
+Confidence: low; keeping the kind on the result would be sturdier if new
+Empire endings appear; revisit then.
+Slice/files: 5; `EmpireEndings`, `RoyalLine`.
+
+**R38. Royal Line's question.**
+Decision: the owner's shape: the question lists every Imperial player, the
+Chancellor first, and nothing else; there is no Decline. Choosing the
+current winner keeps the result and journals nothing, which meets design
+ruling 3's decline.
+Reason: the owner asked for exactly "list all the Imperial players and let
+the Royal Line holder choose the winner".
+Slice/files: 5; `RoyalLine`.
+
+**R39. The operation.**
+Decision: `WinnerNamed(winner, kind)`, wire kind `"winner-named"` with
+fields `"winner"` and `"victory"`; it refuses a game with no result, an
+unseated winner and a kind that is not an Empire win.
+Reason: the plan's proposal.
+Slice/files: 5; `ChronicleOperation`, `ChronicleStateOperations`, the codec.
+
+**R40. The new window.**
+Decision: `PowerWindow.ChronicleStartOfSun` (`chronicle.sun.start-of-sun`),
+the Sun's first window, before Reveal Relics and Iron Hand's Sun
+checkpoint.
+Reason: the plan's proposal.
+Slice/files: 5; `PowerWindow`, `ChronicleWindows`, `ChronicleSunProcedure`.
+
+**R41. The lines and the display.**
+Decision: "p3 named p2 the winner with Royal Line" (a decision line), only
+when the winner changes; the journaled end-of-game line stays; the result
+banner follows the result; no other marker.
+Reason: the plan's proposal.
+Slice/files: 5; `RoyalLine`, `ProcedureLog`.
+
+**R42. The ROADMAP.**
+Decision: tick "Legacy powers: Chronicle"; the setup item keeps Iron
+Hand's and Rival's SETUP halves and R35's interim next game, and the
+in-play item keeps The Ear's ACTION half and Iron Hand's discard during a
+game.
+Reason: the design's Docs section.
+Slice/files: 5; `docs/ROADMAP.md`.
+
+The Sun reading the winner when each step is reached is accepted, with an
+audit of every Chronicle step and power that reads the winner, each reading
+it live after Royal Line, and a test that a Royal Line change reaches at
+least the Crown, Reformer and Score Lineage Points.
+

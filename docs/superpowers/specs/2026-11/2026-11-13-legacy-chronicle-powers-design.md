@@ -170,7 +170,9 @@ rulings then continue.
     holder was a Citizen holding it active when the game ended. In a new
     window before Reveal Relics, the holder chooses the winner from every
     Imperial player, the Chancellor included. Choosing the Chancellor is
-    choosing no one.
+    choosing no one. The owner's shape: the question lists every Imperial
+    player, the Chancellor first, with no Decline; choosing the current
+    winner keeps the result (implementation ruling R38).
 23. **The new winner is journaled.** A new `ChronicleOperation` records it,
     and every later step reads the winner from the game's result. A Citizen
     wins as the Successor; the Chancellor wins by the Empire win that ended
