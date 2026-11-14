@@ -241,13 +241,31 @@ line may name them.
 Slice/files: 3; `OathsOfLoyalty`, `GatherDenizens`.
 
 **R24. Oaths' burial of other starting advisers.**
+Re-ruled by the owner 2026-11-14 for Teeming World; not yet implemented
+(who makes the change is still to be decided).
 Decision: the keep questions stay (Protect and Dispossess, Welcome a
 Stranger, the next Setup's hand of three) and the kept card is buried at
 the bottom of the world deck instead: "p2 buried X with Oaths of Loyalty".
-Under Teeming World an Oaths holder draws no starting adviser.
+Under Teeming World the Oaths holder draws 3 - x cards, where x is the
+number of starting advisers they already have, and buries every card
+drawn. The shape:
+- `SetupDeal.of` gives an Oaths holder `3 - x` draws under Teeming World;
+- `SetupDeal` gains `buried(stack, player)`, which replaces `kept` for the
+  holder;
+- `FirstGameSetupMaterializer` places those cards at the bottom of the
+  world deck, below the Visions, instead of as advisers, so the deal's
+  card accounting stays exact;
+- Setup writes one line per burial, "p2 buried X with Oaths of Loyalty",
+  naming the card only to viewers who know it, as the Setup burial does
+  now;
+- tests for x = 0, 1 and 3.
 Reason: one rule applied uniformly ("would gain, bury it"), with no
-special-case paths.
-Slice/files: 3; `StartingAdviserChoice`, `SetupProcedure`, `SetupDeal`.
+special-case paths; the owner's ruling extends it to Teeming World's
+draws.
+Earlier decision (2026-11-13): under Teeming World an Oaths holder drew no
+starting adviser.
+Slice/files: 3 (to change); `StartingAdviserChoice`, `SetupProcedure`,
+`SetupDeal`, `FirstGameSetupMaterializer`.
 
 **R25. The Bright Beacon's choices.**
 Decision: a first choose-one, "Suited box" (first) or "The Dispossessed",
