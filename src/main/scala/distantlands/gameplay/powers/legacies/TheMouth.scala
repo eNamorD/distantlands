@@ -63,7 +63,17 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
   val tookPublic: NoteKey = notes.key(s"${NoteKey.Used}.public", Vector(NotePart.Arg(0),
     NotePart.Text(" took "), NotePart.Arg(1),
     NotePart.Text(" from the Public Ambitions with "), NotePart.Arg(2)))
-  /** "{Beloved} set Foundation {IV} to {Fellowship}", one key per
+  /** "{p1} activated Iron Hand with {The Mouth}", and the public row's
+    * line, for an Iron Hand the same batch discards: it never shows
+    * faceup, so a card reference would read "a Legacy" (R32). */
+  val activatedIronHand: NoteKey = notes.key(s"${NoteKey.Used}.iron-hand",
+    Vector(NotePart.Arg(0),
+      NotePart.Text(s" activated ${IronHandCard.name} with "),
+      NotePart.Arg(1)))
+  val tookIronHand: NoteKey = notes.key(s"${NoteKey.Used}.public-iron-hand",
+    Vector(NotePart.Arg(0), NotePart.Text(s" took ${IronHandCard.name} " +
+      "from the Public Ambitions with "), NotePart.Arg(1)))
+  /** "{Beloved} set Foundation {IV} to {Teeming World}", one key per
     * foundation, as the Sun's are. */
   val altered: Map[FoundationNumber, NoteKey] = FoundationNumber.all.map(
     number => number -> notes.key(
@@ -151,15 +161,19 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
 
   private def activationNote(states: NoteStates, player: PlayerId)
       : Option[LogNote] = for
-    (before, _) <- states.previous
+    (before, after) <- states.previous
     legacy <- chosen(states.answered)
   yield
-    val key =
-      if before.game.current.commonCards.publicLegacies.contains(legacy) then
-        tookPublic
-      else activated
-    key.sourceless(NoteArg.Player(player), NoteArg.Card(legacy),
-      NoteArg.Card(TheMouthCard.id))
+    val public =
+      before.game.current.commonCards.publicLegacies.contains(legacy)
+    val discarded = legacy == IronHandCard.id &&
+      ChronicleTasks.lineageOf(after, player).forall(!holdsIronHand(after, _))
+    val mouth = NoteArg.Card(TheMouthCard.id)
+    if discarded then
+      (if public then tookIronHand else activatedIronHand).sourceless(
+        NoteArg.Player(player), mouth)
+    else (if public then tookPublic else activated).sourceless(
+      NoteArg.Player(player), NoteArg.Card(legacy), mouth)
 
   /** The foundation the activation altered, and the legacy that did. */
   private def alterationNote(states: NoteStates): Option[LogNote] = for
@@ -181,8 +195,7 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
     if !holdsIronHand(after, lineage) && (holdsIronHand(before, lineage) ||
       before.game.current.commonCards.publicLegacies
         .contains(IronHandCard.id))
-  yield IronHand.discardedNow.sourceless(NoteArg.Player(player),
-    NoteArg.Card(IronHandCard.id))
+  yield IronHand.discardedNow.sourceless(NoteArg.Player(player))
 
   private def holdsIronHand(ready: ReadyGame, lineage: LineageId): Boolean =
     ready.game.campaign.lineages.get(lineage)

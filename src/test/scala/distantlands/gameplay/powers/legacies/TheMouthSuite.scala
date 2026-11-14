@@ -1,6 +1,8 @@
 package distantlands.gameplay.powers.legacies
 
 import distantlands.gameplay.actions.negotiation.HighPriestCard
+import distantlands.application.TreeDecision
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
 import distantlands.gameplay.BanditCrownCard
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.chronicle.legacies.{IronHand, IronHandCard}
@@ -13,10 +15,11 @@ import distantlands.gameplay.powers.economy.{AnimalPlaymatesCard,
 import distantlands.gameplay.setup.legacies.TheStandardBearerCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
-import distantlands.testkit.{CardRefs, Look, PhasePowerHarness, Table}
+import distantlands.testkit.{CardRefs, Commands, Look, MenuPlay,
+  PhasePowerHarness, Table}
 import distantlands.testkit.CardRefs.LegacyRef
 import distantlands.testkit.Table.{p1, p2}
-import distantlands.testkit.Unwrap.accepted
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** The Mouth (L34): "ACTION: Burn 2 favor to activate a dormant legacy if
   * you meet its goal. You can even activate legacies in the Public
@@ -147,7 +150,7 @@ class TheMouthSuite extends munit.FunSuite:
     assert(!legacies(now).exists(_.id == IronHandCard.id))
     assertEquals(NoteText.said(IronHand.id, IronHand.noteKeys,
       done.answered.events).map(_.text),
-      Vector(s"p1 discarded ${IronHandCard.id.value}"))
+      Vector("p1 discarded Iron Hand"))
 
   test("with no legacy whose goal they meet it is shown unavailable with " +
       "its reason (R30)"):
@@ -187,3 +190,33 @@ class TheMouthSuite extends munit.FunSuite:
     assertEquals(offered(base.ready), Vector(legacy(ConspiratorCard)))
     assertEquals(offered(hidden), offered(base.ready))
     assert(use(hidden, TheMouth, source).isRight)
+
+  /** The lines every viewer reads after p1 uses The Mouth on `ready`,
+    * activating `chosen`, played through the service: p1, p2 and the
+    * public. */
+  private def linesByViewer(ready: Table, chosen: LegacyRef)
+      : Vector[Vector[String]] =
+    val gameId = "the-mouth-lines"
+    val (service, _) = ready.service()
+    val started = accepted(service.handle(gameId, 0L, MenuPlay.starting(p1,
+      ActionRef.UsePower(TheMouth.id), Vector(source))))
+    accepted(service.handle(gameId, started.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(TheMouth.decisionId,
+        DecisionAnswer.ChooseOneAnswer(legacy(chosen))))))
+    val steps = present(accepted(service.history(gameId)), "a stored game")
+      .steps
+    Vector(Some(p1), Some(p2), None).map(viewer =>
+      texts(formatter.format(steps, viewer)))
+
+  test("every viewer reads the activated legacy's name (ruling 24)"):
+    linesByViewer(mouthHolder, ArbiterCard).foreach(seen =>
+      assert(seen.contains("p1 activated Arbiter with The Mouth"), seen))
+
+  test("every viewer reads Iron Hand's activation and discard by name, " +
+      "though it never shows faceup (R32)"):
+    val table = mouthHolder.legacy(p1, IronHandCard, active = false)
+      .warbandsAt(AncientCitySite, p1, 1)
+    linesByViewer(table, IronHandCard).foreach { seen =>
+      assert(seen.contains("p1 activated Iron Hand with The Mouth"), seen)
+      assert(seen.contains("p1 discarded Iron Hand"), seen)
+    }

@@ -55,9 +55,10 @@ case object IronHand extends ContributingPower:
 
   /** "p1 discarded Iron Hand": an Imperial's Iron Hand that The Mouth
     * activated goes straight back to the legacy deck (Legacy in-play
-    * powers R25). */
+    * powers R25). It names the card in words: it never shows faceup where
+    * a viewer's card reference could see it (R32). */
   val discardedNow: NoteKey = notes.key("discarded", Vector(NotePart.Arg(0),
-    NotePart.Text(" discarded "), NotePart.Arg(1)))
+    NotePart.Text(s" discarded ${IronHandCard.name}")))
 
   /** The in-game discard's line for the `role` the holder reached. */
   def discardedOnBecoming(role: Role): NoteKey =
