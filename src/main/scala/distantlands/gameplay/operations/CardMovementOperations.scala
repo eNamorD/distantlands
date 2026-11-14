@@ -349,33 +349,18 @@ private[operations] object CardMovementOperations:
           current.copy(commonCards = cards.copy(regionalDiscards =
             cards.regionalDiscards.updated(region, inserted)))
       }
-      case Location.Hand(player) => ensureEmptyTokens(original.state, id).map:
-        _ => ready.updateCurrent { current =>
-          current.copy(temporaryHands = current.temporaryHands.updated(player,
-            current.temporaryHands.getOrElse(player, Vector.empty) :+
-              id.asInstanceOf[WorldCardId]))
-        }
+      case Location.Hand(_) | Location.SetAsideRelics |
+          Location.SetAsideEdifices | Location.CardGathering |
+          Location.NewlyDispossessed =>
+        ensureEmptyTokens(original.state, id).map(_ =>
+          appendedToCurrent(ready, transfer.to.location, id))
       case Location.Reliquary => ensureEmptyTokens(original.state, id).map(_ =>
         ready.copy(game = ready.game.copy(campaign = ready.game.campaign.copy(
           reliquary = ready.game.campaign.reliquary :+ id.asInstanceOf[RelicId]))))
-      case Location.SetAsideRelics => ensureEmptyTokens(original.state, id).map(_ =>
-        ready.updateCurrent(current => current.copy(
-          setAsideRelics = current.setAsideRelics :+ id.asInstanceOf[RelicId])))
-      case Location.SetAsideEdifices => ensureEmptyTokens(original.state, id).map(_ =>
-        ready.updateCurrent(current => current.copy(
-          setAsideEdifices = current.setAsideEdifices :+ id.asInstanceOf[EdificeId])))
       case Location.Dispossessed => ensureEmptyTokens(original.state, id).map(_ =>
         ready.copy(game = ready.game.copy(campaign = ready.game.campaign.copy(
           dispossessed = ready.game.campaign.dispossessed :+
             id.asInstanceOf[WorldCardId]))))
-      case Location.CardGathering => ensureEmptyTokens(original.state, id)
-        .map(_ => ready.updateCurrent(current => current.copy(
-          cardGathering = current.cardGathering :+
-            id.asInstanceOf[WorldCardId])))
-      case Location.NewlyDispossessed => ensureEmptyTokens(original.state, id)
-        .map(_ => ready.updateCurrent(current => current.copy(
-          newlyDispossessed = current.newlyDispossessed :+
-            id.asInstanceOf[WorldCardId])))
       case Location.SuitedReserve(suit) => ensureEmptyTokens(original.state, id)
         .map(_ => ready.updateCampaign(campaign => campaign.copy(
           suitedReserves = campaign.suitedReserves.updated(suit,
@@ -401,9 +386,8 @@ private[operations] object CardMovementOperations:
           ready.updateCampaign(campaign => campaign.copy(lineages =
             campaign.lineages.updated(lineage,
               state.copy(legacies = state.legacies :+ legacy)))))
-      case Location.PublicLegacies => Right(ready.updateCurrent(current =>
-        current.copy(commonCards = current.commonCards.copy(publicLegacies =
-          current.commonCards.publicLegacies :+ id.asInstanceOf[LegacyId]))))
+      case Location.PublicLegacies =>
+        Right(appendedToCurrent(ready, transfer.to.location, id))
       case Location.SharedBank => ensureEmptyTokens(original.state, id)
         .map(_ => ready)
       case Location.Site(site) => adjustedState.flatMap:
@@ -426,6 +410,29 @@ private[operations] object CardMovementOperations:
           value.copy(relics = value.relics :+ state))
         case _ => Left(InvalidDestination(transfer.piece, transfer.to.location))
       case _ => Left(InvalidDestination(transfer.piece, transfer.to.location))
+
+  /** `id` appended to a current-game pile `location` names: a temporary
+    * hand, the set-aside relics or edifices, the card gathering, the newly
+    * dispossessed or the public legacy row. Kept out of `insertCard`, whose
+    * body the coverage instrumenter would otherwise skip as too large. */
+  private def appendedToCurrent(ready: ReadyGame, location: Location,
+      id: CardId): ReadyGame = ready.updateCurrent(current => location match
+    case Location.Hand(player) => current.copy(temporaryHands =
+      current.temporaryHands.updated(player,
+        current.temporaryHands.getOrElse(player, Vector.empty) :+
+          id.asInstanceOf[WorldCardId]))
+    case Location.SetAsideRelics => current.copy(
+      setAsideRelics = current.setAsideRelics :+ id.asInstanceOf[RelicId])
+    case Location.SetAsideEdifices => current.copy(
+      setAsideEdifices = current.setAsideEdifices :+ id.asInstanceOf[EdificeId])
+    case Location.CardGathering => current.copy(
+      cardGathering = current.cardGathering :+ id.asInstanceOf[WorldCardId])
+    case Location.NewlyDispossessed => current.copy(newlyDispossessed =
+      current.newlyDispossessed :+ id.asInstanceOf[WorldCardId])
+    case Location.PublicLegacies => current.copy(commonCards =
+      current.commonCards.copy(publicLegacies =
+        current.commonCards.publicLegacies :+ id.asInstanceOf[LegacyId]))
+    case _ => current)
 
   private def adjustCardOrientation(
       state: Option[CardState],
