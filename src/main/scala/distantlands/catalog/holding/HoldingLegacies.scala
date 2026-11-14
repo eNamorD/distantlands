@@ -51,17 +51,6 @@ object GoldenKeyCard extends Legacy(LegacyId("L12"), "Golden Key",
       "take a relic from the Reliquary.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object WorldCrafterCard extends Legacy(LegacyId("L13"), "World Crafter",
-    LegacyGoal.PeoplesFavor, Suit.Nomad):
-  val power = PrintedPower(PowerId("legacy.world-crafter"),
-    persistent = false, cost = Cost.free,
-    text = "**SETUP:** For the Imperial Maps foundation, you fill site " +
-      "slots, using any mix of Recent and Forgotten Sites _(after " +
-      "resolving the Rival legacy)_. For the Wide Horizons " +
-      "foundation, when anyone explores, you fill the slot with a " +
-      "Recent or Forgotten Site.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object MatchmakerCard extends Legacy(LegacyId("L14"), "Matchmaker",
     LegacyGoal.PeoplesFavor, Suit.Hearth):
   val power = PrintedPower(PowerId("legacy.matchmaker"),

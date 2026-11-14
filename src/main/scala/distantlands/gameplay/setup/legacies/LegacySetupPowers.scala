@@ -6,9 +6,11 @@ import distantlands.model.{NoteKey, Operation}
 /** The legacies whose SETUP powers are implemented (Legacy Setup powers
   * design), registered on the walker by `WalkerPowerCatalog`. */
 object LegacySetupPowers:
-  val all: Vector[ContributingPower] = Vector(CircleOfSwords, ScepterBearer)
+  val all: Vector[ContributingPower] = Vector(CircleOfSwords, ScepterBearer,
+    WorldCrafter)
   /** The lines the powers write in Setup, on Setup's note id, which
     * `SetupProcedure.noteKeys` declares. */
-  def noteKeys: Vector[NoteKey] = StartLines.noteKeys
+  def noteKeys: Vector[NoteKey] = StartLines.noteKeys ++
+    WorldCrafter.setupNoteKeys
   /** The lines that open Setup for what game start's powers did. */
   def startNotes: Vector[Operation] = StartLines.operations

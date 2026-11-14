@@ -2,6 +2,7 @@ package distantlands.gameplay.setup
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.setup.legacies.{SetupLegacyRules, WorldCrafter}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
@@ -20,6 +21,9 @@ import distantlands.model.DecisionAnswer.ChooseOneAnswer
   *       BuildOps(PlaceAtlasSite, 1 favor per denizen to its suit's bank),
   *       Note(placed the site))))
   * }}}
+  *
+  * With World Crafter's holder seated, `WorldCrafter.mapStep` fills the
+  * slots instead: the holder chooses an end for each slot.
   *
   * The Recent option names the Atlas's first site, which the rulebook
   * makes public; nothing else about the Atlas is shown before the fill.
@@ -60,7 +64,7 @@ object ImperialMaps:
       rivalCount(ready))
 
   /** The Atlas's sites once Rival took its own, read as the slots are. */
-  private def atlasAtStart(ready: ReadyGame): Int =
+  private[setup] def atlasAtStart(ready: ReadyGame): Int =
     ready.game.campaign.baseline.atlasBox.size - rivalCount(ready)
 
   private def rivalCount(ready: ReadyGame): Int =
@@ -91,6 +95,13 @@ object ImperialMaps:
     * Hinterward. */
   def step(catalog: ExecutableCatalog, ready: ReadyGame, chancellor: PlayerId)
       : Operation =
+    // World Crafter: its holder fills the slots in the Chancellor's place,
+    // slot by slot (Legacy Setup powers ruling 10; R13).
+    SetupLegacyRules.mapFiller(ready).fold(chancellorFill(catalog, ready,
+      chancellor))(WorldCrafter.mapStep(catalog, ready, _))
+
+  private def chancellorFill(catalog: ExecutableCatalog, ready: ReadyGame,
+      chancellor: PlayerId): Operation =
     val question = Option.when(atlasAtStart(ready) >= 2)(
       Decide(decisionId, chancellor, DecisionQuery.ChooseOne(
         AtlasEnd.all.map(end => DecisionOption.Button(
@@ -109,7 +120,7 @@ object ImperialMaps:
     * and edifices stored with it" (rulebook, "Public and Private
     * Information"), so Recent names that site, "Recent Sites (Buried Giant
     * first)", and Forgotten names none. */
-  private def optionLabel(catalog: ExecutableCatalog, ready: ReadyGame,
+  private[setup] def optionLabel(catalog: ExecutableCatalog, ready: ReadyGame,
       end: AtlasEnd): String =
     val words = AtlasPlacement.endLabel(end)
     val front = ready.game.campaign.atlas.site(AtlasEnd.Recent)

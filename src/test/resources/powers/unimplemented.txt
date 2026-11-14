@@ -27,6 +27,5 @@ legacy.the-mouth
 legacy.the-needle
 legacy.the-standard-bearer
 legacy.wealthy
-legacy.world-crafter
 relic.ancient-grit
 site.ancient-city.enduring
