@@ -47,80 +47,47 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-These change behaviour, data or the public shape of the code and wait for
-the orchestrator's rulings (R7 onward). The tasks are written to each
-recommendation.
+The plan's open questions were ruled on 2026-11-13 as implementation
+rulings R7-R14 ([rulings](../../specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md));
+R15 accepts that inserted windows shift a walk saved mid-Chronicle.
 
-1. **Does Rival leave holding?** Rival prints one power whose text holds
-   both its Throne half and its SETUP half. The design's Approach says each
-   implemented legacy leaves holding, counts as implemented and keeps its
-   uncovered half's text; its slice 2 section says Rival "keeps its SETUP
-   text in holding until the setup batch". `CardCatalogSuite` requires a
-   card with any implemented power to leave holding. Options: (a) Rival
-   leaves holding with its whole text and counts as implemented, and the
-   ROADMAP setup item names its SETUP half (the Approach); (b) Rival stays
-   in holding: its Throne half is registered under a child power id,
-   `legacy.rival.throne`, which `CardCatalogSuite` already allows, so the
-   printed power and the card's unimplemented marker stay as they are.
-   Recommendation: (a), the Approach, which the later slices' split cards
-   (The Ear, Oaths of Loyalty, Iron Hand) would follow too. (b) keeps the
-   marker honest at the cost of a second id per split card.
-2. **What "denizens" covers.** Options per power, recommended:
-   - Rival: every card Shape Empire would discard, denizens and ruined
-     edifices (intact edifices are never discarded there).
-   - Revolutionary: the denizens and ruined edifices at Imperial sites;
-     intact edifices stay, as in Shape Empire, whose destinations ruling 11
-     names (`Discard.RuinedEdifice` is the only edifice discard;
-     Chronicle ruling 16 keeps a rule-protected card protected).
-   - Reformer: denizens only, not edifices: an edifice is built at its
-     site.
-3. **Reformer's pass.** Ruling 12: each move or swap is one decision, read
-   when reached, repeated until Done. Options: (a) a pass is two
-   choose-ones: a denizen at a site the holder rules, or Done (first);
-   then its destination, another site they rule with room (a move) or a
-   denizen at another site they rule (a swap), both board picks;
-   (b) a pass is one choose-one of authored buttons, one per legal move
-   ("Move Village Idiot to Broken Peaks") and swap ("Swap Village Idiot and
-   Map Library"), plus Done; with three ruled sites of three cards each
-   that is dozens of buttons. Recommendation: (a), read as one move or swap
-   per pass; the pick offers only denizens that have a destination, so a
-   pass never dead-ends. A swap is two `Move`s, so each card takes the last
-   slot of the other's site (a site's row has no gaps).
-4. **The lines.** Proposed, each a decision line, each legacy a card span:
-   "p1 protected 2 denizens with Rival", "p2 discarded 3 denizens with
-   Revolutionary" (the spec's wording; "1 denizen" for one), "p1 moved
-   Village Idiot to Broken Peaks with Reformer", "p1 swapped Village Idiot
-   and Map Library with Reformer". Great Architect writes no line of its
-   own: Build Edifice's "p2 built Hall of Debate at Ancient City" already
-   names the builder. Choosing nothing writes nothing (as in slice 1).
-   Shape Empire's "X was discarded from Y" lines stay for the cards it
-   still discards. Recommendation: as proposed.
-5. **The two new windows.** `PowerWindow.ChronicleStartOfThrone`
-   (`chronicle.throne.start-of-throne`), before Offer Citizenship, and
-   `PowerWindow.ChronicleAfterBuildEdifice`
-   (`chronicle.throne.after-build-edifice`), between Build Edifice and
-   Stock Reliquary, after the cards' printed timings. Recommendation: as
-   proposed.
-6. **The decisions' shapes.** Recommended:
-   - Rival: `ChooseMany(0, n)` over the cards Shape Empire would discard,
-     confirm "Keep", none "Keep none", asked only when it would discard
-     one; id `chronicle.throne.legacy.rival.<player>`.
-   - Revolutionary: `ChooseMany(0, n)` over the cards at Imperial sites,
-     confirm "Discard", none "Discard none", asked only when there is one;
-     id `chronicle.throne.legacy.revolutionary.<player>`.
-   - Reformer: per pass, `chronicle.throne.legacy.reformer.<player>`
-     (Done, then the movable denizens) and
-     `chronicle.throne.legacy.reformer.<player>.to` (the destinations).
-     Each pass asks under the same two ids and reads the latest answers,
-     the pattern Call for Help's passes use (`PowerAnswers.last`).
-   - Great Architect: Build Edifice keeps its one decision per suit and its
-     ids; the builder owns them. Each suit's available edifice offers
-     itself in suit order, and under Great Architect any card at a site the
-     builder rules may be buried for it (ruling 10's "any of the edifices
-     set aside as available", one build per available edifice, as today).
-   - All four prefixes are narrated by `chronicle.throne.legacy.`.
+- **R7** (Tasks 1 and 5): Rival leaves holding with its whole text and
+  counts as implemented; the ROADMAP setup item names its SETUP half. The
+  design's slice 2 sentence is corrected.
+- **R8** (Task 1): Rival protects every card Shape Empire would discard,
+  ruined edifices included.
+- **R9** (Task 3, low confidence): Revolutionary discards the denizens and
+  ruined edifices at Imperial sites; intact edifices stay.
+- **R10** (Task 4, low confidence): Reformer moves and swaps every card in
+  a site's row, edifices included, intact and ruined. An edifice moves
+  between sites by the existing `Move` (a site card keeps its state), so no
+  new move kind is needed.
+- **R11** (Task 4): a pass is two choose-ones: a card at a ruled site, or
+  Done (first), offering only cards with a destination; then another ruled
+  site with room (a move) or a card at another ruled site (a swap). A swap
+  is two `Move`s, each card landing in the other's site's last slot.
+- **R12** (Tasks 1, 3 and 4): the lines and window names as proposed:
+  "p1 protected 2 denizens with Rival", "p2 discarded 3 denizens with
+  Revolutionary", "p1 moved X to Y with Reformer", "p1 swapped X and Y
+  with Reformer", decision lines, "1 denizen" for one; nothing for an empty
+  choice; no Great Architect line. `ChronicleStartOfThrone`
+  (`chronicle.throne.start-of-throne`) and `ChronicleAfterBuildEdifice`
+  (`chronicle.throne.after-build-edifice`).
+- **R13** (Tasks 1-4): the decision shapes as proposed. Rival and
+  Revolutionary: one choose-many of zero to all, asked when there is a
+  card; ids `chronicle.throne.legacy.rival.<player>`,
+  `chronicle.throne.legacy.revolutionary.<player>`. Reformer:
+  `chronicle.throne.legacy.reformer.<player>` and its `.to` destination,
+  reused each pass and read from the latest answers. Great Architect keeps
+  Build Edifice's per-suit decisions, owned by the builder. All narrated by
+  the prefix `chronicle.throne.legacy.`. Reformer gets a resume test that
+  parks mid-pass after a completed move and resumes to the same question.
+- **R14** (Tasks 2 and 3): a burial returns favor to the buried card's own
+  suit bank; a ruined edifice Revolutionary discards after Build Edifice
+  stays set aside, and a test checks the stored Chronicle still passes game
+  start's card accounting.
 
 ## Global Constraints
 
@@ -320,7 +287,7 @@ Expected: FAIL to compile: `Not found: RivalCard` in the new package.
 - [ ] **Step 3: Implement**
 
 `Rival.scala`: move `RivalCard` verbatim (both halves' text; the SETUP
-half stays uncovered, open question 1), then:
+half stays uncovered, R7), then:
 
 ```scala
 /** Rival (legacy L17), its Throne half: "In Shape Empire, you may prevent
@@ -641,6 +608,7 @@ import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.setup.ChronicleAccounting
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
@@ -721,6 +689,25 @@ class RevolutionarySuite extends munit.FunSuite:
       discards.contains(FaeMerchantCard.id))
     assertEquals(lines(run), Vector(
       s"p3 discarded 3 denizens with ${RevolutionaryCard.id.value}"))
+
+  test("a ruined edifice discarded after Build Edifice leaves a stored " +
+      "Chronicle that passes game start's card accounting (R14)"):
+    // The whole Chronicle, from p1's win: p1 rules Ancient City, so the
+    // crowned Empire holds its ruined edifice; p3 holds the People's Favor,
+    // so keeps Revolutionary active through the Sun.
+    val table = ChronicleWalk.chronicleWonByP1
+      .warbandsAt(AncientCitySite, p1, 1)
+      .edifice(SchoolOfVinesCard, EdificeSide.Ruined, at = AncientCitySite)
+      .peoplesFavor(Some(p3), 1).legacy(p3, RevolutionaryCard)
+    val run = ChronicleWalk.through(rules, table,
+      TriggeredProcedureRef.ChronicleFinish,
+      discarding(DecisionOptionRef.Edifice(SchoolOfVinesCard.id)))
+    assert(!onMap(run.ready, SchoolOfVinesCard.id))
+    val record = run.ready.game.campaign.evolved.get
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog, record),
+      Right(()))
+    assertEquals(ChronicleAccounting.conserves(
+      run.ready.game.campaign.baseline, record), Right(()))
 
   test("a dormant Revolutionary asks nothing (ruling 1)"):
     val run = throne(empire.update(_.updateCampaign(campaign =>
@@ -902,6 +889,7 @@ import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.ChronicleWalk
 import distantlands.gameplay.powers.action.FaeMerchantCard
+import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
@@ -909,6 +897,7 @@ import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Reformer (L35): "If you won, you may move and swap denizens at sites you
   * rule, ignoring the locked restriction." A step at the start of the
@@ -1004,6 +993,44 @@ class ReformerSuite extends munit.FunSuite:
     assertEquals(lines(run), Vector.empty)
     assertEquals(run.asked.head.decisionId, Reformer.pickId(p1))
 
+  test("an intact edifice moves too (R10)"):
+    val table = empire.edifice(GreatMarketCard, EdificeSide.Intact,
+      at = AncientCitySite).legacy(p1, ReformerCard)
+    val run = reformed(table, Vector(
+      DecisionOptionRef.Edifice(GreatMarketCard.id) ->
+        DecisionOptionRef.Site(brokenPeaks)))
+    assertEquals(at(run.ready, brokenPeaks), Vector(GreatMarketCard.id))
+    assertEquals(run.ready.game.current.map.sites(brokenPeaks).denizens,
+      Vector(EdificeState(GreatMarketCard.id, EdificeSide.Intact,
+        Tokens.empty)))
+
+  test("a walk parked mid-pass after a completed move resumes to the same " +
+      "question (R13)"):
+    // Pass 1 moves Threatening Roar to Broken Peaks; pass 2 picks it again
+    // and parks on its destination. Rebuilt from the journal, the walk
+    // parks on the same question with the same options.
+    val table = empire.legacy(p1, ReformerCard)
+    val started = accepted(rules.next(OathTransition(table.state,
+      Vector.empty), TriggeredProcedureRef.ChronicleSun))
+    def answer(step: OathTransition, id: String, ref: DecisionOptionRef) =
+      val next = accepted(rules.resolveWalker(step.state, p1, id,
+        DecisionAnswer.ChooseOneAnswer(ref)))
+      OathTransition(next.state, step.events ++ next.events)
+    val roar = denizen(ThreateningRoarCard)
+    val parked = Vector(
+      (Reformer.pickId(p1), roar),
+      (Reformer.destinationId(p1), DecisionOptionRef.Site(brokenPeaks)),
+      (Reformer.pickId(p1), roar))
+      .foldLeft(started)((step, pair) => answer(step, pair._1, pair._2))
+    val decide = ChronicleWalk.parked(parked.state).get
+    assertEquals(decide.decisionId, Reformer.destinationId(p1))
+    val replayed = accepted(parked.events.foldLeft[
+      Either[OathViolation, OathState]](Right(table.state))((state, event) =>
+        state.flatMap(rules.evolve(_, event))))
+    assertEquals(ChronicleWalk.parked(replayed), Some(decide))
+    assertEquals(decide.query.asInstanceOf[DecisionQuery.ChooseOne].options
+      .map(_.ref), Vector(DecisionOptionRef.Site(ancientCity)))
+
   test("a holder who lost is not asked"):
     val run = reformed(empire.legacy(p2, ReformerCard), Vector.empty)
     assert(!run.asked.exists(_.decisionId.startsWith(
@@ -1047,10 +1074,10 @@ the empty window.
   * sites you rule, ignoring the locked restriction." Its step is the window
   * at the start of the Throne (Legacy Chronicle powers design, ruling 12),
   * only when the holder is the game's winner. Each pass is one move or
-  * swap: the holder picks a denizen at a site they rule, or Done; then its
-  * destination, another site they rule with room (a move) or a denizen at
-  * another site they rule (a swap). Passes repeat until Done or until no
-  * denizen has a destination; each is read when reached, under the same
+  * swap: the holder picks a card at a site they rule, edifices included
+  * (R10), or Done; then its destination, another site they rule with room
+  * (a move) or a card at another site they rule (a swap). Passes repeat
+  * until Done or until no card has a destination; each is read when reached, under the same
   * two ids, from the latest answers, as Call for Help's passes are. Locks
   * do not bind in the Chronicle (Chronicle ruling 16). A swap is two moves,
   * so each card takes the last slot of the other's site. Lines: "p1 moved
@@ -1088,8 +1115,7 @@ case object Reformer extends ContributingPower:
         Sequence(Vector(
           Branch((live, _) => Vector(Decide(pickId(holder), holder,
             DecisionQuery.ChooseOne(DecisionOption.Button(done, "Done") +:
-              movable(catalog, live, holder).map(card =>
-                DecisionOption.Denizen(DecisionOptionRef.Denizen(card))),
+              movable(catalog, live, holder),
               heading = Some("Reformer: you may move or swap a denizen at " +
                 "sites you rule"))))),
           Branch((live, pending) => picked(pending, holder).toVector.flatMap(
@@ -1105,21 +1131,23 @@ with these private helpers, each reading state or answers when reached:
 
 - `ruled(state, holder)`: the sites in play `ChronicleTasks.rules` says
   the holder rules.
-- `rowOf(state, site)`: the site's `DenizenState` ids (no edifices, open
-  question 2).
+- `rowOf(state, site)`: every card in the site's row, denizens and
+  edifices, intact or ruined (R10), as its `DecisionOption.Denizen` or
+  `DecisionOption.Edifice`.
 - `destinations(catalog, state, holder, card)`: for each other ruled site,
-  `DecisionOption.Site` when `SiteRoom.hasRoom`, then a
-  `DecisionOption.Denizen` for each denizen there; sites in map order.
-- `movable(catalog, state, holder)`: the denizens at ruled sites with at
+  `DecisionOption.Site` when `SiteRoom.hasRoom`, then the option of each
+  card there; sites in map order.
+- `movable(catalog, state, holder)`: the cards at ruled sites with at
   least one destination.
 - `finished(pending, holder)`: `PowerAnswers.last(pending.answered,
   pickId(holder)).contains(done)`.
-- `picked(pending, holder)`: the latest pick, when it is a denizen.
-- `owed(pending, holder)`: the count of denizen picks exceeds the count of
+- `picked(pending, holder)`: the latest pick, when it is a card (a
+  `Denizen` or `Edifice` ref).
+- `owed(pending, holder)`: the count of card picks exceeds the count of
   destination answers, so a pass asks its destination once.
 - `applied(state, holder, pending)`: when the pass's pick and destination
   are both answered and the pick count equals the destination count, the
-  `Move` (a site) or two `Move`s (a denizen), one required `BuildOps`, and
+  `Move` (a site) or two `Move`s (a card), one required `BuildOps`, and
   the `moved` or `swapped` line; otherwise nothing. The pass's own answers
   are the latest of each id, so an earlier pass is never applied twice.
 
@@ -1157,8 +1185,7 @@ git log -3
   rulings" section)
 - Modify: `docs/rules/implementation-traceability.md` (the "Throne task"
   row)
-- Modify: `docs/ROADMAP.md` (the setup item names Rival's SETUP half, if
-  open question 1 is ruled (a))
+- Modify: `docs/ROADMAP.md` (the setup item names Rival's SETUP half, R7)
 - Modify: `docs/superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md`
   (status line)
 
@@ -1212,7 +1239,7 @@ git log -3
 - Shape Empire reads `protector`: Task 1 (ruling 9).
 - Build Edifice reads `builder` and `anyEdifice`: Task 2 (ruling 10).
 - Rival's Throne half, Great Architect, Revolutionary and Reformer leave
-  holding: Tasks 1-4 (Rival per open question 1).
+  holding: Tasks 1-4 (Rival with its whole text, R7).
 - Tests the spec lists: Rival keeping some denizens (Task 1); Great
   Architect as a Citizen building an off-suit edifice in place of the
   Chancellor, and as the Chancellor (Task 2); Revolutionary choosing none

@@ -238,8 +238,9 @@ Gatekeeper and Chronicler both act.
 
 The Reformer and Revolutionary windows; Shape Empire reads `protector`;
 Build Edifice reads `builder` and `anyEdifice`. Rival's Throne half,
-Great Architect, Revolutionary and Reformer leave holding (Rival keeps its
-SETUP text in holding until the setup batch).
+Great Architect, Revolutionary and Reformer leave holding. Rival leaves
+with its whole text and counts as implemented; the ROADMAP setup item
+names its SETUP half (implementation ruling R7).
 
 Tests: Rival keeping some denizens; Great Architect as a Citizen building
 an off-suit edifice in place of the Chancellor, and as the Chancellor;

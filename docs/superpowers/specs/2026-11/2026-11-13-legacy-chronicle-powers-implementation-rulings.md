@@ -58,3 +58,88 @@ takeable; no choose-many and no "Take" confirm. The ids are
 Reason: one answer, the same shape as Chronicler; design ruling 4's
 choose-many is for picking several cards, not one.
 Slice/files: 1; `Chronicler`, `Gatekeeper`.
+
+**R15. Inserted windows and a walk saved mid-Chronicle.**
+Decision: accepted. Inserting Chronicle windows shifts the child indices
+of a parked Sun or Throne walk, so a game saved mid-Chronicle by an
+earlier build may not resume correctly.
+Reason: the project makes no mid-phase save compatibility promise across
+builds, and the Legacies slices inserted Sun steps the same way; the same
+applies to every window slices 2-5 add.
+Slice/files: all; `ChronicleWindows`, `ChronicleSunProcedure`,
+`ChronicleThroneProcedure`.
+
+## Slice 2
+
+**R7. Does Rival leave holding?**
+Decision: yes. Rival leaves holding with its whole text and counts as
+implemented; the ROADMAP setup item names its SETUP half. The Ear, Oaths of
+Loyalty and Iron Hand do the same in their slices. The design's slice 2
+sentence is corrected to match.
+Reason: the design's Approach and `CardCatalogSuite` both require it; the
+ROADMAP is where unbuilt halves are tracked.
+Slice/files: 2; `Rival`, `docs/ROADMAP.md`, the design.
+
+**R8. What Rival protects.**
+Decision: every card Shape Empire would discard, ruined edifices included.
+Reason: an edifice is a denizen (glossary), and Rival prevents discards, so
+its reach is exactly the discard's.
+Slice/files: 2; `ShapeEmpire`, `Rival`.
+
+**R9. What Revolutionary discards.**
+Decision: the denizens and ruined edifices at Imperial sites; intact
+edifices stay.
+Reason: intact edifices are locked and `Discard.RuinedEdifice` is the only
+edifice discard; Chronicle ruling 16's protection holds.
+Confidence: low; the card's text names no edifice exception.
+Slice/files: 2; `Revolutionary`.
+
+**R10. What Reformer moves and swaps.**
+Decision: denizens, edifices included, intact and ruined.
+Reason: an edifice is a denizen, and "ignoring the locked restriction" only
+has force for locked cards such as intact edifices.
+Confidence: low; the text could mean ordinary locked denizens only.
+Slice/files: 2; `Reformer`.
+
+**R11. Reformer's pass.**
+Decision: two choose-ones per pass: a card at a site the holder rules, or
+Done (first), offering only cards with a destination; then its
+destination, another ruled site with room (a move) or a card at another
+ruled site (a swap). A swap is two moves, each card landing in the other's
+site's last slot.
+Reason: board picks scale; dozens of buttons do not.
+Slice/files: 2; `Reformer`.
+
+**R12. The lines and the windows.**
+Decision: "p1 protected 2 denizens with Rival", "p2 discarded 3 denizens
+with Revolutionary" ("1 denizen" for one), "p1 moved X to Y with Reformer"
+and "p1 swapped X and Y with Reformer", each a decision line; Great
+Architect writes no line of its own; choosing nothing writes nothing. The
+windows are `PowerWindow.ChronicleStartOfThrone`
+(`chronicle.throne.start-of-throne`), before Offer Citizenship, and
+`PowerWindow.ChronicleAfterBuildEdifice`
+(`chronicle.throne.after-build-edifice`), between Build Edifice and Stock
+Reliquary.
+Reason: the plan's proposal.
+Slice/files: 2; the four powers, `PowerWindow`, `ProcedureLog`.
+
+**R13. The decisions' shapes.**
+Decision: Rival and Revolutionary each ask one choose-many of zero to all,
+only when there is a card; Reformer asks
+`chronicle.throne.legacy.reformer.<player>` and its `.to` destination each
+pass, the ids reused across passes and read from the latest answers, as
+Call for Help does; Great Architect keeps Build Edifice's per-suit
+decisions, owned by the builder. A resume test parks mid-pass after at
+least one completed move and resumes to the same next question.
+Reason: the plan's proposal; reused ids across passes are the
+parked-decision bug class, so they get their own resume test.
+Slice/files: 2; the four powers, `BuildEdifice`.
+
+**R14. Burial favor and late edifice discards.**
+Decision: Build Edifice's burial returns favor to the buried card's own
+suit bank. A ruined edifice Revolutionary discards after Build Edifice
+returned the set-aside list stays set aside, which is harmless; a test
+checks the stored Chronicle still passes game start's card accounting.
+Reason: the favor follows the card that leaves; game start rebuilds the
+edifice deck from the catalog.
+Slice/files: 2; `BuildEdifice`, `Revolutionary`.
