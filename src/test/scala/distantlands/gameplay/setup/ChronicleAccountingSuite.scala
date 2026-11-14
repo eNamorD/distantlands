@@ -1,6 +1,6 @@
 package distantlands.gameplay.setup
 
-import distantlands.catalog.holding.SeerCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.actions.VisionRules
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.operations.TheGrandScepterCard

@@ -1,6 +1,7 @@
 package distantlands.application.gamelog
 
-import distantlands.catalog.holding.{SeerCard, TheNeedleCard}
+import distantlands.catalog.holding.TheNeedleCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
 import distantlands.gameplay.chronicle.{BuildEdifice, LineageScoring,

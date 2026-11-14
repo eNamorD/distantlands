@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle.legacies
 
-import distantlands.catalog.holding.SeerCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.setup.legacies.MatchmakerCard
 import distantlands.gameplay.OathRules
 import distantlands.gameplay.chronicle.{ChronicleLegacyRules, ChronicleWalk,

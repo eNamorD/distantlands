@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.{ArbiterCard, SeerCard}
+import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.action.{BrassHorseCard, FaeMerchantCard}
 import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}

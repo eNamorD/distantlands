@@ -3,7 +3,7 @@ package distantlands.application.chronicle
 import distantlands.gameplay.chronicle.EvolvedChronicleFixture
 import distantlands.gameplay.setup.FirstGameSetupFixture.chronicle
 import distantlands.model._
-import distantlands.catalog.holding.SeerCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.chronicle.legacies.IronHandCard
 import distantlands.protocol.{ChronicleFoundation, ChronicleLegacy}
 

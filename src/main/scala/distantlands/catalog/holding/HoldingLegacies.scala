@@ -69,14 +69,6 @@ object HighPriestCard extends Legacy(LegacyId("L21"), "High Priest",
       "player board. **WHEN NEGOTIATING:** You may give [secret].")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object SeerCard extends Legacy(LegacyId("L22"), "Seer",
-    LegacyGoal.DarkestSecret, Suit.Arcane):
-  val power = PrintedPower(PowerId("legacy.seer"),
-    persistent = false, cost = Cost.free,
-    text = "**SETUP:** When building the world deck, peek at the " +
-      "Visions and secretly place them in any positions.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object ArbiterCard extends Legacy(LegacyId("L23"), "Arbiter",
     LegacyGoal.DarkestSecret, Suit.Discord):
   val power = PrintedPower(PowerId("legacy.arbiter"),

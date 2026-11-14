@@ -1,8 +1,8 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.holding.{AncestralLandsCard, ArbiterCard,
-  GoldenKeyCard, KeeperOfOrderCard, PeacemakerCard, SeerCard,
-  TheNeedleCard, WealthyCard}
+  GoldenKeyCard, KeeperOfOrderCard, PeacemakerCard, TheNeedleCard, WealthyCard}
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.setup.legacies.MatchmakerCard
 import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
   GreatArchitectCard, IronHandCard, RivalCard, SteadfastCard}

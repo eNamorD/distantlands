@@ -1,6 +1,7 @@
 package distantlands.gameplay.setup
 
-import distantlands.catalog.holding.{ArbiterCard, SeerCard}
+import distantlands.catalog.holding.ArbiterCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.chronicle.legacies.RivalCard
 import distantlands.model._
 

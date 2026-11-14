@@ -4,9 +4,10 @@ import distantlands.gameplay.setup.{ImperialMaps, LaterGameFixture,
   SetupLegacyFixture, SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.legacies.{SecretSociety,
-  SecretSocietyCard}
+  SecretSocietyCard, Seer, SeerCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.protocol.projection.DecisionQueryProjection
 import distantlands.testkit.{Answers, Situation}
 
 /** Who sees the world deck's Visions while Secret Society's and Seer's
@@ -20,7 +21,7 @@ class WorldDeckLegaciesProjectionSuite extends munit.FunSuite:
   private val (p1, p2) = (PlayerId("p1"), PlayerId("p2"))
   private val record = SetupLegacyFixture.holding(
     LaterGameFixture.chronicle(l1, l2), l2, Role.Citizen,
-    SecretSocietyCard.id -> true)
+    SecretSocietyCard.id -> true, SeerCard.id -> true)
   private val rules = Situation.productionRules(catalog)
   /** Secret Society takes the first Vision it offers. */
   private val taking: Answers =
@@ -29,10 +30,15 @@ class WorldDeckLegaciesProjectionSuite extends munit.FunSuite:
         case one: DecisionQuery.ChooseOne => ChooseOneAnswer(one.options(1).ref)
         case other => fail(s"expected a choose-one, got $other")
 
+  /** Secret Society alone: no Seer peeks after it. */
+  private val societyOnly = SetupLegacyFixture.holding(
+    LaterGameFixture.chronicle(l1, l2), l2, Role.Citizen,
+    SecretSocietyCard.id -> true)
+
   private def parkedAt(decisionId: String, answers: Answers =
-      PartialFunction.empty): Situation =
+      PartialFunction.empty, chronicle: Chronicle = record): Situation =
     Situation.start(rules.withAnswers(answers)).parkedAt(decisionId)(
-      GameCommand.Begin(record, LaterGameFixture.orders(record, p1)))
+      GameCommand.Begin(chronicle, LaterGameFixture.orders(chronicle, p1)))
 
   private def deckVisions(ready: ReadyGame): Vector[VisionId] =
     ready.game.current.commonCards.worldDeck.collect { case id: VisionId => id }
@@ -59,7 +65,8 @@ class WorldDeckLegaciesProjectionSuite extends munit.FunSuite:
 
   test("after the take nobody identifies the deck's Visions, and only the " +
       "holder their new adviser"):
-    val at = parkedAt(SetupProcedure.pawnDecisionId(p1), taking).ready
+    val at = parkedAt(SetupProcedure.pawnDecisionId(p1), taking,
+      societyOnly).ready
     Vector(Some(p2), Some(p1), None).foreach(viewer =>
       assertEquals(seenBy(at, viewer), Vector.empty, viewer))
     val taken = at.game.current.player(p2).get.advisers.collect {
@@ -68,3 +75,27 @@ class WorldDeckLegaciesProjectionSuite extends munit.FunSuite:
     assert(presentation.identifiesAt(at, Some(p2), taken.head))
     Vector(Some(p1), None).foreach(viewer =>
       assert(!presentation.identifiesAt(at, viewer, taken.head), viewer))
+
+  test("while Seer's question waits, only its holder identifies the deck's " +
+      "Visions and is shown their positions"):
+    val at = parkedAt(Seer.decisionId(p2), taking)
+    assertEquals(seenBy(at.ready, Some(p2)), deckVisions(at.ready))
+    Vector(Some(p1), None).foreach(viewer =>
+      assertEquals(seenBy(at.ready, viewer), Vector.empty, viewer))
+    val loaded = LoadedGame(at.state, 1L)
+    projector.project("deck", loaded, p2).walkerDecision
+        .flatMap(_.query) match
+      case Some(amounts: DecisionQueryProjection.ChooseAmounts) =>
+        assertEquals(amounts.slots.flatMap(_.suggested),
+          deckVisions(at.ready).map(vision =>
+            at.ready.game.current.commonCards.worldDeck.indexOf(vision) + 1))
+      case other => fail(s"expected the Seer's question, got $other")
+    assert(!projector.project("deck", loaded, p1).walkerDecision
+      .exists(_.query.nonEmpty))
+
+  test("after Seer's answer the holder keeps knowing the deck's Visions, " +
+      "and nobody else does (R20)"):
+    val at = parkedAt(SetupProcedure.pawnDecisionId(p1), taking).ready
+    assertEquals(seenBy(at, Some(p2)), deckVisions(at))
+    Vector(Some(p1), None).foreach(viewer =>
+      assertEquals(seenBy(at, viewer), Vector.empty, viewer))

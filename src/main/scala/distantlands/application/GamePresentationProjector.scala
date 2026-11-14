@@ -8,7 +8,8 @@ import distantlands.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementat
   WalkerPowerCatalog}
 import distantlands.gameplay.powers.wake.TrackerWake
 import distantlands.gameplay.setup.{LegacyKeep, SetupProcedure}
-import distantlands.gameplay.setup.legacies.{SecretSociety, SetupLegacyRules}
+import distantlands.gameplay.setup.legacies.{SecretSociety, Seer,
+  SetupLegacyRules}
 import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
 import distantlands.model._
 import distantlands.protocol.projection._
@@ -417,15 +418,18 @@ private[application] final class GamePresentationProjector(
   private def keepPending(ready: ReadyGame, owner: PlayerId): Boolean =
     setupOpen(ready).contains(LegacyKeep.decisionId(owner))
 
-  /** Whether Setup's walk is parked on `viewer`'s Secret Society question,
-    * whose options name the world deck's Visions (R20, R22). Checked only
-    * for a Vision in the world deck during Setup, held by a seated holder,
-    * so a plain projection never rebuilds Setup's tree. */
+  /** Whether Setup's walk is parked on `viewer`'s Secret Society or Seer
+    * question, whose options name the world deck's Visions (R20, R22,
+    * R23). Checked only for a Vision in the world deck during Setup, held
+    * by a seated holder, so a plain projection never rebuilds Setup's
+    * tree. */
   private def deckQuestionPending(ready: ReadyGame, viewer: PlayerId)
       : Boolean =
     ready.game.current.turn.phase == Phase.Setup &&
-      SetupLegacyRules.secretSociety(ready).contains(viewer) &&
-      setupOpen(ready).contains(SecretSociety.decisionId(viewer))
+      (SetupLegacyRules.secretSociety(ready).contains(viewer) ||
+        SetupLegacyRules.seer(ready).contains(viewer)) &&
+      setupOpen(ready).exists(id => id == SecretSociety.decisionId(viewer) ||
+        id == Seer.decisionId(viewer))
 
   /** The ids of Setup's open decisions: the tree is rebuilt from the state
     * and read as the decision projection reads it. Empty when Setup is not

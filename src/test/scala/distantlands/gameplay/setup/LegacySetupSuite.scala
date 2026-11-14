@@ -1,6 +1,6 @@
 package distantlands.gameplay.setup
 
-import distantlands.catalog.holding.SeerCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.walker.{LogNoted, WalkerPowers}
 import distantlands.model._
 import distantlands.testkit.{Answers, Outcomes, Situation}

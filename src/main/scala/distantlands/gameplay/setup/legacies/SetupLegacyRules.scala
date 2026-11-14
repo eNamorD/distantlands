@@ -34,3 +34,7 @@ object SetupLegacyRules:
     * Society's holder (ruling 14). */
   def secretSociety(state: ReadyGame): Option[PlayerId] =
     ChronicleLegacyRules.holder(state, SecretSocietyCard.id)
+
+  /** Who places the world deck's Visions: Seer's holder (ruling 15). */
+  def seer(state: ReadyGame): Option[PlayerId] =
+    ChronicleLegacyRules.holder(state, SeerCard.id)

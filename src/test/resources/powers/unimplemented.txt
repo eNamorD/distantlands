@@ -19,7 +19,6 @@ legacy.pathfinder
 legacy.peacemaker
 legacy.quest-to-distant-lands
 legacy.ruthless
-legacy.seer
 legacy.the-mouth
 legacy.the-needle
 legacy.the-standard-bearer

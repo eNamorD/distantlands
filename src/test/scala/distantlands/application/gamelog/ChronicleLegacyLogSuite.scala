@@ -1,6 +1,6 @@
 package distantlands.application.gamelog
 
-import distantlands.catalog.holding.SeerCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
   GatekeeperCard, HeirloomCard, IronHandCard, TheBrightBeaconCard,
   TheEarCard}

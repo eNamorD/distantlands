@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle
 
-import distantlands.catalog.holding.SeerCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.model._
 import distantlands.testkit.Table.{p2, p3}
 

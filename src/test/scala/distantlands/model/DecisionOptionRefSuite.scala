@@ -1,6 +1,6 @@
 package distantlands.model
 
-import distantlands.catalog.holding.SeerCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.operations.HallOfMinistersCard
 import distantlands.gameplay.powers.campaign.WrestlersCard
