@@ -220,6 +220,10 @@ object PowerWindow:
   case object ChronicleCrown extends OtherWindow { val key = "chronicle.sun.crown" }
   case object ChronicleAssignTasks extends OtherWindow:
     val key = "chronicle.sun.assign-tasks"
+  /** The start of the Throne, before Offer Citizenship: Reformer's step
+    * (Legacy Chronicle powers design, ruling 12). Empty with no power. */
+  case object ChronicleStartOfThrone extends OtherWindow:
+    val key = "chronicle.throne.start-of-throne"
   case object ChronicleOfferCitizenship extends OtherWindow:
     val key = "chronicle.throne.offer-citizenship"
   case object ChronicleShapeEmpire extends OtherWindow:

@@ -266,15 +266,6 @@ object TheMouthCard extends Legacy(LegacyId("L34"), "The Mouth",
       "Public Ambitions foundation._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object ReformerCard extends Legacy(LegacyId("L35"), "Reformer",
-    LegacyGoal.MostOfSuit, Suit.Order, Some(FoundationNumber.V)):
-  val power = PrintedPower(PowerId("legacy.reformer"),
-    persistent = false, cost = Cost.free,
-    text = "Set Foundation V to Grand Council. **CHRONICLE (START OF " +
-      "THRONE):** If you won, you may move and swap denizens at " +
-      "sites you rule, ignoring the locked restriction.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object PathfinderCard extends Legacy(LegacyId("L36"), "Pathfinder",
     LegacyGoal.MostOfSuit, Suit.Nomad, Some(FoundationNumber.I)):
   val power = PrintedPower(PowerId("legacy.pathfinder"),

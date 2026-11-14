@@ -6,9 +6,10 @@ import distantlands.gameplay.walker.ProcedureStart
 import distantlands.model._
 
 /** The Throne task (CR p. 37, `docs/rules/chronicle.md` task 2), resolved
-  * by the player holding its card. Each step is its own power window. An
-  * empty window after Build Edifice holds Revolutionary's step (Legacy
-  * Chronicle powers design, ruling 11). */
+  * by the player holding its card. Each step is its own power window. Two
+  * empty windows hold the legacies' added steps: one at the start, where
+  * Reformer acts, and one after Build Edifice, where Revolutionary does
+  * (Legacy Chronicle powers design, rulings 11 and 12). */
 object ChronicleThroneProcedure:
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
@@ -22,6 +23,7 @@ object ChronicleThroneProcedure:
     LegacyChroniclePowers.throneNoteKeys
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
+    ChronicleWindows.step(PowerWindow.ChronicleStartOfThrone, Vector.empty),
     ChronicleWindows.step(PowerWindow.ChronicleOfferCitizenship,
       OfferCitizenship.steps),
     ChronicleWindows.step(PowerWindow.ChronicleShapeEmpire,

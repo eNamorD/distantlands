@@ -12,7 +12,8 @@ object ChronicleWindows:
     ChronicleBeforeResolveLegacies, ChronicleFlipLegacies,
     ChronicleExileDormancy, ChronicleLegacyCap, ChronicleShuffleLegacies,
     ChronicleAfterResolveLegacies, ChronicleCrown, ChronicleAssignTasks)
-  val throne: Vector[PowerWindow] = Vector(ChronicleOfferCitizenship,
+  val throne: Vector[PowerWindow] = Vector(ChronicleStartOfThrone,
+    ChronicleOfferCitizenship,
     ChronicleShapeEmpire, ChronicleBuildEdifice, ChronicleAfterBuildEdifice,
     ChronicleStockReliquary,
     ChronicleScatterRelics, ChronicleScoreLineage, ChronicleSwearOath)

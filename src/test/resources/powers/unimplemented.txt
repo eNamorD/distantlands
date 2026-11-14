@@ -24,7 +24,6 @@ legacy.pathfinder
 legacy.peacemaker
 legacy.populist
 legacy.quest-to-distant-lands
-legacy.reformer
 legacy.royal-line
 legacy.ruthless
 legacy.scepter-bearer

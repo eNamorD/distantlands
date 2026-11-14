@@ -917,7 +917,7 @@ In `ChronicleWindowsSuite`, the Throne's keys start with
 ```scala
 package distantlands.gameplay.chronicle.legacies
 
-import distantlands.gameplay.{MarriageCard, OathRules, WalkerDiceFixture}
+import distantlands.gameplay.{OathRules, SacredGroundCard, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.ChronicleWalk
@@ -981,15 +981,18 @@ class ReformerSuite extends munit.FunSuite:
   test("Reformer is implemented"):
     assert(PowerImplementationStatus.implemented(ReformerCard.power.id))
 
-  test("the winner moves a locked denizen to another site they rule with " +
+  test("the winner moves a locked card to another site they rule with " +
       "room (ruling 12; Chronicle ruling 16)"):
-    val table = empire.denizen(MarriageCard, at = AncientCitySite)
-      .legacy(p1, ReformerCard)
-    val run = reformed(table, Vector(denizen(MarriageCard) ->
-      DecisionOptionRef.Site(brokenPeaks)))
-    assertEquals(at(run.ready, brokenPeaks), Vector(MarriageCard.id))
-    assertEquals(lines(run), Vector(s"p1 moved ${MarriageCard.id.value} to " +
-      s"${brokenPeaks.value} with ${ReformerCard.id.value}"))
+    // An intact Sacred Ground shows the lock; the only locked cards a site
+    // holds are intact edifices.
+    val table = empire.edifice(SacredGroundCard, EdificeSide.Intact,
+      at = AncientCitySite).legacy(p1, ReformerCard)
+    val run = reformed(table, Vector(
+      DecisionOptionRef.Edifice(SacredGroundCard.id) ->
+        DecisionOptionRef.Site(brokenPeaks)))
+    assertEquals(at(run.ready, brokenPeaks), Vector(SacredGroundCard.id))
+    assertEquals(lines(run), Vector(s"p1 moved ${SacredGroundCard.id.value} " +
+      s"to ${brokenPeaks.value} with ${ReformerCard.id.value}"))
 
   test("the winner swaps two denizens between sites they rule"):
     val table = empire.denizen(FaeMerchantCard, at = BrokenPeaksSite)
@@ -1079,7 +1082,8 @@ class ReformerSuite extends munit.FunSuite:
 ```
 
 (Every answer is given to a walk rebuilt from the journal, so the passes
-test resuming after each move. `MarriageCard` is a locked denizen.)
+test resuming after each move. An intact edifice is the locked card a
+site can hold; an adviser-only locked denizen cannot be placed at a site.)
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
