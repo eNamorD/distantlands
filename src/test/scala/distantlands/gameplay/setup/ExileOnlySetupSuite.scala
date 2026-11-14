@@ -228,11 +228,15 @@ class ExileOnlySetupSuite extends munit.FunSuite:
   test("a first game played exile-only keeps starting advisers and relics " +
       "(R40)"):
     val adviser = brandNew.worldDeck.head
+    val relic = brandNew.relicDeck.head
     val record = brandNew.copy(worldDeck = brandNew.worldDeck.tail,
+      relicDeck = brandNew.relicDeck.tail,
       lineages = Vector(LineageState(LineageId("l1"), None, Role.Exile,
         Vector.empty, Vector(DenizenState(adviser, Orientation.FaceDown,
-          Tokens.empty)))))
+          Tokens.empty)), startingRelics = Vector(relic))))
     val ready = started(record)
     assertEquals(ready.game.current.player(p1).get.advisers.map(_.id),
       Vector(adviser))
+    assertEquals(ready.game.current.player(p1).get.relics.map(_.id),
+      Vector(relic))
 
