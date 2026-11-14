@@ -48,15 +48,13 @@ object StartingLegacies:
     // Imperial holder is one of its players.
     val bearer = holder(chronicle, seated, ScepterBearerCard.id,
       ChronicleLegacyRules.imperialRoles).map(playerOf)
-    // Only an Exile's Iron Hand acts: an Imperial discarded it (R4). A
-    // first game played exile-only holds no legacy (R40), and restored no
-    // Empire. "If you were in the previous game": a holder whose lineage
-    // sat it out does nothing (R39).
-    val ironHand = mode match
-      case SetupMode.FirstGameExileOnly(_) => None
-      case _ => holder(chronicle, seated, IronHandCard.id, exileRoles)
-        .filter(lineage => chronicle.lineages.exists(stored =>
-          stored.id == lineage && stored.previousPlayer.nonEmpty))
+    // Only an Exile's Iron Hand acts: an Imperial discarded it (R4). "If
+    // you were in the previous game": a holder whose lineage sat it out
+    // does nothing (R39). The R40 wipe leaves no holder in a first game
+    // played exile-only.
+    val ironHand = holder(chronicle, seated, IronHandCard.id, exileRoles)
+      .filter(lineage => chronicle.lineages.exists(stored =>
+        stored.id == lineage && stored.previousPlayer.nonEmpty))
     val (rival, sites) = rivalSites(chronicle, seated,
       placedBefore(chronicle, mode))
     StartLegacies(circle.toMap, ironHand, rival, sites, bearer)
@@ -74,7 +72,8 @@ object StartingLegacies:
 
   /** The sites game start places before Rival in `mode`: a first game's
     * and an exile-only game's eight, else the Empire's stored sites, kept
-    * or former. */
+    * or former. The R40 wipe leaves no Rival holder in a first game played
+    * exile-only; the arm keeps the count true for that mode. */
   def placedBefore(chronicle: Chronicle, mode: SetupMode): Int = mode match
     case SetupMode.FirstGame | SetupMode.FirstGameExileOnly(_) => MapState.slots
     case _ => chronicle.world.size

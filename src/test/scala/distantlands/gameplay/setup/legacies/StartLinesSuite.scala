@@ -50,6 +50,15 @@ class StartLinesSuite extends munit.FunSuite:
           RivalCard.id.value)
     assertEquals(lines(record).take(expected.size), expected)
 
+  test("a holder who sat out the previous game writes no Iron Hand line, " +
+      "and Rival's lines as before (R39)"):
+    val record = SetupLegacyFixture.satOut(SetupLegacyFixture.holding(
+      LaterGameFixture.chronicle(l1, l2), l3, Role.Exile,
+      IronHandCard.id -> true, RivalCard.id -> true), l3)
+    val said = lines(record)
+    assert(!said.exists(_.endsWith(s"with ${IronHandCard.id.value}")), said)
+    assertEquals(said.count(_.endsWith(s"with ${RivalCard.id.value}")), 3)
+
   test("with no legacy acting Setup's log is unchanged"):
     val record = LaterGameFixture.chronicle(l1, l2)
     assert(!lines(record).exists(_.contains(" with L")))

@@ -67,13 +67,10 @@ object StartLines:
   private def site(legacy: LegacyId, world: Boolean, slot: Int)(
       state: ReadyGame): Option[LogNote] =
     val stored = state.game.campaign.baseline.world.map(_.site).toSet
-    // Iron Hand's SETUP half acts only for a holder in the previous game
-    // (R39); Rival's always does.
-    val holder =
-      if legacy == IronHandCard.id then SetupLegacyRules.ironHand(state)
-      else ChronicleLegacyRules.holder(state, legacy, Set(Role.Exile))
+    // A holder whose warbands game start did not place holds no such site,
+    // so Iron Hand's previous-game clause (R39) needs no filter here.
     for
-      player <- holder
+      player <- ChronicleLegacyRules.holder(state, legacy, Set(Role.Exile))
       held <- state.game.current.player(player)
       site <- state.game.current.map.inPlay.lift(slot)
       if stored(site) == world && state.game.current.map.sites(site).forces
