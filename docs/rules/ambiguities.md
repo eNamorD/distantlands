@@ -196,7 +196,7 @@ Rulings for legacies ([Legacies design](../superpowers/specs/2026-11/2026-11-13-
 
 ## Legacy Chronicle powers rulings
 
-Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6; items 15 to 18 are the design's rulings 9 to 12; items 19 to 28 are implementation rulings R7 to R16. Later slices add the design's other rulings as they land.
+Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-implementation-rulings.md)). Items 1 to 8 are the design's rulings 1 to 8, taken with the owner on 2026-11-13; items 9 to 14 are implementation rulings R1 to R6; items 15 to 18 are the design's rulings 9 to 12; items 19 to 28 are implementation rulings R7 to R16; items 29 to 33 are the design's rulings 13 to 17; items 34 to 40 are implementation rulings R17 to R27. Later slices add the design's other rulings as they land.
 
 1. **Only seated players' active legacies act.** A legacy's Chronicle power applies when a seated player holds it active at the moment its window is reached. A boxed lineage's legacies never act; a dormant legacy has no power (design, ruling 1).
 2. **A role condition is read at the same moment,** so the Crown and Offer Citizenship change it for every later step (design, ruling 2).
@@ -226,6 +226,18 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 26. **A burial returns favor to the buried card's own suit bank** (R14).
 27. **A ruined edifice Revolutionary discards returns to the bottom of the edifice deck,** so nothing is left set aside after Build Edifice and the stored Chronicle passes game start's accounting (R16).
 28. **Inserting a Chronicle window** shifts a walk parked mid-Chronicle by an earlier build; no mid-phase save is kept across builds (R15).
+29. **Heirloom is a step before Scatter Relics.** Its holder secretly keeps one relic, never the Grand Scepter, for the next game; it leaves play into the lineage's starting relics, which game start hands back facedown (design, ruling 13).
+30. **The Ear chooses where the scattered relics go,** slot by slot in Hinterward order; the rest return to the relic deck, and only the holder sees the relics (design, ruling 14).
+31. **Oaths of Loyalty keeps up to three faceup advisers** in Gather Denizens, as the lineage's facedown starting advisers for the next game (design, ruling 15).
+32. **Oaths of Loyalty buries every other starting adviser** its holder would gain: Protect and Dispossess's and Welcome a Stranger's keep, and the next Setup's pick; under Teeming World the holder draws none (design, ruling 16).
+33. **The Bright Beacon chooses its source first,** the box or the Dispossessed; from the Dispossessed it takes exactly six, which Welcome a Stranger then resolves (design, ruling 17).
+34. **Heirloom's timing and choice:** after Stock Reliquary, so a Throne holder keeps nothing it took; a choose-one, no Decline, a single relic kept without a question (R17, R18).
+35. **Heirloom's lines:** "p2 kept a relic with Heirloom" for every viewer, and a line naming the relic for the holder alone. `StartingRelicKept` journals the keep, refusing the Grand Scepter, a relic not held and a relic with tokens (R19, R20).
+36. **The Ear asks while two or more relics remain,** under one reused decision id; the last relic is placed without a question; each placed relic is peeked for the holder at its site (R21).
+37. **Hidden cards reach their holder by peeking:** The Ear's set-aside relics and The Bright Beacon's Dispossessed are named to the holder alone, and still hidden from every other seat and spectator (R22).
+38. **Oaths' keep and burial:** a choose-many of zero to three faceup denizen advisers, named in the line; the other keep questions stay and the kept card is buried; under Teeming World the holder draws none (R23, R24).
+39. **The Bright Beacon's questions:** the box first; from the Dispossessed exactly six, taken without a question when exactly six remain (R25). Heirloom's step has its own window before Scatter Relics (R26).
+40. **Two goldens** show an Oaths and Heirloom Chronicle and the next game's Setup from its record (R27).
 
 ## Source relationship cautions
 

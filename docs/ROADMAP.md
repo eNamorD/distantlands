@@ -178,15 +178,14 @@ Legacies, the scoring bonus and the display) landed with the
 - [ ] **Legacy powers: Chronicle.** The CHRONICLE powers still to build,
   through the Chronicle's step windows
   ([Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md)):
-  Heirloom keeping a starting relic, The Ear choosing where relics scatter,
-  Oaths of Loyalty keeping advisers, The Bright Beacon taking newcomers
-  from the Dispossessed, Iron Hand scoring and shaping the Empire, and
-  Royal Line choosing the Successor. Slices 1 and 2 built Steadfast,
-  Gatekeeper, Chronicler, Rival's Throne half, Great Architect,
-  Revolutionary and Reformer.
+  Iron Hand scoring and shaping the Empire, and Royal Line choosing the
+  Successor. Slices 1 to 3 built Steadfast, Gatekeeper, Chronicler, Rival's
+  Throne half, Great Architect, Revolutionary, Reformer, Heirloom, The
+  Ear's Chronicle half, Oaths of Loyalty and The Bright Beacon.
 - [ ] **Legacy powers: in play.** The powers used during a game: actions,
   Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
-  play among them. High Priest's When Negotiating power lets its holder
+  play and The Ear's ACTION half, peeking at a site's relics, among them
+  (The Ear's card counts as implemented for its Chronicle half). High Priest's When Negotiating power lets its holder
   give secrets in a deal: a `DealRules` term kind, as Council Arbiter opens
   advisers.
 - [ ] **Cards that act on legacies.** The non-legacy cards whose powers
