@@ -12,7 +12,8 @@ import distantlands.gameplay.powers.action.FaeMerchantCard
 import distantlands.gameplay.powers.economy.VillageIdiotCard
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.catalog.holding.TheNeedleCard
+import distantlands.catalog.holding.{MatchmakerCard, SeerCard,
+  TheNeedleCard}
 import distantlands.model._
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2, p3}
@@ -270,4 +271,36 @@ class IronHandSuite extends munit.FunSuite:
       .foldLeft[Either[OathViolation, OathState]](Right(twoBuilders.state))(
         (state, event) => state.flatMap(rules.evolve(_, event))))
     assertEquals(ChronicleWalk.parked(replayed), Some(decide))
+
+  test("a new Citizen discards Iron Hand before the cap, so three other " +
+      "active legacies ask no discard (R30)"):
+    val table = ChronicleWalk.throneHeldByChancellorP1
+      .warbandsAt(AncientCitySite, p1, 1).warbandsAt(BuriedGiantSite, p3, 1)
+      .legacy(p3, IronHandCard).legacy(p3, SeerCard).legacy(p3, RivalCard)
+      .legacy(p3, MatchmakerCard)
+    val run = through(table, TriggeredProcedureRef.ChronicleThrone, {
+      case decide if decide.decisionId == OfferCitizenship.offerDecisionId =>
+        DecisionAnswer.ChooseManyAnswer(Vector(DecisionOptionRef.Player(p3)))
+      case decide if decide.decisionId ==
+          OfferCitizenship.answerDecisionId(p3) =>
+        DecisionAnswer.ChooseOneAnswer(OfferCitizenship.accept)
+    }, after = TriggeredProcedureRef.ChronicleSun)
+    assert(!run.asked.exists(_.decisionId ==
+      OfferCitizenship.capDecisionId(p3)))
+    assert(!holds(run.ready, p3))
+
+  test("an Exile winner discards Iron Hand before the Crown's cap, so three " +
+      "reactivated legacies ask no discard (R30)"):
+    // p1 rules Ancient City alone, keeping Iron Hand active; Seer, Rival and
+    // Matchmaker miss their goals, go dormant in step 3 and return at the
+    // Crown.
+    val run = through(ChronicleWalk.chronicleWonByP1
+      .warbandsAt(AncientCitySite, p1, 1).legacy(p1, IronHandCard)
+      .legacy(p1, SeerCard).legacy(p1, RivalCard).legacy(p1, MatchmakerCard),
+      TriggeredProcedureRef.ChronicleSun)
+    assert(!run.asked.exists(_.decisionId ==
+      distantlands.gameplay.chronicle.ResolveLegacies.crownCapDecisionId(p1)))
+    assert(!holds(run.ready, p1))
+    assertEquals(run.ready.game.campaign.lineages(run.ready.game.current
+      .player(p1).get.lineage).legacies.count(_.active), 3)
 
