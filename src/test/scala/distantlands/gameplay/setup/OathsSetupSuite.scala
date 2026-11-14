@@ -1,6 +1,8 @@
 package distantlands.gameplay.setup
 
+import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.legacies.OathsOfLoyaltyCard
+import distantlands.gameplay.powers.NoteText
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Situation
@@ -22,9 +24,12 @@ class OathsSetupSuite extends munit.FunSuite:
           Vector(LegacyState(OathsOfLoyaltyCard.id, active)))
         else lineage))
 
-  private def woken(chronicle: Chronicle)(using munit.Location): ReadyGame =
+  private def wake(chronicle: Chronicle)(using munit.Location): Situation =
     Situation.wake(Situation.rules(catalog), chronicle,
-      LaterGameFixture.orders(chronicle, p1)).ready
+      LaterGameFixture.orders(chronicle, p1))
+
+  private def woken(chronicle: Chronicle)(using munit.Location): ReadyGame =
+    wake(chronicle).ready
 
   test("under Ties of Fellowship the holder still picks from a hand of " +
       "three, and the kept card is buried at the world deck bottom"):
@@ -32,10 +37,18 @@ class OathsSetupSuite extends munit.FunSuite:
     val hand = SetupDeal.of(chronicle, FirstGameSetupFixture.participants)
       .hand(LaterGameFixture.orders(chronicle, p1).denizenOrder, p1)
     assertEquals(hand.size, 3)
-    val ready = woken(chronicle)
+    val situation = wake(chronicle)
+    val ready = situation.ready
     assertEquals(ready.game.current.player(p1).get.advisers, Vector.empty)
     assert(ready.game.current.commonCards.worldDeck.takeRight(3)
       .exists(card => hand.contains(card)))
+    val keys = SetupProcedure.noteKeys
+    val buried = NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
+      keys, situation.events).filter(said => keys.exists(_.name == said.key))
+      .map(_.text).filter(_.startsWith("p1 buried "))
+    assertEquals(buried.size, 1)
+    assert(hand.exists(card => buried.head ==
+      s"p1 buried ${card.value} with ${OathsOfLoyaltyCard.id.value}"), buried)
 
   test("a dormant Oaths keeps the picked adviser as before (ruling 1)"):
     val ready = woken(holding(active = false, FoundationFace.Normal))
