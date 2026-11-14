@@ -74,6 +74,9 @@ private[frontend] object ParkedDecision:
         query: DecisionQueryState.Partition)
     case Distribute(decision: WalkerDecisionState,
         query: DecisionQueryState.Distribute)
+    /** One amount per slot: Seer's positions. */
+    case ChooseAmounts(decision: WalkerDecisionState,
+        query: DecisionQueryState.ChooseAmounts)
     case Selection(decision: WalkerDecisionState, query: SelectionForm)
     /** Cards to look at and a Done button (catalog batch 2, N5). */
     case Inspect(decision: WalkerDecisionState,
@@ -132,6 +135,8 @@ private[frontend] object ParkedDecision:
         controls)
       case surface: Surface.Distribute => DistributePanelRenderer.render(
         surface, drafts.distribute, canControl, panel, controls)
+      case surface: Surface.ChooseAmounts => ChooseAmountsPanelRenderer.render(
+        surface, drafts.chooseAmounts, canControl, panel, controls)
       case surface: Surface.Negotiate => NegotiationDealPanel.render(
         surface, presentation.playerId, canControl, panel, controls)
       case surface: Surface.Gathering => GatheringPanel.render(surface,
@@ -240,8 +245,8 @@ private[frontend] object ParkedDecision:
             negotiate.deal.bystanderPlayerIds.nonEmpty)(decision.decisionId)))
       case gathering: DecisionQueryState.Gathering =>
         Some(Surface.Gathering(decision, gathering))
-      // Its own panel lands with Legacy Setup powers slice 3, Task 3.
-      case _: DecisionQueryState.ChooseAmounts => None
+      case amounts: DecisionQueryState.ChooseAmounts =>
+        Some(Surface.ChooseAmounts(decision, amounts))
 
   private def onTable(decision: WalkerDecisionState,
       options: Vector[DecisionOptionState], value: GameProjection): Boolean =

@@ -16,7 +16,8 @@ private[frontend] final case class SessionDrafts(
     distribute: Option[WalkerDistributeDraft],
     selection: Option[WalkerSelectionDraft],
     board: Option[BoardSelectionDraft],
-    aid: Option[PlanAidDraft] = None):
+    aid: Option[PlanAidDraft] = None,
+    chooseAmounts: Option[WalkerChooseAmountsDraft] = None):
 
   /** The set after a snapshot: each slot asked to carry over what still
     * answers the same question in the same context, and to drop the rest.
@@ -37,7 +38,9 @@ private[frontend] final case class SessionDrafts(
         projection.walkerDecision).orElse(BoardSelectionDraft.preselected(
           context, projection.walkerDecision)
           .filterNot(_ => this.context.contains(context))),
-      aid = PlanAidDraft.reconcile(aid, context, projection.planAidPrompt))
+      aid = PlanAidDraft.reconcile(aid, context, projection.planAidPrompt),
+      chooseAmounts = WalkerChooseAmountsDraft.reconcile(chooseAmounts,
+        context, projection.walkerDecision))
 
   /** One slot replaced; the panel that holds a draft can replace only it. */
   def staged(draft: Draft): SessionDrafts = draft match
@@ -46,6 +49,7 @@ private[frontend] final case class SessionDrafts(
     case Draft.Selection(value) => copy(selection = Some(value))
     case Draft.Board(value) => copy(board = value)
     case Draft.Aid(value) => copy(aid = value)
+    case Draft.ChooseAmounts(value) => copy(chooseAmounts = Some(value))
 
 private[frontend] object SessionDrafts:
   val empty: SessionDrafts =
@@ -62,3 +66,5 @@ private[frontend] enum Draft:
   case Board(value: Option[BoardSelectionDraft])
   /** An Imperial ally's offer (Empire phase design, "Offer panel"). */
   case Aid(value: Option[PlanAidDraft])
+  /** One amount per slot (Legacy Setup powers ruling 15). */
+  case ChooseAmounts(value: WalkerChooseAmountsDraft)

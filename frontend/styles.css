@@ -952,6 +952,16 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .distribute-amount { text-align: center; font-weight: 700;
   font-variant-numeric: tabular-nums; }
 .distribute-maximum { color: #9a8f7c; font-size: 0.85em; white-space: nowrap; }
+/* ChooseAmounts (Seer's positions): the Distribute rows, with a number
+   field between the steppers, and a line per clash. */
+.amounts-slots { display: grid; align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto 3.5em auto auto; gap: 6px 8px; }
+.amounts-slot { display: contents; }
+.amounts-decrement, .amounts-increment { min-width: 2.2em; }
+.amounts-field { width: 3.5em; min-height: 36px; text-align: center;
+  font-weight: 700; font-variant-numeric: tabular-nums; }
+.amounts-maximum { color: #9a8f7c; font-size: 0.85em; white-space: nowrap; }
+.amounts-clash { color: var(--error-text); }
 /* One term per row: control and caption together, so a deal reads as a list
    of offers instead of a paragraph of checkboxes. */
 .negotiation-item, .gathering-item { display: flex; align-items: center; gap: 8px;
@@ -1833,7 +1843,8 @@ button.festival-marker:hover,
 .pane-actions :where(button:not(.card-face)) { min-height: 44px;
   padding: 8px 12px; border: var(--option-ring) solid var(--option-line);
   border-radius: 7px; background: #282117; color: #fff; }
-.pane-actions :where(.distribute-decrement, .distribute-increment, .plan-aid-step) {
+.pane-actions :where(.distribute-decrement, .distribute-increment,
+  .amounts-decrement, .amounts-increment, .plan-aid-step) {
   border-color: var(--brass-line); border-radius: 4px; background: var(--raised); color: #e8d9bb; }
 .pane-actions :where(button:not(.card-face)):hover:not(:disabled, [aria-disabled="true"]) {
   border-color: var(--cream-bright); background: var(--pressed);
