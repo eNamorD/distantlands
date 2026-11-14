@@ -5,6 +5,9 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship,
   ShapeFoundation}
+import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
+  Gatekeeper, GatekeeperCard}
+import distantlands.gameplay.powers.economy.{DowntroddenCard, MapLibraryCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import distantlands.testkit.{MenuPlay, Table}
@@ -68,6 +71,30 @@ object ChronicleLogScripts:
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("throne-gifted", service, p1)
 
+  /** The game of [[throneOffered]] with legacies: p2, ruling Broken Peaks
+    * (a Discord and an Arcane denizen) and holding the Darkest Secret,
+    * holds Gatekeeper and Chronicler; p3 holds Seer. In the Sun p2 takes
+    * Seer with Gatekeeper, then declares Chronicler (Legacy Chronicle
+    * powers, slice 1). */
+  def sunGatekeeperChronicler(using munit.Location): Script =
+    val (service, acting) = atTable("sun-gatekeeper-chronicler", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .warbandsAt(BrokenPeaksSite, p2, 2)
+      .denizen(DowntroddenCard, BrokenPeaksSite)
+      .denizen(MapLibraryCard, BrokenPeaksSite)
+      .darkestSecret(Some(p2), 1)
+      .legacy(p2, GatekeeperCard).legacy(p2, ChroniclerCard)
+      .legacy(p3, SeerCard)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.withAnswers {
+      case park if park.decisionId == Gatekeeper.decisionId(p2) =>
+        ChooseOneAnswer(DecisionOptionRef.Legacy(SeerCard.id))
+      case park if park.decisionId == Chronicler.decisionId(p2) =>
+        ChooseOneAnswer(Chronicler.declare)
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("sun-gatekeeper-chronicler", service, p1)
+
   /** The first game, with Foundation I on Wide Horizons: at the Beacon
     * p1, who holds it, restores it to Imperial Maps (Foundations design,
     * slice 7). */
@@ -101,5 +128,6 @@ object ChronicleLogScripts:
     Vector("chronicle-started" -> (() => chronicleStarted),
       "throne-offered" -> (() => throneOffered),
       "throne-gifted" -> (() => throneGifted),
+      "sun-gatekeeper-chronicler" -> (() => sunGatekeeperChronicler),
       "beacon-restored-foundation" -> (() => beaconRestoredFoundation),
       "beacon-kept-foundations" -> (() => beaconKeptFoundations))

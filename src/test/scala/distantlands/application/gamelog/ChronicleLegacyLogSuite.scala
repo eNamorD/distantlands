@@ -1,6 +1,8 @@
 package distantlands.application.gamelog
 
 import distantlands.catalog.holding.{IronHandCard, SeerCard}
+import distantlands.gameplay.chronicle.legacies.{ChroniclerCard,
+  GatekeeperCard}
 import distantlands.protocol.projection.LogSpan
 import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{format, text}
@@ -22,4 +24,15 @@ class ChronicleLegacyLogSuite extends munit.FunSuite:
         LogSpan.Card(SeerCard.id.value, SeerCard.name)), viewer)
       assert(dormant.head.spans.contains(
         LogSpan.Card(IronHandCard.id.value, IronHandCard.name)), viewer)
+    }
+
+  test("Gatekeeper's and Chronicler's lines read the same to every viewer"):
+    val script = ChronicleLogScripts.sunGatekeeperChronicler
+    Vector(Some(p1), Some(p2), None).foreach { viewer =>
+      val said = format(script, viewer).map(text)
+      assert(said.contains(s"${p2.value} took ${SeerCard.name} from " +
+        s"${p3.value} with ${GatekeeperCard.name}"), viewer)
+      assert(said.contains(s"${p2.value} declared ${ChroniclerCard.name}"),
+        viewer)
+      assert(said.exists(_.startsWith(s"${p2.value} scored ")), viewer)
     }
