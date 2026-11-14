@@ -33,3 +33,18 @@ class VisionPacketsSuite extends munit.FunSuite:
 
   test("a deck of Visions only is just reordered (Teeming World)"):
     assertEquals(laid(visions).toSet, visions.toSet)
+
+  test("exactly 25 denizens: the packets, at the places the dice give"):
+    // The reversing source reverses every permutation: the Visions come
+    // last to first, and each packet's last two places take them.
+    val (v1, v2, v3, v4) = (visions(0), visions(1), visions(2), visions(3))
+    val twentyFive = denizens.take(25)
+    assertEquals(laid(visions ++ twentyFive),
+      twentyFive.take(10) ++ Vector(v4, v3) ++ twentyFive.slice(10, 25) ++
+        Vector(v2, v1))
+
+  test("24 denizens: the whole-deck fallback, at the places the dice give"):
+    val (v1, v2, v3, v4) = (visions(0), visions(1), visions(2), visions(3))
+    val twentyFour = denizens.take(24)
+    assertEquals(laid(twentyFour ++ visions),
+      twentyFour ++ Vector(v4, v3, v2, v1))
