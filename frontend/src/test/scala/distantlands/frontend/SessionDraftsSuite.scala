@@ -49,3 +49,31 @@ class SessionDraftsSuite extends munit.FunSuite:
     assertEquals(base.staged(Draft.Board(Some(board))), base.copy(board = Some(board)))
     assertEquals(base.staged(Draft.Board(Some(board))).staged(Draft.Board(None)),
       base.copy(board = None))
+
+  private val amountsQuery = DecisionQueryState.ChooseAmounts(
+    Vector(DecisionSlotState(DecisionOptionState("vision", "vision:a", "A"),
+        1, 4, Some(1)),
+      DecisionSlotState(DecisionOptionState("vision", "vision:b", "B"), 1, 4,
+        Some(3))),
+    distinct = true, confirmLabel = "Place", heading = Some("Seer"))
+  private val amountsParked = WalkerDecisionState("setup",
+    "setup.legacy.seer.p2", query = Some(amountsQuery))
+
+  test("a choose-amounts draft is kept under the same context and dropped " +
+      "when the decision or the query changes"):
+    val opened = SessionDrafts.empty.reconcile(context,
+      projection(Some(amountsParked)))
+    val moved = present(opened.chooseAmounts, "a choose-amounts draft")
+      .increment("vision:vision:a")
+    val staged = opened.staged(Draft.ChooseAmounts(moved))
+    assertEquals(staged.reconcile(context, projection(Some(amountsParked)))
+      .chooseAmounts, Some(moved))
+    val otherDecision = amountsParked.copy(decisionId = "setup.legacy.seer.p3")
+    assertNotEquals(staged.reconcile(context, projection(Some(otherDecision)))
+      .chooseAmounts.map(_.state), Some(moved.state))
+    val otherQuery = amountsParked.copy(query = Some(amountsQuery.copy(
+      distinct = false)))
+    assertNotEquals(staged.reconcile(context, projection(Some(otherQuery)))
+      .chooseAmounts.map(_.state), Some(moved.state))
+    assertEquals(staged.reconcile(context, projection(None)).chooseAmounts,
+      None)
