@@ -74,5 +74,30 @@ Ruled by the owner on 2026-11-14.
 ## Slice 3
 
 [Plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice3.md).
+Ruled by the owner on 2026-11-14.
 
-None recorded yet. The plan's open questions wait for the owner's rulings.
+- **R11. Where does Arbiter's choice wait for the end die?** *Decision:* a
+  journaled `SetEndDieModifier` writes `CurrentGameState.endDieModifier`,
+  which the roll reads and clears; the field is also cleared whenever the
+  round ends without a roll consuming it, and a test shows no stale
+  modifier reaches a later round. *Reason:* scratch state the walk's end
+  may clear is the fragile option; the journal keeps replay exact.
+  *Slice/files:* slice 3, Tasks 3 and 4; `StateBasedEvaluation`,
+  `ArbiterStep`.
+- **R12. How are the slice's unworded lines written?** *Decision:* "p2
+  flipped the People's Favor with The Needle", keeping writing nothing;
+  "The end die rolled 4, modified by +2 to 6. Stable Regime needed 6.",
+  with today's line for an unmodified roll; Arbiter's Decline writes
+  nothing; Iron Hand "… on becoming a Citizen", or "… on becoming the
+  Chancellor" with no Empire. *Reason:* it matches the existing line
+  patterns, and all of it is public. *Slice/files:* slice 3, Tasks 2-5.
+- **R13. In what order are the options asked?** *Decision:* the plainest
+  answer first: The Needle "Keep this side", then "Flip it"; Arbiter
+  Decline, then −1, +1, +2, +3. *Reason:* existing default-answer tests
+  and goldens keep their results, as the Chronicle powers do.
+  *Slice/files:* slice 3, Tasks 2 and 4.
+- **R14. What if one batch hands The Needle's holder both banners?**
+  *Decision:* one question per banner, People's Favor first, ids
+  `power.the-needle.<banner key>`. *Reason:* the card says "a banner",
+  each take is its own choice, and distinct ids keep two decisions from
+  sharing one id. *Slice/files:* slice 3, Task 2; `TheNeedle`.

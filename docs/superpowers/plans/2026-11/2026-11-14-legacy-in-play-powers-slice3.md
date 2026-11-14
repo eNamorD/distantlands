@@ -54,37 +54,27 @@ echo ready
 
 Expected: `ready`.
 
-## Open questions
+## Rulings
 
-Raised for the owner's rulings before execution. Each names the plan's
-default, which the tasks below are written to.
+The plan's open questions were ruled on 2026-11-14 as implementation
+rulings R11-R14 ([rulings](../../specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)):
 
-- **Q1. Where does Arbiter's choice wait for the roll?** The step is a
-  walk; the roll comes after the walk ends, in the driver. (a) A new
-  journaled operation, `SetEndDieModifier(amount)`, writes it to a new
-  `CurrentGameState.endDieModifier: Int = 0`, which `endRound` reads and
-  `EndDieRolled`'s replay clears. (b) A marker dice pool
-  (`ModifyDicePool(PoolKey("end-die.arbiter"), n)`), with no new
-  operation kind or field, but read from walker scratch the walk's end
-  may clear. *Default: (a)*: a fact of the game's state, journaled and
-  replayed like every other, which the end die's replay can check.
-  Tasks 3 and 4.
-- **Q2. The lines the spec does not word.** *Default:* The Needle writes
-  "p2 flipped the People's Favor with The Needle" (the new face shows on
-  the banner, so the line does not name it); keeping the side writes
-  nothing. The end die's line becomes "The end die rolled 4, modified by
-  +2 to 6. Stable Regime needed 6." when modified, and is unchanged
-  otherwise. Arbiter's Decline writes nothing. Iron Hand's line names the
-  role reached: "p3 discarded Iron Hand on becoming a Citizen", or "... on
-  becoming the Chancellor" in a game with no Empire. Tasks 2, 3, 4 and 5.
-- **Q3. Option order.** *Default:* the plainest answer first, as the
-  Chronicle powers ask (Chronicle powers R6): The Needle "Keep this side",
-  then "Flip it"; Arbiter "Decline", then −1, +1, +2, +3. Every existing
-  test and golden that answers by default keeps its result. Tasks 2 and 4.
-- **Q4. Several banners in one batch.** A raid or a deal may hand The
-  Needle's holder both banners at once. *Default:* one question per
-  banner, People's Favor first, each with its own id
-  (`power.the-needle.<banner key>`). Task 2.
+- **R11** (Tasks 3 and 4): a journaled `SetEndDieModifier` writes
+  `CurrentGameState.endDieModifier`; the roll reads and clears it, and it
+  is also cleared whenever the round ends without a roll consuming it
+  (`RoundEnded` clears it), with a test that no stale modifier reaches a
+  later round.
+- **R12** (Tasks 2-5): "p2 flipped the People's Favor with The Needle",
+  keeping writing nothing; "The end die rolled 4, modified by +2 to 6.
+  Stable Regime needed 6.", an unmodified roll's line unchanged;
+  Arbiter's Decline writes nothing; Iron Hand "… on becoming a Citizen"
+  or "… on becoming the Chancellor".
+- **R13** (Tasks 2 and 4): the plainest answer first.
+- **R14** (Task 2): one question per banner, People's Favor first, ids
+  `power.the-needle.<banner key>`.
+
+Every table is a named fixture with concrete sites and pieces in the test
+itself.
 
 ## Plan choices
 
@@ -295,7 +285,7 @@ git log -3
 
 ### Task 2: The Needle
 
-Written to Q2, Q3 and Q4.
+Written to R12, R13 and R14.
 
 **Files:**
 - Create: `src/main/scala/distantlands/gameplay/powers/banner/TheNeedle.scala`
@@ -375,12 +365,12 @@ Expected: compile error, `TheNeedleCard` is not in `gameplay.powers.banner`.
   * holder's play area from anywhere else (a challenge, a raid, Favored
   * Son, Wizard's Conclave, the Conspiracy, The Standard Bearer at Setup),
   * its holder is asked, on or off turn, "Keep this side" or "Flip it",
-  * once per banner, the People's Favor first (Q3, Q4). Flipping is a
+  * once per banner, the People's Favor first (R13, R14). Flipping is a
   * `FlipBanner`: its tokens stay, flipping to the Festival places no
   * marker and flipping away from it takes the marker off. A banner placed
   * at game start is not taken: game start is no walk.
   *
-  * Line (Q2): "p2 flipped the People's Favor with The Needle"; keeping
+  * Line (R12): "p2 flipped the People's Favor with The Needle"; keeping
   * the side writes nothing.
   */
 case object TheNeedle extends ExecutedTrigger:
@@ -467,7 +457,7 @@ git log -3
 
 ### Task 3: The end die's modifier
 
-Written to Q1 (a) and Q2.
+Written to R11 and R12.
 
 **Files:**
 - Modify: `src/main/scala/distantlands/model/GameState.scala`
@@ -563,7 +553,7 @@ Expected: compile errors, `endDieModifier` and the fourth field of
 
 - `CurrentGameState`: `endDieModifier: Int = 0`, documented "Arbiter's
   modifier, chosen before the end die and read by the roll, which
-  clears it (Legacy in-play powers ruling 21; Q1)."
+  clears it (Legacy in-play powers ruling 21; R11)."
 - `SetEndDieModifier(amount: Int)` in `TurnOperation.scala`, with
   `require(amount >= -1 && amount <= 3)`; `TurnStateOperations` sets the
   field; `LeafApplication` routes it; `TurnOperationCodec` spells it
@@ -611,7 +601,7 @@ git log -3
 
 ### Task 4: Arbiter's step
 
-Written to Q1 (a), Q2 and Q3.
+Written to R11, R12 and R13.
 
 **Files:**
 - Create: `src/main/scala/distantlands/gameplay/phases/rest/Arbiter.scala`
@@ -703,7 +693,7 @@ case object Arbiter extends ContributingPower:
   * {{{
   * Sequence(
   *   Decide(round-end.legacy.arbiter.<holder>, holder,
-  *     ChooseOne(Decline, −1, +1, +2, +3)),              // public (Q3)
+  *     ChooseOne(Decline, −1, +1, +2, +3)),              // public (R13)
   *   BuildOps(SetEndDieModifier(n) unless Decline),
   *   Note("p2 modified the end die by +2 with Arbiter")) // not on Decline
   * }}}
@@ -711,7 +701,7 @@ case object Arbiter extends ContributingPower:
   * The question is asked whatever the die could change, so its shape
   * reads only who holds Arbiter, which the walk does not change; `build`
   * is also `rebuild`. The roll reads the modifier
-  * (`CurrentGameState.endDieModifier`, Q1) and clears it.
+  * (`CurrentGameState.endDieModifier`, R11) and clears it.
   */
 object ArbiterStep:
   def decisionId(player: PlayerId): String =
@@ -828,7 +818,7 @@ git log -3
 
 ### Task 5: Iron Hand's discard on becoming Imperial
 
-Written to Q2.
+Written to R12.
 
 **Files:**
 - Modify: `src/main/scala/distantlands/gameplay/roles/RoleChanges.scala`
