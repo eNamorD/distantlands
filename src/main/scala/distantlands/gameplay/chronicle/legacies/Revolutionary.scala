@@ -1,6 +1,6 @@
 package distantlands.gameplay.chronicle.legacies
 
-import distantlands.catalog.{ExecutableCatalog, Legacy, LegacyGoal,
+import distantlands.catalog.{ExecutableCatalog, Legacy, LegacyGoal, Locked,
   PrintedPower}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.{ChronicleLegacyRules, ShapeEmpire}
@@ -22,8 +22,9 @@ object RevolutionaryCard extends Legacy(LegacyId("L15"), "Revolutionary",
   * Build Edifice (Legacy Chronicle powers design, ruling 11). The holder,
   * read when the step is reached, chooses any of the denizens and ruined
   * edifices at sites the Empire rules, in one choose-many (R9, R13); each
-  * goes where Shape Empire sends it (`ShapeEmpire.discardOf`). Intact
-  * edifices stay, as in Shape Empire. A discarded ruined edifice is set
+  * goes where Shape Empire sends it (`ShapeEmpire.discardOf`). Locked
+  * cards stay: intact edifices and any locked denizen (R9, confirmed by
+  * the owner 2026-11-14). A discarded ruined edifice is set
   * aside, then returned to the bottom of the edifice deck, as Build
   * Edifice's closing step returns its own (R16). Line:
   * "p2 discarded 3 denizens with Revolutionary" (R12). */
@@ -81,6 +82,14 @@ case object Revolutionary extends ContributingPower:
     Move(Piece.Card(edifice), PositionedLocation(Location.SetAsideEdifices),
       PositionedLocation(Location.Deck(CardDeck.Edifice), StackPosition.Bottom))
 
+  /** Whether `card` shows the lock: a locked denizen, or an intact edifice
+    * (R9). Locked cards stay. */
+  private def locked(catalog: ExecutableCatalog, card: SiteDenizenState)
+      : Boolean = card match
+    case DenizenState(id, _, _) =>
+      catalog.denizen(id).exists(_.isInstanceOf[Locked])
+    case EdificeState(_, side, _) => side == EdificeSide.Intact
+
   /** Each card at a site the Empire rules that Shape Empire could discard,
     * as its option and its discard, in map then row order. The question's
     * options are what this Branch read, so a walk resumed there finds the
@@ -93,7 +102,7 @@ case object Revolutionary extends ContributingPower:
         if current.map.sites.get(site).exists(at => SiteRule.ruler(at.forces,
           current.players).contains(SiteRuler.Empire))
       region <- current.map.regionOf(site).toVector
-      card <- current.map.sites(site).denizens
+      card <- current.map.sites(site).denizens if !locked(catalog, card)
       discard <- ShapeEmpire.discardOf(catalog, site, region, card, holder)
         .toVector
     yield (ShapeEmpire.option(card), discard)

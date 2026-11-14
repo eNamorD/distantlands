@@ -9,7 +9,8 @@ import distantlands.gameplay.powers.action.FaeMerchantCard
 import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
-import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+import distantlands.gameplay.powers.whenplayed.{ThreateningRoarCard,
+  TrueOathCard}
 import distantlands.gameplay.setup.ChronicleAccounting
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -69,6 +70,18 @@ class RevolutionarySuite extends munit.FunSuite:
     val order = run.asked.map(_.decisionId)
     assert(order.lastIndexWhere(_.startsWith("chronicle.build-edifice.")) <
       order.indexOf(Revolutionary.decisionId(p3)))
+
+  test("locked cards stay: neither an intact edifice nor a locked denizen " +
+      "is offered (R9)"):
+    // Every locked denizen in the catalog is adviser-only, so True Oath is
+    // placed at Broken Peaks directly, to pin the rule for any locked card.
+    val run = throne(empire.denizen(TrueOathCard, at = BrokenPeaksSite))
+    val offered = run.asked.find(_.decisionId == Revolutionary.decisionId(p3))
+      .get.query.asInstanceOf[DecisionQuery.ChooseMany].options.map(_.ref)
+    assert(!offered.contains(DecisionOptionRef.Denizen(TrueOathCard.id)),
+      offered)
+    assert(!offered.contains(DecisionOptionRef.Edifice(GreatMarketCard.id)),
+      offered)
 
   test("choosing none discards nothing and writes no line"):
     val run = throne(empire)

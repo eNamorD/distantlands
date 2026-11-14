@@ -58,9 +58,10 @@ R15 accepts that inserted windows shift a walk saved mid-Chronicle.
   design's slice 2 sentence is corrected.
 - **R8** (Task 1): Rival protects every card Shape Empire would discard,
   ruined edifices included.
-- **R9** (Task 3, low confidence): Revolutionary discards the denizens and
-  ruined edifices at Imperial sites; intact edifices stay.
-- **R10** (Task 4, low confidence): Reformer moves and swaps every card in
+- **R9** (Task 3; confirmed by the owner 2026-11-14): Revolutionary
+  discards the denizens and ruined edifices at Imperial sites; locked
+  cards stay, intact edifices and any locked denizen.
+- **R10** (Task 4; confirmed by the owner 2026-11-14): Reformer moves and swaps every card in
   a site's row, edifices included, intact and ruined. An edifice moves
   between sites by the existing `Move` (a site card keeps its state), so no
   new move kind is needed.

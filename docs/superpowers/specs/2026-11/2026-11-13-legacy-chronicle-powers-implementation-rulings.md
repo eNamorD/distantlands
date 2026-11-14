@@ -102,18 +102,21 @@ its reach is exactly the discard's.
 Slice/files: 2; `ShapeEmpire`, `Rival`.
 
 **R9. What Revolutionary discards.**
-Decision: the denizens and ruined edifices at Imperial sites; intact
-edifices stay.
-Reason: intact edifices are locked and `Discard.RuinedEdifice` is the only
-edifice discard; Chronicle ruling 16's protection holds.
-Confidence: low; the card's text names no edifice exception.
-Slice/files: 2; `Revolutionary`.
+Confirmed by the owner 2026-11-14.
+Decision: the denizens and ruined edifices at Imperial sites; locked cards
+stay, intact edifices and any locked denizen.
+Reason: the owner's ruling: Revolutionary cannot discard a locked card.
+`Discard.RuinedEdifice` is the only edifice discard, and Chronicle ruling
+16's protection holds. Every locked denizen in the catalog is adviser-only,
+so in play only intact edifices are locked at a site; the code checks the
+lock on any card.
+Slice/files: 2 (lock check widened in 5); `Revolutionary`.
 
 **R10. What Reformer moves and swaps.**
+Confirmed by the owner 2026-11-14.
 Decision: denizens, edifices included, intact and ruined.
 Reason: an edifice is a denizen, and "ignoring the locked restriction" only
 has force for locked cards such as intact edifices.
-Confidence: low; the text could mean ordinary locked denizens only.
 Slice/files: 2; `Reformer`.
 
 **R11. Reformer's pass.**

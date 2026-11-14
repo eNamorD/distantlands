@@ -218,8 +218,8 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 18. **Reformer is a step at the start of the Throne,** only when its holder won: moves and swaps between sites they rule, ignoring locks, each one decision, until Done (design, ruling 12).
 19. **A card with an unbuilt half leaves holding** with its whole text and counts as implemented; the ROADMAP names the unbuilt half. Rival does so now; The Ear, Oaths of Loyalty and Iron Hand will (R7).
 20. **Rival protects every card Shape Empire would discard,** ruined edifices included: an edifice is a denizen (R8).
-21. **Revolutionary discards denizens and ruined edifices;** intact edifices stay, as Shape Empire never discards them (R9; low confidence).
-22. **Reformer moves and swaps every card in a site's row,** edifices included, intact or ruined; its lock lifting has force only for locked cards such as intact edifices (R10; low confidence).
+21. **Revolutionary discards denizens and ruined edifices;** locked cards stay, intact edifices and any locked denizen (R9, confirmed by the owner 2026-11-14).
+22. **Reformer moves and swaps every card in a site's row,** edifices included, intact or ruined; its lock lifting has force only for locked cards such as intact edifices (R10, confirmed by the owner 2026-11-14).
 23. **A Reformer pass is two choices:** a card with a destination, or Done (first); then another ruled site with room, a move, or a card at another ruled site, a swap. A swap is two moves, each card landing in the other's last slot (R11).
 24. **The Throne's lines** say "p1 protected 2 denizens with Rival", "p2 discarded 3 denizens with Revolutionary", "p1 moved Village Idiot to Broken Peaks with Reformer" and "p1 swapped Village Idiot and Map Library with Reformer". Great Architect writes none; Build Edifice's line names the builder. Two Throne windows hold the added steps: the start of the Throne, for Reformer, and after Build Edifice, for Revolutionary (R12).
 25. **Reformer's passes reuse their two decision ids** and read the latest answers, as Call for Help's passes do; a walk parked mid-pass resumes to the same question (R13).
