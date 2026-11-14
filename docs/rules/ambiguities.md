@@ -263,7 +263,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 
 ## Legacy Setup powers rulings
 
-Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 19 are implementation rulings R1 to R10; items 20 to 23 are the design's rulings 10 to 13; items 24 to 29 are implementation rulings R11 to R16.
+Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 19 are implementation rulings R1 to R10; items 20 to 23 are the design's rulings 10 to 13; items 24 to 29 are implementation rulings R11 to R16; item 30 is implementation ruling R17.
 
 1. **Only seated players' active legacies act.** A legacy's SETUP power applies when a seated player holds it active at the moment its step is reached. A boxed lineage's legacies never act, and neither does the Public Ambitions row, which nobody holds (design, ruling 1).
 2. **"If you are an Imperial" or "an Exile" is read at the same moment.** Game start's Empire setup has already chosen the Chancellor, so every role is settled (design, ruling 2).
@@ -294,6 +294,7 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 27. **Populist always asks its holder,** Decline first, even when dividing changes nothing (R14).
 28. **Populist with no remainder** writes "p2 divided the favor evenly among the banks with Populist" (R15).
 29. **Matchmaker's holder sees another player's draw only while that keep is pending,** read from the parked decision; before and after, the holder and the owner see backs. Once kept, the legacy is named to its owner alone, and the returned one to nobody (R16).
+30. **Rival places no sites in an exile-only game,** which fills all eight slots at game start, before the foundations (R17; low confidence).
 
 ## Source relationship cautions
 

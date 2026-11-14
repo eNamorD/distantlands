@@ -65,6 +65,14 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   mid-phase save compatibility promise across builds (Legacy Chronicle
   powers R15). *Slice/files:* slice 1; `SetupProcedure.tree`,
   `StartLines`.
+- **R17. Rival places no sites in an exile-only game.** Game start counts
+  the exile-only game's eight sites as placed before Rival
+  (`StartingLegacies.placedBefore`), so Rival's "three Cradlemost empty
+  slots" are none. *Reason:* an exile-only game fills all eight slots at
+  game start, before the foundations. *Confidence:* low; the exile-only
+  mode is the owner's own (2026-11-12) and has no rulebook timing.
+  *Slice/files:* slice 1 (recorded during slice 2);
+  `StartingLegacies.placedBefore`, `RivalSetupSuite`.
 
 ## Slice 2
 
