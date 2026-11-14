@@ -21,9 +21,10 @@ object PathfinderCard extends Legacy(LegacyId("L36"), "Pathfinder",
   * Its holder's Travel ignores them always, with no question, since
   * ignoring them is never worse. The ignore is the collector's named
   * ignore, so this power hooks each window those powers hook: `TravelCost`
-  * (the Mountain and Island adds, Lost Lagoon's included, implementation
-  * ruling R6) and `TravelActionEligibility` (the Pass's restriction),
-  * contributing nothing there but its vote. The Pass's campaign-targeting
+  * (the Mountain and Island adds, Lost Lagoon's when arriving at its
+  * site, implementation rulings R6 and R15) and
+  * `TravelActionEligibility` (the Pass's restriction), contributing
+  * nothing there but its vote. The Pass's campaign-targeting
   * limit hooks `CampaignTargetSelection`, which this power does not, so it
   * still applies. It writes no line (R8).
   */
@@ -41,11 +42,16 @@ case object Pathfinder extends ContributingPower:
       .contains(ctx.actor) &&
       TravelRoute.pawnMove(ctx.operation).exists(_.player == ctx.actor)
 
-  /** The powers Pathfinder's holder ignores. */
-  def ignored(other: ContributingPower): Boolean = other match
-    case _: MountainSitePower | _: IslandSitePower | LostLagoon |
+  /** The powers Pathfinder's holder ignores on `ctx`'s route: the Mountain
+    * and Island adds, the Pass's restriction, and Lost Lagoon's Island add
+    * when the route arrives at its site. Lost Lagoon leaving its site is
+    * the Coast power, which is never ignored (implementation ruling R15). */
+  def ignored(ctx: PowerCtx, other: ContributingPower): Boolean = other match
+    case _: MountainSitePower | _: IslandSitePower |
         _: NarrowPassSitePower => true
+    case LostLagoon => TravelRoute.pawnMove(ctx.operation).exists(route =>
+      LostLagoon.site(ctx.state).contains(route.destination))
     case _ => false
 
-  override def shouldIgnore(other: ContributingPower): Boolean =
-    Pathfinder.ignored(other)
+  override def ignores(ctx: PowerCtx, other: ContributingPower): Boolean =
+    Pathfinder.ignored(ctx, other)

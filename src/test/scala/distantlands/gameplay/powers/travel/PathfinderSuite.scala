@@ -50,6 +50,16 @@ class PathfinderSuite extends munit.FunSuite:
     assertEquals(candidates(lagoon(without)).get(hinterlandPlains), Some(6))
     assertEquals(candidates(lagoon(holder)).get(hinterlandPlains), Some(4))
 
+  test("leaving Lost Lagoon's site by a Coast route keeps its Coast power " +
+      "(R15)"):
+    // p1 at Salt Flats, Lost Lagoon's site, an Island with the Coast power.
+    def fromLagoon(table: ReadyGame) = on(lagoon(table))(
+      _.pawn(actor, hinterlandPlains))
+    assertEquals(candidates(fromLagoon(without)).get(coast), Some(1))
+    assertEquals(candidates(fromLagoon(holder)).get(coast), Some(1))
+    assertEquals(candidates(fromLagoon(without)).get(island), Some(1))
+    assertEquals(candidates(fromLagoon(holder)).get(island), Some(1))
+
   test("a Pass the holder does not rule does not stop their travel into " +
       "its region"):
     assertEquals(candidates(without).get(provincePlains), None)
