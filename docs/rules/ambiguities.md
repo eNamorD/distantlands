@@ -263,7 +263,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 
 ## Legacy Setup powers rulings
 
-Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 19 are implementation rulings R1 to R10; items 20 to 23 are the design's rulings 10 to 13; items 24 to 29 are implementation rulings R11 to R16; item 30 is implementation ruling R17; items 31 and 32 are the design's rulings 14 and 15; items 33 to 40 are implementation rulings R18 to R25.
+Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md), and its [implementation rulings](../superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md)). Items 1 to 9 are the design's rulings 1 to 9, taken with the owner on 2026-11-13; items 10 to 19 are implementation rulings R1 to R10; items 20 to 23 are the design's rulings 10 to 13; items 24 to 29 are implementation rulings R11 to R16; item 30 is implementation ruling R17; items 31 and 32 are the design's rulings 14 and 15; items 33 to 40 are implementation rulings R18 to R25; item 41 is implementation ruling R26.
 
 1. **Only seated players' active legacies act.** A legacy's SETUP power applies when a seated player holds it active at the moment its step is reached. A boxed lineage's legacies never act, and neither does the Public Ambitions row, which nobody holds (design, ruling 1).
 2. **"If you are an Imperial" or "an Exile" is read at the same moment.** Game start's Empire setup has already chosen the Chancellor, so every role is settled (design, ruling 2).
@@ -300,11 +300,12 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 33. **`ChooseAmounts` is answered as a distribution is,** one amount per slot, with no new answer form (R18).
 34. **Secret Society's reshuffle is a journaled shuffle of its own pile,** `ShufflePile.VisionPackets` (R19).
 35. **Secret Society shows the holder which Visions exist, not where they lie;** Seer's holder peeks at the Visions and keeps that knowledge (R20).
-36. **Secret Society's excess discard** comes after the holder's pawn and before their keep, one choose-many of exactly the excess with no Decline, the cards going where Setup's rejected advisers go, with a line naming them (R21).
+36. **Secret Society's excess discard** comes after the holder's pawn and before their keep, one choose-many of exactly the excess with no Decline, the cards going where Setup's rejected advisers go, with a line naming them by the log's knowledge rule, since regional discard piles are hidden (R21).
 37. **Secret Society offers the Visions in catalog order,** after Decline (R22).
 38. **Seer's question** has one slot per Vision, 1 to the deck's size, distinct, no Decline, and is skipped only with no Vision or a deck of one card (R23).
 39. **Secret Society comes before Seer in one window,** `SetupWorldDeck` (R24).
 40. **The ChooseAmounts control** has steppers and a number field on each row, and refuses two equal amounts (R25).
+41. **Seer's peeks write no Game Log line;** Seer writes its one line, and the holder still knows the Visions (R26; [Legacy Chronicle powers rulings](#legacy-chronicle-powers-rulings), item 62).
 
 ## Source relationship cautions
 
