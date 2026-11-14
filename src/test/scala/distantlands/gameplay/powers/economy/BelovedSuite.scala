@@ -5,6 +5,7 @@ import distantlands.gameplay.actions.economy.TradeProcedure
 import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import distantlands.gameplay.powers.action.AlchemistCard
 import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.legacies.LegacyActionFixture
 import distantlands.gameplay.powers.search.ErrandBoyCard
 import distantlands.model._
 import distantlands.model.OathState.Ready
@@ -79,6 +80,10 @@ class BelovedSuite extends munit.FunSuite:
     assertEquals(sources(trading(identity).ready), only)
     assertEquals(sources(trading(_.legacy(p1, BelovedCard,
       active = false)).ready), only)
+
+  test("a boxed lineage's Beloved adds nothing (ruling 1)"):
+    assertEquals(sources(LegacyActionFixture.boxed(holder.ready, p1)),
+      Some(Vector("denizen" -> alchemist.value)))
 
   test("a walk resumed at the source decision trades on p2's adviser"):
     val ready = holder.ready

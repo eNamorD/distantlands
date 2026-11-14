@@ -1,6 +1,7 @@
 package distantlands.gameplay.powers.travel
 
 import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.powers.legacies.LegacyActionFixture
 import distantlands.model._
 import distantlands.testkit.{Look, Outcomes}
 import distantlands.testkit.Unwrap.accepted
@@ -77,6 +78,11 @@ class PathfinderSuite extends munit.FunSuite:
     val woods = targetOptions(started(withPathfinder))
       .find(_.ref == deepWoodsRef)
     assert(woods.exists(!_.available), woods.toString)
+
+  test("a boxed lineage's Pathfinder ignores nothing (ruling 1)"):
+    val boxed = LegacyActionFixture.boxed(holder, actor)
+    assertEquals(candidates(passRuled(boxed)).get(mountain), Some(3))
+    assertEquals(candidates(boxed).get(provincePlains), None)
 
   test("a dormant Pathfinder ignores nothing (ruling 1)"):
     assertEquals(candidates(passRuled(dormant)).get(mountain), Some(3))

@@ -8,7 +8,9 @@ object LegacyActionFixture:
   val boxedLineage: LineageId = LineageId("boxed")
 
   /** `ready` with `player`'s legacies moved to a lineage nobody is seated
-    * with, so they are a boxed lineage's and never act (ruling 1). */
+    * with, so they are a boxed lineage's and never act (ruling 1). The
+    * boxed lineage is stored as an Exile, so the table keeps one
+    * Chancellor. */
   def boxed(ready: ReadyGame, player: PlayerId): ReadyGame =
     val lineage = ready.game.current.player(player)
       .getOrElse(throw AssertionError(s"$player is not seated")).lineage
@@ -17,4 +19,4 @@ object LegacyActionFixture:
       campaign.copy(lineages = campaign.lineages
         .updated(lineage, held.copy(legacies = Vector.empty))
         .updated(boxedLineage, held.copy(id = boxedLineage,
-          previousPlayer = None))))
+          previousPlayer = None, role = Role.Exile))))

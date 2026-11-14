@@ -1,6 +1,7 @@
 package distantlands.gameplay.powers.travel
 
 import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.powers.legacies.LegacyActionFixture
 import distantlands.model._
 import distantlands.testkit.{Look, Outcomes}
 import distantlands.testkit.Unwrap.accepted
@@ -56,6 +57,10 @@ class AncestralLandsSuite extends munit.FunSuite:
     assertEquals(candidates(imperialOnMountain).get(provincePlains),
       candidates(on(board())(_.imperial(actor).pawn(actor, mountain)))
         .get(provincePlains))
+
+  test("a boxed lineage's Ancestral Lands changes nothing (ruling 1)"):
+    assertEquals(candidates(LegacyActionFixture.boxed(imperialInHinterland,
+      actor)).get(cradlePlains), Some(4))
 
   test("a dormant Ancestral Lands changes nothing (ruling 1)"):
     val dormant = on(board())(_.imperial(actor).pawn(actor, hinterlandPlains)

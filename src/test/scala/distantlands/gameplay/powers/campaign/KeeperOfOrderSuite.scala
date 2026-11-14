@@ -3,6 +3,7 @@ package distantlands.gameplay.powers.campaign
 import distantlands.gameplay.CampaignFixture.{Board, board, on, rules}
 import distantlands.gameplay.actions.campaign.{CampaignIds, PlanAmounts}
 import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.legacies.LegacyActionFixture
 import distantlands.gameplay.powers.campaign.PlanDriver._
 import distantlands.gameplay.walker.WalkerDice
 import distantlands.model._
@@ -133,6 +134,11 @@ class KeeperOfOrderSuite extends munit.FunSuite:
     assert(awaits(run, p3, CampaignIds.defenderPlan))
     assert(run.offered(p1).nonEmpty)
     assert(!run.offered(p1).contains(keeper))
+
+  test("a boxed lineage's Keeper of Order is never offered (ruling 1)"):
+    val boxed = infighting.copy(ready =
+      LegacyActionFixture.boxed(infighting.ready, p1))
+    assert(!raided(boxed).offered(p1).contains(keeper))
 
   test("a walk resumed at its question applies the chosen sign"):
     val b = infighting

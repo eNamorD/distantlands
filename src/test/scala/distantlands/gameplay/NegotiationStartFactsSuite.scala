@@ -4,6 +4,7 @@ import distantlands.gameplay.actions.negotiation.{HighPriestCard,
   NegotiationAdvisers, NegotiationStartFacts}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
+import distantlands.gameplay.powers.legacies.LegacyActionFixture
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
@@ -81,6 +82,12 @@ class NegotiationStartFactsSuite extends munit.FunSuite:
       active = false)), Vector.empty[PlayerId])
     assertEquals(users(Table.start.legacy(p1, HighPriestCard),
       among = Vector(p2, p3)), Vector.empty[PlayerId])
+
+  test("a boxed lineage's High Priest gives no user (ruling 1)"):
+    val boxed = LegacyActionFixture.boxed(
+      Table.start.legacy(p1, HighPriestCard).ready, p1)
+    assertEquals(NegotiationAdvisers.highPriestUsers(catalog, boxed,
+      Vector(p1, p2, p3), Vector.empty), Vector.empty[PlayerId])
 
   test("a private start's candidates are every other player, wherever " +
       "their pawns stand"):

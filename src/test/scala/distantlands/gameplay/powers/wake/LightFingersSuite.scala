@@ -6,6 +6,7 @@ import distantlands.gameplay.cards.{AncientCitySite,
 import distantlands.gameplay.phases.PhaseMenu
 import distantlands.gameplay.powerresolver.PhasePowers
 import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.legacies.LegacyActionFixture
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.{Look, MenuPlay, Outcomes, Table, TakeWealthFixture}
@@ -51,6 +52,9 @@ class LightFingersSuite extends munit.FunSuite:
       Some(OathViolation.EnemyPawnBlocksTakeWealth(AncientCitySite.id,
         Vector(p2))))
     assert(take(wakeBesideP2(_.legacy(p2, LightFingersCard))).isLeft)
+
+  test("a boxed lineage's Light Fingers opens nothing (ruling 1)"):
+    assert(take(LegacyActionFixture.boxed(holder, p1)).isLeft)
 
   test("the once-per-site limit still holds"):
     val once = Outcomes.ready(accepted(take(holder)).state)
