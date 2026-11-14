@@ -128,3 +128,24 @@ class HiddenChronicleCardsSuite extends munit.FunSuite:
     assertEquals(ChronicleWalk.parked(atHeirloom.state).toVector.flatMap(
       _.query.asInstanceOf[DecisionQuery.ChooseOne].options.map(_.ref)).toSet,
       relics.map(id => DecisionOptionRef.Relic(id): DecisionOptionRef).toSet)
+
+  test("Stock Reliquary clears a seat's recorded knowledge of another " +
+      "seat's relic: at Heirloom's question p1 no longer names it (R28)"):
+    // p1 knows p2's facedown Cup of Plenty from a record, as when p1 held
+    // it before passing it on, not from the Sun's reveal.
+    val table = ChronicleWalk.throneHeldByChancellorP1
+      .warbandsAt(AncientCitySite, p1, 1)
+      .relic(p2, CupOfPlentyCard, facedown = true)
+      .relic(p2, GrandMaskCard).legacy(p2, HeirloomCard)
+      .update(_.copy(knowledge = CardKnowledge(heldRelics =
+        Map(p1 -> Vector(CupOfPlentyCard.id)))))
+    assert(presentation.identifiesAt(table.ready, Some(p1), CupOfPlentyCard.id))
+    assert(!presentation.identifiesAt(table.ready, Some(p3),
+      CupOfPlentyCard.id))
+    val atHeirloom = ChronicleWalk.walkedTo(rules, ChronicleWalk.started(rules,
+      table, TriggeredProcedureRef.ChronicleSun), Heirloom.decisionId(p2))
+    val ready = Outcomes.ready(atHeirloom.state)
+    assert(!presentation.identifiesAt(ready, Some(p1), CupOfPlentyCard.id))
+    assertEquals(ready.knowledge.heldRelics.getOrElse(p1, Vector.empty),
+      Vector.empty)
+    assert(presentation.identifiesAt(ready, Some(p2), CupOfPlentyCard.id))
