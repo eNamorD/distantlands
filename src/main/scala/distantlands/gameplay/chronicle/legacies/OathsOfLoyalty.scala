@@ -67,7 +67,8 @@ case object OathsOfLoyalty extends ContributingPower:
 
   /** "p2 buried Fae Merchant with Oaths of Loyalty", under `noteId`, the
     * procedure whose keep the burial replaces. */
-  def buried(noteId: PowerId): Option[NoteKey] = buriedKeys.get(noteId).map(_._2)
+  private def buried(noteId: PowerId): Option[NoteKey] =
+    buriedKeys.get(noteId).map(_._2)
 
   /** The line itself, under `noteId`. */
   def buriedLine(noteId: PowerId, player: PlayerId, card: CardId)
