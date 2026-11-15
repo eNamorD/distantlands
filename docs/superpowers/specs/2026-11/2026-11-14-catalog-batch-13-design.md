@@ -1,10 +1,11 @@
 # Catalog Batch 13: Cards that act on legacies
 
 **Status:** designed 2026-11-14, approved section by section by the owner.
-Not yet planned. Plan each slice after the
-[Legacy in-play powers](2026-11-14-legacy-in-play-powers-design.md) batch's
-slice 4 (The Mouth) lands: slice 5 here reuses The Mouth's activation, and
-slice 2 changes where The Mouth's Iron Hand discard sends the card.
+The [Legacy in-play powers](2026-11-14-legacy-in-play-powers-design.md)
+batch has landed, slice 4 (The Mouth) included: slice 5 here reuses The
+Mouth's activation, and slice 2 changes where The Mouth's Iron Hand discard
+sends the card. Each slice is planned when the one before it lands. Slice 1
+landed 2026-11-14; with it every printed denizen power is implemented.
 
 **Builds on** the [Legacies design](2026-11-13-legacies-design.md), the
 [Legacy Setup powers](2026-11-13-legacy-setup-powers-design.md) batch (the

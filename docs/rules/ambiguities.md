@@ -396,6 +396,12 @@ Rulings for the powers legacies use during a game ([Legacy in-play powers design
 59. **A Conspirator win's log words** are kept for completeness; the game-end step writes the victory line itself (R33).
 60. **Royal Line and the prediction run before Start Chronicle:** a new step after the game's result is set holds Royal Line's choice and then the comparison, so Start Chronicle belongs to the final winner and the winner banner shows that winner throughout. Nothing in the rules happens between the game's end and the Sun's first window (R36; it supersedes R34).
 
+## Catalog batch 13 rulings
+
+Rulings for the cards that act on legacies ([Catalog batch 13 design](../superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)). Items are the design's rulings, taken with the owner on 2026-11-14, added as each slice lands: item 1 is ruling 7.
+
+1. **Reliquary Raid** takes a random relic from the Reliquary, facedown, as Bewitch, Ancient Pact and Royal Ambitions do. An empty Reliquary takes nothing and writes "The Reliquary was empty." (R22), and so does a Reliquary Setup With No Empire set aside ([Foundations rulings](#foundations-rulings), item 3). Otherwise the line is "Took a relic from the Reliquary.", which never names the relic.
+
 ## Source relationship cautions
 
 - NF is intentionally a change overview. When its simplification omits a detail, use CR, not inference.
