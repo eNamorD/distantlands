@@ -330,6 +330,9 @@ private[application] final class GamePresentationProjector(
     *    public row to every viewer. A draw Matchmaker's holder keeps for
     *    another player is named to the holder alone while that keep is the
     *    parked decision, and to nobody before (R16).
+    *  - A legacy in a hand, which a legacy draw leaves there, is named only
+    *    to the hand's holder: the drawer, or Matchmaker's holder drawing
+    *    for another player (catalog batch 13, rulings 6 and 9).
     *  - The Reliquary is named to the Chancellor in Setup, where they pick
     *    one of its relics (Empire ruling R29), and to Golden Key's Imperial
     *    holder whenever they look (Legacy in-play powers ruling 10;
@@ -353,8 +356,9 @@ private[application] final class GamePresentationProjector(
           ready.knowledge.siteRelics.getOrElse(player, Map.empty)
             .getOrElse(site, Vector.empty).contains(id) ||
             ready.game.current.pawnSite(player).contains(site))
-      // A temporary hand is the cards a player has drawn and not yet
-      // resolved. It is private to them outright -- `PendingProjector`
+      // A hand holds the world cards a player has drawn and not yet
+      // resolved, and the legacies a legacy draw left there (catalog batch
+      // 13, ruling 6). It is private to them outright -- `PendingProjector`
       // projects a Search hand only to the drawing actor -- and its cards
       // carry no orientation to reason about, so ownership is the whole
       // rule and there is no faceup case to fall through to.

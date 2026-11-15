@@ -145,6 +145,14 @@ final case class Table private (private val game: ReadyGame,
       temporaryHands = c.temporaryHands.updated(player,
         c.temporaryHands.getOrElse(player, Vector.empty) ++ ids))))
 
+  /** `cards` waiting in `player`'s hand, as a legacy draw leaves them
+    * (catalog batch 13, ruling 6). */
+  def legacyHand(player: PlayerId, cards: LegacyRef*): Table =
+    val ids = cards.toVector.map(CardRefs.legacyId)
+    ids.foldLeft(this)(_.moving(_)).update(_.updateCurrent(c => c.copy(
+      legacyHands = c.legacyHands.updated(player,
+        c.legacyHands.getOrElse(player, Vector.empty) ++ ids))))
+
   /** `cards` in `region`'s discard pile, in order: the last named is its
     * top. */
   def discarded(region: Region, cards: WorldCardRef*): Table =
@@ -682,6 +690,7 @@ object Table:
         relics = p.relics.filter(r => keep(r.id)),
         revealedVisions = p.revealedVisions.filter(v => keep(v.id)))),
       temporaryHands = c.temporaryHands.view.mapValues(_.filter(keep)).toMap,
+      legacyHands = c.legacyHands.view.mapValues(_.filter(keep)).toMap,
       setAsideRelics = c.setAsideRelics.filter(keep))
     val campaign = ready.game.campaign
     ready.copy(

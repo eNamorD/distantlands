@@ -340,7 +340,12 @@ final case class CurrentGameState(
     // Royal Line's choice and before Start Chronicle, which clears it
     // (Legacy in-play powers rulings 25-27; R36). Never projected; the
     // holder reads it in their own log line.
-    predictions: Map[PlayerId, Prediction] = Map.empty
+    predictions: Map[PlayerId, Prediction] = Map.empty,
+    // Legacies drawn and not yet kept or discarded, by drawer (catalog
+    // batch 13, ruling 6). The same `Location.Hand` as `temporaryHands`,
+    // which holds world cards only, so a hand is private to its holder
+    // whatever it holds. A draw's walk empties it.
+    legacyHands: Map[PlayerId, Vector[LegacyId]] = Map.empty
 ):
   /** The warbands of `kind` on `card`. */
   def warbandsOn(card: CardId, kind: ForceKind): Int =

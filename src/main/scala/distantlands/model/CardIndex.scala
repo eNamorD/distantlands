@@ -145,12 +145,14 @@ object CardIndex:
       )
     }
 
-    game.current.temporaryHands.toVector.sortBy(_._1.value).foreach:
-      case (player, cards) =>
-        addIds(
-          cards,
-          CardContainer.Player(player, PlayerCardArea.Hand)
-        )
+    val handOwners = (game.current.temporaryHands.keySet ++
+      game.current.legacyHands.keySet).toVector.sortBy(_.value)
+    handOwners.foreach(player =>
+      addIds(
+        game.current.temporaryHands.getOrElse(player, Vector.empty) ++
+          game.current.legacyHands.getOrElse(player, Vector.empty),
+        CardContainer.Player(player, PlayerCardArea.Hand)
+      ))
 
     game.current.players.foreach { player =>
       addStates(
