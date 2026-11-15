@@ -192,7 +192,7 @@ open questions, ruled on 2026-11-14.
   Conspirator" at the reveal; "p2 won with Conspirator"; the winner banner
   "Conspirator's prediction". The Mouth: "p1 activated Arbiter with The
   Mouth", "p1 took Golden Key from the Public Ambitions with The Mouth",
-  "Arbiter set Foundation VI to Festival", "p1 discarded Seer with The
+  "Beloved set Foundation IV to Teeming World", "p1 discarded Seer with The
   Mouth". *Reason:* it matches the batch's "<player> <verb> … with
   <legacy>" pattern, and the public line names nothing. *Slice/files:*
   slice 4, Tasks 1-4.
