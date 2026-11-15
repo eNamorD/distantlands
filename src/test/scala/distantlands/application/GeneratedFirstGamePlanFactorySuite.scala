@@ -1,7 +1,5 @@
 package distantlands.application
 
-import distantlands.gameplay.powers.PowerImplementationStatus
-import distantlands.gameplay.powers.whenplayed.ReliquaryRaidCard
 import distantlands.gameplay.setup.{EmpireSetupRules, FirstGameRulesData,
   FirstGameSetupFixture, GameStartRules, LaterGameFixture, LegacyDeal}
 import distantlands.model._
@@ -13,16 +11,19 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
   private val config = FirstGameBootstrapConfig(FirstGameSetupFixture.participants,
     PlayerId("p2"))
   private val factory = new GeneratedFirstGamePlanFactory(catalog)
+  private val standIn = StandInUnimplemented(catalog)
 
   test("implemented cards are still dealt first after setup: seeded discards, " +
       "hands, then the world deck; site relic slots, then the relic deck"):
-    val status = PowerImplementationStatus.implemented
+    // Every denizen is implemented, so the Discord ones stand in as not.
+    val status = standIn.implemented
     val denizens = ImplementedCardCatalog.denizens(catalog, status)
     val relics = ImplementedCardCatalog.ordinaryRelics(catalog, status)
     def implementedFirst[A](cards: Vector[A], implemented: A => Boolean): Boolean =
       cards.dropWhile(implemented).forall(card => !implemented(card))
 
-    val plan = accepted(factory.build(config, ChronicleChoice.New("Test Chronicle")))
+    val plan = accepted(new GeneratedFirstGamePlanFactory(catalog,
+      implemented = status).build(config, ChronicleChoice.New("Test Chronicle")))
     val orders = plan.orders
     val current = accepted(
       GameStartRules.evolve(catalog, plan.chronicle, orders)).game.current
@@ -34,6 +35,8 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     // 2 seeded discards in each of the 3 regions.
     assert(worldDenizens.take(6).forall(denizens), "seeded discards")
     assert(implementedFirst(worldDenizens, denizens), worldDenizens.toString)
+    assert(worldDenizens.exists(id => !denizens(id)),
+      "the stand-in Discord denizens are dealt")
 
     val dealtRelics = current.map.inPlay.flatMap(site =>
       current.map.sites(site).relics.map(_.id)) ++ current.commonCards.relicDeck
@@ -127,11 +130,8 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
 
   test("under Teeming World the alpha shuffle's unimplemented denizens, " +
       "last in the stack, top no discard pile"):
-    // Every printed denizen power runs, so Reliquary Raid stands in as the
-    // denizen that does not.
-    val raid = ReliquaryRaidCard.power.id
-    val partial: PowerId => Boolean = id =>
-      id != raid && PowerImplementationStatus.implemented(id)
+    // Every denizen is implemented, so the Discord ones stand in as not.
+    val partial = standIn.implemented
     val implemented = ImplementedCardCatalog.denizens(catalog, partial)
     val unimplemented = present(catalog.denizens.map(definition =>
       DenizenId(definition.id.value)).find(id => !implemented(id)),

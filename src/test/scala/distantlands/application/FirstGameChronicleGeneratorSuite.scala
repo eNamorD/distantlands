@@ -4,7 +4,6 @@ import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.setup.GreatForgeCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.powers.PowerImplementationStatus
-import distantlands.gameplay.powers.whenplayed.ReliquaryRaidCard
 import distantlands.model.{CardId, Chronicle, DenizenId, EdificeId, PowerId,
   Suit}
 import distantlands.testkit.Unwrap.{accepted, present}
@@ -13,10 +12,15 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
   private val status = PowerImplementationStatus.implemented
   private val random = ChronicleRandomPort.random
   private val policy = ShufflePolicy.implementedFirst
+  private val standIn = StandInUnimplemented(catalog)
 
   private def generated(using munit.Location): Chronicle =
-    accepted(FirstGameChronicleGenerator.generate(catalog, "Test Chronicle", status, random,
-      policy))
+    generatedWith(status)
+
+  private def generatedWith(implemented: PowerId => Boolean)(
+      using munit.Location): Chronicle =
+    accepted(FirstGameChronicleGenerator.generate(catalog, "Test Chronicle",
+      implemented, random, policy))
 
   /** The printed suit of `card`; fails naming a card the catalog lacks. */
   private def suitOf(card: CardId)(using munit.Location): Suit =
@@ -39,11 +43,14 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
     }
 
   test("the world deck has 60 denizens, 10 per suit, implemented ones first"):
-    val chronicle = generated
+    // Every denizen is implemented, so the Discord ones stand in as not.
+    val chronicle = generatedWith(standIn.implemented)
     assertEquals(chronicle.worldDeck.size, 60)
     assertEquals(chronicle.worldDeck.distinct.size, 60)
-    val implemented = ImplementedCardCatalog.denizens(catalog, status)
+    val implemented = ImplementedCardCatalog.denizens(catalog,
+      standIn.implemented)
     val (_, rest) = chronicle.worldDeck.span(implemented)
+    assertEquals(rest.size, 10, "the ten Discord denizens come last")
     assert(rest.forall(id => !implemented(id)),
       "no unimplemented denizen may precede an implemented one")
     Suit.all.foreach { suit =>
@@ -82,11 +89,12 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
     val walkerOnly =
       present(greatForge.ruined.powers.headOption, "its ruined power").id
     assert(status(walkerOnly))
-    // Every printed denizen power runs, so Reliquary Raid's stands in as
-    // the one that does not.
-    val unimplemented = ReliquaryRaidCard.power.id
-    val partial: PowerId => Boolean = id => id != unimplemented && status(id)
-    val denizens = ImplementedCardCatalog.denizens(catalog, partial)
+    // Every printed denizen power runs, so a Discord one stands in as the
+    // one that does not.
+    val unimplemented = present(standIn.powers.minByOption(_.value),
+      "a stand-in power")
+    val denizens = ImplementedCardCatalog.denizens(catalog,
+      standIn.implemented)
     val carriers = catalog.denizens.filter(_.powers.exists(_.id == unimplemented))
     assert(carriers.nonEmpty, s"no denizen carries $unimplemented")
     carriers.foreach { d =>
