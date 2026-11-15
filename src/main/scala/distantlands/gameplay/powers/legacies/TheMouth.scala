@@ -52,8 +52,9 @@ object TheMouthCard extends Legacy(LegacyId("L34"), "The Mouth",
   */
 case object TheMouth extends PaidAction(TheMouthCard.power):
   val decisionId: String = "power.the-mouth.legacy"
-  def capDecisionId(player: PlayerId): String =
-    s"power.the-mouth.cap.${player.value}"
+  /** The cap's question. One id for every holder, since only the walk's
+    * actor answers it, so the power can narrate it by its exact id. */
+  val capDecisionId: String = "power.the-mouth.cap"
 
   private val notes = NoteSet(id)
   /** "{p1} activated {Arbiter} with {The Mouth}". */
@@ -86,7 +87,8 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
     NotePart.Text(" discarded "), NotePart.Arg(1),
     NotePart.Text(" with The Mouth")))
   override def noteKeys: Vector[NoteKey] = notes.declared
-  override def narratedDecisions: Set[String] = Set(decisionId)
+  override def narratedDecisions: Set[String] =
+    Set(decisionId, capDecisionId)
 
   /** The holder's dormant legacies, then the Public Ambitions row, whose
     * goal `player` meets now (ruling 23). */
@@ -119,7 +121,7 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
     Note(id, states => activationNote(states, player)),
     Note(id, alterationNote),
     Note(IronHand.id, states => ironHandNote(states, player)),
-    ResolveLegacies.cap(player, capDecisionId(player), id, capped))))
+    ResolveLegacies.cap(player, capDecisionId, id, capped))))
 
   private def chosen(answered: Vector[Answered]): Option[LegacyId] =
     PowerAnswers.last(answered, decisionId).collect {

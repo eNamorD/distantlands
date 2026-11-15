@@ -130,7 +130,7 @@ class ConspiratorRevealSuite extends munit.FunSuite:
         DecisionAnswer.ChooseOneAnswer(
           DecisionOptionRef.Legacy(TheStandardBearerCard.id))))))
     val capped = accepted(service.handle(gameId, chosen.nextSequence,
-      Commands.resolveWalker(p3, TreeDecision(TheMouth.capDecisionId(p3),
+      Commands.resolveWalker(p3, TreeDecision(TheMouth.capDecisionId,
         DecisionAnswer.ChooseManyAnswer(Vector(
           DecisionOptionRef.Legacy(ConspiratorCard.id),
           DecisionOptionRef.Legacy(GoldenKeyCard.id)))))))

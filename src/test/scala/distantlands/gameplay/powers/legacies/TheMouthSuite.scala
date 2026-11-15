@@ -113,9 +113,9 @@ class TheMouthSuite extends munit.FunSuite:
       .legacy(p1, HighPriestCard).publicLegacies(TheStandardBearerCard).ready
     val done = useAndAnswer(ready, TheMouth, source, TheMouth.decisionId,
       legacy(ArbiterCard))
-    assert(awaits(done.answered, TheMouth.capDecisionId(p1)))
+    assert(awaits(done.answered, TheMouth.capDecisionId))
     val capped = accepted(answer(done.answered, p1,
-      TheMouth.capDecisionId(p1), DecisionAnswer.ChooseManyAnswer(
+      TheMouth.capDecisionId, DecisionAnswer.ChooseManyAnswer(
         Vector(legacy(HighPriestCard)))))
     val now = after(capped)
     assertEquals(legacies(now).filter(_.active).map(_.id).toSet,
@@ -131,7 +131,7 @@ class TheMouthSuite extends munit.FunSuite:
       legacy(ArbiterCard))
     val resumed = accepted(replayed(ready, done.events))
     val capped = accepted(rules.resolveWalker(resumed, p1,
-      TheMouth.capDecisionId(p1), DecisionAnswer.ChooseManyAnswer(
+      TheMouth.capDecisionId, DecisionAnswer.ChooseManyAnswer(
         Vector(legacy(GoldenKeyCard)))))
     val events = done.events ++ capped.events
     assertEquals(ops(events).count(_.isInstanceOf[Flip]), 1)
@@ -194,15 +194,18 @@ class TheMouthSuite extends munit.FunSuite:
   /** The lines every viewer reads after p1 uses The Mouth on `ready`,
     * activating `chosen`, played through the service: p1, p2 and the
     * public. */
-  private def linesByViewer(ready: Table, chosen: LegacyRef)
-      : Vector[Vector[String]] =
+  private def linesByViewer(ready: Table, chosen: LegacyRef,
+      after: (String, DecisionAnswer)*): Vector[Vector[String]] =
     val gameId = "the-mouth-lines"
     val (service, _) = ready.service()
     val started = accepted(service.handle(gameId, 0L, MenuPlay.starting(p1,
       ActionRef.UsePower(TheMouth.id), Vector(source))))
-    accepted(service.handle(gameId, started.nextSequence,
+    val answered = accepted(service.handle(gameId, started.nextSequence,
       Commands.resolveWalker(p1, TreeDecision(TheMouth.decisionId,
         DecisionAnswer.ChooseOneAnswer(legacy(chosen))))))
+    after.foldLeft(answered)((at, step) => accepted(service.handle(gameId,
+      at.nextSequence, Commands.resolveWalker(p1,
+        TreeDecision(step._1, step._2)))))
     val steps = present(accepted(service.history(gameId)), "a stored game")
       .steps
     Vector(Some(p1), Some(p2), None).map(viewer =>
@@ -235,3 +238,15 @@ class TheMouthSuite extends munit.FunSuite:
       s"p1 activated ${ArbiterCard.id.value} with ${TheMouthCard.id.value}"))
     assertEquals(replayed(ready, started.events ++ done.events),
       Right(done.state))
+
+  test("the cap's discard is told by its own line, with no chose line, for " +
+      "every viewer (R27)"):
+    val table = mouthHolder.legacy(p1, GoldenKeyCard)
+      .legacy(p1, HighPriestCard).publicLegacies(TheStandardBearerCard)
+    linesByViewer(table, ArbiterCard, TheMouth.capDecisionId ->
+      DecisionAnswer.ChooseManyAnswer(Vector(legacy(HighPriestCard))))
+      .foreach { seen =>
+        assert(seen.contains("p1 activated Arbiter with The Mouth"), seen)
+        assert(seen.contains("p1 discarded High Priest with The Mouth"), seen)
+        assert(!seen.exists(_.startsWith("Chose")), seen)
+      }

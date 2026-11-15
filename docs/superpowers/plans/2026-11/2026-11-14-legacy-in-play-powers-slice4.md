@@ -191,6 +191,10 @@ itself.
 - The coverage build's size limit also caught `insertCard`, whose
   `CurrentGameState` copies grew with `predictions`; its current-game piles
   moved to a helper.
+- From the whole-feature review: the cap's decision id is the player-free
+  `power.the-mouth.cap`, not `power.the-mouth.cap.<player>`, since a
+  power narrates its decisions by exact id and only the walk's actor
+  answers it; narrated, it writes no "Chose" line.
 - `GameLogFormatter.wonBy` gains its `Conspirator` words, which no event
   posts: the reveal step writes the victory line.
 
