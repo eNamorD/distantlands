@@ -9,7 +9,10 @@ All four slices have landed ([slice 1 plan](../../plans/2026-11/2026-11-14-legac
 It follows the [Legacy Chronicle powers](2026-11-13-legacy-chronicle-powers-design.md)
 and [Legacy Setup powers](2026-11-13-legacy-setup-powers-design.md)
 batches, which have landed; slice 4 here meets Quest to Distant Lands'
-first Wake.
+first Wake. After the run the owner moved Conspirator's comparison after
+Royal Line's choice and both before Start Chronicle (implementation
+rulings R24 and R36). Follow-ups are in the ROADMAP's Chronicle steps
+phase and its deferred items.
 
 **Builds on** the [Legacies design](2026-11-13-legacies-design.md), which
 landed the legacy lifecycle, and the Chronicle batch's holder seam,
@@ -334,8 +337,9 @@ Each slice updates, as it lands:
   changes;
 - `docs/rules/ambiguities.md`: the rulings above;
 - `docs/rules/implementation-traceability.md`: each legacy's row;
-- `docs/ROADMAP.md`: the "Legacy powers: in play" item ticked when slice
-  4 lands.
+- `docs/ROADMAP.md`: the "Legacy powers: in play" item removed once
+  slice 4 lands, as the ROADMAP removes done items, and the run's
+  follow-ups added.
 
 ## Out of scope
 

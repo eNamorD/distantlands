@@ -128,6 +128,26 @@ Left behind by the
   low confidence). The alternative is that the site's name gives way to the
   pawns. Needs the owner's word.
 
+Left behind by the
+[Legacy in-play powers work](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md):
+
+- [ ] **Check Arbiter and Golden Key's peek in a played game.** Arbiter's
+  question before the end die needs round 5 or later, which no dev game
+  reaches, and Golden Key's peek at the Reliquary was seen in the browser
+  only during Setup. Both are covered by tests only. The journaled
+  arranged start would seed them.
+- [ ] **Drop the Sun's leftover names.** Royal Line now acts in the
+  final-winner step before Start Chronicle
+  ([implementation ruling R36](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)),
+  but its decision id is still `chronicle.sun.legacy.royal-line.<player>`,
+  and the Sun's `ChronicleStartOfSun` window is left empty. Rename the id
+  and remove or reuse the window before the public release fixes the
+  formats.
+- [ ] **Discard the batch's dev saves.** A dev-database game saved after a
+  game end during the batch, or parked at Start Chronicle, no longer loads
+  or skips Royal Line and the prediction's reveal (R35, R37). The
+  implementer's test game `game-nvruop2xq65z` is among them.
+
 ### Phase - Campaign battle summary
 
 Left out of the Game Log action sections
@@ -189,27 +209,17 @@ Legacies, the scoring bonus and the display) landed with the
 [Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md),
 the legacies' CHRONICLE powers with the
 [Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md),
-and their SETUP powers with the
-[Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md).
+their SETUP powers with the
+[Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md),
+and the powers used during a game with the
+[Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md).
 
-- [x] **Legacy powers: in play.** The powers used during a game: actions,
-  Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
-  play and The Ear's ACTION half, peeking at a site's relics, among them
-  (The Ear's card counts as implemented for its Chronicle half), and Iron
-  Hand's discard when its holder becomes an Imperial during a game, and
-  Matchmaker choosing for players who draw legacies during a game (Amber
-  Doors, Lost Doors, Ancient Writ). High
-  Priest's When Negotiating power lets its holder
-  give secrets in a deal: a `DealRules` term kind, as Council Arbiter opens
-  advisers. Landed with the
-  [Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md);
-  Matchmaker on draws during a game waits with the cards that act on
-  legacies.
 - [ ] **Cards that act on legacies.** The non-legacy cards whose powers
   name legacies, still in holding: Ancient Writ (bury it to draw 3 and
   keep 1), Amber Doors and Lost Doors (E05, draw legacies when explored or
   at setup), Ruined Temple (E10, double the legacy points), and Stone Baths
-  and Ruined Baths (E04, change Resolve Legacies). A draw during a game
+  and Ruined Baths (E04, change Resolve Legacies). Matchmaker choosing for
+  a player who draws legacies during a game comes with them. A draw during a game
   needs a random draw from the derived legacy deck, recorded as a hidden
   outcome: Legacies ruling 3 assumed every draw happens in setup.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
@@ -353,6 +363,14 @@ one.
   Vision's owner's board shows the claimant's warband on it, but the
   claimant's own board shows nothing, so they cannot see which Visions
   they claim. Left by catalog batch 11, slice 7.
+- [ ] **Leave the enemy Imperial out of the attacker's plan offers.** In
+  Imperial Infighting, Imperial Tactics counts the enemy Imperial among the
+  attacker's allies, so the attacker's plan step shows the enemy's lendable
+  plans, Keeper of Order among them, as awaiting an offer and keeps the
+  window open. The rules let the enemy lend (CR p. 35), so this is noise,
+  not a rules defect: hide the enemy from the awaiting-offer view and keep
+  their offers allowed
+  ([Legacy in-play powers implementation ruling R18](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)).
 
 - [ ] **Legacy goal icons.** A legacy shows its goal in words, a tag on
   its face and a sentence in its inspection and its strip chip's hover
