@@ -3,7 +3,10 @@ package distantlands.gameplay.phases.rest
 import distantlands.application.{GameApplicationService, GameAccepted,
   GameProjector, LoadedGame, ParkedServiceFixture, TreeDecision}
 import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.gameplay.chronicle.ChronicleBeginProcedure
+import distantlands.gameplay.chronicle.legacies.{RoyalLine, RoyalLineCard}
 import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.walker.WalkerCompleted
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.OathEvent.{EndDieRolled, RoundEnded}
@@ -162,3 +165,33 @@ class ArbiterSuite extends munit.FunSuite:
       Vector(EndDieRolled(5, 4, Some(win), 3)))
     assertEquals(present(accepted(ParkedServiceFixture.replayingSecond(
       service, repository).load(gameId)), "a stored game").state, done.state)
+
+  test("an Arbiter-modified game end settles the final winner once, across " +
+      "a reload at Royal Line's question and into the Chronicle (R36)"):
+    // p2, the Citizen holding the title, also holds Royal Line.
+    val table = lastActOfRound(5).legacy(p2, RoyalLineCard)
+    val (service, repository) =
+      table.service(roundEnd = RoundEndChoices.endDie(4))
+    val rested = accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))
+    val raised = answering(service, rested, ArbiterStep.by(2))
+    assertEquals(parkedId(raised.state), Some(RoyalLine.decisionId(p2)))
+    val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
+    val loaded = present(accepted(reloaded.load(gameId)), "a stored game")
+    assertEquals(loaded.state, raised.state)
+    val declined = accepted(reloaded.handle(gameId, loaded.nextSequence,
+      Commands.resolveWalker(p2, TreeDecision(RoyalLine.decisionId(p2),
+        DecisionAnswer.ChooseOneAnswer(RoyalLine.decline)))))
+    assertEquals(parkedId(declined.state),
+      Some(ChronicleBeginProcedure.decisionId))
+    val begun = accepted(reloaded.handle(gameId, declined.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(
+        ChronicleBeginProcedure.decisionId,
+        DecisionAnswer.ChooseOneAnswer(ChronicleBeginProcedure.start)))))
+    assertEquals(Outcomes.ready(begun.state).game.current.turn.phase,
+      Phase.Chronicle)
+    val completed = present(accepted(reloaded.history(gameId)),
+      "a stored game").steps.map(_.event.event).collect {
+        case WalkerCompleted(procedure) => procedure }
+    assertEquals(completed.count(_ == TriggeredProcedureRef.ChronicleWinner),
+      1)
