@@ -336,7 +336,8 @@ final case class CurrentGameState(
     // round. Public, as the choice was made openly.
     endDieModifier: Int = 0,
     // Conspirator's predictions, by holder: hidden information, written at
-    // the holder's first Wake and read at the game's end, which clears it
+    // the holder's first Wake and read when the Sun reveals it, after Royal
+    // Line's choice, which clears it
     // (Legacy in-play powers rulings 25-27). Never projected; the holder
     // reads it in their own log line.
     predictions: Map[PlayerId, Prediction] = Map.empty

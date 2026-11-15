@@ -50,7 +50,7 @@ A round gives each player one turn, clockwise from Chancellor; without a Chancel
 
 1. If an Exile holds Oathkeeper, flip it to Usurper unless limited; if already Usurper, they win.
 2. If an Exile has a revealed Vision and currently meets it, they win.
-3. Use any Wake powers once each. Digital: at their round-1 Wake, Conspirator's holder secretly writes down a round and a winner, which no other viewer sees until the game ends ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 45, 46, 52 and 54).
+3. Use any Wake powers once each. Digital: at their round-1 Wake, Conspirator's holder secretly writes down a round and a winner, which no other viewer sees until the Sun reveals it, after Royal Line's choice ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), items 45, 46, 52 and 54).
 4. Built-in **Take Wealth**: take one favor or secret from the pawn's site if no enemy pawn is present (CR p. 17). Digital: Light Fingers' holder takes it even beside an enemy pawn ([Legacy in-play powers rulings](ambiguities.md#legacy-in-play-powers-rulings), item 22).
 
 Digital: a seated player with no pawn, who stayed off the map with Quest to Distant Lands, first places their pawn at any site in play, then chooses an adviser, discards Secret Society's excess advisers, and reveals cards, before step 1 ([Legacy Setup powers rulings](ambiguities.md#legacy-setup-powers-rulings), items 36, 44, 46, 52 and 58).

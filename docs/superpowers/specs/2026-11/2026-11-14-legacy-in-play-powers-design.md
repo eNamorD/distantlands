@@ -198,8 +198,9 @@ rulings then continue.
     writes.
 26. **Conspirator: secrecy.** The prediction is stored as hidden
     information. The projection and the log redact it from every other
-    viewer until the game ends ("p2 wrote down a prediction with
-    Conspirator"); the holder sees it.
+    viewer until the Sun reveals it, after Royal Line's choice ("p2 wrote
+    down a prediction with Conspirator"; as implementation ruling R24
+    amends it); the holder sees it.
 27. **Conspirator: resolution.** When the game ends, the round it ends in
     and the final winner, after any Successor substitution and any Royal
     Line choice, are compared with the prediction, at the Sun's first
