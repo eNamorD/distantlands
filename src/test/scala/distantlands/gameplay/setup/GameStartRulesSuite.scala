@@ -100,15 +100,9 @@ class GameStartRulesSuite extends munit.FunSuite:
       Vector.empty, Vector.empty)
     val ready = accepted(GameStartRules.evolve(catalog,
       chronicle.copy(lineages = Vector(record)), orders))
-    // Each also holds the legacies Quiet Ambitions drew (`LegacySetupSuite`).
-    def drawn(seat: Int): Vector[LegacyState] = LegacyDeal.of(chronicle,
-        orders.participants).drawn(orders.legacyOrder,
-        orders.participants(seat).playerId)
-      .map(LegacyState(_, active = false))
-    assertEquals(ready.game.campaign.lineages(listed),
-      record.copy(legacies = drawn(0)))
+    assertEquals(ready.game.campaign.lineages(listed), record)
     assertEquals(ready.game.campaign.lineages(unlisted), LineageState(unlisted,
-      None, Role.Exile, drawn(1), Vector.empty))
+      None, Role.Exile, Vector.empty, Vector.empty))
 
   test("a seated lineage's legacies start with their stored faces"):
     val seated = LineageId("l1")

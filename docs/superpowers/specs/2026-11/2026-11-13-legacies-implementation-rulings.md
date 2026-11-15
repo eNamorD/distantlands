@@ -35,6 +35,8 @@ position, and a move that names a top or bottom is refused.
 Reason: the deck is derived and no rule reads its order (Legacies ruling
 3).
 
+*Superseded 2026-11-15* by [catalog batch 13](2026-11-14-catalog-batch-13-design.md), ruling 2: the game stores the deck in order, and a move into it names the bottom.
+
 ## Slice 1 review
 
 **R4. The evolved Chronicle shows dormant legacies to every seat.**
@@ -67,6 +69,8 @@ resulting orientation that neither can hold.
 Decision: such a move may name no face or faceup; facedown is refused
 with `UnsupportedOrientation`, as an edifice's face is.
 Reason: the public row is faceup, and the derived deck keeps no face.
+
+*Amended 2026-11-15* by [catalog batch 13](2026-11-14-catalog-batch-13-design.md), ruling 2: the move into the deck names the bottom; it still never names a facedown face.
 
 **R7. `LegacyGoal.key` and `LegacyGoal.all`, and the legacy deck's
 removal arm.**
@@ -127,6 +131,8 @@ Question: how Setup knows which legacies a player drew.
 Decision: derive them from state: the dormant legacies the lineage holds
 that its saved record does not. Nothing new is stored.
 Reason: the draw is already visible in state; a stored copy could drift.
+
+*Superseded 2026-11-15* by [catalog batch 13](2026-11-14-catalog-batch-13-design.md), ruling 6: the keep draws its own legacies into the keeper's hand and offers what that hand holds.
 
 **R14. Where the Public Ambitions line posts.**
 Decision: first in the Setup walk, before the Reliquary pick, as a Setup

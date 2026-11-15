@@ -12,16 +12,16 @@
 20.0 action 1 | [player:p1|p1] placed [site:site:fair-isle|Fair Isle] on the map
 22.0 action 1 | [player:p1|p1] placed [site:site:golden-valley|Golden Valley] on the map
 27.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
-32.0 decision 1 | [player:p1|p1] kept a legacy
-37.0 decision 1 | [player:p1|p1] kept a Denizen
-45.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-50.0 decision 1 | [player:p2|p2] kept a legacy
-55.0 decision 1 | [player:p2|p2] kept [card:175|Nature Worship]
-63.0 action 1 | [player:p3|p3] placed their pawn at [site:site:ancient-city|Ancient City]
-68.0 decision 1 | [player:p3|p3] kept a legacy
-73.0 decision 1 | [player:p3|p3] kept a Denizen
-74.0 round 0 | Round 1
-74.1 turn 0 | [player:p1|p1]'s turn
-74.2 phase 0 | Wake
-76.0 action 1 | Nothing happened in Wake
-76.1 phase 0 | Act
+33.0 decision 1 | [player:p1|p1] kept a legacy
+38.0 decision 1 | [player:p1|p1] kept a Denizen
+46.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+52.0 decision 1 | [player:p2|p2] kept a legacy
+57.0 decision 1 | [player:p2|p2] kept [card:175|Nature Worship]
+65.0 action 1 | [player:p3|p3] placed their pawn at [site:site:ancient-city|Ancient City]
+71.0 decision 1 | [player:p3|p3] kept a legacy
+76.0 decision 1 | [player:p3|p3] kept a Denizen
+77.0 round 0 | Round 1
+77.1 turn 0 | [player:p1|p1]'s turn
+77.2 phase 0 | Wake
+79.0 action 1 | Nothing happened in Wake
+79.1 phase 0 | Act

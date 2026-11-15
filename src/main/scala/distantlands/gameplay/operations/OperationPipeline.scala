@@ -27,16 +27,14 @@ object OperationRun:
     case other => other
 
   /** The cards this run took out of the game: every card whose executed move
-    * ends at the shared bank, every legacy returned to the derived legacy
-    * deck, where no card is indexed (Legacies design, ruling 3), and every
-    * relic kept as a lineage's starting relic, which no index holds
-    * (Heirloom; Legacies R2). The pipeline's card-inventory check allows a
-    * card to be missing afterwards only if a declared operation removed it.
+    * ends at the shared bank, and every relic kept as a lineage's starting
+    * relic, which no index holds (Heirloom; Legacies R2). The pipeline's
+    * card-inventory check allows a card to be missing afterwards only if a
+    * declared operation removed it.
     */
   def boxed(executed: Vector[CoreOperation]): Set[CardId] = executed.collect {
     case Move(Piece.Card(id), _, to, _, _)
-        if to.location == Location.SharedBank ||
-          to.location == Location.Deck(CardDeck.Legacy) =>
+        if to.location == Location.SharedBank =>
       id: CardId
     case StartingRelicKept(_, relic) => relic: CardId
   }.toSet
@@ -73,8 +71,8 @@ object OperationRun:
   * whole batch is rejected.
   *
   * A card may leave the game only through a `Move` to `Location.SharedBank`,
-  * a legacy through a `Move` to the derived legacy deck, or a relic through
-  * `StartingRelicKept`, that the batch declares; its id is then removed from the expected card set. Any other change to the card inventory still fails the batch.
+  * or a relic through `StartingRelicKept`, that the batch declares; its id
+  * is then removed from the expected card set. Any other change to the card inventory still fails the batch.
   *
   * `requireAll` treats every operation as `required` (a reduced or skipped
   * effect rejects the batch). The walker sets it for the `Move` children of a

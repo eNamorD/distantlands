@@ -115,6 +115,7 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   choosing", and an earlier view would inform the holder's World Crafter
   and Populist choices, which come first. *Slice/files:* slice 2;
   `LegacyKeep`, `GamePresentationProjector.identifiesCard`.
+  *Superseded 2026-11-15* by [catalog batch 13](2026-11-14-catalog-batch-13-design.md), ruling 6: the holder draws into their own hand, so the hand rule names the draw to them alone.
 
 ## Slice 3
 

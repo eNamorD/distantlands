@@ -150,19 +150,20 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     // delta, not one event per legacy setup command. The first Wake has
     // nothing to decide, so its End Wake step and completion follow, then
     // the Act menu parks: 1 GameStarted, 13 parks (4 decisions per seat --
-    // pawn, kept legacy, adviser, reveal -- and the Act menu), 23 steps and
-    // 2 completions (Setup's and the first Wake's) make 39. Each of the 12
-    // answers opens its command batch with a `CommandAccepted`, so 51.
+    // pawn, kept legacy, adviser, reveal -- and the Act menu), 26 steps (one
+    // per seat is the keep's legacy draw, catalog batch 13, ruling 6) and 2
+    // completions (Setup's and the first Wake's) make 42. Each of the 12
+    // answers opens its command batch with a `CommandAccepted`, so 54.
     // Setup journals its own Game Log lines, three per seat -- the pawn, the
     // kept legacy and the kept adviser, nobody having a card to reveal --
-    // so 60.
-    assertEquals(reloaded.nextSequence, 60L)
+    // so 63.
+    assertEquals(reloaded.nextSequence, 63L)
     val records = loaded(repository.load("game-v2")).records
-    assertEquals(records.size, 60)
+    assertEquals(records.size, 63)
     val eventType = (record: String) => ujson.read(record)("eventType").str
     assertEquals(records.groupMapReduce(eventType)(_ => 1)(_ + _),
       Map("setup.game-started" -> 1, "walker.parked" -> 13,
-        "walker.step-recorded" -> 23, "walker.completed" -> 2,
+        "walker.step-recorded" -> 26, "walker.completed" -> 2,
         "walker.power-noted" -> 9, "undo.command-accepted" -> 12))
     assert(records.forall(record =>
       ujson.read(record)("formatVersion").num.toInt ==

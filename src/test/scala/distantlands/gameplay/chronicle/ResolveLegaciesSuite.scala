@@ -50,7 +50,7 @@ class ResolveLegaciesSuite extends munit.FunSuite:
       .filter(said => keys.exists(_.name == said.key)).map(_.text)
 
   private def inDeck(ready: ReadyGame, legacy: LegacyId): Boolean =
-    ready.game.cardIndex.toOption.get.get(legacy).isEmpty
+    ready.game.current.commonCards.legacyDeck.contains(legacy)
 
   test("a dormant legacy whose goal is met turns active, and one whose " +
       "goal is missed returns to the deck"):

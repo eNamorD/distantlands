@@ -61,11 +61,8 @@ private[operations] object CardMovementOperations:
       "non-stack destination cannot specify top or bottom"
     ))
 
-  /** The legacy deck is derived and keeps no order (Legacies design, ruling
-    * 3), so a move into it names no top or bottom. */
   private def isStack(location: Location): Boolean = location match
-    case Location.Deck(deck) => deck != CardDeck.Legacy
-    case _: Location.RegionalDiscard => true
+    case _: Location.Deck | _: Location.RegionalDiscard => true
     case _ => false
 
   private final case class ResolvedTransfer(
@@ -139,7 +136,7 @@ private[operations] object CardMovementOperations:
         if id.isInstanceOf[WorldCardId] then None
         else Some(InvalidDestination(transfer.piece, destination))
       case _: Location.Hand =>
-        if id.isInstanceOf[WorldCardId] then None
+        if id.isInstanceOf[WorldCardId] || id.isInstanceOf[LegacyId] then None
         else Some(InvalidDestination(transfer.piece, destination))
       case Location.Reliquary | Location.SetAsideRelics =>
         if id.isInstanceOf[RelicId] then None
@@ -180,7 +177,7 @@ private[operations] object CardMovementOperations:
       ))
       case _ => Some(InvalidDestination(transfer.piece, destination))
 
-  /** The public row is faceup and the derived deck keeps no face, so a move
+  /** The public row is faceup and the legacy deck keeps no face, so a move
     * there may turn a legacy faceup or name no face, never facedown (R6). */
   private def facedownLegacy(id: CardId, transfer: CardTransfer)
       : Option[OperationError] =
@@ -216,6 +213,8 @@ private[operations] object CardMovementOperations:
       Some(ready.game.current.commonCards.relicDeck)
     case CardContainer.Deck(CardDeck.Edifice) =>
       Some(ready.game.current.commonCards.edificeDeck)
+    case CardContainer.Deck(CardDeck.Legacy) =>
+      Some(ready.game.current.commonCards.legacyDeck)
     case CardContainer.RegionalDiscard(region) =>
       Some(ready.game.current.commonCards.discard(region).reverse)
     case _ => None
@@ -251,18 +250,21 @@ private[operations] object CardMovementOperations:
       case CardDeck.World => cards.copy(worldDeck = cards.worldDeck.filterNot(_ == located.id))
       case CardDeck.Relic => cards.copy(relicDeck = cards.relicDeck.filterNot(_ == located.id))
       case CardDeck.Edifice => cards.copy(edificeDeck = cards.edificeDeck.filterNot(_ == located.id))
-      // Unreachable: nothing is indexed in the derived legacy deck, so no
-      // card is ever removed from it.
-      case CardDeck.Legacy => cards
+      case CardDeck.Legacy => cards.copy(legacyDeck = cards.legacyDeck.filterNot(_ == located.id))
     }}
     case CardContainer.RegionalDiscard(region) => updateCommonCards(ready) { cards =>
       cards.copy(regionalDiscards = cards.regionalDiscards.updated(region,
         cards.discard(region).filterNot(_ == located.id)))
     }
     case CardContainer.Player(player, PlayerCardArea.Hand) => Right(ready.updateCurrent {
-      current => current.copy(temporaryHands = current.temporaryHands.updated(
-        player, current.temporaryHands.getOrElse(player, Vector.empty)
-          .filterNot(_ == located.id)))
+      current => located.id match
+        case legacy: LegacyId => current.copy(legacyHands =
+          current.legacyHands.updated(player,
+            current.legacyHands.getOrElse(player, Vector.empty)
+              .filterNot(_ == legacy)))
+        case _ => current.copy(temporaryHands = current.temporaryHands.updated(
+          player, current.temporaryHands.getOrElse(player, Vector.empty)
+            .filterNot(_ == located.id)))
     })
     case CardContainer.Player(player, PlayerCardArea.Advisers) => updatePlayer(ready, player)(
       state => state.copy(advisers = state.advisers.filterNot(_.id == located.id)))
@@ -412,15 +414,19 @@ private[operations] object CardMovementOperations:
       case _ => Left(InvalidDestination(transfer.piece, transfer.to.location))
 
   /** `id` appended to a current-game pile `location` names: a temporary
-    * hand, the set-aside relics or edifices, the card gathering, the newly
+    * hand, a legacy hand, the set-aside relics or edifices, the card gathering, the newly
     * dispossessed or the public legacy row. Kept out of `insertCard`, whose
     * body the coverage instrumenter would otherwise skip as too large. */
   private def appendedToCurrent(ready: ReadyGame, location: Location,
       id: CardId): ReadyGame = ready.updateCurrent(current => location match
-    case Location.Hand(player) => current.copy(temporaryHands =
-      current.temporaryHands.updated(player,
-        current.temporaryHands.getOrElse(player, Vector.empty) :+
-          id.asInstanceOf[WorldCardId]))
+    case Location.Hand(player) => id match
+      case legacy: LegacyId => current.copy(legacyHands =
+        current.legacyHands.updated(player,
+          current.legacyHands.getOrElse(player, Vector.empty) :+ legacy))
+      case _ => current.copy(temporaryHands =
+        current.temporaryHands.updated(player,
+          current.temporaryHands.getOrElse(player, Vector.empty) :+
+            id.asInstanceOf[WorldCardId]))
     case Location.SetAsideRelics => current.copy(
       setAsideRelics = current.setAsideRelics :+ id.asInstanceOf[RelicId])
     case Location.SetAsideEdifices => current.copy(
@@ -481,8 +487,8 @@ private[operations] object CardMovementOperations:
           cards.relicDeck, id.asInstanceOf[RelicId], position, topAtHead = true))
         case CardDeck.Edifice => cards.copy(edificeDeck = insertStack(
           cards.edificeDeck, id.asInstanceOf[EdificeId], position, topAtHead = true))
-        // A legacy returned to the deck leaves play: the deck is derived.
-        case CardDeck.Legacy => cards
+        case CardDeck.Legacy => cards.copy(legacyDeck = insertStack(
+          cards.legacyDeck, id.asInstanceOf[LegacyId], position, topAtHead = true))
       }
       current.copy(commonCards = updated)
     })

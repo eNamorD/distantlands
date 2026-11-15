@@ -83,16 +83,14 @@ class TableSuite extends munit.FunSuite:
     assertEquals((look.favor(p1), look.faceUpSecrets(p1), look.boardWarbands(p1),
       look.supply(p1)), (1, 1, 3, 7))
 
-  test("the quiet table holds exactly the cards the game started with, " +
-      "except the legacies Foundation III dealt"):
+  test("the quiet table holds exactly the cards the game started with"):
     // Starts the game from the Chronicle: the start it was built from is the
     // thing compared. The quiet table returns the dealt legacies to the
-    // derived deck, where no card is indexed.
+    // legacy deck, where they stay indexed.
     val started = accepted(GameStartRules.evolve(catalog,
       FirstGameSetupFixture.chronicle, FirstGameSetupFixture.orders))
     assertEquals(accepted(CardIndex.from(Table.start.ready.game)).ids,
-      accepted(CardIndex.from(started.game)).ids
-        .filterNot(_.isInstanceOf[LegacyId]))
+      accepted(CardIndex.from(started.game)).ids)
 
   test("placing a card takes it out of the zone that held it"):
     // Threatening Roar tops the quiet table's world deck.

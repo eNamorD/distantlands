@@ -17,7 +17,7 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer,
   PartitionAnswer}
 import distantlands.server.GameHttpWire
-import distantlands.gameplay.setup.{LegacyDeal, SetupAdviserSteps,
+import distantlands.gameplay.setup.{SetupAdviserSteps, SetupLegacyFixture,
   SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.model.OathState.Ready
@@ -325,8 +325,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
 
   /** The legacies Quiet Ambitions drew for `player`. */
   private def drawnLegacies(player: PlayerId): Vector[LegacyId] =
-    LegacyDeal.of(chronicle, orders.participants)
-      .drawn(orders.legacyOrder, player)
+    SetupLegacyFixture.drawn(orders, player)
 
   /** The first player, parked on Quiet Ambitions' keep, keeps the first
     * legacy drawn. */

@@ -22,8 +22,8 @@ class LegacySetupSuite extends munit.FunSuite:
     foundations = base.foundations.updated(FoundationNumber.III,
       FoundationState(FoundationFace.Altered, Set.empty)))
 
-  test("Quiet Ambitions deals each seated lineage 2 dormant legacies, " +
-      "after those it holds"):
+  test("Quiet Ambitions' game start deals no legacy: each seated lineage " +
+      "starts from its record and the deck holds the whole order"):
     val seated = seats.head.lineageId
     val kept = LegacyState(SeerCard.id, active = true)
     val keeping = later.copy(lineages = later.lineages.map(lineage =>
@@ -33,12 +33,11 @@ class LegacySetupSuite extends munit.FunSuite:
     val ready = accepted(GameStartRules.evolve(catalog, keeping,
       LaterGameFixture.orders(keeping, seats.head.playerId)
         .copy(legacyOrder = order)))
-    val deal = LegacyDeal.of(keeping, seats)
     seats.foreach(seat => assertEquals(
       ready.game.campaign.lineages(seat.lineageId).legacies,
-      (if seat.lineageId == seated then Vector(kept) else Vector.empty) ++
-        deal.drawn(order, seat.playerId).map(LegacyState(_, active = false)),
+      if seat.lineageId == seated then Vector(kept) else Vector.empty,
       seat.playerId.value))
+    assertEquals(ready.game.current.commonCards.legacyDeck, order)
     assertEquals(ready.game.current.commonCards.publicLegacies, Vector.empty)
 
   test("Public Ambitions deals 4 legacies faceup to the row and nobody " +
@@ -50,9 +49,8 @@ class LegacySetupSuite extends munit.FunSuite:
     assert(seats.forall(seat =>
       ready.game.campaign.lineages(seat.lineageId).legacies.isEmpty))
 
-  private val deal = LegacyDeal.of(chronicle, seats)
   private def drawn(player: PlayerId): Vector[LegacyId] =
-    deal.drawn(orders.legacyOrder, player)
+    SetupLegacyFixture.drawn(orders, player)
 
   private def notes(events: Vector[OathEvent]): Vector[LogNote] =
     events.collect { case LogNoted(_, note, _) => note }
@@ -75,8 +73,15 @@ class LegacySetupSuite extends munit.FunSuite:
       val Vector(kept, returned) = drawn(seat.playerId)
       assertEquals(ready.game.campaign.lineages(seat.lineageId).legacies,
         Vector(LegacyState(kept, active = false)), seat.playerId.value)
-      assertEquals(ready.game.cardIndex.toOption.get.get(returned), None)
+      assertEquals(ready.game.cardIndex.toOption.get.get(returned)
+        .map(_.location.container), Some(CardContainer.Deck(CardDeck.Legacy)))
     }
+    assert(seats.forall(seat =>
+      ready.game.current.legacyHands.getOrElse(seat.playerId, Vector.empty)
+        .isEmpty), "every hand is empty after the keeps")
+    // Each returned legacy went to the bottom, below the deal's rest.
+    assertEquals(ready.game.current.commonCards.legacyDeck
+      .takeRight(seats.size).toSet, seats.map(seat => drawn(seat.playerId)(1)).toSet)
 
   test("each player is asked to keep one of exactly the two legacies they " +
       "drew, and keeps the one chosen"):
@@ -96,8 +101,8 @@ class LegacySetupSuite extends munit.FunSuite:
       woken.ready.game.campaign.lineages(seat.lineageId).legacies,
       Vector(LegacyState(drawn(seat.playerId)(1), active = false))))
 
-  test("a short deck draws 2, 1 and 0 in seat order: the first keeper is " +
-      "asked, the second keeps theirs unasked, the third gets none (R9)"):
+  test("a short deck draws in keep order, and a later keep can draw a " +
+      "legacy an earlier one returned (R9; catalog batch 13, ruling 6)"):
     // Box lineages hold every legacy but 3, so the derived deck is short.
     // A later game with a Chancellor keeps them; a first game played
     // exile-only would wipe them back into the deck (R40).
@@ -108,22 +113,25 @@ class LegacySetupSuite extends munit.FunSuite:
     val short = later.copy(lineages = later.lineages ++ boxed)
     val shortOrders = LaterGameFixture.orders(short, seats.head.playerId)
       .copy(legacyOrder = LegacyDeal.deck(catalog, short))
-    assertEquals(shortOrders.legacyOrder.size, 3)
+    val Vector(a, b, c) = shortOrders.legacyOrder
     val started = accepted(GameStartRules.evolve(catalog, short, shortOrders))
-    val Vector(two, one, none) = seats
+    val Vector(first, second, third) = seats
+    // The default answer keeps the first option: the first keep takes a
+    // and returns b to the bottom, under c; the second draws c and b,
+    // keeps c and returns b; the third draws b alone and keeps it unasked.
     val setup = walked(started)
     assertEquals(legacyQuestions(setup.asked).map(_.owner),
-      Vector(two.playerId))
+      Vector(first.playerId, second.playerId))
     def holding(seat: FirstGameParticipant) =
       setup.ready.game.campaign.lineages(seat.lineageId).legacies
-    assertEquals(holding(two).size, 1)
-    assertEquals(holding(one),
-      Vector(LegacyState(shortOrders.legacyOrder(2), active = false)))
-    assertEquals(holding(none), Vector.empty)
+    assertEquals(holding(first), Vector(LegacyState(a, active = false)))
+    assertEquals(holding(second), Vector(LegacyState(c, active = false)))
+    assertEquals(holding(third), Vector(LegacyState(b, active = false)))
+    assertEquals(setup.ready.game.current.commonCards.legacyDeck, Vector.empty)
     val kept = notes(setup.events).filter(_.key ==
       SetupProcedure.keptLegacy.name).map(_.args)
-    assertEquals(kept.toSet, Set(two, one).map(seat =>
-      Vector[NoteArg](NoteArg.Player(seat.playerId))))
+    assertEquals(kept.toSet, seats.map(seat =>
+      Vector[NoteArg](NoteArg.Player(seat.playerId))).toSet)
 
   test("under Public Ambitions nobody is asked, and Setup first names the " +
       "row"):

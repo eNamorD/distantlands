@@ -1,14 +1,16 @@
 package distantlands.gameplay.setup
 
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.LegacyDraws
 import distantlands.gameplay.setup.legacies.{Matchmaker, MatchmakerCard,
   SetupLegacyRules}
 import distantlands.model._
 import distantlands.model.OathViolation.InvalidEventOrder
 
-/** Foundation III's Quiet Ambitions keep in Setup's walk: each player who
-  * drew two legacies keeps one facedown and returns the other (Legacies
-  * design, slice 2). Split from `SetupProcedure`, which calls `step` in
+/** Foundation III's Quiet Ambitions keep in Setup's walk: each player draws
+  * two legacies from the legacy deck, keeps one facedown and returns the
+  * other to the bottom (Legacies design, slice 2; catalog batch 13, ruling
+  * 6). Split from `SetupProcedure`, which calls `step` in
   * each player's turn. Matchmaker's holder answers every other player's
   * keep (Legacy Setup powers ruling 13; R16). */
 object LegacyKeep:
@@ -23,34 +25,51 @@ object LegacyKeep:
   /** The lines the keep writes, on Setup's note id. */
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  /** Quiet Ambitions: keep one of the two legacies game start drew,
-    * facedown, and return the other to the deck (CR "Set Up Players";
-    * Legacies design, slice 2). The drawn legacies are the dormant ones the
-    * lineage holds that its baseline record does not, read when the
-    * question is reached (implementation ruling R13). A short deck's single
-    * legacy is kept without a question, and a player who drew none is asked
-    * nothing (R9). */
+  /** Quiet Ambitions: draw 2 legacies from the top of the legacy deck,
+    * keep one facedown and return the other to the bottom (CR "Set Up
+    * Players"; Legacies design, slice 2; catalog batch 13, rulings 2 and
+    * 6). The draw goes to the keeper's hand: Matchmaker's holder draws and
+    * keeps for every other player (Legacy Setup powers ruling 13), and a
+    * hand is private to its holder, so only the keeper sees the draw. The
+    * keep is its own `Branch`, after the draw's, so a walk resumed at the
+    * question reads the same hand. A short deck's single legacy is kept
+    * without a question, and a player who draws none is asked nothing
+    * (R9). Public Ambitions draws nothing. */
   def step(participant: FirstGameParticipant): Operation =
-    val decisionId = LegacyKeep.decisionId(participant.playerId)
-    Branch((state, _) =>
-      drawn(state, participant.lineageId) match
-        case Vector() => Vector.empty
-        case Vector(_) => Vector(keptNote(participant.playerId,
-          participant.playerId))
-        // Matchmaker: its holder answers every other player's keep
-        // (Legacy Setup powers ruling 13).
-        case drawn =>
-          val keeper = SetupLegacyRules.keeper(state, participant.playerId)
-          Vector(
+    val owner = participant.playerId
+    val lineage = participant.lineageId
+    val decisionId = LegacyKeep.decisionId(owner)
+    Sequence(Vector(
+      Branch((state, _) =>
+        if !quiet(state) then Vector.empty
+        else LegacyDraws.top(state, LegacyDeal.QuietDraw) match
+          case Vector() => Vector.empty
+          case top => Vector(LegacyDraws.draw(
+            SetupLegacyRules.keeper(state, owner), top))),
+      Branch((state, _) =>
+        val keeper = SetupLegacyRules.keeper(state, owner)
+        LegacyDraws.hand(state, keeper) match
+          case Vector() => Vector.empty
+          case Vector(only) => Vector(
+            BuildOps((_, _) => Right(Vector(keptMove(only, keeper, lineage))),
+              required = true),
+            keptNote(keeper, owner))
+          case drawn => Vector(
             Decide(decisionId, keeper, DecisionQuery.ChooseOne(
               drawn.map(id =>
                 DecisionOption.Legacy(DecisionOptionRef.Legacy(id))),
               heading = Some(
-                if keeper == participant.playerId then "Keep a legacy"
-                else "Matchmaker: keep a legacy for another player"),
+                if keeper == owner then "Keep a legacy"
+                else s"Matchmaker: keep a legacy for ${owner.value}"),
               confirmVerb = Some("Keep"))),
-            BuildOps(returnLegacies(participant.lineageId, drawn, decisionId)),
-            keptNote(keeper, participant.playerId)))
+            BuildOps(settled(lineage, keeper, drawn, decisionId),
+              required = true),
+            keptNote(keeper, owner)))))
+
+  /** Whether Foundation III shows Quiet Ambitions, whose keep draws. */
+  private def quiet(state: ReadyGame): Boolean =
+    state.game.campaign.foundations.get(FoundationNumber.III)
+      .forall(_.face == FoundationFace.Normal)
 
   private def keptNote(keeper: PlayerId, owner: PlayerId): Operation =
     Note(ProcedureNotes.id(TriggeredProcedureRef.Setup), _ => Some(
@@ -58,44 +77,23 @@ object LegacyKeep:
       else Matchmaker.keptFor.sourceless(NoteArg.Player(keeper),
         NoteArg.Player(owner), NoteArg.Card(MatchmakerCard.id))))
 
-  /** The owner and Matchmaker's holder when `legacy` is in a two-legacy
-    * draw, during Setup, that the holder keeps for that owner (R16). The
-    * owner never identifies such a card; the holder does only while the
-    * owner's keep is the parked decision, which the projection checks. None
-    * when the owner keeps for themselves, once one is kept, and outside
-    * Setup. */
-  def matchmade(ready: ReadyGame, lineage: LineageId, legacy: LegacyId)
-      : Option[(PlayerId, PlayerId)] =
-    val waiting = drawn(ready, lineage)
-    for
-      owner <- ready.game.current.players.find(_.lineage == lineage)
-        .map(_.player)
-      if ready.game.current.turn.phase == Phase.Setup &&
-        waiting.sizeIs >= 2 && waiting.contains(legacy)
-      keeper = SetupLegacyRules.keeper(ready, owner)
-      if keeper != owner
-    yield owner -> keeper
+  /** The kept legacy, from the keeper's hand to the owner's lineage, with
+    * no face: dormant. */
+  private def keptMove(legacy: LegacyId, keeper: PlayerId,
+      lineage: LineageId): Move =
+    Move(Piece.Card(legacy), PositionedLocation(Location.Hand(keeper)),
+      PositionedLocation(Location.Legacies(lineage)))
 
-  /** The legacies game start drew for `lineage` that are still on it:
-    * the dormant ones its baseline record does not hold. */
-  def drawn(ready: ReadyGame, lineage: LineageId)
-      : Vector[LegacyId] =
-    val stored = ready.game.campaign.baseline.lineages.find(_.id == lineage)
-      .toVector.flatMap(_.legacies).map(_.id).toSet
-    ready.game.campaign.lineages.get(lineage).toVector
-      .flatMap(_.legacies).collect {
-        case LegacyState(id, false) if !stored(id) => id }
-
-  private def returnLegacies(lineage: LineageId, drawn: Vector[LegacyId],
-      decisionId: String)
+  private def settled(lineage: LineageId, keeper: PlayerId,
+      drawn: Vector[LegacyId], decisionId: String)
       : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
     (_, pending) =>
       pending.answered.find(_.decisionId == decisionId).map(_.answer) match
         case Some(DecisionAnswer.ChooseOneAnswer(
             DecisionOptionRef.Legacy(kept))) if drawn.contains(kept) =>
-          Right(drawn.filterNot(_ == kept).map(id => Move(Piece.Card(id),
-            PositionedLocation(Location.Legacies(lineage)),
-            PositionedLocation(Location.Deck(CardDeck.Legacy)))))
+          Right(keptMove(kept, keeper, lineage) +: drawn.filterNot(_ == kept)
+            .map(id => Move(Piece.Card(id),
+              PositionedLocation(Location.Hand(keeper)),
+              PositionedLocation.legacyDeckBottom)))
         case _ => Left(InvalidEventOrder(
           s"no legacy answer is recorded for $decisionId"))
-

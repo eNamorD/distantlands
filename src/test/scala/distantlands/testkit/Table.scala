@@ -88,6 +88,16 @@ final case class Table private (private val game: ReadyGame,
       commonCards = c.commonCards.copy(publicLegacies =
         c.commonCards.publicLegacies ++ ids))))
 
+  /** The legacy deck holds exactly `cards`, first named on top. Every
+    * other legacy in it leaves the game, and the table no longer expects
+    * it, so a suite can draw from a short or empty deck. */
+  def legacyDeck(cards: LegacyRef*): Table =
+    val ids = cards.toVector.map(CardRefs.legacyId)
+    val moved = ids.foldLeft(this)(_.moving(_))
+    val boxed = moved.game.game.current.commonCards.legacyDeck
+    Table(moved.game.updateCurrent(c => c.copy(commonCards =
+      c.commonCards.copy(legacyDeck = ids))), moved.expected -- boxed)
+
   def denizen(card: DenizenRef, at: SiteRef,
       facedown: Boolean = false): Table =
     val id = CardRefs.denizenId(card)
@@ -134,6 +144,14 @@ final case class Table private (private val game: ReadyGame,
     ids.foldLeft(this)(_.moving(_)).update(_.updateCurrent(c => c.copy(
       temporaryHands = c.temporaryHands.updated(player,
         c.temporaryHands.getOrElse(player, Vector.empty) ++ ids))))
+
+  /** `cards` waiting in `player`'s hand, as a legacy draw leaves them
+    * (catalog batch 13, ruling 6). */
+  def legacyHand(player: PlayerId, cards: LegacyRef*): Table =
+    val ids = cards.toVector.map(CardRefs.legacyId)
+    ids.foldLeft(this)(_.moving(_)).update(_.updateCurrent(c => c.copy(
+      legacyHands = c.legacyHands.updated(player,
+        c.legacyHands.getOrElse(player, Vector.empty) ++ ids))))
 
   /** `cards` in `region`'s discard pile, in order: the last named is its
     * top. */
@@ -614,34 +632,40 @@ object Table:
     * denizens to the bottom of the world deck, edifices to the edifice deck, relics to the bottom of the relic
     * deck. `banks.warbandSupply` is the printed inventory and the bank holds
     * whatever is not in play, so clearing a site's forces returns them to
-    * the bank with no change there. The legacies Foundation III dealt go
-    * back to the derived deck, so no lineage holds one and the public row
-    * is empty. Pawns go to [[homes]], and the turn is p1's Act. */
-  private def quiet(fresh: ReadyGame): ReadyGame = fresh.updateCurrent { c =>
-    val sites = c.map.inPlay.map(c.map.sites)
-    val hands = c.players.flatMap(p => c.temporaryHands.getOrElse(p.player,
-      Vector.empty))
-    val denizens = sites.flatMap(_.denizens).collect { case d: DenizenState => d.id }
-    val edifices = sites.flatMap(_.denizens).collect { case e: EdificeState => e.id }
-    val relics = sites.flatMap(_.relics).map(_.id)
-    val discards = Region.all.flatMap(c.commonCards.discard)
-    c.copy(
-      temporaryHands = Map.empty,
-      commonCards = c.commonCards.copy(
-        worldDeck = c.commonCards.worldDeck ++ hands ++ discards ++ denizens,
-        regionalDiscards = Region.all.map(_ -> Vector.empty[WorldCardId]).toMap,
-        edificeDeck = c.commonCards.edificeDeck ++ edifices,
-        relicDeck = c.commonCards.relicDeck ++ relics,
-        publicLegacies = Vector.empty),
-      map = c.map.copy(sites = c.map.sites.view.mapValues(_ =>
-        SiteState(SiteForces.Empty, Vector.empty, Vector.empty, Tokens.empty))
-        .toMap),
-      players = c.players.map(p => p.copy(pawnSite = Some(
-        c.map.inPlay.find(_ == homes(p.player)).getOrElse(throw AssertionError(
-          s"${homes(p.player).value} is not in the fixture's first game"))))),
-      turn = TurnState(p1, Phase.Act, Set.empty))
-  }.updateCampaign(campaign => campaign.copy(lineages =
-    campaign.lineages.view.mapValues(_.copy(legacies = Vector.empty)).toMap))
+    * the bank with no change there. The legacies Foundation III dealt and
+    * the public row go to the bottom of the legacy deck, so no lineage
+    * holds one and the row is empty. Pawns go to [[homes]], and the turn
+    * is p1's Act. */
+  private def quiet(fresh: ReadyGame): ReadyGame =
+    val dealt = fresh.game.campaign.lineages.toVector.sortBy(_._1.value)
+      .flatMap(_._2.legacies.map(_.id))
+    fresh.updateCurrent { c =>
+      val sites = c.map.inPlay.map(c.map.sites)
+      val hands = c.players.flatMap(p => c.temporaryHands.getOrElse(p.player,
+        Vector.empty))
+      val denizens = sites.flatMap(_.denizens).collect { case d: DenizenState => d.id }
+      val edifices = sites.flatMap(_.denizens).collect { case e: EdificeState => e.id }
+      val relics = sites.flatMap(_.relics).map(_.id)
+      val discards = Region.all.flatMap(c.commonCards.discard)
+      c.copy(
+        temporaryHands = Map.empty,
+        commonCards = c.commonCards.copy(
+          worldDeck = c.commonCards.worldDeck ++ hands ++ discards ++ denizens,
+          regionalDiscards = Region.all.map(_ -> Vector.empty[WorldCardId]).toMap,
+          edificeDeck = c.commonCards.edificeDeck ++ edifices,
+          relicDeck = c.commonCards.relicDeck ++ relics,
+          publicLegacies = Vector.empty,
+          legacyDeck = c.commonCards.legacyDeck ++
+            c.commonCards.publicLegacies ++ dealt),
+        map = c.map.copy(sites = c.map.sites.view.mapValues(_ =>
+          SiteState(SiteForces.Empty, Vector.empty, Vector.empty, Tokens.empty))
+          .toMap),
+        players = c.players.map(p => p.copy(pawnSite = Some(
+          c.map.inPlay.find(_ == homes(p.player)).getOrElse(throw AssertionError(
+            s"${homes(p.player).value} is not in the fixture's first game"))))),
+        turn = TurnState(p1, Phase.Act, Set.empty))
+    }.updateCampaign(campaign => campaign.copy(lineages =
+      campaign.lineages.view.mapValues(_.copy(legacies = Vector.empty)).toMap))
 
   /** `ready` with `card` taken out of every zone and every viewer's memory
     * of it. */
@@ -655,6 +679,7 @@ object Table:
         relicDeck = zones.relicDeck.filter(keep),
         edificeDeck = zones.edificeDeck.filter(keep),
         publicLegacies = zones.publicLegacies.filter(keep),
+        legacyDeck = zones.legacyDeck.filter(keep),
         regionalDiscards = zones.regionalDiscards.view.mapValues(
           _.filter(keep)).toMap),
       map = c.map.copy(sites = c.map.sites.view.mapValues(s => s.copy(
@@ -665,6 +690,7 @@ object Table:
         relics = p.relics.filter(r => keep(r.id)),
         revealedVisions = p.revealedVisions.filter(v => keep(v.id)))),
       temporaryHands = c.temporaryHands.view.mapValues(_.filter(keep)).toMap,
+      legacyHands = c.legacyHands.view.mapValues(_.filter(keep)).toMap,
       setAsideRelics = c.setAsideRelics.filter(keep))
     val campaign = ready.game.campaign
     ready.copy(

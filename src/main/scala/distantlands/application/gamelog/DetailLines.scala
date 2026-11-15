@@ -129,7 +129,11 @@ private[gamelog] final class DetailLines(words: LogWords,
         line(LogSpan.Text(s"Moved $amount ") +:
           (whose(kind, amount, actor, before) ++
             Vector(LogSpan.Text(" to "), words.site(site))))
-      case Draw(player, cards, _, _, _) if run.procedure != ActionRef.Search =>
+      // A legacy draw has no generic line: Ancient Writ writes its own, and
+      // Setup's keep names only the keep (catalog batch 13, "Lines").
+      case Draw(player, cards, source, _, _)
+          if run.procedure != ActionRef.Search &&
+            source != Location.Deck(CardDeck.Legacy) =>
         line(words.subject(player, actor, "drew") ++
           words.cards(cards.map(card)))
       case discard: Discard.Denizen if !placedDiscard.contains(discard.card) =>

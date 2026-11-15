@@ -175,13 +175,8 @@ class RestSuite extends munit.FunSuite:
   test("unrelated active powers and the end-die Arbiter legacy do not block"):
     // p1's lineage holds the Arbiter legacy, active, and p1 holds Threatening
     // Roar, whose power is none of the Rest handlers.
-    val arbiter = ArbiterCard.id
-    val base = restBoard.adviser(p1, ThreateningRoarCard).ready
-    val lineage = base.game.campaign.lineages(Look(base).player(p1).lineage)
-    // No Table step reaches legacies.
-    val supported = base.updateCampaign(_.copy(lineages =
-      base.game.campaign.lineages.updated(lineage.id, lineage.copy(legacies =
-        Vector(LegacyState(arbiter, active = true))))))
+    val supported = restBoard.adviser(p1, ThreateningRoarCard)
+      .legacy(p1, ArbiterCard).ready
     rest(Ready(supported), p1).fold(error => fail(error.toString), _ => ())
 
   test("an optional Rest power, held or at the site, does not block Rest"):

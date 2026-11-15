@@ -149,7 +149,7 @@ object ResolveLegacies:
           Vector(BuildOps((now, _) => Right(chosen.map(id => Move(
               Piece.Card(id),
               PositionedLocation(Location.Legacies(lineageOf(now, player))),
-              PositionedLocation(Location.Deck(CardDeck.Legacy))))),
+              PositionedLocation.legacyDeckBottom))),
               required = true)) ++
             chosen.map(id => Note(notesOf, _ => Some(cappedKey.sourceless(
               NoteArg.Player(player), NoteArg.Card(id))))))))
@@ -181,7 +181,7 @@ object ResolveLegacies:
           val at = PositionedLocation(Location.Legacies(lineageOf(live, player)))
           if met then Flip(id, at.location, Orientation.FaceUp)
           else Move(Piece.Card(id), at,
-            PositionedLocation(Location.Deck(CardDeck.Legacy)))
+            PositionedLocation.legacyDeckBottom)
         }), required = true) +:
         resolved.map((player, id, met) => line(if met then activated
           else discarded, NoteArg.Player(player), NoteArg.Card(id))))
@@ -203,7 +203,7 @@ object ResolveLegacies:
       match
         case Vector() => Vector(BuildOps((_, _) => Right(Vector(Move(
             Piece.Card(legacy), PositionedLocation(Location.PublicLegacies),
-            PositionedLocation(Location.Deck(CardDeck.Legacy))))),
+            PositionedLocation.legacyDeckBottom))),
             required = true),
           line(returnedPublic, NoteArg.Card(legacy)))
         case Vector(player) => taken(legacy, player)

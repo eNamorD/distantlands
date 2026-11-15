@@ -126,7 +126,8 @@ object DomainValidation:
     }
 
     val playerIds = game.current.players.iterator.map(_.player).toSet
-    (game.current.temporaryHands.keySet -- playerIds).toVector
+    (game.current.temporaryHands.keySet ++ game.current.legacyHands.keySet
+      -- playerIds).toVector
       .sortBy(_.value).foreach(player => problems += UnknownTemporaryHandOwner(player))
     if !playerIds.contains(game.current.turn.activePlayer) then
       problems += UnknownActivePlayer(game.current.turn.activePlayer)
