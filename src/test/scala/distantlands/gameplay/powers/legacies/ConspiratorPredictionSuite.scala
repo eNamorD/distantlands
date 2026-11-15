@@ -1,6 +1,8 @@
 package distantlands.gameplay.powers.legacies
 
 import distantlands.gameplay.OathRules
+import distantlands.gameplay.chronicle.ChronicleLegacyRules
+import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import distantlands.gameplay.setup.{LaterGameFixture, SetupLegacyFixture,
   SetupProcedure}
@@ -97,10 +99,29 @@ class ConspiratorPredictionSuite extends munit.FunSuite:
 
   test("after round 1 nothing is asked: a Conspirator The Mouth activates " +
       "later never writes (ruling 25)"):
-    val asked = rested(table(at = 2))
-    assert(!awaits(asked.state, round))
-    assertEquals(Outcomes.ready(asked.state).game.current.predictions,
-      Map.empty)
+    // p2, in round 1's Act after their Wake, holds The Mouth active,
+    // Conspirator dormant, Sticky Fire, the highest relic, which meets its
+    // goal, and 2 favor. The Mouth activates Conspirator; the round plays
+    // on to p2's round-2 Wake, which asks nothing.
+    val table = Table.start.turn(p2, Phase.Act).favor(p2, 2)
+      .relic(p2, StickyFireCard).legacy(p2, TheMouthCard)
+      .legacy(p2, ConspiratorCard, active = false)
+    val activating: Answers =
+      case park if park.decisionId == TheMouth.decisionId =>
+        ChooseOneAnswer(DecisionOptionRef.Legacy(ConspiratorCard.id))
+    val activated = table.situation(Situation.productionRules(catalog)
+      .withAnswers(activating)).after(MenuPlay.start(p2,
+        ActionRef.UsePower(TheMouth.id),
+        Vector(DecisionOptionRef.Legacy(TheMouthCard.id))))
+    assert(ChronicleLegacyRules.holder(activated.ready, ConspiratorCard.id)
+      .contains(p2))
+    val nextWake = activated
+      .after(MenuPlay.starting(p2, PhaseTransitionRef.BeginRest))
+      .endingWake(p3).after(MenuPlay.starting(p3, PhaseTransitionRef.BeginRest))
+      .endingWake(p1).after(MenuPlay.starting(p1, PhaseTransitionRef.BeginRest))
+    val current = nextWake.ready.game.current
+    assertEquals((current.tracks.round, current.turn.activePlayer), (2, p2))
+    assertEquals(current.predictions, Map.empty)
 
   test("a dormant Conspirator asks nothing (ruling 1)"):
     assert(!awaits(rested(table(active = false)).state, round))
