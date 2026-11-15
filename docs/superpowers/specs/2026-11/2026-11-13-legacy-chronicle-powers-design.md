@@ -27,7 +27,7 @@ half needs to mean anything (Oaths of Loyalty's burial). Thirteen legacies:
 | 2. Throne denizens | Rival (Throne half), Great Architect, Revolutionary, Reformer | Start of Throne, Shape Empire, Build Edifice, after Build Edifice |
 | 3. Relics and the next game | Heirloom, The Ear (Chronicle half), Oaths of Loyalty, The Bright Beacon | Scatter Relics, Gather Denizens, the starting-adviser keeps, Setup's adviser pick, Introduce Newcomers |
 | 4. Iron Hand | Iron Hand (Chronicle half and its discard rule) | Sun, Throne, Score Lineage Points, Archive Rival Sites, Store |
-| 5. Royal Line | Royal Line | A new first Sun window; the game's recorded winner |
+| 5. Royal Line | Royal Line | A new first Sun window (before Start Chronicle since Legacy in-play powers R36); the game's recorded winner |
 
 Slices run in order. Slice 1 builds the seam the rest use. Iron Hand comes
 after slice 2 because it changes who performs the steps slice 2 touches,
@@ -216,8 +216,9 @@ rulings then continue.
   `ChronicleShuffleLegacies`, Reformer's before `ChronicleOfferCitizenship`,
   Revolutionary's after `ChronicleBuildEdifice`, Heirloom's before
   `ChronicleScatterRelics`, and Royal Line's before
-  `ChronicleRevealRelics`. Each is empty with no power, and
-  `ChronicleWindowsSuite` lists it.
+  `ChronicleRevealRelics` (moved before Start Chronicle, as
+  `ChronicleFinalWinner`, by Legacy in-play powers implementation ruling
+  R36). Each is empty with no power, and `ChronicleWindowsSuite` lists it.
 - **Journal.** New `ChronicleOperation`s only where existing moves cannot
   say it: the scored legacies (ruling 8), Heirloom's kept relic
   (ruling 13) and Royal Line's winner (ruling 23). Oaths' kept advisers
