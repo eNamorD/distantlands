@@ -8,8 +8,8 @@ sends the card. Each slice is planned when the one before it lands. Slice 1
 landed 2026-11-14; with it every printed denizen power is implemented.
 Amended 2026-11-15 by the owner while slice 2 was planned: the legacy deck
 is stored and ordered, discarded legacies go to its bottom in place of a
-set-aside zone, and drawn legacies wait in the drawer's hand (rulings 1, 2,
-6, 9, 12 and 13; "Slice 2").
+set-aside zone, and drawn legacies wait in the drawer's hand, Setup's
+Quiet Ambitions draw included (rulings 1, 2, 6, 9, 12 and 13; "Slice 2").
 
 **Builds on** the [Legacies design](2026-11-13-legacies-design.md), the
 [Legacy Setup powers](2026-11-13-legacy-setup-powers-design.md) batch (the
@@ -97,8 +97,16 @@ then continue.
    holder, so no other viewer identifies a drawn legacy, and the keep's
    question shows it to the drawer through its options. The kept legacy
    then joins the owner's lineage, dormant, and the others go to the
-   bottom of the deck, where nobody identifies them. The legacy deck is
-   not shown.
+   bottom of the deck, where nobody identifies them, so the hand is empty
+   again. The legacy deck is not shown. Quiet Ambitions' keep draws the
+   same way: game start deals no legacy to a lineage, and each player's
+   keep draws 2 from the top into the keeper's hand, so Matchmaker's
+   holder sees another player's draw because it is in their own hand. The
+   draws happen in keep order, and a short deck can give a later player a
+   legacy an earlier one returned. This amends Legacies ruling 5 (a short
+   deck draws in seat order), Legacies implementation ruling R13 (the
+   drawn legacies are the lineage's unrecorded dormant ones) and Legacy
+   Setup powers R16 (the holder sees the draw while the keep is parked).
 
 ### Slice 1: Reliquary Raid
 
@@ -117,7 +125,8 @@ then continue.
 9. **Matchmaker during a game.** When another seated player holds
    Matchmaker active, that player draws into their own hand and chooses
    for the Ancient Writ holder, off turn. The question names the player
-   they choose for. The owner never identifies the legacies they did not
+   they choose for, "Matchmaker: keep a legacy for p1", as Setup's keep
+   now does too. The owner never identifies the legacies they did not
    keep. A holder using Ancient Writ themself chooses for themself.
 10. **Only Ancient Writ triggers Matchmaker.** Amber Doors is excluded by
     Matchmaker's printed text. Lost Doors' discard is the owner's choice
@@ -209,6 +218,12 @@ deleted.
   active holder in any phase. Its power id is fixed to
   `relic.ancient-writ`. `AncientWritCard` leaves `HoldingRelics`, and
   that file is deleted.
+- **Setup's keep.** Game start deals Quiet Ambitions' draws to nobody:
+  the deck keeps the whole shuffled order less the public row.
+  `LegacyKeep.step` draws 2 into the keeper's hand through `LegacyDraws`,
+  then keeps as Ancient Writ does. `LegacyDeal.drawn`,
+  `LegacyKeep.drawn`, `LegacyKeep.matchmade` and the projection's
+  Matchmaker arm are deleted. The keep's lines are unchanged.
 - **Saved games.** Journals from before this slice need not replay: their
   moves into the legacy deck name no position.
 
@@ -220,11 +235,8 @@ each player's pawn turn for a first game. `LegacyKeep.drawn` reads the
 lineage's baseline (R13) and needs no change. Secret Society and Seer now
 follow the keep. A Quest to Distant Lands holder who places no pawn keeps
 in Foundation III like everyone else. The plan checks that a game saved
-mid-Setup replays: answers are keyed by decision id. The slice also
-weighs drawing Setup's two legacies into the keeper's hand through
-`LegacyDraws`, as Ancient Writ does, which would retire
-`LegacyKeep.matchmade` and the projection's Matchmaker arm; its plan
-settles it with the owner.
+mid-Setup replays: answers are keyed by decision id. Since slice 2 the
+keep draws its own legacies, so moving the keep moves the draw with it.
 
 ### Slice 4: power order
 
@@ -302,6 +314,9 @@ discards. The power-order pick adds no line (ruling 4).
   return, an Iron Hand discard, an Ancient Writ discard).
 - Matchmaker during a game: another holder draws into their hand and
   chooses, and the owner does not identify the legacies not kept.
+- Setup's keep: game start deals no legacy, each keep draws into the
+  keeper's hand, a short deck in keep order, and the Matchmaker suites
+  unchanged in what each viewer identifies.
 - The keep's position: a first game after pawn placement, a later game in
   Foundation III, Matchmaker in both, and replay of a game saved mid-Setup.
 - `OrderedWindowSuite`: Wealthy before Amber Doors; Amber Doors first,
