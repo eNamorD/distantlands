@@ -1,12 +1,13 @@
 package distantlands.gameplay.powers.legacies
 
 import distantlands.application.{GameAccepted, GameApplicationService,
-  ParkedServiceFixture, TreeDecision}
+  GameProjector, ParkedServiceFixture, TreeDecision}
 import distantlands.application.gamelog.LogScripts.{formatter, texts}
 import distantlands.gameplay.actions.negotiation.HighPriestCard
 import distantlands.gameplay.chronicle.ChronicleBeginProcedure
 import distantlands.gameplay.chronicle.legacies.{RoyalLine, RoyalLineCard}
 import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.legacies.TheStandardBearerCard
 import distantlands.model._
 import distantlands.testkit.{Commands, MenuPlay, Outcomes, RoundEndChoices,
@@ -21,6 +22,7 @@ import distantlands.testkit.Unwrap.{accepted, present}
 class ConspiratorRevealSuite extends munit.FunSuite:
   private val gameId = "conspirator-reveal"
   private val successor = GameResult(p2, VictoryKind.Successor)
+  private val projector = new GameProjector(catalog)
 
   /** Round 5's last Act, p3's. p1, the Chancellor, holds the Oathkeeper
     * title of Devotion and the Darkest Secret; p2, a Citizen, holds the
@@ -109,15 +111,17 @@ class ConspiratorRevealSuite extends munit.FunSuite:
       assert(lines(service).contains(revealLine(p2, 5)), lines(service))
     }
 
-  test("the game's end replays from the journal, the store empty"):
+  test("the game's end and the Sun's comparison replay from the journal, " +
+      "the store empty"):
     val table = lastAct(Prediction(5, p2))
     val (service, repository) =
       table.service(roundEnd = RoundEndChoices.endDie(6))
-    val done = accepted(service.handle(gameId, 0L,
-      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))
-    val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
-    assertEquals(present(accepted(reloaded.load(gameId)), "a stored game")
-      .state, done.state)
+    val done = started(service, accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest))))
+    val reloaded = present(accepted(ParkedServiceFixture.replayingSecond(
+      service, repository).load(gameId)), "a stored game").state
+    assertEquals(reloaded, done.state)
+    assertEquals(Outcomes.ready(reloaded).game.current.predictions, Map.empty)
 
   test("with no prediction the game's end writes no reveal"):
     val plain = Table.start.imperial(p1, p2)
@@ -132,7 +136,7 @@ class ConspiratorRevealSuite extends munit.FunSuite:
     assert(!lines(service).exists(_.contains("had written down")))
 
   test("a Conspirator lost to The Mouth's cap in play voids the prediction " +
-      "at the game's end"):
+      "when the Sun compares it"):
     // p3 also holds The Mouth, Golden Key and High Priest active, The
     // Standard Bearer dormant, the People's Favor, which meets its goal,
     // and 2 favor: activating The Standard Bearer takes p3 to five active
@@ -212,3 +216,42 @@ class ConspiratorRevealSuite extends munit.FunSuite:
       Some(GameResult(p3, VictoryKind.Conspirator)))
     assertEquals(present(accepted(ParkedServiceFixture.replayingSecond(
       service, repository).load(gameId)), "a stored game").state, done.state)
+
+  test("Royal Line declining leaves the Successor, and a prediction of the " +
+      "Successor still wins"):
+    val (service, opened) = ended(withRoyalLine(Prediction(5, p2)))
+    val done = accepted(service.handle(gameId, opened.nextSequence,
+      Commands.resolveWalker(p2, TreeDecision(RoyalLine.decisionId(p2),
+        DecisionAnswer.ChooseOneAnswer(RoyalLine.decline)))))
+    assertEquals(Outcomes.ready(done.state).game.current.result,
+      Some(GameResult(p3, VictoryKind.Conspirator)))
+
+  test("a game parked after the comparison, at Assign Tasks, reloads and " +
+      "goes on, each reveal line written once"):
+    val table = lastAct(Prediction(5, p2))
+    val (service, repository) =
+      table.service(roundEnd = RoundEndChoices.endDie(6))
+    val opened = started(service, accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest))))
+    val parked = Outcomes.ready(opened.state).game.current
+    assertEquals(parked.result, Some(GameResult(p3, VictoryKind.Conspirator)))
+    val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
+    val loaded = present(accepted(reloaded.load(gameId)), "a stored game")
+    assertEquals(loaded.state, opened.state)
+    val world = "chronicle.assign.world"
+    val asked = present(projector.project(gameId, loaded, p3).walkerDecision,
+      "the Assign Tasks question")
+    assertEquals(asked.decisionId, world)
+    val option = present(asked.query.flatMap(_.offeredOptions.headOption),
+      "an option")
+    val answered = accepted(reloaded.handle(gameId, loaded.nextSequence,
+      Commands.resolveWalker(p3, TreeDecision(world,
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(
+          PlayerId(option.id)))))))
+    assertEquals(Outcomes.ready(answered.state).game.current.result,
+      Some(GameResult(p3, VictoryKind.Conspirator)))
+    val written = texts(formatter.format(present(accepted(
+      reloaded.history(gameId)), "a stored game").steps, Some(p1)))
+    assertEquals(written.count(_ == revealLine(p2, 5)), 1, written)
+    assertEquals(written.count(_ == s"p3 won with ${ConspiratorCard.name}"),
+      1, written)
