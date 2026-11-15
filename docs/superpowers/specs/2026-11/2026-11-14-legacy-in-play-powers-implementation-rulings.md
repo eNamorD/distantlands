@@ -203,7 +203,7 @@ open questions, ruled on 2026-11-14.
 - **R28. How is the round written?** *Decision:* as an amount from 1 to
   8, which no log line names; a test shows that neither `DetailLines` nor
   any other viewer's projection or log exposes the amount or the winner
-  until the Sun reveals it, after Royal Line's choice (R24).
+  until it is revealed before Start Chronicle (R24, R36).
   *Slice/files:* slice 4, Task 3.
 - **R29. How is a void prediction revealed?** *Decision:* with the same
   line, and no extra word. *Reason:* the game-end state shows Conspirator
