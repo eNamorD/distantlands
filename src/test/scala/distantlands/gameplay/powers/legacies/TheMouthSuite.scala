@@ -103,9 +103,9 @@ class TheMouthSuite extends munit.FunSuite:
     val now = after(done.answered)
     assert(now.game.campaign.foundations(FoundationNumber.IV)
       .alterationSources.contains(BelovedCard.id))
-    assertEquals(lines(done.answered.events).last.takeWhile(_ != ' '),
-      BelovedCard.id.value)
-    assertEquals(lines(done.answered.events).size, 2)
+    assertEquals(lines(done.answered.events), Vector(
+      s"p1 activated ${BelovedCard.id.value} with ${TheMouthCard.id.value}",
+      s"${BelovedCard.id.value} set Foundation IV to Teeming World"))
 
   test("with four active legacies the holder discards to three, choosing, " +
       "and no foundation flips back"):
