@@ -68,6 +68,18 @@ class WalkerChoicePanelRenderSuite extends munit.FunSuite:
     assertEquals(titles(power), Vector("**REST:** Gain [secret]."))
     assertEquals(titles(used), Vector("Already used this turn"))
 
+  test("a legacy option shows its goal on hover, as the legacy strip does"):
+    val populist = CardDetails("L22", "legacy", "Populist",
+      rulesText = Some("**SETUP:** Divide the favor evenly."),
+      legacyGoal = Some(distantlands.protocol.projection.LegacyGoalProjection(
+        "most-favor", "Hold the most favor.")))
+    val keep = DecisionOptionState("legacy", "L22", "Populist", Some(populist))
+    val panel = draw(WalkerDecisionState("setup", "setup.legacy-choice.p1",
+      query = Some(DecisionQueryState.ChooseOne(Vector(keep),
+        heading = Some("Keep a legacy")))))
+    assertEquals(Dom.one(panel, ".walker-choice").getAttribute("data-tip"),
+      "Hold the most favor.")
+
   test("choosing an option submits the generic answer for its kind and id"):
     val ui = new RecordingControls()
     val panel = draw(parked, ui)
