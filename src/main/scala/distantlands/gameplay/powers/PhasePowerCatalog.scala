@@ -1,7 +1,8 @@
 package distantlands.gameplay.powers
 
 import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
-import distantlands.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders,
+import distantlands.gameplay.powers.action.{AncientWrit,
+  DiceAndRelicDrawPowers, Elders,
   GrandScepterAction, ImperialSeal, MagicWaterskin, MovementPowers,
   OtherActionPowers, SelfActionPowers, StonePortal, TargetPowers, WaysideInn,
   WhisperingStone, WorldActionPowers}
@@ -24,8 +25,8 @@ object PhasePowerCatalog:
       Vector(Insomnia, Naysayers) ++
       Vector(VowOfObedience) ++
       Vector(VowOfPoverty) ++
-      Vector[PhasePower](WaysideInn, Elders, MagicWaterskin, MarbleFountains,
-        GrandScepterAction, ImperialSeal,
+      Vector[PhasePower](WaysideInn, Elders, MagicWaterskin, AncientWrit,
+        MarbleFountains, GrandScepterAction, ImperialSeal,
         Quartermaster, StonePortal, SinkingPassages, HiddenPassages,
         TrackerAction, TrackerWake, WhisperingStone) ++
       DiceAndRelicDrawPowers.powers ++
