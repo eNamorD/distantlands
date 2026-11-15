@@ -93,7 +93,7 @@ class ConspiratorRevealSuite extends munit.FunSuite:
     s"p3 had written down ${winner.value} to win in round $round with " +
       ConspiratorCard.name
 
-  test("a correct prediction beats a Successor win, and the Sun's later " +
+  test("a correct prediction beats a Successor win, and the Chronicle's " +
       "steps read its holder as the winner"):
     val (service, done) = ended(lastAct(Prediction(5, p2)))
     val current = Outcomes.ready(done.state).game.current
@@ -128,8 +128,8 @@ class ConspiratorRevealSuite extends munit.FunSuite:
       assert(lines(service).contains(revealLine(p2, 5)), lines(service))
     }
 
-  test("the game's end and the Sun's comparison replay from the journal, " +
-      "the store empty"):
+  test("the game's end and the comparison before Start Chronicle replay " +
+      "from the journal, the store empty"):
     val table = lastAct(Prediction(5, p2))
     val (service, repository) =
       table.service(roundEnd = RoundEndChoices.endDie(6))
@@ -153,7 +153,7 @@ class ConspiratorRevealSuite extends munit.FunSuite:
     assert(!lines(service).exists(_.contains("had written down")))
 
   test("a Conspirator lost to The Mouth's cap in play voids the prediction " +
-      "when the Sun compares it"):
+      "when it is compared, before Start Chronicle"):
     // p3 also holds The Mouth, Golden Key and High Priest active, The
     // Standard Bearer dormant, the People's Favor, which meets its goal,
     // and 2 favor: activating The Standard Bearer takes p3 to five active
@@ -208,7 +208,8 @@ class ConspiratorRevealSuite extends munit.FunSuite:
     assert(lines(service).contains(revealLine(p2, 5)), lines(service))
     assert(!lines(service).exists(_.contains("won with")), lines(service))
 
-  test("the Sun's steps after the comparison read the Conspirator winner"):
+  test("the Sun's steps, after the comparison, read the Conspirator " +
+      "winner"):
     val (service, _) = ended(lastAct(Prediction(5, p2)))
     val written = lines(service)
     val won = written.indexOf(s"p3 won with ${ConspiratorCard.name}")

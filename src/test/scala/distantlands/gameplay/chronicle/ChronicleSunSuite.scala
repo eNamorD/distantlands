@@ -254,8 +254,9 @@ class ChronicleSunSuite extends munit.FunSuite:
         state.flatMap(rules.evolve(_, event)))), done.state)
 
   test("Crown Chancellor and Assign Tasks read the winner when reached"):
-    // A power at the Sun's first window names p2 the winner; the Crown and
-    // the Throne task then go to p2.
+    // A test power at the Sun's first window, now empty in play (Royal Line
+    // acts before Start Chronicle since Legacy in-play powers R36), names p2
+    // the winner; the Crown and the Throne task then go to p2.
     final case class NamesP2() extends ContributingPower:
       val id: PowerId = PowerId("test.chronicle.names-p2")
       val source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
