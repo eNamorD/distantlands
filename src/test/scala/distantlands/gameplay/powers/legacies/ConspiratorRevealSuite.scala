@@ -227,11 +227,14 @@ class ConspiratorRevealSuite extends munit.FunSuite:
     assertEquals(Outcomes.ready(opened.state).game.current.predictions,
       Map(p3 -> Prediction(5, p1)))
     val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
-    assertEquals(present(accepted(reloaded.load(gameId)), "a stored game")
-      .state, opened.state)
-    val done = naming(service, opened, p1)
+    val loaded = present(accepted(reloaded.load(gameId)), "a stored game")
+    assertEquals(loaded.state, opened.state)
+    val done = accepted(reloaded.handle(gameId, loaded.nextSequence,
+      Commands.resolveWalker(p2, TreeDecision(RoyalLine.decisionId(p2),
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(p1))))))
     assertEquals(Outcomes.ready(done.state).game.current.result,
       Some(GameResult(p3, VictoryKind.Conspirator)))
+    assertEquals(parkedOn(done), (ChronicleBeginProcedure.decisionId, p3))
     assertEquals(present(accepted(ParkedServiceFixture.replayingSecond(
       service, repository).load(gameId)), "a stored game").state, done.state)
 
