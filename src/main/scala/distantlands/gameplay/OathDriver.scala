@@ -38,7 +38,9 @@ import distantlands.model.OathViolation._
   *
   * Each start runs on the state the steps before it left, so a turn that
   * changes inside one command gives the next walk the new active player.
-  * Once a result is set and nothing is pending, the winner's Start
+  * Once a result is set and nothing is pending, the final winner is
+  * settled (`ChronicleWinnerProcedure`: Royal Line, then Conspirator's
+  * comparison; Legacy in-play powers R36), and then that winner's Start
   * Chronicle decision parks.
   */
 private[gameplay] trait OathDriver:
@@ -69,8 +71,9 @@ private[gameplay] trait OathDriver:
     case _ => Right(transition)
 
   /** Wherever a result was set -- by a walk, the Wake checks or the round's
-    * end -- the winner's Start Chronicle decision parks once the driver is
-    * done (Chronicle steps design, "Chaining"). */
+    * end -- the driver, once done, starts `ChronicleWinnerProcedure`, and
+    * after it the final winner's Start Chronicle decision parks (Chronicle
+    * steps design, "Chaining"; Legacy in-play powers R36). */
   private def openChronicle(transition: OathTransition,
       finished: ProcedureRef) =
     transition.state match

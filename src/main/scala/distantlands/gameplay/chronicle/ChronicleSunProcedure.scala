@@ -55,9 +55,10 @@ object ChronicleSunProcedure:
     yield Sequence(steps(catalog))
 
   /** The nodes `steps` builds for the winner the result names when the
-    * step is reached: Royal Line, at the Sun's first window, may have named
-    * another (Legacy Chronicle powers design, ruling 23). A shape that reads
-    * only the result, which nothing in the step changes, holds on resume. */
+    * step is reached. Royal Line's choice and a Conspirator win are settled
+    * before the Chronicle (`ChronicleWinnerProcedure`; Legacy in-play powers
+    * R36), so the result is the final winner. A shape that reads only the
+    * result, which nothing in the step changes, holds on resume. */
   private def forWinner(steps: PlayerId => Vector[Operation]): Operation =
     Branch((state, _) => ChronicleTasks.winner(state).fold(
       violation => Vector(ChronicleTasks.failing(violation)), steps))
