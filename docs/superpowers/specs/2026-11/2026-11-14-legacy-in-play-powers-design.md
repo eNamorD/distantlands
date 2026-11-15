@@ -201,8 +201,10 @@ rulings then continue.
     viewer until the game ends ("p2 wrote down a prediction with
     Conspirator"); the holder sees it.
 27. **Conspirator: resolution.** When the game ends, the round it ends in
-    and the final winner, after any Successor substitution, are compared
-    with the prediction. If both match and the holder still holds
+    and the final winner, after any Successor substitution and any Royal
+    Line choice, are compared with the prediction, at the Sun's first
+    window right after Royal Line's step (as implementation ruling R24
+    amends it). If both match and the holder still holds
     Conspirator active, the holder wins instead, under a new victory kind
     `Conspirator`. The prediction is revealed in the log either way. A
     Conspirator lost during the game, as to The Mouth's cap, voids it.

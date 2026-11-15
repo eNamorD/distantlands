@@ -168,12 +168,16 @@ The [slice 4 plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice4.m
 open questions, ruled on 2026-11-14.
 
 - **R24. Is Conspirator's prediction compared before or after Royal
-  Line?** *Decision:* at the game's end, before the Chronicle opens, with
-  the result after any Successor substitution. *Reason:* Royal Line
-  chooses who meets the Successor goal for the Chronicle, not who won this
-  game; the card's prediction "even beats a Successor win", so it is
-  compared with this game's final winner. *Slice/files:* slice 4, Task 4;
-  `ConspiratorReveal`.
+  Line?** *Decision:* after Royal Line's CHRONICLE (SUN) choice has been
+  made, against the winner that results from it: after the Successor
+  substitution and any Royal Line choice. The comparison runs at the Sun's
+  first window, right after Royal Line's step, so a Conspirator win then
+  overrides the result, and every later Chronicle step reads it.
+  *Reason:* the owner's ruling, overriding the first one ("Conspirator
+  should check after Royal Line power is activated"). This supersedes the
+  earlier decision to compare at the game's end, before the Chronicle
+  opens. *Slice/files:* slice 4, Task 4, re-ruled; `ConspiratorReveal`,
+  `ChronicleSunProcedure`.
 - **R25. May The Mouth activate Iron Hand for an Imperial holder?**
   *Decision:* yes; the same batch then discards it, with Iron Hand's
   discard line. *Reason:* "If you are Imperial, discard Iron Hand" is a

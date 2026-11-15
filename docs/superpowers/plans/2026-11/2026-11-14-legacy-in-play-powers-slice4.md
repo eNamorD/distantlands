@@ -60,8 +60,10 @@ This plan's open questions were ruled on 2026-11-14 as implementation
 rulings R24-R30 ([rulings](../../specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)).
 Each took the recommended option but R25:
 
-- **R24** (Task 4): the prediction is compared at the game's end, before
-  the Chronicle, with the result after any Successor.
+- **R24** (Task 4, re-ruled by the owner after the slice landed): the
+  prediction is compared at the Sun's first window, right after Royal
+  Line's step, against the winner it leaves. The first ruling, comparing
+  it before the Chronicle, is superseded; see Deviations.
 - **R25** (Task 1): The Mouth may activate Iron Hand for an Imperial
   holder; the same batch then discards it, with Iron Hand's discard line.
 - **R26** (Task 3): the holder sees the prediction through the holder-only
@@ -197,6 +199,12 @@ itself.
   answers it; narrated, it writes no "Chose" line.
 - `GameLogFormatter.wonBy` gains its `Conspirator` words, which no event
   posts: the reveal step writes the victory line.
+
+- After the slice landed the owner re-ruled R24: the comparison moved from
+  a triggered step before the Chronicle (`TriggeredProcedureRef.ConspiratorReveal`,
+  "game-end-conspirator", now withdrawn; no released stream used it) to
+  the Sun's steps, right after the `ChronicleStartOfSun` window where
+  Royal Line acts. Its lines are now the Sun's.
 
 ## Global Constraints
 
